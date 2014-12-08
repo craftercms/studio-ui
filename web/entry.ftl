@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js" lang="" ng-app="userDashboard">
+<html class="no-js" lang="" ng-app="studio">
 <head>
     <meta charset="utf-8">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
     <title>Crafter Studio</title>
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <#-- TODO: Check if user is in session and spit it out here as shown by the example below.
     <script type="application/json" id="user">{"name":"Roy","surname":"Art","email":"rart@rivetlogic.com"}</script>
@@ -15,69 +15,126 @@
         var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };
     </script>
 
-    <link rel="stylesheet" href="studio/static-assets/styles/main.css">
+    
 
-    <script src="studio/static-assets/scripts/modernizr.js"></script>
+    <link rel="stylesheet" href="/studio/static-assets/styles/main.css">
+
+    <script src="/studio/static-assets/js/modernizr.js"></script>
 
 </head>
-<body>
-
+<body class="{{$state.current.cssClass}}">
 <!--[if lt IE 10]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<nav class="navbar navbar-default navbar-static-top" role="navigation" ng-controller="AppCtrl">
-    <div class="container-fluid">
-
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">
-                <img src="/studio/static-assets/images/crafter_studio_360.png" alt="Crafter Studio"/>
-            </a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse"
-             ng-if="!$state.$current.includes['login']">
-            <ul class="nav navbar-nav navbar-right">
-                <li ui-sref-active="active"><a ui-sref="home">Sites</a></li>
-                <li><a href="https://craftersoftware.zendesk.com/home" target="_blank">Help</a></li>
-                <li class="dropdown" dropdown>
-                    <a class="dropdown-toggle" dropdown-toggle>Account <span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li class="user-display">
-                            <div class="name">{{user.name}} {{user.surname}}</div>
-                            <div class="email">{{user.email}}</div>
-                        </li>
-                        <li><a ui-sref-active="active" ui-sref="settings">Settings</a></li>
-                        <li><a ng-click="logout()">Sign out</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-</nav>
-
-<div class="container">
-    <ui-view></ui-view>
-</div>
+<ui-view></ui-view>
 
 <script type="text/ng-template" id="templates/home">
+    <header>
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container-fluid">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" ui-sref="home.sites">
+                        <img src="/studio/static-assets/images/crafter_studio_360.png" alt="Crafter Studio"/>
+                    </a>
+                </div>
+
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li ui-sref-active="active"><a ui-sref="home.sites">Sites</a></li>
+                        <li><a href="https://craftersoftware.zendesk.com/home" target="_blank">Help</a></li>
+                        <li class="dropdown" dropdown>
+                            <a class="dropdown-toggle" dropdown-toggle>Account <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="user-display">
+                                    <div class="name">{{user.name}} {{user.surname}}</div>
+                                    <div class="email">{{user.email}}</div>
+                                </li>
+                                <li><a ui-sref-active="active" ui-sref="home.settings">Settings</a></li>
+                                <li><a ng-click="logout()">Sign out</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <section class="container" id="main" ui-view="content"></section>
+</script>
+
+<script type="text/ng-template" id="templates/preview">
+    <div class="preview-container">
+        <header ui-view="header">
+            <nav class="navbar navbar-default navbar-static-top" role="navigation">
+                <div class="container-fluid">
+
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" ui-sref="home.sites">
+                            <img src="/studio/static-assets/images/crafter_studio_360.png" alt="Crafter Studio"/>
+                        </a>
+                    </div>
+
+                    <div class="collapse navbar-collapse">
+
+                        <form class="navbar-form navbar-right" role="search">
+                            <div class="form-group">
+                                <input type="text" class="form-control"
+                                       placeholder="Send a message..."
+                                       ng-model="data.message"/>
+                            </div>
+                            <button type="button" ng-click="sendMessage()" class="btn btn-default">Submit</button>
+                            <button type="button" ng-click="reloadIFrame()" class="btn btn-default">Reload</button>
+                        </form>
+
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown studio-sites-dropdown" dropdown>
+                                <a class="dropdown-toggle" dropdown-toggle>Sites <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a ui-sref-active="active" ui-sref="home.settings">Settings</a></li>
+                                    <li><a ng-click="logout()">Sign out</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <section id="main">
+            <div class="site-window">
+                <iframe id="studioIFrame" class="studio-preview-frame" ng-src="{{url}}"></iframe>
+            </div>
+        </section>
+        <footer class="status-bar">
+            <div class="status">{{status}}</div>
+        </footer>
+    </div>
+</script>
+
+<script type="text/ng-template" id="templates/sites">
     <div class="home-view">
         <div class="row" ng-if="sites">
             <div class="col-sm-4 col-md-3">
                 <div class="list-group">
                     <a class="list-group-item"
-                       ui-sref="home" ng-class="{ 'active': $state.$current.name === 'home' }">
+                       ui-sref="home.sites" ng-class="{ 'active': $state.$current.name === 'home.sites' }">
                         All Sites
                     </a>
                     <a class="list-group-item"
-                       ui-sref="home.site({ siteId: {{site.id}} })"
+                       ui-sref="home.sites.site({ siteId: {{site.id}} })"
                        ui-sref-active="active"
                        ng-repeat="site in sites">
                         {{site.name}}
@@ -119,7 +176,7 @@
 
             <div class="row">
                 <div class="col-lg-12 columns text-center">
-                    <img src="studio/static-assets/images/crafter_studio_360.png"
+                    <img src="/studio/static-assets/images/crafter_studio_360.png"
                          style="width: 60%; margin: 0 auto 20px; display: block;"/>
                 </div>
             </div>
@@ -319,9 +376,9 @@
     </div>
 </script>
 
-<script src="studio/static-assets/scripts/angular.js"></script>
+<script src="/studio/static-assets/js/angular.js"></script>
 
-<script src="studio/static-assets/scripts/main.js"></script>
+<script src="/studio/static-assets/js/studio.js"></script>
 
 </body>
 </html>
