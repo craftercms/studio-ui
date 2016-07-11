@@ -408,7 +408,7 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
             };
 
             var readDirectory = function(entries, cfg) {
-                for (i = 0; i < entries.length; i++) {
+                for (var i = 0; i < entries.length; i++) {
                     if (entries[i].isDirectory) {
 
                         var cfgSubFolder = JSON.parse(JSON.stringify(cfg));
@@ -449,14 +449,14 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
             cfg.site = getParameter("site", cfg.target);
             cfg.path = getParameter("path", cfg.target);
 
-            for (var i = 0; i < length; i++) {
+            for (var x = 0; x < length; x++) {
                 var entries = [];
 
                 try{    //chrome feature to upload folders
-                    entries[0] = e.dataTransfer.items[i].webkitGetAsEntry();
+                    entries[0] = e.dataTransfer.items[x].webkitGetAsEntry();
                     readDirectory(entries, cfg);
                 }catch(e){      //other browsers
-                    var file = files[i];
+                    var file = files[x];
                     uploadFile(file, cfg);
                 }
 
