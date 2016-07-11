@@ -366,6 +366,10 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
                                                                                 YDom.replaceClass("targeting-panel-elem", 'expanded', 'contracted');
                                                                             }
 
+                                                                            if(CStudioAuthoringContext.isPreview){
+                                                                                CStudioAuthoring.Operations.refreshPreview();
+                                                                            }
+
                                                                         },
 
                                                                         failure: function() {
