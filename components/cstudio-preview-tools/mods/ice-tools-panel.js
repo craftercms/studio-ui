@@ -167,20 +167,22 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         templateButtonEl.onclick = function() {
 
             if(!checkRenderingTemplates(CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates)) {
-                var contentType = CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates[0].uri;
+                var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0],
+                    renderingTemplate = selectedContent.renderingTemplates[0].uri,
+                    contentType = selectedContent.contentType;
 
                 // if(CStudioAuthoringContext.channel && CStudioAuthoringContext.channel != "web") {
                 // 		contentType = contentType.substring(0, contentType.lastIndexOf(".ftl")) +
                 // 			"-" + CStudioAuthoringContext.channel + ".ftl";
                 // }
 
-                CStudioAuthoring.Operations.openTemplateEditor(contentType, "default", {
+                CStudioAuthoring.Operations.openTemplateEditor(renderingTemplate, "default", {
                     success: function () {
                         CStudioAuthoring.Operations.refreshPreview();
                     },
                     failure: function () {
                     }
-                });
+                }, contentType);
             }else{
                 alert("No template found");
             }
