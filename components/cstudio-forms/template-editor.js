@@ -141,11 +141,11 @@ CStudioAuthoring.Module.requireModule(
 															if(this.type == "node-selector") {
 																variables.push(
 																	{
-																		"value" : "${model." + id + ".item[0].key}",
+																		"value" : id + ".item[0].key",
 																		"label" : value + " - Key"
 																	},
 																	{
-																		"value" : "${model." + id + ".item[0].value}",
+																		"value" : + id + ".item[0].value",
 																		"label" : value + " - Value"
 																	}
 																);
@@ -211,7 +211,7 @@ CStudioAuthoring.Module.requireModule(
 											variableModel = $("#variable").find('option:selected'),
 											selectedValue = $(varList).find('option:selected').val();
 
-										variableModel.val("${model." + selectedValue + "}");
+										variableModel.val("${contentModel." + selectedValue + "}");
 
 									};
 									var _addVarsSelect = function() {
@@ -262,27 +262,27 @@ CStudioAuthoring.Module.requireModule(
 
 										//Create array of options to be added
 										var variableOpts = [
-											{label:"Content variable", value:"${model.VARIABLENAME}"},
+											{label:"Content variable", value:"${contentModel.VARIABLENAME}"},
 											{label:"Request parameter", value:"${RequestParameters[\"PARAMNAME\"]!\"DEFAULT\"}"},
 											{label:"Studio support", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n\t...\r\n\t<@studio.toolSupport />"},
 											{label:"Dynamic navigation", value:"<#include \"/templates/web/navigation/navigation.ftl\">\r\n\t...\r\n\t<@renderNavigation \"/site/website\", 1 />"},
 
 											{label:"Incontext editing attribute (pencil)", value:"<@studio.iceAttr iceGroup=\"ICEGROUID\"/>"},
-											{label:"Component DropZone attribute", value:"<@studio.componentContainerAttr target=\"TARGETID\" objectId=model.objectId />"},
-											{label:"Component attribute", value:"<@studio.componentAttr path=model.storeUrl ice=false />"},
-											{label:"Render list of components", value:"<#list model.VARIABLENAME.item as module>\r\n\t<@renderComponent component=module />\r\n</#list>"},
-											{label:"Iterate over a list of items and load content item", value:"<#list model.VARIABLENAME.item as myItem>\r\n\t<#assign myContentItem =  siteItemService.getSiteItem(myItem.key) />\r\n\t${myContentItem.variableName}\r\n</#list>"},
-											{label:"Iterate over repeat group", value:"<#list model.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>"},
+											{label:"Component DropZone attribute", value:"<@studio.componentContainerAttr target=\"TARGETID\" objectId=contentModel.objectId />"},
+											{label:"Component attribute", value:"<@studio.componentAttr path=contentModel.storeUrl ice=false />"},
+											{label:"Render list of components", value:"<#list contentModel.VARIABLENAME.item as module>\r\n\t<@renderComponent component=module />\r\n</#list>"},
+											{label:"Iterate over a list of items and load content item", value:"<#list contentModel.VARIABLENAME.item as myItem>\r\n\t<#assign myContentItem =  siteItemService.getSiteItem(myItem.key) />\r\n\t${myContentItem.variableName}\r\n</#list>"},
+											{label:"Iterate over repeat group", value:"<#list contentModel.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>"},
 
 
-											{label:"Freemarker value assignment", value:"<#assign imageSource = model.image!\"\" />"},
+											{label:"Freemarker value assignment", value:"<#assign imageSource = contentModel.image!\"\" />"},
 											{label:"Freemarker value IF", value:"<#if CONDITION>\r\n\t...\r\n</#if>"},
 											{label:"Freemarker value LOOP", value:"<#list ARRAY as value>\r\n\t${value_index}: ${value}\r\n</#list>"},
 											{label:"Freemarker Fragment include", value:"<#include \"/templates/PATH\" />"},
 											{label:"Freemarker Library import", value:"<#import \"/templates/PATH\" as NAMESPACE />"},
 
 											{label:"HTML Page", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<html lang=\"en\">\r\n<head>\r\n\t</head>\r\n\t<body>\r\n\t\t<h1>CONTENT HERE</h1>\r\n\t<@studio.toolSupport/>\r\n\t</body>\r\n</html>"},
-											{label:"HTML Component", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<div <@studio.componentAttr path=model.storeUrl ice=false /> >\r\nCOMPONENT MARKUP</div>"},
+											{label:"HTML Component", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<div <@studio.componentAttr path=contentModel.storeUrl ice=false /> >\r\nCOMPONENT MARKUP</div>"},
 
 										];
 
