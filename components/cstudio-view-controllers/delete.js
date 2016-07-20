@@ -230,6 +230,9 @@
                     var data = JSON.parse(dataInf).items[0];
                     var nodeName = data.split("/")[data.split("/").length - 2];
                     CStudioAuthoring.Operations.pageReload('deleteSchedule', nodeName);
+                    if(CStudioAuthoringContext.isPreview) {
+                        CStudioAuthoring.PreviewTools.turnToolsOff();
+                    }
                 }, null, self);
             })(dataInf);
             if (this.getComponent(".action-complete-close1")) {
