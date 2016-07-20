@@ -212,7 +212,7 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                     groupEl.appendChild(rowEl);
                 }
                 _self.value = newValue;
-                _self.form.updateModel(_self.id, _self.getValue());
+                //_self.form.updateModel(_self.id, _self.getValue());
 
                 var helpContainerEl = document.createElement("div");
                 YAHOO.util.Dom.addClass(helpContainerEl, 'cstudio-form-field-help-container');
