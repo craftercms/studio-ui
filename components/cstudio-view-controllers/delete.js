@@ -217,16 +217,24 @@
             // check.setAttribute( "scheduleddate", scheduledDate );
         },
 
-        afterSubmit: function(message){
+        afterSubmit: function(message, dataInf){
             var agent = new TemplateAgent(template),
                 body = agent.get("SUCCESS", {
                     msg: message
-                });
+                }),
+                self = this;
             this.getComponent(".studio-view.admin-delete-view").innerHTML = body;
-            Event.addListener(this.getComponent(".action-complete-close1"), "click", function(){
-                this.end();
-                CStudioAuthoring.Operations.pageReload('deleteSchedule');
-            }, null, this);
+            (function (dataInf) {
+                Event.addListener(self.getComponent(".action-complete-close1"), "click", function(){
+                    this.end();
+                    var data = JSON.parse(dataInf).items[0];
+                    var nodeName = data.split("/")[data.split("/").length - 2];
+                    CStudioAuthoring.Operations.pageReload('deleteSchedule', nodeName);
+                    if(CStudioAuthoringContext.isPreview) {
+                        CStudioAuthoring.PreviewTools.turnToolsOff();
+                    }
+                }, null, self);
+            })(dataInf);
             if (this.getComponent(".action-complete-close1")) {
                 CStudioAuthoring.Utils.setDefaultFocusOn(this.getComponent(".action-complete-close1"));
             }
@@ -238,31 +246,33 @@
             this.fire("submitStart");
             var data = this.getData(),
                 _this = this;
+            (function (dataInf) {
             CStudioAuthoring.Service.request({
-                method: "POST",
-                data: data,
-                resetFormState: true,
-                url: CStudioAuthoring.Service.createServiceUri(
-                    CStudioAuthoring.Service.deleteContentUrl + 
-                        "?deletedep=true&site=" +CStudioAuthoringContext.site+
-                        "&user="+CStudioAuthoringContext.user),
-                callback: {
-                    success: function(oResponse) {
-                        _this.showProcessingOverlay(false);
-                        _this.enableActions();
-                        var oResp = JSON.parse(oResponse.responseText);
-                        _this.afterSubmit(oResp.message);
-                        _this.fire("submitEnd", oResp);
-                        _this.fire("submitComplete", oResp);
-                    },
-                    failure: function(oResponse) {
-                        _this.showProcessingOverlay(false);
-						var oResp = JSON.parse(oResponse.responseText);
-                        _this.fire("submitEnd", oResp);
-                        _this.enableActions();
+                    method: "POST",
+                    data: data,
+                    resetFormState: true,
+                    url: CStudioAuthoring.Service.createServiceUri(
+                        CStudioAuthoring.Service.deleteContentUrl +
+                            "?deletedep=true&site=" +CStudioAuthoringContext.site+
+                            "&user="+CStudioAuthoringContext.user),
+                    callback: {
+                        success: function(oResponse) {
+                            _this.showProcessingOverlay(false);
+                            _this.enableActions();
+                            var oResp = JSON.parse(oResponse.responseText);
+                            _this.afterSubmit(oResp.message, dataInf);
+                            _this.fire("submitEnd", oResp);
+                            _this.fire("submitComplete", oResp);
+                        },
+                        failure: function(oResponse) {
+                            _this.showProcessingOverlay(false);
+                            var oResp = JSON.parse(oResponse.responseText);
+                            _this.fire("submitEnd", oResp);
+                            _this.enableActions();
+                        }
                     }
-                }
-            });
+                });
+            })(data);
         },
         overlayCloseActionClicked: function() {
             //var fields = [this.getComponent("input.time-picker"), this.getComponent("input.date-picker")];

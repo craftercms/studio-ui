@@ -2050,7 +2050,7 @@ var parentSaveCb = {
             /**
              * reload the page action for dialog box buttons.
              */
-            pageReload: function(flow){
+            pageReload: function(flow, nodeName){
 
                 if(flow){
 
@@ -2065,15 +2065,19 @@ var parentSaveCb = {
                             && CStudioAuthoringContext.isPreview==true
                             && (CStudioAuthoringContext.role === "admin")) {
                             var deletedPage = document.location.href;
+                            var deletedNodeName = deletedPage.split("/")[deletedPage.split("/").length - 1];
+                            if(deletedNodeName.lastIndexOf("&") != -1){
+                                deletedNodeName = deletedNodeName.split("&")[0];
+                            }
                             deletedPage = deletedPage.replace(CStudioAuthoringContext.previewAppBaseUri, "");
                             var parentPath = "";
                             if(deletedPage.charAt(deletedPage.length - 1) == "/") {
                                 deletedPage = deletedPage.substring(0, deletedPage.length - 1);
                             }
                             parentPath = deletedPage.substring(0, deletedPage.lastIndexOf("/"));
-                            auxParentPath = parentPath;
+                            parentPath = parentPath == "/studio/preview/#/?page=" ? parentPath + "/" : parentPath;
                             parentPath = CStudioAuthoringContext.previewAppBaseUri + parentPath;
-                            if(auxParentPath != "/studio/preview/#/?page=") {
+                            if(deletedPage.lastIndexOf("/&") == -1 && nodeName == deletedNodeName) {
                                 document.location = parentPath;
                             }
                             return;
