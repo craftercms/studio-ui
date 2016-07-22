@@ -546,7 +546,6 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 						ed.contextControl._onChange(null, ed.contextControl);				
 			        });
 			        ed.onChange.add(function(ed, l) {
-			        	ed.contextControl.resizeEditor(ed);
                         _self.edited = true;
 		            });
 
