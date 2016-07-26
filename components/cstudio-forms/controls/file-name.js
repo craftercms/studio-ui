@@ -129,7 +129,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
      * don't allow characters which are invalid for file names and check length
      */
     processKey: function(evt, el) {
-        var invalid = new RegExp("[!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\/\\{\\}|\":<>\\?~ ]", 'g');
+        var invalid = new RegExp("[.!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\/\\{\\}|\":<>\\?~ ]", 'g');
         //Prevent the use of non english characters
         var nonEnglishChar = new RegExp('[^\x00-\x80]','g');
         var cursorPosition = el.selectionStart;
