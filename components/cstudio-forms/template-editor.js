@@ -124,7 +124,6 @@ CStudioAuthoring.Module.requireModule(
 
 									initEditorFn();
 
-									//TODO: node-selectors and repeat groups
 									var _getVarsFromSections = function(sections, parent, variables) {
 										var variables = variables ? variables : [],
 											_searchFields = function(section) {
@@ -132,10 +131,14 @@ CStudioAuthoring.Module.requireModule(
 													$.each(section.fields.field, function() {
 														if(this.id) {
 															var value = this.title ? this.title : this.id,
-																id = this.id;
+																containsDash = (this.id.indexOf('-') > -1),
+																id = containsDash ? "[\"" + this.id + "\"]" : this.id;
+
 															if(parent){
+																var parentVarContainsDash = (sections.id.indexOf('-') > -1),
+																	parentId = parentVarContainsDash ? "[\"" + sections.id + "\"]" : "." + sections.id;
 																value = parent + " - " + value;
-																id = sections.id + ".item[0]." + id;
+																id = containsDash ? parentId + ".item[0]" + id : parentId + ".item[0]." + id;
 															}
 
 															if(this.type == "node-selector") {
@@ -165,11 +168,14 @@ CStudioAuthoring.Module.requireModule(
 													var field = section.fields.field;
 													if(field.id) {
 														var value = field.title ? field.title : field.id,
-															id = field.id;
+															containsDash = (field.id.indexOf('-') > -1),
+															id = containsDash ? "[\"" + field.id + "\"]" : field.id;
 
 														if(parent){
+															var parentVarContainsDash = (sections.id.indexOf('-') > -1),
+																parentId = parentVarContainsDash ? "[\"" + sections.id + "\"]" : "." + sections.id;
 															value = parent + " - " + value;
-															id = sections.key + ".item[0]." + id;
+															id = containsDash ? parentId + ".item[0]" + id : parentId + ".item[0]." + id;
 														}
 
 														if(field.type == "node-selector") {
@@ -211,7 +217,13 @@ CStudioAuthoring.Module.requireModule(
 											variableModel = $("#variable").find('option:selected'),
 											selectedValue = $(varList).find('option:selected').val();
 
-										variableModel.val("${contentModel." + selectedValue + "}");
+										//if val contains - ,
+										var containsDash = (selectedValue.indexOf('-') > -1);
+										if(containsDash){
+											variableModel.val("${contentModel" + selectedValue + "}");
+										}else {
+											variableModel.val("${contentModel." + selectedValue + "}");
+										}
 
 									};
 									var _addVarsSelect = function() {
