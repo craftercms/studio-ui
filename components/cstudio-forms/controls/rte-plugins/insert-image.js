@@ -42,8 +42,24 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
                                             var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
 
                                             ed.selection.moveToBookmark(actualCaretPositionBookmark);
-	                        				ed.execCommand('mceInsertContent', false, '<img src="' + cleanUrl + '" />');
-	                        				ed.contextControl.save();
+
+                                            CStudioAuthoring.Service.contentExists(imageData.relativeUrl, {
+                                                exists: function(result) {
+                                                    if(result) {
+                                                        ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
+                                                        ed.contextControl.save();
+                                                    }else {
+                                                        setTimeout(function(){
+                                                            ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
+                                                            ed.contextControl.save();
+                                                        },500);
+                                                    }
+                                                },
+                                                failure: function(message) {
+                                                    console.log(message);
+                                                }
+                                            });
+
 	                        			},
 	                        			failure: function(message) {
 	                        				alert(message);
