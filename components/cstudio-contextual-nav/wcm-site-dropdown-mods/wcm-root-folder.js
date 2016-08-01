@@ -1957,7 +1957,6 @@ treeNode.getHtml = function() {
                                                     if(Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/")).parent.contentElId != oCurrentTextNode.contentElId){
                                                         this.args.addItems([ menuItems.pasteOption ]);
                                                     }else {
-                                                        console.log("duplicate in here");   //TODO: add duplicate code
                                                         this.args.addItems([ menuItems.pasteOption ]);
                                                     }
                                                 }
