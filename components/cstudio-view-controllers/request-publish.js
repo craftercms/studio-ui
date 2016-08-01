@@ -104,6 +104,21 @@
     function initDatePicker() {
 
         var me = this;
+        var dateToday = new Date();
+        var logic = function( currentDateTime, input ){
+            // 'this' is jquery object datetimepicker
+            if( currentDateTime.getDate() == dateToday.getDate()
+                && currentDateTime.getMonth() == dateToday.getMonth()
+                && currentDateTime.getFullYear() == dateToday.getFullYear()){
+                this.setOptions({
+                    minTime: 0
+                });
+            }else {
+                this.setOptions({
+                    minTime:'12:00 am'
+                });
+            }
+        };
 
         me.$('[name="schedulingMode"]').change(function () {
             var $elem = $(this);
@@ -126,7 +141,8 @@
             formatTime:	'h:i a',
             minDate: '0',
             minTime: 0,
-            step: 15
+            step: 15,
+            onChangeDateTime: logic
         });
 
         me.$('.date-picker').change(function () {
