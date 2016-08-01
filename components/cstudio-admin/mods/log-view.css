@@ -13,37 +13,37 @@
    position: relative;
    right: auto;
    top: 5px;
-   width: 90%;
+   width: 98%;
   }
 
 .timestamp {
  text-align:top;
- min-width: 150px;
- height: 30px;
+ max-width: 100px;
+ overflow-x: scroll !important;
+ 
 }
 
 .message {
   padding-top:15px;
   height: 30px;
-  overflow: scroll;
+  max-width: 150px;
+  overflow-x: scroll !important;
 }
 
 .exception {
   padding-top:15px;
   padding-left:40px;
-  height: 30px;
-  overflow: scroll;
+  max-width: 150px;
+  overflow-x: scroll !important;
 }
 
 #log-view {
    left: 250px;
    position: relative;
-   right: auto;
    top: 85px;
-
     height:500px;
     min-height:500px;
-    width: 70%;
+    width: 80%;
     border: 1px solid black;
     overflow:scroll;
 }
