@@ -1936,9 +1936,31 @@ treeNode.getHtml = function() {
 
                                         if ((collection.count > 0 && isContainer) && collection.item[0].uri.replace(/\/\//g,"/") != oCurrentTextNode.data.uri) {
 			                            	if(Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"))){
-                                                if(Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/")).parent.contentElId != oCurrentTextNode.contentElId){
-                                                    this.args.addItems([ menuItems.pasteOption ]);
+
+                                                if(Self.cutItem){
+                                                    if(Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/")).parent.contentElId != oCurrentTextNode.contentElId){
+                                                        var elementItem = Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/")).index,
+                                                            currentItem = oCurrentTextNode.parent,
+                                                            isChild = false;
+
+                                                        while(!isChild && currentItem){
+                                                            if(currentItem.index == elementItem){
+                                                                isChild = true;
+                                                            }else{
+                                                                currentItem = currentItem.parent;
+                                                            }
+                                                        }
+
+                                                        !isChild && this.args.addItems([ menuItems.pasteOption ]);
+                                                    }
+                                                }else if(Self.copiedItem) {
+                                                    if(Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/")).parent.contentElId != oCurrentTextNode.contentElId){
+                                                        this.args.addItems([ menuItems.pasteOption ]);
+                                                    }else {
+                                                        this.args.addItems([ menuItems.pasteOption ]);
+                                                    }
                                                 }
+
                                             }
                                             Self.copiedItem = Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"));
 			                            }
@@ -2337,6 +2359,7 @@ treeNode.getHtml = function() {
 				}
 
                 var uri = oCurrentTextNode.data.uri;
+                Self.copiedItem = null;
                 Self.cutItem = oCurrentTextNode;
 
 				if(uri.lastIndexOf("index.xml")==-1){
@@ -2410,8 +2433,7 @@ treeNode.getHtml = function() {
             pasteContent: function(sType, args, tree) {
                 //Check source and destination paths.
                 if ((Self.cutItem != null && Self.cutItem.contentElId == oCurrentTextNode.contentElId) ||
-                    (Self.copiedItem != null && (Self.copiedItem.contentElId == oCurrentTextNode.contentElId) || Self.copiedItem == oCurrentTextNode.data.uri) ||
-                    (Self.copiedItem != null && Self.copiedItem.parent.contentElId == oCurrentTextNode.contentElId)){
+                    (Self.copiedItem != null && (Self.copiedItem.contentElId == oCurrentTextNode.contentElId) || Self.copiedItem == oCurrentTextNode.data.uri)){
                     alert("Source and destination path are same");
                     return false;
                 }
@@ -2438,6 +2460,9 @@ treeNode.getHtml = function() {
                             //code below to alert user if destination node url already exist during cut/paste
                             if (errorMsgExist && errorMsg=='DESTINATION_NODE_EXIST'){
                                 alert("Page already exist at the destination");
+                            }else{
+                                Self.cutItem = null;
+                                Self.copiedItem = null;
                             }
                         } catch(e) { }
                     },
@@ -2473,6 +2498,7 @@ treeNode.getHtml = function() {
                 var idTree = oCurrentTextNode.tree.id.toString().replace(/-/g,'');
                 Self.myTree = Self.myTreePages[idTree];
 
+                Self.cutItem = null;
                 Self.copiedItem = Self.myTree.getNodeByProperty("path", oCurrentTextNode.data.path);
                 Self.copiedItem ? null : Self.copiedItem = oCurrentTextNode;
 
