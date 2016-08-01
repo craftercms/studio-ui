@@ -3,6 +3,7 @@ CStudioAdminConsole.Tool.LogView = CStudioAdminConsole.Tool.LogView ||  function
 	this.containerEl = el;
 	this.config = config;
 	this.types = [];
+	this.currMillis = new Date().getTime();
 	return this;
 }
 
@@ -11,6 +12,7 @@ CStudioAdminConsole.Tool.LogView = CStudioAdminConsole.Tool.LogView ||  function
  */
 YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
+		CStudioAdminConsole.Tool.LogView.currMillis = new Date().getTime();
 		CStudioAdminConsole.Tool.LogView.pause = false;
 		CStudioAdminConsole.Tool.LogView.history = 
 		 	"<th class='cs-loglist-heading'>Timestamp</th>" +
@@ -44,7 +46,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 		this.appendLogs();
 		window.setTimeout(function(console) { 
 			console.renderLogView();
-		 }, 1000, this);
+		 }, 5000, this);
 	},
 	
 	appendLogs: function() {
@@ -56,12 +58,15 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 
 				for(var i=0; i<entries.length; i++) {
 					var entry = entries[i];
+					
+					if(entry.message != "") {
 
-					CStudioAdminConsole.Tool.LogView.history += "<tr class='entry "+entry.level+"' >"+
+						CStudioAdminConsole.Tool.LogView.history += "<tr class='entry "+entry.level+"' >"+
 							"<td class='timestamp'>"+entry.timestamp+"</td>"+
 							"<td class='message'>"+entry.message+"</td>"+
 							"<td class='exception'>"+entry.exception+"</td>"+
 						"</tr>";
+					}
 
 					if(CStudioAdminConsole.Tool.LogView.pause == false) {
 						this.el.innerHTML = CStudioAdminConsole.Tool.LogView.history;
@@ -79,8 +84,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 		}
 
 		if(tailEl) {
-			var serviceUri = "/api/1/services/api/1/server/get-log-entries.json";
-			YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
+			
+			var since = CStudioAdminConsole.Tool.LogView.currMillis;
+			CStudioAdminConsole.Tool.LogView.currMillis = new Date().getTime();
+			var serviceUri = "/api/1/monitoring/log.json?since="+since+"&siteId="+CStudioAuthoringContext.site;
+			YConnect.asyncRequest("GET", serviceUri, cb);
 		}
 		else {
 			if(CStudioAdminConsole.Tool.LogView.refreshFn) {
