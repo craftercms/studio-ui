@@ -107,7 +107,7 @@
         var dateToday = new Date();
         var logic = function( currentDateTime, input ){
             // 'this' is jquery object datetimepicker
-            if( currentDateTime.getDate() == dateToday.getDate()
+            if(currentDateTime && currentDateTime.getDate() == dateToday.getDate()
                 && currentDateTime.getMonth() == dateToday.getMonth()
                 && currentDateTime.getFullYear() == dateToday.getFullYear()){
                 this.setOptions({
