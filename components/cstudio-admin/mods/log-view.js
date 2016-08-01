@@ -12,6 +12,7 @@ CStudioAdminConsole.Tool.LogView = CStudioAdminConsole.Tool.LogView ||  function
  */
 YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
+		CStudioAdminConsole.Tool.LogView.ticks = 0;
 		CStudioAdminConsole.Tool.LogView.currMillis = new Date().getTime();
 		CStudioAdminConsole.Tool.LogView.pause = false;
 		CStudioAdminConsole.Tool.LogView.history = 
@@ -45,6 +46,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 	renderLogView: function() {
 		this.appendLogs();
 		window.setTimeout(function(console) { 
+			CStudioAdminConsole.Tool.LogView.ticks += 1;
 			console.renderLogView();
 		 }, 5000, this);
 	},
@@ -54,12 +56,19 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 
 		var cb = {
 			success:function(response) {
+				if(CStudioAdminConsole.Tool.LogView.ticks > 100) {
+					// can't grow the DOM forever
+					CStudioAdminConsole.Tool.LogView.ticks = 0;
+					CStudioAdminConsole.Tool.LogView.history = "";
+				}
+				
 				var entries = eval("(" + response.responseText + ")");
 
 				for(var i=0; i<entries.length; i++) {
 					var entry = entries[i];
 					
 					if(entry.message != "") {
+
 
 						CStudioAdminConsole.Tool.LogView.history += "<tr class='entry "+entry.level+"' >"+
 							"<td class='timestamp'>"+entry.timestamp+"</td>"+
