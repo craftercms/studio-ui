@@ -2204,10 +2204,17 @@ treeNode.getHtml = function() {
              */
             createContent: function() {
                 var createCb = {
-                    success: function() {
+                    success: function(contentTO, editorId, name, value, draft) {
+                        var page =  CStudioAuthoring.Utils.getQueryParameterURL("page");
+                        var currentPage = page.split("/")[page.split("/").length - 1];
                         eventYS.data = oCurrentTextNode;
                         eventYS.typeAction = "";
                         document.dispatchEvent(eventYS);
+                        if(currentPage == value){
+                            if(CStudioAuthoringContext.isPreview) {
+                                CStudioAuthoring.Operations.refreshPreview();
+                            }
+                        }
                     },
                     failure: function() { },
                     callingWindow: window
