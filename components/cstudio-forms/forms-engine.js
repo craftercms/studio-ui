@@ -23,6 +23,7 @@ var CStudioForms = CStudioForms || function() {
         var formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
         var cstopic = crafter.studio.preview.cstopic;
         var repeatEdited = false;
+        var saveDraft = false;
 
         // private methods
 
@@ -984,7 +985,7 @@ var CStudioForms = CStudioForms || function() {
                     {
                         form.model["file-name"] = (fileName += ".xml");
                     }
-                    if (edit == "true" || form.readOnly) { //This is also necessary in readonly mode
+                    if (edit == "true" || form.readOnly || saveDraft) { //This is also necessary in readonly mode
                         // Get parent folder
                         entityId = entityId.substring(0, entityId.lastIndexOf("/"));
                     }
@@ -994,6 +995,7 @@ var CStudioForms = CStudioForms || function() {
                     else {
                         entityId += "/" + fileName;
                     }
+                    saveDraft = true;
                     return entityId;
                 }
 
