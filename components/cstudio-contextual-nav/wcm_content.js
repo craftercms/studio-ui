@@ -602,7 +602,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                             content = content[0];
                             option.onclick = function() {
-                                crafterSaveType = "edit";
                                 this.style.pointerEvents = "none";
                                 if (typeof CStudioAuthoring.editDisabled === 'undefined') {
                                     CStudioAuthoring.editDisabled = []
