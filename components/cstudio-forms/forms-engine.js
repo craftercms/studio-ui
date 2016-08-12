@@ -1115,6 +1115,18 @@ var CStudioForms = CStudioForms || function() {
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                                         }
                                     }
+                                    var page =  CStudioAuthoring.Utils.getQueryParameterURL("page");
+                                    var currentPage = page.split("/")[page.split("/").length - 1];
+                                    var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
+                                    if(acnDraftContent && !saveDraft){
+                                        acnDraftContent.parentNode.removeChild(acnDraftContent);
+                                    }
+                                    if(!acnDraftContent && saveDraft && contentTO.item.internalName == currentPage){
+                                        var noticeEl = document.createElement("div");
+                                        parent.document.querySelector("#studioBar nav .container-fluid").appendChild(noticeEl);
+                                        YDom.addClass(noticeEl, "acnDraftContent");
+                                        noticeEl.innerHTML = CMgs.format(formsLangBundle, "wcmContentSavedAsDraft");
+                                    }
                                 },
                                 failure: function (err) {
                                     alert(err);
@@ -1128,16 +1140,7 @@ var CStudioForms = CStudioForms || function() {
                             };
 
                             CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, entityId, getContentItemCb, false, false);
-                            var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
-                            if(acnDraftContent && !saveDraft){
-                                acnDraftContent.parentNode.removeChild(acnDraftContent);
-                            }
-                            if(!acnDraftContent && saveDraft){
-                                var noticeEl = document.createElement("div");
-                                parent.document.querySelector("#studioBar nav .container-fluid").appendChild(noticeEl);
-                                YDom.addClass(noticeEl, "acnDraftContent");
-                                noticeEl.innerHTML = CMgs.format(formsLangBundle, "wcmContentSavedAsDraft");
-                            }
+
                         },
                         failure: function(err) {
                             try{
