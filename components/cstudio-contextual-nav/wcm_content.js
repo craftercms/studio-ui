@@ -61,7 +61,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                              for(var n=0; n<noticeEls.length; n++) {
                                  var curNode = noticeEls[n];
                                  curNode.parentNode.removeChild(curNode);
-                             }  
+                             }
 
                             if (contentTO[0] && contentTO[0].path) {
                                 selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
@@ -85,15 +85,19 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             me.removeDisableMessage();
                                         }
 
+                                        var thisContext = this;
                                         for(var s=0; s<selectedContent.length; s++) {
-                                            if(selectedContent[s].savedAsDraft == true) {
-                                                var noticeEl = document.createElement("div");
-                                                this._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                                                YDom.addClass(noticeEl, "acnDraftContent");
-                                                noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
+                                                success: function (content) {
+                                                    if(content.item.savedAsDraft == true) {
+                                                        var noticeEl = document.createElement("div");
+                                                        thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                        YDom.addClass(noticeEl, "acnDraftContent");
+                                                        noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                    }
+                                                }
+                                            });
 
-                                                break;
-                                            }
                                        }
                                     },
                                     failure: function() {
@@ -325,15 +329,18 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     me.removeDisableMessage();
                                 }
 
+                                var thisContext = this;
                                 for(var s=0; s<selectedContent.length; s++) {
-                                    if(selectedContent[s].savedAsDraft == true) {
-                                        var noticeEl = document.createElement("div");
-                                        this._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                                        YDom.addClass(noticeEl, "acnDraftContent");
-                                        noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
-
-                                        break;
-                                    }
+                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
+                                        success: function (content) {
+                                            if(content.item.savedAsDraft == true) {
+                                                var noticeEl = document.createElement("div");
+                                                thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                YDom.addClass(noticeEl, "acnDraftContent");
+                                                noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                            }
+                                        }
+                                    });
                                 }
 
                             },
@@ -595,7 +602,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                             content = content[0];
                             option.onclick = function() {
-
                                 this.style.pointerEvents = "none";
                                 if (typeof CStudioAuthoring.editDisabled === 'undefined') {
                                     CStudioAuthoring.editDisabled = []
