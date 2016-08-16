@@ -3496,3 +3496,12 @@ input.drop-arrow-button {
     float: right;
     margin: 0 25px 0 0;
 }
+
+.studio-ice-dialog.ui-resizable .ui-resizable-s, .studio-ice-dialog.ui-resizable .ui-resizable-se{
+    z-index: 9000000000000!important;
+}
+
+.studio-ice-dialog.ui-resizable .ui-resizable-e{
+    width: 0px;
+    height: 0px;
+}
