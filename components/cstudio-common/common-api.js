@@ -1322,6 +1322,21 @@ var nodeOpen = false;
                     }
                 });
 
+                $(function() {
+                    $modal.find('.studio-ice-dialog').resizable({
+                        minHeight: 50,
+                        grid: [10000, 1],
+                        start: function(event, ui) {
+                            $('#engineWindow').css('pointer-events','none');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','none');
+                        },
+                        stop: function( event, ui ) {
+                            $('#engineWindow').css('pointer-events','auto');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                        },
+                    });
+                });
+
                 CSA.Env.Loader.use(controller, function() {
                     CStudioAuthoring.Service.getInContextEditView({
                         success: function (response) {
