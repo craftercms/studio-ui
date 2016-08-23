@@ -40,9 +40,18 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 			addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
 		}
 
+		var datasourceDef = this.form.definition.datasources,
+			newElTitle = '';
+
+		for(var x = 0; x < datasourceDef.length; x++){
+			if (datasourceDef[x].id == this.id){
+				newElTitle = datasourceDef[x].title;
+			}
+		}
+
 		var createEl = document.createElement("div");
 		YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-		createEl.innerHTML = "Create New - " + this.id;
+		createEl.innerHTML = "Create New - " + newElTitle;
 		control.addContainerEl.create.appendChild(createEl);
 
 		YAHOO.util.Event.on(createEl, 'click', function() {
@@ -63,7 +72,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		}, createEl);
 
 		 var browseEl = document.createElement("div");
-		 browseEl.innerHTML = "Browse for Existing - " + this.id;
+		 browseEl.innerHTML = "Browse for Existing - " + newElTitle;
 		 YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
 		 control.addContainerEl.browse.appendChild(browseEl);
 

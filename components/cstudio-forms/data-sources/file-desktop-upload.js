@@ -74,9 +74,18 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 				addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
 			}
 
+			var datasourceDef = this.form.definition.datasources,
+				newElTitle = '';
+
+			for(var x = 0; x < datasourceDef.length; x++){
+				if (datasourceDef[x].id == this.id){
+					newElTitle = datasourceDef[x].title;
+				}
+			}
+
 			var createEl = document.createElement("div");
 			YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-			createEl.innerHTML = "Create New - " + this.id;
+			createEl.innerHTML = "Create New - " + newElTitle;
 			control.addContainerEl.create.appendChild(createEl);
 
 			YAHOO.util.Event.on(createEl, 'click', function() {
