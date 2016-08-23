@@ -20,68 +20,73 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		var _self = this;
 		
 		var addContainerEl = null;
-		
-		if(control.addContainerEl) {
-			addContainerEl = control.addContainerEl;
-			control.addContainerEl = null;
-			control.containerEl.removeChild(addContainerEl);			
-		}
-		else {
+
+		if(!control.addContainerEl){
 			addContainerEl = document.createElement("div")
-	        control.containerEl.appendChild(addContainerEl);
-	        YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-	        control.addContainerEl = addContainerEl;
-					
-	       	addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-	       	addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
-		        		
-			 var createEl = document.createElement("div");
-			 YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-			 createEl.innerHTML = "Create New";
-		   	 addContainerEl.appendChild(createEl);
-		   	 
-			YAHOO.util.Event.on(createEl, 'click', function() {
-				control.addContainerEl = null;
-				control.containerEl.removeChild(addContainerEl);
-				
-			    CStudioAuthoring.Operations.uploadAsset(CStudioAuthoringContext.site, _self.processPathsForMacros(_self.repoPath), true, { 
-					success: function(fileData) {
-						var item = _self.processPathsForMacros(_self.repoPath) + "/" + fileData.fileName;
-						control.insertItem(item, item, fileData.fileExtension, fileData.size);
-						control._renderItems();
-					}, 
+			addContainerEl.create = document.createElement("div");
+			addContainerEl.browse = document.createElement("div");
 
-					failure: function() {
-					},
+			addContainerEl.appendChild(addContainerEl.create);
+			addContainerEl.appendChild(addContainerEl.browse);
+			control.containerEl.appendChild(addContainerEl);
 
-					context: this });	
-			}, createEl);		   	 
-			
-			 var browseEl = document.createElement("div");
-			 browseEl.innerHTML = "Browse for Existing";
-			 YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
-		   	 addContainerEl.appendChild(browseEl);
 
-			 YAHOO.util.Event.on(browseEl, 'click', function() {
-				control.addContainerEl = null;
-				control.containerEl.removeChild(addContainerEl);
+			YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+			YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+			YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
 
-				CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(_self.repoPath), "-1", "select", true, { 
-					success: function(searchId, selectedTOs) {
-
-						for(var i=0; i<selectedTOs.length; i++) {
-							var item = selectedTOs[i];
-							var fileName = item.name;
-							var fileExtension = fileName.split('.').pop();
-							control.insertItem(item.uri, item.uri, fileExtension);
-							control._renderItems();
-						}					
-					}, 
-					failure: function() {
-					}
-				}); 
-			}, browseEl);		   	 
+			control.addContainerEl = addContainerEl;
+			addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
+			addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
 		}
+
+		var createEl = document.createElement("div");
+		YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+		createEl.innerHTML = "Create New - " + this.id;
+		control.addContainerEl.create.appendChild(createEl);
+
+		YAHOO.util.Event.on(createEl, 'click', function() {
+			// control.addContainerEl = null;
+			// control.containerEl.removeChild(addContainerEl);
+
+			CStudioAuthoring.Operations.uploadAsset(CStudioAuthoringContext.site, _self.processPathsForMacros(_self.repoPath), true, {
+				success: function(fileData) {
+					var item = _self.processPathsForMacros(_self.repoPath) + "/" + fileData.fileName;
+					control.insertItem(item, item, fileData.fileExtension, fileData.size);
+					control._renderItems();
+				},
+
+				failure: function() {
+				},
+
+				context: this });
+		}, createEl);
+
+		 var browseEl = document.createElement("div");
+		 browseEl.innerHTML = "Browse for Existing - " + this.id;
+		 YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
+		 control.addContainerEl.browse.appendChild(browseEl);
+
+		 YAHOO.util.Event.on(browseEl, 'click', function() {
+			// control.addContainerEl = null;
+			// control.containerEl.removeChild(addContainerEl);
+
+			CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(_self.repoPath), "-1", "select", true, {
+				success: function(searchId, selectedTOs) {
+
+					for(var i=0; i<selectedTOs.length; i++) {
+						var item = selectedTOs[i];
+						var fileName = item.name;
+						var fileExtension = fileName.split('.').pop();
+						control.insertItem(item.uri, item.uri, fileExtension);
+						control._renderItems();
+					}
+				},
+				failure: function() {
+				}
+			});
+		}, browseEl);
+
 	},
 	
 	edit: function(key) {
