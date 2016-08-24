@@ -95,8 +95,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     decreaseFormDialog: function(){
         var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        if($('#ice-body').length > 0 && $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height() > 212){
-            $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height(212);
+        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
+            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
         }
     },
 
