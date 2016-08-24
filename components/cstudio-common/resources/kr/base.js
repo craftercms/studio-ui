@@ -445,6 +445,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     setNowLink: "이제 링크 설정",
     populated: "인구",
     allowPastDate: "과거 날짜 허용",
+    populateExpression:"",
     readonly: "읽기 전용",
     readonlyOnEdit: "편집에 읽기 전용",
     datasource: "데이터 소스",
