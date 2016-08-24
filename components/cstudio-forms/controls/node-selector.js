@@ -165,7 +165,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         nodeControlboxEl.appendChild(nodeItemsContainerEl);
         this.itemsContainerEl = nodeItemsContainerEl;
 
-        var nodeOptionsEl = document.createElement("div")
+        var nodeOptionsEl = document.createElement("div");
+        this.nodeOptionsEl = nodeOptionsEl;
         YAHOO.util.Dom.addClass(nodeOptionsEl, 'cstudio-form-control-node-selector-options');
         nodeControlboxEl.appendChild(nodeOptionsEl);
 
@@ -226,7 +227,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         containerEl.appendChild(titleEl);
         containerEl.appendChild(controlWidgetContainerEl);
         containerEl.appendChild(descriptionEl);
-        
+
         this.defaultValue = config.defaultValue;
 
         this._renderItems();
@@ -237,15 +238,30 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     _setActions: function () {
         var _self = this;
-        var datasource = this.form.datasourceMap[this.datasourceName];
+        //var datasource = this.form.datasourceMap[this.datasourceName];
+
+        var dataSourceNames = this.datasourceName.split(","),
+            datasources = [];
+
+        for(var x = 0; x < dataSourceNames.length; x++) {
+            var currentDatasource = this.form.datasourceMap[dataSourceNames[x]];
+            datasources.push(currentDatasource);
+
+            if(currentDatasource.add){
+                YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
+                this.addButtonEl.disabled = false;
+            }
+            if(currentDatasource.edit){
+                this.allowEdit = true;
+            }
+        }
+
+        var datasource = datasources[0];
 
         if( datasource && this.readonly == false ){
             this.datasource = datasource;
 
-            if (datasource.add) {
-                YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
-                this.addButtonEl.disabled = false;
-                // give control to the node selector to render the add
+            if(!this.addButtonEl.disabled){
                 YAHOO.util.Event.on(this.addButtonEl, 'click', function(evt) {
                     var selectItemsCount = _self.getItemsLeftCount();
                     _self.form.setFocusedField(_self);
@@ -253,17 +269,33 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                         alert("You can't add more items, Remove one and try again.");
                     }
                     else{
-                        datasource.selectItemsCount = selectItemsCount;
-                        datasource.add(_self);
+
+                        if(_self.addContainerEl) {
+                            var addContainerEl = _self.addContainerEl;
+                            _self.addContainerEl = null;
+                            _self.containerEl.removeChild(addContainerEl);
+                        }else{
+                            for(var x = 0; x < datasources.length; x++) {
+                                datasources[x].selectItemsCount = selectItemsCount;
+                                
+                                if(datasources.length > 1){
+                                    datasources[x].add(_self, true);   
+                                }else{
+                                    datasources[x].add(_self);
+                                }
+                            }
+                        }
                     }
                 }, this.addButtonEl);
             }
 
-            if (datasource.edit) {
-                this.allowEdit = true;
+            if(this.allowEdit){
                 YAHOO.util.Event.on(this.editButtonEl, 'click', function(evt) {
                     _self.form.setFocusedField(_self);
-                    datasource.edit(_self.items[_self.selectedItemIndex].key, _self);
+
+                    for(var x = 0; x < datasources.length; x++) {
+                        datasources[x].edit(_self.items[_self.selectedItemIndex].key, _self);
+                    }
                 }, this.editButtonEl);
             }
 
@@ -273,6 +305,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                 _self._renderItems();
             }, this.deleteButtonEl);
         }
+
+
+
+        // var datasource = datasources[0];
+
+
     },
 
     _renderItems: function() {

@@ -52,7 +52,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
         obj._onChange(evt,obj);
     },
 
-	onDatasourceLoaded: function ( data ) {
+	onDatasourceLoaded: function ( data ) {		//TODO: is this being called? forms-engine 1439
 		if (this.datasourceName === data.name && !this.datasource) {
     		var datasource = this.form.datasourceMap[this.datasourceName];
     		this.datasource = datasource;
@@ -74,8 +74,9 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 				
 				if(prop.name == "datasource") {
 					if(prop.value && prop.value != "") {
-					this.datasourceName = (Array.isArray(prop.value)) ? prop.value[0] : prop.value;
-                    this.datasourceName = this.datasourceName.replace("[\"","").replace("\"]","");					}
+						this.datasourceName = (Array.isArray(prop.value)) ? prop.value[0] : prop.value;
+						this.datasourceName = this.datasourceName.replace("[\"","").replace("\"]","");
+					}
 				}
 				
 				if(prop.name == "emptyvalue"){
@@ -96,58 +97,61 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 
 			  		    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
 						titleEl.innerHTML = config.title;
-					
-					var controlWidgetContainerEl = document.createElement("div");
-					    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-dropdown-container');
-			
-					var validEl = document.createElement("span");
+
+					if(!_self.controlWidgetContainerEl){
+						var controlWidgetContainerEl = document.createElement("div");
+						YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-dropdown-container');
+
+						var validEl = document.createElement("span");
 						YAHOO.util.Dom.addClass(validEl, 'validation-hint');
 						YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation');
 						controlWidgetContainerEl.appendChild(validEl);
-			
-					var inputEl = document.createElement("select");
+
+						var inputEl = document.createElement("select");
 						_self.inputEl = inputEl;
 						YAHOO.util.Dom.addClass(inputEl, 'datum');
 						YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-dropdown');
-						
+
 						if(showEmptyValue){
 							var optionEl = document.createElement("option");
 							optionEl.text = "";
 							optionEl.value = "";
 							inputEl.add(optionEl);
 						}
-						
-						if(keyValueList){
-							for(var j=0; j<keyValueList.length; j++) {
-								var item = keyValueList[j];
-								var optionEl = document.createElement("option");
-								optionEl.text = item.value;
-								optionEl.value = item.key;
-								inputEl.add(optionEl);
-							}
-						}
+
+						_self.controlWidgetContainerEl = controlWidgetContainerEl;
+						_self.controlWidgetContainerEl.inputEl = inputEl;
 
 						inputEl.value = (_self.value == "_not-set") ? config.defaultValue : _self.value;
-						
-						controlWidgetContainerEl.appendChild(inputEl);
-						
-						if(_self.readonly == true){
-							inputEl.disabled = true;
-						}
-			
+						_self.controlWidgetContainerEl.appendChild(inputEl);
 						YAHOO.util.Event.on(inputEl, 'focus', function(evt, context) { context.form.setFocusedField(context) }, _self);
 						YAHOO.util.Event.on(inputEl, 'change', _self._onChangeVal, _self);
 
-					_self.renderHelp(config, controlWidgetContainerEl);
-								
-					var descriptionEl = document.createElement("span");
+						_self.renderHelp(config, _self.controlWidgetContainerEl);
+
+						var descriptionEl = document.createElement("span");
 						YAHOO.util.Dom.addClass(descriptionEl, 'description');
 						YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
 						descriptionEl.innerHTML = config.description;
-			
-					containerEl.appendChild(titleEl);
-					containerEl.appendChild(controlWidgetContainerEl);
-					containerEl.appendChild(descriptionEl);
+
+						containerEl.appendChild(titleEl);
+						containerEl.appendChild(_self.controlWidgetContainerEl);
+						containerEl.appendChild(descriptionEl);
+					}
+
+					if(keyValueList){
+						for(var j=0; j<keyValueList.length; j++) {
+							var item = keyValueList[j];
+							var optionEl = document.createElement("option");
+							optionEl.text = item.value;
+							optionEl.value = item.key;
+							_self.controlWidgetContainerEl.inputEl.add(optionEl);
+						}
+					}
+
+					if(_self.readonly == true){
+						inputEl.disabled = true;
+					}
 
                     // TODO remove comment once CRAFTERCMS-41 is closed
                     // This call only makes sense for user actioned changes and
@@ -158,10 +162,24 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 				}
 			};
 
-			var datasource = this.form.datasourceMap[this.datasourceName];
+			var dataSourceNames = this.datasourceName.split(","),
+				datasources = [];
+
+			for(var x = 0; x < dataSourceNames.length; x++) {
+				var currentDatasource = this.form.datasourceMap[dataSourceNames[x]];
+				datasources.push(currentDatasource);
+
+				if(currentDatasource){
+					currentDatasource.getList(cb);
+				}else{
+					this.callback = cb;
+				}
+			}
+
+			var datasource = datasources[0];
 			if(datasource){
 				this.datasource = datasource;
-				datasource.getList(cb);
+				//datasource.getList(cb);
 		    }else{
 		    	this.callback = cb;
 		    }
