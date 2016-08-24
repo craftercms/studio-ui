@@ -66,30 +66,18 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
 
         var clickFn = function(){};
 
-        if ( type == "item"){
-            cbEl.type = "radio";
-            if(!this.radioGroupName){
-                this.radioGroupName = CStudioAuthoring.Utils.generateUUID();
-            }
-            cbEl.name = this.radioGroupName;
-            clickFn =  function() {
-                _self.removeAll();
+        cbEl.type = "checkbox";
+
+        clickFn =  function() {
+            if (this.checked) {
                 _self.addValue(this.id);
                 updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
-            }
-        }else{
-            cbEl.type = "checkbox";
-
-            clickFn =  function() {
-                if (this.checked) {
-                    _self.addValue(this.id);
-                    updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
-                } else {
-                    _self.removeValue(this.id);
-                    updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
-                }
+            } else {
+                _self.removeValue(this.id);
+                updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
             }
         }
+
         cbEl.value = datasource.id;
         cbEl.id = datasource.id;
 

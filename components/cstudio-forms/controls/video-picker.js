@@ -12,7 +12,7 @@ CStudioForms.Controls.VideoPicker = CStudioForms.Controls.VideoPicker ||
         this.id = id;
         this.datasources = null;
         this.upload_dialog = null;
-        this.validExtensions = ["MOV", "mov", "MP4", "mp4", "wmv", "WMV"];
+        this.validExtensions = ["MOV", "mov", "MP4", "mp4", "wmv", "WMV", "webm"];
         this.readonly = readonly;
 
         return this;

@@ -26,7 +26,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 	/**
 	 * action called when user clicks insert file
 	 */
-	add: function(control) {
+	add: function(control, multiple) {
 		this._self = this;
 
 		var site = CStudioAuthoringContext.site;
@@ -36,7 +36,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 		for(var i=0; i<this.properties.length; i++) {
 			if(this.properties[i].name == "repoPath") {
 				path = this.properties[i].value;
-			
+
 				path = this.processPathsForMacros(path);
 			}
 		}
@@ -52,14 +52,55 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 
 			failure: function() {
 				if (control) {
-					control.failure("An error occurred while uploading the file."); 
+					control.failure("An error occurred while uploading the file.");
 				}
 			},
 
-			context: this 
+			context: this
 		};
 
-		CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+		if(multiple){
+			var addContainerEl = null;
+
+			if(!control.addContainerEl){
+				addContainerEl = document.createElement("div")
+				addContainerEl.create = document.createElement("div");
+				addContainerEl.browse = document.createElement("div");
+
+				addContainerEl.appendChild(addContainerEl.create);
+				addContainerEl.appendChild(addContainerEl.browse);
+				control.containerEl.appendChild(addContainerEl);
+
+
+				YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+				YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+				YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
+
+				control.addContainerEl = addContainerEl;
+				addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
+				addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
+			}
+
+			var datasourceDef = this.form.definition.datasources,
+				newElTitle = '';
+
+			for(var x = 0; x < datasourceDef.length; x++){
+				if (datasourceDef[x].id == this.id){
+					newElTitle = datasourceDef[x].title;
+				}
+			}
+
+			var createEl = document.createElement("div");
+			YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+			createEl.innerHTML = "Create New - " + newElTitle;
+			control.addContainerEl.create.appendChild(createEl);
+
+			YAHOO.util.Event.on(createEl, 'click', function() {
+				CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+			}, createEl);
+		}else{
+			CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+		}
 	},
 
 	edit: function(key, control) {
