@@ -114,12 +114,14 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     },
 
     showAlert: function(message){
+        var self = this;
         var dialog = new YAHOO.widget.SimpleDialog("alertDialog",
             { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
                 text: message, icon: YAHOO.widget.SimpleDialog.ICON_ALARM,
                 constraintoviewport: true,
                 buttons: [ { text:"OK", handler: function(){
                     this.destroy();
+                    self.decreaseFormDialog();
 
                 }, isDefault:false } ]
             });
@@ -134,6 +136,8 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
         self.repoImage = repoImage;
+
+        self.increaseFormDialogForCrop();
 
         var newdiv = YDom.get("cstudio-wcm-popup-div");
         if (newdiv == undefined) {
@@ -373,6 +377,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
                     self.setImageData(imagePicker, imageData)
                     self.cropPopupCancel();
+                    self.decreaseFormDialog();
                 },
                 failure: function(message) {
                     self.showAlert(JSON.parse(message.responseText).message);
@@ -486,6 +491,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     cropPopupCancel: function(event) {
         this.crop_dialog.destroy();
+        self.decreaseFormDialog();
     },
 
     setImageData: function(imagePicker, imageData){
@@ -506,6 +512,21 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         imagePicker.adjustImage();
 
         imagePicker._onChangeVal(null, imagePicker);
+    },
+
+    decreaseFormDialog: function(){
+        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+        if($('#ice-body').length > 0 && $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height() > 212){
+            $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height(212);
+        }
+    },
+
+    increaseFormDialogForCrop: function(){
+        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+        var formSize = parent.getFormSize(id);
+        if(formSize < 557){
+            parent.setFormSize(557, id);
+        }
     },
 
     addImage: function(){
@@ -623,9 +644,11 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                                     //this.isUploadOverwrite = isUploadOverwrite;
                                 }else{
                                     if(this.setImageData){
-                                        this.setImageData(imagePicker, imageData)
+                                        this.setImageData(imagePicker, imageData);
+                                        this.decreaseFormDialog();
                                     }else{
-                                        self.setImageData(imagePicker, imageData)
+                                        self.setImageData(imagePicker, imageData);
+                                        self.decreaseFormDialog();
                                     }
                                 }
                             };

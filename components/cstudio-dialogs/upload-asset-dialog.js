@@ -20,7 +20,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	/**
 	 * show dialog
 	 */
-	showDialog: function(site, path, serviceUri, callback, isUploadOverwrite) {	
+	showDialog: function(site, path, serviceUri, callback, isUploadOverwrite) {
 		this._self = this;
 
 		this.dialog = this.createDialog(path, site, serviceUri, isUploadOverwrite);
@@ -33,7 +33,12 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 		this.isUploadOverwrite = isUploadOverwrite;
 		this.dialog.show();
 		document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
-		
+
+        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+        var formSize = parent.getFormSize(id);
+        if(formSize < 320){
+            parent.setFormSize(320, id);
+        }
 	},
 	
 	/**
@@ -41,6 +46,31 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	 */
     closeDialog:function() {
         this.dialog.destroy();
+        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+        /*var body = $('body').get(0),
+            html = $(body).parents('html').get(0),
+            count = 1,
+            max,
+            $modal = parent.document.getElementsByClassName("studio-ice-dialog")[0];
+
+        max = Math.max(
+                body.scrollHeight,
+                html.offsetHeight,
+                html.clientHeight,
+                html.scrollHeight,
+                html.offsetHeight);
+
+            if (max > $(window).height()) {
+                max = $(window).height() - 100;
+            }
+
+            if (max > 350) {
+                $modal.height(max);
+            }*/
+        /*if($('#ice-body').length > 0 && $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height() > 212){
+            $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height(212);
+        }*/
+
     },
 
     /**
@@ -253,6 +283,10 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	 */
 	uploadPopupCancel: function(event) {
 		CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
+        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+        if($('#ice-body').length > 0 && $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height() > 212){
+            $(parent.document.getElementsByClassName("studio-ice-container-"+id)[0]).height(212);
+        }
 	}
 
 
