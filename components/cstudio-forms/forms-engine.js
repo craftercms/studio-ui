@@ -16,6 +16,15 @@ catch(err) {
     parentWindowLocation = window.location.href;
 }
 
+var getFormSize = function(id){
+    return document.getElementsByClassName("studio-ice-container-"+id)[0].offsetHeight;
+}
+
+var setFormSize = function(height,id){
+    var form = document.getElementsByClassName("studio-ice-container-"+id)[0];
+    form.style.height = height+'px';
+}
+
 var CStudioForms = CStudioForms || function() {
         var cfe = {};
 
