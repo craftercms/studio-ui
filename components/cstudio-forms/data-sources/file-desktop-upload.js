@@ -17,6 +17,12 @@ function(id, form, properties, constraints)  {
 YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
 
+    decreaseFormDialog: function(){
+        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
+            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
+        }
+    },
 	/**
 	 * action called when user clicks insert file
 	 */
@@ -40,6 +46,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 				if (control) {
 					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
 					control._renderItems();
+                    control.decreaseFormDialog();
 				}
 			},
 
@@ -117,6 +124,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 					control.deleteItem(key);
 					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
 					control._renderItems();
+                    control.decreaseFormDialog();
 				}
 			},
 

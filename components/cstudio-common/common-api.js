@@ -1333,7 +1333,7 @@ var nodeOpen = false;
                         stop: function( event, ui ) {
                             $('#engineWindow').css('pointer-events','auto');
                             $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
-                        },
+                        }
                     });
                 });
 

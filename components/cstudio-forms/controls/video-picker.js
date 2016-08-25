@@ -99,12 +99,14 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
      * Show Alert
      */
     showAlert: function(message){
+        var self = this;
         var dialog = new YAHOO.widget.SimpleDialog("alertDialog",
             { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
                 text: message, icon: YAHOO.widget.SimpleDialog.ICON_ALARM,
                 constraintoviewport: true,
                 buttons: [ { text:"OK", handler: function(){
                     this.destroy();
+                    self.decreaseFormDialog();
 
                 }, isDefault:false } ]
             });
@@ -118,6 +120,13 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
      */
     uploadPopupCancel: function(event) {
         this.upload_dialog.destroy();
+    },
+
+    decreaseFormDialog: function(){
+        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
+            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
+        }
     },
 
     addVideo: function() {
@@ -183,7 +192,8 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     },
 
     _addVideo: function(datasourceEl) {
-        var datasource = datasourceEl;
+        var datasource = datasourceEl,
+            self = this;
         if(datasource) {
             if(datasource.insertVideoAction) {
                 var callback = {
@@ -220,6 +230,8 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
                             YAHOO.util.Dom.removeClass(this.videoPicker.delEl, 'cstudio-button-disabled');
 
                             this.videoPicker._onChangeVal(null, this.videoPicker);
+
+                            self.decreaseFormDialog();
                         }
                     },
                     failure: function(message) {
