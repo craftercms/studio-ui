@@ -2210,11 +2210,9 @@ treeNode.getHtml = function() {
                         eventYS.data = oCurrentTextNode;
                         eventYS.typeAction = "";
                         document.dispatchEvent(eventYS);
-                        if(currentPage == value){
                             if(CStudioAuthoringContext.isPreview) {
                                 CStudioAuthoring.Operations.refreshPreview();
                             }
-                        }
                     },
                     failure: function() { },
                     callingWindow: window
