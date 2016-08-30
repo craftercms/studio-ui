@@ -213,7 +213,8 @@ var nodeOpen = false;
                 '/static-assets/yui/selector/selector-min.js',
                 '/static-assets/components/cstudio-contextual-nav/contextual-nav.js',
                 '/static-assets/yui/calendar/calendar-min.js',
-                '/static-assets/components/cstudio-components/loader.js'
+                '/static-assets/components/cstudio-components/loader.js',
+                '/static-assets/libs/notify/notify.min.js'
             ],
             /**
              * this CSS has dynamically defined contents so load order is important
@@ -6271,6 +6272,21 @@ var parentSaveCb = {
                     oDiv.parentNode.removeChild(oDiv);
                     focusedButton.onblur = null;
                 }
+            },
+
+            //More configuration on https://notifyjs.com/
+            showNotification: function(message, position, type){
+                var globalPosition = position ? position : 'top right',
+                    type = type ? type : 'success';
+
+                $.notify(
+                    message,
+                    {
+                        globalPosition: globalPosition,
+                        className: type,
+                        autoHideDelay: 4000
+                    }
+                );
             }
         },
         "Utils.Doc": {
@@ -7473,24 +7489,23 @@ CStudioAuthoring.InContextEdit = {
                         serviceCallback,
                         delay = 60000;  // poll once every minute
 
-                        serviceUri = CStudioAuthoring.Service.verifyAuthTicketUrl;
+                        serviceUri = CStudioAuthoring.Service.verifyAuthTicketUrl,
+                        networkErrorMsg = "Network Error. Some functionallity may be unavailable."
 
                         serviceCallback = {
                             success: function(response) {
                                 var resObj = response.responseText
  
                                 if (resObj.indexOf("true") != -1) {
-
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 } 
                                 else {
-                                    // Ticket is invalid
-                                    authRedirect(configObj);
+                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
                                 }
                             },
                             failure: function(response) {
-                                authRedirect(configObj);
                                 //throw new Error('Unable to read session ticket');
+                                CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
                             }
                         };
 
