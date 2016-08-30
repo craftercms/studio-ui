@@ -105,7 +105,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
 
     search: "검색",
 
-    logout: "로그 아웃"
+    logout: "로그 아웃",
+
+    networkError: "네트워크 오류. 일부 기능은 사용할 수 없습니다."
 
 });
 
