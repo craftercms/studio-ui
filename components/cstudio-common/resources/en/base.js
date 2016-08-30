@@ -113,7 +113,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
 
     logout: "Log Out",
 
-    variableLabel: "Template code examples"
+    variableLabel: "Template code examples",
+
+    networkError: "Network Error. Some functionality may be unavailable."
 
 });
 

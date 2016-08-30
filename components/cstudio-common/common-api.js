@@ -7489,8 +7489,11 @@ CStudioAuthoring.InContextEdit = {
                         serviceCallback,
                         delay = 60000;  // poll once every minute
 
-                        serviceUri = CStudioAuthoring.Service.verifyAuthTicketUrl,
-                        networkErrorMsg = "Network Error. Some functionallity may be unavailable."
+                        serviceUri = CStudioAuthoring.Service.verifyAuthTicketUrl;
+
+                        var CMgs = CStudioAuthoring.Messages;
+                        var formsLangBundle = CStudioAuthoring.Messages.getBundle("contextnav", CStudioAuthoringContext.lang);
+                        var networkErrorMsg = CMgs.format(formsLangBundle, 'networkError');
 
                         serviceCallback = {
                             success: function(response) {
