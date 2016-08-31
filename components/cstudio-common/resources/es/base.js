@@ -112,7 +112,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
 
     logout: "Cerrar Sesión",
 
-    variableLabel: "Ejemplos de Código de Plantilla"
+    variableLabel: "Ejemplos de Código de Plantilla",
+
+    networkError: "Error de red. Ciertas funcionalidades pueden no estar disponibles."
 
 });
 
