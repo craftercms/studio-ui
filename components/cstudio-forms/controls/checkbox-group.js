@@ -120,7 +120,7 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                 // also found in datasource B, then they will remain checked. However, if there were values checked in
                 // datasource A that are no longer found in datasource B, these need to be removed from the control's value.
                     newValue = _self.value ? _self.value : [],
-                    rowEl, textEl, inputEl;
+                    rowEl, labelEl, textEl, inputEl;
 
 
                 var titleEl = document.createElement("span");
@@ -149,9 +149,14 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                     groupEl.className = "checkbox-group";
 
                     if (_self.selectAll && !_self.readonly) {
-                        rowEl = document.createElement("label");
+
+                        rowEl = document.createElement("span");
                         rowEl.className = "checkbox select-all";
-                        rowEl.setAttribute("for", _self.id + "-all");
+
+                        labelEl = document.createElement("label");
+                        labelEl.setAttribute("for", _self.id + "-all");
+
+                        rowEl.appendChild(labelEl);
 
                         textEl = document.createElement("span");
                         textEl.innerHTML = "Select All";
@@ -164,8 +169,8 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                         YAHOO.util.Event.on(inputEl, 'click', function(evt, context) { context.form.setFocusedField(context) }, _self);
                         YAHOO.util.Event.on(inputEl, 'change', _self.toggleAll, inputEl, _self);
 
-                        rowEl.appendChild(inputEl);
-                        rowEl.appendChild(textEl);
+                        labelEl.appendChild(inputEl);
+                        labelEl.appendChild(textEl);
                         groupEl.appendChild(rowEl);
                     }
 
@@ -192,9 +197,14 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                 for(var j=0; j<keyValueList.length; j++) {
                     var item = keyValueList[j];
 
-                    rowEl = document.createElement("label");
+                    rowEl = document.createElement("span");
                     rowEl.className = "checkbox";
-                    rowEl.setAttribute("for", _self.id + "-" + item.key);
+                    //rowEl.setAttribute("for", _self.id + "-" + item.key);
+
+                    labelEl = document.createElement("label");
+                    labelEl.setAttribute("for", _self.id + "-" + item.key);
+
+                    rowEl.appendChild(labelEl);
 
                     textEl = document.createElement("span");
                     // TODO:
@@ -228,8 +238,8 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                     inputEl.context = _self;
                     inputEl.item = item;
 
-                    rowEl.appendChild(inputEl);
-                    rowEl.appendChild(textEl);
+                    labelEl.appendChild(inputEl);
+                    labelEl.appendChild(textEl);
                     _self.controlWidgetContainerEl.groupEl.appendChild(rowEl);
                 }
                 _self.value = newValue;
