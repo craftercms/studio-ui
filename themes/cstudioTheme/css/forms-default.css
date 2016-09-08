@@ -916,6 +916,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 /* --- Controls --- */
 .cstudio-form-field-container .checkbox-group { display: inline-block; width: 64%; margin: 2px 0 0 2%;}
 .checkbox-group > .checkbox { display:inline-block; width: 48%; }
+.checkbox-group > .checkbox > label { margin-left: -20px; font-weight: bold; }
 .checkbox-group > .checkbox:nth-child(odd){margin-right: 3%;padding-right: 3%;}
 .checkbox-group > .checkbox input { cursor: pointer; vertical-align: text-top; }
 .checkbox-group > .checkbox span { display: inline-block; margin-left: 5px; }
