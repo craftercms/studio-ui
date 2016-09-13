@@ -803,6 +803,7 @@ WcmDashboardWidgetCommon.editItem = function (matchedElement, isChecked) {
             }
             eventNS.data = contentTO.item;
             eventNS.typeAction = "edit";
+            eventNS.oldPath = null;
             document.dispatchEvent(eventNS);
         },
         failure: function () {
