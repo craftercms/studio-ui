@@ -571,8 +571,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                             var editCallback = {
                                 success: function(contentTO, editorId, name, value, draft) {
-                                    //this.callingWindow.location.reload(true);
-                                    if(CStudioAuthoringContext.isPreview){
+                                    var oCurrentTextNodeOldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri;
+                                    var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                                    if(CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri != contentTO.item.browserUri){
+                                        eventNS.oldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].path;
+                                        CStudioAuthoring.SelectedContent.getSelectedContent()[0] = contentTO.item;
+                                        if(oCurrentTextNodeOldPath == pageParameter){
+                                            var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page", CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri);
+                                            window.location.href = currentURL;
+                                        }
+                                    }
+                                    if(CStudioAuthoringContext.isPreview && oCurrentTextNodeOldPath == pageParameter){
                                         try{
                                             CStudioAuthoring.Operations.refreshPreview();
                                         }catch(err) {
@@ -660,6 +669,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         YDom.get("duplicate-loading").style.display = "none";
                                         eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
                                         eventNS.typeAction = "";
+                                        eventNS.oldPath = null;
                                         document.dispatchEvent(eventNS);
                                     },
                                     failure: function() {
