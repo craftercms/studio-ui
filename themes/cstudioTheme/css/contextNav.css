@@ -709,7 +709,7 @@ body.yui-skin-cstudioTheme .mask{
   border-color: #adadad;
 }
 
-#closeUserWarning .bd, #saveDraftWar .bd {
+#closeUserWarning .bd, #saveDraftWar .bd, #errMissingRequirements .bd {
   height: 63px!important;
   padding: 24px;
 }
@@ -718,17 +718,21 @@ body.yui-skin-cstudioTheme .mask{
     border-radius: 0 0 6px 6px;
 }
 
-#closeUserWarning .hd, #saveDraftWar .hd{
+#errMissingRequirements .bd{
+    padding: 24px 25px;
+}
+
+#closeUserWarning .hd, #saveDraftWar .hd, #errMissingRequirements .hd{
   border-radius: 6px 6px 0 0;
   font-size: 15px;
   padding: 7px 10px;
 }
 
-#closeUserWarning .ft, #saveDraftWar .ft{
+#closeUserWarning .ft, #saveDraftWar .ft, #errMissingRequirements .ft{
   border-radius: 0 0 6px 6px;
 }
 
-#closeUserWarning .ft span.button-group, #closeUserWarning .ft span.button-group{
+#closeUserWarning .ft span.button-group, #saveDraftWar .ft span.button-group, #errMissingRequirements .ft span.button-group{
     margin: 12px 0 6px;
 }
 
