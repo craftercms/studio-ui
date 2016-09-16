@@ -229,3 +229,11 @@ div#preview-tools-panel-container{
     background: #F8F8F8;
     border-radius: 0;
 }
+
+.yui-skin-cstudioTheme .yui-simple-dialog .bd span.blckicon{
+    background: url(error-icon.png) no-repeat;
+    background-position: -3px -4px;
+    background-size: 22px;
+    height: 17px;
+    width: 16px;
+}
