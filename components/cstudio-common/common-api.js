@@ -21,6 +21,7 @@ var eventYS = document.createEvent('Event');
 // Define that the event name is 'build'.
 eventYS.initEvent('crafter.refresh', true, true);
 eventYS.changeStructure = true;
+eventYS.oldPath = null;
 eventYS.typeAction = "";
 
 // Create the event.
@@ -29,6 +30,7 @@ var eventNS = document.createEvent("Event");
 eventNS.initEvent("crafter.refresh", true, true);
 eventNS.changeStructure = false;
 eventNS.typeAction = "";
+eventNS.oldPath = null;
 
 // Create the event.
 var eventCM = document.createEvent("Event");
@@ -549,6 +551,7 @@ var nodeOpen = false;
                                             //window.location.reload();
                                             eventNS.data = items;
                                             eventNS.typeAction = "";
+                                            eventNS.oldPath = null;
                                             document.dispatchEvent(eventNS);
                                         };
                                         dialogue.hideEvent.subscribe(reloadFn);
@@ -595,6 +598,7 @@ var nodeOpen = false;
                                 dialogue.hide();
                                 eventNS.data = contentObj;
                                 eventNS.typeAction = "";
+                                eventNS.oldPath = null;
                                 document.dispatchEvent(eventNS);
                             };
 
@@ -630,6 +634,7 @@ var nodeOpen = false;
                             dialogue.hide();
                             eventNS.data = items;
                             eventNS.typeAction = "";
+                            eventNS.oldPath = null;
                             document.dispatchEvent(eventNS);
                         });
 
@@ -1697,6 +1702,7 @@ var nodeOpen = false;
                                         CStudioAuthoring.Operations.refreshPreview();
                                     }
                                     eventNS.typeAction = "";
+                                    eventNS.oldPath = null;
                                     document.dispatchEvent(eventNS);
                                 },
 
@@ -1851,6 +1857,7 @@ var parentSaveCb = {
                                                         CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()) : null;
                                                 }
                                                 eventYS.typeAction = "";
+                                                eventYS.oldPath = null;
                                                 document.dispatchEvent(eventYS);
                                             }, failure: function() {}});
                                     },
@@ -4907,6 +4914,18 @@ var parentSaveCb = {
                 var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
                     results = regex.exec(location.hash);
                 return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            },
+
+            replaceQueryParameterURL : function(url, param_name, new_value){
+                var base = url.substr(0, url.indexOf('?'));
+                var query = url.substr(url.indexOf('?')+1, url.length);
+                var a_query = query.split('&');
+                for(var i=0; i < a_query.length; i++){
+                    var name = a_query[i].split('=')[0];
+                    var value = a_query[i].split('=')[1];
+                    if (name == param_name) a_query[i] = param_name+'='+new_value;
+                }
+                return base + '?' + a_query.join('&');
             },
 
             /**
