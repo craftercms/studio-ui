@@ -1031,7 +1031,21 @@ var CStudioForms = CStudioForms || function() {
                     var entityId = buildEntityIdFn();
                     var entityFile = entityId.substring(entityId.lastIndexOf('/') + 1);
                     if((form.isInError() && draft==false) || (form.isInErrorDraft() && draft ==true)) {
-                        alert(CMgs.format(formsLangBundle, "errMissingRequirements"));
+                        var dialogEl = document.getElementById("errMissingRequirements");
+                        if(!dialogEl){
+                            var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                                { width: "375px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                    text: CMgs.format(formsLangBundle, "errMissingRequirements"), icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    constraintoviewport: true,
+                                    buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                });
+                            dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                            dialog.render(document.body);
+                            dialogEl = document.getElementById("errMissingRequirements");
+                            dialogEl.dialog = dialog;
+                        }
+                        dialogEl.dialog.show();
+                        //alert(CMgs.format(formsLangBundle, "errMissingRequirements"));
                         if(saveAndCloseEl) saveAndCloseEl.disabled = false;
                         if(saveAndPreviewEl) saveAndPreviewEl.disabled = false;
                         if(saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = false;
