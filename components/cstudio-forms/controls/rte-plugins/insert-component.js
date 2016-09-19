@@ -137,11 +137,60 @@ CStudioForms.Controls.RTE.InsertComponent = CStudioForms.Controls.RTE.InsertComp
 									false,
 									formSaveCb,
 									[{ name: "childForm", value: "true"}]);
-							};							
-							
-		                	onclickFn.widget = widget;
+							};
 
-		                	m.add({title : widget.name, onclick :onclickFn });
+							onclickFn.widget = widget;
+
+							var onClickBrowse = function() {
+
+								var path = this.onclick.widget.contentPath;
+								path = path.replace("{objectGroupId}", model.objectGroupId);
+								path = path.replace("{objectId}", model.objectId);
+
+								path = path.replace("{objectGroupId2}", model.objectGroupId.substring(0, 2));
+								path = path.replace("{parentPath}", CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/, "$1"));
+								/* Date macros */
+								var currentDate = new Date();
+								path = path.replace("{year}", currentDate.getFullYear());
+								path = path.replace("{month}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
+
+
+								CStudioAuthoring.Operations.openBrowse("", path, "1", "select", true, {
+									success: function(searchId, selectedTOs) {
+
+										var name = selectedTOs[0].uri;
+										var id = name.substring(name.lastIndexOf("/")+1).replace(".xml", "");
+
+										if(!model['rteComponents']) {
+											model['rteComponents'] = [];
+										}
+
+										var componentItem = {
+											id: id,
+											contentId: name,
+											include: name
+										};
+
+										model['rteComponents'][model['rteComponents'].length] = componentItem;
+										editor.execCommand('mceInsertContent', false,
+											"<span id=\"" + id + "\" class='crComponent' >" + WAITING_IMG + "</span> &nbsp;");
+
+										_self.renderComponent(editor, componentItem);
+									},
+									failure: function() {
+
+									},
+									context: _self
+								});
+
+							};
+
+							onClickBrowse.widget = widget;
+
+							//TODO: add with string utils
+
+		                	m.add({title : "Create - " + widget.name, onclick :onclickFn });
+							m.add({title : "Browse - " + widget.name, onclick :onClickBrowse });
 				        };
 					});
 
