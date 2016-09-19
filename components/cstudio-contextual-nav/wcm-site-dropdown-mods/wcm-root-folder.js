@@ -514,14 +514,14 @@
                             try {
                                 if(e.data && e.data.length) {
                                     for (var i = 0; i < e.data.length; i++){
-                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
+                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
                                      }
                                 }else{
-                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
+                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
                                 }
                             } catch (er) {
                                 if (CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
-                                    Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
+                                    Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
                                 }
                             }
 
@@ -1245,7 +1245,7 @@ treeNode.getHtml = function() {
     /**
 	* methos that fires when new items added to tree.
 	*/
-	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, edit) {
+	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, edit, oldPath) {
         var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
 		var tree = tree ? tree : Self.myTree,
             isMytree = false,
@@ -1290,6 +1290,17 @@ treeNode.getHtml = function() {
                         nodeToChange = tree.getNodesByProperty("path", currentPath);
                     }else{
                         nodeToChange = node;
+                    }
+
+                    /* Updating the tree Url if the path has been change. */
+                    if(oldPath && currentPath != oldPath && tree.getNodesByProperty("path", oldPath)) {
+                        var treeToUpdate = tree.getNodesByProperty("path", oldPath);
+                        for(var i=0; i<treeToUpdate.length;i++) {
+                            treeToUpdate[i].data.path = treeNode.data ? treeNode.data.path : treeNode.path;
+                            treeToUpdate[i].data.browserUri = treeNode.data ? treeNode.data.browserUri : treeNode.browserUri;
+                            treeToUpdate[i].data.uri = treeNode.data ? treeNode.data.uri : treeNode.uri;
+                        }
+                        nodeToChange = treeToUpdate;
                     }
 
                     if(nodeToChange){
@@ -2189,6 +2200,7 @@ treeNode.getHtml = function() {
                     success: function() {
                         eventNS.data = oCurrentTextNode;
                         eventNS.typeAction = "";
+                        eventNS.oldPath = null;
                         document.dispatchEvent(eventNS);
                     },
                     failure: function() { },
@@ -2209,6 +2221,7 @@ treeNode.getHtml = function() {
                         var currentPage = page.split("/")[page.split("/").length - 1];
                         eventYS.data = oCurrentTextNode;
                         eventYS.typeAction = "";
+                        eventYS.oldPath = null;
                         document.dispatchEvent(eventYS);
                             if(CStudioAuthoringContext.isPreview) {
                                 CStudioAuthoring.Operations.refreshPreview();
@@ -2240,7 +2253,19 @@ treeNode.getHtml = function() {
 
                 var editCb = {
                     success: function(contentTO, editorId, name, value, draft) {
-                        if(CStudioAuthoringContext.isPreview){
+                        eventNS.oldPath = oCurrentTextNode.data.path;
+                        var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                        if(oCurrentTextNode.data.browserUri != contentTO.item.browserUri){
+                            var oCurrentTextNodeOldPath = oCurrentTextNode.data.browserUri;
+                            oCurrentTextNode.data.browserUri = contentTO.item.browserUri;
+                            oCurrentTextNode.data.path = contentTO.item.path;
+                            oCurrentTextNode.data.uri = contentTO.item.uri;
+                            if(oCurrentTextNodeOldPath == pageParameter){
+                                var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page", oCurrentTextNode.data.browserUri);
+                                window.location.href = currentURL;
+                            }
+                        }
+                        if(CStudioAuthoringContext.isPreview && oCurrentTextNodeOldPath == pageParameter){
                             try{
                                 CStudioAuthoring.Operations.refreshPreview();
                             }catch(err) {
@@ -2601,6 +2626,7 @@ treeNode.getHtml = function() {
                             var editCb = {
                                 success: function() {
                                     eventNS.typeAction = "";
+                                    eventNS.oldPath = null;
                                     document.dispatchEvent(eventNS);
                                 },
 
