@@ -128,15 +128,36 @@ CStudioForms.Controls.RTE.InsertComponent = CStudioForms.Controls.RTE.InsertComp
 									path = path.replace("{year}", currentDate.getFullYear());
 									path = path.replace("{month}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
 
-									CStudioAuthoring.Operations.openContentWebForm(
-										this.onclick.widget.contentType,
-										null,
-										null,
-										path,
-										false,
-										false,
-										formSaveCb,
-										[{ name: "childForm", value: "true"}]);
+									var contentType = this.onclick.widget.contentType;
+
+									var CMgs = CStudioAuthoring.Messages;
+									var formsLangBundle = CStudioAuthoring.Messages.getBundle("contentTypes", CStudioAuthoringContext.lang);
+									var networkErrorMsg = CMgs.format(formsLangBundle, 'contentTypeNotFound');
+
+									CStudioAuthoring.Service.lookupContentType(
+										CStudioAuthoringContext.site,
+										contentType,
+										{
+											success: function(result){
+
+												if(result == null){
+													alert(networkErrorMsg);
+												}else {
+													CStudioAuthoring.Operations.openContentWebForm(
+														contentType,
+														null,
+														null,
+														path,
+														false,
+														false,
+														formSaveCb,
+														[{ name: "childForm", value: "true"}]);
+												}
+											},
+											failure: function(){
+											}
+										}
+									);
 								};
 
 								onclickFn.widget = widget;
