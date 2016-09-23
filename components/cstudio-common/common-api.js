@@ -1443,7 +1443,20 @@ var nodeOpen = false;
                         }
 
                         if (contentTypes.length == 0) {
-                            alert("no content types available for [" + site + ":" + path + "]");
+                            var dialogEl = document.getElementById("errMissingRequirements");
+                            if(!dialogEl){
+                                var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                                    { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                        text: "No content types available for [" + site + ":" + path + "]", icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        constraintoviewport: true,
+                                        buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                    });
+                                dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                                dialog.render(document.body);
+                                dialogEl = document.getElementById("errMissingRequirements");
+                                dialogEl.dialog = dialog;
+                            }
+                            dialogEl.dialog.show();
                         } else {
                             var selectTemplateDialogCb = {
                                 moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
@@ -1564,7 +1577,20 @@ var nodeOpen = false;
                 var callback = {
                     success: function(contentTypes) {
                         if (contentTypes.length == 0) {
-                            alert("no content types available for [" + site + ":" + path + "]");
+                            var dialogEl = document.getElementById("errMissingRequirements");
+                            if(!dialogEl){
+                                var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                                    { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                        text: "No content types available for [" + site + ":" + path + "]", icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        constraintoviewport: true,
+                                        buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                    });
+                                dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                                dialog.render(document.body);
+                                dialogEl = document.getElementById("errMissingRequirements");
+                                dialogEl.dialog = dialog;
+                            }
+                            dialogEl.dialog.show();
                         }
                         else if (contentTypes.length == 1) {
 
