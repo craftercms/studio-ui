@@ -624,6 +624,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
 
     /* Errors */
     errorTitle: ". Please fill every title for fields and datasources.",
-    errorName: ". Please fill variable name for: "
+    errorName: ". Please fill variable name for: ",
+    contentTypeNotFound: "Component's content type not found."
 
 });
