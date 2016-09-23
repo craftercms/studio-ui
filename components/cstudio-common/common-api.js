@@ -1447,7 +1447,7 @@ var nodeOpen = false;
                             if(!dialogEl){
                                 var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
                                     { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
-                                        text: "No content types available for [" + site + ":" + path + "]", icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        text: CMgs.format(formsLangBundle, "noContentTypes")+ " " + path, icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                         constraintoviewport: true,
                                         buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
                                     });
@@ -1581,7 +1581,7 @@ var nodeOpen = false;
                             if(!dialogEl){
                                 var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
                                     { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
-                                        text: "No content types available for [" + site + ":" + path + "]", icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        text: CMgs.format(formsLangBundle, "noContentTypes")+ " " + path, icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                         constraintoviewport: true,
                                         buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
                                     });
