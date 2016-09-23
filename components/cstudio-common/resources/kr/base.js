@@ -562,5 +562,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
 
     /* Errors */
     errorTitle: ". 필드와 데이터 소스에 대한 모든 제목을 입력 해주세요.",
-    errorName: ". 대한 변수 이름을 기입하십시오: "
+    errorName: ". 대한 변수 이름을 기입하십시오: ",
+    contentTypeNotFound: "구성 요소의 콘텐츠 형식을 찾을 수 없습니다."
 });
