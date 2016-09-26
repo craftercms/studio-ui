@@ -333,6 +333,16 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     max-width: 100%;
 }
 
+.cstudio-form-field-container#header, .cstudio-form-field-container#footer {
+    background: none;
+    width: 100%;
+    border: none;
+    height: auto;
+    text-align: left;
+    margin: 0;
+    padding: 15px 0 0;
+}
+
 .cstudio-form-field-title {
     display: block;
     float: left;
