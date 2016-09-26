@@ -281,6 +281,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     cancelDialogHeader:"Crafter Studio",
     cancelDialogBody:"Close this form without saving changes?",
+    noContentTypes:"No content types available for content at path:",
 
     changeTemplateDialogTitle:"Warning: Change Content Type",
     changeTemplateDialogSubTitle:"Crafter Studio",
