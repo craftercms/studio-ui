@@ -574,6 +574,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     display: inline;
 }
 
+.cstudio-form-control-image-picker-container .cstudio-form-control-validation,
+.cstudio-form-control-video-picker-container .cstudio-form-control-validation{
+    height: 50px;
+}
+
 .cstudio-form-control-rte-container {
 	display: block;
     margin: 24px auto 0 auto;
