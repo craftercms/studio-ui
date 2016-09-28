@@ -641,7 +641,11 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
         // Update all content before saving the form (all content is automatically updated on focusOut)
         var callback = {};
         callback.beforeSave = function () {
-            //_thisControl.focusOut();
+
+			//if codemirror has changes - update rte.
+			if (! YDom.hasClass(this.containerEl, "text-mode")) {
+				_thisControl.editor.setContent(_thisControl.editor.codeMirror.getValue()); // Transfer content in codeMirror to RTE
+			}
             _thisControl.save();
         };
         _thisControl.form.registerBeforeSaveCallback(callback);
