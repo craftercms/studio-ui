@@ -232,8 +232,8 @@ div#preview-tools-panel-container{
 
 .yui-skin-cstudioTheme .yui-simple-dialog .bd span.blckicon{
     background: url(error-icon.png) no-repeat;
-    background-position: -3px -4px;
-    background-size: 22px;
-    height: 17px;
-    width: 16px;
+    background-size: 18px;
+    height: 19px;
+    width: 17px;
+    top: 0px;
 }
