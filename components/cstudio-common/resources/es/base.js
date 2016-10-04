@@ -279,6 +279,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     cancelDialogHeader:"Crafter Studio",
     cancelDialogBody:"Desea cerrar este formulario sin guardar los cambios?",
     noContentTypes:"No hay tipos de contenido desponibles en la siguiente ruta:",
+    noTemplatesAssoc:"No hay plantillas asociadas a la página:",
+    noTemplateAssocAdm:"No existen plantillas asignadas. Por favor creé o seleccione una plantilla.",
 
     changeTemplateDialogTitle:"Advertencia: Cambiando el Tipo de Contenido",
     changeTemplateDialogSubTitle:"Crafter Studio",
