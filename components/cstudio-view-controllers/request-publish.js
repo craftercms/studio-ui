@@ -45,6 +45,22 @@
 
         if (data.schedule === 'custom') {
             data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
+
+            function pad(number, length){
+                var str = "" + number
+                while (str.length < length) {
+                    str = '0'+str
+                }
+                return str
+            }
+
+            var offset = new Date().getTimezoneOffset()
+            offset = ((offset<0? '+':'-')+ // Note the reversed sign!
+            pad(parseInt(Math.abs(offset/60)), 2)+ ":" +
+            pad(Math.abs(offset%60), 2));
+
+            data.scheduledDate += offset;
+
         }
 
 
@@ -83,22 +99,84 @@
     }
 
     function renderItems(items) {
-        var html = [],
+        var me = this,
+            $container = this.$('.item-listing tbody'),
             tpl = [
                 '<tr>',
-                '<td class="small"><input type="checkbox" class="select-all-check" data-item-id="_URI_" checked/></td>',
-                '<td class="large">_INTERNALNAME_ _URI_</td>',
-                '<td class="medium">_SCHEDULE_</td>',
+                '<td class="small">' +
+                    '<input type="checkbox" class="select-all-check" data-item-id="_URI_" checked/>' +
+                '</td> ' +
+                '<td class="large">' +
+                    '<div class="in"> ' +
+                        '<span id="_INDEX_" class="toggleDependencies ttOpen parent-div-widget" style="margin-right:17px; margin-bottom: -2px; float: left;"></span> ' +
+                        '<span style="overflow:hidden; display: block;">_INTERNALNAME_ _URI_</span>' +
+                    '</div>' +
+                '</td>' +
+                ' <td class="medium">_SCHEDULE_</td> ' +
+                '</tr>'].join(),
+            depTpl = [
+                '<tr class="_INDEX_" style="display:none;">',
+                    '<td style="width:5%;"></td>',
+                    // '<td class="text-center small" style="padding-left: 25px;width: 1%;"><input type="checkbox" class="item-checkbox" data-item-id="{uri}" checked/></td>', //TODO: checkbox to remove dependencies publish
+                    '<td class="text-center small" style="padding-left: 25px;width: 5%;"></td>',
+                    '<td class="name large"><div class="in">_INTERNALNAME_ _URI_</div></div></td>',
                 '</tr>'
             ].join();
-        $.each(items, function (i, item) {
-            html.push(tpl
+
+        $.each(items, function (index, item) {
+            var itemDependenciesClass = "toggle-deps-" + index,
+                $parentRow;
+
+            item.index = itemDependenciesClass;
+            $parentRow = $(tpl
+                .replace('_INDEX_', item.index)
                 .replace('_URI_', item.uri)
                 .replace('_INTERNALNAME_', item.internalName)
                 .replace('_SCHEDULE_', item.scheduledDate ? item.scheduledDate : "")
                 .replace('_URI_', item.uri));
+
+            if(index == 0) $container.empty();
+            $container.append($parentRow);
+
+            var itemToGetDependencies = {
+                'path' : item.uri,
+                'site' : item.site
+            };
+
+            CStudioAuthoring.Operations.getWorkflowAffectedFiles(itemToGetDependencies, {
+                success: function(content) {
+                    $.each(content, function(index, elem){
+                        if(index != 0){     //first element is itself (already added)
+                            elem.uri = elem.path;
+                            elem.internalName = elem.name;
+                            elem.scheduledDate = '';
+                            elem.index = itemDependenciesClass;
+
+                            $parentRow.after(depTpl
+                                .replace('_INDEX_', elem.index)
+                                .replace('_URI_', elem.uri)
+                                .replace('_INTERNALNAME_', elem.internalName)
+                                .replace('_URI_', elem.uri));
+                        }
+                    });
+                }
+            });
+
         });
-        this.$('.item-listing tbody').html(html.join(''));
+
+        $('.toggleDependencies').on('click', function(){
+            var $container = $(me.getComponent('tbody')),
+                parentId = $(this).attr('id'),
+                $childItems = $container.find("." + parentId);
+
+            if($(this).attr('class') == "ttClose parent-div-widget"){
+                $childItems.hide();
+                $(this).attr('class', 'ttOpen parent-div-widget');
+            }else{
+                $childItems.show();
+                $(this).attr('class', 'ttClose parent-div-widget');
+            }
+        })
     }
 
     function initDatePicker() {
