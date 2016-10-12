@@ -242,11 +242,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 				"<h4 id=\"properties-tools-panel\"><span class=\"content-type-tools-panel-icon ttClose \"></span>"+CMgs.format(langBundle, "propertiesExplorer")+"</h4>" +
 			    "<div id='properties-container'></div>" +
 			"</div>" +
+            "<div id='basicContentContainer'><a id='basicContent'>"+CMgs.format(langBundle, "basicContentTypeProp")+"</a></div>" +
 			"<div class='content-type-tools-panel'>" +
 			   "<h4 id=\"control-tools-panel\"><span class=\"content-type-tools-panel-icon ttClose \"></span>"+CMgs.format(langBundle, "controls")+"</h4>" +
 			    "<div id='widgets-container'></div>" +
 			"</div>"+
-                        "<div class='content-type-tools-panel'>" +
+            "<div class='content-type-tools-panel'>" +
 			    "<h4 id=\"datasources-tools-panel\"><span class=\"content-type-tools-panel-icon ttClose\"></span>"+CMgs.format(langBundle, "datasources")+"</h4>" +
 			    "<div id='datasources-container'></div>" +
 			"</div>";
@@ -293,7 +294,15 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 					return [ ];
 				}				
 			};
-			
+
+        var linkContainer = document.getElementById("basicContent");
+
+        var formClickFn = function (evt) {
+            fieldEvent = false;
+            formItemSelectedEvent.fire(this, true);
+        };
+        YAHOO.util.Event.on(linkContainer, 'click', formClickFn);
+        formClickFn();
 			
 			// makes me wonder if this control constructor is too 'smart'?
 			// basically we dont care about registering these fields in this use case
@@ -502,36 +511,35 @@ CStudioAdminConsole.Tool.ContentTypes.FormVisualization.prototype = {
 		YDom.addClass(formVisualContainerEl, "content-type-visual-container");
 		this.containerEl.appendChild(formVisualContainerEl);
 		this.formVisualContainerEl = formVisualContainerEl;		
-		var formTarget = new YAHOO.util.DDTarget(formVisualContainerEl); 	
+		var formTarget = new YAHOO.util.DDTarget(formVisualContainerEl);
 
 		var formNameEl = document.createElement("div");
 		YDom.addClass(formNameEl, "content-form-name");
 		formNameEl.innerHTML = this.definition.title;
 		formVisualContainerEl.appendChild(formNameEl);
 		formVisualContainerEl.definition = this.definition;
-		
-		var formClickFn = function(evt) {
-			fieldEvent = false;
-			formItemSelectedEvent.fire(this);
-		};
-		
-		var formSelectedFn = function(evt, selectedEl) {
-			if(fieldEvent == true) return;
-			
-			var listeningEl = arguments[2];
-			
-			if(selectedEl[0] != listeningEl) {
-				YDom.removeClass(listeningEl, "content-type-visual-form-container-selected");				
-			}
-			else {
-				YDom.addClass(listeningEl, "content-type-visual-form-container-selected");
-				CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(listeningEl.definition);
-			}
-		};
 
-		formItemSelectedEvent.subscribe(formSelectedFn, formVisualContainerEl); 
-		YAHOO.util.Event.on(formVisualContainerEl, 'click', formClickFn);
+        var formClickFn = function (evt) {
+            fieldEvent = false;
+            formItemSelectedEvent.fire(this);
+        };
 
+        var formSelectedFn = function (evt, selectedEl, isBasicLink) {
+            if (fieldEvent == true) return;
+
+            var listeningEl = arguments[2];
+
+            if (selectedEl[0] != listeningEl && !isBasicLink) {
+                YDom.removeClass(listeningEl, "content-type-visual-form-container-selected");
+            }
+            else {
+                YDom.addClass(listeningEl, "content-type-visual-form-container-selected");
+                CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(listeningEl.definition);
+            }
+        };
+
+        formItemSelectedEvent.subscribe(formSelectedFn, formVisualContainerEl);
+        YAHOO.util.Event.on(formVisualContainerEl, 'click', formClickFn);
 		
 		this.renderSections();
 
@@ -1215,7 +1223,7 @@ CStudioAdminConsole.PropertySheet.prototype = {
 	render: function(item) {	
 
 		this.containerEl.innerHTML = "";
-		YAHOO.util.Dom.setStyle(this.containerEl,"height","220px");
+		YAHOO.util.Dom.setStyle(this.containerEl,"height","210px");
 		
 		try { 
 		var sheetEl = document.createElement("div");
