@@ -74,8 +74,22 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 
         return {flagTitleError:flagTitleError, idError:idError}
     },
-	
-	openExistingItemRender: function(contentType) {
+
+    templateValidation: function(formDef) {
+        var properties = formDef.properties,
+            flagTemplateError = false;
+
+        for(var i = 0; i<properties.length; i++){
+            if(properties[i].name == 'display-template' && properties[i].value != ""){
+                flagTemplateError = true;
+            }
+        }
+
+        return {flagTemplateError:flagTemplateError}
+    },
+
+
+    openExistingItemRender: function(contentType) {
 		var _self = this;
 		
 		this.loadFormDefinition(contentType, {
@@ -92,39 +106,58 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 				CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), fn: function() {
 
                             var validation = _self.titleNameValidation(formDef);
+                            var istemplate = _self.templateValidation(formDef);
 
                             if(validation.flagTitleError){
                                 alert(CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorTitle"));
-                            }else{
-                                if(validation.idError.length > 0){
-                                    alert(CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorName") + validation.idError.toString().replace(/,/g,", "));
-                                }else {
+                            }else {
+                                if (validation.idError.length > 0) {
+                                    alert(CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorName") + validation.idError.toString().replace(/,/g, ", "));
+                                } else {
+                                    if (!istemplate.flagTemplateError) {
+                                        var dialogEl = document.getElementById("errTemplates");
+                                        if(!dialogEl){
+                                            var dialog = new YAHOO.widget.SimpleDialog("errTemplates",
+                                                { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                                    text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                    constraintoviewport: true,
+                                                    buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                                });
+                                            dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                                            dialog.render(document.body);
+                                            dialogEl = document.getElementById("errTemplates");
+                                            dialogEl.dialog = dialog;
+                                        }
+                                        dialogEl.className +=(' errorDialog');
+                                        dialogEl.dialog.show();
+                                    } else {
 
-                                    var xml = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef);
+                                        var xml = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef);
 
-                                    var cb = { success: function () {
-                                        CStudioAdminConsole.isDirty = false;
-                                        alert(CMgs.format(langBundle, "saved"));
-                                    },
-                                        failure: function () {
-                                            alert(CMgs.format(langBundle, "saveFailed"));
+                                        var cb = { success: function () {
+                                            CStudioAdminConsole.isDirty = false;
+                                            alert(CMgs.format(langBundle, "saved"));
                                         },
-                                        CMgs: CMgs,
-                                        langBundle: langBundle
-                                    };
+                                            failure: function () {
+                                                alert(CMgs.format(langBundle, "saveFailed"));
+                                            },
+                                            CMgs: CMgs,
+                                            langBundle: langBundle
+                                        };
 
-                                    var defPath = '/cstudio/config/sites/' +
-                                        CStudioAuthoringContext.site +
-                                        '/content-types' + formDef.contentType +
-                                        '/form-definition.xml';
+                                        var defPath = '/cstudio/config/sites/' +
+                                            CStudioAuthoringContext.site +
+                                            '/content-types' + formDef.contentType +
+                                            '/form-definition.xml';
 
-                                    var url = "/api/1/services/api/1/site/write-configuration.json" +
-                                        "?path=" + defPath;
+                                        var url = "/api/1/services/api/1/site/write-configuration.json" +
+                                            "?path=" + defPath;
 
-									YAHOO.util.Connect.resetFormState();
-                                    YAHOO.util.Connect.setDefaultPostHeader(false);
-                                    YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                                    YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xml);
+                                        YAHOO.util.Connect.resetFormState();
+                                        YAHOO.util.Connect.setDefaultPostHeader(false);
+                                        YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
+                                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xml);
+                                    }
                                 }
                             }
 						}	

@@ -282,6 +282,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     cancelDialogHeader:"Crafter Studio",
     cancelDialogBody:"Close this form without saving changes?",
     noContentTypes:"No content types available for content at path:",
+    noTemplatesAssoc:"No template associated for page:",
+    noTemplateAssocAdm:"No template associated. Please create or select a template.",
 
     changeTemplateDialogTitle:"Warning: Change Content Type",
     changeTemplateDialogSubTitle:"Crafter Studio",
@@ -626,5 +628,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     errorTitle: ". Please fill every title for fields and datasources.",
     errorName: ". Please fill variable name for: ",
     contentTypeNotFound: "Component's content type not found."
+
 
 });

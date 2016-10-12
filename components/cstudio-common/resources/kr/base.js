@@ -254,6 +254,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     cancelDialogHeader:"크래프터 스튜디오",
     cancelDialogBody:"변경 사항을 저장하지 않고이 양식을 닫습니다?",
     noContentTypes:"경로에서 콘텐츠를 사용할 수있는 콘텐츠 유형 없음:",
+    noTemplatesAssoc:"페이지 관련된 템플릿 없습니다:",
+    noTemplateAssocAdm:"어떤 템플릿을 할당하지 않습니다. 만들거나 템플릿을 선택하십시오.",
 
     changeTemplateDialogTitle:"경고 : 콘텐츠 형식 변경",
     changeTemplateDialogSubTitle:"크래프터 스튜디오",
