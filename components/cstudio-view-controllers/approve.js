@@ -261,16 +261,55 @@
 
     function renderItems(items) {
 
-        var html = [];
+        var html = [],
+            me = this,
+            $container = $(this.getComponent('tbody'));
 
         each(items, function (index, item) {
-            var temp = item.scheduledDate;
+            var temp = item.scheduledDate,
+                itemDependenciesClass = "toggle-deps-" + index;
+
             item.scheduledDate = CStudioAuthoring.Utils.formatDateFromString(temp);
-            html.push(agent.get('ITEM_ROW', item));
+            item.index = itemDependenciesClass;
+            var $parentRow = $(agent.get('ITEM_ROW', item));
+            if(index == 0) $container.empty();
+            $container.append($parentRow);
             item.scheduledDate = temp;
+
+            var itemToGetDependencies = {
+                'path' : item.uri,
+                'site' : item.site
+            };
+
+            CStudioAuthoring.Operations.getWorkflowAffectedFiles(itemToGetDependencies, {
+                success: function(content) {
+                    each(content, function(index, elem){
+                        if(index != 0){     //first element is itself (already added)
+                            elem.uri = elem.path;
+                            elem.internalName = elem.name;
+                            elem.scheduledDate = '';
+                            elem.index = itemDependenciesClass;
+                            $parentRow.after(agent.get('SUBITEM_ROW', elem));
+                        }
+                    });
+                }
+            });
+
         });
 
-        this.getComponent('tbody').innerHTML = html.join('');
+        $('.toggleDependencies').on('click', function(){
+            var $container = $(me.getComponent('tbody')),
+                parentId = $(this).attr('id'),
+                $childItems = $container.find("." + parentId);
+
+            if($(this).attr('class') == "ttClose parent-div-widget"){
+                $childItems.hide();
+                $(this).attr('class', 'ttOpen parent-div-widget');
+            }else{
+                $childItems.show();
+                $(this).attr('class', 'ttClose parent-div-widget');
+            }
+        })
 
     }
 
