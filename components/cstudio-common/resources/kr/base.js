@@ -415,6 +415,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     disabled: "장애인",
     flash: "플래시",
     internalName: "내부 이름",
+    basicContentTypeProp: "기본 콘텐츠 형식 등록",
 
     /*Datasources */
     childContent: "자식 내용",

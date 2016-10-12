@@ -443,6 +443,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     disabled: "Discapacitados",
     flash: "Flash",
     internalName: "Nombre Interno",
+    basicContentTypeProp: "Propiedades Baásicas del Tipo de Contenido",
 
     /*Datasources */
     childContent: "Contenido Hijos",
