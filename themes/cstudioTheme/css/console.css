@@ -109,6 +109,14 @@ body,tbody {
 .content-type-tools-panel.content-type-tools-panel-first{
   padding-bottom: 0;
 }
+#basicContentContainer{
+    text-align: right;
+    padding-right: 15px;
+    cursor: pointer;
+}
+#basicContentContainer #basicContent{
+    cursor: pointer;
+}
 .content-type-tools-panel h4 {
     font-size: 14px;
     font-weight: normal;
