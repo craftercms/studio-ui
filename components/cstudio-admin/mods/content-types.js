@@ -517,6 +517,14 @@ CStudioAdminConsole.Tool.ContentTypes.FormVisualization.prototype = {
 		YDom.addClass(formNameEl, "content-form-name");
 		formNameEl.innerHTML = this.definition.title;
 		formVisualContainerEl.appendChild(formNameEl);
+
+        var divPropertiesEl = document.createElement("div");
+        YDom.addClass(divPropertiesEl, "content-form-link");
+        var linkPropertiesEl = document.createElement("a");
+        linkPropertiesEl.innerHTML = "Basic Content Type Properties";
+        divPropertiesEl.appendChild(linkPropertiesEl);
+        formVisualContainerEl.appendChild(divPropertiesEl);
+
 		formVisualContainerEl.definition = this.definition;
 
         var formClickFn = function (evt) {
@@ -540,6 +548,7 @@ CStudioAdminConsole.Tool.ContentTypes.FormVisualization.prototype = {
 
         formItemSelectedEvent.subscribe(formSelectedFn, formVisualContainerEl);
         YAHOO.util.Event.on(formVisualContainerEl, 'click', formClickFn);
+        YAHOO.util.Event.on(linkPropertiesEl, 'click', formClickFn);
 		
 		this.renderSections();
 
