@@ -71,7 +71,7 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
         }
     },
 
-    render: function(config, containerEl, isValueSet) {
+    render: function(config, containerEl, lastTwo, isValueSet) {
         containerEl.id = this.id;
         this.containerEl = containerEl;
         this.config = config;
@@ -434,7 +434,7 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
 
         this.value = value;
         this.form.updateModel(this.id, this.getValue());
-        this.render(this.config, this.containerEl, true);
+        this.render(this.config, this.containerEl, false, true);
         this.hiddenEl.value = this.valueToString();
     },
 

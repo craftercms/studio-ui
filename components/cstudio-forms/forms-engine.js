@@ -286,7 +286,7 @@ var CStudioForms = CStudioForms || function() {
                     }
                 }
 
-                this.render(config, containerEl, lastTwo);
+                this.render(config, containerEl, lastTwo, false);
 
                 if (this.delayedInit) {
                     if (this.form.asyncFields == 0) {
