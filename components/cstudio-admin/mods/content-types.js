@@ -105,6 +105,35 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 				// render save bar
 				CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), fn: function() {
 
+                            var saveFn = function(){
+                                var xml = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef);
+
+                                var cb = { success: function () {
+                                    CStudioAdminConsole.isDirty = false;
+                                    CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "bottom right", "success");
+
+                                },
+                                    failure: function () {
+                                        alert(CMgs.format(langBundle, "saveFailed"));
+                                    },
+                                    CMgs: CMgs,
+                                    langBundle: langBundle
+                                };
+
+                                var defPath = '/cstudio/config/sites/' +
+                                    CStudioAuthoringContext.site +
+                                    '/content-types' + formDef.contentType +
+                                    '/form-definition.xml';
+
+                                var url = "/api/1/services/api/1/site/write-configuration.json" +
+                                    "?path=" + defPath;
+
+                                YAHOO.util.Connect.resetFormState();
+                                YAHOO.util.Connect.setDefaultPostHeader(false);
+                                YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
+                                YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xml);
+                            }
+
                             var validation = _self.titleNameValidation(formDef);
                             var istemplate = _self.templateValidation(formDef);
 
@@ -119,9 +148,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
                                         if(!dialogEl){
                                             var dialog = new YAHOO.widget.SimpleDialog("errTemplates",
                                                 { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
-                                                    text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                    text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_WARN,
                                                     constraintoviewport: true,
-                                                    buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                                    buttons: [ { text:CMgs.format(formsLangBundle, "continueEditing"),  handler:function(){this.hide();}, isDefault:false },
+                                                        { text:CMgs.format(formsLangBundle, "save"),  handler:function(){this.hide(); saveFn();}, isDefault:false }]
                                                 });
                                             dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                                             dialog.render(document.body);
@@ -131,32 +161,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
                                         dialogEl.className +=(' errorDialog');
                                         dialogEl.dialog.show();
                                     } else {
-
-                                        var xml = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef);
-
-                                        var cb = { success: function () {
-                                            CStudioAdminConsole.isDirty = false;
-                                            alert(CMgs.format(langBundle, "saved"));
-                                        },
-                                            failure: function () {
-                                                alert(CMgs.format(langBundle, "saveFailed"));
-                                            },
-                                            CMgs: CMgs,
-                                            langBundle: langBundle
-                                        };
-
-                                        var defPath = '/cstudio/config/sites/' +
-                                            CStudioAuthoringContext.site +
-                                            '/content-types' + formDef.contentType +
-                                            '/form-definition.xml';
-
-                                        var url = "/api/1/services/api/1/site/write-configuration.json" +
-                                            "?path=" + defPath;
-
-                                        YAHOO.util.Connect.resetFormState();
-                                        YAHOO.util.Connect.setDefaultPostHeader(false);
-                                        YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xml);
+                                        saveFn();
                                     }
                                 }
                             }
