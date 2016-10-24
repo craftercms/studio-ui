@@ -22,12 +22,15 @@
 
         events: ['wipeAndRevert', 'view', 'restore', 'compare', 'revert', 'wipeRecent'],
 
-        actions: ['.close-button'],
+        actions: ['.close-button', '.compare-button'],
 
         loadHistory: function (selection) {
             var _this = this,
                 colspan = 5,
                 loadFn;
+
+            _this.selection = selection;
+
             loadFn = function () {
 
                 var tbody = _this.getComponent('table.item-listing tbody');
@@ -60,11 +63,22 @@
                                         col4El,
                                         col5El,
                                         col6El,
-                                        revertActionEl;
+                                        revertActionEl,
+                                        checkboxEl;
 
                                     col2El = document.createElement('div');
                                     Dom.addClass(col2El, "c2");
-                                    col2El.innerHTML = version.versionNumber;
+
+                                    col2El.innerHTML =  + version.versionNumber;
+
+                                    checkboxEl = document.createElement('input');
+                                    checkboxEl.type = "checkbox";
+                                    checkboxEl.name = "version";
+                                    checkboxEl.value = version.versionNumber;
+                                    checkboxEl.style.marginRight = '5px';
+
+                                    col2El.insertBefore(checkboxEl, col2El.firstChild);
+
                                     tdEl = document.createElement('td');
                                     tdEl.appendChild(col2El);
                                     rowEl.appendChild(tdEl);
@@ -95,11 +109,40 @@
                                     tdEl = document.createElement('td');
                                     tdEl.appendChild(col5El);
                                     rowEl.appendChild(tdEl);
+                                    
+                                    var viewActionEl = document.createElement("a");
+                                    viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action iconViewFile"></span>';        //TODO: select proper icon
+                                    viewActionEl.version = version.versionNumber;
+                                    viewActionEl.path = selection.uri;
+                                    col5El.appendChild(viewActionEl);
+                                    new YAHOO.widget.Tooltip("tooltipView" + viewActionEl.version, {
+                                        context: "actionView" + viewActionEl.version,
+                                        text: CMgs.format(formsLangBundle, "historyDialogViewFileMessage"),
+                                        zIndex: 100103
+                                    });
+
+
+                                    var compareActionEl = document.createElement("a");
+                                    compareActionEl.innerHTML = '<span id="actionCompare' + version.versionNumber + '" class="action iconCompareFile"></span>';        //TODO: select proper icon
+                                    compareActionEl.version = version.versionNumber;
+                                    compareActionEl.path = selection.uri;
+                                    col5El.appendChild(compareActionEl);
+                                    new YAHOO.widget.Tooltip("tooltipCompare" + compareActionEl.version, {
+                                        context: "actionCompare" + viewActionEl.version,
+                                        text: CMgs.format(formsLangBundle, "historyDialogCompareFileMessage"),
+                                        zIndex: 100103
+                                    });
 
                                     revertActionEl = document.createElement("a");
-                                    revertActionEl.innerHTML = CMgs.format(formsLangBundle, "historyDialogRevert");
+                                    revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action iconRevertFile"></span>';        //TODO: select proper icon
                                     revertActionEl.item = selection;
                                     revertActionEl.version = version.versionNumber;
+                                    new YAHOO.widget.Tooltip("tooltipRevert"+ revertActionEl.version, {
+                                        context: "actionRevert" + viewActionEl.version,
+                                        text: CMgs.format(formsLangBundle, "historyDialogRevertFileMessage"),
+                                        zIndex: 100103
+                                    });
+
                                     col5El.appendChild(revertActionEl);
                                     (function (item) {
                                         Event.addListener(revertActionEl, "click", function () {
@@ -120,6 +163,19 @@
                                                     }
                                                 });
                                         });
+
+                                        Event.addListener(viewActionEl, "click", function () {
+                                            CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, this.version);
+                                        });
+
+                                        Event.addListener(compareActionEl, "click", function () {
+                                            CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version);
+                                        });
+
+                                        Event.addListener(checkboxEl, "change", function () {
+                                            _this.validateDiffCheckboxes();
+                                        });
+
                                     })(history.item);
 
                                     tbody.appendChild(rowEl);
@@ -140,6 +196,24 @@
                     });
             };
             loadFn();
+        },
+
+        validateDiffCheckboxes: function () {
+            var tbody = this.getComponent('table.item-listing tbody'),
+                selectedCheckboxes = $(tbody).find('input[name="version"]:checked'),
+                unselectedCheckboxes = $(tbody).find('input[name="version"]:not(:checked)');
+
+            if(selectedCheckboxes.length >= 2) {
+                unselectedCheckboxes.prop('disabled', true);
+            }else{
+                unselectedCheckboxes.prop('disabled', false);
+            }
+
+            if(selectedCheckboxes.length == 2){
+                $("#historyCompareBtn").prop('disabled', false);
+            }else {
+                $("#historyCompareBtn").prop('disabled', true);
+            }
         },
 
         wipeRecentEdits: function () {
@@ -163,6 +237,19 @@
         },
         closeButtonActionClicked: function () {
             this.end();
+        },
+        compareButtonActionClicked: function () {
+            var tbody = this.getComponent('table.item-listing tbody'),
+                selectedCheckboxes = $(tbody).find('input[name="version"]:checked'),
+                diffArray = [],
+                path = this.selection.uri;
+
+            $.each(selectedCheckboxes, function(index) {
+                diffArray[index] = this.value;
+            });
+
+
+            CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, path,diffArray[0], diffArray[1]);
         }
     });
 

@@ -1382,7 +1382,49 @@ var nodeOpen = false;
                     });
 
                 });
+            },
 
+            openDiff: function(site, path, version, versionTO) {
+
+                var id = CSA.Utils.getScopedId(),
+                    animator,
+                    editorId =  CStudioAuthoring.Utils.generateUUID(),
+                    $modal = $('<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' + editorId + '" style="display:none;"><div class="bd"></div></div></div>'),
+                    template = '<iframe name="diffDialog" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+window.top.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>"',
+                    parentEl = window.top.document.body,
+                    diffUrl;
+
+                animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
+
+                $(function() {
+                    $modal.find('.studio-ice-dialog').resizable({
+                        minHeight: 50,
+                        grid: [10000, 1],
+                        start: function(event, ui) {
+                            $('#engineWindow').css('pointer-events','none');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
+                        },
+                        stop: function( event, ui ) {
+                            $('#engineWindow').css('pointer-events','auto');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                        }
+                    });
+                });
+
+                $modal.find('.bd').html(template).end().appendTo(parentEl);
+                $modal.find('.studio-ice-container').css('z-index', 100525);
+
+                $('body').on("diff-end", function () {
+                    $modal.remove();
+                });
+
+                diffUrl = "http://localhost:8080/studio/diff?site=" + site + "&path=" + path + "&version=" + version;
+                diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
+                diffUrl += "&mode=iframe";
+
+                window.open(diffUrl, 'diffDialog');
+
+                animator.slideInDown();
             },
 
             openCopyDialog:function(site, uri, callback, args) {
@@ -3498,6 +3540,18 @@ var parentSaveCb = {
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
             },
 
+            /**
+             * get current version history for given content path
+             */
+            getCurrentVersion: function(site, uri, callback) {
+                var contentTO = { "uri" : uri };
+
+                this.getVersionHistory(site, contentTO, {
+                    success: function(response){
+                        callback.success(response.versions[0].versionNumber);
+                    }
+                })
+            },
 
             /**
              * given a site id and a path look up the available content types
@@ -4992,7 +5046,7 @@ var parentSaveCb = {
                                 itemTime[0] = 12;
                         }
 
-                        var myDate = new Date(itemDate);
+                        var myDate = new Date(itemDate);        //TODO: Needs to be checked!!!
                         var d = myDate.getDate();
                         var m = myDate.getMonth() + 1;
                         var y = myDate.getFullYear();
@@ -6299,7 +6353,7 @@ var parentSaveCb = {
             setDefaultFocusOn: function(focusedButton) {
                 if (!focusedButton) return;
                 focusedButton.focus();
-                /* 
+                /*
                  * after dialog rendered, default focused button outline style not displaying in firefox4
                  * This code block adds focus outline manually and on blur, we should remove added styles.
                  */
@@ -7384,6 +7438,20 @@ CStudioAuthoring.InContextEdit = {
 
         iframeDoc.activeElement.parentNode.style.background = "#F0F0F0";
         iframeDoc.activeElement.style.background = "#F0F0F0";
+        window.scrollBy(0,1);
+    }
+};
+
+CStudioAuthoring.FilesDiff = {
+    autoSizeIceDialog: function(editorId) {
+        var el = document.getElementById('in-context-edit-editor-'+editorId);
+        var containerEl = document.getElementById('studio-ice-container-'+editorId);
+        if(!containerEl) return;
+
+        var height = YAHOO.util.Dom.getViewportHeight() - 90;
+
+        containerEl.style.height = height+'px';
+        el.style.height = height+'px';
         window.scrollBy(0,1);
     }
 };

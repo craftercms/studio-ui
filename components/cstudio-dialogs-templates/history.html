@@ -31,6 +31,23 @@
             border-top:1px #CCC dashed;
             margin: 4px 0;
         }
+        .history-view .action-wrapper{
+            width: 100%;
+        }
+        .history-view .action-wrapper .close-button{
+            float: right;
+        }
+
+        .history-view .action {
+            margin-right: 10px;
+        }
+
+        .yui-module.yui-overlay.yui-tt {
+            border-color: gray;
+            background-color: #ececec;
+            padding: 6px;
+            font-weight: bold;
+        }
     </style>
 
     <h3 data-translation="historyDialogTitle" class="view-title">Version History</h3>
@@ -46,7 +63,7 @@
                 <th><div data-translation="historyDialogTableRowTime" class="c3">Edit Time</div></th>
                 <th><div data-translation="historyDialogTableRowEditBy" class="c4">Edited By</div></th>
                 <th><div data-translation="historyDialogTableRowComment" class="c6">Comment</div></th>
-                <th><div class="c7">&nbsp;</div></th>
+                <th><div data-translation="historyDialogTableRowActions" class="c7">Actions</div></th>
             </tr>
             </thead>
             <tbody>
@@ -56,6 +73,7 @@
     </div>
 
     <div class="action-wrapper">
+        <input id="historyCompareBtn" type="button" class="compare-button btn btn-default" value="Compare" disabled/>
         <input id="historyCloseBtn" type="button" class="close-button btn btn-default" value="Close" />
     </div>
 
