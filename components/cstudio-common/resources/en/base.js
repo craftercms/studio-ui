@@ -260,6 +260,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     viewSample: "View Sample",
     hideSample: "Hide Sample",
     clearCache: "Clear Cache",
+    continueEditing: "Continue Editing",
 
     copy: "Copy",
     copyDescription: "Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained.",
@@ -283,7 +284,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     cancelDialogBody:"Close this form without saving changes?",
     noContentTypes:"No content types available for content at path:",
     noTemplatesAssoc:"No template associated for page:",
-    noTemplateAssocAdm:"No template associated. Please create or select a template.",
+    noTemplateAssocAdm:"There is no template associated with this content type. Click Save to proceed with save operation or Continue to update the content type (under Basic Content Type Properties) with a template.",
 
     changeTemplateDialogTitle:"Warning: Change Content Type",
     changeTemplateDialogSubTitle:"Crafter Studio",

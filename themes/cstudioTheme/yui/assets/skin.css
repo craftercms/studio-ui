@@ -237,3 +237,16 @@ div#preview-tools-panel-container{
     width: 17px;
     top: 0px;
 }
+
+.yui-skin-cstudioTheme .yui-simple-dialog .bd span.warnicon{
+    width: 18px;
+}
+
+.yui-skin-cstudioTheme .yui-simple-dialog #errTemplates .bd span.warnicon{
+    height: 47px;
+}
+
+.yui-skin-cstudioTheme .yui-simple-dialog #errTemplates .bd{
+    text-align: justify;
+}
+
