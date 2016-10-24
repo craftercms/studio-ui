@@ -1,6 +1,76 @@
 /*
  * Styles for the Tag Diff
  */
+.skin-diff #studioBar .navbar-brand img{
+    width: 75px;
+    position: relative;
+    bottom: 15px;
+}
+
+.container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.container .content {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: block;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.container.as-dialog .content {
+    margin-bottom: 70px;
+}
+
+.container .content table tr td{
+    padding-top: 10px;
+    vertical-align: top;
+}
+
+.container .content table tr td:nth-child(1){
+    text-align: right;
+    padding-right: 40px;
+}
+
+.container:before, .container:after {
+    content: " ";
+    display: table;
+}
+
+.container:after {
+    clear: both;
+}
+
+.page-header.with-navbar{
+    margin-top: 54px;
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+    }
+}
+@media (min-width: 992px) {
+    .container {
+        width: 970px;
+    }
+}
+@media (min-width: 1200px) {
+    .container {
+        width: 1170px;
+    }
+}
+
+
+
+
+
+
+ 
 span.diff-tag-html {
   font-family: "Andale Mono" monospace;
   font-size: 80%;
