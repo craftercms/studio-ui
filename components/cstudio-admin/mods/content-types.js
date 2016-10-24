@@ -110,7 +110,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 
                                 var cb = { success: function () {
                                     CStudioAdminConsole.isDirty = false;
-                                    alert(CMgs.format(langBundle, "saved"));
+                                    CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "bottom right", "success");
+
                                 },
                                     failure: function () {
                                         alert(CMgs.format(langBundle, "saveFailed"));
