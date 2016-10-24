@@ -257,6 +257,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     loading:"Cargando&hellip;",
     viewSample: "Ver Ejemplo",
     hideSample: "Esconder Ejemplo",
+    continueEditing: "Continuar Editando",
 
     copy: "Copiar",
     copyDescription: "Por favor seleccione las subpaginas que le gustaria copar.<br/> Al pegar, se conservarán las sub-páginas seleccionadas y su jerarquía posicional.",
@@ -280,7 +281,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     cancelDialogBody:"Desea cerrar este formulario sin guardar los cambios?",
     noContentTypes:"No hay tipos de contenido desponibles en la siguiente ruta:",
     noTemplatesAssoc:"No hay plantillas asociadas a la página:",
-    noTemplateAssocAdm:"No existen plantillas asignadas. Por favor creé o seleccione una plantilla.",
+    noTemplateAssocAdm:"No existe una plantilla asociada con este tipo de contenido. Haga clic en Guardar para proceder con la operación de guardar o Continuar para actualizar el tipo de contenido (en Propiedades básicas de tipo de contenido) con una plantilla.",
 
     changeTemplateDialogTitle:"Advertencia: Cambiando el Tipo de Contenido",
     changeTemplateDialogSubTitle:"Crafter Studio",
