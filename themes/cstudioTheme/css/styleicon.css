@@ -193,3 +193,27 @@
 	width: 120px; 
 	text-decoration: line-through;
 }
+
+.iconViewFile {
+	background: transparent url(../images/icons/history-strip.png) 0px 0px no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
+}
+
+.iconCompareFile {
+	background: transparent url(../images/icons/history-strip.png) 0px -22px no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
+}
+
+.iconRevertFile {
+	background: transparent url(../images/icons/history-strip.png) 0px -44px no-repeat;
+	display: block;
+	float: left;
+	height: 20px;
+	width: 20px;
+}
