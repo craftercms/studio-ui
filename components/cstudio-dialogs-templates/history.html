@@ -40,6 +40,10 @@
 
         .history-view .action {
             margin-right: 10px;
+            font-size: 16px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
 
         .yui-module.yui-overlay.yui-tt {
@@ -47,6 +51,11 @@
             background-color: #ececec;
             padding: 6px;
             font-weight: bold;
+        }
+
+        .yui-module.yui-overlay.yui-tt .bd {
+            background-color: transparent;
+            border: none;
         }
     </style>
 
@@ -73,7 +82,6 @@
     </div>
 
     <div class="action-wrapper">
-        <input id="historyCompareBtn" type="button" class="compare-button btn btn-default" value="Compare" disabled/>
         <input id="historyCloseBtn" type="button" class="close-button btn btn-default" value="Close" />
     </div>
 

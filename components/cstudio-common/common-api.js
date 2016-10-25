@@ -1418,7 +1418,7 @@ var nodeOpen = false;
                     $modal.remove();
                 });
 
-                diffUrl = "http://localhost:8080/studio/diff?site=" + site + "&path=" + path + "&version=" + version;
+                diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
                 diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
                 diffUrl += "&mode=iframe";
 
