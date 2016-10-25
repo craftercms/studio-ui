@@ -41,7 +41,8 @@
                     selection, {
                         success: function (history) {
 
-                            var versions = history.versions;
+                            var versions = history.versions,
+                                contentType = history.item.contentType;
 
                             var itemStateEl = _this.getComponent('span.show-for-item');
                             Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
@@ -52,6 +53,24 @@
                             } else {
 
                                 tbody.innerHTML = '';
+
+                                if(contentType != "asset"){
+                                    var actionWrapper = _this.getComponent(".history-view .action-wrapper"),
+                                        compareButton = document.createElement('input');
+                                    compareButton.type = "button";
+                                    Dom.addClass(compareButton, "compare-button btn btn-default");
+                                    compareButton.value="Compare";
+                                    compareButton.setAttribute("disabled", "");
+                                    compareButton.setAttribute("id", "historyCompareBtn");
+                                    actionWrapper.appendChild(compareButton);
+
+                                    (function () {
+                                        Event.addListener(compareButton, "click", function () {
+                                            // CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, this.version);
+                                            _this.compareButtonActionClicked();
+                                        });
+                                    })();
+                                }
 
                                 for (var i = 0; i < versions.length; i++) {
 
@@ -71,13 +90,14 @@
 
                                     col2El.innerHTML =  + version.versionNumber;
 
-                                    checkboxEl = document.createElement('input');
-                                    checkboxEl.type = "checkbox";
-                                    checkboxEl.name = "version";
-                                    checkboxEl.value = version.versionNumber;
-                                    checkboxEl.style.marginRight = '5px';
-
-                                    col2El.insertBefore(checkboxEl, col2El.firstChild);
+                                    if(contentType != "asset"){
+                                        checkboxEl = document.createElement('input');
+                                        checkboxEl.type = "checkbox";
+                                        checkboxEl.name = "version";
+                                        checkboxEl.value = version.versionNumber;
+                                        checkboxEl.style.marginRight = '5px';
+                                        col2El.insertBefore(checkboxEl, col2El.firstChild);
+                                    }
 
                                     tdEl = document.createElement('td');
                                     tdEl.appendChild(col2El);
@@ -105,40 +125,43 @@
                                     rowEl.appendChild(tdEl);
 
                                     col5El = document.createElement('div');
+                                    col5El.style.whiteSpace = "nowrap";
                                     Dom.addClass(col5El, "c5");
                                     tdEl = document.createElement('td');
                                     tdEl.appendChild(col5El);
                                     rowEl.appendChild(tdEl);
-                                    
-                                    var viewActionEl = document.createElement("a");
-                                    viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action iconViewFile"></span>';        //TODO: select proper icon
-                                    viewActionEl.version = version.versionNumber;
-                                    viewActionEl.path = selection.uri;
-                                    col5El.appendChild(viewActionEl);
-                                    new YAHOO.widget.Tooltip("tooltipView" + viewActionEl.version, {
-                                        context: "actionView" + viewActionEl.version,
-                                        text: CMgs.format(formsLangBundle, "historyDialogViewFileMessage"),
-                                        zIndex: 100103
-                                    });
+
+                                    if(contentType != "asset"){
+                                        var viewActionEl = document.createElement("a");
+                                        viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action glyphicon glyphicon-eye-open"></span>';
+                                        viewActionEl.version = version.versionNumber;
+                                        viewActionEl.path = selection.uri;
+                                        col5El.appendChild(viewActionEl);
+                                        new YAHOO.widget.Tooltip("tooltipView" + viewActionEl.version, {
+                                            context: "actionView" + viewActionEl.version,
+                                            text: CMgs.format(formsLangBundle, "historyDialogViewFileMessage"),
+                                            zIndex: 100103
+                                        });
 
 
-                                    var compareActionEl = document.createElement("a");
-                                    compareActionEl.innerHTML = '<span id="actionCompare' + version.versionNumber + '" class="action iconCompareFile"></span>';        //TODO: select proper icon
-                                    compareActionEl.version = version.versionNumber;
-                                    compareActionEl.path = selection.uri;
-                                    col5El.appendChild(compareActionEl);
-                                    new YAHOO.widget.Tooltip("tooltipCompare" + compareActionEl.version, {
-                                        context: "actionCompare" + viewActionEl.version,
-                                        text: CMgs.format(formsLangBundle, "historyDialogCompareFileMessage"),
-                                        zIndex: 100103
-                                    });
+                                        var compareActionEl = document.createElement("a");
+                                        compareActionEl.innerHTML = '<span id="actionCompare' + version.versionNumber + '" class="action glyphicon glyphicon-duplicate"></span>';
+                                        compareActionEl.version = version.versionNumber;
+                                        compareActionEl.path = selection.uri;
+                                        col5El.appendChild(compareActionEl);
+                                        new YAHOO.widget.Tooltip("tooltipCompare" + compareActionEl.version, {
+                                            context: "actionCompare" + viewActionEl.version,
+                                            text: CMgs.format(formsLangBundle, "historyDialogCompareFileMessage"),
+                                            zIndex: 100103
+                                        });
+                                    }
 
                                     revertActionEl = document.createElement("a");
-                                    revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action iconRevertFile"></span>';        //TODO: select proper icon
+                                    revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action glyphicon glyphicon-share-alt revert"></span>';
                                     revertActionEl.item = selection;
                                     revertActionEl.version = version.versionNumber;
                                     new YAHOO.widget.Tooltip("tooltipRevert"+ revertActionEl.version, {
-                                        context: "actionRevert" + viewActionEl.version,
+                                        context: "actionRevert" + revertActionEl.version,
                                         text: CMgs.format(formsLangBundle, "historyDialogRevertFileMessage"),
                                         zIndex: 100103
                                     });
