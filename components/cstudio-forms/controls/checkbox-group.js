@@ -300,18 +300,20 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
             allSameState = true,
             checkAllEl = YAHOO.util.Selector.query('.checkbox.select-all input[type="checkbox"]', ancestor)[0];
 
-        checkboxes.forEach( function (el) {
-            var isSelectAll = el.parentElement.className.indexOf('select-all') != -1;
+        if (checkAllEl) {
+            checkboxes.forEach( function (el) {
+                var isSelectAll = el.parentElement.className.indexOf('select-all') != -1;
 
-            if(!isSelectAll && (el.checked != state)){
-                allSameState = false;
+                if(!isSelectAll && (el.checked != state)){
+                    allSameState = false;
+                }
+            });
+
+            if(allSameState) {
+                checkAllEl.checked = state;
+            }else {
+                checkAllEl.checked = false;
             }
-        });
-
-        if(allSameState) {
-            checkAllEl.checked = state;
-        }else {
-            checkAllEl.checked = false;
         }
     },
 
