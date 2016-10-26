@@ -1,26 +1,26 @@
 CStudioForms.Controls.CheckBoxGroup = CStudioForms.Controls.CheckBoxGroup ||
-function(id, form, owner, properties, constraints, readonly)  {
-    this.owner = owner;
-    this.owner.registerField(this);
-    this.errors = [];
-    this.properties = properties;
-    this.constraints = constraints;
-    this.inputEl = null;
-    this.countEl = null;
-    this.required = false;
-    this.value = "_not-set";
-    this.form = form;
-    this.id = id;
-    this.readonly = readonly;
-    this.minSize = 0;
-    this.hiddenEl = null;
-    // Stores the type of data the control is now working with (this value is fetched from the datasource controller)
-    this.dataType = null;
+    function(id, form, owner, properties, constraints, readonly)  {
+        this.owner = owner;
+        this.owner.registerField(this);
+        this.errors = [];
+        this.properties = properties;
+        this.constraints = constraints;
+        this.inputEl = null;
+        this.countEl = null;
+        this.required = false;
+        this.value = "_not-set";
+        this.form = form;
+        this.id = id;
+        this.readonly = readonly;
+        this.minSize = 0;
+        this.hiddenEl = null;
+        // Stores the type of data the control is now working with (this value is fetched from the datasource controller)
+        this.dataType = null;
 
-    amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
+        amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
 
-    return this;
-}
+        return this;
+    }
 
 YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField, {
 
@@ -119,87 +119,65 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                 // from datasource A may be present in datasource B. If there were values checked in datasource A and they are
                 // also found in datasource B, then they will remain checked. However, if there were values checked in
                 // datasource A that are no longer found in datasource B, these need to be removed from the control's value.
-                    newValue = _self.value ? _self.value : [],
+                    newValue = [],
                     rowEl, labelEl, textEl, inputEl;
 
-
+                containerEl.innerHTML = "";
                 var titleEl = document.createElement("span");
 
                 YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
                 titleEl.innerHTML = config.title;
 
-                if(!_self.controlWidgetContainerEl){
-                    containerEl.innerHTML = "";
-                    var controlWidgetContainerEl = document.createElement("div");
-                    _self.controlWidgetContainerEl = controlWidgetContainerEl;
-                    YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
+                var controlWidgetContainerEl = document.createElement("div");
+                YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
 
-                    var validEl = document.createElement("span");
-                    YAHOO.util.Dom.addClass(validEl, 'validation-hint');
-                    YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation');
-                    controlWidgetContainerEl.appendChild(validEl);
+                var validEl = document.createElement("span");
+                YAHOO.util.Dom.addClass(validEl, 'validation-hint');
+                YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation');
+                controlWidgetContainerEl.appendChild(validEl);
 
-                    var hiddenEl = document.createElement("input");
-                    hiddenEl.type = "hidden";
-                    YAHOO.util.Dom.addClass(hiddenEl, 'datum');
-                    controlWidgetContainerEl.appendChild(hiddenEl);
-                    _self.hiddenEl = hiddenEl;
+                var hiddenEl = document.createElement("input");
+                hiddenEl.type = "hidden";
+                YAHOO.util.Dom.addClass(hiddenEl, 'datum');
+                controlWidgetContainerEl.appendChild(hiddenEl);
+                _self.hiddenEl = hiddenEl;
 
-                    var groupEl = document.createElement("div");
-                    groupEl.className = "checkbox-group";
+                var groupEl = document.createElement("div");
+                groupEl.className = "checkbox-group";
 
-                    if (_self.selectAll && !_self.readonly) {
+                if (_self.selectAll && !_self.readonly) {
+                    rowEl = document.createElement("span");
+                    rowEl.className = "checkbox select-all";
 
-                        rowEl = document.createElement("span");
-                        rowEl.className = "checkbox select-all";
+                    labelEl = document.createElement("label");
+                    labelEl.setAttribute("for", _self.id + "-all");
 
-                        labelEl = document.createElement("label");
-                        labelEl.setAttribute("for", _self.id + "-all");
+                    rowEl.appendChild(labelEl);
 
-                        rowEl.appendChild(labelEl);
+                    textEl = document.createElement("span");
+                    textEl.innerHTML = "Select All";
 
-                        textEl = document.createElement("span");
-                        textEl.innerHTML = "Select All";
+                    inputEl = document.createElement("input");
+                    inputEl.type = "checkbox";
+                    inputEl.checked = false;
+                    inputEl.id = _self.id + "-all";
 
-                        inputEl = document.createElement("input");
-                        inputEl.type = "checkbox";
-                        inputEl.checked = false;
-                        inputEl.id = _self.id + "-all";
+                    YAHOO.util.Event.on(inputEl, 'click', function(evt, context) { context.form.setFocusedField(context) }, _self);
+                    YAHOO.util.Event.on(inputEl, 'change', _self.toggleAll, inputEl, _self);
 
-                        YAHOO.util.Event.on(inputEl, 'click', function(evt, context) { context.form.setFocusedField(context) }, _self);
-                        YAHOO.util.Event.on(inputEl, 'change', _self.toggleAll, inputEl, _self);
-
-                        labelEl.appendChild(inputEl);
-                        labelEl.appendChild(textEl);
-                        groupEl.appendChild(rowEl);
-                    }
-
-                    controlWidgetContainerEl.appendChild(groupEl);
-
-                    _self.controlWidgetContainerEl.groupEl = groupEl;
-
-                    var helpContainerEl = document.createElement("div");
-                    YAHOO.util.Dom.addClass(helpContainerEl, 'cstudio-form-field-help-container');
-                    controlWidgetContainerEl.appendChild(helpContainerEl);
-
-                    _self.renderHelp(config, helpContainerEl);
-
-                    var descriptionEl = document.createElement("span");
-                    YAHOO.util.Dom.addClass(descriptionEl, 'description');
-                    YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-                    descriptionEl.innerHTML = config.description;
-
-                    containerEl.appendChild(titleEl);
-                    containerEl.appendChild(controlWidgetContainerEl);
-                    containerEl.appendChild(descriptionEl);
+                    labelEl.appendChild(inputEl);
+                    labelEl.appendChild(textEl);
+                    groupEl.appendChild(rowEl);
                 }
+
+                controlWidgetContainerEl.appendChild(groupEl);
 
                 for(var j=0; j<keyValueList.length; j++) {
                     var item = keyValueList[j];
 
                     rowEl = document.createElement("span");
                     rowEl.className = "checkbox";
-                    //rowEl.setAttribute("for", _self.id + "-" + item.key);
+                    // rowEl.setAttribute("for", _self.id + "-" + item.key);
 
                     labelEl = document.createElement("label");
                     labelEl.setAttribute("for", _self.id + "-" + item.key);
@@ -240,9 +218,24 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
 
                     labelEl.appendChild(inputEl);
                     labelEl.appendChild(textEl);
-                    _self.controlWidgetContainerEl.groupEl.appendChild(rowEl);
+                    groupEl.appendChild(rowEl);
                 }
                 _self.value = newValue;
+
+                var helpContainerEl = document.createElement("div");
+                YAHOO.util.Dom.addClass(helpContainerEl, 'cstudio-form-field-help-container');
+                controlWidgetContainerEl.appendChild(helpContainerEl);
+
+                _self.renderHelp(config, helpContainerEl);
+
+                var descriptionEl = document.createElement("span");
+                YAHOO.util.Dom.addClass(descriptionEl, 'description');
+                YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
+                descriptionEl.innerHTML = config.description;
+
+                containerEl.appendChild(titleEl);
+                containerEl.appendChild(controlWidgetContainerEl);
+                containerEl.appendChild(descriptionEl);
 
                 // Check if the value loaded is valid or not
                 _self.validate();
@@ -251,41 +244,20 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
 
         if(isValueSet) {
 
-            var dataSourceNames = this.datasourceName.split(","),
-                datasources = [];
-
-            for(var x = 0; x < dataSourceNames.length ; x++) {
-                var currentDatasource = this.form.datasourceMap[dataSourceNames[x]];
-                datasources.push(currentDatasource);
-
-                if(currentDatasource){
-                    this.datasource = currentDatasource;
-                    this.dataType = currentDatasource.getDataType() || "value";	// Set default value for dataType (for backwards compatibility)
-                    if (!this.dataType.match(/^value$/)) {
-                        this.dataType += "mv";
-                    }
-
-                    currentDatasource.getList(cb);
-                }
-            }
-
-            // var datasource = this.form.datasourceMap[this.datasourceName];
-
-            var datasource = datasources[0];
-
+            var datasource = this.form.datasourceMap[this.datasourceName];
             // This render method is currently being called twice (on initialization and on the setValue).
             // We need the value to know which checkboxes should be checked or not so restrict the rendering to only
             // after the value has been set.
-            // if(datasource){
-            //     this.datasource = datasource;
-            //     this.dataType = datasource.getDataType() || "value";	// Set default value for dataType (for backwards compatibility)
-            //     if (!this.dataType.match(/^value$/)) {
-            //         this.dataType += "mv";
-            //     }
-            //     datasource.getList(cb);
-            // }else{
-            //     this.callback = cb;
-            // }
+            if(datasource){
+                this.datasource = datasource;
+                this.dataType = datasource.getDataType() || "value";	// Set default value for dataType (for backwards compatibility)
+                if (!this.dataType.match(/^value$/)) {
+                    this.dataType += "mv";
+                }
+                datasource.getList(cb);
+            }else{
+                this.callback = cb;
+            }
         }
     },
 
@@ -328,15 +300,15 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
             allSameState = true,
             checkAllEl = YAHOO.util.Selector.query('.checkbox.select-all input[type="checkbox"]', ancestor)[0];
 
-        checkboxes.forEach( function (el) {
-            var isSelectAll = el.parentElement.className.indexOf('select-all') != -1;
+        if (checkAllEl) {
+            checkboxes.forEach( function (el) {
+                var isSelectAll = el.parentElement.className.indexOf('select-all') != -1;
 
-            if(!isSelectAll && (el.checked != state)){
-                allSameState = false;
-            }
-        });
+                if(!isSelectAll && (el.checked != state)){
+                    allSameState = false;
+                }
+            });
 
-        if(checkAllEl){
             if(allSameState) {
                 checkAllEl.checked = state;
             }else {
