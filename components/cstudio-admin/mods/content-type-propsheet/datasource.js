@@ -1,18 +1,18 @@
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource = 
-    CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource 
+CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource =
+    CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource
     ||  function(fieldName, containerEl, form, type)  {
 
-    this.fieldName = fieldName;
-    this.containerEl = containerEl;
-    this.form = form;
-    this["interface"] = (type.indexOf("datasource:") != -1) ? type.split("datasource:")[1] : "" + type;
-    this.fieldValue = [];
-    return this;
-}
+        this.fieldName = fieldName;
+        this.containerEl = containerEl;
+        this.form = form;
+        this["interface"] = (type.indexOf("datasource:") != -1) ? type.split("datasource:")[1] : "" + type;
+        this.fieldValue = [];
+        return this;
+    }
 
 YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
 
-    render: function(value, updateFn) {
+    render: function(value, updateFn, fName, itemId) {
         var type = this["interface"];
         var containerEl = this.containerEl;
         var valuesEl, controlEl;
@@ -30,7 +30,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
                 var datasource = datasources[i];
                 if (datasource["interface"] == type) {
 
-                    controlEl = this.createControl(datasource, updateFn, type);
+                    controlEl = this.createControl(datasource, updateFn, type, itemId);
                     valuesEl.appendChild(controlEl);
                 }
             }
@@ -54,7 +54,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
         containerEl.appendChild(labelEl);
     },
 
-    createControl : function (datasource, updateFn, type) {
+    createControl : function (datasource, updateFn, type, itemId) {
         var labelEl, cbEl, labelText, _self = this;
 
         labelEl = document.createElement("label");
@@ -66,17 +66,31 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
 
         var clickFn = function(){};
 
-        cbEl.type = "checkbox";
-
-        clickFn =  function() {
-            if (this.checked) {
+        if(itemId == "checkboxgroup"){
+            cbEl.type = "radio";
+            if(!this.radioGroupName){
+                this.radioGroupName = CStudioAuthoring.Utils.generateUUID();
+            }
+            cbEl.name = this.radioGroupName;
+            clickFn = function() {
+                _self.removeAll();
                 _self.addValue(this.id);
-                updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
-            } else {
-                _self.removeValue(this.id);
-                updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
+                updateFn(null, {fieldName: _self.fieldName, value: _self.fieldValue.toString() });
+            }
+        }else{
+            cbEl.type = "checkbox";
+
+            clickFn =  function() {
+                if (this.checked) {
+                    _self.addValue(this.id);
+                    updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
+                } else {
+                    _self.removeValue(this.id);
+                    updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
+                }
             }
         }
+
 
         cbEl.value = datasource.id;
         cbEl.id = datasource.id;
