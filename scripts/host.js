@@ -361,6 +361,10 @@
         communicator.publish(Topics.ICE_TOOLS_REGIONS, data);
     });
 
+    communicator.subscribe(Topics.INSTALL_SITE_PLUGIN, function (message, scope) {
+        alert("STUDIO RESPONSE: INSTALL PLUGIN: "+message.name);
+    });
+
     function setHashPage(url) {
         window.location.hash = '#/?page=' + url;
     }

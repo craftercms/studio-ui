@@ -68,6 +68,9 @@
                 "OPEN_BROWSE": "OPEN_BROWSE",
                 "DND_CREATE_BROWSE_COMP": "DND_CREATE_BROWSE_COMP",
 
+                "INSTALL_SITE_PLUGIN": "INSTALL_SITE_PLUGIN",
+                "INSTALL_COMPLETE": "INSTALL_COMPLETE"
+                "INSTALL_STATE": "INSTALL_STATE",
                 "": ""
             },
             cstopic: function (topic) {

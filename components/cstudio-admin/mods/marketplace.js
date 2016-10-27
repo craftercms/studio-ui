@@ -8,7 +8,7 @@ CStudioAdminConsole.Tool.MarketPlace = CStudioAdminConsole.Tool.MarketPlace ||  
 YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
 		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		workareaEl.innerHTML = "<iframe style='' src='http://localhost:9090/' />";
+		workareaEl.innerHTML = "<iframe style='width:100%; height:2000px; margin-left:150px;' src='http://marketplacecraftersoftwarecom.live.craftercloud.io' />";
 	}
 });
 
