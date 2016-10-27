@@ -105,7 +105,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
 
     search: "검색",
 
-    logout: "로그 아웃"
+    logout: "로그 아웃",
+
+    networkError: "네트워크 오류. 일부 기능은 사용할 수 없습니다."
 
 });
 
@@ -248,9 +250,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     loading:"로드&hellip;",
     viewSample: "샘플보기",
     hideSample: "숨기기 샘플",
+    continueEditing: "편집을 계속",
 
     cancelDialogHeader:"크래프터 스튜디오",
     cancelDialogBody:"변경 사항을 저장하지 않고이 양식을 닫습니다?",
+    noContentTypes:"경로에서 콘텐츠를 사용할 수있는 콘텐츠 유형 없음:",
+    noTemplatesAssoc:"페이지 관련된 템플릿 없습니다:",
+    noTemplateAssocAdm:"이 콘텐츠 유형과 관련된 템플릿이 없습니다. 계속 함께 작업을 저장하거나 템플릿 (기본 콘텐츠 형식 속성 아래) 콘텐츠 형식을 업데이트 계속하려면 저장을 클릭합니다.",
 
     changeTemplateDialogTitle:"경고 : 콘텐츠 형식 변경",
     changeTemplateDialogSubTitle:"크래프터 스튜디오",
@@ -263,10 +269,14 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     historyDialogTableRowEditBy: "편집",
     historyDialogTableRowComment: "논평",
     historyDialogRevert: "되돌리기",
+    historyDialogTableRowActions: "행위",
     historyDialogLoadingWait: "로딩 중 기다려주세요&hellip;",
     historyDialogNoVersionsFound: "어떤 버전을 찾을 수 없습니다.",
     historyDialogUnable:"버전 기록을로드 할 수 없습니다.",
     historyDialogTryAgain:"다시 시도",
+    historyDialogViewFileMessage:"이 버전보기",
+    historyDialogCompareFileMessage:"현재에 비해",
+    historyDialogRevertFileMessage:"이 버전으로 되돌리기",
 
     deleteDialogTitle:"삭제",
     deleteDialogSubTitle:"다음 선택 항목이 삭제됩니다 :",
@@ -410,6 +420,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     disabled: "장애인",
     flash: "플래시",
     internalName: "내부 이름",
+    basicContentTypeProp: "기본 콘텐츠 형식 등록",
 
     /*Datasources */
     childContent: "자식 내용",
@@ -445,6 +456,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     setNowLink: "이제 링크 설정",
     populated: "인구",
     allowPastDate: "과거 날짜 허용",
+    populateExpression:"",
     readonly: "읽기 전용",
     readonlyOnEdit: "편집에 읽기 전용",
     datasource: "데이터 소스",
@@ -559,5 +571,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
 
     /* Errors */
     errorTitle: ". 필드와 데이터 소스에 대한 모든 제목을 입력 해주세요.",
-    errorName: ". 대한 변수 이름을 기입하십시오: "
+    errorName: ". 대한 변수 이름을 기입하십시오: ",
+    contentTypeNotFound: "구성 요소의 콘텐츠 형식을 찾을 수 없습니다."
 });

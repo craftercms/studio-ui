@@ -252,7 +252,12 @@ PLEASE NOTE:
 }
 
 .yui-simple-dialog .bd span.blckicon {
-    background: url("blck16_1.gif") no-repeat;
+    background: url("error-icon.png") no-repeat;
+    background-size: 18px;
+    width: 19px;
+    height: 17px;
+    position: relative;
+    top: 0px;
 }
 
 .yui-simple-dialog .bd span.alrticon {

@@ -229,3 +229,24 @@ div#preview-tools-panel-container{
     background: #F8F8F8;
     border-radius: 0;
 }
+
+.yui-skin-cstudioTheme .yui-simple-dialog .bd span.blckicon{
+    background: url(error-icon.png) no-repeat;
+    background-size: 18px;
+    height: 19px;
+    width: 17px;
+    top: 0px;
+}
+
+.yui-skin-cstudioTheme .yui-simple-dialog .bd span.warnicon{
+    width: 18px;
+}
+
+.yui-skin-cstudioTheme .yui-simple-dialog #errTemplates .bd span.warnicon{
+    height: 47px;
+}
+
+.yui-skin-cstudioTheme .yui-simple-dialog #errTemplates .bd{
+    text-align: justify;
+}
+

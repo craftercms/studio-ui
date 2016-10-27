@@ -333,6 +333,16 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     max-width: 100%;
 }
 
+.cstudio-form-field-container#header, .cstudio-form-field-container#footer {
+    background: none;
+    width: 100%;
+    border: none;
+    height: auto;
+    text-align: left;
+    margin: 0;
+    padding: 15px 0 0;
+}
+
 .cstudio-form-field-title {
     display: block;
     float: left;
@@ -562,6 +572,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 
 .cstudio-form-control-input-url-err.on {
     display: inline;
+}
+
+.cstudio-form-control-image-picker-container .cstudio-form-control-validation,
+.cstudio-form-control-video-picker-container .cstudio-form-control-validation{
+    height: 50px;
 }
 
 .cstudio-form-control-rte-container {
@@ -916,6 +931,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 /* --- Controls --- */
 .cstudio-form-field-container .checkbox-group { display: inline-block; width: 64%; margin: 2px 0 0 2%;}
 .checkbox-group > .checkbox { display:inline-block; width: 48%; }
+.checkbox-group > .checkbox > label { margin-left: -20px; font-weight: bold; }
 .checkbox-group > .checkbox:nth-child(odd){margin-right: 3%;padding-right: 3%;}
 .checkbox-group > .checkbox input { cursor: pointer; vertical-align: text-top; }
 .checkbox-group > .checkbox span { display: inline-block; margin-left: 5px; }

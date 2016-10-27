@@ -97,11 +97,6 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         wrapper.style.marginleft = "4px";
         wrapper.appendChild(templateButtonEl);
 
-        if(checkRenderingTemplates(CStudioAuthoring.SelectedContent.getSelectedContent()[0].renderingTemplates)) {
-            templateButtonEl.setAttributeNode(document.createAttribute("disabled"));
-            templateButtonEl.style.pointerEvents = "none";
-        }
-
         container.appendChild(wrapper);
 
         wrapper = document.createElement('div');
@@ -184,7 +179,21 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                     }
                 }, contentType);
             }else{
-                alert("No template found");
+                var dialogEl = document.getElementById("errNoTemplAssoc");
+                if(!dialogEl){
+                    var dialog = new YAHOO.widget.SimpleDialog("errNoTemplAssoc",
+                        { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                            text: CMgs.format(formsLangBundle, "noTemplatesAssoc")+ " " + CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName, icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            constraintoviewport: true,
+                            buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                        });
+                    dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                    dialog.render(document.body);
+                    dialogEl = document.getElementById("errNoTemplAssoc");
+                    dialogEl.dialog = dialog;
+                }
+                dialogEl.className +=(' errorDialog');
+                dialogEl.dialog.show();
             }
 		};
 

@@ -112,7 +112,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
 
     logout: "Cerrar Sesión",
 
-    variableLabel: "Ejemplos de Código de Plantilla"
+    variableLabel: "Ejemplos de Código de Plantilla",
+
+    networkError: "Error de red. Ciertas funcionalidades pueden no estar disponibles."
 
 });
 
@@ -255,6 +257,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     loading:"Cargando&hellip;",
     viewSample: "Ver Ejemplo",
     hideSample: "Esconder Ejemplo",
+    continueEditing: "Continuar Editando",
 
     copy: "Copiar",
     copyDescription: "Por favor seleccione las subpaginas que le gustaria copar.<br/> Al pegar, se conservarán las sub-páginas seleccionadas y su jerarquía posicional.",
@@ -276,6 +279,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 
     cancelDialogHeader:"Crafter Studio",
     cancelDialogBody:"Desea cerrar este formulario sin guardar los cambios?",
+    noContentTypes:"No hay tipos de contenido desponibles en la siguiente ruta:",
+    noTemplatesAssoc:"No hay plantillas asociadas a la página:",
+    noTemplateAssocAdm:"No existe una plantilla asociada con este tipo de contenido. Haga clic en Guardar para proceder con la operación de guardar o Continuar para actualizar el tipo de contenido (en Propiedades básicas de tipo de contenido) con una plantilla.",
 
     changeTemplateDialogTitle:"Advertencia: Cambiando el Tipo de Contenido",
     changeTemplateDialogSubTitle:"Crafter Studio",
@@ -288,10 +294,14 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     historyDialogTableRowEditBy: "Editado por",
     historyDialogTableRowComment: "Comentario",
     historyDialogRevert: "Revertir",
+    historyDialogTableRowActions: "Acciones",
     historyDialogLoadingWait: "Cargando, por favor esperar&hellip;",
     historyDialogNoVersionsFound: "No hay versiones encontradas.",
     historyDialogUnable:"No se puede cargar el historial de versiones.",
     historyDialogTryAgain:"Inténtalo de nuevo",
+    historyDialogViewFileMessage:"Ver esta versión",
+    historyDialogCompareFileMessage:"Comparar con el actual",
+    historyDialogRevertFileMessage:"Revertir a esta versión",
 
     deleteDialogTitle:"Eliminar",
     deleteDialogSubTitle:"Los siguientes elementos seleccionados serán eliminados:",
@@ -438,6 +448,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     disabled: "Discapacitados",
     flash: "Flash",
     internalName: "Nombre Interno",
+    basicContentTypeProp: "Propiedades Baásicas del Tipo de Contenido",
 
     /*Datasources */
     childContent: "Contenido Hijos",
@@ -473,6 +484,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     setNowLink: "Establecer Link de Ahora",
     populated: "Poblado",
     allowPastDate: "Permitir Fecha Pasada",
+    populateExpression:"Expresion valor por defecto",
     useCustomTimezone: "Usar Timezone Personalizado",
     readonly: "Solo Lectura",
     readonlyOnEdit: "Editar en Solo Lectura",
@@ -588,5 +600,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
 
     /* Errors */
     errorTitle: ". Rellene todos los títulos de los campos y fuentes de datos.",
-    errorName: ". Por favor, rellene el nombre de variable para: "
+    errorName: ". Por favor, rellene el nombre de variable para: ",
+    contentTypeNotFound: "El content type del componente no fue encontrado."
 });

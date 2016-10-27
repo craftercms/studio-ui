@@ -21,6 +21,7 @@ var eventYS = document.createEvent('Event');
 // Define that the event name is 'build'.
 eventYS.initEvent('crafter.refresh', true, true);
 eventYS.changeStructure = true;
+eventYS.oldPath = null;
 eventYS.typeAction = "";
 
 // Create the event.
@@ -29,6 +30,7 @@ var eventNS = document.createEvent("Event");
 eventNS.initEvent("crafter.refresh", true, true);
 eventNS.changeStructure = false;
 eventNS.typeAction = "";
+eventNS.oldPath = null;
 
 // Create the event.
 var eventCM = document.createEvent("Event");
@@ -213,7 +215,8 @@ var nodeOpen = false;
                 '/static-assets/yui/selector/selector-min.js',
                 '/static-assets/components/cstudio-contextual-nav/contextual-nav.js',
                 '/static-assets/yui/calendar/calendar-min.js',
-                '/static-assets/components/cstudio-components/loader.js'
+                '/static-assets/components/cstudio-components/loader.js',
+                '/static-assets/libs/notify/notify.min.js'
             ],
             /**
              * this CSS has dynamically defined contents so load order is important
@@ -548,6 +551,7 @@ var nodeOpen = false;
                                             //window.location.reload();
                                             eventNS.data = items;
                                             eventNS.typeAction = "";
+                                            eventNS.oldPath = null;
                                             document.dispatchEvent(eventNS);
                                         };
                                         dialogue.hideEvent.subscribe(reloadFn);
@@ -594,6 +598,7 @@ var nodeOpen = false;
                                 dialogue.hide();
                                 eventNS.data = contentObj;
                                 eventNS.typeAction = "";
+                                eventNS.oldPath = null;
                                 document.dispatchEvent(eventNS);
                             };
 
@@ -629,6 +634,7 @@ var nodeOpen = false;
                             dialogue.hide();
                             eventNS.data = items;
                             eventNS.typeAction = "";
+                            eventNS.oldPath = null;
                             document.dispatchEvent(eventNS);
                         });
 
@@ -1322,6 +1328,21 @@ var nodeOpen = false;
                     }
                 });
 
+                $(function() {
+                    $modal.find('.studio-ice-dialog').resizable({
+                        minHeight: 50,
+                        grid: [10000, 1],
+                        start: function(event, ui) {
+                            $('#engineWindow').css('pointer-events','none');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','none');
+                        },
+                        stop: function( event, ui ) {
+                            $('#engineWindow').css('pointer-events','auto');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                        }
+                    });
+                });
+
                 CSA.Env.Loader.use(controller, function() {
                     CStudioAuthoring.Service.getInContextEditView({
                         success: function (response) {
@@ -1361,7 +1382,49 @@ var nodeOpen = false;
                     });
 
                 });
+            },
 
+            openDiff: function(site, path, version, versionTO) {
+
+                var id = CSA.Utils.getScopedId(),
+                    animator,
+                    editorId =  CStudioAuthoring.Utils.generateUUID(),
+                    $modal = $('<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' + editorId + '" style="display:none;"><div class="bd"></div></div></div>'),
+                    template = '<iframe name="diffDialog" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+window.top.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>"',
+                    parentEl = window.top.document.body,
+                    diffUrl;
+
+                animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
+
+                $(function() {
+                    $modal.find('.studio-ice-dialog').resizable({
+                        minHeight: 50,
+                        grid: [10000, 1],
+                        start: function(event, ui) {
+                            $('#engineWindow').css('pointer-events','none');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
+                        },
+                        stop: function( event, ui ) {
+                            $('#engineWindow').css('pointer-events','auto');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                        }
+                    });
+                });
+
+                $modal.find('.bd').html(template).end().appendTo(parentEl);
+                $modal.find('.studio-ice-container').css('z-index', 100525);
+
+                $('body').on("diff-end", function () {
+                    $modal.remove();
+                });
+
+                diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
+                diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
+                diffUrl += "&mode=iframe";
+
+                window.open(diffUrl, 'diffDialog');
+
+                animator.slideInDown();
             },
 
             openCopyDialog:function(site, uri, callback, args) {
@@ -1422,7 +1485,20 @@ var nodeOpen = false;
                         }
 
                         if (contentTypes.length == 0) {
-                            alert("no content types available for [" + site + ":" + path + "]");
+                            var dialogEl = document.getElementById("errMissingRequirements");
+                            if(!dialogEl){
+                                var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                                    { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                        text: CMgs.format(formsLangBundle, "noContentTypes")+ " " + path, icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        constraintoviewport: true,
+                                        buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                    });
+                                dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                                dialog.render(document.body);
+                                dialogEl = document.getElementById("errMissingRequirements");
+                                dialogEl.dialog = dialog;
+                            }
+                            dialogEl.dialog.show();
                         } else {
                             var selectTemplateDialogCb = {
                                 moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
@@ -1543,7 +1619,20 @@ var nodeOpen = false;
                 var callback = {
                     success: function(contentTypes) {
                         if (contentTypes.length == 0) {
-                            alert("no content types available for [" + site + ":" + path + "]");
+                            var dialogEl = document.getElementById("errMissingRequirements");
+                            if(!dialogEl){
+                                var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                                    { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                        text: CMgs.format(formsLangBundle, "noContentTypes")+ " " + path, icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        constraintoviewport: true,
+                                        buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                    });
+                                dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                                dialog.render(document.body);
+                                dialogEl = document.getElementById("errMissingRequirements");
+                                dialogEl.dialog = dialog;
+                            }
+                            dialogEl.dialog.show();
                         }
                         else if (contentTypes.length == 1) {
 
@@ -1681,6 +1770,7 @@ var nodeOpen = false;
                                         CStudioAuthoring.Operations.refreshPreview();
                                     }
                                     eventNS.typeAction = "";
+                                    eventNS.oldPath = null;
                                     document.dispatchEvent(eventNS);
                                 },
 
@@ -1835,6 +1925,7 @@ var parentSaveCb = {
                                                         CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()) : null;
                                                 }
                                                 eventYS.typeAction = "";
+                                                eventYS.oldPath = null;
                                                 document.dispatchEvent(eventYS);
                                             }, failure: function() {}});
                                     },
@@ -3449,6 +3540,18 @@ var parentSaveCb = {
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
             },
 
+            /**
+             * get current version history for given content path
+             */
+            getCurrentVersion: function(site, uri, callback) {
+                var contentTO = { "uri" : uri };
+
+                this.getVersionHistory(site, contentTO, {
+                    success: function(response){
+                        callback.success(response.versions[0].versionNumber);
+                    }
+                })
+            },
 
             /**
              * given a site id and a path look up the available content types
@@ -4886,6 +4989,25 @@ var parentSaveCb = {
                 return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
             },
 
+            getQueryParameterURL : function(name) {
+                name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.hash);
+                return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            },
+
+            replaceQueryParameterURL : function(url, param_name, new_value){
+                var base = url.substr(0, url.indexOf('?'));
+                var query = url.substr(url.indexOf('?')+1, url.length);
+                var a_query = query.split('&');
+                for(var i=0; i < a_query.length; i++){
+                    var name = a_query[i].split('=')[0];
+                    var value = a_query[i].split('=')[1];
+                    if (name == param_name) a_query[i] = param_name+'='+new_value;
+                }
+                return base + '?' + a_query.join('&');
+            },
+
             /**
              * format a date
              */
@@ -4924,7 +5046,7 @@ var parentSaveCb = {
                                 itemTime[0] = 12;
                         }
 
-                        var myDate = new Date(itemDate);
+                        var myDate = new Date(itemDate);        //TODO: Needs to be checked!!!
                         var d = myDate.getDate();
                         var m = myDate.getMonth() + 1;
                         var y = myDate.getFullYear();
@@ -6231,7 +6353,7 @@ var parentSaveCb = {
             setDefaultFocusOn: function(focusedButton) {
                 if (!focusedButton) return;
                 focusedButton.focus();
-                /* 
+                /*
                  * after dialog rendered, default focused button outline style not displaying in firefox4
                  * This code block adds focus outline manually and on blur, we should remove added styles.
                  */
@@ -6249,6 +6371,21 @@ var parentSaveCb = {
                     oDiv.parentNode.removeChild(oDiv);
                     focusedButton.onblur = null;
                 }
+            },
+
+            //More configuration on https://notifyjs.com/
+            showNotification: function(message, position, type){
+                var globalPosition = position ? position : 'top right',
+                    type = type ? type : 'success';
+
+                $.notify(
+                    message,
+                    {
+                        globalPosition: globalPosition,
+                        className: type,
+                        autoHideDelay: 4000
+                    }
+                );
             }
         },
         "Utils.Doc": {
@@ -7305,6 +7442,20 @@ CStudioAuthoring.InContextEdit = {
     }
 };
 
+CStudioAuthoring.FilesDiff = {
+    autoSizeIceDialog: function(editorId) {
+        var el = document.getElementById('in-context-edit-editor-'+editorId);
+        var containerEl = document.getElementById('studio-ice-container-'+editorId);
+        if(!containerEl) return;
+
+        var height = YAHOO.util.Dom.getViewportHeight() - 90;
+
+        containerEl.style.height = height+'px';
+        el.style.height = height+'px';
+        window.scrollBy(0,1);
+    }
+};
+
 (function (w) {
 
     var Dom = YAHOO.util.Dom,
@@ -7453,22 +7604,24 @@ CStudioAuthoring.InContextEdit = {
 
                         serviceUri = CStudioAuthoring.Service.verifyAuthTicketUrl;
 
+                        var CMgs = CStudioAuthoring.Messages;
+                        var formsLangBundle = CStudioAuthoring.Messages.getBundle("contextnav", CStudioAuthoringContext.lang);
+                        var networkErrorMsg = CMgs.format(formsLangBundle, 'networkError');
+
                         serviceCallback = {
                             success: function(response) {
                                 var resObj = response.responseText
  
                                 if (resObj.indexOf("true") != -1) {
-
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 } 
                                 else {
-                                    // Ticket is invalid
-                                    authRedirect(configObj);
+                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
                                 }
                             },
                             failure: function(response) {
-                                authRedirect(configObj);
                                 //throw new Error('Unable to read session ticket');
+                                CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
                             }
                         };
 

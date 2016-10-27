@@ -211,14 +211,23 @@
             };
 
             this.getLoginLogo = function() {
-                return $http.get(api('get-content-at-path'), {
-                    params: { path : '/cstudio/config/app-logo.png' }
+                return $http.get(api('get-ui-resource-override', true), {
+                    params: { resource : 'logo.jpg' }
                 })
             };
 
+            this.getLoginUrl = function() {
+                return api('get-ui-resource-override', true) + '?resource=logo.jpg';
+            }
 
-            function api(action) {
-                return Constants.SERVICE + 'user/' + action + '.json';
+            function api(action, server) {
+                var api = "user/";
+
+                if(server){
+                    api = "server/";
+                }
+
+                return Constants.SERVICE + api + action + '.json';
             }
 
             return this;
@@ -401,8 +410,7 @@
 
             authService.getLoginLogo().then(
                 function successCallback(response) {
-                    //TODO: update when service works
-                    $scope.crafterLogo = 'data:image/png;base64,' + response.data;
+                    $scope.crafterLogo = authService.getLoginUrl();
                 }, function errorCallback(response) {
                     $scope.crafterLogo = "/studio/static-assets/images/crafter_studio_360.png";
                 }
@@ -689,10 +697,7 @@
 
             authService.getLoginLogo().then(
                 function successCallback(response) {
-                    $scope.crafterLogo = response.data;
-
-                    //TODO: update when service works
-                    $scope.crafterLogo = 'data:image/png;base64,' + response.data;
+                    $scope.crafterLogo = authService.getLoginUrl();
                 }, function errorCallback(response) {
                     $scope.crafterLogo = "/studio/static-assets/images/crafter_studio_360.png";
                 }

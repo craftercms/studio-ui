@@ -16,6 +16,15 @@ catch(err) {
     parentWindowLocation = window.location.href;
 }
 
+var getFormSize = function(id){
+    return document.getElementsByClassName("studio-ice-container-"+id)[0].offsetHeight;
+}
+
+var setFormSize = function(height,id){
+    var form = document.getElementsByClassName("studio-ice-container-"+id)[0];
+    form.style.height = height+'px';
+}
+
 var CStudioForms = CStudioForms || function() {
         var cfe = {};
 
@@ -23,6 +32,7 @@ var CStudioForms = CStudioForms || function() {
         var formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
         var cstopic = crafter.studio.preview.cstopic;
         var repeatEdited = false;
+        var saveDraft = false;
 
         // private methods
 
@@ -276,7 +286,7 @@ var CStudioForms = CStudioForms || function() {
                     }
                 }
 
-                this.render(config, containerEl, lastTwo);
+                this.render(config, containerEl, lastTwo, false);
 
                 if (this.delayedInit) {
                     if (this.form.asyncFields == 0) {
@@ -984,7 +994,7 @@ var CStudioForms = CStudioForms || function() {
                     {
                         form.model["file-name"] = (fileName += ".xml");
                     }
-                    if (edit == "true" || form.readOnly) { //This is also necessary in readonly mode
+                    if (edit == "true" || form.readOnly || saveDraft) { //This is also necessary in readonly mode
                         // Get parent folder
                         entityId = entityId.substring(0, entityId.lastIndexOf("/"));
                     }
@@ -994,6 +1004,7 @@ var CStudioForms = CStudioForms || function() {
                     else {
                         entityId += "/" + fileName;
                     }
+                    saveDraft = true;
                     return entityId;
                 }
 
@@ -1020,7 +1031,21 @@ var CStudioForms = CStudioForms || function() {
                     var entityId = buildEntityIdFn();
                     var entityFile = entityId.substring(entityId.lastIndexOf('/') + 1);
                     if((form.isInError() && draft==false) || (form.isInErrorDraft() && draft ==true)) {
-                        alert(CMgs.format(formsLangBundle, "errMissingRequirements"));
+                        var dialogEl = document.getElementById("errMissingRequirements");
+                        if(!dialogEl){
+                            var dialog = new YAHOO.widget.SimpleDialog("errMissingRequirements",
+                                { width: "375px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                    text: CMgs.format(formsLangBundle, "errMissingRequirements"), icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    constraintoviewport: true,
+                                    buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
+                                });
+                            dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                            dialog.render(document.body);
+                            dialogEl = document.getElementById("errMissingRequirements");
+                            dialogEl.dialog = dialog;
+                        }
+                        dialogEl.dialog.show();
+                        //alert(CMgs.format(formsLangBundle, "errMissingRequirements"));
                         if(saveAndCloseEl) saveAndCloseEl.disabled = false;
                         if(saveAndPreviewEl) saveAndPreviewEl.disabled = false;
                         if(saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = false;
@@ -1113,6 +1138,18 @@ var CStudioForms = CStudioForms || function() {
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                                         }
                                     }
+                                    var page =  CStudioAuthoring.Utils.getQueryParameterURL("page");
+                                    var currentPage = page.split("/")[page.split("/").length - 1];
+                                    var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
+                                    if(acnDraftContent && !saveDraft){
+                                        acnDraftContent.parentNode.removeChild(acnDraftContent);
+                                    }
+                                    if(!acnDraftContent && saveDraft && contentTO.item.internalName == currentPage){
+                                        var noticeEl = document.createElement("div");
+                                        parent.document.querySelector("#studioBar nav .container-fluid").appendChild(noticeEl);
+                                        YDom.addClass(noticeEl, "acnDraftContent");
+                                        noticeEl.innerHTML = CMgs.format(formsLangBundle, "wcmContentSavedAsDraft");
+                                    }
                                 },
                                 failure: function (err) {
                                     alert(err);
@@ -1126,16 +1163,7 @@ var CStudioForms = CStudioForms || function() {
                             };
 
                             CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, entityId, getContentItemCb, false, false);
-                            var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
-                            if(acnDraftContent && !saveDraft){
-                                acnDraftContent.parentNode.removeChild(acnDraftContent);
-                            }
-                            if(!acnDraftContent && saveDraft){
-                                var noticeEl = document.createElement("div");
-                                parent.document.querySelector("#studioBar nav .container-fluid").appendChild(noticeEl);
-                                YDom.addClass(noticeEl, "acnDraftContent");
-                                noticeEl.innerHTML = CMgs.format(formsLangBundle, "wcmContentSavedAsDraft");
-                            }
+
                         },
                         failure: function(err) {
                             try{

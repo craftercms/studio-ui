@@ -575,32 +575,35 @@ body.yui-skin-cstudioTheme .mask{
   background-color: transparent;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .hd{
+.yui-overlay.yui-panel .hd{
   background-color: white;
   font-size: 21px;
   font-weight: 500;
   text-align: left;
   padding: 10px 10px;
+    line-height: 2;
+    color: #000;
+    border-bottom: solid 1px #ccc;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .bd{
+.yui-overlay.yui-panel .bd{
   background-color: white;
   border-bottom: solid 1px #ccc;
   padding: 30px;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .bd > div{
+.yui-overlay.yui-panel .bd > div{
   width:100%!important;
 }
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .bd .when-go-live-items{
+.yui-overlay.yui-panel .bd .when-go-live-items{
     margin:0;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .bd .form-go-live-items .radio{
+.yui-overlay.yui-panel .bd .form-go-live-items .radio{
     margin-top: 3px;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .bd .form-go-live-items .radio label{
+.yui-overlay.yui-panel .bd .form-go-live-items .radio label{
     padding-left: 10px;
 }
 
@@ -608,7 +611,7 @@ body.yui-skin-cstudioTheme .mask{
     width: 595px!important;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .bd > div select, .rejectReasonDropDown{
+.yui-overlay.yui-panel .bd > div select, .rejectReasonDropDown{
   display: block;
   width: 100%;
   height: 31px;
@@ -627,16 +630,22 @@ body.yui-skin-cstudioTheme .mask{
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .ft{
+.yui-overlay.yui-panel .ft{
   background-color: white;
+  padding: 0px 10px 10px;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .ft .button-group{
-  text-align: right;
+#errMissingRequirements .ft .button-group, .errorDialog .ft .button-group{
+    display: block;
+}
+
+.yui-overlay.yui-panel .ft .button-group{
+  text-align: right !important;
   margin: 15px 0;
+
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .ft .button-group span{
+.yui-overlay.yui-panel .ft .button-group span{
   border:none!important;
   background: none;
   padding: 0!important;
@@ -644,11 +653,11 @@ body.yui-skin-cstudioTheme .mask{
   background-color: white!important;
 }
 
-.yui-skin-cstudioTheme .yui-overlay.yui-panel .ft .button-group span.first-child{
+.yui-overlay.yui-panel .ft .button-group span.first-child{
   margin-right: 10px;
 }
 
-.yui-skin-cstudioTheme .yui-panel-container.shadow .underlay{
+.yui-panel-container.shadow .underlay{
   border-radius: 6px;
 }
 
@@ -709,27 +718,44 @@ body.yui-skin-cstudioTheme .mask{
   border-color: #adadad;
 }
 
-#closeUserWarning .bd, #saveDraftWar .bd {
+#errNoTemplAssoc, #errMissingRequirements{
+    border: none;
+}
+
+#closeUserWarning .bd, #saveDraftWar .bd, #errMissingRequirements .bd, .errorDialog .bd{
   height: 63px!important;
   padding: 24px;
+}
+
+#errMissingRequirements .bd, .errorDialog .bd{
+    height: auto!important;
 }
 
 #saveDraftWar .bd {
     border-radius: 0 0 6px 6px;
 }
 
-#closeUserWarning .hd, #saveDraftWar .hd{
+#errMissingRequirements .bd, .errorDialog .bd{
+    padding: 24px 25px;
+}
+
+#closeUserWarning .hd, #saveDraftWar .hd, #errMissingRequirements .hd, .yui-dialog .yui-overlay.yui-panel.errorDialog .hd{
   border-radius: 6px 6px 0 0;
   font-size: 15px;
   padding: 7px 10px;
 }
 
-#closeUserWarning .ft, #saveDraftWar .ft{
+#closeUserWarning .ft, #saveDraftWar .ft, #errMissingRequirements .ft, .errorDialog .ft{
   border-radius: 0 0 6px 6px;
 }
 
-#closeUserWarning .ft span.button-group, #closeUserWarning .ft span.button-group{
+#closeUserWarning .ft span.button-group, #saveDraftWar .ft span.button-group, #errMissingRequirements .ft span.button-group,
+.errorDialog .ft span.button-group{
     margin: 12px 0 6px;
+}
+
+#errNoTemplAssoc .bd span.blckicon {
+    top: -2px;
 }
 
 .newTempText{

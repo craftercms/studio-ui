@@ -113,7 +113,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
 
     logout: "Log Out",
 
-    variableLabel: "Template code examples"
+    variableLabel: "Template code examples",
+
+    networkError: "Network Error. Some functionality may be unavailable."
 
 });
 
@@ -258,6 +260,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     viewSample: "View Sample",
     hideSample: "Hide Sample",
     clearCache: "Clear Cache",
+    continueEditing: "Continue Editing",
 
     copy: "Copy",
     copyDescription: "Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained.",
@@ -279,6 +282,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     cancelDialogHeader:"Crafter Studio",
     cancelDialogBody:"Close this form without saving changes?",
+    noContentTypes:"No content types available for content at path:",
+    noTemplatesAssoc:"No template associated for page:",
+    noTemplateAssocAdm:"There is no template associated with this content type. Click Save to proceed with save operation or Continue to update the content type (under Basic Content Type Properties) with a template.",
 
     changeTemplateDialogTitle:"Warning: Change Content Type",
     changeTemplateDialogSubTitle:"Crafter Studio",
@@ -290,11 +296,15 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     historyDialogTableRowTime: "Edit Time",
     historyDialogTableRowEditBy: "Edited By",
     historyDialogTableRowComment: "Comment",
+    historyDialogTableRowActions: "Actions",
     historyDialogRevert: "Revert",
     historyDialogLoadingWait: "Loading, please wait&hellip;",
     historyDialogNoVersionsFound: "No versions found.",
     historyDialogUnable:"Unable to load version history.",
     historyDialogTryAgain:"Try again",
+    historyDialogViewFileMessage:"View this version",
+    historyDialogCompareFileMessage:"Compare to current",
+    historyDialogRevertFileMessage:"Revert to this version",
 
     deleteDialogTitle: "Delete",
     deleteDialogSubTitle: "The following checked items will be deleted:",
@@ -454,6 +464,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     disabled: "Disabled",
     flash: "Flash",
     internalName: "Internal Name",
+    basicContentTypeProp: "Basic Content Type Properties",
 
     /*Datasources */
     childContent: "Child Content",
@@ -491,6 +502,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     setNowLink: "Set Now Link",
     populated: "Populated",
     allowPastDate: "Allow Past Date",
+    populateExpression:"Populate Expression",
     useCustomTimezone: "Use Custom Timezone",
     readonly: "Readonly",
     readonlyOnEdit: "Readonly on Edit",
@@ -620,6 +632,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
 
     /* Errors */
     errorTitle: ". Please fill every title for fields and datasources.",
-    errorName: ". Please fill variable name for: "
+    errorName: ". Please fill variable name for: ",
+    contentTypeNotFound: "Component's content type not found."
+
 
 });

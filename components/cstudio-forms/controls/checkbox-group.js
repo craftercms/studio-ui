@@ -1,26 +1,26 @@
 CStudioForms.Controls.CheckBoxGroup = CStudioForms.Controls.CheckBoxGroup ||
-function(id, form, owner, properties, constraints, readonly)  {
-    this.owner = owner;
-    this.owner.registerField(this);
-    this.errors = [];
-    this.properties = properties;
-    this.constraints = constraints;
-    this.inputEl = null;
-    this.countEl = null;
-    this.required = false;
-    this.value = "_not-set";
-    this.form = form;
-    this.id = id;
-    this.readonly = readonly;
-    this.minSize = 0;
-    this.hiddenEl = null;
-    // Stores the type of data the control is now working with (this value is fetched from the datasource controller)
-    this.dataType = null;
+    function(id, form, owner, properties, constraints, readonly)  {
+        this.owner = owner;
+        this.owner.registerField(this);
+        this.errors = [];
+        this.properties = properties;
+        this.constraints = constraints;
+        this.inputEl = null;
+        this.countEl = null;
+        this.required = false;
+        this.value = "_not-set";
+        this.form = form;
+        this.id = id;
+        this.readonly = readonly;
+        this.minSize = 0;
+        this.hiddenEl = null;
+        // Stores the type of data the control is now working with (this value is fetched from the datasource controller)
+        this.dataType = null;
 
-    amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
+        amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
 
-    return this;
-}
+        return this;
+    }
 
 YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField, {
 
@@ -71,7 +71,7 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
         }
     },
 
-    render: function(config, containerEl, isValueSet) {
+    render: function(config, containerEl, lastTwo, isValueSet) {
         containerEl.id = this.id;
         this.containerEl = containerEl;
         this.config = config;
@@ -120,7 +120,7 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                 // also found in datasource B, then they will remain checked. However, if there were values checked in
                 // datasource A that are no longer found in datasource B, these need to be removed from the control's value.
                     newValue = [],
-                    rowEl, textEl, inputEl;
+                    rowEl, labelEl, textEl, inputEl;
 
                 containerEl.innerHTML = "";
                 var titleEl = document.createElement("span");
@@ -146,9 +146,13 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                 groupEl.className = "checkbox-group";
 
                 if (_self.selectAll && !_self.readonly) {
-                    rowEl = document.createElement("label");
+                    rowEl = document.createElement("span");
                     rowEl.className = "checkbox select-all";
-                    rowEl.setAttribute("for", _self.id + "-all");
+
+                    labelEl = document.createElement("label");
+                    labelEl.setAttribute("for", _self.id + "-all");
+
+                    rowEl.appendChild(labelEl);
 
                     textEl = document.createElement("span");
                     textEl.innerHTML = "Select All";
@@ -161,8 +165,8 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                     YAHOO.util.Event.on(inputEl, 'click', function(evt, context) { context.form.setFocusedField(context) }, _self);
                     YAHOO.util.Event.on(inputEl, 'change', _self.toggleAll, inputEl, _self);
 
-                    rowEl.appendChild(inputEl);
-                    rowEl.appendChild(textEl);
+                    labelEl.appendChild(inputEl);
+                    labelEl.appendChild(textEl);
                     groupEl.appendChild(rowEl);
                 }
 
@@ -171,9 +175,14 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                 for(var j=0; j<keyValueList.length; j++) {
                     var item = keyValueList[j];
 
-                    rowEl = document.createElement("label");
+                    rowEl = document.createElement("span");
                     rowEl.className = "checkbox";
-                    rowEl.setAttribute("for", _self.id + "-" + item.key);
+                    // rowEl.setAttribute("for", _self.id + "-" + item.key);
+
+                    labelEl = document.createElement("label");
+                    labelEl.setAttribute("for", _self.id + "-" + item.key);
+
+                    rowEl.appendChild(labelEl);
 
                     textEl = document.createElement("span");
                     // TODO:
@@ -207,8 +216,8 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
                     inputEl.context = _self;
                     inputEl.item = item;
 
-                    rowEl.appendChild(inputEl);
-                    rowEl.appendChild(textEl);
+                    labelEl.appendChild(inputEl);
+                    labelEl.appendChild(textEl);
                     groupEl.appendChild(rowEl);
                 }
                 _self.value = newValue;
@@ -291,18 +300,20 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
             allSameState = true,
             checkAllEl = YAHOO.util.Selector.query('.checkbox.select-all input[type="checkbox"]', ancestor)[0];
 
-        checkboxes.forEach( function (el) {
-            var isSelectAll = el.parentElement.className.indexOf('select-all') != -1;
+        if (checkAllEl) {
+            checkboxes.forEach( function (el) {
+                var isSelectAll = el.parentElement.className.indexOf('select-all') != -1;
 
-            if(!isSelectAll && (el.checked != state)){
-                allSameState = false;
+                if(!isSelectAll && (el.checked != state)){
+                    allSameState = false;
+                }
+            });
+
+            if(allSameState) {
+                checkAllEl.checked = state;
+            }else {
+                checkAllEl.checked = false;
             }
-        });
-
-        if(allSameState) {
-            checkAllEl.checked = state;
-        }else {
-            checkAllEl.checked = false;
         }
     },
 
@@ -395,7 +406,7 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
 
         this.value = value;
         this.form.updateModel(this.id, this.getValue());
-        this.render(this.config, this.containerEl, true);
+        this.render(this.config, this.containerEl, false, true);
         this.hiddenEl.value = this.valueToString();
     },
 

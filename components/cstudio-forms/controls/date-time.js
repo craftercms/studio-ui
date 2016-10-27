@@ -23,6 +23,7 @@ CStudioForms.Controls.DateTime = CStudioForms.Controls.DateTime ||
 		this.useCustomTimezone = false;
 		this.startDateTimeObj = null; // Object storing the time when the form was loaded; will be used to adjust startTzDateTimeStr before the form is saved
 		this.startTzDateTimeStr = null;	// Time the form was loaded (adjusted to the site's timezone)
+		this.populateDateExp = "now";
 		this.defaultTimezones = [
 			{key: 'Etc/GMT+12', value: '(GMT-12:00) International Date Line West'},
 			{key: 'Etc/GMT+11', value: '(GMT-11:00) Coordinated Universal Time-11'},
@@ -731,6 +732,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			if(prop.name == "showNowLink" && prop.value == "true") {
 				this.showNowLink = true;
 			}
+			if(prop.name === "populateDateExp" && prop.value.length>0 ){
+				this.populateDateExp=prop.value
+			}
 
 			if(prop.name == "populate" && prop.value == "true") {
 				this.populate = true;
@@ -1156,13 +1160,56 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		} else {
 			//No value exists yet
 			if (this.populate) {
+
+				cb = {
+					success: function (response) {
+						var data = eval("(" + response.responseText + ")");
+						var	adjustedTimeZoneObj = _self.getFormattedDateTimeObject(data.convertedTimezone, true);
+						_self.populateDateTime(adjustedTimeZoneObj, _self.dateEl, _self.timeEl, _self.showDate, _self.showTime);
+					},
+					failure: function (response) {
+						console.log("Unable to convert current date/time");
+					}
+				};
+				var changeDate = _self.doDatePopulateExpression( new Date(this.startTzDateTimeStr));
+				this.getCurrentDateTime(changeDate, this.timezone, cb);
 				// Populate it with the current time (see getCurrentDateTime)
-				timezoneNowObj = this.getFormattedDateTimeObject(this.startTzDateTimeStr, true);
-				this.populateDateTime(timezoneNowObj, this.dateEl, this.timeEl, this.showDate, this.showTime);
 			}
 			this.validate(null, this);
 			// this.displayTimezoneWarning(this.startDateTimeObj, this.startTzDateTimeStr);
 		}
+	},
+
+	doDatePopulateExpression : function (currentDate) {
+		var daysInWeek=7;
+		var modifier=1;
+
+		if(this.checkPopulateDateExpisValid()){
+			var action=this.populateDateExp.substring(0,1);
+			var value = this.populateDateExp.match(/\d+/gi)[0];
+			var type = this.populateDateExp.match(/((days)|(weeks)|(years))/gi);
+			if(action=='-'){
+				modifier=modifier*-1;
+			}
+			if(type=="years"){
+				currentDate.setFullYear(currentDate.getFullYear()+(modifier*value))
+			}else if (type=="weeks"){
+				currentDate.setDate(currentDate.getDate()+(modifier*value*daysInWeek))
+			}else if(type=="days") {
+				currentDate.setDate(currentDate.getDate()+(modifier*value));
+			}
+			console.log(currentDate)
+		}
+		return currentDate;
+	},
+
+	checkPopulateDateExpisValid : function() {
+		if(this.populateDateExp){
+			if(this.populateDateExp.match(/(\+|\-)\d+((days)|(weeks)|(years))/gi)){
+				return true;
+			}
+		}
+		return false;
 	},
 
 	getCurrentDateTime : function (now, configTimezone, callback) {
@@ -1318,6 +1365,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			{ label: CMgs.format(langBundle, "setNowLink"), name: "showNowLink", type: "boolean", defaultValue: "false" },
 			{ label: CMgs.format(langBundle, "populated"), name: "populate", type: "boolean", defaultValue: "true" },
 			{ label: CMgs.format(langBundle, "allowPastDate"), name: "allowPastDate", type: "boolean", defaultValue: "false" },
+			{ label: CMgs.format(langBundle, "populateExpression"), name: "populateDateExp", type: "string", defaultValue: "now" },
 			{ label: CMgs.format(langBundle, "useCustomTimezone"), name: "useCustomTimezone", type: "boolean", defaultValue: "false" },
 			{ label: CMgs.format(langBundle, "readonly"), name: "readonly", type: "boolean" },
 			{ label: CMgs.format(langBundle, "readonlyOnEdit"), name: "readonlyEdit", type: "boolean", defaultValue: "false" }
