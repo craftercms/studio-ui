@@ -39,6 +39,17 @@
             packageName = ('studio.' + packageName);
             return crafter.define(packageName, component);
         },
+        
+        marketplace: {
+            Topics: {
+                "ALL": "*",
+
+                "INSTALL_SITE_PLUGIN": "INSTALL_SITE_PLUGIN",
+                "INSTALL_COMPLETE": "INSTALL_COMPLETE",
+                "INSTALL_REQUEST_PLUGIN_STATES": "INSTALL_REQUEST_PLUGIN_STATES"
+            }
+        },
+        
         preview: {
             Topics: {
                 "ALL": "*",
@@ -68,9 +79,6 @@
                 "OPEN_BROWSE": "OPEN_BROWSE",
                 "DND_CREATE_BROWSE_COMP": "DND_CREATE_BROWSE_COMP",
 
-                "INSTALL_SITE_PLUGIN": "INSTALL_SITE_PLUGIN",
-                "INSTALL_COMPLETE": "INSTALL_COMPLETE"
-                "INSTALL_STATE": "INSTALL_STATE",
                 "": ""
             },
             cstopic: function (topic) {
