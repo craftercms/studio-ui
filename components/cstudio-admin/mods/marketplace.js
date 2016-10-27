@@ -1,4 +1,4 @@
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/marketplace/plugin.css");
+//CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/marketplace/plugin.css");
 CStudioAdminConsole.Tool.MarketPlace = CStudioAdminConsole.Tool.MarketPlace ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;
@@ -18,7 +18,18 @@ YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 
 	    communicator.subscribe(Topics.INSTALL_SITE_PLUGIN, function (message) {
 
-	        alert("HOLA HOLA: MESSAGE "+message.name);
+	    	var cb = {
+				success:function(response) {
+					alert("plugin " + message.title + " installed")
+				},
+				failure:function(response) {
+					alert("plugin " + message.title + " install failed")
+				}
+			}
+
+
+            var serviceUri = "/api/1/plugins/install.json?pluginurl="+message.pluginUrl+"&site="+CStudioAuthoring.site;
+			YConnect.asyncRequest("GET", serviceUri, cb);
 	    });
 
 
