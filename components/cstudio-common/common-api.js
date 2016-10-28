@@ -509,6 +509,39 @@ var nodeOpen = false;
                 Loader.use.apply(Loader, params);
             },
 
+            simpleDialogTypeINFO: "INFO",
+            simpleDialogTypeWARN: "WARN",
+            simpleDialogTypeERROR: "ERROR",
+
+            showSimpleDialog: function(id, type, header, message, buttonsArray) {
+
+                var dialogId = id;
+                var dialogType = YAHOO.widget.SimpleDialog.ICON_INFO;
+
+                if(!buttonsArray) {
+                    buttonsArray = [{ text: "OK",  handler:function(){this.hide();}, isDefault:false }];
+                };
+
+                var dialog = new YAHOO.widget.SimpleDialog(dialogId,
+                    {   width: "400px",
+                        fixedcenter: true,
+                        visible: false,
+                        draggable: false,
+                        close: false,
+                        modal: true,
+                        text: message,
+                        icon: dialogType,
+                        constraintoviewport: true,
+                        buttons: buttonsArray
+                    });
+
+                    dialog.setHeader(header);
+                    dialog.render(document.body);
+
+                    dialog.show();
+
+            },
+
             translateContent: function(langBundle){
                 var elements = document.querySelectorAll('[data-translation]');
                 for(var i=0; i<elements.length; i++){

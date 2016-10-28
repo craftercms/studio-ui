@@ -39,6 +39,16 @@
             packageName = ('studio.' + packageName);
             return crafter.define(packageName, component);
         },
+        marketplace: {
+            Topics: {
+                "ALL": "*",
+
+                "INSTALL_SITE_PLUGIN": "INSTALL_SITE_PLUGIN",
+                "INSTALL_COMPLETE": "INSTALL_COMPLETE",
+                "INSTALL_REQUEST_PLUGIN_STATES": "INSTALL_REQUEST_PLUGIN_STATES"
+            }
+        },
+
         preview: {
             Topics: {
                 "ALL": "*",
