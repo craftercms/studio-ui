@@ -20,19 +20,30 @@ YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 
 	    	var cb = {
 				success:function(response) {
-					alert("plugin " + message.title + " installed")
+
+					CStudioAuthoring.Operations.showSimpleDialog(
+						"install-plugin-dialog",
+						CStudioAuthoring.Operations.simpleDialogTypeINFO,
+						"Crafter Market Place",
+						"Install Successful",
+						null // use default button
+					);
 				},
 				failure:function(response) {
-					alert("plugin " + message.title + " install failed")
+					CStudioAuthoring.Operations.showSimpleDialog(
+						"install-plugin-dialog",
+						CStudioAuthoring.Operations.simpleDialogTypeINFO,
+						"Crafter Market Place",
+						"Install Failed",
+						null // use default button
+					);
 				}
 			}
 
 
-            var serviceUri = "/api/1/plugins/install.json?pluginurl="+message.pluginUrl+"&site="+CStudioAuthoring.site;
+            var serviceUri = "/api/1/plugins/install.json?pluginurl="+message.pluginUrl+"&site="+CStudioAuthoringContext.site;
 			YConnect.asyncRequest("GET", serviceUri, cb);
 	    });
-
-
 	}
 
 });
