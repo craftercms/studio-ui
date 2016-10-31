@@ -45,7 +45,7 @@
 
                 "INSTALL_SITE_PLUGIN": "INSTALL_SITE_PLUGIN",
                 "INSTALL_COMPLETE": "INSTALL_COMPLETE",
-                "INSTALL_STATE": "INSTALL_STATE"
+                "INSTALL_REQUEST_PLUGIN_STATES": "INSTALL_REQUEST_PLUGIN_STATES"
             }
         },
 
