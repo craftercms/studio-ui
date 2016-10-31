@@ -8,7 +8,9 @@ CStudioAdminConsole.Tool.MarketPlace = CStudioAdminConsole.Tool.MarketPlace ||  
 YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
 		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		workareaEl.innerHTML = "<iframe id='marketplace' style='margin-left:150px; width:100%; height:1500px;' src='http://apps.craftersoftware.com?mode=store' />";
+		var hostOrigin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+
+		workareaEl.innerHTML = "<iframe id='marketplace' style='margin-left:150px; width:100%; height:1500px;' src='http://apps.craftersoftware.com?mode=store&host="+hostOrigin+"' />";
 
 	    var Topics = crafter.studio.marketplace.Topics;
 	    var origin = window.location.origin; // 'http://127.0.0.1:8080';
@@ -41,7 +43,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 			}
 
 
-            var serviceUri = "/api/1/plugins/install.json?pluginurl="+message.pluginUrl+"&site="+CStudioAuthoringContext.site;
+            var serviceUri = "/studio/api/1/services/api/1/plugins/install.json?pluginUrl="+message.pluginUrl+"&site="+CStudioAuthoringContext.site;
 			YConnect.asyncRequest("GET", serviceUri, cb);
 	    });
 	}
