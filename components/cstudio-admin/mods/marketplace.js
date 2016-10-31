@@ -8,12 +8,12 @@ CStudioAdminConsole.Tool.MarketPlace = CStudioAdminConsole.Tool.MarketPlace ||  
 YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
 		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		workareaEl.innerHTML = "<iframe id='marketplace' style='margin-left:150px; width:100%; height:1500px;' src='http://authoring.craftercloud.io/?site=marketplacecraftersoftwarecom' />";
+		workareaEl.innerHTML = "<iframe id='marketplace' style='margin-left:150px; width:100%; height:1500px;' src='http://apps.craftersoftware.com' />";
 
 	    var Topics = crafter.studio.marketplace.Topics;
 	    var origin = window.location.origin; // 'http://127.0.0.1:8080';
 	    var communicator = new crafter.studio.Communicator(origin);
-	        communicator.addOrigin("https://authoring.craftercloud.io");
+	        communicator.addOrigin("http://apps.craftersoftware.com");
 
 
 	    communicator.subscribe(Topics.INSTALL_SITE_PLUGIN, function (message) {
