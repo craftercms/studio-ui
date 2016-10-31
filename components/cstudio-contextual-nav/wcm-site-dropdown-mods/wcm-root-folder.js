@@ -1245,7 +1245,7 @@ treeNode.getHtml = function() {
     /**
 	* methos that fires when new items added to tree.
 	*/
-	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, edit, oldPath) {
+	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, typeAction, oldPath) {
         var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
 		var tree = tree ? tree : Self.myTree,
             isMytree = false,
@@ -1265,7 +1265,20 @@ treeNode.getHtml = function() {
         if(tree) {
             var copiedItemNode = Self.copiedItem;
             var node = [];
-            node = tree.getNodesByProperty("path", currentPath) ? tree.getNodesByProperty("path", currentPath) : null;
+
+            if(currentPath == '/site/website' && typeAction == "createContent"){
+                var auxNodes = tree.getNodesByProperty("path", currentPath);
+                if(auxNodes.length){
+                    for(var i=0; i < auxNodes.length; i++){
+                        if(auxNodes[i].data.path == '/site/website'){
+                            node[0] = auxNodes[i];
+                        }
+                    }
+                }
+            }else{
+                node = tree.getNodesByProperty("path", currentPath) ? tree.getNodesByProperty("path", currentPath) : null;
+            }
+
             if (copiedItemNode != null && (currentPath == copiedItemNode.data.path) && treeNode.parent) {
                 node = tree.getNodesByProperty("path", treeNode.parent.data.path);
                 Self.copiedItem = null;
@@ -1357,7 +1370,7 @@ treeNode.getHtml = function() {
                                                             CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
                                                                 CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
                                                         }
-                                                        if((curNode.labelStyle.indexOf("folder") == -1) && (edit != "edit")) {
+                                                        if((curNode.labelStyle.indexOf("folder") == -1) && (typeAction != "edit")) {
                                                             document.dispatchEvent(eventCM);
                                                             Self.refreshAllDashboards();
                                                         }
@@ -2220,7 +2233,7 @@ treeNode.getHtml = function() {
                         var page =  CStudioAuthoring.Utils.getQueryParameterURL("page");
                         var currentPage = page.split("/")[page.split("/").length - 1];
                         eventYS.data = oCurrentTextNode;
-                        eventYS.typeAction = "";
+                        eventYS.typeAction = "createContent";
                         eventYS.oldPath = null;
                         document.dispatchEvent(eventYS);
                             if(CStudioAuthoringContext.isPreview) {
