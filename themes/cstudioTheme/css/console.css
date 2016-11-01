@@ -78,6 +78,10 @@ body,tbody {
     padding: 3px 0 0 3px;
 }
 
+#content-type-canvas .content-form-name:hover {
+    cursor: pointer;
+}
+
 #content-type-canvas .content-form-link {
     padding: 0 0 10px 3px;
     font-size: 11px;
@@ -192,6 +196,7 @@ body,tbody {
 
 .content-type-visual-datasource-container:hover {
   background: none repeat scroll 0 0 #ccbbcc;
+  cursor: pointer;
 }
 
 .content-type-visual-datasource-container-selected {
@@ -231,6 +236,7 @@ body,tbody {
 
 .content-type-visual-field-container:hover {
   background: none repeat scroll 0 0 #D5E2F2;
+  cursor: pointer;
 }
 
 .content-type-visual-field-container-selected {
@@ -350,6 +356,11 @@ body,tbody {
     border-top-left-radius: 3px;
     font-size: 14px;
     line-height: 27px;
+}
+
+.content-section-name:hover {
+    cursor: pointer;
+
 }
 
 #cstudio-admin-console-command-bar {
@@ -743,3 +754,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0; }
+
+.content-form-link a:hover {
+    cursor: pointer;
+}
