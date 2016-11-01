@@ -101,6 +101,7 @@ body,tbody {
     padding-top: 32px;
     margin-top: 19px;
     font-size: 11.5px;
+    overflow-y: auto;
 }
 
 .content-type-tools-panel {
@@ -113,6 +114,9 @@ body,tbody {
     overflow: hidden;
     min-width: 290px;
     padding-bottom: 8px;
+}
+#content-type-tools .content-type-tools-panel:last-child{
+    margin-bottom: 49px;
 }
 .content-type-tools-panel.content-type-tools-panel-first{
   padding-bottom: 0;
