@@ -62,6 +62,9 @@ var nodeOpen = false;
      * authoring object
      */
     if (typeof CStudioAuthoring == "undefined" || !CStudioAuthoring) CStudioAuthoring = {
+
+        UIBuildId: window.UIBuildId,
+
         /**
          * Registers 1 or more namespaces under the CStudioAuthoring Object and returns the last registered namespace object.
          * Note:
@@ -195,28 +198,28 @@ var nodeOpen = false;
          */
         OverlayRequiredResources: {
             css: [
-                '/static-assets/yui/treeview/assets/skins/sam/treeview.css',
-                '/static-assets/themes/cstudioTheme/yui/assets/skin.css',
-                '/static-assets/themes/cstudioTheme/css/contextNav.css',
-                '/static-assets/yui/container/assets/container.css',
-                '/static-assets/jquery/jquery-time/jquery.timeentry.css',
-                '/static-assets/jquery/jquery-ui/themes/smoothness/jquery-ui.css',
-                '/static-assets/jquery/jquery-ui/themes/smoothness/ui.resizable.css'
+                '/static-assets/yui/treeview/assets/skins/sam/treeview.css?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/themes/cstudioTheme/yui/assets/skin.css?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/themes/cstudioTheme/css/contextNav.css?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/container/assets/container.css?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/jquery/jquery-time/jquery.timeentry.css?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/jquery/jquery-ui/themes/smoothness/jquery-ui.css?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/jquery/jquery-ui/themes/smoothness/ui.resizable.css?version=' + CStudioAuthoring.UIBuildId
             ], js: [
-                '/static-assets/yui/connection/connection-min.js',
-                '/static-assets/yui/json/json-min.js',
-                '/static-assets/yui/resize/resize-min.js',
-                '/static-assets/yui/event-delegate/event-delegate-min.js',
-                '/static-assets/yui/container/container_core-min.js',
-                '/static-assets/yui/menu/menu-min.js',
-                '/static-assets/yui/treeview/treeview-min.js',
-                '/static-assets/yui/animation/animation-min.js',
-                '/static-assets/yui/container/container-min.js',
-                '/static-assets/yui/selector/selector-min.js',
-                '/static-assets/components/cstudio-contextual-nav/contextual-nav.js',
-                '/static-assets/yui/calendar/calendar-min.js',
-                '/static-assets/components/cstudio-components/loader.js',
-                '/static-assets/libs/notify/notify.min.js'
+                '/static-assets/yui/connection/connection-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/json/json-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/resize/resize-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/event-delegate/event-delegate-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/container/container_core-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/menu/menu-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/treeview/treeview-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/animation/animation-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/container/container-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/selector/selector-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/components/cstudio-contextual-nav/contextual-nav.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/yui/calendar/calendar-min.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/components/cstudio-components/loader.js?version=' + CStudioAuthoring.UIBuildId,
+                '/static-assets/libs/notify/notify.min.js?version=' + CStudioAuthoring.UIBuildId
             ],
             /**
              * this CSS has dynamically defined contents so load order is important
@@ -225,8 +228,8 @@ var nodeOpen = false;
             loadContextNavCss: function() {
                 //CStudioAuthoring.Utils.addCss('/overlay-css?baseUrl=' +
                 //                           CStudioAuthoringContext.baseUri);
-                CSA.Utils.addCss('/static-assets/styles/temp.css');
-                CSA.Utils.addCss('/static-assets/styles/forms-engine.css');
+                CSA.Utils.addCss('/static-assets/styles/temp.css?version=') + CStudioAuthoring.UIBuildId ;
+                CSA.Utils.addCss('/static-assets/styles/forms-engine.css?version=') + CStudioAuthoring.UIBuildId;
             },
 
             /**
@@ -1269,7 +1272,7 @@ var nodeOpen = false;
 
                 CStudioAuthoring.Module.requireModule(
                     "dialog-order-taxonomy",
-                    "/static-assets/components/cstudio-dialogs/order-taxonomy.js",
+                    "/static-assets/components/cstudio-dialogs/order-taxonomy.js?version=" + CStudioAuthoring.UIBuildId,
                     moduleConfig,
                     openDialogCb);
             },
@@ -1294,7 +1297,7 @@ var nodeOpen = false;
 
                 CStudioAuthoring.Module.requireModule(
                     "dialog-new-taxonomy",
-                    "/static-assets/components/cstudio-dialogs/new-taxonomy.js",
+                    "/static-assets/components/cstudio-dialogs/new-taxonomy.js?version=" + CStudioAuthoring.UIBuildId,
                     moduleConfig,
                     openDialogCb);
             },
@@ -1459,7 +1462,7 @@ var nodeOpen = false;
                 };
 
                 CStudioAuthoring.Module.requireModule("dialog-copy",
-                    "/static-assets/components/cstudio-dialogs/copyDialog.js",
+                    "/static-assets/components/cstudio-dialogs/copyDialog.js?version=" + CStudioAuthoring.UIBuildId,
                     {},
                     submitDialogCb);
             },
@@ -1539,7 +1542,7 @@ var nodeOpen = false;
                             };
 
                             CStudioAuthoring.Module.requireModule("dialog-select-template",
-                                "/static-assets/components/cstudio-dialogs/select-content-type.js",
+                                "/static-assets/components/cstudio-dialogs/select-content-type.js?version=" + CStudioAuthoring.UIBuildId,
                                 moduleConfig,
                                 selectTemplateDialogCb);
                         }
@@ -1684,7 +1687,7 @@ var nodeOpen = false;
                             };
 
                             CStudioAuthoring.Module.requireModule("dialog-select-template",
-                                "/static-assets/components/cstudio-dialogs/select-content-type.js",
+                                "/static-assets/components/cstudio-dialogs/select-content-type.js?version=" + CStudioAuthoring.UIBuildId,
                                 moduleConfig,
                                 selectTemplateDialogCb);
                         }
@@ -1965,7 +1968,7 @@ var parentSaveCb = {
                 };
 
                 CStudioAuthoring.Module.requireModule("new-template-dialog",
-                    "/static-assets/components/cstudio-dialogs/new-template.js",
+                    "/static-assets/components/cstudio-dialogs/new-template.js?version=" + CStudioAuthoring.UIBuildId,
                     createModuleConfig,
                     createTemplateDialogCb);
             },
@@ -1986,7 +1989,7 @@ var parentSaveCb = {
                 };
 
                 CStudioAuthoring.Module.requireModule("new-script-dialog",
-                    "/static-assets/components/cstudio-dialogs/new-script.js",
+                    "/static-assets/components/cstudio-dialogs/new-script.js?version=" + CStudioAuthoring.UIBuildId,
                     createModuleConfig,
                     createScriptDialogCb);
             },
@@ -2002,7 +2005,7 @@ var parentSaveCb = {
                 }
 
                 CStudioAuthoring.Module.requireModule("cstudio-forms-template-editor",
-                    "/static-assets/components/cstudio-forms/template-editor.js",
+                    "/static-assets/components/cstudio-forms/template-editor.js?version=" + CStudioAuthoring.UIBuildId,
                     { displayTemplate: displayTemplate, channel: channel, cb: templateSaveCb},
                     loadTemplateEditorCb, contentType);
 
@@ -2045,7 +2048,7 @@ var parentSaveCb = {
                                     };
 
                                     CStudioAuthoring.Module.requireModule("dialog-create-taxonomy",
-                                        "/static-assets/components/cstudio-dialogs/create-taxonomy-item.js",
+                                        "/static-assets/components/cstudio-dialogs/create-taxonomy-item.js?version=" + CStudioAuthoring.UIBuildId,
                                         createModuleConfig,
                                         createTaxonomyDialogCb);
                                 },
@@ -2070,7 +2073,7 @@ var parentSaveCb = {
                             };
 
                             CStudioAuthoring.Module.requireModule("dialog-select-taxonomy",
-                                "/static-assets/components/cstudio-dialogs/select-taxonomy-type.js",
+                                "/static-assets/components/cstudio-dialogs/select-taxonomy-type.js?version=" + CStudioAuthoring.UIBuildId,
                                 moduleConfig,
                                 selectTemplateDialogCb);
                         }
@@ -2091,7 +2094,7 @@ var parentSaveCb = {
             approveContent: function(site, contentItems) {
                 CStudioAuthoring.Module.requireModule(
                     'dialog-approve',
-                    '/static-assets/components/cstudio-dialogs/go-live.js', {
+                    '/static-assets/components/cstudio-dialogs/go-live.js?version=' + CStudioAuthoring.UIBuildId, {
                         contentItems: contentItems,
                         site: site
                     }, {
@@ -2108,7 +2111,7 @@ var parentSaveCb = {
             approveScheduleContent: function(site, contentItems) {
                 CStudioAuthoring.Module.requireModule(
                     'dialog-schedule-to-go-live',
-                    '/static-assets/components/cstudio-dialogs/schedule-to-go-live.js', {
+                    '/static-assets/components/cstudio-dialogs/schedule-to-go-live.js?version=' + CStudioAuthoring.UIBuildId, {
                         contentItems: contentItems,
                         site: site
                     }, {
@@ -2133,7 +2136,7 @@ var parentSaveCb = {
                     site: site
                 };
                 CStudioAuthoring.Module.requireModule("dialog-reject",
-                    "/static-assets/components/cstudio-dialogs/reject.js",
+                    "/static-assets/components/cstudio-dialogs/reject.js?version=" + CStudioAuthoring.UIBuildId,
                     moduleConfig,
                     submitDialogCb);
             },
@@ -2222,8 +2225,8 @@ var parentSaveCb = {
                     isUploadOverwrite: isUploadOverwrite
                 }
 
-                CSA.Utils.addCss('/static-assets/libs/cropper/dist/cropper.css');
-                CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
+                CSA.Utils.addCss('/static-assets/libs/cropper/dist/cropper.css?version=' + CStudioAuthoring.UIBuildId);
+                CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css?version=' + CStudioAuthoring.UIBuildId);
 
                 CStudioAuthoring.Module.requireModule("upload-dialog", "/static-assets/components/cstudio-dialogs/upload-asset-dialog.js", moduleConfig, openUploadDialogCb);
                 CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
@@ -2258,7 +2261,7 @@ var parentSaveCb = {
                     callback: callback
                 }
 
-                CStudioAuthoring.Module.requireModule("new-folder-name-dialog", "/static-assets/components/cstudio-dialogs/new-folder-name-dialog.js", moduleConfig, openCreateFolderDialogCb);
+                CStudioAuthoring.Module.requireModule("new-folder-name-dialog", "/static-assets/components/cstudio-dialogs/new-folder-name-dialog.js?version=" + CStudioAuthoring.UIBuildId, moduleConfig, openCreateFolderDialogCb);
             }
         },
         /**
@@ -4368,7 +4371,7 @@ var parentSaveCb = {
                     control: control
                 };
 
-                CStudioAuthoring.Module.requireModule("dialog-nav-order", "/static-assets/components/cstudio-dialogs/page-nav-order-panel.js", moduleConfig, createDialogOrder);
+                CStudioAuthoring.Module.requireModule("dialog-nav-order", "/static-assets/components/cstudio-dialogs/page-nav-order-panel.js?version=" + CStudioAuthoring.UIBuildId, moduleConfig, createDialogOrder);
             },
 
 
@@ -7252,7 +7255,7 @@ CStudioAuthoring.InContextEdit = {
 
         CStudioAuthoring.Module.requireModule(
             "ice-tools-controller",
-            '/static-assets/components/cstudio-preview-tools/ice-tools.js',
+            '/static-assets/components/cstudio-preview-tools/ice-tools.js?version=' + CStudioAuthoring.UIBuildId,
             0,
             iceToolsModuleCb
         );
@@ -7393,7 +7396,7 @@ CStudioAuthoring.InContextEdit = {
 
                 CStudioAuthoring.Module.requireModule(
                     "ice-tools-controller",
-                    '/static-assets/components/cstudio-preview-tools/ice-tools.js',
+                    '/static-assets/components/cstudio-preview-tools/ice-tools.js?version=' + CStudioAuthoring.UIBuildId,
                     0,
                     iceToolsModuleCb
                 );
