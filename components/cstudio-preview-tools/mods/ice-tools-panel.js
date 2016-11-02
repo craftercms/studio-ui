@@ -1,5 +1,5 @@
 CStudioAuthoring.Utils.addJavascript("/static-assets/modules/editors/tiny_mce/tiny_mce.js");
-CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-forms/forms-engine.js");
+CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-forms/forms-engine.js?version=" + CStudioAuthoring.UIBuildId);
 
 var initRegCookie;
 /**

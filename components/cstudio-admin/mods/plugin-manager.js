@@ -1,4 +1,4 @@
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/plugin-manager/plugin.css");
+CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/plugin-manager/plugin.css?version=" + CStudioAuthoring.UIBuildId);
 CStudioAdminConsole.Tool.PluginManager = CStudioAdminConsole.Tool.PluginManager ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;

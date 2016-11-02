@@ -9,11 +9,11 @@ CStudioAuthoring.Module.requireModule(
 			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/htmlmixed/htmlmixed.js");
 			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/css/css.js");
 			CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-common/codemirror/lib/codemirror.css");
-			CStudioAuthoring.Utils.addCss("/static-assets/themes/cstudioTheme/css/template-editor.css");
+			CStudioAuthoring.Utils.addCss("/static-assets/themes/cstudioTheme/css/template-editor.css?version=" + CStudioAuthoring.UIBuildId);
 
 			CStudioAuthoring.Module.requireModule(
 				"cstudio-forms-engine",
-				'/static-assets/components/cstudio-forms/forms-engine.js',
+				'/static-assets/components/cstudio-forms/forms-engine.js?version=' + CStudioAuthoring.UIBuildId,
 				{  },
 				{ moduleLoaded: function() {
 

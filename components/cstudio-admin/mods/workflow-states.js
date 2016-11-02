@@ -1,4 +1,4 @@
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/workflow-states.css");
+CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/workflow-states.css?version=" + CStudioAuthoring.UIBuildId);
 CStudioAdminConsole.Tool.WorkflowStates = CStudioAdminConsole.Tool.WorkflowStates ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;
