@@ -9,7 +9,7 @@ CStudioAuthoring.Module.requireModule(
  
 CStudioAuthoring.Module.requireModule(
 	"cstudio-forms-engine",
-    '/static-assets/components/cstudio-forms/forms-engine.js?version=' + CStudioAuthoring.UIBuildId,
+    '/static-assets/components/cstudio-forms/forms-engine.js',
 	{  },
 	{ moduleLoaded: function () {
 		

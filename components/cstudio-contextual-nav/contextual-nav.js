@@ -87,7 +87,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				
                 CStudioAuthoring.Module.requireModule(
                     module.moduleName,
-                    '/static-assets/components/cstudio-contextual-nav/' + module.moduleName + ".js?version=" + CStudioAuthoring.UIBuildId,
+                    '/static-assets/components/cstudio-contextual-nav/' + module.moduleName + ".js",
                     0,
                     cb
                 );
