@@ -14,7 +14,7 @@ window.addEventListener("beforeunload", function (e) {
 
 CStudioAuthoring.Module.requireModule(
 	"cstudio-forms-engine",
-	'/static-assets/components/cstudio-forms/forms-engine.js',
+	'/static-assets/components/cstudio-forms/forms-engine.js?version=' + CStudioAuthoring.UIBuildId,
 	{  },
 	{ moduleLoaded: function() {
 
@@ -345,7 +345,7 @@ CStudioAuthoring.Module.requireModule(
 
 						CStudioAuthoring.Module.requireModule(
 							"cstudio-forms-controls-" + controls[j],
-							'/static-assets/components/cstudio-forms/controls/' + controls[j] + ".js",
+							'/static-assets/components/cstudio-forms/controls/' + controls[j] + ".js?version=" + CStudioAuthoring.UIBuildId,
 							{ config: controls[j] },
 							cb);
 					}
@@ -391,7 +391,7 @@ CStudioAuthoring.Module.requireModule(
 
 						CStudioAuthoring.Module.requireModule(
 							"cstudio-forms-controls-" + datasources[l],
-							'/static-assets/components/cstudio-forms/data-sources/' + datasources[l] + ".js",
+							'/static-assets/components/cstudio-forms/data-sources/' + datasources[l] + ".js?version=" + CStudioAuthoring.UIBuildId,
 							{ config: datasources[l] },
 							cb);
 					}
@@ -433,7 +433,7 @@ CStudioAuthoring.Module.requireModule(
 						};
 
 						CStudioAuthoring.Module.requireModule("dialog-select-template",
-							"/static-assets/components/cstudio-dialogs/select-content-type.js",
+							"/static-assets/components/cstudio-dialogs/select-content-type.js?version=" + CStudioAuthoring.UIBuildId,
 							moduleConfig,
 							selectTemplateDialogCb);
 					},
@@ -474,7 +474,7 @@ CStudioAuthoring.Module.requireModule(
 				};
 
 				CStudioAuthoring.Module.requireModule("new-content-type-dialog",
-					"/static-assets/components/cstudio-dialogs/new-content-type.js",
+					"/static-assets/components/cstudio-dialogs/new-content-type.js?version=" + CStudioAuthoring.UIBuildId,
 					moduleConfig,
 					dialogLoadedCb);
 

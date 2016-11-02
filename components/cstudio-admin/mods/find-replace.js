@@ -1,4 +1,4 @@
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/find-replace.css");
+CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/find-replace.css?version=" + CStudioAuthoring.UIBuildId);
 CStudioAdminConsole.Tool.FindReplace = CStudioAdminConsole.Tool.FindReplace ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;

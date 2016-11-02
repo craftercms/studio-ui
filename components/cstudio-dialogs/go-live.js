@@ -9,7 +9,7 @@ CStudioAuthoring.Dialogs.DialogGoLive = CStudioAuthoring.Dialogs.DialogGoLive ||
     this.moduleName = "goLive";
 };
 
-CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/components/cstudio-dialogs/publish-dialog.js", {}, {
+CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/components/cstudio-dialogs/publish-dialog.js?version=" + CStudioAuthoring.UIBuildId, {}, {
     moduleLoaded: function(moduleName, parentClass) {
 
         var Y = YAHOO,
