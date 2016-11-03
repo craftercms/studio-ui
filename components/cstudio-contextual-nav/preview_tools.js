@@ -58,7 +58,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 							
 							CStudioAuthoring.Module.requireModule(
 			                    "preview-tools-controller",
-			                    '/static-assets/components/cstudio-preview-tools/preview-tools.js?version=' + CStudioAuthoring.UIBuildId,
+			                    '/static-assets/components/cstudio-preview-tools/preview-tools.js',
 			                    0,
 			                    cb
 			                );
