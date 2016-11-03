@@ -1,4 +1,4 @@
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/log-view.css?version=" + CStudioAuthoring.UIBuildId);
+CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/log-view.css");
 CStudioAdminConsole.Tool.LogView = CStudioAdminConsole.Tool.LogView ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;

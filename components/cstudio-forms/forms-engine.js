@@ -1473,7 +1473,7 @@ var CStudioForms = CStudioForms || function() {
 
                     CStudioAuthoring.Module.requireModule(
                         "cstudio-forms-controls-" + datasourceDef.type,
-                        '/static-assets/components/cstudio-forms/data-sources/' + datasourceDef.type + ".js?version=" + CStudioAuthoring.UIBuildId,
+                        '/static-assets/components/cstudio-forms/data-sources/' + datasourceDef.type + ".js",
                         { config: datasourceDef },
                         cb);
                 }
@@ -1832,7 +1832,7 @@ var CStudioForms = CStudioForms || function() {
 
                 CStudioAuthoring.Module.requireModule(
                     "cstudio-forms-controls-" + field.type,
-                    '/static-assets/components/cstudio-forms/controls/' + field.type + ".js?version=" + CStudioAuthoring.UIBuildId,
+                    '/static-assets/components/cstudio-forms/controls/' + field.type + ".js",
                     { config: { field: field,
                         repeatField: repeatField,
                         repeatIndex: repeatIndex}},
@@ -2137,7 +2137,7 @@ var CStudioForms = CStudioForms || function() {
                             CStudioAuthoring.Module.requireModule(
                                 formId+"-controller",
                                 "/api/1/services/api/1/content/get-content-at-path.bin" +
-                                "?path=/cstudio/config/sites/"+CStudioAuthoringContext.site+"/content-types/"+formId+"/form-controller.js?version=" + CStudioAuthoring.UIBuildId,
+                                "?path=/cstudio/config/sites/"+CStudioAuthoringContext.site+"/content-types/"+formId+"/form-controller.js",
                                 moduleConfig, moduleCb);
                         }
                         else {
