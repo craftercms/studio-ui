@@ -138,29 +138,27 @@
             if(index == 0) $container.empty();
             $container.append($parentRow);
 
-            var itemToGetDependencies = {
-                'path' : item.uri,
-                'site' : item.site
-            };
+            var data = "[ { uri:\"" +  item.uri + "\" }]";
 
-            CStudioAuthoring.Operations.getWorkflowAffectedFiles(itemToGetDependencies, {
-                success: function(content) {
-                    $.each(content, function(index, elem){
-                        if(index != 0){     //first element is itself (already added)
-                            elem.uri = elem.path;
-                            elem.internalName = elem.name;
-                            elem.scheduledDate = '';
-                            elem.index = itemDependenciesClass;
+            CStudioAuthoring.Service.loadItems({
+                success: function(response){
+                    var item = JSON.parse(response.responseText);
 
-                            $parentRow.after(depTpl
-                                .replace('_INDEX_', elem.index)
-                                .replace('_URI_', elem.uri)
-                                .replace('_INTERNALNAME_', elem.internalName)
-                                .replace('_URI_', elem.uri));
-                        }
+                    $.each(item.dependencies, function(index, dependency){
+                        var elem = {};
+                        elem.uri = dependency;
+                        elem.internalName = '';
+                        elem.scheduledDate = '';
+                        elem.index = itemDependenciesClass;
+
+                        $parentRow.after(depTpl
+                            .replace('_INDEX_', elem.index)
+                            .replace('_URI_', elem.uri)
+                            .replace('_INTERNALNAME_', elem.internalName)
+                            .replace('_URI_', elem.uri));
                     });
                 }
-            });
+            }, data);
 
         });
 
