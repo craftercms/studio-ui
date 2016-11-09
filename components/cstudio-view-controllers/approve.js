@@ -275,25 +275,23 @@
             if(index == 0) $container.empty();
             $container.append($parentRow);
             item.scheduledDate = temp;
+            
+            var data = "[ { uri:\"" +  item.uri + "\" }]";
 
-            var itemToGetDependencies = {
-                'path' : item.uri,
-                'site' : item.site
-            };
+            CStudioAuthoring.Service.loadItems({
+                success: function(response){
+                    var item = JSON.parse(response.responseText);
 
-            CStudioAuthoring.Operations.getWorkflowAffectedFiles(itemToGetDependencies, {
-                success: function(content) {
-                    each(content, function(index, elem){
-                        if(index != 0){     //first element is itself (already added)
-                            elem.uri = elem.path;
-                            elem.internalName = elem.name;
-                            elem.scheduledDate = '';
-                            elem.index = itemDependenciesClass;
-                            $parentRow.after(agent.get('SUBITEM_ROW', elem));
-                        }
+                    $.each(item.dependencies, function(index, dependency){
+                        var elem = {};
+                        elem.uri = dependency;
+                        elem.internalName = '';
+                        elem.scheduledDate = '';
+                        elem.index = itemDependenciesClass;
+                        $parentRow.after(agent.get('SUBITEM_ROW', elem));
                     });
                 }
-            });
+            }, data);
 
         });
 
