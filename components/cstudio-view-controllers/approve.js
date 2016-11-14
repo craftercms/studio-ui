@@ -137,7 +137,9 @@
                     submissionCommentElem.value = dependencies.submissionComment + ' ' + submissionCommentElem.value;
                     //var scheduledDate = this.getTimeInJsonObject(dependencies.items, browserUri);
                     me.renderItems(dependencies.items);
-                    verifyMixedSchedules(dependencies.items)
+                    //enable submit button after loading items
+                    $("#approveSubmit").prop('disabled', false);
+                    verifyMixedSchedules(dependencies.items);
 
                 } catch(err) {
                     var error = err;

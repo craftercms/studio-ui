@@ -162,6 +162,9 @@
 
         });
 
+        //enable submit button after loading items
+        $("#approveSubmit").prop('disabled', false);
+
         $('.toggleDependencies').on('click', function(){
             var $container = $(me.getComponent('tbody')),
                 parentId = $(this).attr('id'),
