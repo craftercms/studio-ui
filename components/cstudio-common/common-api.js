@@ -1868,9 +1868,14 @@ var nodeOpen = false;
                         // determine the ID of the top level object
 //parentContent = parentContent.responseText;
 
-                        var origObjectIdPos = parentContent.indexOf("objectId")+9;
-                        var origObjectId = parentContent.substr(origObjectIdPos, 36);
-                        var origGroupId = origObjectId.substr(0,4);
+                        var objGroupIdRegex = /<objectGroupId>(.+)<\/objectGroupId>/;
+                        var objGroupIdMatch = parentContent.match(objGroupIdRegex);
+                        var origGroupId = objGroupIdMatch[1];
+
+                        var objIdRegex = /<objectId>(.+)<\/objectId>/;
+                        var objIdMatch = parentContent.match(objIdRegex);
+                        var origObjectId = objIdMatch[1];
+
 
                         var contentTypePos = parentContent.indexOf("content-type")+13;
                         var contentTypeEndPos = parentContent.indexOf("<", contentTypePos);
