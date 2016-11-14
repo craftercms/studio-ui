@@ -465,7 +465,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	        editor_selector : rteUniqueInitClass,
 	        theme : "advanced",
 	        skin : "cstudio-rte",
-	        width : width,
+			width: '100%', // Why? Field width should be flexible, because of responsiveness, should resize based on the screen size, this works together with max width set on post render event below on setup: method 
 	        height: height,
 	        encoding : "xml",
             valid_elements :"+*[*]",
@@ -571,6 +571,8 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	   				ed.onPostRender.add(function(ed, cm) {
 
 	   					ed.contextControl.resizeEditor(ed, true);
+						_thisControl.containerEl.querySelector('.mceLayout').style.maxWidth = width + 'px'; // Why? Field width should be flexible, because of responsiveness, should resize based on the screen size
+
 
 	   					// Add counter element
 	   					var refEl = YSelector.query("table.mceLayout tbody", _thisControl.containerEl, true),
