@@ -791,16 +791,21 @@
 
     function moduleLoaded() {
 
-        var modulePath = CStudioAuthoring.Utils.getScriptPath(moduleName + ".js")
-            .split(CStudioAuthoringContext.baseUri)[1];
+        try {
+            var modulePath = CStudioAuthoring.Utils.getScriptPath(moduleName + ".js")
+                .split(CStudioAuthoringContext.baseUri)[1];
 
-        // Load the component's css
-        // We need to remove CStudioAuthoringContext.baseUri from the path to be able to use the addCss function
-        if (modulePath) {
-            // console.log("Loading css file: " + modulePath + moduleName + ".css");
-            CStudioAuthoring.Utils.addCss(modulePath + moduleName + ".css");
+            // Load the component's css
+            // We need to remove CStudioAuthoringContext.baseUri from the path to be able to use the addCss function
+            if (modulePath) {
+                // console.log("Loading css file: " + modulePath + moduleName + ".css");
+                CStudioAuthoring.Utils.addCss(modulePath + moduleName + ".css");
+            }
         }
-
+        catch(err) {
+            // not able to load css for a model (not a issue per se)
+        }
+        
         var Utility = {
 
             /*
