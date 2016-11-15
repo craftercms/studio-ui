@@ -649,8 +649,8 @@ var CStudioForms = CStudioForms || function() {
                 var previousFocusedField = this.focusedField;
                 this.focusedField = field;
 
-                if(previousFocusedField && (previousFocusedField !== field))
-                    if(field && previousFocusedField && previousFocusedField.focusOut) {
+                if((previousFocusedField && (previousFocusedField !== field)) || field == null)
+                    if(previousFocusedField && previousFocusedField.focusOut) {
                         previousFocusedField.focusOut();
                     }
 
