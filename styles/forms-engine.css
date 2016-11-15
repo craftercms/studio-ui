@@ -572,6 +572,11 @@ a.bg-danger:focus {
   margin: 34px 0 17px;
   border-bottom: 1px solid #eeeeee; }
 
+.has-page-name {
+  color: inherit;
+  display: block;
+}
+
 ul,
 ol {
   margin-top: 0;

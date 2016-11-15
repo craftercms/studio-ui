@@ -802,6 +802,22 @@ var CStudioForms = CStudioForms || function() {
                 dialogEl.dialog = dialog;
             },
 
+            _getPageName: function(content) {
+                var _content = content.responseXML ? content.responseXML : content;
+                if (_content) {
+                    var internalNameArr = "";
+                    try{
+                        internalNameArr = _content.getElementsByTagName("internal-name");
+                        return (internalNameArr.length <= 0) ? "" :
+                            (YAHOO.env.ua.ie) ? internalNameArr[0].text :
+                                internalNameArr[0].textContent;
+                    } catch(err) {
+                        return "";
+                    }
+                }
+                return "";
+            },
+
             _renderFormWithContent: function(content, formId, formDef, style, customControllerClass, readOnly) {
 
                 function getDateTimeObject(timeObj) {
@@ -878,19 +894,7 @@ var CStudioForms = CStudioForms || function() {
 
                 form.definition = formDef;
 
-                if (content.responseXML) {
-                    var internalNameArr = "";
-                    try{
-                        internalNameArr = content.responseXML.getElementsByTagName("internal-name");
-                        form.definition.pageName = (internalNameArr.length <= 0) ? "" :
-                            (YAHOO.env.ua.ie) ? internalNameArr[0].text :
-                                internalNameArr[0].textContent;
-                    } catch(err) {
-                        form.definition.pageName = "";
-                    }
-                } else {
-                    form.definition.pageName = "";
-                }
+                form.definition.pageName = this._getPageName(content);
 
                 form.definition.pageLocation = this._getPageLocation(path);
                 form.containerEl = document.getElementById("formContainer");
@@ -1905,7 +1909,7 @@ var CStudioForms = CStudioForms || function() {
                 $('header').show();
                 $('.page-header h1 .header').text(formDef.title);
                 if (formDef.pageName) {
-                    $('.page-header h1 .name').text(formDef.pageName);
+                    $('.page-header h1 .name').addClass('has-page-name').text(formDef.pageName);
                 }
                 if (formDef.pageLocation) {
                     $('.page-header h1 .location').text(formDef.pageLocation);
