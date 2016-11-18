@@ -55,7 +55,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         CStudioAuthoring.Events.contentSelected.subscribe(function(evtName, contentTO) {
                             var selectedContent,
-                                callback;
+                                callback;   
 
                             if (contentTO[0] && contentTO[0].path) {
                                 selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
