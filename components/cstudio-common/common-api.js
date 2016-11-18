@@ -4999,6 +4999,13 @@ var parentSaveCb = {
                 return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
             },
 
+            getQueryParameterURLParentWindow : function(name) {
+                name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+                var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(parent.window.location.hash);
+                return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            },
+
             replaceQueryParameterURL : function(url, param_name, new_value){
                 var base = url.substr(0, url.indexOf('?'));
                 var query = url.substr(url.indexOf('?')+1, url.length);
