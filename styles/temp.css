@@ -15862,6 +15862,11 @@ body.masked {
   margin: 6px 0 0 10px;
   color: #000; }
 
+.studio-preview.disabled-wcm-dropdown,
+.site-dashboard.disabled-wcm-dropdown {
+  left: 0 !important;
+}
+
 .studio-preview {
   top: 50px;
   overflow: auto;

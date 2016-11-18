@@ -57,7 +57,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				var $ = jQuery || function(fn) { fn() };
 				$(function () {
 					document.body.appendChild(bar);
-					me.context.buildModules(config);
+					me.context.buildModules(config, bar);
 				});
 			},
 			failure: function() {},
@@ -68,8 +68,16 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
     /**
      * given a dropdown configuration, build the nav
      */
-    buildModules: function(navConfig) {
-		// TODO console.log(navConfig.modules.module)
+    buildModules: function(navConfig, barEl) {
+
+		var c = navConfig;
+		if (c.left && c.left.menuItem && c.left.menuItem.item) {
+			this.showLeftModules(c.left.menuItem.item, barEl);
+		}
+		if (c.right && c.right.menuItem && c.right.menuItem.item) {
+			this.showRightModules(c.right.menuItem.item, barEl);
+		}
+
 		if(navConfig.modules.module.length) {
 			for(var i=0; i<navConfig.modules.module.length; i++) {
 				var module = navConfig.modules.module[i];
@@ -93,7 +101,77 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
                 );
 			}
 		}
-    }		
+    },
+
+	/**
+     * Hides/Disables first all the modules, so then when looping configuration, they are shown again
+	 * 
+     */
+	preProcessModules: function(modulesMap, $barEl, onItem) { 
+		for (var key in modulesMap) {
+			if (modulesMap.hasOwnProperty(key)) {
+				$barEl.find(modulesMap[key]).addClass('hidden');
+				onItem(key, modulesMap[key]);
+			}
+		};
+	},
+
+	/**
+     * Shown left context nav modules based on configuration
+     */
+	showLeftModules: function(modules, barEl) {
+		var modulesMap = CStudioAuthoring.ContextualNav.LeftModulesMap;
+		this.showModules(modulesMap, modules, barEl);
+	},
+
+	/**
+     * Shown right context nav modules based on configuration
+     */
+	showRightModules: function(modules, barEl) {
+		var modulesMap = CStudioAuthoring.ContextualNav.RightModulesMap;
+		this.showModules(modulesMap, modules, barEl);
+	},
+
+	/**
+     * Generic show modules stuff
+     */
+	showModules: function(modulesMap, modules, barEl) {
+		var PREVIEW_CONTAINERS = '.studio-preview, .site-dashboard';
+		var DISABLED = 'disabled-wcm-dropdown';
+		
+		var $barEl = $(barEl);
+
+		this.preProcessModules(modulesMap, $barEl, function(key) {
+			if (key === 'wcm_dropdown') {
+				$(PREVIEW_CONTAINERS).addClass(DISABLED);
+			}
+		});
+
+		for (var i = 0; i < modules.length; i++) {
+			var name = modules[i].modulehook;
+			$barEl.find(modulesMap[name]).removeClass('hidden');
+			
+			if (name === 'wcm_dropdown') {
+				$(PREVIEW_CONTAINERS).removeClass(DISABLED);
+			}
+
+		};
+	}		
+};
+
+CStudioAuthoring.ContextualNav.LeftModulesMap = {
+	'wcm_logo': '.navbar-brand',
+	'wcm_dropdown': '#acn-dropdown-wrapper',
+	'wcm_content': '#activeContentActions',
+	'admin_console': '#acn-admin-console'
+};
+
+CStudioAuthoring.ContextualNav.RightModulesMap = {
+	'ice_tools': '#acn-ice-tools',
+	'preview_tools': '#acn-preview-tools',
+	'persona': '#acn-persona',
+	'search': '[role="search"]',
+	'logout': '#acn-logout-link'
 };
 
 CStudioAuthoring.Events.contextNavLoaded.fire();
