@@ -1148,7 +1148,8 @@ var CStudioForms = CStudioForms || function() {
                                     if(acnDraftContent && !saveDraft){
                                         acnDraftContent.parentNode.removeChild(acnDraftContent);
                                     }
-                                    if(!acnDraftContent && saveDraft && contentTO.item.browserUri == page){
+                                    if(!acnDraftContent && saveDraft && (contentTO.item.browserUri == page ||
+                                        parent.window.location.href.indexOf("site-dashboard") >= 0)){
                                         var noticeEl = document.createElement("div");
                                         parent.document.querySelector("#studioBar nav .container-fluid").appendChild(noticeEl);
                                         YDom.addClass(noticeEl, "acnDraftContent");
