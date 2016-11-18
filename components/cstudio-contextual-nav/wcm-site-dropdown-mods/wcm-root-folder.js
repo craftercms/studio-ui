@@ -471,12 +471,10 @@
                     self.expandTree(node);
 
                     if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-                        if (instance.path.length - 1 == instance.pathNumber) {
                             var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
                             for (var i = 0; i < treeChild.length; i++) {
                                 treeChild[i].setAttribute("num", instance.path[i].replace(/\//g, "").toLowerCase());
                             }
-                        }
                     }else{
                         var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
                         treeChild[0].setAttribute("num", instance.path.replace(/\//g, "").toLowerCase());
@@ -495,12 +493,10 @@
                     self.collapseTree(node);
 
                     if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-                        if (instance.path.length - 1 == instance.pathNumber) {
                             var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
                             for (var i = 0; i < treeChild.length; i++) {
                                 treeChild[i].setAttribute("num", instance.path[i].replace(/\//g, "").toLowerCase());
                             }
-                        }
                     }else{
                         var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
                         treeChild[0].setAttribute("num", instance.path.replace(/\//g, "").toLowerCase());
@@ -554,12 +550,10 @@
 
                 tree.draw();
                if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-                   if (instance.path.length - 1 == instance.pathNumber) {
                        var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
                        for (var i = 0; i < treeChild.length; i++) {
                            treeChild[i].setAttribute("num", instance.path[i].replace(/\//g, "").toLowerCase());
                        }
-                   }
                }else{
                    var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
                    treeChild[0].setAttribute("num", instance.path.replace(/\//g, "").toLowerCase());
@@ -701,10 +695,12 @@
                     }
                 }
 
-
+                for(var i=0; i<treeNodesLabels.length; i++){
+                    Self.labelsMenu.push(treeNodesLabels[i]);
+                }
 
                 new YAHOO.widget.Tooltip("acn-context-tooltipWrapper", {
-                    context: treeNodesLabels,
+                    context: Self.labelsMenu,
                     hidedelay:0,
                     showdelay:1000,
                     container: "acn-context-tooltip"
@@ -895,7 +891,13 @@ treeNode.getHtml = function() {
                                         if(!num){
                                             while ((el = el.parentElement) && !el.hasAttribute("num"));
                                         }
-                                        num = el.getAttribute('num');
+                                        try{
+                                           num = el.getAttribute('num') ? el.getAttribute('num') : null;
+                                            console.log('try');
+                                        }catch (e){
+                                           num = null;
+                                            console.log('catch');
+                                        }
                                         if(num == key) {
                                             var loadEl = YSelector(".ygtvtp", node[n].getEl(), true);
                                             loadEl == null && (loadEl = YSelector(".ygtvlp", node[n].getEl(), true));
@@ -2315,7 +2317,7 @@ treeNode.getHtml = function() {
                                 window.location.href = currentURL;
                             }
                         }
-                        if(CStudioAuthoringContext.isPreview && oCurrentTextNodeOldPath == pageParameter){
+                        if(CStudioAuthoringContext.isPreview){
                             try{
                                 CStudioAuthoring.Operations.refreshPreview();
                             }catch(err) {
@@ -2329,9 +2331,11 @@ treeNode.getHtml = function() {
                                 //this.callingWindow.location.reload(true);
                             }
                         }
-                        eventNS.data = oCurrentTextNode;
-                        eventNS.typeAction = "";
-                        document.dispatchEvent(eventNS);
+                        if(CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
+                            eventNS.data = oCurrentTextNode;
+                            eventNS.typeAction = "";
+                            document.dispatchEvent(eventNS);
+                        }
                     },
 
                     failure: function() {
