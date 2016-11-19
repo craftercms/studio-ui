@@ -1166,6 +1166,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 						var data = eval("(" + response.responseText + ")");
 						var	adjustedTimeZoneObj = _self.getFormattedDateTimeObject(data.convertedTimezone, true);
 						_self.populateDateTime(adjustedTimeZoneObj, _self.dateEl, _self.timeEl, _self.showDate, _self.showTime);
+						_self.validate(null, _self);
 					},
 					failure: function (response) {
 						console.log("Unable to convert current date/time");

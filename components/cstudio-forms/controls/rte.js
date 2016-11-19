@@ -211,15 +211,23 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	        YDom.replaceClass(this.containerEl, "rte-inactive", "rte-active");
             var elements = YDom.getElementsByClassName('cstudio-form-container', 'div');
             YDom.setStyle(elements[0],'margin-top', '50px');
- 
-	        if (YDom.hasClass(this.containerEl, "text-mode")) {
-	        	// The RTE is in text mode
-		        this.resizeEditor(this.editor);		// Resize the editor (in case its contents exceed its set height)
-	        } else {
-	        	// The RTE is in code mode
-	        	this.resizeCodeMirror(this.editor.codeMirror);
-	        }
+			
+			this.resize();
+	       
 	        this.scrollToTopOfElement(this.containerEl, 30);
+		}
+	},
+
+	/**
+	 * Resize editor whether is text mode or code mode
+	 */
+	resize: function() {
+		if (YDom.hasClass(this.containerEl, "text-mode")) {
+			// The RTE is in text mode
+			this.resizeEditor(this.editor);		// Resize the editor (in case its contents exceed its set height)
+		} else {
+			// The RTE is in code mode
+			this.resizeCodeMirror(this.editor.codeMirror);
 		}
 	},
 	
@@ -547,6 +555,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 			        });
 			        ed.onChange.add(function(ed, l) {
                         _self.edited = true;
+						_self.resize();
 		            });
 
 		            ed.onInit.add(function(ed) {

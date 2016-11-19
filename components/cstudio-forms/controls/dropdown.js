@@ -153,6 +153,8 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 						inputEl.disabled = true;
 					}
 
+					_self.inputEl.value = _self.getValue(); // set value after loading data source
+
                     // TODO remove comment once CRAFTERCMS-41 is closed
                     // This call only makes sense for user actioned changes and
                     // it is actually wiping out the value of the model when initialising
