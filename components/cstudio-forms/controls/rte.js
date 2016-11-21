@@ -735,6 +735,12 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		var stylesheets  = "/studio/static-assets/themes/cstudioTheme/css/forms-rte.css";
 		var rteConfig = this.rteConfig;
 		
+		// if rteStylesheets xml tag is not defined, use only default css
+		if (typeof rteConfig.rteStylesheets === 'undefined' || typeof rteConfig.rteStylesheets.link !== 'object') {
+			return stylesheets;
+		};
+
+		// if rteStylesheets xml tag is defined, add them to the style sheet list
 		for(var i=0; i<rteConfig.rteStylesheets.link.length; i++) {
 			var item = rteConfig.rteStylesheets.link[i];
 			if(!item.appliesToChannel 
@@ -743,7 +749,6 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 				stylesheets += ", " + item.url;
 			}
 		}
-		
 		return stylesheets;
 	},
 	
