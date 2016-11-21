@@ -733,15 +733,19 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         YAHOO.util.Dom.addClass(inputEl, 'datum');
         controlWidgetContainerEl.appendChild(inputEl);
 
+        var imgInfoContainer = document.createElement("div");
+        YAHOO.util.Dom.addClass(imgInfoContainer, 'imgInfoContainer');
+        controlWidgetContainerEl.appendChild(imgInfoContainer);
+
         var urlEl = document.createElement("div");
         this.urlEl = urlEl;
         urlEl.innerHTML = this.inputEl.value;
-        controlWidgetContainerEl.appendChild(urlEl);
+        YAHOO.util.Dom.addClass(urlEl, 'info');
+        imgInfoContainer.appendChild(urlEl);
 
         var bodyEl = document.createElement("div");
         YAHOO.util.Dom.addClass(bodyEl, 'cstudio-form-control-asset-picker-body');
-        controlWidgetContainerEl.appendChild(bodyEl);
-
+        imgInfoContainer.appendChild(bodyEl);
 
         var imageEl = document.createElement("div");
         this.imageEl = imageEl;

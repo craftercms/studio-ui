@@ -965,3 +965,30 @@ input[disabled]{background-color: whitesmoke;}
 .cstudio-form-control-dropdown{max-width: 62%;}
 
 body.yui-skin-cstudioTheme.masked{overflow: hidden;}
+
+/* Long File Name in Image Picker */
+.image-picker-control .cstudio-form-field-title{
+    float: none;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.image-picker-control .cstudio-form-control-image-picker-container{
+    float: none;
+    display: inline-block;
+    width: 74%;
+}
+
+.image-picker-control .cstudio-form-control-image-picker-container .validation-hint{
+    float: none;
+    display: inline-block;
+    vertical-align: top;
+    width: 5.5%;
+}
+
+.image-picker-control .cstudio-form-control-image-picker-container .imgInfoContainer{
+    float: none;
+    display: inline-block;
+    width: 94.5%;
+}
+
