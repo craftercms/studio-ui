@@ -15569,6 +15569,8 @@ address {
   .studio-view table.item-listing .original-schedule,
   .studio-dialog table.item-listing .original-schedule {
     padding: 5px 10px 5px 6px; }
+
+  .studio-view table.item-listing thead,
   .studio-view table.item-listing th,
   .studio-dialog table.item-listing th {
     color: #fff;
