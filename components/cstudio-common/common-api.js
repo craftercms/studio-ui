@@ -4717,7 +4717,7 @@ var parentSaveCb = {
                     name="status-icon folder";
                 }
 
-                if(item.isComponent) {
+                if(item.isComponent && item.contentType !== 'folder') {
                     name= name + " component";
                 }
 
