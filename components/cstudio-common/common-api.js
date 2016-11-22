@@ -1887,9 +1887,14 @@ while(found=dependencyRegExp.exec(parentContent)) {
                         // create a new ID for this page
                         var newObjectId = CStudioAuthoring.Utils.generateUUID();
                         var newGroupId = newObjectId.substring(0,4);
-
+                        var newPath = "";
                         // create new path for this page
-                        var newPath = path.replace("/index.xml", "-"+newGroupId+"/index.xml");
+                        //      if content-as-folder is true
+                        if (path.indexOf("index.xml") !== -1) {
+                            newPath = path.replace("/index.xml", "-"+newGroupId+"/index.xml");
+                        } else {
+                            newPath = path.replace(".xml", "-" + newGroupId + ".xml");
+                        } 
 
                         for(var i=0; i<dependencies.length; i++) {
                             var dependencyPath = dependencies[i];
