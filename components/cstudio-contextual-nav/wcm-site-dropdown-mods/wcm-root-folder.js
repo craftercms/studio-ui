@@ -835,6 +835,26 @@ treeNode.getHtml = function() {
                 return (CStudioAuthoringContext.site + "-"+ instance.label.replace(" ", "").toLowerCase() + '-opened');
 			},
 
+            getNumKey: function(nodes, key, callback) {
+                var num;
+                for(n = 0; nodes.length > n;  n++) {
+                    var el = nodes[n].getEl(), num;
+                    num = el.getAttribute('num');
+                    if(!num){
+                        while ((el = el.parentElement) && !el.hasAttribute("num"));
+                    }
+                    try{
+                        num = el.getAttribute('num') ? el.getAttribute('num') : null;
+                    }catch (e){
+                        num = null;
+                    }
+                    if(num == key) {
+                        callback(nodes[n]);
+                    }
+                }
+                return num;
+            },
+
 			openLatest: function(instance){
 
                 var latestStored = {};
@@ -885,26 +905,13 @@ treeNode.getHtml = function() {
 								updatePathTrace(j, key);
 								var node = tree.getNodesByProperty("path", pathTrace[key][j]);
 								if (node != null) {
-                                    for(n = 0; node.length > n;  n++) {
-                                        var el = node[n].getEl(), num;
-                                        num = el.getAttribute('num');
-                                        if(!num){
-                                            while ((el = el.parentElement) && !el.hasAttribute("num"));
-                                        }
-                                        try{
-                                           num = el.getAttribute('num') ? el.getAttribute('num') : null;
-                                            console.log('try');
-                                        }catch (e){
-                                           num = null;
-                                            console.log('catch');
-                                        }
-                                        if(num == key) {
-                                            var loadEl = YSelector(".ygtvtp", node[n].getEl(), true);
-                                            loadEl == null && (loadEl = YSelector(".ygtvlp", node[n].getEl(), true));
-                                            YDom.addClass(loadEl, "ygtvloading");
-                                            doCall(node[n], j, key);
-                                        }
-                                    }
+                                    Self.getNumKey(node, key, function(currentNode) {
+                                        var loadEl = YSelector(".ygtvtp", currentNode.getEl(), true);
+                                        loadEl == null && (loadEl = YSelector(".ygtvlp", currentNode.getEl(), true));
+                                        YDom.addClass(loadEl, "ygtvloading");
+                                        doCall(currentNode, j, key);
+                                    });
+
 								} else {
 									YDom.removeClass(label, "loading");
 									YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
@@ -934,20 +941,12 @@ treeNode.getHtml = function() {
                                     }
 
                                     if (node != null) {
-                                        for (var i = 0; node.length > i; i++) {
-                                        var el = node[i].getEl(), num;
-                                            num = el.getAttribute('num');
-                                            if (!num) {
-                                                while ((el = el.parentElement) && !el.hasAttribute("num"));
-                                            }
-                                            num = el.getAttribute('num');
-                                            if (num == key) {
-                                                var loadEl = YSelector(".ygtvtp", node[i].getEl(), true);
-                                                loadEl == null && (loadEl = YSelector(".ygtvlp", node[i].getEl(), true));
-                                                YDom.addClass(loadEl, "ygtvloading");
-                                                doCall(node[i], k[key], key);
-                                            }
-                                       }
+                                        Self.getNumKey(node, key, function(currentNode) {
+                                            var loadEl = YSelector(".ygtvtp", currentNode.getEl(), true);
+                                            loadEl == null && (loadEl = YSelector(".ygtvlp", currentNode.getEl(), true));
+                                            YDom.addClass(loadEl, "ygtvloading");
+                                            doCall(currentNode, k[key], key);
+                                        });
                                     }
                                 } else {
                                     //YDom.removeClass(label, "loading");
@@ -1019,8 +1018,13 @@ treeNode.getHtml = function() {
                                                 paths[key][k[key]] = tmp[key][k[key]].length ? (tmp[key][k[key]].charAt(0) == "/" ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split("/") : null;
                                                 recursiveCalls[key][k[key]] = tmp[key][k[key]].length ? paths[key][k[key]].length : 0;
                                             })();
-                                            var node, loadEl;
-                                            node = tree.getNodeByProperty("path", treeData.item.path);
+                                            var nodes, node, loadEl;
+                                            nodes = tree.getNodesByProperty("path", treeData.item.path);
+                                            if (nodes != null) {
+                                                Self.getNumKey(nodes, key, function(currentNode) {
+                                                    node = currentNode;
+                                                });
+                                            }
                                             if (node == null) {
                                                 node = tree.getNodeByProperty("path", updatePathTrace(k[key], key));
                                                 loadEl = YAHOO.util.Selector.query(".ygtvtp", node.getEl(), true);
