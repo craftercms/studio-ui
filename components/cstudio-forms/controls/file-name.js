@@ -286,7 +286,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         controlWidgetContainerEl.appendChild(countEl);
         this.countEl = countEl;
 
-        YAHOO.util.Event.on(inputEl, 'keypress', this.count, countEl);
+        YAHOO.util.Event.on(inputEl, 'keyup', this.count, countEl);
         YAHOO.util.Event.on(inputEl, 'mouseup', this.count, countEl);
 
         this.renderHelp(config, controlWidgetContainerEl);
