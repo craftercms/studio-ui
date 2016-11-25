@@ -37,8 +37,21 @@
             }
         }
         var editCb = {
-            success:function() {
-                CStudioAuthoring.Operations.refreshPreview();
+            success:function(contentTO, editorId, name, value, draft) {
+                if(CStudioAuthoringContext.isPreview){
+                    try{
+                        CStudioAuthoring.Operations.refreshPreview();
+                    }catch(err) {
+                        if(!draft) {
+                            this.callingWindow.location.reload(true);
+                        }
+                    }
+                }
+                if(CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
+                    eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
+                    eventNS.typeAction = "";
+                    document.dispatchEvent(eventNS);
+                }
             },
             failure: function() {
             }
