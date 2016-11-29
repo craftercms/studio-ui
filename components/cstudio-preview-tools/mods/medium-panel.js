@@ -23,10 +23,14 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
         var me = this,
             $select,
             $engine = $('#engineWindow'),
-            $container = $(containerEl),
-            channels = ((config.config.channels.length)
-                ? config.config.channels.channels[0]
-                : [config.config.channels.channel])[0];
+            $container = $(containerEl);
+
+        var channels = [];
+        if (config.config.channels.channel && config.config.channels.channel.length) {
+            channels = config.config.channels.channel;
+        } else {
+            channels = (config.config.channels.channel) ? [config.config.channels.channel] : [];
+        }
 
         $container
             .addClass('studio-view')

@@ -57,12 +57,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             var selectedContent,
                                 callback;
 
-                             var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
-                             for(var n=0; n<noticeEls.length; n++) {
-                                 var curNode = noticeEls[n];
-                                 curNode.parentNode.removeChild(curNode);
-                             }
-
                             if (contentTO[0] && contentTO[0].path) {
                                 selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
 
@@ -89,11 +83,19 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         for(var s=0; s<selectedContent.length; s++) {
                                             CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
                                                 success: function (content) {
+                                                    var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
                                                     if(content.item.savedAsDraft == true) {
-                                                        var noticeEl = document.createElement("div");
-                                                        thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                                                        YDom.addClass(noticeEl, "acnDraftContent");
-                                                        noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                        if(noticeEls.length < 1) {
+                                                            var noticeEl = document.createElement("div");
+                                                            thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                            YDom.addClass(noticeEl, "acnDraftContent");
+                                                            noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                        }
+                                                    }else{
+                                                        for(var n=0; n<noticeEls.length; n++) {
+                                                            var curNode = noticeEls[n];
+                                                            curNode.parentNode.removeChild(curNode);
+                                                        }
                                                     }
                                                 }
                                             });
@@ -334,10 +336,13 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
                                         success: function (content) {
                                             if(content.item.savedAsDraft == true) {
-                                                var noticeEl = document.createElement("div");
-                                                thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                                                YDom.addClass(noticeEl, "acnDraftContent");
-                                                noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
+                                                if(noticeEls.length < 1) {
+                                                    var noticeEl = document.createElement("div");
+                                                    thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                    YDom.addClass(noticeEl, "acnDraftContent");
+                                                    noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                }
                                             }
                                         }
                                     });
@@ -581,7 +586,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             window.location.href = currentURL;
                                         }
                                     }
-                                    if(CStudioAuthoringContext.isPreview && oCurrentTextNodeOldPath == pageParameter){
+                                    if(CStudioAuthoringContext.isPreview){
                                         try{
                                             CStudioAuthoring.Operations.refreshPreview();
                                         }catch(err) {
@@ -595,9 +600,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             //this.callingWindow.location.reload(true);
                                         }
                                     }
-                                    eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
-                                    eventNS.typeAction = "edit";
-                                    document.dispatchEvent(eventNS);
+                                    if(CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
+                                        eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
+                                        eventNS.typeAction = "edit";
+                                        document.dispatchEvent(eventNS);
+                                    }
                                 },
                                 failure: function() { },
                                 callingWindow : window
