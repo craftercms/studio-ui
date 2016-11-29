@@ -385,6 +385,15 @@ CStudioAuthoring.Messages.registerBundle("search", "es", {
     errNoResults: "Su búsqueda no produjo resultados."
 });
 
+CStudioAuthoring.Messages.registerBundle("browse", "es", {
+    labelUrl: "URL",
+    labelType: "Tipo",
+    labelAddClose: "Agregar & Cerrar",
+    selectAll: "Seleccionar Todo",
+    clearAll: "Limpiar Selección",
+    uploadLabel: "Subir"
+});
+
 CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     contentTypes: "Tipos de Contenido",
     configuration: "Configuración",
