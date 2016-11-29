@@ -1449,7 +1449,6 @@ var nodeOpen = false;
 
                 $modal.find('.bd').html(template).end().appendTo(parentEl);
                 $modal.find('.studio-ice-container').css('z-index', 100525);
-
                 $('body').on("diff-end", function () {
                     $modal.remove();
                 });
@@ -1459,6 +1458,39 @@ var nodeOpen = false;
                 diffUrl += "&mode=iframe";
 
                 window.open(diffUrl, 'diffDialog');
+
+                animator.slideInDown();
+            },
+
+            _openIframe: function(url, name) {
+                var id = CSA.Utils.getScopedId(),
+                    animator,
+                    editorId =  CStudioAuthoring.Utils.generateUUID(),
+                    $modal = $('<div><div class="no-ice-mask" style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;background-color: rgba(0, 0, 0, 0.65);z-index: 3000;"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' + editorId + '" style="display:none;"><div class="bd"></div></div></div>'),
+                    template = '<iframe name="'+ name +'" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+window.top.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>"',
+                    parentEl = window.top.document.body;
+
+                animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
+
+                $(function() {
+                    $modal.find('.studio-ice-dialog').resizable({
+                        minHeight: 50,
+                        grid: [10000, 1],
+                        start: function(event, ui) {
+                            $('#engineWindow').css('pointer-events','none');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
+                        },
+                        stop: function( event, ui ) {
+                            $('#engineWindow').css('pointer-events','auto');
+                            $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                        }
+                    });
+                });
+
+                $modal.find('.bd').html(template).end().appendTo(parentEl);
+                $modal.find('.studio-ice-container').css('z-index', 100525);
+
+                window.open(url, name);
 
                 animator.slideInDown();
             },
@@ -3867,7 +3899,11 @@ var parentSaveCb = {
              */
             lookupSiteFolders: function(site, path, depth, order, callback, populateDependencies) {
 
-                var serviceUri = this.lookupFoldersServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
+                if(depth) {
+                    var serviceUri = this.lookupFoldersServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
+                }else{
+                    var serviceUri = this.lookupFoldersServiceUri + "?site=" + site + "&path=" + path + "&order=" + order;
+                }
 
                 if (populateDependencies != undefined && !populateDependencies) {
                     serviceUri = serviceUri + "&populateDependencies=false";
@@ -4898,13 +4934,13 @@ var parentSaveCb = {
             /**
              * dynamically add a javascript file
              */
-            addJavascript: function(script) {
+            addJavascript: function(script, cache) {
                 if (!this.arrayContains(script, this.addedJs)) {
 
                     this.addedJs.push(script);
 
                     if(script.indexOf("http") == -1) {
-                        script = CStudioAuthoringContext.baseUri + script + "?version=" + CStudioAuthoring.UIBuildId;
+                        script = cache ? CStudioAuthoringContext.baseUri + script : CStudioAuthoringContext.baseUri + script + "?version=" + CStudioAuthoring.UIBuildId;
                     }
 
                     /*script = (script.indexOf("?")==-1)
@@ -6789,10 +6825,12 @@ var parentSaveCb = {
 
                     var newWindow;
 
-                    if (YAHOO.env.ua.ie > 0)
-                        newWindow = window.open(childSearchConfig.searchUrl, null);
-                    else
-                        newWindow = window.open(childSearchConfig.searchUrl, childSearchConfig.searchId);
+                    if (YAHOO.env.ua.ie > 0) {
+                        CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
+                    }else {
+                        CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId);
+
+                    }
 
                 }
             }

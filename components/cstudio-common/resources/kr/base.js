@@ -360,6 +360,15 @@ CStudioAuthoring.Messages.registerBundle("search", "kr", {
     errNoResults: "귀하의 검색 결과가 없습니다."
 });
 
+CStudioAuthoring.Messages.registerBundle("browse", "kr", {
+    labelUrl: "URL",
+    labelType: "유형",
+    labelAddClose: "추가 및 닫기",
+    selectAll: "모두 선택",
+    clearAll: "선택 지우기",
+    uploadLabel: "업로드"
+});
+
 CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     contentTypes: "콘텐츠 형식",
     configuration: "구성",

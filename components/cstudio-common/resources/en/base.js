@@ -400,6 +400,15 @@ CStudioAuthoring.Messages.registerBundle("search", "en", {
     errNoResults: "Your search returned no results."
 });
 
+CStudioAuthoring.Messages.registerBundle("browse", "en", {
+    labelUrl: "URL",
+    labelType: "Type",
+    labelAddClose: "Add & Close",
+    selectAll: "Select All",
+    clearAll: "Clear Selection",
+    uploadLabel: "Upload"
+});
+
 CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     contentTypes: "Content Types",
     configuration: "Configuration",
