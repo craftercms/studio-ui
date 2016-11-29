@@ -1374,9 +1374,10 @@ treeNode.getHtml = function() {
                                 success: function (treeData) {
                                     if (currentUri == treeData.item.uri) {
                                         var style = "",
-                                            cont = paramCont ? paramCont : 0;
-                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).innerHTML =
-                                            (treeData.item.internalName != "" ? treeData.item.internalName : treeData.item.name) : null;
+                                            cont = paramCont ? paramCont : 0,
+                                            currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name);
+                                        currentInternalName = treeData.item.isNew ? currentInternalName + " *" : currentInternalName;
+                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).innerHTML = currentInternalName : null;
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                         if (treeData.item.isPreviewable) {
                                             style = style + " preview";
@@ -1386,6 +1387,7 @@ treeNode.getHtml = function() {
                                         if (treeData.item.contentType == "asset") {
                                             style = style + " component";
                                         }
+                                        style = style + " treenode-label";
                                         YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).className = style : null;
                                         if (style.indexOf("deleted") != -1 || treeData.item.isDeleted) {
                                             var tempSplit = curNode.labelElId.split("labelel");
