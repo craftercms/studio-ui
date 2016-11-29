@@ -150,7 +150,7 @@
                                     window.firstClick = true;
                                     thisComponent.openLatest(instance);
                                 }
-                                thisComponent.blur();
+                                this.blur();
                             });
 
                             Self.wireUpCannedSearches();
