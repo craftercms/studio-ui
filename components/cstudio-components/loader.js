@@ -256,7 +256,7 @@
         type: 'js',
         name:'jquery-datetimepicker',
         path: 'libs/datetimepicker/jquery.datetimepicker.js?version=' + CStudioAuthoring.UIBuildId,
-        requires: ['jquery-datetimepicker-css', 'jquery']
+        requires: ['jquery-datetimepicker-css']
     });
 
     Loader.addModule({
