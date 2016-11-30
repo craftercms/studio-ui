@@ -4957,7 +4957,8 @@ var parentSaveCb = {
                     this.addedJs.push(script);
 
                     if(script.indexOf("http") == -1) {
-                        script = CStudioAuthoringContext.baseUri + script + "?version=" + CStudioAuthoring.UIBuildId;
+                        script = CStudioAuthoringContext.baseUri + script;
+                        script = this.addURLParameter(script, "version", CStudioAuthoring.UIBuildId);
                     }
 
                     /*script = (script.indexOf("?")==-1)
