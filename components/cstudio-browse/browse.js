@@ -36,12 +36,16 @@
             var path = data.node.a_attr["data-path"];
 
             if(CStudioBrowse.currentSelection != data.node.id){
-                $resultsContainer.empty();
-                $resultsActions.empty();
                 CStudioBrowse.renderSiteContent(searchContext.site, path);
                 CStudioBrowse.currentSelection = data.node.id;
             }
 
+        });
+
+        $('.cstudio-browse-container').on('click', '.path span', function(){
+            var path = $(this).attr('data-path');
+
+            CStudioBrowse.renderSiteContent(CStudioBrowse.searchContext.site, path);
         });
 
         $tree.on('open_node.jstree', function(event, node){
@@ -63,7 +67,6 @@
             }
         });
 
-        //TODO: change into one event
         $resultsActions.on('click', '.cstudio-search-select-all', function(){
             var checkBoxes = $resultsContainer.find('input[name=result-select]');
             checkBoxes.prop('checked', true).trigger('change');
@@ -73,7 +76,6 @@
             var checkBoxes = $resultsContainer.find('input[name=result-select]');
             checkBoxes.prop('checked', false).trigger('change');
         });
-        /////////
 
         $('#cstudio-command-controls').on('click', '#formSaveButton', function(){
             CStudioBrowse.saveContent();
@@ -82,6 +84,14 @@
         $('#cstudio-command-controls').on('click', '#formCancelButton', function(){
             window.close();
             $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+        })
+
+        $('#cstudio-command-controls').on('click', '#colExpButtonBtn', function(){
+
+
+            if (top !== window) {
+                $(window.frameElement.parentElement).closest('.studio-ice-dialog').height(60);
+            }
         })
 
         $resultsContainer.on('click', '.add-close-btn', function() {
@@ -249,12 +259,8 @@
     }
 
     CStudioBrowse.refreshCurrentResults = function() {
-        var searchContext = CStudioBrowse.searchContext,
-            $resultsContainer = $('#cstudio-wcm-search-result .results'),
-            $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions');
+        var searchContext = CStudioBrowse.searchContext;
 
-        $resultsContainer.empty();
-        $resultsActions.empty();
         CStudioBrowse.renderSiteContent(searchContext.site, CStudioBrowse.currentResultsPath);
     }
 
@@ -285,7 +291,6 @@
         }
     }
 
-    //should this be more separated from the rest of CStudio?
     CStudioBrowse.saveContent = function() {
         var searchId = CStudioBrowse.searchContext.searchId;
         var crossServerAccess = false;
@@ -437,10 +442,19 @@
     }
 
     CStudioBrowse.renderSiteContent = function(site, path){
-        var contentPromise = CStudioBrowse._lookupSiteContent(site, path);
+        var $resultsContainer = $('#cstudio-wcm-search-result .results'),
+            $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
+            contentPromise = CStudioBrowse._lookupSiteContent(site, path);
+
+        $resultsContainer.empty();
+        $resultsActions.empty();
+
         contentPromise.then(function (results) {
             var filesPresent = false;
             results = results.item.children;
+
+            var pathLabel = path.replace(/\//g, ' / ');
+            $('.current-folder .path').html(pathLabel);
 
             if(results.length > 0){
                 $.each(results, function(index, value){
