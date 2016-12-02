@@ -80,27 +80,29 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         }
 
                                         var thisContext = this;
-                                        for(var s=0; s<selectedContent.length; s++) {
-                                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
-                                                success: function (content) {
-                                                    var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
-                                                    if(content.item.savedAsDraft == true) {
-                                                        if(noticeEls.length < 1) {
-                                                            var noticeEl = document.createElement("div");
-                                                            thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                                                            YDom.addClass(noticeEl, "acnDraftContent");
-                                                            noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
-                                                        }
-                                                    }else{
-                                                        for(var n=0; n<noticeEls.length; n++) {
-                                                            var curNode = noticeEls[n];
-                                                            curNode.parentNode.removeChild(curNode);
+                                        var saveDraftFlag = false;
+                                        (function (saveDraftFlag) {
+                                            for(var s=0; s<selectedContent.length; s++) {
+                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
+                                                    success: function (content) {
+                                                        var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
+                                                        if(content.item.savedAsDraft == true) {
+                                                            saveDraftFlag = true;
+                                                            if(noticeEls.length < 1) {
+                                                                var noticeEl = document.createElement("div");
+                                                                thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                                YDom.addClass(noticeEl, "acnDraftContent");
+                                                                noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                            }
+                                                        }else{
+                                                            if(!saveDraftFlag) {
+                                                                me.removeNotices(noticeEls);
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            });
-
-                                       }
+                                                });
+                                           }
+                                        })(saveDraftFlag);
                                     },
                                     failure: function() {
                                         //TDOD: log error, not mute it
@@ -171,13 +173,42 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 noticeEl,
                                 isWrite;
 
-                             var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
-                             for(var n=0; n<noticeEls.length; n++) {
-                                 var curNode = noticeEls[n];
-                                 curNode.parentNode.removeChild(curNode);
-                             }  
-
                             if (contentTO[0] && contentTO[0].path) {
+
+                                selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
+
+                                var saveDraftFlag = false;
+                                var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
+                                (function (saveDraftFlag, noticeEls, selectedContent) {
+                                    if(selectedContent.length > 0) {
+                                        for (var s = 0; s < selectedContent.length; s++) {
+                                            (function (s) {
+                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
+                                                    success: function (content) {
+                                                        if (content.item.savedAsDraft == true && selectedContent.length > 0) {
+                                                            saveDraftFlag = true;
+                                                            noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
+                                                            if (noticeEls.length < 1) {
+                                                                var noticeEl = document.createElement("div");
+                                                                _this.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                                YDom.addClass(noticeEl, "acnDraftContent");
+                                                                noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                            }
+                                                        } else {
+                                                            if (!saveDraftFlag /*|| (saveDraftFlag && selectedContent.length-1 == s )*/) {
+                                                                me.removeNotices(noticeEls);
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            })(s);
+                                        }
+                                    }else{
+                                        noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
+                                        me.removeNotices(noticeEls);
+                                    }
+                                })(saveDraftFlag, noticeEls, selectedContent);
+
                                 _this.removeFilePermissions(contentTO[0].path, filePermissions, permissionAggregateCounter);
 
                                 if (filePermissions.fileLen) {
@@ -277,6 +308,13 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         for(var x = 0; x < messages.length; x++) {
                             messages[x].remove();
+                        }
+                    },
+
+                    removeNotices: function(noticeEls) {
+                        for (var n = 0; n < noticeEls.length; n++) {
+                            var curNode = noticeEls[n];
+                            curNode.parentNode.removeChild(curNode);
                         }
                     },
 
