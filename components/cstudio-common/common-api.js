@@ -1469,7 +1469,16 @@ var nodeOpen = false;
                 var id = CSA.Utils.getScopedId(),
                     animator,
                     editorId =  CStudioAuthoring.Utils.generateUUID(),
-                    $modal = $('<div><div class="no-ice-mask" style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;background-color: rgba(0, 0, 0, 0.65);z-index: 3000;"></div><div class="studio-ice-dialog studio-ice-container" id="studio-ice-container-' + editorId + '" style="display:none;"><div class="bd"></div></div></div>'),
+                    modalTpl =  '<div class="studio-iframe-view">' +
+                                '   <div class="overlay">' +
+                                '   </div>' +
+                                '   <div class="studio-ice-dialog studio-ice-container studio-ice-container-'+ editorId +'" id="studio-ice-container-' + editorId + '">' +
+                                '       <div class="bd">' +
+                                '           <input id="colExpButton" class="btn btn-default" type="button" value="Collapse">'
+                                '       </div>' +
+                                '   </div>' +
+                                '</div>',
+                    $modal = $(modalTpl),
                     template = '<iframe name="'+ name +'" id="in-context-edit-editor-'+editorId+'" frameborder="0" style="z-index:'+window.top.studioFormZorder+';" onload="CStudioAuthoring.FilesDiff.autoSizeIceDialog(\'' + editorId + '\');"></iframe>"',
                     parentEl = window.top.document.body;
 
@@ -1488,14 +1497,39 @@ var nodeOpen = false;
                             $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
                         }
                     });
+
+                    $modal.on('click', '#colExpButton', function(){
+                        var dialog = window.parent.$( ".studio-ice-container-"+editorId),
+                            dialogContainer = dialog.parent(),
+                            controlContainer = dialog.find('.bd'),
+                            colExpButtonBtn = $('#colExpButtonBtn'),
+                            overlayContainer = dialogContainer.find('.overlay'),
+                            iframe = dialog.find('iframe');
+
+                        if( Math.floor($(dialog).height()) != 60){
+                            CStudioAuthoring.Utils.Cookies.createCookie("formEngineHeight", $(dialog).height().toString());
+                            $(dialog).height(60);
+                            controlContainer.addClass("collapseForm");
+                            overlayContainer && overlayContainer.addClass('overlay-collapsed');
+                            iframe.css('top', -(iframe.height() - 60));
+                            overlayContainer.hide();
+                        } else{
+                            $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie("formEngineHeight")));
+                            controlContainer.removeClass("collapseForm");
+                            overlayContainer && overlayContainer.removeClass('overlay-collapsed');
+                            iframe.css('top', 0);
+                            overlayContainer.show();
+                        }
+                    });
                 });
 
-                $modal.find('.bd').html(template).end().appendTo(parentEl);
+                $modal.find('.bd').append(template).end().appendTo(parentEl);
                 $modal.find('.studio-ice-container').css('z-index', 100525);
 
                 window.open(url, name);
 
                 animator.slideInDown();
+
             },
 
             openCopyDialog:function(site, uri, callback, args) {
