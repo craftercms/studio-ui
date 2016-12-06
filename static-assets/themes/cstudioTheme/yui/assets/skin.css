@@ -250,3 +250,13 @@ div#preview-tools-panel-container{
     text-align: justify;
 }
 
+.studio-view .date-picker-control .date-picker{
+    width: 61%;
+    display: inline-block;
+}
+
+.yui-overlay.yui-panel .bd .date-picker-control .zone-picker{
+    width: 37%;
+    display: inline-block;
+}
+
