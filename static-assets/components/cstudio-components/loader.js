@@ -213,7 +213,8 @@
             'viewcontroller-base',
             'component-templateagent',
             'template-approve',
-            'jquery-datetimepicker'
+            'jquery-datetimepicker',
+            'jquery-momentjs'
         ]
     });
 
@@ -242,7 +243,7 @@
         type: 'js',
         name:'viewcontroller-requestpublish',
         path: 'components/cstudio-view-controllers/request-publish.js?version=' + CStudioAuthoring.UIBuildId,
-        requires: ['viewcontroller-base', 'jquery-datetimepicker']
+        requires: ['viewcontroller-base', 'jquery-datetimepicker', 'jquery-momentjs']
     });
 
     Loader.addModule({
@@ -270,7 +271,13 @@
         name:'jquery-datetimepicker-css',
         path: 'libs/datetimepicker/jquery.datetimepicker.css?version=' + CStudioAuthoring.UIBuildId,
         requires: emptyArray
-    })
+    });
+
+    Loader.addModule({
+        type: 'js',
+        name:'jquery-momentjs',
+        path: 'jquery/timezones/timezones.full.js?version=' + CStudioAuthoring.UIBuildId
+    });
 
 })();
  

@@ -97,8 +97,11 @@
             data.items.push(check.getAttribute('data-item-id'));
         });
 
+        var timezone = $("select.zone-picker").find(':selected').attr('data-offset');
+
         if (data.schedule === 'custom') {
             data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
+            data.scheduledDate += timezone;
         }
 
         //this.showProcessingOverlay(true);
@@ -376,6 +379,17 @@
                 me.$('#approveSubmitVal').show();
             }
         });
+
+        me.$('.zone-picker').timezones();
+
+        CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/site-config.xml",
+            {
+                success: function(config) {
+                    $("select.zone-picker option[value='"+config["default-timezone"]+"']").attr("selected", "selected");
+                }
+            });
 
     }
 
