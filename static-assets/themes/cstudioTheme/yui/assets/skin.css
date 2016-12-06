@@ -250,13 +250,9 @@ div#preview-tools-panel-container{
     text-align: justify;
 }
 
-.studio-view .date-picker-control .date-picker{
-    width: 61%;
-    display: inline-block;
+.studio-view .date-picker-control .zone-text{
+    margin: 0;
+    padding: 7px 0;
 }
 
-.yui-overlay.yui-panel .bd .date-picker-control .zone-picker{
-    width: 37%;
-    display: inline-block;
-}
 
