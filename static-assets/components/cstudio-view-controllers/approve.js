@@ -97,8 +97,11 @@
             data.items.push(check.getAttribute('data-item-id'));
         });
 
+        var timezone = $("select.zone-picker").find(':selected').attr('data-offset');
+
         if (data.schedule === 'custom') {
             data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
+            data.scheduledDate += timezone;
         }
 
         //this.showProcessingOverlay(true);
@@ -376,6 +379,27 @@
                 me.$('#approveSubmitVal').show();
             }
         });
+
+        CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/site-config.xml",
+            {
+                success: function(config) {
+                    var timeZoneText = me.$('.zone-text');
+                    timeZoneText.html("<a class='zone-link'>"+config["default-timezone"] + "</a>");
+                    $( '<select class="zone-picker form-control"></select>' ).insertAfter( timeZoneText );
+                    var zonePicker = $('.zone-picker');
+                    zonePicker.timezones();
+                    zonePicker.hide();
+                    $("select.zone-picker option[value='"+config["default-timezone"]+"']").attr("selected", "selected");
+                    me.$('.zone-link').click(function() {
+                        zonePicker.show();
+                    });
+                    zonePicker.change(function() {
+                        me.$('.zone-link').html($(this).val());
+                    });
+                }
+            });
 
     }
 
