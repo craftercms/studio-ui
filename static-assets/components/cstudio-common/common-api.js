@@ -2978,6 +2978,27 @@ var parentSaveCb = {
             },
 
             /**
+             * lookup configuration
+             */
+            getConfiguration: function(site, configPath, callback) {
+                var serviceUrl = this.getConfigurationUrl;
+                serviceUrl += "?site="+site;
+                serviceUrl += "&path=" + configPath;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
+                        callback.success(YAHOO.lang.JSON.parse(res));
+
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
              * unlock the content item
              */
             unlockContentItem: function(site, path, callback) {
