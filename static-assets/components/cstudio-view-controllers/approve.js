@@ -386,7 +386,7 @@
             {
                 success: function(config) {
                     var timeZoneText = me.$('.zone-text');
-                    timeZoneText.html("<a class='zone-link'><span class='current-zone'>"+config["default-timezone"] + "</span> (click to change) </a>");
+                    timeZoneText.html("<a class='zone-link'>"+config["default-timezone"] + "</a>");
                     $( '<select class="zone-picker form-control"></select>' ).insertAfter( timeZoneText );
                     var zonePicker = $('.zone-picker');
                     zonePicker.timezones();
@@ -396,7 +396,7 @@
                         zonePicker.show();
                     });
                     zonePicker.change(function() {
-                        me.$('.current-zone').html($(this).val());
+                        me.$('.zone-link').html($(this).val());
                     });
                 }
             });

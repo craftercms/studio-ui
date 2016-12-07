@@ -254,5 +254,12 @@ div#preview-tools-panel-container{
     margin: 0;
     padding: 7px 0;
 }
+.studio-view .date-picker-control .zone-link{
+    cursor: pointer;
+}
+
+.studio-view .date-picker-control .validation{
+    margin-bottom: 0px;
+}
 
 
