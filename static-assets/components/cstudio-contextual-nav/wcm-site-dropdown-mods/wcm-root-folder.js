@@ -1285,6 +1285,55 @@ treeNode.getHtml = function() {
         return el;
     },
 
+    updateNote:function (note, treeData) {
+        note.browserUri != treeData.browserUri && treeData.browserUri != undefined ?
+            note.browserUri = treeData.browserUri : null;
+        note.contentType != treeData.contentType && treeData.contentType != undefined ?
+            note.contentType = treeData.contentType : null;
+        note.editedDate != treeData.editedDate && treeData.editedDate != undefined ?
+            note.editedDate = treeData.editedDate : null;
+        note.fileName != treeData.fileName && treeData.fileName != undefined ?
+            note.fileName = treeData.fileName : null;
+        note.formId != treeData.formId && treeData.formId != undefined ?
+            note.formId = treeData.formId  : null;
+        note.formPagePath != treeData.formPagePath && treeData.formPagePath != undefined ?
+            note.formPagePath = treeData.formPagePath : null;
+        note.inFlight != treeData.inFlight && treeData.inFlight != undefined ?
+            note.inFlight = treeData.inFlight : null;
+        note.inProgress != treeData.inProgress && treeData.inProgress != undefined ?
+            note.inProgress = treeData.inProgress : null;
+        note.internalName != treeData.internalName && treeData.internalName != undefined ?
+            note.internalName = treeData.internalName : null;
+        note.isComponent != treeData.isComponent && treeData.isComponent != undefined ?
+            note.isComponent = treeData.isComponent : null;
+        note.isContainer != treeData.isContainer && treeData.isContainer != undefined ?
+            note.isContainer = treeData.isContainer : null;
+        note.isLevelDescriptor != treeData.isLevelDescriptor && treeData.isLevelDescriptor != undefined ?
+            note.isLevelDescriptor = treeData.isLevelDescriptor : null;
+        note.link != treeData.link && treeData.link != undefined ?
+            note.link = treeData.link : null;
+        note.linkToPreview != treeData.linkToPreview && treeData.linkToPreview != undefined ?
+            note.linkToPreview = treeData.linkToPreview : null;
+        note.lockOwner != treeData.lockOwner && treeData.lockOwner != undefined ?
+            note.lockOwner = treeData.lockOwner : null;
+        note.modifier != treeData.modifier && treeData.modifier != undefined ?
+            note.modifier = treeData.modifier : null;
+        note.nodeRef != treeData.nodeRef && treeData.nodeRef != undefined ?
+            note.nodeRef = treeData.nodeRef : null;
+        note.path != treeData.path && treeData.path != undefined ?
+            note.path = treeData.path : null;
+        note.pathSegment != treeData.pathSegment && treeData.pathSegment != undefined ?
+            note.pathSegment = treeData.pathSegment : null;
+        note.previewable != treeData.previewable && treeData.previewable != undefined ?
+            note.previewable = treeData.previewable : null;
+        note.site != treeData.site && treeData.site != undefined ?
+            note.site = treeData.site : null;
+        note.status != treeData.status && treeData.status != undefined ?
+            note.status = treeData.status : null;
+        note.uri != treeData.uri && treeData.uri != undefined ?
+            note.uri = treeData.uri : null;
+    },
+
     /**
 	* methos that fires when new items added to tree.
 	*/
@@ -1378,6 +1427,8 @@ treeNode.getHtml = function() {
                                             currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name);
                                         currentInternalName = treeData.item.isNew ? currentInternalName + " *" : currentInternalName;
                                         YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).innerHTML = currentInternalName : null;
+                                        //curNode.data.lockOwner = treeData.item.lockOwner;
+                                        Self.updateNote(curNode.data, treeData.item);
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                         if (treeData.item.isPreviewable) {
                                             style = style + " preview";
