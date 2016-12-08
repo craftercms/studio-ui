@@ -1427,7 +1427,6 @@ treeNode.getHtml = function() {
                                             currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name);
                                         currentInternalName = treeData.item.isNew ? currentInternalName + " *" : currentInternalName;
                                         YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).innerHTML = currentInternalName : null;
-                                        //curNode.data.lockOwner = treeData.item.lockOwner;
                                         Self.updateNote(curNode.data, treeData.item);
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                         if (treeData.item.isPreviewable) {
