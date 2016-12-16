@@ -1541,6 +1541,17 @@ var nodeOpen = false;
 
                 animator.slideInDown();
 
+                $('body').on("diff-end", function () {
+                    $modal.remove();
+                });
+
+                diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
+                diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
+                diffUrl += "&mode=iframe";
+
+                window.open(diffUrl, 'diffDialog');
+
+                animator.slideInDown();
             },
 
             openCopyDialog:function(site, uri, callback, args) {
@@ -2979,6 +2990,27 @@ var parentSaveCb = {
                         }catch(err){
 
                         }
+
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * lookup configuration
+             */
+            getConfiguration: function(site, configPath, callback) {
+                var serviceUrl = this.getConfigurationUrl;
+                serviceUrl += "?site="+site;
+                serviceUrl += "&path=" + configPath;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
+                        callback.success(YAHOO.lang.JSON.parse(res));
 
                     },
                     failure: function(response) {

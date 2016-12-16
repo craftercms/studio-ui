@@ -43,10 +43,10 @@
         marketplace: {
             Topics: {
                 "ALL": "*",
-
+                "STORE_READY": "STORE_READY",
                 "INSTALL_SITE_PLUGIN": "INSTALL_SITE_PLUGIN",
                 "INSTALL_COMPLETE": "INSTALL_COMPLETE",
-                "INSTALL_REQUEST_PLUGIN_STATES": "INSTALL_REQUEST_PLUGIN_STATES"
+                "INSTALLED_PLUGINS": "INSTALLED_PLUGINS"
             }
         },
         
