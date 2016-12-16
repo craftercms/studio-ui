@@ -1566,10 +1566,6 @@ var CStudioForms = CStudioForms || function() {
                     };
 
                     controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
-                    // The repeat container will be re-rendered, thus all field callbacks will be registered again.
-                    // Solution: Remove the field callbacks before re-rendering the repeat container
-                    // TO-DO : Make the update process more selective (ie. do not re-render the whole repeat container)
-                    controlEl.form.beforeSaveCallbacks = arrayFilter(controlEl.form.beforeSaveCallbacks, "renderPersist");
                     controlEl.innerHTML = "";
                     controlEl.formEngine._renderRepeatBody(controlEl);
                 };
