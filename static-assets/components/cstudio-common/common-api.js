@@ -671,7 +671,18 @@ var nodeOpen = false;
                             eventNS.data = items;
                             eventNS.typeAction = "";
                             eventNS.oldPath = null;
+
                             document.dispatchEvent(eventNS);
+
+                            var retry = window.setInterval(function(){
+                                //checkIconState
+                                if(document.querySelector('#activeContentActions .status-icon.in-progress')){
+                                    document.dispatchEvent(eventNS);
+                                }else{
+                                    window.clearInterval(retry);
+                                }
+                            }, 5000);
+
                         });
 
                     }
@@ -7772,15 +7783,17 @@ CStudioAuthoring.FilesDiff = {
                                 var resObj = response.responseText
  
                                 if (resObj.indexOf("true") != -1) {
+                                    //ticket is valid
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 } 
                                 else {
-                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
+                                    //ticket is invalid
+                                    authRedirect(configObj);
                                 }
                             },
                             failure: function(response) {
-                                //throw new Error('Unable to read session ticket');
                                 CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
+                                setTimeout(function() { authLoop(configObj); }, delay);
                             }
                         };
 
