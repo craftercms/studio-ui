@@ -7792,8 +7792,12 @@ CStudioAuthoring.FilesDiff = {
                                 }
                             },
                             failure: function(response) {
-                                CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
-                                setTimeout(function() { authLoop(configObj); }, delay);
+                                if(response.status == 401){
+                                    authRedirect(configObj);
+                                }else{
+                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
+                                    setTimeout(function() { authLoop(configObj); }, delay);
+                                }
                             }
                         };
 
