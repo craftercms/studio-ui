@@ -295,11 +295,11 @@ CStudioAuthoring.Module.requireModule(
 												{label:"User Profile", value:"profile"},
 												{label:"Current Authentication", value:"authentication"},
 
-												{label:"Log and INFO", value:"logger.info('MY MESSAGE')"},
-												{label:"Log and ERROR", value:"logger.error('MY MESSAGE')"},
+												{label:"Log an INFO", value:"logger.info('MY MESSAGE')"},
+												{label:"Log an ERROR", value:"logger.error('MY MESSAGE')"},
 
 												{label:"Search Service", value:"searchService"},
-												{label:"SiteItem Service", value:"siteItemService"},
+												{label:"Site Item Service", value:"siteItemService"},
 												{label:"Profile Service", value:"profileService"},
 
 												{label:"Get Spring Bean", value:"applicationContext.get(\"SPRING_BEAN_NAME\")"}
