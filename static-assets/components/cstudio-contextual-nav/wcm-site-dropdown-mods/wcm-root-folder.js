@@ -246,7 +246,8 @@
                             CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, "default", {
                                 openToPath: pathToOpen,
                                 success: function (treeData) {
-
+                                    
+                                    YDom.removeClass(label, "loading");
                                     //if(servPath == "/site/website")
                                     window.treeData = treeData;
 
@@ -256,7 +257,6 @@
                                     }
                                     Self.drawTree(items, tree, path, instance, pathFlag);
                                     pathFlag = false;
-                                    YDom.removeClass(label, "loading");
                                     //add hover effect to nodes
                                     Self.nodeHoverEffects(this);
 
