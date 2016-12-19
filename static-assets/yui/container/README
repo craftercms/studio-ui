@@ -114,7 +114,7 @@ Fixed the following bugs:
   keep it from being re-added to the end of the queue if 
   listeners were to set a property which superceded the entry.
 
-*** version 2.5.2 ***
+*** version 2.5.3-SNAPSHOT ***
 
 + No change.
 

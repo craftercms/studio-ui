@@ -251,4 +251,4 @@ this._loading=false
 };
 YAHOO.widget.Tab=c
 })();
-YAHOO.register("tabview",YAHOO.widget.TabView,{version:"2.5.2",build:"1076"});
+YAHOO.register("tabview",YAHOO.widget.TabView,{version:"2.5.3-SNAPSHOT",build:"1076"});

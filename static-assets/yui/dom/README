@@ -12,7 +12,7 @@ Dom Release Notes
 - class attribute now removed if empty after removeClass
 - normalized isAncestor (needle === haystack no longer returns true in some browsers) 
 
-*** version 2.5.2 ***
+*** version 2.5.3-SNAPSHOT ***
 * no change
 
 *** version 2.5.1 ***
