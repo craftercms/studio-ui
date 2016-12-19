@@ -11,7 +11,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="/studio/site-dashboard">
-                    <img src="/studio/static-assets/images/crafter_studio_360.png" alt="Crafter Studio">
+                    <img id="cstudio-logo" src="" alt="Crafter Studio">
                 </a>
             </div>
 
