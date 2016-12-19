@@ -2521,6 +2521,7 @@ var parentSaveCb = {
             allowedContentTypesForPath: "/api/1/services/api/1/content/get-content-types.json",
             retrieveSitesUrl: "/api/1/services/api/1/user/get-sites-3.json",
             retrievePublishingChannelsUrl: "/api/1/services/api/1/deployment/get-available-publishing-channels.json",
+            getUiResource: "/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg",
 
             getPagesServiceUrl: "/api/1/services/api/1/content/get-pages.json",
             lookupFoldersServiceUri: "/api/1/services/api/1/content/get-pages.json", // NEED A SERVICE
@@ -4196,6 +4197,33 @@ var parentSaveCb = {
 
                             var contentType = YAHOO.lang.JSON.parse(contentTypeJson);
                             callback.success(contentType);
+                        }
+                        catch(err) {
+                            callback.failure(err);
+                        }
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            /**
+             * lookup site logo
+             */
+            lookupSiteLogo: function(site, callback) {
+
+                var serviceUri = this.getUiResource;
+
+                var serviceCallback = {
+                    success: function(oResponse) {
+                        var responseText = oResponse.responseText;
+
+                        try {
+                            callback.success(responseText);
                         }
                         catch(err) {
                             callback.failure(err);
