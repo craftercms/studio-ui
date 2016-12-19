@@ -1128,6 +1128,7 @@ var CStudioForms = CStudioForms || function() {
                                         else {
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-save-draft");
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                            StudioAuthoring.Operations.refreshPreview();
                                         }
                                     }
                                     else {
@@ -1140,6 +1141,7 @@ var CStudioForms = CStudioForms || function() {
                                         else {
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-save-draft");
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                            CStudioAuthoring.Operations.refreshPreview();
                                         }
                                     }
                                     var page =  CStudioAuthoring.Utils.getQueryParameterURLParentWindow("page");
