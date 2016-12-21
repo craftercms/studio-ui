@@ -2070,8 +2070,8 @@ YAHOO.register("get", YAHOO.util.Get, {version: "2.9.0", build: "2800"});
          */
         info: {
 
-    // 'root': '2.5.3-SNAPSHOT/build/',
-    // 'base': 'http://yui.yahooapis.com/2.5.3-SNAPSHOT/build/',
+    // 'root': '2.5.2/build/',
+    // 'base': 'http://yui.yahooapis.com/2.5.2/build/',
 
     'root': VERSION + '/build/',
     'base': 'http://yui.yahooapis.com/' + VERSION + '/build/',

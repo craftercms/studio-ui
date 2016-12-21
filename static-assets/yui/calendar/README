@@ -19,7 +19,7 @@ Calendar Release Notes
   
 + Refactored code to reduce minified Kweight.
 
-*** version 2.5.3-SNAPSHOT ***
+*** version 2.5.2 ***
 
 + CalendarGroup toDate method no longer throws javascript exception
 
