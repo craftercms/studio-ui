@@ -891,7 +891,11 @@ treeNode.getHtml = function() {
                         k = {},
                         pathTrace = {},
                         rooth = {},
-						updatePathTrace = function(j, key){ return (pathTrace[key][j] = (pathTrace[key][j] + "/" + paths[key][j][counter[key][j]++])); },
+						updatePathTrace = function(j, key){ 
+                            var appendedPath = (paths[key] && paths[key][j]) ? paths[key][j][counter[key][j]++] : "";
+                            appendedPath = (appendedPath !== "") ? ("/" + appendedPath) : "";
+                            return (pathTrace[key][j] = (pathTrace[key][j] + appendedPath)); 
+                        },
                         nextPathTrace = function(j, key){
                             var cont = j == 0 ? 0 : counter[key][j] + 1;
                             return (pathTrace[key][j] + "/" + paths[key][j][counter[key][j]]); }
@@ -1027,13 +1031,20 @@ treeNode.getHtml = function() {
                                             }
                                             if (node == null) {
                                                 node = tree.getNodeByProperty("path", updatePathTrace(k[key], key));
-                                                loadEl = YAHOO.util.Selector.query(".ygtvtp", node.getEl(), true);
+                                                if (node != null) {
+                                                    loadEl = YAHOO.util.Selector.query(".ygtvtp", node.getEl(), true);
+                                                }
                                             } else {
                                                 loadEl = YAHOO.util.Selector.query(".ygtvlp", node.getEl(), true);
                                             }
-                                            YDom.addClass(loadEl, "ygtvloading");
-                                            //YDom.setAttribute ( node , "index" ,instance.pathNumber  );
-                                            doCall(node, k[key], key);
+                                            if (node == null) {
+                                                YDom.removeClass(label, "loading");
+                                                Self.firePathLoaded(instance);
+                                            } else {
+                                                YDom.addClass(loadEl, "ygtvloading");
+                                                //YDom.setAttribute ( node , "index" ,instance.pathNumber  );
+                                                doCall(node, k[key], key);
+                                            }
                                         } else {
                                             YDom.removeClass(label, "loading");
                                             Self.firePathLoaded(instance);
