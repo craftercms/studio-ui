@@ -163,11 +163,18 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
             
   
             WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+
+            var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"),
+                currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked") ?
+                    JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null;
   
             html = html.concat([
                 '<td style="padding-right:0px">',
                     '<div class="dashlet-ident">',
-                            '<input type="checkbox" class="dashlet-item-check" id="', uri, '"', (item.inFlight ? ' disabled' : ''), ' />',
+                            '<input type="checkbox" class="dashlet-item-check" id="', uri,
+                ((this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0
+                    && item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim())) ? ' checked' : ''),
+                '"', (item.inFlight ? ' disabled' : ''), ' />',
                     '</div>',
                 '</td>',
                 '<td style="padding-left:0px">'+
@@ -183,6 +190,10 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
                 "<td title='fullUri' class='width0'>", uri, "</td>",                
                 "<td class='alignRight ttThColLast'>", lastEditTime, "</td>"
             ]);
+        }
+
+        if(currentCheckItem && this.widgetId == currentDashboard){
+            CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
         }
 
         return html.join("");

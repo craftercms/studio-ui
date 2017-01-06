@@ -191,12 +191,19 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                 WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
                 WcmDashboardWidgetCommon.insertViewLink(item, viewLinkId);
 
+                var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"),
+                    currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked") ?
+                        JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null;
+
                 html = html.concat([
                     '<td colspan=2>',
                     '<div class="dashlet-cell-wrp">', depth ?
                         '<div class="dashlet-ident">' : '',
                     '<div class="dashlet-ident">',
-                    '<input type="checkbox" class="dashlet-item-check" id="', uri, '"', ((item.deleted || item.inFlight) ? ' disabled' : ''), ' />',
+                    '<input type="checkbox" class="dashlet-item-check" id="', uri, '"',
+                    ((this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0
+                        && item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim())) ? ' checked' : ''),
+                    ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                     '<span class="', itemIconStatus, (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                     '<a ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+browserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true) ? "previewLink" : "non-previewable-link",
                     (item.disabled == true ? ' dashboard-item disabled' : '') , '">',
@@ -216,6 +223,11 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromString(item.eventDate), "</td>"
                 ]);
 
+            }
+
+            if(this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0
+                && item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim())){
+                CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
             }
 
             return html.join('');
