@@ -638,11 +638,18 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             //this.callingWindow.location.reload(true);
                                         }
                                     }
-                                    if(CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
                                         eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
                                         eventNS.typeAction = "edit";
+                                        eventNS.draft = draft;
                                         document.dispatchEvent(eventNS);
-                                    }
+                                        if(!CStudioAuthoringContext.isPreview) {
+                                            if(draft) {
+                                                console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
+                                                CStudioAuthoring.Utils.Cookies.createCookie("dashboard-checked", JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent()));
+                                            }else{
+                                                CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
+                                            }
+                                        }
                                 },
                                 failure: function() { },
                                 callingWindow : window

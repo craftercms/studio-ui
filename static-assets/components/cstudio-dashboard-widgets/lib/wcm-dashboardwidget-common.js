@@ -386,6 +386,7 @@ WcmDashboardWidgetCommon.init = function (instance) {
 
 
                     var checkboxClick = function (event, matchedEl) {
+                        CStudioAuthoring.Utils.Cookies.createCookie("dashboard-selected", instance.widgetId.trim());
                         if (instance.onCheckedClickHandler) {
                             instance.onCheckedClickHandler(event, matchedEl);
                         }
@@ -1296,7 +1297,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
                 },
                 'input',
                 divTableContainer);
-            if (checkboxArray && checkboxArray.length >= 1) {
+            if (checkboxArray && checkboxArray.length >= 1 && (eventNS.typeAction =="edit" && !eventNS.draft)) {
                 for (var chkIdx = 0; chkIdx < checkboxArray.length; chkIdx++) {
                     checkboxArray[chkIdx].checked = false;
                     WcmDashboardWidgetCommon.clearItem(checkboxArray[chkIdx], instance.dashBoardData);
