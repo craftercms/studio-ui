@@ -1472,7 +1472,7 @@ treeNode.getHtml = function() {
                                                 if ((curNode.labelStyle.indexOf("folder") != -1 && cont < 25) || (curNode.labelStyle.indexOf("folder") == -1 && cont < 2)) {
                                                     setTimeout(function () {
                                                         lookupSiteContent(curNode, currentUri, cont);
-                                                        if (typeof WcmDashboardWidgetCommon != 'undefined') {
+                                                        if (typeof WcmDashboardWidgetCommon != 'undefined' && (eventNS.typeAction =="edit" && !eventNS.draft)) {
                                                             CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
                                                                 CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
                                                         }
@@ -2398,10 +2398,17 @@ treeNode.getHtml = function() {
                                 //this.callingWindow.location.reload(true);
                             }
                         }
-                        if(CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
-                            eventNS.data = oCurrentTextNode;
-                            eventNS.typeAction = "";
-                            document.dispatchEvent(eventNS);
+                        eventNS.data = oCurrentTextNode;
+                        eventNS.typeAction = "edit";
+                        eventNS.draft = draft;
+                        document.dispatchEvent(eventNS);
+                        if(!CStudioAuthoringContext.isPreview) {
+                            if(draft) {
+                                console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
+                                CStudioAuthoring.Utils.Cookies.createCookie("dashboard-checked", JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent()));
+                            }else{
+                                CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
+                            }
                         }
                     },
 
