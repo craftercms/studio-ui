@@ -1128,6 +1128,7 @@ var CStudioForms = CStudioForms || function() {
                                         else {
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-save-draft");
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                            StudioAuthoring.Operations.refreshPreview();
                                         }
                                     }
                                     else {
@@ -1140,6 +1141,7 @@ var CStudioForms = CStudioForms || function() {
                                         else {
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-save-draft");
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                            CStudioAuthoring.Operations.refreshPreview();
                                         }
                                     }
                                     var page =  CStudioAuthoring.Utils.getQueryParameterURLParentWindow("page");
@@ -1148,8 +1150,7 @@ var CStudioForms = CStudioForms || function() {
                                     if(acnDraftContent && !saveDraft){
                                         acnDraftContent.parentNode.removeChild(acnDraftContent);
                                     }
-                                    if(!acnDraftContent && saveDraft && (contentTO.item.browserUri == page ||
-                                        parent.window.location.href.indexOf("site-dashboard") >= 0)){
+                                    if(!acnDraftContent && saveDraft && (contentTO.item.browserUri == page )){
                                         var noticeEl = document.createElement("div");
                                         parent.document.querySelector("#studioBar nav .container-fluid").appendChild(noticeEl);
                                         YDom.addClass(noticeEl, "acnDraftContent");

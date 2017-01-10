@@ -271,13 +271,8 @@ CStudioAuthoring.Module.requireModule(
 
 
 									if(templatePath.indexOf(".ftl") != -1 || templatePath.indexOf(".groovy")) {
-										var variableLabel = document.createElement("label");
-										variableLabel.innerHTML = CMgs.format(contextNavLangBundle, "variableLabel");
-										templateEditorToolbarVarElt.appendChild(variableLabel);
-
-
 										//Create array of options to be added
-										var variableOpts =null
+										var variableOpts = [];
 
 										if(templatePath.indexOf(".groovy") != -1) {
 											//Create array of options to be added
@@ -334,53 +329,59 @@ CStudioAuthoring.Module.requireModule(
 										}
 
 										//Create and append select list
-										var selectList = document.createElement("select");
-										selectList.id = "variable";
-										templateEditorToolbarVarElt.appendChild(selectList);
+										if (variableOpts.length > 0) {
+											var variableLabel = document.createElement("label");
+											variableLabel.innerHTML = CMgs.format(contextNavLangBundle, "variableLabel");
+											templateEditorToolbarVarElt.appendChild(variableLabel);
 
-										//Create and append the options
-										for (var i = 0; i < variableOpts.length; i++) {
-											var option = document.createElement("option");
-											option.value = variableOpts[i].value;
-											option.text = variableOpts[i].label;
-											selectList.appendChild(option);
-										}
+											var selectList = document.createElement("select");
+											selectList.id = "variable";
+											templateEditorToolbarVarElt.appendChild(selectList);
 
-										//Create and append add button
-										var addButton = document.createElement("button");
-										addButton.id = "addButtonVar";
-										addButton.innerHTML = "Add Code";
-										addButton.className = "btn btn-primary";
-										templateEditorToolbarVarElt.appendChild(addButton);
-
-										if(contentType && contentType !== ""){
-											_addVarsSelect();
-
-											var selectedLabel = $("#variable").find('option:selected').text(),
-												$varsSelect = $("#var-names");
-											if(selectedLabel == "Content variable"){
-												$varsSelect.show();
+											//Create and append the options
+											for (var i = 0; i < variableOpts.length; i++) {
+												var option = document.createElement("option");
+												option.value = variableOpts[i].value;
+												option.text = variableOpts[i].label;
+												selectList.appendChild(option);
 											}
 
-											selectList.onchange = function() {
+											//Create and append add button
+											var addButton = document.createElement("button");
+											addButton.id = "addButtonVar";
+											addButton.innerHTML = "Add Code";
+											addButton.className = "btn btn-primary";
+											templateEditorToolbarVarElt.appendChild(addButton);
 
-												var selectedLabel = $(this).find('option:selected').text();
+											if(contentType && contentType !== ""){
+												_addVarsSelect();
 
-												if(selectedLabel == 'Content variable') {
-													if($varsSelect.length){
-														$varsSelect.show();
-													}
-												}else {
-													$varsSelect.hide();
+												var selectedLabel = $("#variable").find('option:selected').text(),
+													$varsSelect = $("#var-names");
+												if(selectedLabel == "Content variable"){
+													$varsSelect.show();
 												}
 
+												selectList.onchange = function() {
+
+													var selectedLabel = $(this).find('option:selected').text();
+
+													if(selectedLabel == 'Content variable') {
+														if($varsSelect.length){
+															$varsSelect.show();
+														}
+													}else {
+														$varsSelect.hide();
+													}
+
+												};
+											}
+
+											//TODO: need to change to selected variable
+											addButton.onclick = function() {
+												editorEl.codeMirrorEditor.replaceRange(selectList.options[selectList.selectedIndex].value, editorEl.codeMirrorEditor.getCursor());
 											};
 										}
-
-										//TODO: need to change to selected variable
-										addButton.onclick = function() {
-											editorEl.codeMirrorEditor.replaceRange(selectList.options[selectList.selectedIndex].value, editorEl.codeMirrorEditor.getCursor());
-										};
 									}
 
 									var cancelEl = document.getElementById('template-editor-cancel-button');

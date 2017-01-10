@@ -60,6 +60,10 @@
 
             CStudioBrowse.validateSelections();
 
+            if ($(this).prop("type") === "radio") { // just select one if its radio button
+                CStudioAuthoring.SelectedContent.selectedContent = [];
+            }
+
             if($(this).is(":checked")){
                 CStudioAuthoring.SelectedContent.selectContent(contentTO);
             }else{

@@ -220,8 +220,9 @@ CStudioAuthoringContext.site,
                                 this.cb.success(combinedTree, args);
                             },
                             failure: function() {
-                                var combinedTree = combineResultsFn(this.baseTreeData, {});
-                                this.cb.success(combinedTree, args);
+                                // var combinedTree = combineResultsFn(this.baseTreeData, {});
+                                // this.cb.success(combinedTree, args);
+                                this.cb.failure(); // if fails it fails, instead of retrying the same service call
                             },
                             baseTreeData: treeData,
                             cb: this.cb,
@@ -235,8 +236,9 @@ CStudioAuthoringContext.site,
                                 this.cb.success(combinedTree, args);
                             },
                             failure: function() {
-                                var combinedTree = combineResultsFn(this.baseTreeData, {});
-                                this.cb.success(combinedTree, args);
+                                // var combinedTree = combineResultsFn(this.baseTreeData, {});
+                                // this.cb.success(combinedTree, args);
+                                this.cb.failure(); // if fails it fails, instead of retrying the same service call
                             },
                             baseTreeData: treeData,
                             cb: this.cb,

@@ -194,11 +194,18 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
         itemNameForDisplay = CStudioAuthoring.Utils.replaceWithASCIICharacter(itemNameForDisplay);
 
         WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
+
+        var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"),
+            currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked") ?
+                JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null;
        	
         var itemRow = [
 			'<td style="padding-right:0px">',
 				'<div class="dashlet-ident">',
-                    '<input type="checkbox" class="dashlet-item-check" id="', this.widgetId, '-', item.uri, '"', ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
+                    '<input type="checkbox" class="dashlet-item-check" id="', this.widgetId, '-', item.uri, '"',
+            ((this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0
+                && item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim())) ? ' checked' : ''),
+            ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                 '</div>',
 			'</td>',
             '<td style="padding-left:0px">' +
@@ -216,6 +223,10 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			'<td class="alignRight">', WcmDashboardWidgetCommon.getDisplayName(item), '</td>',
 			'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromString(item.eventDate), '</td>'
         ];
+
+        if(currentCheckItem && this.widgetId == currentDashboard){
+            CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
+        }
 
 		return itemRow.join('');
 	};
