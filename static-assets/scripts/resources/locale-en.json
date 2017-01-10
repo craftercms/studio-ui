@@ -1,0 +1,43 @@
+{
+  "admin": {
+    "groups": {
+      "HEADER_LABEL": "Groups",
+      "IDENTIFIER": "Identifier",
+      "DISPLAY_NAME": "Display Name",
+      "NEW_GROUP": "New Group",
+      "GROUP_ID_ERROR_MESSAGE": "Group Identifier is required.",
+      "GROUP_NAME_ERROR_MESSAGE": "Group Display Name is required.",
+      "CREATE_GROUP": "Create Group",
+      "EDIT_GROUP": "Edit Group",
+      "ADD_USERS": "Add Users",
+      "SEARCH_GROUPS": "Search Groups",
+      "SEARCH_USERS": "Search Users",
+      "ADD_USER_TOOLTIP": "Add User to Group",
+      "ASSIGN_USERS_LABEL": "Assign Users",
+      "VIEW_GROUPS_LABEL": "View Groups"
+    },
+    "users": {
+      "HEADER_LABEL": "Users",
+      "USER_LABEL": "User",
+      "NEW_USER": "New User",
+      "NAME": "Name",
+      "USER_NAME": "User Name",
+      "JOB_TITLE": "Job Title",
+      "EMAIL": "Email",
+      "USAGE": "Usage",
+      "QUOTA": "Quota",
+      "PASSWORD": "Password",
+      "PASSWORD_VERIFICATION": "Password Verification"
+    }
+  },
+  "common": {
+    "CANCEL_LABEL": "Cancel",
+    "SEARCH_LABEL": "Search",
+    "CLOSE_LABEL": "Close",
+    "ADD_LABEL": "Add",
+    "CREATE": "create",
+    "EDIT": "edit",
+    "VIEW": "view",
+    "IS_REQUIRED_LABEL": "is required."
+  }
+}

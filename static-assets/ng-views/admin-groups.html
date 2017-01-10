@@ -1,0 +1,175 @@
+<h2 class="page-header">{{ 'admin.groups.HEADER_LABEL' | translate }}</h2>
+
+<div class="actions clearfix">
+    <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.groups.NEW_GROUP' | translate }}</a>
+    <a class="btn btn-default" ng-click="toggleAssignUsers()" role="button" style="float: right; margin-right: 15px;">{{toggleAssignUsersLabel}}</a>
+</div>
+
+<table ng-show="!assignUsers" st-table="displayedCollection" st-safe-src="groupsCollection" class="table table-striped">
+    <thead>
+    <tr>
+        <th st-sort="id">{{ 'admin.groups.IDENTIFIER' | translate }}</th>
+        <th st-sort="displayName">{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
+        <th></th>
+    </tr>
+    <tr>
+        <th colspan="5"><input st-search="" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="group in displayedCollection">
+        <td>{{group.id}}</td>
+        <td>{{group.displayName}}</td>
+        <td>
+            <a ng-click="editGroupDialog(group)" class="btn btn-sm">
+                <i class="glyphicon glyphicon-pencil">
+                </i>
+            </a>
+        </td>
+        <td>
+            <a ng-click="removeItem(group)" class="btn btn-sm">
+                <i class="glyphicon glyphicon-trash">
+                </i>
+            </a>
+        </td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td colspan="5" class="text-center">
+            <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
+        </td>
+    </tr>
+    </tfoot>
+</table>
+
+<div ng-show="assignUsers" class="row assign-users">
+    <div class="col-md-6 col-xs-6">
+        <table st-table="displayedCollection2" st-safe-src="groupsCollection" class="table ">
+            <thead>
+                <tr>
+                    <th colspan="5"><input st-search="" class="form-control" placeholder="{{ 'admin.groups.SEARCH_GROUPS' | translate }}" type="text"/></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="group in displayedCollection2" ng-click="getUsersFromGroup(group)"
+                    ng-class="{active : activeGroup === group.id}">
+                    <td>{{group.displayName || group.id}}</td>
+                    <td class="actions">
+                        <a ng-click="editGroupDialog(group)" class="btn btn-sm">
+                            <i class="glyphicon glyphicon-pencil">
+                            </i>
+                        </a>
+                        <a ng-click="removeItem(group)" class="btn btn-sm">
+                            <i class="glyphicon glyphicon-trash">
+                            </i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6 col-xs-6">
+        <table st-table="displayedCollection3" st-safe-src="usersFromGroupCollection" class="table ">
+            <thead>
+                <tr>
+                    <th colspan="5">
+                        <input st-search="" class="form-control search-users" placeholder="{{ 'admin.groups.SEARCH_USERS' | translate }}" type="text"/>
+                        <a ng-click="addUserToGroupDialog()" class="add-user glyphicon glyphicon-plus"
+                           tooltip="{{ 'admin.groups.ADD_USER_TOOLTIP' | translate }}" tooltip-placement="top"></a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in displayedCollection3">
+                    <td>{{user.name || user.userName}}</td>
+                    <td class="actions">
+                        <a ng-click="removeUserFromGroup(user)" class="btn btn-sm">
+                            <i class="glyphicon glyphicon-trash">
+                            </i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/ng-template" id="modalView.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{dialogTitle}}</h3>
+    </div>
+    <div class="modal-body clearfix">
+        <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
+            <div class="form-group">
+                <label for="identifier" class="control-label">{{ 'admin.groups.IDENTIFIER' | translate }}</label>
+                <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.identifier" ng-change="" required>
+
+                <div class="error-container"
+                     ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.identifier.$error.required">
+                        {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
+                    </small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="displayName" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
+                <input type="text" class="form-control" id="displayName" name="displayName" ng-model="group.displayName" ng-change="" required>
+
+                <div class="error-container"
+                     ng-show="(createNameForm.displayName.$dirty && createNameForm.displayName.$invalid) || (createNameForm.displayName.$touched && createNameForm.displayName.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.displayName.$error.required">
+                        {{ 'admin.groups.GROUP_NAME_ERROR_MESSAGE' | translate }}
+                    </small>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary text-capitalize"
+                ng-click="okModalFunction()" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>
+        <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="addUsersView.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'admin.groups.ADD_USERS' | translate }}</h3>
+    </div>
+
+    <div class="modal-body">
+        <table st-table="displayedCollection3" st-safe-src="usersCollection" class="table add-users-table">
+            <thead>
+            <tr>
+                <th colspan="5">
+                    <input st-search="" class="form-control search-users" placeholder="{{ 'admin.groups.SEARCH_USERS' | translate }}" type="text"/>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in displayedCollection3">
+                    <td>{{user.name || user.userName}}</td>
+                    <td style="text-align: right;"><a ng-click="addUser(user)">{{ 'common.ADD_LABEL' | translate }}</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary text-capitalize"
+                ng-click="okModalFunction()" ng-disabled="createNameForm.$invalid">{{ 'common.ADD_LABEL' | translate }}</button>
+        <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="creatingGroupConfirmation.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Creating Group</h3>         <!-- TODO: pending display current action & translate -->
+    </div>
+    <div class="modal-body">
+        <img class="creatingSpinner" src="/studio/static-assets/img/spinner_tra.gif" />
+    </div>
+</script>
