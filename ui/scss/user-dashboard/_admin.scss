@@ -1,0 +1,210 @@
+table {
+  td{
+    vertical-align: middle !important;
+
+    .user-image {
+      width: 50px;
+      height: 50px;
+    }
+  }
+}
+
+@media (min-width:768px) {
+  #admin-sidebar {
+    width: inherit;
+    min-width: 300px;
+    max-width: 300px;
+    float: left;
+    height: 100%;
+    position:relative;
+    overflow: auto;
+
+    .sidebar-container{
+      background-color:#f5f5f5;
+      min-height: calc(100vh - 116px);
+      padding: 1px 15px;
+      border: 1px solid #e3e3e3;
+      border-radius: 0 0 4px 4px;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 1px 1p;
+    }
+  }
+  #main {
+    width:calc(100% - 300px);
+    float: right;
+  }
+}
+
+.modal-dialog {
+  .admin-dialog {
+    .form-group {
+      padding-left: 120px;
+    }
+
+    .image-group {
+      padding-left: 0;
+      position: relative;
+
+      button[type="file"]{
+        position: absolute;
+        top: 0;
+        width: 100%;
+        background: white;
+        opacity: 0;
+        height: 100%;
+        border: none;
+        color: gray;
+        font-size: 60px;
+        font-weight: bold;
+        padding-bottom: 18px;
+        z-index: 2;
+        border-radius: 14px;
+
+        &:focus {
+          outline: none;
+        }
+
+        &:hover {
+          opacity: 0.6;
+        }
+      }
+
+      .progress {
+        z-index: 1;
+
+        div {
+          background-color: #00f713;
+          position: absolute;
+          bottom: -14px;
+          width: 100%;
+          height: 10%;
+          border: none;
+          color: gray;
+          font-weight: bold;
+          opacity: 0.8;
+          border-radius: 14px;
+
+          &.completed {
+            background: none;
+
+            &:after {
+              /*Add another block-level blank space*/
+              content: '';
+              display: block;
+
+              /*Make it a small rectangle so the border will create an L-shape*/
+              width: 5px;
+              height: 10px;
+
+              /*Add a white border on the bottom and left, creating that 'L' */
+              border: solid #00f713;
+              border-width: 0 3px 3px 0;
+
+              /*Rotate the L 45 degrees to turn it into a checkmark*/
+              transform: rotate(45deg);
+
+              float: right;
+              margin-right: 6px;
+            }
+          }
+        }
+      }
+
+      .user-image {
+        border: 2px solid #adadad;
+        border-radius: 14px;
+      }
+    }
+  }
+
+  .edit-false {
+    .image-group {
+      button[type="file"] {
+        display: none;
+      }
+    }
+
+    .control-label {
+      min-width: 120px;
+    }
+
+    .form-control {
+      background: none;
+      border: none;
+      box-shadow: none;
+      display: inline-block;
+      width: initial;
+      height: initial;
+      cursor: default !important;
+
+    }
+  }
+  
+  .error.ng-binding {
+    color: red;
+  }
+}
+
+.assign-users {
+  margin: 0 auto;
+  margin-bottom: 20px;
+
+  div:first-child {
+    border-right: 1px solid #ddd;
+  }
+
+  div {
+    padding: 5px 15px 5px;
+  }
+
+  table {
+    margin-bottom: 0;
+
+    .search-users {
+      width: calc( 100% - 35px );
+      display: inline-block;
+    }
+    
+    .add-user {
+      border: 1px solid #ccc;
+      padding: 4px 4px 5px 5px;
+      border-radius: 11px;
+      color: #a2a2a2;
+      text-decoration: none;
+      margin-left: 5px;
+
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+      -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+      transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+
+    tbody {
+      tr {
+        cursor: pointer;
+
+
+        &:hover, &.active {
+          background-color: #f3f3f3;
+        }
+
+        &:hover{
+          .actions {
+            a{
+              visibility: visible;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .actions {
+    text-align: right;
+
+    a{
+      visibility: hidden;
+    }
+  }
+}

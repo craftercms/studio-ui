@@ -4,12 +4,15 @@
     var app = angular.module('studio', [
         'ngCookies',
         'ui.router',
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'smart-table',
+        'ngFileUpload',
+        'pascalprecht.translate'
     ]);
 
     app.run([
-        '$rootScope', '$state', '$stateParams', 'authService', 'Constants',
-        function ($rootScope, $state, $stateParams, authService, Constants) {
+        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$translate',
+        function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $translate) {
 
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
@@ -25,12 +28,13 @@
 
             });
 
+            sitesService.getLanguages($rootScope);
         }
     ]);
 
     app.config([
-        '$stateProvider', '$urlRouterProvider',
-        function ($stateProvider, $urlRouterProvider) {
+        '$stateProvider', '$urlRouterProvider', '$translateProvider',
+        function ($stateProvider, $urlRouterProvider, $translateProvider) {
 
             $urlRouterProvider
                 .otherwise('/sites');
@@ -69,6 +73,30 @@
                             controller: 'AppCtrl'
                         }
                     }
+                })
+                .state('home.admin', {
+                    url: 'admin',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/admin.html',
+                            controller: 'AdminCtrl'
+                        }
+                    }
+                })
+                .state('home.admin.groups', {
+                    url: '/groups',
+                    templateUrl: '/studio/static-assets/ng-views/admin-groups.html',
+                    controller: 'AdminCtrl'
+                })
+                .state('home.admin.users', {
+                    url: '/users',
+                    templateUrl: '/studio/static-assets/ng-views/admin-users.html',
+                    controller: 'AdminCtrl'
+                })
+                .state('home.admin.group',{
+                    url: '/group?identifier',
+                    templateUrl: '/studio/static-assets/ng-views/admin-group.html',
+                    controller: "AdminCtrl"
                 })
                 .state('login', {
                     url: '/login',
@@ -140,6 +168,15 @@
                     templateUrl: '/studio/static-assets/ng-views/preview.html',
                     controller: 'PreviewCtrl'
                 });
+
+            $translateProvider.preferredLanguage('en');
+
+            $translateProvider.useStaticFilesLoader({
+                prefix: '/studio/static-assets/scripts/resources/locale-',
+                suffix: '.json'
+            });
+
+
 
         }
     ]);
@@ -236,8 +273,8 @@
     ]);
 
     app.service('sitesService', [
-        '$http', 'Constants', '$cookies', '$timeout', '$window',
-        function ($http, Constants, $cookies, $timeout, $window) {
+        '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
+        function ($http, Constants, $cookies, $timeout, $window, $translate) {
 
             var me = this;
 
@@ -319,11 +356,15 @@
                             scope.langSelected = data[0].id;
                         }
                         scope.languagesAvailable = data;
+                        $translate.use(scope.langSelected)
+
                     })
                     .error(function () {
                         scope.languagesAvailable = [];
                     });
-            }
+
+
+            };
 
             function api(action) {
                 return Constants.SERVICE + 'site/' + action + '.json';
@@ -784,5 +825,9 @@
 
         }
     ]);
+
+
+    
+
 
 })(angular);
