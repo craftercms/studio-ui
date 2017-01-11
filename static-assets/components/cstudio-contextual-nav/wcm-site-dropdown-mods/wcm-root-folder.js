@@ -2389,13 +2389,8 @@ treeNode.getHtml = function() {
                                 CStudioAuthoring.Operations.refreshPreview();
                             }catch(err) {
                                 if(!draft) {
-                                    this.callingWindow.location.reload(true);
+                                    CStudioAuthoring.Operations.refreshPreview(this);
                                 }
-                            }
-                        }
-                        else {
-                            if(!draft) {
-                                //this.callingWindow.location.reload(true);
                             }
                         }
                         eventNS.data = oCurrentTextNode;
@@ -2404,7 +2399,6 @@ treeNode.getHtml = function() {
                         document.dispatchEvent(eventNS);
                         if(!CStudioAuthoringContext.isPreview) {
                             if(draft) {
-                                console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
                                 CStudioAuthoring.Utils.Cookies.createCookie("dashboard-checked", JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent()));
                             }else{
                                 CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
@@ -2752,9 +2746,32 @@ treeNode.getHtml = function() {
                             var path = (this.activeNode.data.uri);
 
                             var editCb = {
-                                success: function() {
-                                    eventNS.typeAction = "";
-                                    eventNS.oldPath = null;
+                                success: function(contentTO, editorId, name, value, draft) {
+
+                                    eventNS.oldPath = oCurrentTextNode.data.path;
+                                    var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                                    if(oCurrentTextNode.data.browserUri != contentTO.item.browserUri){
+                                        var oCurrentTextNodeOldPath = oCurrentTextNode.data.browserUri;
+                                        oCurrentTextNode.data.browserUri = contentTO.item.browserUri;
+                                        oCurrentTextNode.data.path = contentTO.item.path;
+                                        oCurrentTextNode.data.uri = contentTO.item.uri;
+                                        if(oCurrentTextNodeOldPath == pageParameter){
+                                            var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page", oCurrentTextNode.data.browserUri);
+                                            window.location.href = currentURL;
+                                        }
+                                    }
+                                    if(CStudioAuthoringContext.isPreview){
+                                        try{
+                                            CStudioAuthoring.Operations.refreshPreview();
+                                        }catch(err) {
+                                            if(!draft) {
+                                                CStudioAuthoring.Operations.refreshPreview(this);
+                                            }
+                                        }
+                                    }
+                                    eventNS.data = oCurrentTextNode;
+                                    eventNS.typeAction = "edit";
+                                    eventNS.draft = draft;
                                     document.dispatchEvent(eventNS);
                                 },
 
