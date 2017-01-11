@@ -186,7 +186,7 @@
                         }
                     })
             }
-            if (key === "browserUri"){
+            if (key === "path"){
                 this.a_attr = {
                     "data-path": value
                 }
