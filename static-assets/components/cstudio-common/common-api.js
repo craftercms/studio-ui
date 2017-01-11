@@ -4252,9 +4252,6 @@ var parentSaveCb = {
 
                 var serviceUri = this.allowedContentTypesForPath + "?site=" + site + "&path=" + path;
 
-                serviceUri = (serviceUri.indexOf("?")==-1) ?
-                    serviceUri + "?nocache="+new new Date().getTime() : serviceUri + "&nocache="+new Date().getTime();
-
                 var serviceCallback = {
                     success: function(oResponse) {
                         var contentTypeJson = oResponse.responseText;
