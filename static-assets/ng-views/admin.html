@@ -1,0 +1,29 @@
+<div class="container-fluid admin-view">
+    <div class="row full">
+        <div class="col-md-12 ">
+            <header class="screen-title"><h1>Admin Tools</h1></header>
+        </div>
+        <div id="admin-sidebar" class="col-md-3">
+            <div class="sidebar-container">
+                <h3>Users and Groups</h3>
+                <ul class="nav nav-pills nav-stacked">
+                    <!--<li>Users and Groups</li>-->
+                    <li ng-class="{ 'active': $state.$current.name === 'home.admin.groups' }">
+                        <a ui-sref="home.admin.groups" href="#/admin/groups">{{ 'admin.groups.HEADER_LABEL' | translate }}</a>
+                    </li>
+                    <li ng-class="{ 'active': $state.$current.name === 'home.admin.users' }">
+                        <a ui-sref="home.admin.users" href="#/admin/users">{{ 'admin.users.HEADER_LABEL' | translate }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="main" class="col-md-9">
+            <div class="row">
+                <div class="col-md-12">
+                    <div ui-view>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
