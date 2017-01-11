@@ -2389,13 +2389,8 @@ treeNode.getHtml = function() {
                                 CStudioAuthoring.Operations.refreshPreview();
                             }catch(err) {
                                 if(!draft) {
-                                    this.callingWindow.location.reload(true);
+                                    CStudioAuthoring.Operations.refreshPreview(this);
                                 }
-                            }
-                        }
-                        else {
-                            if(!draft) {
-                                //this.callingWindow.location.reload(true);
                             }
                         }
                         eventNS.data = oCurrentTextNode;
@@ -2770,13 +2765,8 @@ treeNode.getHtml = function() {
                                             CStudioAuthoring.Operations.refreshPreview();
                                         }catch(err) {
                                             if(!draft) {
-                                                this.callingWindow.location.reload(true);
+                                                CStudioAuthoring.Operations.refreshPreview(this);
                                             }
-                                        }
-                                    }
-                                    else {
-                                        if(!draft) {
-                                            //this.callingWindow.location.reload(true);
                                         }
                                     }
                                     eventNS.data = oCurrentTextNode;

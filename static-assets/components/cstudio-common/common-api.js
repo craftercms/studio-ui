@@ -1100,9 +1100,16 @@ var nodeOpen = false;
                 if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
             },
 
-            refreshPreview: function() {
+            refreshPreview: function(win) {
                 var previewFrameEl = document.getElementById("engineWindow");
-                if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
+                if(previewFrameEl){
+                    if(!win){
+                        previewFrameEl.contentWindow.location.reload();
+                    }else{
+                        win.callingWindow.location.reload(true);
+                    }
+                }
+
             },
 
             setPreview: function(url) {
