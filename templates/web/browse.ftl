@@ -139,7 +139,7 @@
               <div class="cstudio-search-description-preview">
                 {{#equal type "image"}}
                 <img src="{{browserUri}}" alt="{{name}}" class="cstudio-search-banner-image"">
-                <img src="http://localhost:8080/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}">
+                <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}">
                 {{/equal}}
               </div>
             </div>
