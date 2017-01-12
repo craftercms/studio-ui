@@ -1,4 +1,41 @@
 {
+  "dashboard": {
+    "login": {
+      "EMAIL": "Email",
+      "USERNAME": "Username",
+      "PASSWORD": "Password",
+      "SIGN_IN": "Sign in"
+    },
+    "sites": {
+      "SITES_LABEL": "Sites",
+      "CREATE_SITE": "Create Site",
+      "SITE_NAME": "Site Name",
+      "SITE_DASHBOARD_LINK": "Site Dashboard Link",
+      "PREVIEW_LINK": "Preview Link",
+      "LIVE_SITE_LINK": "Live Site Link",
+      "PREVIEW": "Preview",
+      "DASHBOARD": "Dashboard",
+      "LIVE_SITE": "Live Site",
+      "REMOVE_SITE_CONFIRMATION_MSG": "Do you want to remove the site?",
+      "TOGGLE_NAV": "Toggle navigation",
+      "ACCOUNT": "Account",
+
+      "create": {
+        "HEADER_LABEL": "Create Site",
+        "SITE_NAME": "Site Name",
+        "SITE_ID": "Site Id",
+        "DESCRIPTION": "Description",
+        "BLUEPRINT": "Blueprint",
+        "CREATING_SITE": "Creating Site"
+      }
+    }
+  },
+  "settings": {
+    "HEADER_LABEL": "Account Management",
+    "PROFILE": "Profile",
+    "UPDATE_PROFILE": "Update Profile",
+    "PROFILE_UPDATED": "Profile Updated"
+  },
   "admin": {
     "groups": {
       "HEADER_LABEL": "Groups",
@@ -38,6 +75,14 @@
     "CREATE": "create",
     "EDIT": "edit",
     "VIEW": "view",
-    "IS_REQUIRED_LABEL": "is required."
+    "IS_REQUIRED_LABEL": "is required.",
+    "ALL_LABEL": "All",
+    "REMOVE_LABEL": "Remove",
+    "CONFIRMATION": "Confirmation",
+    "YES": "Yes",
+    "NO": "No",
+    "HELP": "Help",
+    "SETTINGS": "Settings",
+    "SIGN_OUT": "Sign out"
   }
 }

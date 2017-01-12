@@ -5914,6 +5914,20 @@ a[ng-click] {
         height: 100%;
         border: none; }
 
+.centered-dialog {
+  text-align: center;
+  padding: 0 !important; }
+  .centered-dialog:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -4px; }
+  .centered-dialog .modal-dialog {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle; }
+
 .screen-title {
   margin: 0;
   color: #555555;

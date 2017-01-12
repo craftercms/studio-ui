@@ -11,8 +11,8 @@
     ]);
 
     app.run([
-        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$translate',
-        function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $translate) {
+        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants',
+        function ($rootScope, $state, $stateParams, authService, sitesService, Constants) {
 
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
@@ -28,7 +28,7 @@
 
             });
 
-            sitesService.getLanguages($rootScope);
+            sitesService.getLanguages($rootScope, true);
         }
     ]);
 
@@ -175,8 +175,6 @@
                 prefix: '/studio/static-assets/scripts/resources/locale-',
                 suffix: '.json'
             });
-
-
 
         }
     ]);
@@ -340,7 +338,7 @@
                 return $http.get(server('get-available-languages'));
             }
 
-            this.getLanguages = function(scope) {
+            this.getLanguages = function(scope, setLang) {
                 this.getAvailableLanguages()
                     .success(function (data) {
                         var cookieLang = $cookies['crafterStudioLanguage'];
@@ -356,8 +354,10 @@
                             scope.langSelected = data[0].id;
                         }
                         scope.languagesAvailable = data;
-                        $translate.use(scope.langSelected)
 
+                        if(setLang){
+                            $translate.use(cookieLang);
+                        }
                     })
                     .error(function () {
                         scope.languagesAvailable = [];
@@ -388,8 +388,8 @@
     ]);
 
     app.controller('AppCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal',
-        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal) {
+        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout',
+        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout) {
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
@@ -422,13 +422,20 @@
             };
 
             $scope.setLangCookie = function() {
+                $translate.use($scope.langSelected);
+
                 $rootScope.modalInstance = $modal.open({
                     templateUrl: 'settingLanguajeConfirmation.html',
+                    windowClass: 'centered-dialog',
                     controller: 'AppCtrl',
                     backdrop: 'static',
+                    backdropClass: 'hidden',
                     keyboard: false,
                     size: 'sm'
                 });
+                $timeout(function () {
+                    $rootScope.modalInstance.close();
+                }, 1500, false);
                 sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
 
             };
@@ -550,6 +557,16 @@
                     });
             }
 
+            $scope.createSitesDialog = function() {
+                $scope.adminModal = $modal.open({
+                    templateUrl: '/studio/static-assets/ng-views/create-site.html',
+                    backdrop: 'static',
+                    keyboard: false,
+                    controller: 'SiteCtrl',
+                    scope: $scope
+                });
+            }
+
         }
 
 
@@ -657,6 +674,7 @@
                     keyboard: false,
                     size: 'sm'
                 });
+                $scope.adminModal.close();
                 sitesService.create({
                     siteId: $scope.site.siteId,
                     siteName: $scope.site.siteName,
