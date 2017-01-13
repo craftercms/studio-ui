@@ -1,3 +1,88 @@
 {
-  "HELLO": "HelloKr"
+  "dashboard": {
+    "login": {
+      "EMAIL": "이메일",
+      "USERNAME": "사용자 이름",
+      "PASSWORD": "암호",
+      "SIGN_IN": "로그인"
+    },
+    "sites": {
+      "SITES_LABEL": "사이트",
+      "CREATE_SITE": "사이트 만들기",
+      "SITE_NAME": "사이트 이름",
+      "SITE_DASHBOARD_LINK": "사이트 대시 보드 링크",
+      "PREVIEW_LINK": "미리보기 링크",
+      "LIVE_SITE_LINK": "라이브 사이트 링크",
+      "PREVIEW": "시사",
+      "DASHBOARD": "계기반",
+      "LIVE_SITE": "라이브 사이트",
+      "REMOVE_SITE_CONFIRMATION_MSG": "사이트를 제거 하시겠습니까?",
+      "TOGGLE_NAV": "내비게이션 토글",
+      "ACCOUNT": "계정",
+
+      "create": {
+        "HEADER_LABEL": "사이트 만들기",
+        "SITE_NAME": "사이트 이름",
+        "SITE_ID": "사이트 신분증",
+        "DESCRIPTION": "기술",
+        "BLUEPRINT": "청사진",
+        "CREATING_SITE": "사이트 만들기"
+      }
+    }
+  },
+  "settings": {
+    "HEADER_LABEL": "계정 관리",
+    "PROFILE": "윤곽",
+    "UPDATE_PROFILE": "프로필 업데이트",
+    "PROFILE_UPDATED": "프로필이 업데이트되었습니다."
+  },
+  "admin": {
+    "groups": {
+      "HEADER_LABEL": "여러 떼",
+      "IDENTIFIER": "식별자",
+      "DISPLAY_NAME": "표시 이름",
+      "NEW_GROUP": "새 그룹",
+      "GROUP_ID_ERROR_MESSAGE": "그룹 식별자가 필요합니다.",
+      "GROUP_NAME_ERROR_MESSAGE": "그룹 표시 이름이 필요합니다.",
+      "CREATE_GROUP": "그룹 만들기",
+      "EDIT_GROUP": "그룹 편집",
+      "ADD_USERS": "사용자 추가",
+      "SEARCH_GROUPS": "그룹 검색",
+      "SEARCH_USERS": "사용자 검색",
+      "ADD_USER_TOOLTIP": "그룹에 사용자 추가",
+      "ASSIGN_USERS_LABEL": "사용자 지정",
+      "VIEW_GROUPS_LABEL": "그룹보기"
+    },
+    "users": {
+      "HEADER_LABEL": "사용자",
+      "USER_LABEL": "사용자",
+      "NEW_USER": "새로운 사용자",
+      "NAME": "이름",
+      "USER_NAME": "사용자 이름",
+      "JOB_TITLE": "직위",
+      "EMAIL": "이메일",
+      "USAGE": "용법",
+      "QUOTA": "몫",
+      "PASSWORD": "암호",
+      "PASSWORD_VERIFICATION": "비밀번호 확인"
+    }
+  },
+  "common": {
+    "CANCEL_LABEL": "취소하다",
+    "SEARCH_LABEL": "수색",
+    "CLOSE_LABEL": "닫기",
+    "ADD_LABEL": "더하다",
+    "CREATE": "create",
+    "EDIT": "edit",
+    "VIEW": "view",
+    "IS_REQUIRED_LABEL": "is required.",
+    "ALL_LABEL": "모든",
+    "REMOVE_LABEL": "없애다",
+    "CONFIRMATION": "확인",
+    "YES": "예",
+    "NO": "아니",
+    "HELP": "도움",
+    "SETTINGS": "설정",
+    "SIGN_OUT": "로그 아웃"
+  }
 }
