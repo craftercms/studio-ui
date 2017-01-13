@@ -1494,7 +1494,7 @@ treeNode.getHtml = function() {
 
                 }
             }else {
-                if(node) {
+                if(node && node.length) {
                     nodeOpen = true;
                     for(var i=0; i<node.length; i++) {
                         var curNode = node[i];
