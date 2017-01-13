@@ -17,6 +17,9 @@
 
     <script src="/studio/static-assets/js/modernizr.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular/angular.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/angular-translate/angular-translate.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/angular-translate-handler-log/angular-translate-handler-log.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular-ui-router/release/angular-ui-router.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular-cookies/angular-cookies.js?version=${UIBuildId!''}"></script>

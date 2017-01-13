@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-lg-12 columns">
                 <div class="form-group">
-                    <label for="username">Email/Username</label>
+                    <label for="username">{{ 'dashboard.login.EMAIL' | translate }}/{{ 'dashboard.login.USERNAME' | translate }}</label>
                     <input id="username" type="text"
                            ng-model="credentials.username"
                            class="form-control" placeholder="john@domain.com"
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-lg-12 columns">
                 <div class="form-group">
-                    <label for="username">Password</label>
+                    <label for="username">{{ 'dashboard.login.PASSWORD' | translate }}</label>
                     <input type="password" id="password"
                            class="form-control" placeholder=""
                            ng-model="credentials.password" />
@@ -52,7 +52,7 @@
                 <div class="alert alert-danger" ng-if="error">
                     {{error.message}}
                 </div>
-                <button type="submit" class="btn btn-primary" ng-click="login()">Sign in</button>
+                <button type="submit" class="btn btn-primary" ng-click="login()">{{ 'dashboard.login.SIGN_IN' | translate }}</button>
             </div>
         </div>
 
