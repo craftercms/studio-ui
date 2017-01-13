@@ -1494,52 +1494,52 @@ treeNode.getHtml = function() {
 
                 }
             }else {
-                if(node) {
+                if(node && node.length) {
                     nodeOpen = true;
-                    for(var i=0; i<node.length; i++) {
-                        var curNode = node[i];
-                        if (curNode.nodeType == "CONTENT") {
-                            var itemStore = instance ? storage.read(Self.getStoredPathKey(instance)) : null;
+                    //for(var i=0; i<node.length; i++) {
+                    var curNode = node[node.length - 1];
+                    if (curNode.nodeType == "CONTENT") {
+                        var itemStore = instance ? storage.read(Self.getStoredPathKey(instance)) : null;
+                        //console.log(itemStore);
+                        if(YDom.get(curNode.labelElId)) {
+                            tree.removeChildren(curNode);
+                            var loadEl = YAHOO.util.Selector.query(".ygtvtp", curNode.getEl(), true);
+                            loadEl == null && (loadEl = YAHOO.util.Selector.query(".ygtvlp", curNode.getEl(), true));
+                            YDom.addClass(loadEl, "ygtvloading");
+                            curNode.renderChildren();
+                            curNode.refresh();
                             //console.log(itemStore);
-                            if(YDom.get(curNode.labelElId)) {
-                                tree.removeChildren(curNode);
-                                var loadEl = YAHOO.util.Selector.query(".ygtvtp", curNode.getEl(), true);
-                                loadEl == null && (loadEl = YAHOO.util.Selector.query(".ygtvlp", curNode.getEl(), true));
-                                YDom.addClass(loadEl, "ygtvloading");
-                                curNode.renderChildren();
-                                curNode.refresh();
-                                //console.log(itemStore);
-                                if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
-                                self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
-                                Self.refreshAllDashboards();
-                            }
-
-                        } else {
-                            var root = false;
-                            if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-                                var path;
-                                try {
-                                    path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.treeNodeTO.path : treeNode.treeNodeTO.path;
-                                } catch (er) {
-                                    path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.path ? treeNode.path : null : treeNode.path ? treeNode.path : null;
-                                }
-                                for (var i = 0; i <= instance.path.length; i++) {
-                                    if (path == instance.path[i]) {
-                                        root = true;
-                                    }
-                                }
-                            }
-                            if (root && instance) {
-                                Self.initializeContentTree(instance.rootFolderEl, null, instance);
-                                Self.toggleFolderState(instance, "open");
-                            }
+                            if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
+                            self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
                             Self.refreshAllDashboards();
                         }
-                        if(i >= (node.length - 1)){
-                            eventYS.parent = null;
-                            eventNS.parent = null;
+
+                    } else {
+                        var root = false;
+                        if (Object.prototype.toString.call(instance.path) === '[object Array]') {
+                            var path;
+                            try {
+                                path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.treeNodeTO.path : treeNode.treeNodeTO.path;
+                            } catch (er) {
+                                path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.path ? treeNode.path : null : treeNode.path ? treeNode.path : null;
+                            }
+                            for (var i = 0; i <= instance.path.length; i++) {
+                                if (path == instance.path[i]) {
+                                    root = true;
+                                }
+                            }
                         }
+                        if (root && instance) {
+                            Self.initializeContentTree(instance.rootFolderEl, null, instance);
+                            Self.toggleFolderState(instance, "open");
+                        }
+                        Self.refreshAllDashboards();
                     }
+                    if(i >= (node.length - 1)){
+                        eventYS.parent = null;
+                        eventNS.parent = null;
+                    }
+                    //}
                 }
                 if (root && instance) {
                     var __self = this;
