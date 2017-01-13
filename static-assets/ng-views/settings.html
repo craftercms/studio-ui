@@ -3,10 +3,10 @@
          ng-init="data.action = '/api/1/services/change-password'">
 
         <div class="col-sm-12">
-            <h1>Account Management</h1>
+            <h1>{{ 'settings.HEADER_LABEL' | translate }}</h1>
         </div>
         <div class="col-sm-12">
-            <h2>Profile</h2>
+            <h2>{{ 'settings.PROFILE' | translate }}</h2>
             <div class="well">
                 <div class="user-display">
                     <div class="name">{{user.name}} {{user.surname}}</div>
@@ -24,7 +24,7 @@
                             </option>-->
                         </select>
                         <button class="btn btn-primary" ng-click="setLangCookie()">
-                            Update Profile
+                            {{ 'settings.UPDATE_PROFILE' | translate }}
                         </button>
                     </div>
                 </div>
@@ -58,10 +58,10 @@
     </div>
 </div>
 <script type="text/ng-template" id="settingLanguajeConfirmation.html">
-    <div class="modal-body">
-        <h3 class="modal-title">Profile Updated</h3>
+    <div class="modal-header">
+        <h3 class="modal-title">Nofitication</h3>
     </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="cancel()">OK</button>
+    <div class="modal-body">
+        <h4><span class="glyphicon glyphicon-info-sign" style="color: #0505ce;"></span> {{ 'settings.PROFILE_UPDATED' | translate }}</h4>
     </div>
 </script>

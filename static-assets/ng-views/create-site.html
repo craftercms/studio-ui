@@ -1,70 +1,68 @@
-<div class="create-site-view">
-    <div class="p20" ui-view>
+<div class="modal-header">
+    <h2 class="">{{ 'dashboard.sites.create.HEADER_LABEL' | translate }}</h2>
+</div>
 
-        <h2 class="page-header">Create Site</h2>
+<div class="modal-body">
+    <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
 
-        <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+        <div class="form-group">
+            <label for="name">{{ 'dashboard.sites.create.SITE_NAME' | translate }}</label>
+            <input id="name" name="name" type="text" class="form-control" ng-model="site.siteName"
+                   ng-change="setSiteId()" required/>
 
-            <div class="form-group">
-                <label for="name">Site Name</label>
-                <input id="name" name="name" type="text" class="form-control" ng-model="site.siteName"
-                       ng-change="setSiteId()" required/>
-
-                <div class="error-container"
-                     ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
-                    <small class="error"
-                           ng-show="createNameForm.name.$error.required">
-                        Site name is required.
-                    </small>
-                </div>
+            <div class="error-container"
+                 ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.name.$error.required">
+                    {{ 'dashboard.sites.create.SITE_NAME' | translate }} is required.
+                </small>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="name">Site Id</label>
-                <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" required/>
+        <div class="form-group">
+            <label for="name">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label>
+            <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" required/>
 
-                <div class="error-container"
-                     ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
-                    <small class="error"
-                           ng-show="createNameForm.name.$error.required">
-                        Site Id is required.
-                    </small>
-                </div>
+            <div class="error-container"
+                 ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.name.$error.required">
+                    {{ 'dashboard.sites.create.SITE_ID' | translate }} is required.
+                </small>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea class="form-control" id="description" name="desc" ng-model="site.description"></textarea>
-            </div>
+        <div class="form-group">
+            <label for="description">{{ 'dashboard.sites.create.DESCRIPTION' | translate }}</label>
+            <textarea class="form-control" id="description" name="desc" ng-model="site.description"></textarea>
+        </div>
 
-            <div class="form-group">
-                <label for="blueprint">Blueprint</label>
-                <select id="blueprint"
-                        name="blueprint"
-                        class="form-control"
-                        ng-model="site.blueprint"
-                        ng-options="opt as opt.label for opt in blueprints">
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="blueprint">{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</label>
+            <select id="blueprint"
+                    name="blueprint"
+                    class="form-control"
+                    ng-model="site.blueprint"
+                    ng-options="opt as opt.label for opt in blueprints">
+            </select>
+        </div>
 
-            <div class="form-group">
-                <button class="btn btn-primary"
-                        ng-click="create()" ng-disabled="createNameForm.$invalid">
-                    Create
-                </button>
-                <button ui-sref="home.sites" class="btn btn-default">
-                    Cancel
-                </button>
-            </div>
+        <div class="form-group">
+            <button class="btn btn-primary text-capitalize"
+                    ng-click="create()" ng-disabled="createNameForm.$invalid">
+                {{ 'common.CREATE' | translate }}
+            </button>
+            <button ng-click="adminModal.close()" class="btn btn-default">
+                {{ 'common.CANCEL_LABEL' | translate }}
+            </button>
+        </div>
 
-        </form>
-
-    </div>
+    </form>
 </div>
 
 <script type="text/ng-template" id="creatingSiteConfirmation.html">
     <div class="modal-header">
-        <h3 class="modal-title">Creating Site</h3>
+        <h3 class="modal-title">{{ 'dashboard.sites.create.CREATING_SITE' | translate }}</h3>
     </div>
     <div class="modal-body">
         <img class="creatingSpinner" src="/studio/static-assets/img/spinner_tra.gif" />
