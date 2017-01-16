@@ -1957,8 +1957,6 @@ var nodeOpen = false;
                 CStudioAuthoring.Service.getContent(path, false, {
                     success: function(parentContent) {
                         // determine the ID of the top level object
-//parentContent = parentContent.responseText;
-
                         var objGroupIdRegex = /<objectGroupId>(.+)<\/objectGroupId>/;
                         var objGroupIdMatch = parentContent.match(objGroupIdRegex);
                         var origGroupId = objGroupIdMatch[1];
@@ -1975,10 +1973,10 @@ var nodeOpen = false;
                         // find a list of paths like a "/site/components/page/GRPID/OBJID/*.xml"
                         var dependencyRegExp = new RegExp("(\\/site\\/components\\/page\\/"+origGroupId+"\\/"+origObjectId+"\\/([^\.]+)\\.xml)","gm");
 
-var dependencies = [];
-while(found=dependencyRegExp.exec(parentContent)) {
-  dependencies.push(found[0]);
-}
+			var dependencies = [];
+			while(found=dependencyRegExp.exec(parentContent)) {
+			  dependencies.push(found[0]);
+			}
 
                         // create a new ID for this page
                         var newObjectId = CStudioAuthoring.Utils.generateUUID();
@@ -2018,8 +2016,8 @@ while(found=dependencyRegExp.exec(parentContent)) {
                                         var childContentType = dependencyContent.substr(childContentTypePos, childContentTypeEndPos-childContentTypePos);
 
                                         var writeChildFileName = this.path.substr(newDepPath.lastIndexOf("/")+1);
-                                        var writeChildPath = this.path; //.substr(0, newDepPath.lastIndexOf("/"));
-                                        var writeChildServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writeChildPath, writeChildFileName, null, childContentType, CStudioAuthoringContext.site, true, false, false, true);
+                                        var writeChildPath = this.path;
+                                        var writeChildServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writeChildPath, writeChildFileName, null, childContentType, CStudioAuthoringContext.site, true, false, true, true);
 
                                         YAHOO.util.Connect.setDefaultPostHeader(false);
                                         YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
@@ -2039,10 +2037,10 @@ while(found=dependencyRegExp.exec(parentContent)) {
 
                         // save the top level content
                         var writeFileName = newPath.substr(newPath.lastIndexOf("/")+1);
-                        var writePath = newPath; //.substr(0, newPath.lastIndexOf("/"));
-                        var writeServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writePath, writeFileName, null, contentType, CStudioAuthoringContext.site, true, false, false, true);
+                        var writePath = newPath;
+                        var writeServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writePath, writeFileName, null, contentType, CStudioAuthoringContext.site, true, false, true, true);
 
-var parentSaveCb = {
+			var parentSaveCb = {
                             success: function(){
                                 // open the top level content for edit
                                 var getContentItemCb = {
