@@ -1100,9 +1100,16 @@ var nodeOpen = false;
                 if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
             },
 
-            refreshPreview: function() {
+            refreshPreview: function(win) {
                 var previewFrameEl = document.getElementById("engineWindow");
-                if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
+                if(previewFrameEl){
+                    if(!win){
+                        previewFrameEl.contentWindow.location.reload();
+                    }else{
+                        win.callingWindow.location.reload(true);
+                    }
+                }
+
             },
 
             setPreview: function(url) {
@@ -2007,8 +2014,8 @@ while(found=dependencyRegExp.exec(parentContent)) {
                                         var childContentType = dependencyContent.substr(childContentTypePos, childContentTypeEndPos-childContentTypePos);
 
                                         var writeChildFileName = this.path.substr(newDepPath.lastIndexOf("/")+1);
-                                        var writeChildPath = this.path; //.substr(0, newDepPath.lastIndexOf("/"));
-                                        var writeChildServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writeChildPath, writeChildFileName, null, childContentType, CStudioAuthoringContext.site, true, false, false, true);
+                                        var writeChildPath = this.path; 
+                                        var writeChildServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writeChildPath, writeChildFileName, null, childContentType, CStudioAuthoringContext.site, true, false, true, true);
 
                                         YAHOO.util.Connect.setDefaultPostHeader(false);
                                         YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
@@ -2028,8 +2035,8 @@ while(found=dependencyRegExp.exec(parentContent)) {
 
                         // save the top level content
                         var writeFileName = newPath.substr(newPath.lastIndexOf("/")+1);
-                        var writePath = newPath; //.substr(0, newPath.lastIndexOf("/"));
-                        var writeServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writePath, writeFileName, null, contentType, CStudioAuthoringContext.site, true, false, false, true);
+                        var writePath = newPath; 
+                        var writeServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writePath, writeFileName, null, contentType, CStudioAuthoringContext.site, true, false, true, true);
 
 var parentSaveCb = {
                             success: function(){
