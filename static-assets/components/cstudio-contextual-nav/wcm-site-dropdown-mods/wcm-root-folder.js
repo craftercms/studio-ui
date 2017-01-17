@@ -2341,7 +2341,9 @@ treeNode.getHtml = function() {
                         eventYS.data = oCurrentTextNode;
                         eventYS.typeAction = "createContent";
                         eventYS.oldPath = null;
+                        eventYS.parent = false;
                         document.dispatchEvent(eventYS);
+                        //Self.refreshNodes(oCurrentTextNode, true, false, null, null, true, "createContent", null);
                             if(CStudioAuthoringContext.isPreview) {
                                 CStudioAuthoring.Operations.refreshPreview();
                             }
