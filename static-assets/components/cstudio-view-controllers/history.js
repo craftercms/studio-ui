@@ -103,9 +103,11 @@
                                     tdEl.appendChild(col2El);
                                     rowEl.appendChild(tdEl);
 
+                                    var versionDate = _this.preFormatDate(version.lastModifiedDate);
+
                                     col3El = document.createElement('div');
                                     Dom.addClass(col3El, "c3");
-                                    col3El.innerHTML = CStudioAuthoring.Utils.formatDateFromString(version.lastModifiedDate, "tooltipformat");
+                                    col3El.innerHTML = CStudioAuthoring.Utils.formatDateFromString(versionDate, "tooltipformat");
                                     tdEl = document.createElement('td');
                                     tdEl.appendChild(col3El);
                                     rowEl.appendChild(tdEl);
@@ -219,6 +221,24 @@
                     });
             };
             loadFn();
+        },
+
+        preFormatDate: function(dateTime) {
+            var inZulu = new RegExp("Z$").test(dateTime),
+                convertedDate = dateTime;
+            if(inZulu){
+                var convertedTimezone = new Date(dateTime),
+                    year = convertedTimezone.getFullYear(),
+                    month = convertedTimezone.getMonth() + 1,
+                    day = convertedTimezone.getDate(),
+                    hours = convertedTimezone.getHours(),
+                    minutes = convertedTimezone.getMinutes(),
+                    minutes = minutes < 10 ? "0" + minutes : minutes,
+                    seconds = convertedTimezone.getSeconds();
+
+                convertedDate = year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds;
+            }
+            return convertedDate;
         },
 
         validateDiffCheckboxes: function () {
