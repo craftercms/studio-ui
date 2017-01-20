@@ -1949,61 +1949,91 @@ var nodeOpen = false;
             },
 
             /**
-	     * Duplicate Content Operation
-	     */
+             * Duplicate operation
+             */
             duplicateContent: function(site, path, opCallBack) {
-                var serviceUri = CStudioAuthoring.Service.duplicateContentServiceUri 
-                               + "?site=" + site + "&path=" + path;
+                var contentTO = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
 
-                var serviceUrl = CStudioAuthoring.Service.createServiceUri(serviceUri);
+                if(!contentTO) {
+                    // no item selected
+                    return;
+                }
 
-                var serviceCallback = {
-                    success: function(oResponse) {
-                        var contentTypeJson = oResponse.responseText;
+                var parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
 
-                        try {
-                            var contentTypes = eval("(" + contentTypeJson + ")");
-                            var formId = contentTypes.formId;
-                            var path = contentTypes.path;
-                            var editCb = {
+                if(contentTO.uri.indexOf("index.xml") != -1) {
+                    parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
+                    parentPath += "/index.xml";
+                }
+
+                var refreshFn = function(to) {
+                    CStudioAuthoring.Operations.refreshPreview();
+                    
+                    eventYS.data = to;
+                    eventYS.typeAction = "";
+                    eventYS.oldPath = null;
+                    document.dispatchEvent(eventYS);
+                };
+
+                CStudioAuthoring.Service.lookupContentItem(
+                    site, 
+                    parentPath, 
+                    {
+                        success: function(parentItemTo) {
+                            var copyCb = {
                                 success: function() {
-                                    CStudioAuthoring.Operations.refreshPreview();
-                                    // NEED ContentTO FOR PASSED PATH
-                                    eventYS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
-                                    eventYS.typeAction = "";
-                                    eventYS.oldPath = null;
-                                    document.dispatchEvent(eventYS);
+                                    refreshFn(parentItemTo.item);
 
-                                    opCallBack.success();
+                                    var pasteCb = {
+                                        success: function(pasteResponse) {
+
+                                            var editCb = {
+                                                success: function() {
+                                                    refreshFn(parentItemTo.item);
+                                                    opCallBack.success();
+                                                },
+                                                failure: function(errorResponse) {
+                                                    opCallBack.failure(errorResponse);
+                                                }
+                                            };
+                 
+                                            CStudioAuthoring.Operations.editContent(
+                                                contentTO.contentType,
+                                                CStudioAuthoringContext.site,
+                                                pasteResponse.status[0], 
+                                                "", 
+                                                pasteResponse.status[0], 
+                                                false,
+                                                editCb,
+                                                new Array());
+                                        },
+                                        failure: function(errorResponse) {
+                                            opCallBack.failure(errorResponse);
+                                        },
+                                    };
+
+                                    CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
                                 },
 
                                 failure: function(errorResponse) {
                                     opCallBack.failure(errorResponse);
-                                },
-
-                                callingWindow: window
+                                }
                             };
 
-                            var auxParams = new Array();
- 
-                            CStudioAuthoring.Operations.editContent(
-                                formId,
-                                CStudioAuthoringContext.site,path, 
-                                "", path, false,editCb,auxParams);
-                        }
-                        catch(err) {
-                            opCallBack.failure(err);
+                            //This method doesn't seem to do the rght thing
+                            //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
+                            var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site; 
+                            var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
+                            YAHOO.util.Connect.setDefaultPostHeader(false);
+                            YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+                            YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
+                        },
+                        failure: function() {
                         }
                     },
-
-                    failure: function(response) {
-                        opCallBack.failure();
-                    }
-                };
-
-                YConnect.asyncRequest('GET', serviceUrl, serviceCallback);
-            },
-		
+                    false,
+                    false);
+            },		
             /**
              * create new template
              */
