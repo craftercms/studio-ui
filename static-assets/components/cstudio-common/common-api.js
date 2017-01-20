@@ -1948,140 +1948,92 @@ var nodeOpen = false;
                 CStudioAuthoring.Operations.openContentWebForm(formId, id, noderef, path, true, asPopup, callback, auxParams);
             },
 
-            duplicateContent: function(site, path, argsCallback) {
+            /**
+             * Duplicate operation
+             */
+            duplicateContent: function(site, path, opCallBack) {
+                var contentTO = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
 
-                CStudioAuthoring.Service.getContent(path, false, {
-                    success: function(parentContent) {
-                        // determine the ID of the top level object
-//parentContent = parentContent.responseText;
+                if(!contentTO) {
+                    // no item selected
+                    return;
+                }
 
-                        var objGroupIdRegex = /<objectGroupId>(.+)<\/objectGroupId>/;
-                        var objGroupIdMatch = parentContent.match(objGroupIdRegex);
-                        var origGroupId = objGroupIdMatch[1];
+                var parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
 
-                        var objIdRegex = /<objectId>(.+)<\/objectId>/;
-                        var objIdMatch = parentContent.match(objIdRegex);
-                        var origObjectId = objIdMatch[1];
+                if(contentTO.uri.indexOf("index.xml") != -1) {
+                    parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
+                    parentPath += "/index.xml";
+                }
 
+                var refreshFn = function(to) {
+                    CStudioAuthoring.Operations.refreshPreview();
+                    
+                    eventYS.data = to;
+                    eventYS.typeAction = "";
+                    eventYS.oldPath = null;
+                    document.dispatchEvent(eventYS);
+                };
 
-                        var contentTypePos = parentContent.indexOf("content-type")+13;
-                        var contentTypeEndPos = parentContent.indexOf("<", contentTypePos);
-                        var contentType = parentContent.substr(contentTypePos, contentTypeEndPos-contentTypePos);
+                CStudioAuthoring.Service.lookupContentItem(
+                    site, 
+                    parentPath, 
+                    {
+                        success: function(parentItemTo) {
+                            var copyCb = {
+                                success: function() {
+                                    refreshFn(parentItemTo.item);
 
-                        // find a list of paths like a "/site/components/page/GRPID/OBJID/*.xml"
-                        var dependencyRegExp = new RegExp("(\\/site\\/components\\/page\\/"+origGroupId+"\\/"+origObjectId+"\\/([^\.]+)\\.xml)","gm");
+                                    var pasteCb = {
+                                        success: function(pasteResponse) {
 
-var dependencies = [];
-while(found=dependencyRegExp.exec(parentContent)) {
-  dependencies.push(found[0]);
-}
-
-                        // create a new ID for this page
-                        var newObjectId = CStudioAuthoring.Utils.generateUUID();
-                        var newGroupId = newObjectId.substring(0,4);
-                        var newPath = "";
-                        // create new path for this page
-                        //      if content-as-folder is true
-                        if (path.indexOf("index.xml") !== -1) {
-                            newPath = path.replace("/index.xml", "-"+newGroupId+"/index.xml");
-                        } else {
-                            newPath = path.replace(".xml", "-" + newGroupId + ".xml");
-                        } 
-
-                        for(var i=0; i<dependencies.length; i++) {
-                            var dependencyPath = dependencies[i];
-                            if(dependencyPath.indexOf("/site") != -1) {
-                                // generate new path
-                                var newDepPath = dependencyPath.replace(origObjectId, newObjectId);
-                                    newDepPath = newDepPath.replace(origGroupId, newGroupId);
-
-                                // replace the value in the parent
-                                var replaceIdRegex = new RegExp(dependencyPath, 'g');
-                                parentContent = parentContent.replace(replaceIdRegex, newDepPath);
-
-                                // load the dependency
-                                CStudioAuthoring.Service.getContent(dependencyPath, false, {
-                                    success: function(dependencyContent) {
-
-                                        var childSaveCb = {
-                                            success: function(){},
-                                            failure: function(){}
-                                        };
-
-                                        // write it in new location
-                                        var childContentTypePos = dependencyContent.indexOf("content-type")+13;
-                                        var childContentTypeEndPos = dependencyContent.indexOf("<", childContentTypePos);
-                                        var childContentType = dependencyContent.substr(childContentTypePos, childContentTypeEndPos-childContentTypePos);
-
-                                        var writeChildFileName = this.path.substr(newDepPath.lastIndexOf("/")+1);
-                                        var writeChildPath = this.path; 
-                                        var writeChildServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writeChildPath, writeChildFileName, null, childContentType, CStudioAuthoringContext.site, true, false, true, true);
-
-                                        YAHOO.util.Connect.setDefaultPostHeader(false);
-                                        YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
-                                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeChildServiceUrl), childSaveCb, dependencyContent);
-                                    },
-                                    failure: function(err) {
-                                        alert("failed to load component content: "+err);
-                                    },
-                                    path: newDepPath
-                                });
-                            }
-                        }
-
-                        // update the object id and group id in the top level object
-                        parentContent = parentContent.replace(origObjectId, newObjectId);
-                        parentContent = parentContent.replace(origGroupId, newGroupId);
-
-                        // save the top level content
-                        var writeFileName = newPath.substr(newPath.lastIndexOf("/")+1);
-                        var writePath = newPath; 
-                        var writeServiceUrl = CStudioAuthoring.Service.createWriteServiceUrl(writePath, writeFileName, null, contentType, CStudioAuthoringContext.site, true, false, true, true);
-
-var parentSaveCb = {
-                            success: function(){
-                                // open the top level content for edit
-                                var getContentItemCb = {
-                                    success: function (contentTO) {
-                                          contentTO = contentTO.item;
-                                         CStudioAuthoring.Operations.editContent(
-                                            contentType, //contentTO.form,
-                                            CStudioAuthoringContext.siteId,
-                                            newPath, //contentTO.uri,
-                                            null, //contentTO.nodeRef,
-                                            newPath, //contentTO.uri,
-                                            false,
-                                            { success: function(contentTO) {
-                                                eventYS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
-                                                if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                                                    CStudioAuthoring.SelectedContent.getSelectedContent() ?
-                                                        CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()) : null;
+                                            var editCb = {
+                                                success: function() {
+                                                    refreshFn(parentItemTo.item);
+                                                    opCallBack.success();
+                                                },
+                                                failure: function(errorResponse) {
+                                                    opCallBack.failure(errorResponse);
                                                 }
-                                                eventYS.typeAction = "";
-                                                eventYS.oldPath = null;
-                                                document.dispatchEvent(eventYS);
-                                            }, failure: function() {}});
-                                    },
-                                    failure: function() {
+                                            };
+                 
+                                            CStudioAuthoring.Operations.editContent(
+                                                contentTO.contentType,
+                                                CStudioAuthoringContext.site,
+                                                pasteResponse.status[0], 
+                                                "", 
+                                                pasteResponse.status[0], 
+                                                false,
+                                                editCb,
+                                                new Array());
+                                        },
+                                        failure: function(errorResponse) {
+                                            opCallBack.failure(errorResponse);
+                                        },
+                                    };
 
-                                    }
-                                };
+                                    CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
+                                },
 
-                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, newPath, getContentItemCb, false, false);
-                            },
-                            failure: function(){}
-                        };
+                                failure: function(errorResponse) {
+                                    opCallBack.failure(errorResponse);
+                                }
+                            };
 
-                        YAHOO.util.Connect.setDefaultPostHeader(false);
-                        YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
-                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), parentSaveCb, parentContent);
+                            //This method doesn't seem to do the rght thing
+                            //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
+                            var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site; 
+                            var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
+                            YAHOO.util.Connect.setDefaultPostHeader(false);
+                            YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+                            YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
+                        },
+                        failure: function() {
+                        }
                     },
-                    failure: function(err) {
-                        alert("failed to load content");
-                    }
-                });
-            },
-
+                    false,
+                    false);
+            },		
             /**
              * create new template
              */
@@ -2584,6 +2536,7 @@ var parentSaveCb = {
             cutContentToClipboardServiceUri: "/api/1/services/api/1/clipboard/cut-item.json",
             pasteContentFromClipboardServiceUri: "/api/1/services/api/1/clipboard/paste-item.json",
             getClipboardItemsServiceUri: "/api/1/services/api/1/clipboard/get-items.json",
+            duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",	
 
             // Analytics
             getAnalyticsReportUrl: "/api/1/services/analytics/get-report.json",
