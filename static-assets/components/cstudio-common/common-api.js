@@ -1140,15 +1140,15 @@ var nodeOpen = false;
                     window.location.reload();
                 } else {
 
-					// remove server name and port etc
-					if(url.indexOf("//") != -1) {
-						url = url.replace("//","--x--");
-						url = url.substring(url.indexOf("/"));
-						if(url.indexOf("--x--") != -1) {
-							url = "/";
-						}
+                    // remove server name and port etc
+                    if(url.indexOf("//") != -1) {
+                        url = url.replace("//","--x--");
+                        url = url.substring(url.indexOf("/"));
+                        if(url.indexOf("--x--") != -1) {
+                            url = "/";
+                        }
 
-					}
+                    }
 
                     var Topics = crafter.studio.preview.Topics;
                     window.location = '/studio/preview/#/?page='+url+'&site='+CStudioAuthoringContext.site;
@@ -1963,13 +1963,13 @@ var nodeOpen = false;
                     return;
                 }
 
-                var parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
-
+                var parentPath  = contentTO.uri;
                 if(contentTO.uri.indexOf("index.xml") != -1) {
+                    parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
                     parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
                     parentPath += "/index.xml";
                 }
-
+                
                 var refreshFn = function(to) {
                     CStudioAuthoring.Operations.refreshPreview();
                     
@@ -2038,7 +2038,7 @@ var nodeOpen = false;
                     false,
                     false);
             },
-		
+
             /**
              * create new template
              */
@@ -2086,7 +2086,7 @@ var nodeOpen = false;
              */
             openTemplateEditor: function(displayTemplate, channel, templateSaveCb, contentType) {
                 var loadTemplateEditorCb = {
-                    moduleLoaded: function(moduleName, moduleClass, moduleConfig) {																		var editor = new moduleClass();
+                    moduleLoaded: function(moduleName, moduleClass, moduleConfig) {                                                                     var editor = new moduleClass();
                         editor.render(moduleConfig.displayTemplate, moduleConfig.channel, moduleConfig.cb, contentType);
                     }
                 }
@@ -2118,7 +2118,7 @@ var nodeOpen = false;
                                 success: function(selectedType) {
 
                                     var createTaxonomyDialogCb = {
-                                        moduleLoaded: function(moduleName, dialogClass, moduleConfig) {														if(moduleName == "dialog-create-taxonomy") {
+                                        moduleLoaded: function(moduleName, dialogClass, moduleConfig) {                                                     if(moduleName == "dialog-create-taxonomy") {
                                             dialogClass.showDialog(
                                                 moduleConfig.taxonomyType,
                                                 moduleConfig.taxonomyName,
@@ -2289,10 +2289,10 @@ var nodeOpen = false;
             },
 
             uploadAsset: function(site, path, isUploadOverwrite, uploadCb) {
-                CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb);	  				},
+                CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb);                  },
 
             /**
-             *	opens a dialog to upload an asset
+             *  opens a dialog to upload an asset
              */
             openUploadDialog: function(site, path, isUploadOverwrite, callback) {
 
@@ -2535,14 +2535,14 @@ var nodeOpen = false;
             getWorkflowJobsServiceUrl: "/api/1/services/api/1/workflow/get-active-jobs.json",
             rejectContentServiceUrl: "/api/1/services/api/1/workflow/reject.json",
             getGoLiveServiceUrl: "/api/1/services/api/1/workflow/go-live.json",
- 	    
+        
             // Clipboard
             copyServiceUrl: "/api/1/services/api/1/clipboard/copy-item.json",
             copyContentToClipboardServiceUri: "/api/1/services/api/1/clipboard/copy-item.json",
             cutContentToClipboardServiceUri: "/api/1/services/api/1/clipboard/cut-item.json",
             pasteContentFromClipboardServiceUri: "/api/1/services/api/1/clipboard/paste-item.json",
             getClipboardItemsServiceUri: "/api/1/services/api/1/clipboard/get-items.json",
-            duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",	
+            duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",   
 
             // Analytics
             getAnalyticsReportUrl: "/api/1/services/analytics/get-report.json",
@@ -4654,7 +4654,7 @@ var nodeOpen = false;
                 }
 
                 searchConfig +=
-                    ',"keyword": "' + dkeywords + '", 	' +
+                    ',"keyword": "' + dkeywords + '",   ' +
                     '"page": "' + searchContext.page + '",' +
                     '"pageSize": "' + searchContext.pageSize + '",' +
                     '"sortBy": "' + searchContext.sortBy + '",' +
@@ -5507,7 +5507,7 @@ var nodeOpen = false;
                             hourValue = (parseInt(hourValue)%12)+1;
 
                             if(hourValue.toString().length < 2)
-                                hourValue =	"0"+hourValue;
+                                hourValue = "0"+hourValue;
                             else
                                 hourValue = hourValue.toString();
                         }else if(cursorPosition > 2 && cursorPosition < 6){
@@ -5522,7 +5522,7 @@ var nodeOpen = false;
                             }
 
                             if(minuteValue.toString().length < 2)
-                                minuteValue =	"0"+minuteValue;
+                                minuteValue =   "0"+minuteValue;
                             else
                                 minuteValue = minuteValue.toString();
 
@@ -5537,7 +5537,7 @@ var nodeOpen = false;
                             }
 
                             if(secondValue.toString().length < 2)
-                                secondValue =	"0"+secondValue;
+                                secondValue =   "0"+secondValue;
                             else
                                 secondValue = secondValue.toString();
                         }else if(cursorPosition > 8){
@@ -5598,7 +5598,7 @@ var nodeOpen = false;
                             }
 
                             if(hourValue.toString().length < 2)
-                                hourValue =	"0"+hourValue;
+                                hourValue = "0"+hourValue;
                             else
                                 hourValue = hourValue.toString();
                         }else if(cursorPosition > 2 && cursorPosition < 6){
@@ -5613,7 +5613,7 @@ var nodeOpen = false;
                             }
 
                             if(minuteValue.toString().length < 2)
-                                minuteValue =	"0"+minuteValue;
+                                minuteValue =   "0"+minuteValue;
                             else
                                 minuteValue = minuteValue.toString();
 
@@ -5628,7 +5628,7 @@ var nodeOpen = false;
                             }
 
                             if(secondValue.toString().length < 2)
-                                secondValue =	"0"+secondValue;
+                                secondValue =   "0"+secondValue;
                             else
                                 secondValue = secondValue.toString();
                         }else if(cursorPosition > 8){

@@ -114,11 +114,12 @@ body {
               body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description .cstudio-search-component.cstudio-search-component-button a, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview .cstudio-search-component.cstudio-search-component-button a {
                 margin-top: 20px; }
             body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview {
+              height: 210px;
               overflow: hidden;
-              position: relative;
-              text-align: right; }
+              position: relative; }
               body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview .cstudio-search-banner-image {
-                height: 210px; }
+                max-height: 100%;
+                max-width: 100%; }
           body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-search-component {
             display: block;
             margin-bottom: 5px; }
@@ -134,12 +135,6 @@ body {
             text-align: center;
             line-height: 210px;
             color: #5a5a5a; }
-    body .cstudio-browse-container .current-folder {
-      font-size: 18px;
-      background-color: #f7f7f7;
-      padding: 10px 20px;
-      margin-left: -20px;
-      margin-right: -20px; }
   body .cstudio-browse-image-popup-overlay {
     position: fixed;
     display: none;
@@ -188,21 +183,6 @@ body {
     background: #f8f8f8;
     padding: 15px 0;
     border-top: 1px solid #e7e7e7; }
-    body #cstudio-command-controls #colExpButtonBtn {
-      float: right;
-      position: relative;
-      top: 2px;
-      right: 16px;
-      background-image: url("/studio/static-assets/themes/cstudioTheme/images/icons/arrows_up_down.png");
-      background-repeat: no-repeat;
-      border: none;
-      background-color: transparent;
-      text-indent: -9999px;
-      background-size: 26px;
-      padding: 0;
-      width: 26px;
-      height: 26px;
-      background-position: 0 0; }
   body ::-webkit-scrollbar {
     width: 8px; }
   body ::-webkit-scrollbar-thumb:hover {
