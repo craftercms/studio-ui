@@ -246,7 +246,8 @@
                             CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, "default", {
                                 openToPath: pathToOpen,
                                 success: function (treeData) {
-
+                                    
+                                    YDom.removeClass(label, "loading");
                                     //if(servPath == "/site/website")
                                     window.treeData = treeData;
 
@@ -256,7 +257,6 @@
                                     }
                                     Self.drawTree(items, tree, path, instance, pathFlag);
                                     pathFlag = false;
-                                    YDom.removeClass(label, "loading");
                                     //add hover effect to nodes
                                     Self.nodeHoverEffects(this);
 
@@ -891,7 +891,11 @@ treeNode.getHtml = function() {
                         k = {},
                         pathTrace = {},
                         rooth = {},
-						updatePathTrace = function(j, key){ return (pathTrace[key][j] = (pathTrace[key][j] + "/" + paths[key][j][counter[key][j]++])); },
+						updatePathTrace = function(j, key){ 
+                            var appendedPath = (paths[key] && paths[key][j]) ? paths[key][j][counter[key][j]++] : "";
+                            appendedPath = (appendedPath !== "") ? ("/" + appendedPath) : "";
+                            return (pathTrace[key][j] = (pathTrace[key][j] + appendedPath)); 
+                        },
                         nextPathTrace = function(j, key){
                             var cont = j == 0 ? 0 : counter[key][j] + 1;
                             return (pathTrace[key][j] + "/" + paths[key][j][counter[key][j]]); }
@@ -1027,13 +1031,20 @@ treeNode.getHtml = function() {
                                             }
                                             if (node == null) {
                                                 node = tree.getNodeByProperty("path", updatePathTrace(k[key], key));
-                                                loadEl = YAHOO.util.Selector.query(".ygtvtp", node.getEl(), true);
+                                                if (node != null) {
+                                                    loadEl = YAHOO.util.Selector.query(".ygtvtp", node.getEl(), true);
+                                                }
                                             } else {
                                                 loadEl = YAHOO.util.Selector.query(".ygtvlp", node.getEl(), true);
                                             }
-                                            YDom.addClass(loadEl, "ygtvloading");
-                                            //YDom.setAttribute ( node , "index" ,instance.pathNumber  );
-                                            doCall(node, k[key], key);
+                                            if (node == null) {
+                                                YDom.removeClass(label, "loading");
+                                                Self.firePathLoaded(instance);
+                                            } else {
+                                                YDom.addClass(loadEl, "ygtvloading");
+                                                //YDom.setAttribute ( node , "index" ,instance.pathNumber  );
+                                                doCall(node, k[key], key);
+                                            }
                                         } else {
                                             YDom.removeClass(label, "loading");
                                             Self.firePathLoaded(instance);
@@ -1461,7 +1472,7 @@ treeNode.getHtml = function() {
                                                 if ((curNode.labelStyle.indexOf("folder") != -1 && cont < 25) || (curNode.labelStyle.indexOf("folder") == -1 && cont < 2)) {
                                                     setTimeout(function () {
                                                         lookupSiteContent(curNode, currentUri, cont);
-                                                        if (typeof WcmDashboardWidgetCommon != 'undefined') {
+                                                        if (typeof WcmDashboardWidgetCommon != 'undefined' && (eventNS.typeAction =="edit" && !eventNS.draft)) {
                                                             CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
                                                                 CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
                                                         }
@@ -2330,6 +2341,7 @@ treeNode.getHtml = function() {
                         eventYS.data = oCurrentTextNode;
                         eventYS.typeAction = "createContent";
                         eventYS.oldPath = null;
+                        eventYS.parent = false;
                         document.dispatchEvent(eventYS);
                             if(CStudioAuthoringContext.isPreview) {
                                 CStudioAuthoring.Operations.refreshPreview();
@@ -2387,10 +2399,16 @@ treeNode.getHtml = function() {
                                 //this.callingWindow.location.reload(true);
                             }
                         }
-                        if(CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
-                            eventNS.data = oCurrentTextNode;
-                            eventNS.typeAction = "";
-                            document.dispatchEvent(eventNS);
+                        eventNS.data = oCurrentTextNode;
+                        eventNS.typeAction = "edit";
+                        eventNS.draft = draft;
+                        document.dispatchEvent(eventNS);
+                        if(!CStudioAuthoringContext.isPreview) {
+                            if(draft) {
+                                CStudioAuthoring.Utils.Cookies.createCookie("dashboard-checked", JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent()));
+                            }else{
+                                CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
+                            }
                         }
                     },
 
@@ -2734,9 +2752,37 @@ treeNode.getHtml = function() {
                             var path = (this.activeNode.data.uri);
 
                             var editCb = {
-                                success: function() {
-                                    eventNS.typeAction = "";
-                                    eventNS.oldPath = null;
+                                success: function(contentTO, editorId, name, value, draft) {
+
+                                    eventNS.oldPath = oCurrentTextNode.data.path;
+                                    var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                                    if(oCurrentTextNode.data.browserUri != contentTO.item.browserUri){
+                                        var oCurrentTextNodeOldPath = oCurrentTextNode.data.browserUri;
+                                        oCurrentTextNode.data.browserUri = contentTO.item.browserUri;
+                                        oCurrentTextNode.data.path = contentTO.item.path;
+                                        oCurrentTextNode.data.uri = contentTO.item.uri;
+                                        if(oCurrentTextNodeOldPath == pageParameter){
+                                            var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page", oCurrentTextNode.data.browserUri);
+                                            window.location.href = currentURL;
+                                        }
+                                    }
+                                    if(CStudioAuthoringContext.isPreview){
+                                        try{
+                                            CStudioAuthoring.Operations.refreshPreview();
+                                        }catch(err) {
+                                            if(!draft) {
+                                                this.callingWindow.location.reload(true);
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        if(!draft) {
+                                            //this.callingWindow.location.reload(true);
+                                        }
+                                    }
+                                    eventNS.data = oCurrentTextNode;
+                                    eventNS.typeAction = "edit";
+                                    eventNS.draft = draft;
                                     document.dispatchEvent(eventNS);
                                 },
 

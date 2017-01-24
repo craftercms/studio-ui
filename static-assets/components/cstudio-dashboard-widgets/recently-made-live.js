@@ -120,7 +120,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
 
         if (isFirst) {
 
-            html.push('<td colspan="5">');
+            html.push('<td colspan="6">');
 
             if (item.numOfChildren > 0) {
                 var parentClass = ['wcm-table-parent-', name, '-', count].join("");
@@ -166,10 +166,17 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
 
             WcmDashboardWidgetCommon.insertEditLink(item, editLinkId);
 
+            var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"),
+                currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked") ?
+                    JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null;
+
             html = html.concat([
                 '<td style="padding-right:0px">',
                     '<div class="dashlet-ident">',
-                            '<input type="checkbox" class="dashlet-item-check" id="', uri, '"', ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
+                            '<input type="checkbox" class="dashlet-item-check" id="', uri, '"',
+                ((this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0
+                    && item.internalName.trim() == CStudioAuthoring.SelectedContent.getSelectedContent()[0].internalName.trim())) ? ' checked' : ''),
+                ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                     '</div>',
                 '</td>',
                 '<td style="padding-left:0px">'+
@@ -187,6 +194,10 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
                 "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromString(item.eventDate), "</td>",
                 "<td class='alignRight ttThColLast'>", item.user, "</td>"
             ]);
+        }
+
+        if(currentCheckItem && this.widgetId == currentDashboard){
+            CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
         }
 
         return html.join("");

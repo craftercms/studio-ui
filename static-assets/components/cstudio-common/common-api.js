@@ -2038,7 +2038,7 @@ var nodeOpen = false;
                     false,
                     false);
             },
-        
+
             /**
              * create new template
              */

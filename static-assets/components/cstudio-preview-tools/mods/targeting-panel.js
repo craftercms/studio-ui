@@ -55,7 +55,7 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
                     }
 
                     personaEl.personaDescription = config[i].description;
-                    personaImgEl.src = CStudioAuthoringContext.baseUri + '/api/1/services/api/1/content/get-content-at-path.bin?path=/cstudio/config/sites/' + CStudioAuthoringContext.site + "/targeting/personas/thumbs/"+config[i].thumb;
+                    personaImgEl.src = CStudioAuthoringContext.baseUri + '/api/1/services/api/1/content/get-content-at-path.bin?path=/config/studio/targeting/personas/thumbs/' + config[i].thumb + '&site=' + CStudioAuthoringContext.site;
 
                     personalListEl.appendChild(personaEl);
                 }
@@ -357,7 +357,7 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
                                                                             }
 
                                                                             imageEl.title = persona.name;
-                                                                            imageEl.src = CStudioAuthoringContext.baseUri + '/api/1/services/api/1/content/get-content-at-path.bin?path=/cstudio/config/sites/' + CStudioAuthoringContext.site + "/targeting/personas/thumbs/" + persona.thumb;
+                                                                            imageEl.src = CStudioAuthoringContext.baseUri + '/api/1/services/api/1/content/get-content-at-path.bin?path=/config/studio/targeting/personas/thumbs/' + persona.thumb + '&site=' + CStudioAuthoringContext.site;
 
                                                                             CStudioAuthoring.TargetingPanel.collapse();
                                                                             if (YDom.hasClass("targeting-panel-elem", 'contracted')) {

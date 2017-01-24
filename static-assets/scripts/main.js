@@ -4,12 +4,15 @@
     var app = angular.module('studio', [
         'ngCookies',
         'ui.router',
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'smart-table',
+        'ngFileUpload',
+        'pascalprecht.translate'
     ]);
 
     app.run([
-        '$rootScope', '$state', '$stateParams', 'authService', 'Constants',
-        function ($rootScope, $state, $stateParams, authService, Constants) {
+        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants',
+        function ($rootScope, $state, $stateParams, authService, sitesService, Constants) {
 
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
@@ -25,12 +28,13 @@
 
             });
 
+            sitesService.getLanguages($rootScope, true);
         }
     ]);
 
     app.config([
-        '$stateProvider', '$urlRouterProvider',
-        function ($stateProvider, $urlRouterProvider) {
+        '$stateProvider', '$urlRouterProvider', '$translateProvider',
+        function ($stateProvider, $urlRouterProvider, $translateProvider) {
 
             $urlRouterProvider
                 .otherwise('/sites');
@@ -69,6 +73,30 @@
                             controller: 'AppCtrl'
                         }
                     }
+                })
+                .state('home.admin', {
+                    url: 'admin',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/admin.html',
+                            controller: 'AdminCtrl'
+                        }
+                    }
+                })
+                .state('home.admin.groups', {
+                    url: '/groups',
+                    templateUrl: '/studio/static-assets/ng-views/admin-groups.html',
+                    controller: 'AdminCtrl'
+                })
+                .state('home.admin.users', {
+                    url: '/users',
+                    templateUrl: '/studio/static-assets/ng-views/admin-users.html',
+                    controller: 'AdminCtrl'
+                })
+                .state('home.admin.group',{
+                    url: '/group?identifier',
+                    templateUrl: '/studio/static-assets/ng-views/admin-group.html',
+                    controller: "AdminCtrl"
                 })
                 .state('login', {
                     url: '/login',
@@ -140,6 +168,13 @@
                     templateUrl: '/studio/static-assets/ng-views/preview.html',
                     controller: 'PreviewCtrl'
                 });
+
+            $translateProvider.preferredLanguage('en');
+
+            $translateProvider.useStaticFilesLoader({
+                prefix: '/studio/static-assets/scripts/resources/locale-',
+                suffix: '.json'
+            });
 
         }
     ]);
@@ -236,8 +271,8 @@
     ]);
 
     app.service('sitesService', [
-        '$http', 'Constants', '$cookies', '$timeout', '$window',
-        function ($http, Constants, $cookies, $timeout, $window) {
+        '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
+        function ($http, Constants, $cookies, $timeout, $window, $translate) {
 
             var me = this;
 
@@ -303,7 +338,7 @@
                 return $http.get(server('get-available-languages'));
             }
 
-            this.getLanguages = function(scope) {
+            this.getLanguages = function(scope, setLang) {
                 this.getAvailableLanguages()
                     .success(function (data) {
                         var cookieLang = $cookies['crafterStudioLanguage'];
@@ -319,11 +354,17 @@
                             scope.langSelected = data[0].id;
                         }
                         scope.languagesAvailable = data;
+
+                        if(setLang){
+                            $translate.use(cookieLang);
+                        }
                     })
                     .error(function () {
                         scope.languagesAvailable = [];
                     });
-            }
+
+
+            };
 
             function api(action) {
                 return Constants.SERVICE + 'site/' + action + '.json';
@@ -347,8 +388,8 @@
     ]);
 
     app.controller('AppCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal',
-        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal) {
+        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout',
+        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout) {
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
@@ -381,13 +422,20 @@
             };
 
             $scope.setLangCookie = function() {
+                $translate.use($scope.langSelected);
+
                 $rootScope.modalInstance = $modal.open({
                     templateUrl: 'settingLanguajeConfirmation.html',
+                    windowClass: 'centered-dialog',
                     controller: 'AppCtrl',
                     backdrop: 'static',
+                    backdropClass: 'hidden',
                     keyboard: false,
                     size: 'sm'
                 });
+                $timeout(function () {
+                    $rootScope.modalInstance.close();
+                }, 1500, false);
                 sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
 
             };
@@ -509,6 +557,16 @@
                     });
             }
 
+            $scope.createSitesDialog = function() {
+                $scope.adminModal = $modal.open({
+                    templateUrl: '/studio/static-assets/ng-views/create-site.html',
+                    backdrop: 'static',
+                    keyboard: false,
+                    controller: 'SiteCtrl',
+                    scope: $scope
+                });
+            }
+
         }
 
 
@@ -616,6 +674,7 @@
                     keyboard: false,
                     size: 'sm'
                 });
+                $scope.adminModal.close();
                 sitesService.create({
                     siteId: $scope.site.siteId,
                     siteName: $scope.site.siteName,
@@ -784,5 +843,9 @@
 
         }
     ]);
+
+
+    
+
 
 })(angular);

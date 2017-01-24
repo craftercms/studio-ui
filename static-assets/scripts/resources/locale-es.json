@@ -1,0 +1,88 @@
+{
+  "dashboard": {
+    "login": {
+      "EMAIL": "Email",
+      "USERNAME": "Usuario",
+      "PASSWORD": "Password",
+      "SIGN_IN": "Sign in"
+    },
+    "sites": {
+      "SITES_LABEL": "Sitios",
+      "CREATE_SITE": "Crear Sitio",
+      "SITE_NAME": "Nombre de Sitio",
+      "SITE_DASHBOARD_LINK": "Link a Panel de Control",
+      "PREVIEW_LINK": "Preview Link",
+      "LIVE_SITE_LINK": "Link al Sitio en Vivo",
+      "PREVIEW": "Vista Previa",
+      "DASHBOARD": "Panel de Control",
+      "LIVE_SITE": "Sitio en vivo",
+      "REMOVE_SITE_CONFIRMATION_MSG": "Quiere eliminar el sitio?",
+      "TOGGLE_NAV": "Toggle navigation",
+      "ACCOUNT": "Cuenta",
+
+      "create": {
+        "HEADER_LABEL": "Crear Sitio",
+        "SITE_NAME": "Nombre de Sitio",
+        "SITE_ID": "Id de Sitio",
+        "DESCRIPTION": "Descripción",
+        "BLUEPRINT": "Blueprint",
+        "CREATING_SITE": "Creando Sitio"
+      }
+    }
+  },
+  "settings": {
+    "HEADER_LABEL": "Administración de Cuenta",
+    "PROFILE": "Perfil",
+    "UPDATE_PROFILE": "Actualizar Perfil",
+    "PROFILE_UPDATED": "Perfil Actualizado"
+  },
+  "admin": {
+    "groups": {
+      "HEADER_LABEL": "Grupos",
+      "IDENTIFIER": "Identificador",
+      "DISPLAY_NAME": "Nombre a Mostrar",
+      "NEW_GROUP": "Nuevo Grupo",
+      "GROUP_ID_ERROR_MESSAGE": "Identificador del Grupo es requerido.",
+      "GROUP_NAME_ERROR_MESSAGE": "Nombre a mostrar del Grupo es requerido.",
+      "CREATE_GROUP": "Crear Grupo",
+      "EDIT_GROUP": "Editar Grupo",
+      "ADD_USERS": "Agregar Usuarios",
+      "SEARCH_GROUPS": "Buscar Grupos",
+      "SEARCH_USERS": "Buscar Usuarios",
+      "ADD_USER_TOOLTIP": "Agregar Usuario a Grupo",
+      "ASSIGN_USERS_LABEL": "Asignar Usuarios",
+      "VIEW_GROUPS_LABEL": "Ver Grupos"
+    },
+    "users": {
+      "HEADER_LABEL": "Usuarios",
+      "USER_LABEL": "Usuario",
+      "NEW_USER": "Nuevo Usuario",
+      "NAME": "Nombre",
+      "USER_NAME": "Nombre de usuario",
+      "JOB_TITLE": "Cargo",
+      "EMAIL": "Correo",
+      "USAGE": "Uso",
+      "QUOTA": "Quota",
+      "PASSWORD": "Contraseña",
+      "PASSWORD_VERIFICATION": "Verificación de Contraseña"
+    }
+  },
+  "common": {
+    "CANCEL_LABEL": "Cancelar",
+    "SEARCH_LABEL": "Buscar",
+    "CLOSE_LABEL": "Cerrar",
+    "ADD_LABEL": "Agregar",
+    "CREATE": "create",
+    "EDIT": "edit",
+    "VIEW": "view",
+    "IS_REQUIRED_LABEL": "es requerido.",
+    "ALL_LABEL": "Todos",
+    "REMOVE_LABEL": "Eliminar",
+    "CONFIRMATION": "Confirmación",
+    "YES": "Si",
+    "NO": "No",
+    "HELP": "Ayuda",
+    "SETTINGS": "Preferencias",
+    "SIGN_OUT": "Desloguearse"
+  }
+}

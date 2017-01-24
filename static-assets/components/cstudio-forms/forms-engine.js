@@ -1128,6 +1128,7 @@ var CStudioForms = CStudioForms || function() {
                                         else {
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-save-draft");
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                            StudioAuthoring.Operations.refreshPreview();
                                         }
                                     }
                                     else {
@@ -1140,6 +1141,7 @@ var CStudioForms = CStudioForms || function() {
                                         else {
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-save-draft");
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                            CStudioAuthoring.Operations.refreshPreview();
                                         }
                                     }
                                     var page =  CStudioAuthoring.Utils.getQueryParameterURLParentWindow("page");
@@ -1148,8 +1150,7 @@ var CStudioForms = CStudioForms || function() {
                                     if(acnDraftContent && !saveDraft){
                                         acnDraftContent.parentNode.removeChild(acnDraftContent);
                                     }
-                                    if(!acnDraftContent && saveDraft && (contentTO.item.browserUri == page ||
-                                        parent.window.location.href.indexOf("site-dashboard") >= 0)){
+                                    if(!acnDraftContent && saveDraft && (contentTO.item.browserUri == page )){
                                         var noticeEl = document.createElement("div");
                                         parent.document.querySelector("#studioBar nav .container-fluid").appendChild(noticeEl);
                                         YDom.addClass(noticeEl, "acnDraftContent");
@@ -1566,10 +1567,6 @@ var CStudioForms = CStudioForms || function() {
                     };
 
                     controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
-                    // The repeat container will be re-rendered, thus all field callbacks will be registered again.
-                    // Solution: Remove the field callbacks before re-rendering the repeat container
-                    // TO-DO : Make the update process more selective (ie. do not re-render the whole repeat container)
-                    controlEl.form.beforeSaveCallbacks = arrayFilter(controlEl.form.beforeSaveCallbacks, "renderPersist");
                     controlEl.innerHTML = "";
                     controlEl.formEngine._renderRepeatBody(controlEl);
                 };

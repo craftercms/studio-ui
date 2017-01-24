@@ -60,6 +60,10 @@
 
             CStudioBrowse.validateSelections();
 
+            if ($(this).prop("type") === "radio") { // just select one if its radio button
+                CStudioAuthoring.SelectedContent.selectedContent = [];
+            }
+
             if($(this).is(":checked")){
                 CStudioAuthoring.SelectedContent.selectContent(contentTO);
             }else{
@@ -172,14 +176,17 @@
         var parsed = JSON.parse(JSON.stringify(obj), function(key, value) {
             if (key === "children"){
                     $.each(value, function(index, elem){
-                        if(!elem.folder){
+                        if(elem.numOfChildren === 0){
                             value[index].li_attr = {
                                 "data-display" : 'hidden-node'
                             };
+                        } else {
+                            value[index].state = {'closed': true};
+                            value[index].children = true;
                         }
                     })
             }
-            if (key === "browserUri"){
+            if (key === "path"){
                 this.a_attr = {
                     "data-path": value
                 }
@@ -397,38 +404,42 @@
     //Services
 
     CStudioBrowse.renderSiteFolders = function(site, path){
-        var foldersPromise = CStudioBrowse._lookupSiteFolders(site, path);
-        foldersPromise.then(function (treeData) {
-            var items = treeData.item.children;
-            items = new Array(treeData.item);
-
-            var items = CStudioBrowse.parseObjForTree(items);
-
-            //Removes jstree cached state from localStorage
-            localStorage.removeItem('jstree');
-            //Tree - default closed
-            $.jstree.defaults.core.expand_selected_onload = false;
-            $('#data').jstree({
-                'core' : {
-                    'check_callback': true,
-                    'data' : items
-                },
-                "types" : {
-                    "default" : {
-                        "icon" : "status-icon folder"
-                    }
-                },
-                "plugins" : [
-                    "state", "types"
-                ]
-            });
+        //Removes jstree cached state from localStorage
+        localStorage.removeItem('jstree');
+        //Tree - default closed
+        $.jstree.defaults.core.expand_selected_onload = false;
+        $('#data').jstree({
+            'core' : {
+                'check_callback': true,
+                'data' : function (node, cb) {
+                    var notRoot = (typeof node.a_attr !== 'undefined' && typeof node.a_attr['data-path'] !== 'undefined');
+                    var currentPath = notRoot ? node.a_attr['data-path'] : path; // use node path or root path
+                    var foldersPromise = CStudioBrowse._lookupSiteFolders(site, currentPath);
+                    foldersPromise.then(function (treeData) {
+                        var items = new Array(treeData.item);
+                        items = CStudioBrowse.parseObjForTree(items);
+                        if (notRoot) { // do this when it is not root level
+                            items = items[0].children;
+                        }
+                        cb(items);
+                    });
+                }
+            },
+            "types" : {
+                "default" : {
+                    "icon" : "status-icon folder"
+                }
+            },
+            "plugins" : [
+                "state", "types"
+            ]
         });
     }
 
     CStudioBrowse._lookupSiteFolders = function(site, path){
         var d = new $.Deferred();
 
-        CStudioAuthoring.Service.lookupSiteFolders(site, path, null, "default", {
+        CStudioAuthoring.Service.lookupSiteFolders(site, path, 2, "default", {
             success: function(treeData) {   //done (?)
                 d.resolve(treeData);
             },
