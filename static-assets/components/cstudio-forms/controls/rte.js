@@ -278,8 +278,11 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 
 		var sizeCookie = tinymce.util.Cookie.getHash("TinyMCE_" + editor.id + "_size" + window.name);
 		var cookieHeight = (sizeCookie) ? sizeCookie.ch : 0;
-		var formBody = document.getElementsByTagName("body")[0];
-		var scrollTop = formBody.scrollTop;
+		/* BEGIN: resizing editor treatment */
+		var formBody = document.querySelectorAll('html, body');
+		var scrollTop = formBody[0].scrollTop > 0 ? formBody[0].scrollTop : formBody[1].scrollTop;
+		formBody = formBody[0].scrollTop > 0 ? formBody[0] : formBody[1];
+		/* end */
 
 		tinymce.DOM.setStyle(editor.editorId + "_ifr", "height", cookieHeight + "px");
 
