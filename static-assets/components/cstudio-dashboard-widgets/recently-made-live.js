@@ -120,7 +120,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
 
         if (isFirst) {
 
-            html.push('<td colspan="5">');
+            html.push('<td colspan="6">');
 
             if (item.numOfChildren > 0) {
                 var parentClass = ['wcm-table-parent-', name, '-', count].join("");
