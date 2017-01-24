@@ -163,12 +163,13 @@ body {
 				   	 	}
 
 				   	 	.cstudio-search-description-preview {
+							height: 210px;
 				   	 		overflow:hidden;
 				   	 		position: relative;
-				   	 		text-align: right;
 
 				   	 		.cstudio-search-banner-image {
-				   	 			height: 210px;
+								max-height: 100%;
+								max-width: 100%;
 				   	 		}
 				   	 	}
 
