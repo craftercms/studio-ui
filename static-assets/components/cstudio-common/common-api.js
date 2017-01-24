@@ -671,7 +671,18 @@ var nodeOpen = false;
                             eventNS.data = items;
                             eventNS.typeAction = "";
                             eventNS.oldPath = null;
+
                             document.dispatchEvent(eventNS);
+
+                            var retry = window.setInterval(function(){
+                                //checkIconState
+                                if(document.querySelector('#activeContentActions .status-icon.in-progress')){
+                                    document.dispatchEvent(eventNS);
+                                }else{
+                                    window.clearInterval(retry);
+                                }
+                            }, 5000);
+
                         });
 
                     }
@@ -1941,62 +1952,93 @@ var nodeOpen = false;
                 CStudioAuthoring.Operations.openContentWebForm(formId, id, noderef, path, true, asPopup, callback, auxParams);
             },
 
-	    /**
-	     * Duplicate content operation
-	     */
+            /**
+             * Duplicate operation
+             */
             duplicateContent: function(site, path, opCallBack) {
-                var serviceUri = CStudioAuthoring.Service.duplicateContentServiceUri 
-                               + "?site=" + site + "&path=" + path;
+                var contentTO = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
 
-                var serviceUrl = CStudioAuthoring.Service.createServiceUri(serviceUri);
+                if(!contentTO) {
+                    // no item selected
+                    return;
+                }
 
-                var serviceCallback = {
-                    success: function(oResponse) {
-                        var contentTypeJson = oResponse.responseText;
+                var parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
 
-                        try {
-                            var contentTypes = eval("(" + contentTypeJson + ")");
-                            var formId = contentTypes.formId;
-                            var path = contentTypes.path;
-                            var editCb = {
+                if(contentTO.uri.indexOf("index.xml") != -1) {
+                    parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
+                    parentPath += "/index.xml";
+                }
+
+                var refreshFn = function(to) {
+                    CStudioAuthoring.Operations.refreshPreview();
+                    
+                    eventYS.data = to;
+                    eventYS.typeAction = "";
+                    eventYS.oldPath = null;
+                    document.dispatchEvent(eventYS);
+                };
+
+                CStudioAuthoring.Service.lookupContentItem(
+                    site, 
+                    parentPath, 
+                    {
+                        success: function(parentItemTo) {
+                            var copyCb = {
                                 success: function() {
-                                    CStudioAuthoring.Operations.refreshPreview();
-                                    // NEED ContentTO FOR PASSED PATH
-                                    eventYS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
-                                    eventYS.typeAction = "";
-                                    eventYS.oldPath = null;
-                                    document.dispatchEvent(eventYS);
+                                    refreshFn(parentItemTo.item);
 
-                                    opCallBack.success();
+                                    var pasteCb = {
+                                        success: function(pasteResponse) {
+
+                                            var editCb = {
+                                                success: function() {
+                                                    refreshFn(parentItemTo.item);
+                                                    opCallBack.success();
+                                                },
+                                                failure: function(errorResponse) {
+                                                    opCallBack.failure(errorResponse);
+                                                }
+                                            };
+                 
+                                            CStudioAuthoring.Operations.editContent(
+                                                contentTO.contentType,
+                                                CStudioAuthoringContext.site,
+                                                pasteResponse.status[0], 
+                                                "", 
+                                                pasteResponse.status[0], 
+                                                false,
+                                                editCb,
+                                                new Array());
+                                        },
+                                        failure: function(errorResponse) {
+                                            opCallBack.failure(errorResponse);
+                                        },
+                                    };
+
+                                    CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
                                 },
 
                                 failure: function(errorResponse) {
                                     opCallBack.failure(errorResponse);
-                                },
-
-                                callingWindow: window
+                                }
                             };
 
-                            var auxParams = new Array();
- 
-                            CStudioAuthoring.Operations.editContent(
-                                formId,
-                                CStudioAuthoringContext.site,path, 
-                                "", path, false,editCb,auxParams);
-                        }
-                        catch(err) {
-                            opCallBack.failure(err);
+                            //This method doesn't seem to do the rght thing
+                            //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
+                            var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site; 
+                            var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
+                            YAHOO.util.Connect.setDefaultPostHeader(false);
+                            YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+                            YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
+                        },
+                        failure: function() {
                         }
                     },
-
-                    failure: function(response) {
-                        opCallBack.failure();
-                    }
-                };
-
-                YConnect.asyncRequest('GET', serviceUrl, serviceCallback);
+                    false,
+                    false);
             },
-
+		
             /**
              * create new template
              */
@@ -2443,6 +2485,7 @@ var nodeOpen = false;
             allowedContentTypesForPath: "/api/1/services/api/1/content/get-content-types.json",
             retrieveSitesUrl: "/api/1/services/api/1/user/get-sites-3.json",
             retrievePublishingChannelsUrl: "/api/1/services/api/1/deployment/get-available-publishing-channels.json",
+            getUiResource: "/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg",
 
             getPagesServiceUrl: "/api/1/services/api/1/content/get-pages.json",
             lookupFoldersServiceUri: "/api/1/services/api/1/content/get-pages.json", // NEED A SERVICE
@@ -4119,6 +4162,33 @@ var nodeOpen = false;
 
                             var contentType = YAHOO.lang.JSON.parse(contentTypeJson);
                             callback.success(contentType);
+                        }
+                        catch(err) {
+                            callback.failure(err);
+                        }
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            /**
+             * lookup site logo
+             */
+            lookupSiteLogo: function(site, callback) {
+
+                var serviceUri = this.getUiResource;
+
+                var serviceCallback = {
+                    success: function(oResponse) {
+                        var responseText = oResponse.responseText;
+
+                        try {
+                            callback.success(responseText);
                         }
                         catch(err) {
                             callback.failure(err);
@@ -7706,15 +7776,21 @@ CStudioAuthoring.FilesDiff = {
                                 var resObj = response.responseText
  
                                 if (resObj.indexOf("true") != -1) {
+                                    //ticket is valid
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 } 
                                 else {
-                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
+                                    //ticket is invalid
+                                    authRedirect(configObj);
                                 }
                             },
                             failure: function(response) {
-                                //throw new Error('Unable to read session ticket');
-                                CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
+                                if(response.status == 401){
+                                    authRedirect(configObj);
+                                }else{
+                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
+                                    setTimeout(function() { authLoop(configObj); }, delay);
+                                }
                             }
                         };
 
