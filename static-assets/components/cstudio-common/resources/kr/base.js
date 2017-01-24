@@ -225,6 +225,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
 
 
 CStudioAuthoring.Messages.registerBundle("forms", "kr", {
+    new:"새로운",
     expandAll: "모두 확장",
     collapseAll: "모두 축소",
     pageName: "항목 이름",

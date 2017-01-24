@@ -232,6 +232,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
 });
 
 CStudioAuthoring.Messages.registerBundle("forms", "en", {
+    new:"New",
     expandAll: "Expand All",
     collapseAll: "Collapse All",
     pageName: "Item Name",
