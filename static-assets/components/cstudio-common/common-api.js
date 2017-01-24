@@ -1959,9 +1959,10 @@ var nodeOpen = false;
                     return;
                 }
 
-                var parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
-
-                if(contentTO.uri.indexOf("index.xml") != -1) {
+                var parentPath  = contentTO.uri;
+                
+		if(contentTO.uri.indexOf("index.xml") != -1) {
+                    parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
                     parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
                     parentPath += "/index.xml";
                 }
