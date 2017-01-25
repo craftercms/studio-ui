@@ -1905,9 +1905,9 @@ var CStudioForms = CStudioForms || function() {
                 window.document.title = (formDef.pageName) ? formDef.title + " | " + formDef.pageName : formDef.title;
 
                 $('header').show();
-                $('.page-header h1 .header').text(formDef.title);
-                if (formDef.pageName) {
-                    $('.page-header h1 .name').addClass('has-page-name').text(formDef.pageName);
+                $('.page-header h1 .header').text(formDef.pageName ? formDef.pageName : CMgs.format(formsLangBundle, "new")+" "+ formDef.title);
+                if (formDef.title) {
+                    $('.page-header h1 .name').addClass('has-page-name').text(formDef.title);
                 }
                 if (formDef.pageLocation) {
                     $('.page-header h1 .location').text(formDef.pageLocation);
