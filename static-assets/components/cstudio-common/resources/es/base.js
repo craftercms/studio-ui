@@ -231,6 +231,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
 });
 
 CStudioAuthoring.Messages.registerBundle("forms", "es", {
+    new:"Nuevo",
     expandAll: "Expandir Todo",
     collapseAll: "Collapsar Todo",
     pageName: "Item Name",
