@@ -2380,8 +2380,10 @@ treeNode.getHtml = function() {
                             oCurrentTextNode.data.browserUri = contentTO.item.browserUri;
                             oCurrentTextNode.data.path = contentTO.item.path;
                             oCurrentTextNode.data.uri = contentTO.item.uri;
-                            if(oCurrentTextNodeOldPath == pageParameter){
-                                var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page", oCurrentTextNode.data.browserUri);
+                            if(oCurrentTextNodeOldPath.split(".")[0] == pageParameter.split(".")[0]){
+                                var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page",
+                                        contentTO.item.browserUri.indexOf(".xml") > 0 ? contentTO.item.browserUri.split(".")[0]+".html" :
+                                        contentTO.item.browserUri);
                                 window.location.href = currentURL;
                             }
                         }
