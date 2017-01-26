@@ -1976,6 +1976,7 @@ var nodeOpen = false;
                     eventYS.data = to;
                     eventYS.typeAction = "";
                     eventYS.oldPath = null;
+                    eventYS.parent = false;
                     document.dispatchEvent(eventYS);
                 };
 
