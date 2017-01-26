@@ -1409,8 +1409,8 @@ treeNode.getHtml = function() {
                     }
 
                     /* Updating the tree Url if the path has been change. */
-                    if(oldPath && currentPath != oldPath && tree.getNodesByProperty("path", oldPath)) {
-                        var treeToUpdate = tree.getNodesByProperty("path", oldPath);
+                    if(oldPath && currentPath != oldPath && tree.getNodesByProperty("uri", oldPath)) {
+                        var treeToUpdate = tree.getNodesByProperty("uri", oldPath);
                         for(var i=0; i<treeToUpdate.length;i++) {
                             treeToUpdate[i].data.path = treeNode.data ? treeNode.data.path : treeNode.path;
                             treeToUpdate[i].data.browserUri = treeNode.data ? treeNode.data.browserUri : treeNode.browserUri;
@@ -2373,7 +2373,7 @@ treeNode.getHtml = function() {
 
                 var editCb = {
                     success: function(contentTO, editorId, name, value, draft) {
-                        eventNS.oldPath = oCurrentTextNode.data.path;
+                        eventNS.oldPath = oCurrentTextNode.data.uri;
                         var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
                         if(oCurrentTextNode.data.browserUri != contentTO.item.browserUri){
                             var oCurrentTextNodeOldPath = oCurrentTextNode.data.browserUri;
@@ -2756,7 +2756,7 @@ treeNode.getHtml = function() {
                             var editCb = {
                                 success: function(contentTO, editorId, name, value, draft) {
 
-                                    eventNS.oldPath = oCurrentTextNode.data.path;
+                                    eventNS.oldPath = oCurrentTextNode.data.uri;
                                     var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
                                     if(oCurrentTextNode.data.browserUri != contentTO.item.browserUri){
                                         var oCurrentTextNodeOldPath = oCurrentTextNode.data.browserUri;
