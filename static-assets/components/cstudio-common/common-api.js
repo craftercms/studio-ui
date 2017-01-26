@@ -377,6 +377,14 @@ var nodeOpen = false;
                 }
 
                 return retAt;
+            },
+
+            /**
+             * Unselects or clears all the selected items from the data structure
+             * 
+             */
+            clear: function() {
+                this.selectedContent = [];
             }
         },
         /**
@@ -667,6 +675,7 @@ var nodeOpen = false;
 
                         this.on("submitComplete", function(evt, args){
                             //window.location.reload();
+                            CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
                             dialogue.hide();
                             eventNS.data = items;
                             eventNS.typeAction = "";
