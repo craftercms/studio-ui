@@ -2006,7 +2006,6 @@ var nodeOpen = false;
                         success: function(parentItemTo) {
                             var copyCb = {
                                 success: function() {
-                                    refreshFn(parentItemTo.item);
 
                                     var pasteCb = {
                                         success: function(pasteResponse) {
@@ -2018,7 +2017,11 @@ var nodeOpen = false;
                                                 },
                                                 failure: function(errorResponse) {
                                                     opCallBack.failure(errorResponse);
-                                                }
+                                                },
+
+                                                cancelled: function() {
+                                                    refreshFn(parentItemTo.item);
+                                                },
                                             };
                  
                                             CStudioAuthoring.Operations.editContent(
