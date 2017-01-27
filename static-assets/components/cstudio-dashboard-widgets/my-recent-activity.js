@@ -167,7 +167,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			if (!itemName || itemName == "") {
 				itemName = item.name;
 			}
-            var browserUri = item.browserUri,
+			var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false),
                 fullUri = item.uri,
                 editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri),
 
