@@ -720,10 +720,14 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             if(isWrite) {
                                 var duplicateContentCallback = {
                                     success : function() {
-                                        YDom.get("duplicate-loading").style.display = "none";
+                                        if(YDom.get("duplicate-loading")){
+                                            YDom.get("duplicate-loading").style.display = "none";
+                                        }
                                     },
                                     failure: function() {
-                                        YDom.get("duplicate-loading").style.display = "none";
+                                        if(YDom.get("duplicate-loading")) {
+                                            YDom.get("duplicate-loading").style.display = "none";
+                                        }
                                     }
                                 };
                                 var content = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
