@@ -1120,6 +1120,32 @@ var nodeOpen = false;
             },
 
             /**
+             * Based on content item, returns preview url properly
+             * 
+             * @param contentTO {object} item data
+             * @param useAppBase {boolean} if false, forces url to be returned without baseUri
+             * 
+             * return {string}
+             */
+            getPreviewUrl: function(contentTO, useAppBase) {
+                var url = "";
+                var baseUri = (useAppBase === false) ? '' : CStudioAuthoringContext.previewAppBaseUri;
+                var filename = (contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name;
+                if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
+                    url = baseUri + contentTO.browserUri;
+                    url = url.replace('.xml', '.html');
+
+                    if (contentTO.document && contentTO.assets && contentTO.assets.length == 1) {
+                        url = baseUri + contentTO.assets[0].uri;
+                    }
+
+                } else {
+                    url = baseUri + contentTO.uri;
+                }
+                return url;
+            },
+
+            /**
              * given a transfer object, open a preview URL
              */
             openPreview: function(contentTO, windowId, soundTone, incontextEdit, targetWindowId) {
@@ -1130,20 +1156,7 @@ var nodeOpen = false;
                     targetWindowId = window.name;
                 }
 
-                var url = "";
-                var filename = (contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name;
-
-                if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
-                    url = CStudioAuthoringContext.previewAppBaseUri + contentTO.browserUri;
-                    url = url.replace('.xml', '.html');
-
-                    if (contentTO.document && contentTO.assets && contentTO.assets.length == 1) {
-                        url = CStudioAuthoringContext.previewAppBaseUri + contentTO.assets[0].uri;
-                    }
-
-                } else {
-                    url = CStudioAuthoringContext.previewAppBaseUri+contentTO.uri;
-                }
+                var url = this.getPreviewUrl(contentTO);
 
                 if (incontextEdit) {
                     window.location.reload();

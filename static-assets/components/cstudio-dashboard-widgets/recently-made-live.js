@@ -142,7 +142,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
 
         } else {
 
-            var browserUri = item.browserUri,
+            var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false),
                 displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80),
                 uri = item.uri;
 
