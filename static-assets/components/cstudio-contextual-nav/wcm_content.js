@@ -617,10 +617,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     var oCurrentTextNodeOldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri;
                                     var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
                                     if(CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri != contentTO.item.browserUri){
-                                        eventNS.oldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].path;
+                                        eventNS.oldPath = CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
                                         CStudioAuthoring.SelectedContent.getSelectedContent()[0] = contentTO.item;
-                                        if(oCurrentTextNodeOldPath == pageParameter){
-                                            var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page", CStudioAuthoring.SelectedContent.getSelectedContent()[0].browserUri);
+                                        if(oCurrentTextNodeOldPath.split(".")[0] == pageParameter.split(".")[0]){
+                                            var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page",
+                                                contentTO.item.browserUri.indexOf(".xml") > 0 ? contentTO.item.browserUri.split(".")[0]+".html" :
+                                                contentTO.item.browserUri);
                                             window.location.href = currentURL;
                                         }
                                     }
