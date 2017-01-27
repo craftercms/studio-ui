@@ -1383,8 +1383,10 @@ treeNode.getHtml = function() {
             }
 
             if (copiedItemNode != null && (currentPath == copiedItemNode.data.path) && treeNode.parent) {
-                node = tree.getNodesByProperty("path", treeNode.parent.data.path);
-                Self.copiedItem = null;
+                if(treeNode.parent.data.path) {
+                    node = tree.getNodesByProperty("path", treeNode.parent.data.path);
+                    Self.copiedItem = null;
+                }
             }
 
             if (node) {
