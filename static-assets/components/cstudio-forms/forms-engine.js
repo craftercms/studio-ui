@@ -1017,12 +1017,14 @@ var CStudioForms = CStudioForms || function() {
                 var _notifyServer = (form.readOnly)?false:true;
                 var message = CMgs.format(formsLangBundle, "cancelDialogBody");
 
+                var queryString = document.location.search;
+                var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, "editorId");
+                var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
+
                 var saveFn = function(preview,draft) {
                     showWarnMsg = false;
                     var saveDraft = (draft == true) ? true : false;
-                    var queryString = document.location.search;
-                    var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, "editorId");
-                    var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
+
 
                     var saveAndCloseEl = document.getElementById("cstudioSaveAndClose");
                     var saveAndCloseDraftEl = document.getElementById("cstudioSaveAndCloseDraft");
@@ -1217,6 +1219,10 @@ var CStudioForms = CStudioForms || function() {
                 };
 
                 var cancelFn = function() {
+
+                    if(iceWindowCallback && iceWindowCallback.cancelled){
+                        iceWindowCallback.cancelled();
+                    }
 
                     if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
                         for(var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++){

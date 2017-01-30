@@ -675,7 +675,9 @@ var nodeOpen = false;
 
                         this.on("submitComplete", function(evt, args){
                             //window.location.reload();
-                            CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
+                            if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
+                                 CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
+                            }
                             dialogue.hide();
                             eventNS.data = items;
                             eventNS.typeAction = "";
@@ -2009,7 +2011,6 @@ var nodeOpen = false;
                         success: function(parentItemTo) {
                             var copyCb = {
                                 success: function() {
-                                    refreshFn(parentItemTo.item);
 
                                     var pasteCb = {
                                         success: function(pasteResponse) {
@@ -2021,7 +2022,11 @@ var nodeOpen = false;
                                                 },
                                                 failure: function(errorResponse) {
                                                     opCallBack.failure(errorResponse);
-                                                }
+                                                },
+
+                                                cancelled: function() {
+                                                    refreshFn(parentItemTo.item);
+                                                },
                                             };
                  
                                             CStudioAuthoring.Operations.editContent(
