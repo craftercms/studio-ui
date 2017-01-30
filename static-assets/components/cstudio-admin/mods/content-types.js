@@ -106,7 +106,8 @@ CStudioAuthoring.Module.requireModule(
 						CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), fn: function() {
 
 							var saveFn = function(){
-								var xml = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef);
+								var xml = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef),
+									configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
 								var cb = { success: function () {
 									CStudioAdminConsole.isDirty = false;
@@ -120,13 +121,11 @@ CStudioAuthoring.Module.requireModule(
 									langBundle: langBundle
 								};
 
-								var defPath = '/cstudio/config/sites/' +
-									CStudioAuthoringContext.site +
-									'/content-types' + formDef.contentType +
+								var defPath = configFilesPath + '/content-types' + formDef.contentType +
 									'/form-definition.xml';
 
 								var url = "/api/1/services/api/1/site/write-configuration.json" +
-									"?path=" + defPath;
+									"?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
 
 								YAHOO.util.Connect.resetFormState();
 								YAHOO.util.Connect.setDefaultPostHeader(false);

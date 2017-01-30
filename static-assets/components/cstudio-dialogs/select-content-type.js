@@ -177,6 +177,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 	},
 
 	setDefaultTemplate: function(contentTypes) {
+		var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 		var contentTypesSelect = YDom.get("wcm-content-types-dropdown");
 		if (!contentTypesSelect) return;
 		var defaultSrc = CStudioAuthoringContext.baseUri+'/static-assets/themes/cstudioTheme/images/';
@@ -191,8 +192,8 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 
 				contentTypePreviewImg.src = 
 						CStudioAuthoringContext.baseUri+
-						'/api/1/services/api/1/content/get-content-at-path.bin?path=/cstudio/config/sites/' +
-						CStudioAuthoringContext.site + 
+						'/api/1/services/api/1/content/get-content-at-path.bin?site=' + CStudioAuthoringContext.site +
+						'&path=' + configFilesPath +
 						"/content-types" + 
 						contentTypesSelect.value + 
 						"/"+imageName;					
@@ -244,6 +245,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 			var defaultSrc = CStudioAuthoringContext.baseUri+'/static-assets/themes/cstudioTheme/images/';
 			var defaultImg = "default-contentType.jpg";
 			var contentTypePreviewImg = YDom.get("contentTypePreviewImg");
+			var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
 			for(var k=0; k<contentTypes.length; k++) {
 				if(this.value == contentTypes[k].form){
@@ -253,8 +255,8 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 						
 						contentTypePreviewImg.src = 
 								CStudioAuthoringContext.baseUri+
-								'/api/1/services/api/1/content/get-content-at-path.bin?path=/cstudio/config/sites/' +
-								CStudioAuthoringContext.site + 
+								'/api/1/services/api/1/content/get-content-at-path.bin?site=' + CStudioAuthoringContext.site +
+								'path=' + configFilesPath +
 								"/content-types" + 
 								contentTypesSelect.value + 
 								"/"+imageName;

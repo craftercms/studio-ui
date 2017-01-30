@@ -122,14 +122,16 @@ CStudioAuthoring.Module.requireModule(
 			
 				// add onchange behavior to display selected
 				itemSelectEl.onchange = function() {
-					var selectedIndex = itemSelectEl.selectedIndex;
+					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH,
+						selectedIndex = itemSelectEl.selectedIndex;
+
 					if(selectedIndex != 0) {
 						editAreaEl.style.display = 'block';
 						var descriptionEl = document.getElementById("config-description");
 						descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute("description");
 						// load configuration into editor
-						var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=/cstudio/config/sites/' +
-							          CStudioAuthoringContext.site + itemSelectEl[selectedIndex].value;
+						var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
+							CStudioAuthoringContext.site + '&path=' + configFilesPath + itemSelectEl[selectedIndex].value;
 						var getConfigCb = {
 							success: function(response) {
 								editor.setValue(response.responseText);
@@ -148,8 +150,9 @@ CStudioAuthoring.Module.requireModule(
 						var samplePath = itemSelectEl[selectedIndex].getAttribute("sample");
 						var viewSampleButtonEl = document.getElementById("view-sample-button");
 						if (samplePath != 'undefined' && samplePath != '') {
-							var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=/cstudio/config/sites/' +
-								    CStudioAuthoringContext.site + itemSelectEl[selectedIndex].getAttribute("sample");
+							var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
+								CStudioAuthoringContext.site + '&path=' + configFilesPath + itemSelectEl[selectedIndex].getAttribute("sample");
+
 							var getSampleCb = {
 								success: function(response) {
 									var sampleAreaEl = document.getElementById("sample-window");
@@ -216,7 +219,9 @@ CStudioAuthoring.Module.requireModule(
 					"<button type='submit' id='hide-sample-button' class='btn btn-primary'>"+CMgs.format(formsLangBundle, "hideSample")+"</button>";
 
 				// add button actions
-				var saveButtonEl = document.getElementById("save-button");
+				var saveButtonEl = document.getElementById("save-button"),
+					configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
+
 				// save the configuration file back to repo 
 				saveButtonEl.onclick = function () { 
 					var selectedIndex = itemSelectEl.selectedIndex;
@@ -226,14 +231,11 @@ CStudioAuthoring.Module.requireModule(
 					var xml = editor.getValue();
 					var savePath = itemSelectEl[selectedIndex].value;
 					if (savePath != 'undefined' && savePath != '') {
-						
-						var defPath =  '/cstudio/config/sites/' + 
-							CStudioAuthoringContext.site + 
-							itemSelectEl[selectedIndex].value;
+
+						var defPath =  configFilesPath + itemSelectEl[selectedIndex].value;
 
 						var url = "/api/1/services/api/1/site/write-configuration.json" +
-                        "?path=" + defPath;
-
+                        "?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
 
 						YAHOO.util.Connect.setDefaultPostHeader(false);
 						YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");

@@ -51,6 +51,7 @@ CStudioAuthoring.ContextualNav.PersonaNavMod = CStudioAuthoring.ContextualNav.Pe
 									"/targeting/personas/personas-config.xml", {
 										success: function(response) {
 
+											var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
                                             var config;
                                             var persona;
 											
@@ -77,7 +78,7 @@ CStudioAuthoring.ContextualNav.PersonaNavMod = CStudioAuthoring.ContextualNav.Pe
                                             }
 
                                             imageEl.title = persona.name;
-                                            imageEl.src = CStudioAuthoringContext.baseUri + '/api/1/services/api/1/content/get-content-at-path.bin?path=/cstudio/config/sites/' + CStudioAuthoringContext.site + "/targeting/personas/thumbs/" + persona.thumb;
+											imageEl.src = CStudioAuthoringContext.baseUri + '/api/1/services/api/1/content/get-content-at-path.bin?path='+ configFilesPath + '/targeting/personas/thumbs/' + persona.thumb + '&site=' + CStudioAuthoringContext.site;
 
 										},
 										
