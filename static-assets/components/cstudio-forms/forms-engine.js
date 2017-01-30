@@ -2141,11 +2141,12 @@ var CStudioForms = CStudioForms || function() {
                             };
 
                             var moduleConfig = {};
+                            var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
                             CStudioAuthoring.Module.requireModule(
                                 formId+"-controller",
-                                "/api/1/services/api/1/content/get-content-at-path.bin" +
-                                "?path=/cstudio/config/sites/"+CStudioAuthoringContext.site+"/content-types/"+formId+"/form-controller.js",
+                                "/api/1/services/api/1/content/get-content-at-path.bin?site=" + CStudioAuthoringContext.site +
+                                "&path=" + configFilesPath + "/content-types/"+formId+"/form-controller.js",
                                 moduleConfig, moduleCb);
                         }
                         else {

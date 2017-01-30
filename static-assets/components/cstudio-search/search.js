@@ -196,9 +196,10 @@ CStudioSearch.determineFilterRendererFromUrl = function() {
         };
 
         var moduleConfig = { };
+		var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
-		var modulePath = "/api/1/services/api/1/content/get-content-at-path.bin" +
-            "?path=/cstudio/config/sites/" + CStudioAuthoringContext.site + "/search/filters/" + paramContext + ".js";
+		var modulePath = "/api/1/services/api/1/content/get-content-at-path.bin?site=" + CStudioAuthoringContext.site +
+            "&path=" + configFilesPath + "/search/filters/" + paramContext + ".js";
             
 		CStudioAuthoring.Module.requireModule(
         	paramContext,

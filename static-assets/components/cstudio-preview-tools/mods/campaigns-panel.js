@@ -121,10 +121,12 @@ CStudioAuthoring.CampaignsPanel = CStudioAuthoring.CampaignsPanel || {
           containerEl: containerEl
       };
 
+	  var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
+
       CStudioAuthoring.Module.requireModule(
           "salesforce-report-"+reportId,
-          "/api/1/services/api/1/content/get-content-at-path.bin" +
-          "?path=/cstudio/config/sites/" + site  + "/salesforce/reports/" + reportId + ".js",
+          "/api/1/services/api/1/content/get-content-at-path.bin?site=" + site +
+          "&path=" + configFilesPath  + "/salesforce/reports/" + reportId + ".js",
           moduleConfig, reportCb);
 
 	}

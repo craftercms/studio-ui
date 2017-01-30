@@ -159,6 +159,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 	 * create clicked 
 	 */
 	createClick: function(event, params) {
+		var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 		var label = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.labelEl.value);
 		var name = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.typeNameEl.value);
 		var type = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.objectTypeEl.value);
@@ -166,8 +167,8 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 		var contentAsFolder = (
 			type == 'component' ? false : params.asFolderEl.checked
 		);
-		var baseServicePath = '/api/1/services/api/1/site/write-configuration.json?path=/cstudio/config/sites/' + 
-			CStudioAuthoringContext.site +
+		var baseServicePath = '/api/1/services/api/1/site/write-configuration.json?site=' + CStudioAuthoringContext.site +
+			'&path=' + configFilesPath +
 			'/content-types/' + type + '/' + name + 
 			'/';
 
