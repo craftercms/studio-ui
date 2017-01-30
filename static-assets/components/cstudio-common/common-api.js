@@ -2005,6 +2005,10 @@ var nodeOpen = false;
                 }
                 
                 var refreshFn = function(to) {
+                    if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
+                        CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
+                    }
+
                     CStudioAuthoring.Operations.refreshPreview(to);
                     
                     eventYS.data = to;
