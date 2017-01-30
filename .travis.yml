@@ -1,12 +1,10 @@
 language:
    - node_js
-
 node_js:
    - "6"
 before_script:
    - gem install travis
-
 script:
-   -
+   - chmod +x travisTrigger.sh
 after_script:
-     - 'if [[ "$TRAVIS_PULL_REQUEST" = "false" ]]; then bash -c curl -LO  https://raw.github.com/stephanmg/travis-dependent-builds/master/trigger.sh;  chmod +x trigger.sh; ./trigger.sh craftercms studio master $TRAVIS_ACCESS_TOKEN  ;fi'
+    ./travisTrigger.sh
