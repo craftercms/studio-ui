@@ -1130,7 +1130,7 @@ var CStudioForms = CStudioForms || function() {
                                         else {
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-save-draft");
                                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                                            StudioAuthoring.Operations.refreshPreview();
+                                            CStudioAuthoring.Operations.refreshPreview();
                                         }
                                     }
                                     else {
