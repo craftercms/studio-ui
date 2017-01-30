@@ -628,7 +628,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     }
                                     if(CStudioAuthoringContext.isPreview){
                                         try{
-                                            CStudioAuthoring.Operations.refreshPreview();
+                                            CStudioAuthoring.Operations.refreshPreview(contentTO.item);
                                         }catch(err) {
                                             if(!draft) {
                                                 this.callingWindow.location.reload(true);

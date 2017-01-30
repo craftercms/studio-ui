@@ -1113,7 +1113,17 @@ var nodeOpen = false;
 
             refreshPreview: function() {
                 var previewFrameEl = document.getElementById("engineWindow");
-                if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
+                if(previewFrameEl){
+                    if(!context){
+                        previewFrameEl.contentWindow.location.reload();
+                    }else{
+                        if (context && context.browserUri) {
+                            amplify.publish(crafter.studio.preview.Topics.GUEST_CHECKIN, CStudioAuthoring.Operations.getPreviewUrl(context, false));
+                            return;
+                        }
+                        context.callingWindow.location.reload(true);
+                    }
+                }
             },
 
             setPreview: function(url) {
@@ -1995,7 +2005,7 @@ var nodeOpen = false;
                 }
                 
                 var refreshFn = function(to) {
-                    CStudioAuthoring.Operations.refreshPreview();
+                    CStudioAuthoring.Operations.refreshPreview(to);
                     
                     eventYS.data = to;
                     eventYS.typeAction = "";
@@ -2016,8 +2026,8 @@ var nodeOpen = false;
                                         success: function(pasteResponse) {
 
                                             var editCb = {
-                                                success: function() {
-                                                    refreshFn(parentItemTo.item);
+                                                success: function(newItem) {
+                                                    refreshFn(newItem.item);
                                                     opCallBack.success();
                                                 },
                                                 failure: function(errorResponse) {
