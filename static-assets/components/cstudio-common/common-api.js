@@ -1111,7 +1111,7 @@ var nodeOpen = false;
                 if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
             },
 
-            refreshPreview: function() {
+            refreshPreview: function(context) {
                 var previewFrameEl = document.getElementById("engineWindow");
                 if(previewFrameEl){
                     if(!context){
