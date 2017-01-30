@@ -2391,7 +2391,7 @@ treeNode.getHtml = function() {
                         }
                         if(CStudioAuthoringContext.isPreview){
                             try{
-                                CStudioAuthoring.Operations.refreshPreview();
+                                CStudioAuthoring.Operations.refreshPreview(contentTO.item);
                             }catch(err) {
                                 if(!draft) {
                                     CStudioAuthoring.Operations.refreshPreview(this);
