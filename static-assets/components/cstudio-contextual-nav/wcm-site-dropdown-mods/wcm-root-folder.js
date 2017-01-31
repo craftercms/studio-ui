@@ -533,7 +533,8 @@
                                         Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
                                      }
                                 }else{
-                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
+                                    var changeStructure = (e.data && e.data.children && e.data.children.length > 0) ? true : false;
+                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath);
                                 }
                             } catch (er) {
                                 if (CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
