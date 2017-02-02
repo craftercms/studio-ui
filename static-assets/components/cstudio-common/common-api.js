@@ -2022,7 +2022,7 @@ var nodeOpen = false;
 
                                             var editCb = {
                                                 success: function(newItem) {
-                                                    refreshFn(newItem.item);
+                                                    refreshFn(parentItemTo.item);
                                                     opCallBack.success();
                                                 },
                                                 failure: function(errorResponse) {

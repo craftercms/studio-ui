@@ -640,7 +640,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             //this.callingWindow.location.reload(true);
                                         }
                                     }
-                                        eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
+                                        eventNS.data = contentTO.item;
                                         eventNS.typeAction = "edit";
                                         eventNS.draft = draft;
                                         document.dispatchEvent(eventNS);
