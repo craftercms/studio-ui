@@ -1170,7 +1170,11 @@ var CStudioForms = CStudioForms || function() {
                                 }
                             };
 
-                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, entityId, getContentItemCb, false, false);
+                            if(entityId == path){
+                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, entityId, getContentItemCb, false, false);
+                            }else{
+                                CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, entityId, 1, 'default', getContentItemCb);
+                            }
 
                         },
                         failure: function(err) {
