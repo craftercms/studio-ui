@@ -530,14 +530,17 @@
                             try {
                                 if(e.data && e.data.length) {
                                     for (var i = 0; i < e.data.length; i++){
-                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
+                                        var changeStructure = (e.data[i] && e.data[i].children && e.data[i].children.length > 0 || e.changeStructure) ? true : false;
+                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath);
                                      }
                                 }else{
-                                    var changeStructure = (e.data && e.data.children && e.data.children.length > 0) ? true : false;
+                                    var changeStructure = (e.data && e.data.children && e.data.children.length > 0 || e.changeStructure) ? true : false;
                                     Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath);
                                 }
                             } catch (er) {
-                                if (CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
+                                var contentSelected = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
+                                if (contentSelected) {
+                                    var changeStructure = (contentSelected && contentSelected.children && contentSelected.children.length > 0 || e.changeStructure) ? true : false;
                                     Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
                                 }
                             }
@@ -1380,7 +1383,12 @@ treeNode.getHtml = function() {
                     }
                 }
             }else{
-                node = tree.getNodesByProperty("path", currentPath) ? tree.getNodesByProperty("path", currentPath) : null;
+                if(oldPath && currentUri != oldPath && tree.getNodesByProperty("uri", oldPath)) {
+                    node = tree.getNodesByProperty("uri", oldPath) ? tree.getNodesByProperty("uri", oldPath) : null;
+                }else{
+                    node = tree.getNodesByProperty("path", currentPath) ? tree.getNodesByProperty("path", currentPath) : null;
+                }
+
             }
 
             if (copiedItemNode != null && (currentPath == copiedItemNode.data.path) && treeNode.parent) {
@@ -1415,9 +1423,10 @@ treeNode.getHtml = function() {
                     if(oldPath && currentPath != oldPath && tree.getNodesByProperty("uri", oldPath)) {
                         var treeToUpdate = tree.getNodesByProperty("uri", oldPath);
                         for(var i=0; i<treeToUpdate.length;i++) {
-                            treeToUpdate[i].data.path = treeNode.data ? treeNode.data.path : treeNode.path;
-                            treeToUpdate[i].data.browserUri = treeNode.data ? treeNode.data.browserUri : treeNode.browserUri;
-                            treeToUpdate[i].data.uri = treeNode.data ? treeNode.data.uri : treeNode.uri;
+                            Self.updateNote(treeToUpdate[i].data, treeNode.data ? treeNode.data : treeNode);
+                            treeToUpdate[i].label = treeNode.data ? treeNode.data.internalName : treeNode.internalName;
+                            treeToUpdate[i].treeNodeTO.path = treeNode.data ? treeNode.data.path : treeNode.path;
+                            treeToUpdate[i].treeNodeTO.uri = treeNode.data ? treeNode.data.uri : treeNode.uri;
                         }
                         nodeToChange = treeToUpdate;
                     }
@@ -2383,6 +2392,9 @@ treeNode.getHtml = function() {
                             oCurrentTextNode.data.browserUri = contentTO.item.browserUri;
                             oCurrentTextNode.data.path = contentTO.item.path;
                             oCurrentTextNode.data.uri = contentTO.item.uri;
+                            oCurrentTextNode.label = contentTO.item.internalName;
+                            oCurrentTextNode.treeNodeTO.path = contentTO.item.path;
+                            oCurrentTextNode.treeNodeTO.uri = contentTO.item.uri;
                             if(oCurrentTextNodeOldPath.split(".")[0] == pageParameter.split(".")[0]){
                                 var currentURL = CStudioAuthoring.Utils.replaceQueryParameterURL(window.location.href, "page",
                                         contentTO.item.browserUri.indexOf(".xml") > 0 ? contentTO.item.browserUri.split(".")[0]+".html" :
@@ -2404,7 +2416,7 @@ treeNode.getHtml = function() {
                                 //this.callingWindow.location.reload(true);
                             }
                         }
-                        eventNS.data = oCurrentTextNode;
+                        eventNS.data = contentTO.item;
                         eventNS.typeAction = "edit";
                         eventNS.draft = draft;
                         document.dispatchEvent(eventNS);
