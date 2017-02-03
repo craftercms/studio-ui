@@ -2559,6 +2559,7 @@ var nodeOpen = false;
 
             // Preview Services
             previewSyncAllServiceUrl: "/api/1/services/api/1/preview/sync-site.json",
+            syncRepoServiceUrl: "/api/1/services/api/1/repo/sync-from-repo.json",
 
             // Activity Services
             getUserActivitiesServiceUrl: "/api/1/services/api/1/activity/get-user-activities.json",
@@ -3378,6 +3379,27 @@ var nodeOpen = false;
                 };
 
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            syncFromRepo: function(site, callback){
+                var serviceUrl = this.syncRepoServiceUrl;
+                var postData = "site_id=" + site;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = {};
+                        if(jsonResponse.responseText != "") {
+                            results = eval("(" + jsonResponse.responseText + ")");
+                        }
+
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, postData);
             },
             /**
              * crop image

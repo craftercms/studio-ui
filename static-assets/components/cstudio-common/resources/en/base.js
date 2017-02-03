@@ -189,6 +189,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     analyticsDashboard: "Analytics Dashboard",
     adminConsole: "Admin Console",
     previewSync: "Preview Sync",
+    syncrepo: "Sync From Repository",
     allSites: "All Sites",
     newContent: "New Content",
     newFolder: "New Folder",

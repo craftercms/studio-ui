@@ -188,6 +188,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     analyticsDashboard: "Panel de Control de Análisis",
     adminConsole: "Consola de Administración",
     previewSync: "Vista previa de Sincronización",
+    syncrepo: "Sincronizar del Repositorio",
     allSites: "Todos los Sitios",
     newContent: "Nuevo Contenido",
     newFolder: "Nueva Carpeta",

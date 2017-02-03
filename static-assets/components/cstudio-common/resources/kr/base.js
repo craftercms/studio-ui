@@ -181,6 +181,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     analyticsDashboard: "웹 로그 분석 대시 보드",
     adminConsole: "관리 콘솔",
     previewSync: "미리 동기화",
+    syncrepo: "저장소에서 동기화",
     allSites: "모든 사이트",
     newContent: "새로운 내용",
     newFolder: "새 폴더",
