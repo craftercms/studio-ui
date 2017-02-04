@@ -628,7 +628,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     }
                                     if(CStudioAuthoringContext.isPreview){
                                         try{
-                                            CStudioAuthoring.Operations.refreshPreview(contentTO.item);
+                                            var currentContentTO = (pageParameter.replace("html","xml") == contentTO.item.browserUri) ? null : contentTO.item;
+                                            CStudioAuthoring.Operations.refreshPreview(currentContentTO);
                                         }catch(err) {
                                             if(!draft) {
                                                 this.callingWindow.location.reload(true);
