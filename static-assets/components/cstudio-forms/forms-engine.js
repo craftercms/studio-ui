@@ -956,7 +956,7 @@ var CStudioForms = CStudioForms || function() {
                     this._renderFormSections(form);
                 }
 
-                var buildEntityIdFn = function() {
+                var buildEntityIdFn = function(draft) {
                     var entityId = path.replace(".html", ".xml");
                     var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, "changeTemplate");
                     var length = entityId.length;
@@ -1008,7 +1008,9 @@ var CStudioForms = CStudioForms || function() {
                     else {
                         entityId += "/" + fileName;
                     }
-                    saveDraft = true;
+                    if(!(form.isInError() && draft==false) && !(form.isInErrorDraft() && draft ==true)){
+                        saveDraft = true;
+                    }
                     return entityId;
                 }
 
@@ -1034,7 +1036,7 @@ var CStudioForms = CStudioForms || function() {
                     if(saveAndPreviewEl) saveAndPreviewEl.disabled = true;
                     if(saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = true;
 
-                    var entityId = buildEntityIdFn();
+                    var entityId = buildEntityIdFn(draft);
                     var entityFile = entityId.substring(entityId.lastIndexOf('/') + 1);
                     if((form.isInError() && draft==false) || (form.isInErrorDraft() && draft ==true)) {
                         var dialogEl = document.getElementById("errMissingRequirements");
@@ -1216,7 +1218,7 @@ var CStudioForms = CStudioForms || function() {
                     if(_notifyServer){
                         path = CStudioAuthoring.Utils.getQueryVariable(location.search, "path");
                         if( path && path.indexOf(".xml") != -1) {
-                            var entityId = buildEntityIdFn();
+                            var entityId = buildEntityIdFn(null);
                             CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
                         }
                     }
@@ -1256,7 +1258,7 @@ var CStudioForms = CStudioForms || function() {
                                     constraintoviewport: true,
                                     buttons: [ { text:CMgs.format(formsLangBundle, "yes"), handler: function(){
                                         this.hide();
-                                        var entityId = buildEntityIdFn();
+                                        var entityId = buildEntityIdFn(null);
                                         showWarnMsg = false;
 
                                         var path = CStudioAuthoring.Utils.getQueryVariable(location.search, "path");
@@ -1304,7 +1306,7 @@ var CStudioForms = CStudioForms || function() {
                         dialogEl.dialog.show();
                     }else{
                         if( path && path.indexOf(".xml") != -1) {
-                            var entityId = buildEntityIdFn();
+                            var entityId = buildEntityIdFn(null);
                             CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
                         }
                         if((iceId && iceId !="") || (iceComponent && iceComponent != "")) {
