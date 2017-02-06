@@ -628,8 +628,18 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     }
                                     if(CStudioAuthoringContext.isPreview){
                                         try{
-                                            var currentContentTO = (pageParameter.replace("html","xml") == contentTO.item.uri.replace('/site/website', '').replace("/index.xml", "")) ? null : contentTO.item;
+                                            var currentContentTO,
+                                                URLBrowseUri = pageParameter.replace("html","xml"),
+                                                contentTOBrowseUri = contentTO.item.uri.replace('/site/website', '').replace("/index.xml", "");
+
+                                            if (URLBrowseUri == contentTOBrowseUri){
+                                                currentContentTO = null;
+                                            } else{
+                                                currentContentTO = contentTO.item;
+                                            }
+
                                             CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+
                                         }catch(err) {
                                             if(!draft) {
                                                 this.callingWindow.location.reload(true);
