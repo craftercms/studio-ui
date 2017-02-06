@@ -3388,8 +3388,8 @@ var nodeOpen = false;
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = {};
-                        if(jsonResponse.responseText != "") {
-                            results = eval("(" + jsonResponse.responseText + ")");
+                        if((jsonResponse.responseText != "null")  && (jsonResponse.responseText != "")) {
+                            results = JSON.parse(jsonResponse.responseText);
                         }
 
                         callback.success(results);
