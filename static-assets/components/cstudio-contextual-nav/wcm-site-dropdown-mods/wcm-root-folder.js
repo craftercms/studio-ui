@@ -2404,7 +2404,7 @@ treeNode.getHtml = function() {
                         }
                         if(CStudioAuthoringContext.isPreview){
                             try{
-                                var currentContentTO = (pageParameter.replace("html","xml") == contentTO.item.browserUri) ? null : contentTO.item;
+                                var currentContentTO = (pageParameter.replace("html","xml") == contentTO.item.uri.replace('/site/website', '').replace("/index.xml", "")) ? null : contentTO.item;
                                 CStudioAuthoring.Operations.refreshPreview(currentContentTO);
                             }catch(err) {
                                 if(!draft) {
