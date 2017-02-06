@@ -2356,7 +2356,7 @@ treeNode.getHtml = function() {
                         eventYS.parent = oCurrentTextNode.data.path == "/site/website" ? null : false;
                         document.dispatchEvent(eventYS);
                             if(CStudioAuthoringContext.isPreview) {
-                                CStudioAuthoring.Operations.refreshPreview();
+                                CStudioAuthoring.Operations.refreshPreview(contentTO.item);
                             }
                     },
                     failure: function() { },
