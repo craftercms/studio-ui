@@ -2006,12 +2006,12 @@ var nodeOpen = false;
                     parentPath += "/index.xml";
                 }
                 
-                var refreshFn = function(to) {
+                var refreshFn = function(to, newTo) {
                     if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
                         CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
                     }
 
-                    CStudioAuthoring.Operations.refreshPreview(to);
+                    CStudioAuthoring.Operations.refreshPreview(newTo);
                     
                     eventYS.data = to;
                     eventYS.typeAction = "";
@@ -2033,7 +2033,7 @@ var nodeOpen = false;
 
                                             var editCb = {
                                                 success: function(newItem) {
-                                                    refreshFn(parentItemTo.item);
+                                                    refreshFn(parentItemTo.item, newItem.item);
                                                     opCallBack.success();
                                                 },
                                                 failure: function(errorResponse) {
@@ -2041,7 +2041,7 @@ var nodeOpen = false;
                                                 },
 
                                                 cancelled: function() {
-                                                    refreshFn(parentItemTo.item);
+                                                    refreshFn(parentItemTo.item, null);
                                                 },
                                             };
                  
