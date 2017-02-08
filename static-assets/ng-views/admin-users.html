@@ -1,17 +1,30 @@
 <h2 class="page-header">{{ 'admin.users.HEADER_LABEL' | translate }}</h2>
 
+<div class="btn-group" dropdown is-open="dropdownStatus.isopen">
+    <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+        {{ currentSite.name }} <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li>
+            <a ng-click="updateDropdown('all', 'All Sites')">All Sites</a>
+        </li>
+        <li ng-repeat="site in sites">
+            <span class="hidden">{{site}}</span>
+            <a ng-click="updateDropdown(site.siteId, site.name)">{{site.name}}</a>
+        </li>
+    </ul>
+</div>
+
 <a class="btn btn-default" ng-click="createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
 
-<table st-table="displayedCollection" st-safe-src="usersCollection" class="table table-striped">
+<table st-table="displayedCollection" st-safe-src="usersCollection.users" class="table table-striped">
     <thead>
     <tr>
-        <th st-sort="id">#</th>
-        <th st-sort="displayName">{{ 'admin.users.NAME' | translate }}</th>
+        <th st-sort="">#</th>
+        <th st-sort="displayName">{{ 'admin.users.FIRST_NAME' | translate }}</th>
+        <th st-sort="displayName">{{ 'admin.users.LAST_NAME' | translate }}</th>
         <th st-sort="userName">{{ 'admin.users.USER_NAME' | translate }}</th>
-        <th st-sort="jobTitle">{{ 'admin.users.JOB_TITLE' | translate }}</th>
         <th st-sort="email">{{ 'admin.users.EMAIL' | translate }}</th>
-        <th st-sort="usage">{{ 'admin.users.USAGE' | translate }}</th>
-        <th st-sort="quota">{{ 'admin.users.QUOTA' | translate }}</th>
         <th></th>
         <th></th>
     </tr>
@@ -23,15 +36,13 @@
     <tr ng-repeat="user in displayedCollection">
         <td>
             <a ng-click="viewUser(user)">
-                <img class="user-image" src="https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=:)&amp;w=50&amp;h=50">
+                <img class="user-image" src="https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=50&amp;h=50">
             </a>
         </td>
-        <td><a ng-click="viewUser(user)">{{user.name}}</a></td>
-        <td>{{user.userName}}</td>
-        <td>{{user.jobTitle}}</td>
+        <td><a ng-click="viewUser(user)">{{user.first_name}}</a></td>
+        <td>{{user.last_name}}</td>
+        <td>{{user.username}}</td>
         <td>{{user.email}}</td>
-        <td>{{user.usage}}</td>
-        <td>{{user.quota}}</td>
 
         <td>
             <a ng-click="editUserDialog(user)" class="btn btn-sm">
@@ -40,7 +51,7 @@
             </a>
         </td>
         <td>
-            <a ng-click="removeItem(user)" class="btn btn-sm">
+            <a ng-click="removeUser(user)" class="btn btn-sm">
                 <i class="glyphicon glyphicon-trash">
                 </i>
             </a>
@@ -70,7 +81,7 @@
                     +
                 </button>
 
-                <img class="user-image" ngf-thumbnail="picFile || 'https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=:)&amp;w=100&amp;h=100'" class="thumb"
+                <img class="user-image" ngf-thumbnail="picFile || 'https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=100&amp;h=100'" class="thumb"
                      style="width: 100px; height: 100px;">
 
                 <span class="progress" ng-show="f.progress >= 0">
@@ -79,15 +90,39 @@
                 </span>
             </div>
 
+            <div class="form-group" ng-if="!(dialogMode == 'create')">
+                <label for="enabled" class="control-label">Enabled</label>
+                <input type="checkbox"
+                       ng-disabled="!dialogMode"
+                       id="enabled"
+                       name="enabled"
+                       ng-checked="user.status.enabled"
+                       required
+                       ng-click="toggleUserStatus(user)"
+                >
+            </div>
+
             <div class="form-group">
-                <label for="firstName" class="control-label">{{ 'admin.users.NAME' | translate }}</label>
-                <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.name" required>
+                <label for="firstName" class="control-label">{{ 'admin.users.FIRST_NAME' | translate }}</label>
+                <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.first_name" required>
 
                 <div class="error-container" ng-if="dialogMode"
                      ng-show="(createNameForm.firstName.$dirty && createNameForm.firstName.$invalid) || (createNameForm.firstName.$touched && createNameForm.firstName.$invalid)">
                     <small class="error"
                            ng-show="createNameForm.firstName.$error.required">
                         {{ 'admin.users.NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                    </small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastName" class="control-label">{{ 'admin.users.LAST_NAME' | translate }}</label>
+                <input ng-disabled="!dialogMode" type="text" class="form-control" id="lastName" name="lastName" ng-model="user.last_name" required>
+
+                <div class="error-container" ng-if="dialogMode"
+                     ng-show="(createNameForm.lastName.$dirty && createNameForm.lastName.$invalid) || (createNameForm.lastName.$touched && createNameForm.lastName.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.firstName.$error.required">
+                        {{ 'admin.users.LAST_NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
                     </small>
                 </div>
             </div>
@@ -109,7 +144,7 @@
             </div>
             <div class="form-group">
                 <label for="username" class="control-label">{{ 'admin.users.USER_NAME' | translate }}</label>
-                <input ng-disabled="!dialogMode" type="text" class="form-control" id="username" name="username" ng-model="user.userName" required>
+                <input ng-disabled="!dialogMode" type="text" class="form-control" id="username" name="username" ng-model="user.username" required>
 
                 <div class="error-container" ng-if="dialogMode"
                      ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
@@ -119,7 +154,38 @@
                     </small>
                 </div>
             </div>
-            <div class="form-group">
+
+            <div ng-if="!dialogMode">
+
+                <div ng-if="user.sites">
+                    <div class="form-group">
+                        <label class="control-label"> Sites </label>
+
+                        <div ng-repeat="site in user.sites">
+                            <span>{{ site.site_name }}</span>
+                            <span ng-repeat="group in site.groups">{{ group.group_name }}, </span>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div ng-if="user.groups">
+                    <div class="form-group">
+                        <label class="control-label"> Groups </label>
+
+                        <div ng-repeat="group in user.groups">
+                            <span>{{ group.group_name }}</span>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+
+            <div class="form-group" ng-if="dialogMode == 'create'">
                 <label for="password" class="control-label">{{ 'admin.users.PASSWORD' | translate }}</label>
                 <input ng-disabled="!dialogMode" type="password" class="form-control" id="password" name="password" ng-model="user.password" required>
 
@@ -131,15 +197,31 @@
                     </small>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" ng-if="dialogMode == 'create'">
+
                 <label for="passwordVerification" class="control-label">{{ 'admin.users.PASSWORD_VERIFICATION' | translate }}</label>
-                <input ng-disabled="!dialogMode" type="password" class="form-control" id="passwordVerification" name="passwordVerification" ng-model="user.passwordVerification" required>
+                <input ng-disabled="!dialogMode"
+                       type="password"
+                       class="form-control"
+                       id="passwordVerification"
+                       name="passwordVerification"
+                       ng-model="user.passwordVerification"
+                       required
+                       compare-to="user.password">
+
+                <!--<div class="error-container" ng-if="dialogMode"-->
+                     <!--ng-show="(createNameForm.passwordVerification.$dirty && createNameForm.passwordVerification.$invalid) || (createNameForm.passwordVerification.$touched && createNameForm.passwordVerification.$invalid)">-->
+                    <!--<small class="error"-->
+                           <!--ng-show="createNameForm.passwordVerification.$error.required">-->
+                        <!--{{ 'admin.users.PASSWORD_VERIFICATION' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}-->
+                    <!--</small>-->
+                <!--</div>-->
 
                 <div class="error-container" ng-if="dialogMode"
-                     ng-show="(createNameForm.passwordVerification.$dirty && createNameForm.passwordVerification.$invalid) || (createNameForm.passwordVerification.$touched && createNameForm.passwordVerification.$invalid)">
+                     ng-show="createNameForm.passwordVerification.$error.compareTo">
                     <small class="error"
-                           ng-show="createNameForm.passwordVerification.$error.required">
-                        {{ 'admin.users.PASSWORD_VERIFICATION' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                           ng-show="createNameForm.passwordVerification.$error.compareTo">
+                        Must match the previous entry.
                     </small>
                 </div>
             </div>
@@ -148,7 +230,7 @@
 
     <div class="modal-footer">
         <button class="btn btn-primary text-capitalize" ng-if="dialogMode"
-                ng-click="okModalFunction()" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>
+                ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>
         <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
         <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
     </div>
