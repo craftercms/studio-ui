@@ -9,72 +9,113 @@
 
             var me = this;
 
-            this.getUsers = function() {
-                return $http.get(json('get-users'));
+            this.getSites = function() {
+                return $http.get(users('get-sites-3'));
             };
 
-            this.getUser = function() {
-                return $http.get(json('get-user'));
+            //USERS
+
+            this.getUsers = function(site) {
+                if(site && site != "all"){
+                    return $http.get(users('get-per-site', 'site_id=' + site));
+                }else{
+                    return $http.get(users('get-all'));
+                }
             };
 
-            this.getGroups = function() {
-                return $http.get(json('get-groups'));
-            };
-
-            this.getGroup = function() {
-                return $http.get(json('get-group'));
-            };
-
-            this.getUsersFromGroup = function() {
-                return $http.get(json('get-users-from-group'));
+            this.getUser = function(username) {
+                return $http.get(users('get', 'username=' + username));
             };
 
             this.createUser = function (user) {
-                return $http.post(api('create-user'),user);
-            };
-
-            this.createGroup = function (group) {
-                return $http.post(api('create-group'),group);
+                return $http.post(users('create'),user);
             };
 
             this.editUser = function(user) {
-                return $http.post(api('edit-group'), {
-                    userId: user.id
-                });
+                return $http.post(users('update'), user);
+            };
+
+            this.deleteUser = function(user){
+                return $http.post(users('delete'), user);
+            };
+
+            this.getUserStatus = function(username){
+                return $http.get(users('status', 'username=' + username));
+            };
+
+            this.toggleUserStatus = function(user, status){
+                return $http.post(users(status), user);
+            };
+
+            this.setPassword = function(data){
+                return $http.post(users('set-password'), data);
+            };
+
+            this.changePassword = function(data){
+                return $http.post(users('change-password'), data);
+            };
+
+            this.forgotPassword = function(username){
+                return $http.get(users('forgot-password', 'username=' + username));
+            };
+
+            //GROUPS
+
+            this.getGroups = function(site) {
+                if(site && site != "all"){
+                    return $http.get(groups('get-per-site', 'site_id=' + site));
+                }else{
+                    return $http.get(groups('get-all'));
+                }
+            };
+
+            this.getGroup = function(group) {
+                return $http.get(groups('get', 'group_name=' + group.group_name + '&site_id=' + group.site_id));
+            };
+
+            this.getUsersFromGroup = function(group) {
+                return $http.get(groups('users', 'group_name=' + group.group_name + "&site_id=" + group.site_id));
+            };
+
+            this.deleteUserFromGroup = function(user){
+                return $http.post(groups('remove-user'), user);
+            };
+
+            this.createGroup = function (group) {
+                return $http.post(groups('create'),group);
             };
 
             this.editGroup = function(group) {
-                return $http.post(api('edit-group'), {
-                    groupId: group.id
-                });
+                return $http.post(groups('update'), group);
             };
 
-            this.addUserToGroup = function(groupId) {
-                return $http.post(api('add-user-to-group'), {
-                    groupId: groupId
-                });
+            this.deleteGroup = function(group){
+                return $http.post(groups('delete'), group);
+            };
+
+            this.addUserToGroup = function(data) {
+                return $http.post(groups('add-user'), data);
             }
 
-            this.removeSite = function(site) {
-                return $http.post(api('delete-site'), {
-                    siteId: site.siteId
-                });
-            };
 
             function api(action) {
                 return Constants.SERVICE + 'site/' + action + '.json';
             }
 
-            function json(action) {
-                return Constants.SERVICE + 'user/' + action + '.json';
+            function users(action, params) {
+                if(params){
+                    return Constants.SERVICE + 'user/' + action + '.json?' + params;
+                }else {
+                    return Constants.SERVICE + 'user/' + action + '.json';
+                }
             }
 
-            function security(action) {
-                return Constants.SERVICE + 'security/' + action + '.json';
-            }
-
-            function server(action) {
-                return Constants.SERVICE + 'server/' + action + '.json';
+            function groups(action, params) {
+                if(params){
+                    return Constants.SERVICE + 'group/' + action + '.json?' + params;
+                }else {
+                    return Constants.SERVICE + 'group/' + action + '.json';
+                }
             }
 
             return this;
@@ -90,74 +131,216 @@
 
             var current = $state.current.name.replace(/\./g, '');
 
-            $scope.back = function() {
-                window.history.back();
+            adminService.getSites()
+                .success(function (data) {
+                    $scope.sites = data;
+                })
+                .error(function () {
+                    $scope.sites = null;
+                });
+
+            //sites dropdown
+            $scope.currentSite = {
+                name : "All Sites",
+                id: "all"
             };
+            $scope.dropdownStatus = {
+                isopen: false
+            };
+            $scope.toggleDropdown = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.status.isopen = !$scope.status.isopen;
+            };
+            $scope.updateDropdown = function(siteId, siteName) {
+                $scope.currentSite = {
+                    name: siteName,
+                    id: siteId
+                };
+            }
 
             this.homeadmin = function() {
                 $location.path('/admin/groups');
             };
 
             this.homeadminusers = function() {
-
+                
                 //table setup
-                $scope.itemsByPage=5;
-                $scope.usersCollection = [];
+                $scope.itemsByPage=8;
+                $scope.usersCollection = {};
 
-                //remove to the real data holder
-                $scope.removeItem = function removeItem(row) {
-                    var index = $scope.usersCollection.indexOf(row);
-                    if (index !== -1) {
-                        $scope.usersCollection.splice(index, 1);
-                    }
-                }
-
-                adminService.getUsers().success(function (data) {
-                    //TODO: set users to scope
-                }).error(function () {
-                    $scope.usersCollection = [
-                        {
-                            'name': 'User 1',
-                            'userName': 'user1',
-                            'jobTitle': 'dev',
-                            'email': 'user1@test.com',
-                            'usage': '?',
-                            'quota': '?'
-                        },
-                        {
-                            'name': 'User 2',
-                            'userName': 'user2',
-                            'jobTitle': 'dev',
-                            'email': 'user2@test.com',
-                            'usage': '?',
-                            'quota': '?'
-                        }
-                    ]
-
-                    ;
+                var getUsers = function(site) {
+                    adminService.getUsers(site).success(function (data) {
+                        $scope.usersCollection = data;
+                    }).error(function (error) {
+                        console.log(error);
+                        //TODO: properly show error
+                    });
+                };
+                getUsers();
+                $scope.$watch('currentSite', function() {
+                    getUsers($scope.currentSite.id);
                 });
+
+                $scope.createUserDialog = function() {
+                    $scope.user = {};
+                    $scope.okModalFunction = $scope.createUser;
+
+                    $scope.adminModal = showModal('modalView.html');
+                    $scope.dialogMode = $translate.instant('common.CREATE');
+                };
+                $scope.createUser = function(user) {
+                    $scope.hideModal();
+
+                    adminService.createUser(user).success(function (data) {
+                        $scope.usersCollection.users.push(user);
+                        $scope.notification('\''+ user.username + '\' created.');
+                    }).error(function(error){
+                        console.log(error);
+                    });
+
+                };
+                $scope.editUserDialog = function(user) {
+                    $scope.editedUser = user;
+                    $scope.user = {};
+                    $scope.okModalFunction = $scope.editUser;
+
+                    $scope.adminModal = showModal('modalView.html');
+                    $scope.dialogMode = $translate.instant('common.EDIT');
+
+                    adminService.getUser(user.username).success(function (data) {
+                        $scope.user = data;
+
+                        adminService.getUserStatus(user.username).success(function(data){
+                            $scope.user.status = data;
+                        }).error(function(error){
+                            console.log(error);
+                            //TODO: properly display error
+                        });
+                    }).error(function (error) {
+                        console.log(error);
+                        //TODO: properly display error
+                    });
+                };
+                $scope.editUser = function(user) {
+                    $scope.hideModal();
+
+                    adminService.editUser(user).success(function (data) {
+                        var index = $scope.usersCollection.users.indexOf($scope.editedUser);
+
+                        if(index != -1){
+                            $scope.usersCollection.users[index] = user;
+                            $scope.displayedCollection = $scope.usersCollection.users;
+                        }
+
+                        $scope.notification('\''+ user.username + '\' edited.');
+                    }).error(function(error){
+                        console.log(error);
+                        //TODO: properly display the error.
+                    });
+                };
+                $scope.viewUser = function(user){
+                    $scope.user = {};
+                    $scope.dialogMode = false;
+
+                    $scope.adminModal = showModal('modalView.html');
+
+                    adminService.getUser(user.username).success(function (data) {
+                        $scope.user = data;
+
+                        adminService.getUserStatus(user.username).success(function(status){
+                            $scope.user.status = status;
+                        }).error(function(error){
+                            console.log(error);
+                        });
+                    }).error(function (error) {
+                        console.log(error);
+                        //TODO: properly display error
+                    });
+                };
+                $scope.toggleUserStatus = function(user){
+                    var currentStatus = user.status.enabled,
+                        newStatus = currentStatus == true ? 'disable' : 'enable';
+
+                    adminService.toggleUserStatus(user, newStatus).success(function(data){
+                        user.status.enabled = !currentStatus;
+                        var notificationText = user.status.enabled ? 'enabled' : 'disabled';
+                        $scope.notification('User ' + notificationText, true);
+                    }).error(function() {
+                        // user.status.enabled = !currentStatus;
+                    });
+                };
+                $scope.removeUser = function(user) {
+
+                    var deleteUser = function() {
+                        adminService.deleteUser(user).success(function (data) {
+                            var index = $scope.usersCollection.users.indexOf(user);
+                            if (index !== -1) {
+                                $scope.usersCollection.users.splice(index, 1);
+                            }
+
+                            $scope.notification('\''+ user.username + '\' deleted.');
+                        }).error(function (error) {
+                            console.log(error);
+                            //TODO: properly display error.
+                        });
+                    }
+
+                    $scope.confirmationAction = deleteUser;
+                    $scope.confirmationText = "Do you want to delete " + user.username + "?";
+
+                    $scope.adminModal = showModal('confirmationModal.html', 'sm', true);
+                };
+
             };
 
             this.homeadmingroups = function() {
 
                 $scope.assignUsers = false;
                 $scope.toggleAssignUsersLabel = $translate.instant('admin.groups.ASSIGN_USERS_LABEL');
+                $scope.noGroupSelected = true;
                 
                 //table setup
-                $scope.itemsByPage=5;
+                $scope.itemsByPage=8;
                 $scope.groupsCollection = [];
 
-                //remove to the real data holder
-                $scope.removeItem = function removeItem(row) {
-                    var index = $scope.groupsCollection.indexOf(row);
-                    if (index !== -1) {
-                        $scope.groupsCollection.splice(index, 1);
-                    }
-                }
+                var getGroups = function(site) {
+                    adminService.getGroups(site).success(function (data) {
+                        if(data.sites){
+                            var groups = {
+                                "groups": []
+                            };
+                            for(var x = 0; x < data.sites.length; x++){
+                                var site = data.sites[x],
+                                    site_id = site.site_id;
+
+                                for(var y = 0; y < site.groups.length; y++){
+                                    var group = site.groups[y];
+                                    group.site_id = site_id;
+                                    groups.groups.push(group);
+                                }
+                            }
+
+                            $scope.groupsCollection = groups;
+                        }else{
+                            $scope.groupsCollection = data;
+                        }
+
+
+
+                    }).error(function () {
+                        console.log(error);
+                        //TODO: properly display the error.
+                    });
+                };
+                getGroups();
+
+                $scope.$watch('currentSite', function() {
+                    getGroups($scope.currentSite.id);
+                });
 
                 $scope.toggleAssignUsers = function() {
                     $scope.assignUsers = !$scope.assignUsers;
-
                     if($scope.assignUsers){
                         $scope.toggleAssignUsersLabel = $translate.instant('admin.groups.VIEW_GROUPS_LABEL');
                     }else{
@@ -165,280 +348,180 @@
                     }
                 }
 
-                adminService.getGroups().success(function (data) {
-                    //TODO: set groups to scope
-                }).error(function () {
-                    $scope.groupsCollection = [
-                        {
-                            id: 'test1',
-                            displayName: 'Hello 1'
-                        },
-                        {
-                            id: 'test2',
-                            displayName: 'Test 2'
-                        },
-                        {
-                            id: 'batman',
-                            displayName: 'batman'
-                        },
-                        {
-                            id: 'robin',
-                            displayName: 'robin'
-                        },
-                        {
-                            id: 'yo',
-                            displayName: 'yo'
-                        },
-                        {
-                            id: 'tu',
-                            displayName: 'tu'
-                        }
-                    ];
-                });
-            };
+                $scope.createGroupDialog = function(){
+                    $scope.group = {};
+                    $scope.okModalFunction = $scope.createGroup;
 
-            this.homeadmingroup = function() {
-                $scope.group = {};
+                    $scope.adminModal = showModal('modalView.html');
 
-                adminService.getGroup().success(function (data) {
-                    //TODO: set group to scope
-                }).error(function () {
-                    $scope.group =
-                    {
-                        'id': 'test',
-                        'displayName': 'Test'
+                    $scope.dialogMode = $translate.instant('common.CREATE');
+                    $scope.dialogTitle = $translate.instant('admin.groups.CREATE_GROUP');
+                }
+                $scope.createGroup = function(group) {
+                    $scope.hideModal();
+
+                    adminService.createGroup(group).success(function (data) {
+                        $scope.groupsCollection.groups.push(group);
+                        $scope.notification('\''+ group.group_name + '\' created.');
+                    }).error(function(error){
+                        console.log(error);
+                        //TODO: properly display error.
+                    });
+
+                }
+                $scope.editGroupDialog = function(group){
+                    $scope.group = {};
+                    $scope.okModalFunction = $scope.editGroup;
+
+                    $scope.adminModal = showModal('modalView.html');
+                    $scope.dialogMode = $translate.instant('common.EDIT');
+                    $scope.dialogTitle = $translate.instant('admin.groups.EDIT_GROUP');
+
+                    adminService.getGroup(group).success(function (data) {
+                        $scope.group = data;
+                    }).error(function () {
+                        //TODO: properly display error.
+                    });
+                }
+                $scope.editGroup = function(group) {
+                    $scope.hideModal();
+
+                    var createModalInstance = $modal.open({
+                        templateUrl: 'creatingGroupConfirmation.html',
+                        backdrop: 'static',
+                        keyboard: false,
+                        size: 'sm'
+                    });
+                    adminService.editGroup(group).success(function (data) {
+                        //TODO: pending, need get group service working
+
+                        createModalInstance.close();
+                    }).error(function(error){
+                        console.log(error);
+                        //TODO: properly display error.
+                    });
+                }
+                $scope.removeGroup = function(group) {
+                    var deleteGroup = function() {
+                        adminService.deleteGroup(group).success(function (data) {
+                            var index = $scope.groupsCollection.groups.indexOf(group);
+                            if (index !== -1) {
+                                $scope.groupsCollection.groups.splice(index, 1);
+                            }
+
+                            $scope.usersFromGroupCollection = [];
+                            $scope.noGroupSelected = true;
+
+                            $scope.notification('\''+ group.group_name + '\' group deleted.');
+
+                        }).error(function (error) {
+                            console.log(error);
+                            //TODO: properly display error;
+                        });
                     };
-                });
-            }
+
+                    $scope.confirmationAction = deleteGroup;
+                    $scope.confirmationText = "Do you want to delete " + group.group_name + "?";
+
+                    $scope.adminModal = showModal('confirmationModal.html', 'sm', true);
+                };
+                $scope.getUsersFromGroup = function(group){
+                    $scope.usersFromGroupCollection = [];
+                    $scope.activeGroup = group;
+                    $scope.noGroupSelected = false;
+
+                    $scope.removeUserFromGroup = function(user) {
+
+                        user.group_name = group.group_name;
+                        user.site_id = group.site_id;
+
+                        var removeUserFromGroup = function() {
+                            adminService.deleteUserFromGroup(user).success(function () {
+                                var index = $scope.usersFromGroupCollection.users.indexOf(user);
+                                if (index !== -1) {
+                                    $scope.usersFromGroupCollection.users.splice(index, 1);
+                                }
+                            }).error(function () {
+                                var index = $scope.usersFromGroupCollection.users.indexOf(user);
+                                if (index !== -1) {
+                                    $scope.usersFromGroupCollection.users.splice(index, 1);
+                                }
+                            });
+                        }
+
+                        $scope.confirmationAction = removeUserFromGroup;
+                        $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.group_name + "?";
+
+                        $scope.adminModal = showModal('confirmationModal.html', 'sm');
+                    };
+                    
+                    adminService.getUsersFromGroup(group).success(function (data) {
+                        //TODO: set users to scope
+                    }).error(function () {
+                        var users = {
+                            "users" :
+                                [
+                                    {
+                                        "username" : "jane.doe",
+                                        "first_name" : "Jane",
+                                        "last_name" : "Doe",
+                                        "email" : "jane@example.com",
+                                    },
+                                    {
+                                        "username" : "joe.bloggs",
+                                        "first_name" : "Joe",
+                                        "last_name" : "Bloggs",
+                                        "email" : "joe@example.com",
+                                    }
+                                ]
+                        }
+
+                        $scope.usersFromGroupCollection = users;
+                    });
+                }
+                $scope.addUserToGroupDialog = function () {
+                    $scope.userSelected = {};
+                    $scope.usersCollection = [];
+
+                    $scope.adminModal = showModal('addUsersView.html');
+
+                    adminService.getUsers().success(function (data) {
+                        $scope.usersCollection = data;
+                    }).error(function (error) {
+                        console.log(error);
+                    });
+                }
+                $scope.addUserToGroup = function (user) {
+                    var activeGroup = $scope.activeGroup;
+
+                    adminService.addUserToGroup({
+                        "username": user.username,
+                        "group_name": activeGroup.group_name,
+                        "site_id": activeGroup.site_id
+                    }).success(function (data) {
+                        //TODO: set users to scope
+                    }).error(function () {
+                        $scope.hideModal();
+                    });
+                }
+            };
 
             this[current]();
 
-            $scope.createGroupDialog = function(){
-                $scope.group = {};
-                $scope.okModalFunction = $scope.createGroup;
-
-                showModal('modalView.html');
-
-                $scope.dialogMode = $translate.instant('common.CREATE');
-                $scope.dialogTitle = $translate.instant('admin.groups.CREATE_GROUP');
-            }
-            $scope.createGroup = function() {
-                $scope.hideModal();
-                var createModalInstance = $modal.open({
-                    templateUrl: 'creatingGroupConfirmation.html',
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'sm'
-                });
-                adminService.createGroup({
-                    identifier: $scope.group.identifier,
-                    displayName: $scope.group.displayName
-                }).success(function (data) {
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                }).error(function(error){
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                });
-
-            }
-            $scope.editGroupDialog = function(){
-                $scope.group = {};
-                $scope.okModalFunction = $scope.editGroup;
-
-                showModal('modalView.html');
-                $scope.dialogMode = $translate.instant('common.EDIT');
-                $scope.dialogTitle = $translate.instant('admin.groups.EDIT_GROUP');
-
-                adminService.getGroup().success(function (data) {
-                    //TODO: set group to scope
-                }).error(function () {
-                    $scope.group =
-                    {
-                        'identifier': 'test',
-                        'displayName': 'Test'
-                    }
-                    ;
-                });
-            }
-            $scope.editGroup = function(group) {
-                $scope.hideModal();
-
-                var createModalInstance = $modal.open({
-                    templateUrl: 'creatingGroupConfirmation.html',
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'sm'
-                });
-                adminService.editGroup({
-                    identifier: $scope.group.identifier,
-                    displayName: $scope.group.displayName
-                }).success(function (data) {
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                }).error(function(error){
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                });
-            }
-
-            $scope.createUserDialog = function() {
-                $scope.user = {};
-                $scope.okModalFunction = $scope.createUser;
-
-                showModal('modalView.html');
-                $scope.dialogMode = $translate.instant('common.CREATE');
-            }
-            $scope.createUser = function() {
-                $scope.hideModal();
-                var createModalInstance = $modal.open({
-                    templateUrl: 'creatingUserConfirmation.html',
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'sm'
-                });
-                adminService.createUser({
-                    name: $scope.user.firstName,
-                    email: $scope.user.email,
-                    username: $scope.user.username,
-                    password: $scope.user.password      //TODO: verify/encrypt password
-                }).success(function (data) {
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                }).error(function(error){
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                });
-
-            }
-            $scope.editUserDialog = function() {
-                $scope.user = {};
-                $scope.okModalFunction = $scope.editUser;
-
-                showModal('modalView.html');
-                $scope.dialogMode = $translate.instant('common.EDIT');
-
-                adminService.getUser().success(function (data) {
-                    //TODO: set group to scope
-                }).error(function () {
-                    $scope.user =
-                    {
-                        'name': 'User 1',
-                        'userName': 'user1',
-                        'jobTitle': 'dev',
-                        'email': 'user1@test.com',
-                        'usage': '?',
-                        'quota': '?'
-                    }
-                    ;
-                });
-            }
-            $scope.editUser = function(user) {
-                $scope.hideModal();
-
-                var createModalInstance = $modal.open({
-                    templateUrl: 'creatingUserConfirmation.html',
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'sm'
-                });
-
-                adminService.editUser({
-                    name: $scope.user.firstName,
-                    email: $scope.user.email,
-                    username: $scope.user.username,
-                    password: $scope.user.password      //TODO: verify/encrypt password
-                }).success(function (data) {
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                }).error(function(error){
-                    $timeout(function () {
-                        createModalInstance.close();
-                    }, 5000, false);
-                });
-            }
-            $scope.viewUser = function(user){
-                $scope.user = {};
-                $scope.dialogMode = false;
-                
-                showModal('modalView.html');
-
-                adminService.getUser().success(function (data) {
-                    //TODO: set group to scope
-                }).error(function () {
-                    $scope.user =
-                    {
-                        'name': 'User 1',
-                        'userName': 'user1',
-                        'jobTitle': 'dev',
-                        'email': 'user1@test.com',
-                        'usage': '?',
-                        'quota': '?'
-                    }
-                    ;
-                });
-            }
-
-            $scope.getUsersFromGroup = function(group){
-                $scope.usersFromGroupCollection = [];
-                $scope.activeGroup = group.id;
-
-                //remove to the real data holder
-                // $scope.removeItem = function removeItem(row) {
-                //     var index = $scope.usersCollection.indexOf(row);
-                //     if (index !== -1) {
-                //         $scope.usersCollection.splice(index, 1);
-                //     }
-                // }
-
-                adminService.getUsersFromGroup(group.id).success(function (data) {
-                    //TODO: set users to scope
-                }).error(function () {
-                    var index = Math.floor((Math.random() * 2));
-
-                    var users1 = [
-                        {
-                            'name': 'User 1',
-                            'userName': 'user1'
-                        },
-                        {
-                            'name': 'User 2',
-                            'userName': 'user2'
-                        }
-                    ];
-                    var users2 = [
-                        {
-                            'name': 'User 3',
-                            'userName': 'user3'
-                        }
-                    ];
-
-                    var testData = [users1, users2]
-
-                    $scope.usersFromGroupCollection = testData[index];
-                });
-            }
-
-            function showModal(template){
-                $scope.adminModal = $modal.open({
+            function showModal(template, size, verticalCentered){
+                return $modal.open({
                     templateUrl: template,
+                    windowClass: verticalCentered ? 'centered-dialog' : '',
                     backdrop: 'static',
                     keyboard: false,
                     controller: 'AdminCtrl',
-                    scope: $scope
+                    scope: $scope,
+                    size: size ? size : ''
                 });
             }
             $scope.hideModal = function() {
                 $scope.adminModal.close();
             }
-
             $scope.uploadFiles = function(file, errFiles) {         //TODO: change upload to submit button
                 $scope.f = file;
                 $scope.errFile = errFiles && errFiles[0];
@@ -466,45 +549,19 @@
                     });
                 }
             }
+            $scope.notification = function(notificationText, showOnTop){
+                var verticalAlign = showOnTop ? false : true;
+                $scope.notificationText = notificationText;
+                $scope.notificationType = 'alert';
 
-            $scope.addUserToGroupDialog = function () {
-                $scope.userSelected = {};
-                $scope.usersCollection = [];
+                var modal = showModal('notificationModal.html', 'sm', verticalAlign);
 
-                showModal('addUsersView.html');
+                $timeout(function () {
+                    modal.close();
+                }, 1500, false);
 
-                adminService.getUsers().success(function (data) {
-                    //TODO: set users to scope
-                }).error(function () {
-                    $scope.usersCollection = [
-                        {
-                            'name': 'User 1',
-                            'userName': 'user1',
-                            'jobTitle': 'dev',
-                            'email': 'user1@test.com',
-                            'usage': '?',
-                            'quota': '?'
-                        },
-                        {
-                            'name': 'User 2',
-                            'userName': 'user2',
-                            'jobTitle': 'dev',
-                            'email': 'user2@test.com',
-                            'usage': '?',
-                            'quota': '?'
-                        }
-                    ]
+            };
 
-                    ;
-                });
-            }
-            $scope.addUser = function (user) {
-                adminService.addUserToGroup(user.id).success(function (data) {
-                    //TODO: set users to scope
-                }).error(function () {
-                    $scope.hideModal();
-                });
-            }
         }
 
 

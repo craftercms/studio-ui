@@ -400,17 +400,23 @@
             }
 
             function changePassword() {
-                authService.changePassword($scope.data)
-                    .then(function (data) {
-                        $scope.error = $scope.message = null;
-                        if (data.type === 'error') {
-                            $scope.error = data.message;
-                        } else if (data.error) {
-                            $scope.error = data.error;
-                        } else {
-                            $scope.message = data.message;
-                        }
-                    });
+                $scope.data.username = $scope.user.username;
+
+                if($scope.data.new == $scope.data.confirmation){
+                    authService.changePassword($scope.data)
+                        .then(function (data) {
+                            $scope.error = $scope.message = null;
+                            if (data.type === 'error') {
+                                $scope.error = data.message;
+                            } else if (data.error) {
+                                $scope.error = data.error;
+                            } else {
+                                $scope.message = data.message;
+                            }
+                        });
+                }else{
+                    console.log("nope");
+                }
             }
 
             $scope.languagesAvailable = [];
@@ -844,8 +850,24 @@
         }
     ]);
 
+    app.directive("compareTo", function() {
+        return {
+            require: "ngModel",
+            scope: {
+                otherModelValue: "=compareTo"
+            },
+            link: function(scope, element, attributes, ngModel) {
 
-    
+                ngModel.$validators.compareTo = function(modelValue) {
+                    return modelValue == scope.otherModelValue;
+                };
+
+                scope.$watch("otherModelValue", function() {
+                    ngModel.$validate();
+                });
+            }
+        };
+    });
 
 
 })(angular);
