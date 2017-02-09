@@ -524,10 +524,9 @@ var nodeOpen = false;
             simpleDialogTypeWARN: "WARN",
             simpleDialogTypeERROR: "ERROR",
 
-            showSimpleDialog: function(id, type, header, message, buttonsArray) {
+            showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className) {
 
                 var dialogId = id;
-                var dialogType = YAHOO.widget.SimpleDialog.ICON_INFO;
 
                 if(!buttonsArray) {
                     buttonsArray = [{ text: "OK",  handler:function(){this.hide();}, isDefault:false }];
@@ -548,6 +547,10 @@ var nodeOpen = false;
 
                     dialog.setHeader(header);
                     dialog.render(document.body);
+
+                    if(className){
+                        dialog.element.firstElementChild.className +=(' '+className);
+                    }
 
                     dialog.show();
 
@@ -1995,12 +1998,12 @@ var nodeOpen = false;
                     parentPath += "/index.xml";
                 }
 
-                var refreshFn = function(to) {
+                var refreshFn = function(to, newTo) {
                     if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
                         CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
                     }
 
-                    CStudioAuthoring.Operations.refreshPreview(to);
+                    CStudioAuthoring.Operations.refreshPreview(newTo);
                     
                     eventYS.data = to;
                     eventYS.typeAction = "";
@@ -2022,7 +2025,7 @@ var nodeOpen = false;
 
                                             var editCb = {
                                                 success: function(newItem) {
-                                                    refreshFn(parentItemTo.item);
+                                                    refreshFn(parentItemTo.item, newItem.item);
                                                     opCallBack.success();
                                                 },
                                                 failure: function(errorResponse) {
@@ -2030,7 +2033,7 @@ var nodeOpen = false;
                                                 },
 
                                                 cancelled: function() {
-                                                    refreshFn(parentItemTo.item);
+                                                    refreshFn(parentItemTo.item, null);
                                                 },
                                             };
                  
