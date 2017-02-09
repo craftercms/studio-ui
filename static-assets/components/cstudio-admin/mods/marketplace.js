@@ -34,7 +34,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 						CStudioAuthoring.Operations.simpleDialogTypeINFO,
 						"Crafter Market Place",
 						"Unable to determine what plugins have been installed in your site.",
-						null // use default button
+						null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_INFO,
+                        null //don't has extra class
 					);
 				},
 			};	
@@ -54,7 +56,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 						CStudioAuthoring.Operations.simpleDialogTypeINFO,
 						"Crafter Market Place",
 						"Install Successful",
-						null // use default button
+						null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_INFO,
+                        null //don't has extra class
 					);
 				},
 				failure:function(response) {
@@ -63,7 +67,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.MarketPlace, CStudioAdminConsole.Tool, {
 						CStudioAuthoring.Operations.simpleDialogTypeINFO,
 						"Crafter Market Place",
 						"Install Failed",
-						null // use default button
+						null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_INFO,
+                        null //don't has extra class
 					);
 				}
 			}

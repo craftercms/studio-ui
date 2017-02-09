@@ -526,10 +526,9 @@ var nodeOpen = false;
             simpleDialogTypeWARN: "WARN",
             simpleDialogTypeERROR: "ERROR",
 
-            showSimpleDialog: function(id, type, header, message, buttonsArray) {
+            showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className) {
 
                 var dialogId = id;
-                var dialogType = YAHOO.widget.SimpleDialog.ICON_INFO;
 
                 if(!buttonsArray) {
                     buttonsArray = [{ text: "OK",  handler:function(){this.hide();}, isDefault:false }];
@@ -550,6 +549,10 @@ var nodeOpen = false;
 
                     dialog.setHeader(header);
                     dialog.render(document.body);
+
+                    if(className){
+                        dialog.element.firstElementChild.className +=(' '+className);
+                    }
 
                     dialog.show();
 
