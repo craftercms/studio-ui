@@ -246,6 +246,10 @@ div#preview-tools-panel-container{
     height: 47px;
 }
 
+.yui-simple-dialog #duplicate-dialog .bd .yui-icon{
+    height: 31px;
+}
+
 .yui-skin-cstudioTheme .yui-simple-dialog #errTemplates .bd{
     text-align: justify;
 }
