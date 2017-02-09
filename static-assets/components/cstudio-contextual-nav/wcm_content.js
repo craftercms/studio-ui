@@ -744,10 +744,22 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 var content = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
                                 option.onclick = function() {
                                     //YDom.get("duplicate-loading").style.display = "block";
-                                    CStudioAuthoring.Operations.duplicateContent(
-                                        CStudioAuthoringContext.site,
-                                        content.uri,
-                                        duplicateContentCallback);
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "duplicate-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        "Duplicate",
+                                        "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
+                                        [{ text:"Duplicate", handler: function() {
+                                            this.hide();
+                                            CStudioAuthoring.Operations.duplicateContent(
+                                                CStudioAuthoringContext.site,
+                                                content.uri,
+                                                duplicateContentCallback);
+                                        }, isDefault:false },
+                                        { text:CMgs.format(formsLangBundle, "cancel"),  handler:function(){this.hide();}, isDefault:true }],
+                                        YAHOO.widget.SimpleDialog.ICON_WARN,
+                                        "errorDialog"
+                                    );
                                 };
 
                                 if(content.document || content.component) { // for doc and components disable dublicate link
