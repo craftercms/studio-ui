@@ -21,13 +21,19 @@
 
         <div class="form-group">
             <label for="name">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label>
-            <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" required/>
+            <input id="siteId" name="siteId" ng-change="site.siteExists = false" type="text" class="form-control" ng-model="site.siteId" required/>
 
             <div class="error-container"
                  ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
                 <small class="error"
                        ng-show="createNameForm.name.$error.required">
                     {{ 'dashboard.sites.create.SITE_ID' | translate }} is required.
+                </small>
+            </div>
+            <div class="error-container"
+                 ng-show="site.siteExists">
+                <small class="error ng-binding">
+                    There is an existing site with the same id.
                 </small>
             </div>
         </div>

@@ -498,10 +498,13 @@ body,tbody {
 }
 
 #keyValueDialogContainer, #richTextDialog .property-dialog-body-container {
-    /*overflow-y: scroll;*/
     max-height: 420px;
     padding: 20px 2px 12px;
     border-bottom: 1px solid #DDD;
+}
+
+#keyValueDialogContainer {
+    overflow-y: scroll;
 }
 
 #richTextDialog .property-dialog-body-container {

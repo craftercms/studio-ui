@@ -673,29 +673,57 @@
                 }
             }
 
-            function create() {
-                var createModalInstance = $modal.open({
-                    templateUrl: 'creatingSiteConfirmation.html',
-                    backdrop: 'static',
-                    keyboard: false,
-                    size: 'sm'
-                });
-                $scope.adminModal.close();
-                sitesService.create({
-                    siteId: $scope.site.siteId,
-                    siteName: $scope.site.siteName,
-                    blueprintName: $scope.site.blueprint.id,
-                    description: $scope.site.description
-                }).success(function (data) {
-                    $timeout(function () {
-                        sitesService.editSite($scope.site);
-                        createModalInstance.close();
-                    }, 12000, false);
+            $scope.siteExists = function(siteId) {
+                var exists = false;
 
-                });
+                if (!$scope.sites) {
+                    return false;
+                }
 
+                for (var i = 0,
+                         sites = $scope.sites,
+                         site = sites[i],
+                         l = sites.length;
+                     i < l;
+                     site = sites[++i]) {
+                    if ((site.siteId + '') === (siteId + '')) {
+                        exists = true;
+                    }
+                }
+
+                return exists;
             }
 
+            function create() {
+                var siteExists = $scope.siteExists($scope.site.siteId);
+
+                if(!siteExists) {
+                    var createModalInstance = $modal.open({
+                        templateUrl: 'creatingSiteConfirmation.html',
+                        backdrop: 'static',
+                        keyboard: false,
+                        size: 'sm'
+                    });
+                    $scope.adminModal.close();
+
+                    sitesService.create({
+                        siteId: $scope.site.siteId,
+                        siteName: $scope.site.siteName,
+                        blueprintName: $scope.site.blueprint.id,
+                        description: $scope.site.description
+                    }).success(function (data) {
+                        $timeout(function () {
+                            sitesService.editSite($scope.site);
+                            createModalInstance.close();
+                        }, 12000, false);
+
+                    });
+                }else{
+                    $scope.site.siteExists = true;
+                    console.log('site already exists');
+                }
+
+            }
         }
     ]);
 
