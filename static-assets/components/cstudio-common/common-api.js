@@ -565,62 +565,52 @@ var nodeOpen = false;
                 }
             },
 
-            deleteContent: function(items) {
-                var checkDeletePermissionsCb = {
-                    success: function(results) {
-                        var controller, view;
-                        for (var i = 0; i < results.permissions.length; i++) {
-                            if(results.permissions[i] == "delete") {
-                                controller = "viewcontroller-delete";
-                                view = CSA.Service.getDeleteView;
-                                break;
-                            } else if(results.permissions[i] == "request delete") {
-                                controller = "viewcontroller-submitfordelete";
-                                view = CSA.Service.getSubmitForDeleteView;
-                                break;
-                            }
-                        }
+            deleteContent: function(items, requestDelete) {
+                var controller, view;
+                if(requestDelete == true) {
+                    controller = "viewcontroller-submitfordelete";
+                    view = CSA.Service.getSubmitForDeleteView;
+                } else {
+                    controller = "viewcontroller-delete";
+                    view = CSA.Service.getDeleteView;
+                }
 
-                        CSA.Operations._showDialogueView({
-                            fn: view,
-                            controller: controller,
-                            callback: function (dialogue) {
-                                var _self = this;
-                                CSA.Operations.translateContent(formsLangBundle);
-                                if (YDom.get("cancelBtn")) {
-                                    YDom.get("cancelBtn").value = CMgs.format(formsLangBundle, "cancel");
-                                }
-                                if (YDom.get("deleteBtn")) {
-                                    YDom.get("deleteBtn").value = CMgs.format(formsLangBundle, "deleteDialogDelete");
-                                }
-                                this.loadDependencies(items);
-                                (function (items) {
-                                    _self.on("submitComplete", function (evt, args) {
-                                        var reloadFn = function () {
-                                            //window.location.reload();
-                                            eventNS.data = items;
-                                            eventNS.typeAction = "";
-                                            eventNS.oldPath = null;
-                                            document.dispatchEvent(eventNS);
-                                        };
-                                        dialogue.hideEvent.subscribe(reloadFn);
-                                        dialogue.destroyEvent.subscribe(reloadFn);
-                                    });
-                                })(items);
-                                // Admin version of the view does not have this events
-                                // but then the call is ignored
-                                this.on("hideRequest", function (evt, args) {
-                                    dialogue.hide();
-                                });
-                                this.on("showRequest", function (evt, args) {
-                                    dialogue.show();
-                                });
-                            }
-                        }, true);
-                    },
-                    failure: function() {}
-                };
-                CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, "/", checkDeletePermissionsCb);
+                CSA.Operations._showDialogueView({
+                    fn: view,
+                    controller: controller,
+                    callback: function (dialogue) {
+                        var _self = this;
+                        CSA.Operations.translateContent(formsLangBundle);
+                        if (YDom.get("cancelBtn")) {
+                            YDom.get("cancelBtn").value = CMgs.format(formsLangBundle, "cancel");
+                        }
+                        if (YDom.get("deleteBtn")) {
+                            YDom.get("deleteBtn").value = CMgs.format(formsLangBundle, "deleteDialogDelete");
+                        }
+                        this.loadDependencies(items);
+                        (function (items) {
+                            _self.on("submitComplete", function (evt, args) {
+                                var reloadFn = function () {
+                                    //window.location.reload();
+                                    eventNS.data = items;
+                                    eventNS.typeAction = "";
+                                    eventNS.oldPath = null;
+                                    document.dispatchEvent(eventNS);
+                                };
+                                dialogue.hideEvent.subscribe(reloadFn);
+                                dialogue.destroyEvent.subscribe(reloadFn);
+                            });
+                        })(items);
+                        // Admin version of the view does not have this events
+                        // but then the call is ignored
+                        this.on("hideRequest", function (evt, args) {
+                            dialogue.hide();
+                        });
+                        this.on("showRequest", function (evt, args) {
+                            dialogue.show();
+                        });
+                    }
+                }, true);
             },
             viewSchedulingPolicy: function(callback) {
                 CSA.Operations._showDialogueView({
@@ -4179,7 +4169,7 @@ var nodeOpen = false;
             // is this really a service and not a util, can we rename it to something descriptive?
             isDeleteAllowed: function(permissions) {
                 for (var i = 0; i < permissions.length; i++) {
-                    if(permissions[i] == "delete" || permissions[i] == "request delete") {
+                    if(permissions[i] == "delete"){
                         return true;
                     }
                 }
