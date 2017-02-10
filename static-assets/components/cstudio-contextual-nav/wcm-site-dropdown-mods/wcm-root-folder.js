@@ -2503,12 +2503,8 @@ treeNode.getHtml = function() {
              * event that triggered the display of the ContextMenu instance.
              */
             deleteContent: function(p_sType, p_aArgs, tree) {
-				var dropDownWrap = YDom.get('acn-dropdown-menu-wrapper');
-				if(dropDownWrap){
-					//dropDownWrap.style.display = 'none';
-				}
                 CStudioAuthoring.Operations.deleteContent(
-                        [oCurrentTextNode.data]);
+                        [oCurrentTextNode.data], false);
             },
             /**
              * copy content
