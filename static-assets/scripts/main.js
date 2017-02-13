@@ -425,6 +425,7 @@
 
             $scope.selectAction = function(optSelected) {
                 $scope.langSelected = optSelected;
+                $translate.use($scope.langSelected);
             };
 
             $scope.setLangCookie = function() {
@@ -728,8 +729,8 @@
     ]);
 
     app.controller('LoginCtrl', [
-        '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService',
-        function ($scope, $state, authService, $timeout, $cookies, sitesService) {
+        '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate',
+        function ($scope, $state, authService, $timeout, $cookies, sitesService, $translate) {
 
             var credentials = {};
             $scope.langSelected = '';
@@ -798,6 +799,8 @@
 
             $scope.selectAction = function(optSelected) {
                 $scope.langSelected = optSelected;
+                $translate.use($scope.langSelected);
+
             };
 
         }
