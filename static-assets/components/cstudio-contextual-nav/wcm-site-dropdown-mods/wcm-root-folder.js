@@ -1464,7 +1464,9 @@ treeNode.getHtml = function() {
                                         style = style + " treenode-label";
                                         if(curElt){
                                             curElt.className = style;
-                                            curElt.title = curNode.data.title;
+                                            if(curNode.data.title && curElt.title != curNode.data.title) {
+                                                curElt.title = curNode.data.title;
+                                            }
                                         }
                                         if (style.indexOf("deleted") != -1 || treeData.item.isDeleted) {
                                             var tempSplit = curNode.labelElId.split("labelel");
