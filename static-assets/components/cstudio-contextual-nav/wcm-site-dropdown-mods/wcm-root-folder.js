@@ -1447,9 +1447,10 @@ treeNode.getHtml = function() {
                                     if (currentUri == treeData.item.uri) {
                                         var style = "",
                                             cont = paramCont ? paramCont : 0,
-                                            currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name);
+                                            currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name),
+                                            curElt = YDom.get(curNode.labelElId);
                                         currentInternalName = treeData.item.isNew ? currentInternalName + " *" : currentInternalName;
-                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).innerHTML = currentInternalName : null;
+                                        curElt ? curElt.innerHTML = currentInternalName : null;
                                         curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                         if (treeData.item.isPreviewable) {
@@ -1461,8 +1462,10 @@ treeNode.getHtml = function() {
                                             style = style + " component";
                                         }
                                         style = style + " treenode-label";
-                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).className = style : null;
-                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).title = curNode.data.title : null;
+                                        if(curElt){
+                                            curElt.className = style;
+                                            curElt.title = curNode.data.title;
+                                        }
                                         if (style.indexOf("deleted") != -1 || treeData.item.isDeleted) {
                                             var tempSplit = curNode.labelElId.split("labelel");
                                             var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
