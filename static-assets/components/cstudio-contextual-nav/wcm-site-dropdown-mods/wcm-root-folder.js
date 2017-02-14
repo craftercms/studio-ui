@@ -1450,7 +1450,7 @@ treeNode.getHtml = function() {
                                             currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name);
                                         currentInternalName = treeData.item.isNew ? currentInternalName + " *" : currentInternalName;
                                         YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).innerHTML = currentInternalName : null;
-                                        Self.updateNote(curNode.data, treeData.item);
+                                        curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                         if (treeData.item.isPreviewable) {
                                             style = style + " preview";
@@ -1462,6 +1462,7 @@ treeNode.getHtml = function() {
                                         }
                                         style = style + " treenode-label";
                                         YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).className = style : null;
+                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).title = curNode.data.title : null;
                                         if (style.indexOf("deleted") != -1 || treeData.item.isDeleted) {
                                             var tempSplit = curNode.labelElId.split("labelel");
                                             var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
@@ -1730,8 +1731,9 @@ treeNode.getHtml = function() {
                             statusStr,
                             ttFormattedEditDate,
                             retTransferObj.modifier,
-                            ttFormattedSchedDate,
-                            itemNameLabel);
+                            retTransferObj.lockOwner,
+                            itemNameLabel,
+                            ttFormattedSchedDate);
                 } else {
                     retTransferObj.title = this.buildToolTipRegular(
                             retTransferObj.label,
@@ -1763,7 +1765,7 @@ treeNode.getHtml = function() {
              * build the HTML for the scheduled tool tip.
              *
              */
-            buildToolTipScheduled: function(label, contentType, style, status, editedDate, modifier, schedDate, itemNameLabel) {
+            buildToolTipScheduled: function(label, contentType, style, status, editedDate, modifier, lockOwner, itemNameLabel, schedDate) {
                 var toolTip = "";
                 if (!itemNameLabel) {
                     itemNameLabel = "Page";
