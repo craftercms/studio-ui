@@ -1109,7 +1109,7 @@ var nodeOpen = false;
             refreshPreview: function(context) {
                 var previewFrameEl = document.getElementById("engineWindow");
                 if(previewFrameEl){
-                    if(!context){
+                    if(!context || context.isComponent){
                         previewFrameEl.contentWindow.location.reload();
                     }else{
                         if (context && context.browserUri) {
