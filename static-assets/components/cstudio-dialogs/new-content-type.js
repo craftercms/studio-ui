@@ -197,7 +197,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
                 	'extractMetadataParams.contentXml = contentXml;\r\n' +
                 	'extractMetadataParams.applicationContext = applicationContext;\r\n\r\n' +
                 	'def extractor = new ExtractMetadataApi(extractMetadataParams);\r\n' +
-                	'extractor.execute();\r\n'
+                	'extractor.execute();\r\n';
 
 				var writeControllerCb = {
 					success: function() {
@@ -212,7 +212,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 							'contentLifecycleParams.contentLoader = contentLoader;\r\n' +
 							'contentLifecycleParams.applicationContext = applicationContext;\r\n\r\n' +
 							'def controller = new CommonLifecycleApi(contentLifecycleParams);\r\n' +
-							'controller.execute();\r\n' +
+							'controller.execute();\r\n';
 
 						var writeExtractionCb = {
 							success: function() {
