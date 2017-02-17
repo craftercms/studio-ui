@@ -18,16 +18,16 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 	/**
 	 * show dialog
 	 */
-	showDialog: function(cb, config) {	
+	showDialog: function(cb, config) {
 		this.config = config;
 		this._self = this;
 		this.cb = cb;
 		this.dialog = this.createDialog();
 		this.dialog.show();
 		document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
-		
+
 	},
-	
+
 	/**
 	 * hide dialog
 	 */
@@ -82,11 +82,11 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
         }else{
             objectTypes=this.config.objectTypes[0];
         }
-		
+
 		if(!objectTypes.length) {
             objectTypes = [ objectTypes ];
 		}
-		
+
 		var typeEl = document.getElementById("contentTypeObjectType");
 		for(var k=0; k<objectTypes.length; k++) {
 			var objectType = objectTypes[k];
@@ -94,7 +94,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 		}
 
 		// Instantiate the Dialog
-		var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", 
+		var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
 								{ width : "360px",
                                   height: "306px",
                                   effect:{
@@ -111,9 +111,9 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
 		// Render the Dialog
 		dialog.render();
-		
+
 		this.buttonValidator("createButton", { "contentTypeDisplayName" : [/^$/] });
-		
+
 		var eventParams = {
 			self: this,
 			typeNameEl: document.getElementById('contentTypeName'),
@@ -121,7 +121,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 			asFolderEl: document.getElementById('contentTypeAsFolder'),
 			objectTypeEl: document.getElementById('contentTypeObjectType')
 		};
-		
+
 		YEvent.on("contentTypeObjectType", "change", function() {
 			 var type = document.getElementById('contentTypeObjectType').value;
 			 if(type=="page") {
@@ -155,24 +155,24 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 		return dialog;
 	},
 
-	/** 
-	 * create clicked 
+	/**
+	 * create clicked
 	 */
 	createClick: function(event, params) {
 		var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 		var label = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.labelEl.value);
 		var name = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.typeNameEl.value);
 		var type = CStudioAuthoring.Dialogs.NewContentType.xmlEscape(params.objectTypeEl.value);
-        
+
 		var contentAsFolder = (
 			type == 'component' ? false : params.asFolderEl.checked
 		);
 		var baseServicePath = '/api/1/services/api/1/site/write-configuration.json?site=' + CStudioAuthoringContext.site +
 			'&path=' + configFilesPath +
-			'/content-types/' + type + '/' + name + 
+			'/content-types/' + type + '/' + name +
 			'/';
 
-		var typeConfig = 
+		var typeConfig =
 			'<content-type name="/' + type + '/' + name +'" is-wcm-type="true">\r\n' +
 			 '<label>'+ label +'</label>\r\n'+
 			 '<form>/' + type + '/' + name +'</form>\r\n'+
@@ -185,21 +185,34 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 			 '<image-thumbnail></image-thumbnail>\r\n' +
 			'</content-type>';
 
-		var contentTypeCb = { 
+		var contentTypeCb = {
 			success: function() {
-				var controllerContent = 
-					'<import resource="classpath:alfresco/templates/webscripts/org/craftercms/cstudio/common/lib/common-lifecycle-api.js">\r\n' +
-					'controller = (controller) ? controller : {};\r\n'+
-					'controller.execute();';	
+				var controllerContent =
+					'import scripts.libs.ExtractMetadataApi;\r\n\r\n' +
+                	'def extractMetadataParams =[:];\r\n' +
+                	'extractMetadataParams.site = site;\r\n' +
+                	'extractMetadataParams.path = path;\r\n' +
+                	'extractMetadataParams.user = user;\r\n' +
+                	'extractMetadataParams.contentType = contentType;\r\n' +
+                	'extractMetadataParams.contentXml = contentXml;\r\n' +
+                	'extractMetadataParams.applicationContext = applicationContext;\r\n\r\n' +
+                	'def extractor = new ExtractMetadataApi(extractMetadataParams);\r\n' +
+                	'extractor.execute();\r\n'
 
 				var writeControllerCb = {
 					success: function() {
-						var extractionContent = 
-							'<import resource="classpath:alfresco/templates/webscripts/org/craftercms/cstudio/common/lib/common-extraction-api.js">\r\n' +
-							'contentNode.addAspect("cstudio-core:pageMetadata");\r\n'+
-							'var root = contentXml.getRootElement();\r\n'+
-							'extractCommonProperties(contentNode, root);\r\n'+
-							'contentNode.save();';
+						var extractionContent =
+							'import scripts.libs.CommonLifecycleApi;\r\n\r\n' +
+							'def contentLifecycleParams =[:];\r\n' +
+							'contentLifecycleParams.site = site;\r\n' +
+							'contentLifecycleParams.path = path;\r\n' +
+							'contentLifecycleParams.user = user;\r\n' +
+							'contentLifecycleParams.contentType = contentType;\r\n' +
+							'contentLifecycleParams.contentLifecycleOperation = contentLifecycleOperation;\r\n' +
+							'contentLifecycleParams.contentLoader = contentLoader;\r\n' +
+							'contentLifecycleParams.applicationContext = applicationContext;\r\n\r\n' +
+							'def controller = new CommonLifecycleApi(contentLifecycleParams);\r\n' +
+							'controller.execute();\r\n' +
 
 						var writeExtractionCb = {
 							success: function() {
@@ -207,7 +220,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 								if(type == "component") {
 									var fileNameLabel = "Component ID";
 								}
-								var formDefContent = 
+								var formDefContent =
 									'<form>\r\n'+
 									'<title>'+label+'</title>\r\n'+
 									'<description></description>\r\n' +
@@ -218,32 +231,32 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 										"<name>content-type</name>\r\n"+
 										"<label>Content Type</label>\r\n"+
 										"<value>/"+type+'/'+name+"</value>\r\n"+
-										"<type>string</type>\r\n"+					
+										"<type>string</type>\r\n"+
 										"</property>\r\n";
-								
+
 								if(!this.context.config.objectTypes.type.length) {
 									this.context.config.objectTypes.type = [ this.context.config.objectTypes.type ];
 								}
-								
+
 								for(var k=0; k<this.context.config.objectTypes.type.length; k++) {
 									var objectType = this.context.config.objectTypes.type[k];
-									
+
 									if(objectType.name == type) {
 										if(!objectType.properties.property.length) {
 											objectType.properties.property = [ objectType.properties.property];
 										}
-										
+
 										var typeProps = objectType.properties.property;
-										
+
 										for(var j=0; j<typeProps.length; j++) {
 											var typeProperty = typeProps[j];
-											
+
 											formDefContent +=
 											"<property>\r\n"+
 												"<name>" + typeProperty.name + "</name>\r\n"+
 												"<label>" + typeProperty.label + "</label>\r\n"+
 												"<value>" + typeProperty.value + "</value>\r\n"+
-												"<type>" + typeProperty.type + "</type>\r\n"+					
+												"<type>" + typeProperty.type + "</type>\r\n"+
 											"</property>\r\n";
 										}
 										break;
@@ -252,7 +265,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
 								formDefContent +=
 									'</properties>\r\n' +
-									'<sections>\r\n' +		
+									'<sections>\r\n' +
 										'<section>\r\n' +
 											'<title>'+label+' Properties</title>\r\n' +
 											'<description></description>\r\n' +
@@ -356,13 +369,13 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 										CStudioAuthoring.Dialogs.NewContentType.closeDialog();
 										CStudioAuthoring.Dialogs.NewContentType.cb.success("/"+type + '/' + name);
 									},
-									
+
 									failure: function() {
 									},
 									context: this.context.context
-									
+
 								};
-								
+
 								this.context.writeConfig(baseServicePath + 'form-definition.xml', formDefContent, writeFormDefCb);
 							},
 							failure: function() {
@@ -382,15 +395,15 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 			context: CStudioAuthoring.Dialogs.NewContentType
 		};
 
-		CStudioAuthoring.Dialogs.NewContentType.writeConfig(baseServicePath + 'config.xml', typeConfig, contentTypeCb);			 
+		CStudioAuthoring.Dialogs.NewContentType.writeConfig(baseServicePath + 'config.xml', typeConfig, contentTypeCb);
 	},
 
 	writeConfig: function(url, content, cb) {
 		YAHOO.util.Connect.setDefaultPostHeader(false);
 		YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-		YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, content);		
+		YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, content);
 	},
-	
+
 	/**
 	 * event fired when the ok is pressed
 	 */
@@ -413,9 +426,9 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
             regExp;
 
         var checkButton = function () {
-            
+
             enableButton = true;
-            
+
             controlLoop:
                 for (var inputId in configObj) {
                     if (configObj.hasOwnProperty(inputId)) {
@@ -444,14 +457,14 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
         YAHOO.Bubbling.on("content-type.values.changed", checkButton);
 	},
-    
+
     xmlEscape: function(value) {
         value = value.replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;')
 			.replace(/"/g, '&quot;')
 			.replace(/&nbsp;/g, '&amp;nbsp;');
-            
+
         return value;
     }
 };
