@@ -382,13 +382,13 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 							},
 							context: this.context
 						}
-						this.context.writeConfig(baseServicePath + 'extract.js', extractionContent, writeExtractionCb);
+						this.context.writeConfig(baseServicePath + 'extract.groovy', extractionContent, writeExtractionCb);
 					},
 					failure: function() {
 					},
 					context: this.context
 				};
-				this.context.writeConfig(baseServicePath + 'controller.js', controllerContent, writeControllerCb);
+				this.context.writeConfig(baseServicePath + 'controller.groovy', controllerContent, writeControllerCb);
 			},
 			failure: function() {
 			},
