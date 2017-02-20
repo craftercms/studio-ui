@@ -91,6 +91,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     wcmContentEdit: "Editar",
     wcmContentView: "Ver",
     wcmContentSubmit: "Solicitud de Publicación",
+    wcmContentDependencies: "Ver Dependencias",
     wcmContentDelete: "Eliminar",
     wcmContentSubmitDelete: "Solicitud de Eliminación",
     wcmContentReject: "Rechazar",
@@ -226,7 +227,8 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     statusScheduled: "Programado",
     statusDisabled: "Deshabilitado",
     wcmContentSubmit: "Solicitud de Publicación",
-    wcmContentApprove: "Aprobar y Publicar"
+    wcmContentApprove: "Aprobar y Publicar",
+    wcmContentDependencies: "View Dependencies"
 
 });
 
@@ -320,6 +322,11 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 
     approveDialogTitle: "Aprobar para Publicar",
     approveDialogSubTitle: "Los siguientes elementos seleccionados estarán en vivo.",
+    dependenciesDialogTitle: "Dependencias",
+    dependenciesDialogSubTitle: "Dependencias mostradas para:",
+    dependsOn: "Depende de",
+    dependsOnMe: "Dependen de mi",
+    dependenciesDialogItem: "Item",
     approveDialogPage: "Página",
     approveDialogOriginalSchedule: "Horario original",
     approveDialogSubmissionComment: "Comentario de envio",

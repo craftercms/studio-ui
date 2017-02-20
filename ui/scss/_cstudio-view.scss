@@ -153,13 +153,14 @@
 
 }
 
-.cstudio-dialogue[id^="viewcontroller-history"] {
+.cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"]{
   left: 0px !important;
   right: 0px !important;
   width: 90% !important;
   margin: auto;
   top: 0px !important;
   bottom: 0px !important;
+  position: fixed;
 
   .yui-panel {
     width: 100% !important;
@@ -229,6 +230,53 @@
       }
     }
   }
+}
+
+.cstudio-dialogue[id^="viewcontroller-dependencies"] {
+  .full-height {
+    height: 100%;
+  }
+
+  .studio-view {
+    .dependencies-option {
+      width: 165px;
+      //margin-top: 10px;
+      margin-bottom: 10px;
+      margin-left: 10px;
+      display: inline-block;
+    }
+
+    .view-caption {
+      margin-top: 10px;
+    }
+
+    .dep-content {
+      height: calc(100% - 140px);
+      .dep-body {
+        height: calc(100% - 36px);
+
+        tr {
+          border-bottom: 1px solid rgba(211, 211, 211, 0.31);
+        }
+
+        td.name {
+          max-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
+          //border-right: solid 10px white;
+
+          .in {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 5px 0;
+          }
+        }
+      }
+    }
+  }
+
 }
 
 .cstudio-dialogue-mask {
