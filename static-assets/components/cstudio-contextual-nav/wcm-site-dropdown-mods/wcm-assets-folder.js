@@ -889,6 +889,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     uploadAsset: function() {
         var uploadCb = {
             success: function() {
+                CStudioAuthoring.Operations.refreshPreview();
                 Self.refreshNodes(this.tree,false, false, null, null, true);
             },
 
