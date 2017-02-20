@@ -319,16 +319,58 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
             this.inputEl.disabled=true;
 
+            var createWarningDialog = function(){
+                var dialogEl = document.getElementById("changeNameWar");
+                if(!dialogEl) {
+                    var dialog = new YAHOO.widget.SimpleDialog("changeNameWar",
+                        {
+                            width: "440px", fixedcenter: true, visible: false, draggable: false, close: true,
+                            modal: true, icon: YAHOO.widget.SimpleDialog.ICON_WARN, constraintoviewport: true
+                        });
+
+                    var viewDependenciesLink = document.createElement("a");
+                    viewDependenciesLink.innerHTML="here";
+                    viewDependenciesLink.onclick = function() {
+                        window.parent.CStudioAuthoring.Operations.viewDependencies(
+                            window.parent.CStudioAuthoringContext.site,
+                            window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
+                            false,
+                            'depends-on-me'
+                        );
+                    };
+
+                    dialog.setHeader("Warning");
+                    dialog.setBody("Changing this value may result in broken references and links.</br></br>" +
+                        "<span>To view the content that references this content, click </span>");
+                    dialog.body.insertBefore(viewDependenciesLink, dialog.body.lastChild);
+
+                    var handleYes = function() {
+                        _self.inputEl.disabled = false;
+                        editFileNameEl.style.display='none';
+                        this.hide();
+                    };
+                    var handleNo = function() {
+                        this.hide();
+                    };
+                    var myButtons = [
+                        { text:"Cancel", handler: handleNo, isDefault:true},
+                        { text: "OK", handler: handleYes }
+                    ];
+
+                    dialog.cfg.queueProperty("buttons", myButtons);
+                    dialog.render(document.body);
+                    dialogEl = document.getElementById("changeNameWar");
+                    dialogEl.dialog = dialog;
+                }
+
+                dialogEl.dialog.show();
+            };
+
             YAHOO.util.Event.on(editFileNameBtn, 'click', function(){
-            	var edit = true;
                 _self.form.setFocusedField(_self);
             	if(_self.showWarnOnEdit){
-            		edit = confirm("Changing this value may result in broken links");
+                    createWarningDialog();
             	}
-                if(edit){
-                    _self.inputEl.disabled = false;
-                    editFileNameEl.style.display='none';
-                }
             });
         }
     },
