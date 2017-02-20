@@ -332,6 +332,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     dependenciesDialogSubTitle: "Dependencies shown for:",
     dependsOn: "Refers to this item",
     dependsOnMe: "Is referenced by this item",
+    selectDeps: "Show content that:",
     dependenciesDialogItem: "Item",
     approveDialogPage: "Page",
     approveDialogOriginalSchedule: "Original Schedule",
