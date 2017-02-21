@@ -268,7 +268,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 
     historyDialogTitle: "버전 기록",
     historyDialogSubTitle: "역사에 대해 표시 :",
-    historyDialogTableRowVersion: "버전",
+    historyDialogTableRowVersion: "버전 날짜 및 시간",
     historyDialogTableRowTime: "편집 시간",
     historyDialogTableRowEditBy: "편집",
     historyDialogTableRowComment: "논평",

@@ -86,12 +86,12 @@
                                         checkboxEl;
 
                                     col2El = document.createElement('div');
-                                    Dom.addClass(col2El, "c3");
+                                    Dom.addClass(col2El, "c8");
+
+                                    col2El.innerHTML = CStudioAuthoring.Utils.formatDateFromString(version.lastModifiedDate, "full");
 
                                     var versionNumber = new Date(version.lastModifiedDate);
                                     versionNumber = versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
-                                    col2El.innerHTML =  versionNumber;
-
 
                                     if(contentType != "asset"){
                                         checkboxEl = document.createElement('input');
@@ -107,15 +107,6 @@
                                     tdEl.appendChild(col2El);
                                     rowEl.appendChild(tdEl);
 
-                                    var versionDate = _this.preFormatDate(version.lastModifiedDate);
-
-                                    col3El = document.createElement('div');
-                                    Dom.addClass(col3El, "c3");
-                                    col3El.innerHTML = CStudioAuthoring.Utils.formatDateFromString(versionDate, "tooltipformat");
-                                    tdEl = document.createElement('td');
-                                    tdEl.appendChild(col3El);
-                                    rowEl.appendChild(tdEl);
-
                                     col4El = document.createElement('div');
                                     Dom.addClass(col4El, "c4");
                                     col4El.innerHTML = version.lastModifier;
@@ -124,7 +115,7 @@
                                     rowEl.appendChild(tdEl);
 
                                     col6El = document.createElement('div');
-                                    Dom.addClass(col6El, "c6");
+                                    // Dom.addClass(col6El, "c6");
                                     col6El.innerHTML = (version.comment) ? version.comment : "&nbsp;";
                                     tdEl = document.createElement('td');
                                     tdEl.appendChild(col6El);
@@ -244,7 +235,7 @@
             }
             return convertedDate;
         },
-
+        
         validateDiffCheckboxes: function () {
             var tbody = this.getComponent('table.item-listing tbody'),
                 selectedCheckboxes = $(tbody).find('input[name="version"]:checked'),

@@ -194,9 +194,6 @@
                   &+ th, &+ td {
                     width: 17%;
 
-                    &+th, &+ td {
-                      width: 20%;
-
                       &+th, &+ td {
                         width: 45%;
 
@@ -204,11 +201,7 @@
                           width: 8%;
                         }
                       }
-                    }
-                  }
 
-                  div {
-                    width: 100%;
                   }
                 }
               }

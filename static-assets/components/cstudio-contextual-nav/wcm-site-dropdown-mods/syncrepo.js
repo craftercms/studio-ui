@@ -11,9 +11,6 @@ CStudioAuthoring.ContextualNav.SyncFromRepo = CStudioAuthoring.ContextualNav.Syn
          * initialize module
          */
         initialize: function(config) {
-
-            console.log("test");
-
             if(config.name == "syncrepo") {
                 this.initialized = true;
                 var dropdownInnerEl = config.containerEl;
