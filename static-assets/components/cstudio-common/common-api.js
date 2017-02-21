@@ -5277,87 +5277,121 @@ var nodeOpen = false;
             formatDateFromString: function(dateTime, timeFormat) {
 
                 try {
-                    var updatedDateTime = "";
+                    if(timeFormat != "full"){
+                        var updatedDateTime = "";
 
-                    if (dateTime != undefined && dateTime != "")
-                    {
-                        var itemDateTime = dateTime.split('T');
-                        var itemDate = itemDateTime[0].replace(/-/g, "/");
-                        var itemTime = itemDateTime[1].split(':', 2);
-                        var tt = "";
+                        if (dateTime != undefined && dateTime != "")
+                        {
+                            var itemDateTime = dateTime.split('T');
+                            var itemDate = itemDateTime[0].replace(/-/g, "/");
+                            var itemTime = itemDateTime[1].split(':', 2);
+                            var tt = "";
 
-                        var simpleTimeFormatFlag = false;
-                        var tooltipformat = false;
-                        if (timeFormat != undefined && timeFormat == "tooltipformat") {
-                            tooltipformat = true;
-                        } else if ((timeFormat != undefined && timeFormat != "") || timeFormat == "simpleformat") {
-                            simpleTimeFormatFlag = true;
-                        }
-
-                        if (itemTime[0] >= 12) {
-                            tt = "P";
-                            itemTime[0] = itemTime[0] - 12;
-                            if (itemTime[0] == 0)
-                                itemTime[0] = itemTime[0] + 12;
-                            if (itemTime[0] < 10) {
-                                itemTime[0] = "0" + itemTime[0];
+                            var simpleTimeFormatFlag = false;
+                            var tooltipformat = false;
+                            if (timeFormat != undefined && timeFormat == "tooltipformat") {
+                                tooltipformat = true;
+                            } else if ((timeFormat != undefined && timeFormat != "") || timeFormat == "simpleformat") {
+                                simpleTimeFormatFlag = true;
                             }
-                        }
-                        else {
-                            tt = "A";
-                            if (itemTime[0] == 0)
-                                itemTime[0] = 12;
-                        }
 
-                        var myDate = new Date(itemDate);        //TODO: Needs to be checked!!!
-                        var d = myDate.getDate();
-                        var m = myDate.getMonth() + 1;
-                        var y = myDate.getFullYear();
+                            if (itemTime[0] >= 12) {
+                                tt = "P";
+                                itemTime[0] = itemTime[0] - 12;
+                                if (itemTime[0] == 0)
+                                    itemTime[0] = itemTime[0] + 12;
+                                if (itemTime[0] < 10) {
+                                    itemTime[0] = "0" + itemTime[0];
+                                }
+                            }
+                            else {
+                                tt = "A";
+                                if (itemTime[0] == 0)
+                                    itemTime[0] = 12;
+                            }
 
-                        if (m < 10)
-                            m = "0" + m;
+                            var myDate = new Date(itemDate);        //TODO: Needs to be checked!!!
+                            var d = myDate.getDate();
+                            var m = myDate.getMonth() + 1;
+                            var y = myDate.getFullYear();
 
-                        if (d < 10)
-                            d = "0" + d;
+                            if (m < 10)
+                                m = "0" + m;
 
-                        if (simpleTimeFormatFlag) { // if simple time format pass mm/dd/yy format
+                            if (d < 10)
+                                d = "0" + d;
 
-                            var newDate = m + "/" + d + "/" + y;
-                            updatedDateTime = newDate;
+                            if (simpleTimeFormatFlag) { // if simple time format pass mm/dd/yy format
 
-                        } else if (tooltipformat) { //date format for tooltip
+                                var newDate = m + "/" + d + "/" + y;
+                                updatedDateTime = newDate;
 
-                            var year = y + "";
-                            var newDate = (isNaN(m)?m:parseInt(m, 10)) + "/" +
-                                (isNaN(d)?d:parseInt(d, 10)) + "/" +
-                                year.substr(2);
-                            updatedDateTime = newDate + " " + itemTime[0] + ":" + itemTime[1] + "" + tt + "  ";
+                            } else if (tooltipformat) { //date format for tooltip
+
+                                var year = y + "";
+                                var newDate = (isNaN(m)?m:parseInt(m, 10)) + "/" +
+                                    (isNaN(d)?d:parseInt(d, 10)) + "/" +
+                                    year.substr(2);
+                                updatedDateTime = newDate + " " + itemTime[0] + ":" + itemTime[1] + "" + tt + "  ";
+
+                            } else {
+
+                                var newDate = m + "/" + d;
+                                updatedDateTime = newDate + " " + itemTime[0] + ":" + itemTime[1] + "" + tt + "  ";
+
+                            }
 
                         } else {
 
+                            var myDate = new Date(itemDate);
+                            var d = myDate.getDate();
+                            var m = myDate.getMonth() + 1;
+                            var y = myDate.getFullYear();
+
+                            if (m < 10)
+                                m = "0" + m;
+
+                            if (d < 10)
+                                d = "0" + d;
+
                             var newDate = m + "/" + d;
-                            updatedDateTime = newDate + " " + itemTime[0] + ":" + itemTime[1] + "" + tt + "  ";
 
                         }
 
-                    } else {
+                        return updatedDateTime;
+                    }else{
+                        var dateTime = new Date(dateTime),
+                            weekdays = ["Sunday", "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+                            months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                            weekDay = weekdays[dateTime.getDay()],
+                            month = months[dateTime.getMonth()],
+                            day = dateTime.getDate(),
+                            year = dateTime.getFullYear(),
+                            hours = dateTime.getHours(),
+                            minutes = dateTime.getMinutes() < 10 ? '0' + dateTime.getMinutes() : dateTime.getMinutes(),
+                            seconds = dateTime.getSeconds() < 10 ? '0' + dateTime.getSeconds() : dateTime.getSeconds(),
+                            tt,
+                            time,
+                            timezone = /\((.*)\)/.exec(dateTime.toString())[1];
 
-                        var myDate = new Date(itemDate);
-                        var d = myDate.getDate();
-                        var m = myDate.getMonth() + 1;
-                        var y = myDate.getFullYear();
+                        if ( hours >= 12 ) {
+                            tt = "PM";
+                            hours = hours - 12;
+                            if (hours == 0)
+                                hours = hours + 12;
+                            if (hours < 10) {
+                                hours = "0" + hours;
+                            }
+                        }else{
+                            tt = "AM";
+                            if (hours == 0)
+                                hours = 12;
+                        }
 
-                        if (m < 10)
-                            m = "0" + m;
+                        time = hours + ":" + minutes + ":" + seconds + " " + tt;
 
-                        if (d < 10)
-                            d = "0" + d;
-
-                        var newDate = m + "/" + d;
-
+                        return weekDay + ", " + month + " " + day + ", " + year + ", " + time + " " + timezone;
                     }
-
-                    return updatedDateTime;
                 }
                 catch(err) {
                     return dateTime;

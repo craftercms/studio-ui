@@ -298,7 +298,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     historyDialogTitle: "Version History",
     historyDialogSubTitle: "History shown for:",
-    historyDialogTableRowVersion: "Version",
+    historyDialogTableRowVersion: "Version Date and Time",
     historyDialogTableRowTime: "Edit Time",
     historyDialogTableRowEditBy: "Edited By",
     historyDialogTableRowComment: "Comment",
