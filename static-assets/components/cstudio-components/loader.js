@@ -149,6 +149,14 @@
 
     Loader.addModule({
         type: 'js',
+        name:'template-dependencies',
+        path: 'components/cstudio-templates/dependencies.js?version=' + CStudioAuthoring.UIBuildId,
+        requires: emptyArray
+    });
+
+
+    Loader.addModule({
+        type: 'js',
         name:'viewcontroller-base',
         path: 'components/cstudio-view-controllers/base.js?version=' + CStudioAuthoring.UIBuildId,
         requires: emptyArray
@@ -213,6 +221,20 @@
             'viewcontroller-base',
             'component-templateagent',
             'template-approve',
+            'jquery-datetimepicker',
+            'jquery-momentjs'
+        ]
+    });
+
+    Loader.addModule({
+        type: 'js',
+        name:'viewcontroller-dependencies',
+        path: 'components/cstudio-view-controllers/dependencies.js?version=' + CStudioAuthoring.UIBuildIds,
+        requires: [
+            'viewcontroller-base',
+            'component-templateagent',
+            'template-approve',
+            'template-dependencies',
             'jquery-datetimepicker',
             'jquery-momentjs'
         ]

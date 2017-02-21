@@ -81,7 +81,9 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
     dashletIconGuideStateInWorkflow: "In Workflow",
     dashletIconGuideStateScheduled: "Scheduled",
     dashletIconGuideStateSystemProcessing: "Processing",
-    dashletIconGuideStateLocked: "Locked for edit"
+    dashletIconGuideStateLocked: "Locked for edit",
+
+
 
 });
 
@@ -91,6 +93,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     wcmContentEdit: "Edit",
     wcmContentView: "View",
     wcmContentSubmit: "Request Publish",
+    wcmContentDependencies: "View Dependencies",
     wcmContentDelete: "Delete",
     wcmContentSubmitDelete: "Request Delete",
     wcmContentReject: "Reject",
@@ -228,6 +231,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     statusScheduled: "Scheduled",
     statusDisabled: "Disabled",
     wcmContentSubmit: "Request Publish",
+    wcmContentDependencies: "View Dependencies",
     wcmContentApprove: "Approve & Publish"
 
 });
@@ -324,6 +328,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     approveDialogTitle: "Approve for Publish",
     approveDialogSubTitle: "The following checked items will go live.",
+    dependenciesDialogTitle: "Dependencies",
+    dependenciesDialogSubTitle: "Dependencies shown for:",
+    dependsOn: "Refers to this item",
+    dependsOnMe: "Is referenced by this item",
+    selectDeps: "Show content that:",
+    dependenciesDialogItem: "Item",
     approveDialogPage: "Page",
     approveDialogOriginalSchedule: "Original Schedule",
     approveDialogSubmissionComment: "Submission Comment",
@@ -452,6 +462,11 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     defaultOpen: "Default Open",
     showInNav: "Show In Nav",
     descriptorMapper: "Descriptor Mapper",
+    warning: "Warning",
+    warningBody: "Changing this value may result in broken links.",
+    warningViewDeps: "To view the possible broken elements click ",
+    warningLink: "here",
+    
 
     /*Controls*/
     textArea: "Text Area",

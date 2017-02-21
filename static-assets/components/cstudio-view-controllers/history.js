@@ -86,15 +86,19 @@
                                         checkboxEl;
 
                                     col2El = document.createElement('div');
-                                    Dom.addClass(col2El, "c2");
+                                    Dom.addClass(col2El, "c3");
 
-                                    col2El.innerHTML =  + version.versionNumber;
+                                    var versionNumber = new Date(version.lastModifiedDate);
+                                    versionNumber = versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
+                                    col2El.innerHTML =  versionNumber;
+
 
                                     if(contentType != "asset"){
                                         checkboxEl = document.createElement('input');
+                                        checkboxEl.maxLength = 300;
                                         checkboxEl.type = "checkbox";
                                         checkboxEl.name = "version";
-                                        checkboxEl.value = version.versionNumber;
+                                        checkboxEl.value = versionNumber;
                                         checkboxEl.style.marginRight = '5px';
                                         col2El.insertBefore(checkboxEl, col2El.firstChild);
                                     }
