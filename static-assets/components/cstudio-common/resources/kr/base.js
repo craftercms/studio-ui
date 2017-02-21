@@ -86,6 +86,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     wcmContentEdit: "편집",
     wcmContentView: "보기",
     wcmContentSubmit: "요청 게시",
+    wcmContentDependencies: "View Dependencies",
     wcmContentDelete: "삭제",
     wcmContentSubmitDelete: "요청 삭제",
     wcmContentReject: "거부",
@@ -219,7 +220,8 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     statusScheduled: "예약",
     statusDisabled: "장애인",
     wcmContentSubmit: "요청 게시",
-    wcmContentApprove: "승인 및 게시"
+    wcmContentApprove: "승인 및 게시",
+    wcmContentDependencies: "View Dependencies"
 
 });
 
@@ -295,6 +297,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 
     approveDialogTitle: "게시에 대한 승인",
     approveDialogSubTitle: "다음 선택 항목이 게재됩니다.",
+    dependenciesDialogTitle: "Dependencies",
+    dependenciesDialogSubTitle: "Dependencies shown for:",
+    dependsOn: "Depends On",
+    dependsOnMe: "Depends On Me",
+    selectDeps: "Show content that:",
+    dependenciesDialogItem: "Item",
     approveDialogPage: "페이지",
     approveDialogOriginalSchedule: "원래 일정",
     approveDialogSubmissionComment: "제출 코멘트",

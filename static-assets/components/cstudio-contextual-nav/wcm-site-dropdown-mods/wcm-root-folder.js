@@ -2208,6 +2208,34 @@ treeNode.getHtml = function() {
                                 }
                             }
 
+                            if(oCurrentTextNode.data.contentType != "folder") {
+                                //dependencies dialog
+                                p_aArgs.addItems([
+                                    {
+                                        text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
+                                        onclick: { fn: function(){
+                                            var callback = {
+                                                success: function(contentTO) {
+                                                    var selectedContent = [];
+                                                    selectedContent.push(contentTO.item);
+
+                                                    CStudioAuthoring.Operations.viewDependencies(
+                                                        CStudioAuthoringContext.site,
+                                                        selectedContent,
+                                                        false
+                                                    );
+                                                },
+                                                failure: function() {
+
+                                                }
+                                            }
+
+                                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                        } }
+                                    }
+                                ]);
+                            }
+
                         },
                         failure: function() { }
                     };
