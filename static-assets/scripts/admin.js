@@ -238,6 +238,15 @@
                         console.log(error);
                         //TODO: properly display the error.
                     });
+
+                    if(user.newPassword){
+                        adminService.setPassword({
+                            "username" : user.username,
+                            "new" : user.newPassword
+                        }).success(function (data) {
+
+                        });
+                    }
                 };
                 $scope.viewUser = function(user){
                     $scope.user = {};

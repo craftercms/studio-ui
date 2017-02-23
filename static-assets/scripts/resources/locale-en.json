@@ -4,7 +4,14 @@
       "EMAIL": "Email",
       "USERNAME": "Username",
       "PASSWORD": "Password",
-      "SIGN_IN": "Sign in"
+      "SIGN_IN": "Sign in",
+      "EMAIL_CONFIRMATION": "Please check your email for a message with an URL to reset your password.",
+      "PASSWORD_UPDATED": "Your password has been updated, you will be redirected to the login page.",
+      "RECOVER": "Recover",
+      "BACK": "back",
+      "BACK_TO_LOGIN": "Back to Login",
+      "SUBMIT": "Submit",
+      "FORGOT_PASSWORD": "Forgot your Password?"
     },
     "sites": {
       "SITES_LABEL": "Sites",

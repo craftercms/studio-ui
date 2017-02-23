@@ -22,8 +22,11 @@
             $rootScope.$on('$stateChangeStart', function (event, toState) {
 
                 if (toState.name.indexOf('login') === -1 && !authService.isAuthenticated()) {
-                    event.preventDefault();
-                    $state.go('login');
+
+                    if (toState.name.indexOf('reset') === -1) {
+                        event.preventDefault();
+                        $state.go('login');
+                    }
                 }
 
             });
@@ -114,7 +117,7 @@
 
                             $rootScope.loginModal.result.finally(function () {
                                 $rootScope.loginModal = null;
-                                $state.go('home.sites');
+                                // $state.go('home.sites');
                             });
 
                         }
@@ -144,7 +147,7 @@
 
                             $rootScope.recoverModal.result.finally(function () {
                                 $rootScope.recoverModal = null;
-                                $state.go('login');
+                                // $state.go('login');
                             });
 
                         }
@@ -157,6 +160,15 @@
                             }
                         }
                     ]
+                })
+                .state('home.reset', {
+                    url: 'reset-password',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/reset-password.html',
+                            controller: 'ResetCtrl'
+                        }
+                    }
                 })
                 .state('logout', {
                     url: 'logout',
@@ -234,15 +246,18 @@
                 return user;
             };
 
+            this.forgotPassword = function (username) {
+                return $http.get(api('forgot-password'), {
+                    params: { username : username }
+                });
+            };
+
             this.recoverPassword = function (data) {
                 return $http.post(api('reset-password'), data);
             };
 
-            this.changePassword = function (data) {
-                return $http.post(api('change-password'), data)
-                    .then(function (data) {
-                        return data.data;
-                    });
+            this.setPassword = function (data) {
+                return $http.post(api('set-password'), data);
             };
 
             this.getLoginLogo = function() {
@@ -394,6 +409,8 @@
             $scope.langSelected = '';
             $scope.modalInstance = '';
 
+            $scope.authenticated = authService.isAuthenticated();
+
             function logout() {
                 authService.logout();
                 $state.go('login');
@@ -415,7 +432,7 @@
                             }
                         });
                 }else{
-                    console.log("nope");
+
                 }
             }
 
@@ -807,22 +824,69 @@
     ]);
 
     app.controller('RecoverCtrl', [
-        '$scope', '$state', 'authService',
-        function ($scope, $state, authService) {
+        '$scope', '$state', 'authService', '$translate',
+        function ($scope, $state, authService, $translate) {
 
             var credentials = $scope.credentials = {};
 
-            $scope.recover = function recover() {
-                authService.recoverPassword(credentials)
-                    .success(function (data) {
-                        if (data.type === 'error') {
-                            $scope.error = data.message;
-                        }  else if (data.error) {
-                            $scope.error = data.error;
-                        } else {
-                            $scope.success = data.message;
-                        }
+            $scope.forgotPassword = function recover() {
+                authService.forgotPassword(credentials.username).success(function(data) {
+                    if(data.message === 'OK') {
+                        $scope.error = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
+                        $scope.recoverSuccess = true;
+                    }else{
+                        $scope.error = data.message;
+                    }
+                }).error(function(error) {
+                    // $scope.error = error;
+                });
+            };
+
+        }
+    ]);
+
+    app.controller('ResetCtrl', [
+        '$scope', '$state', '$location', 'authService', '$modal', '$timeout', '$translate',
+        function ($scope, $state, $location, authService, $modal, $timeout, $translate) {
+            
+            $scope.user = {};
+
+            $scope.setPassword = function() {
+                authService.setPassword({
+                    'token': $location.search().token,
+                    'new': $scope.user.password
+                }).success(function(data) {
+                    $scope.notificationText = $translate.instant('dashboard.login.PASSWORD_UPDATED');
+                    $scope.notificationType = 'info-sign';
+
+                    var modal = $modal.open({
+                        templateUrl: 'notificationModal.html',
+                        windowClass: 'centered-dialog',
+                        backdrop: 'static',
+                        keyboard: false,
+                        controller: 'ResetCtrl',
+                        scope: $scope,
+                        size: 'sm'
                     });
+                }).error(function(error){
+                    $scope.notificationText = $translate.instant('dashboard.login.PASSWORD_UPDATED');
+                    $scope.notificationType = 'info-sign';
+
+                    var modal = $modal.open({
+                        templateUrl: 'notificationModal.html',
+                        windowClass: 'centered-dialog',
+                        backdrop: 'static',
+                        keyboard: false,
+                        controller: 'ResetCtrl',
+                        scope: $scope,
+                        size: 'sm'
+                    });
+
+                    $timeout(function() {
+                        modal.close();
+                        $state.go('login');
+                    }, 2000);
+                });
             };
 
         }

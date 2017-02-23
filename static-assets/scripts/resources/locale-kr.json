@@ -4,7 +4,14 @@
       "EMAIL": "이메일",
       "USERNAME": "사용자 이름",
       "PASSWORD": "암호",
-      "SIGN_IN": "로그인"
+      "SIGN_IN": "로그인",
+      "EMAIL_CONFIRMATION": "Please check your email for a message with an URL to reset your password",
+      "PASSWORD_UPDATED": "Your password has been updated, you will be redirected to the login page.",
+      "RECOVER": "Recover",
+      "BACK": "back",
+      "BACK_TO_LOGIN": "Back to login",
+      "SUBMIT": "Submit",
+      "FORGOT_PASSWORD": "Forgot your Password?"
     },
     "sites": {
       "SITES_LABEL": "사이트",
