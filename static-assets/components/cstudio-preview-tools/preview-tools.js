@@ -100,6 +100,8 @@
                 }
 
                 this.PreviewToolsOnEvent.fire();
+
+                $('.studio-preview').css('right', 265);
             },
 
             turnToolsOff: function () {
@@ -117,6 +119,8 @@
                 }
 
                 this.PreviewToolsOffEvent.fire();
+
+                $('.studio-preview').css('right', 0);
             },
 
             /*
