@@ -136,12 +136,12 @@
                   <a class="btn btn-default cstudio-search-btn add-close-btn results-btn" href="#" role="button">{{labelAddClose}}</a>
                 </span>
               </div>
-              <div class="cstudio-search-description-preview">
-                {{#equal type "image"}}
-                <img src="{{browserUri}}" alt="{{name}}" class="cstudio-search-banner-image"">
-                <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}">
-                {{/equal}}
-              </div>
+              {{#equal type "image"}}
+                  <div class="cstudio-search-description-preview">
+                    <img src="{{browserUri}}" alt="{{name}}" class="cstudio-search-banner-image"">
+                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}">
+                  </div>
+              {{/equal}}
             </div>
           </div>
     </script>
