@@ -209,19 +209,28 @@
                        required
                        compare-to="user.password">
 
-                <!--<div class="error-container" ng-if="dialogMode"-->
-                     <!--ng-show="(createNameForm.passwordVerification.$dirty && createNameForm.passwordVerification.$invalid) || (createNameForm.passwordVerification.$touched && createNameForm.passwordVerification.$invalid)">-->
-                    <!--<small class="error"-->
-                           <!--ng-show="createNameForm.passwordVerification.$error.required">-->
-                        <!--{{ 'admin.users.PASSWORD_VERIFICATION' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}-->
-                    <!--</small>-->
-                <!--</div>-->
-
                 <div class="error-container" ng-if="dialogMode"
                      ng-show="createNameForm.passwordVerification.$error.compareTo">
                     <small class="error"
                            ng-show="createNameForm.passwordVerification.$error.compareTo">
                         Must match the previous entry.
+                    </small>
+                </div>
+            </div>
+            <div class="form-group" ng-if="dialogMode == 'edit'">
+                <hr/>
+                <label for="newPassword" class="control-label">Reset Password -
+                    <a ng-click="resetPassword = !resetPassword; resetLabel = resetPassword ? 'Disable' : 'Enable'">
+                        {{ resetLabel || 'Enable' }}
+                    </a>
+                </label>
+                <input ng-disabled="!resetPassword" type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword" ng-required="resetPassword">
+
+                <div class="error-container" ng-if="dialogMode"
+                     ng-show="(createNameForm.newPassword.$dirty && createNameForm.newPassword.$invalid) || (createNameForm.newPassword.$touched && createNameForm.newPassword.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.newPassword.$error.required">
+                        {{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
                     </small>
                 </div>
             </div>

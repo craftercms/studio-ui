@@ -3,8 +3,15 @@
     "login": {
       "EMAIL": "Email",
       "USERNAME": "Usuario",
-      "PASSWORD": "Password",
-      "SIGN_IN": "Iniciar Sesión"
+      "PASSWORD": "Contraseña",
+      "SIGN_IN": "Iniciar Sesión",
+      "EMAIL_CONFIRMATION": "Por favor revise su correo electrónico, se ha enviado un mensaje con un link para reestablecer su contraseña.",
+      "PASSWORD_UPDATED": "Su contraseña ha sido actualizada, será redirigido a la página de login.",
+      "RECOVER": "Recuperar",
+      "BACK": "atrás",
+      "BACK_TO_LOGIN": "Regresar al login",
+      "SUBMIT": "Enviar",
+      "FORGOT_PASSWORD": "Olvidó su Contraseña?"
     },
     "sites": {
       "SITES_LABEL": "Sitios",
