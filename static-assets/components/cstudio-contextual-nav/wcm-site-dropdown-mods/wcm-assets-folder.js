@@ -539,6 +539,9 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             "assetsMenuRead" : [
                 { text: CMgs.format(siteDropdownLangBundle, "upload"), disabled: true, onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.overwriteAsset, obj:tree } },
                 { text: CMgs.format(siteDropdownLangBundle, "delete"), disabled: true, onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent, obj:tree } }
+            ],
+            "separator": [
+                { text: "<div>&nbsp;</div>", disabled:true, classname:"menu-separator" }
             ]
         };
 
@@ -563,7 +566,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                     var perms = results.permissions,
                         isWrite = CSA.Service.isWrite(perms),
                         isDeleteAllowed = CSA.Service.isDeleteAllowed(perms),
-                        isCreateFolder = CSA.Service.isCreateFolder(perms);
+                        isCreateFolder = CSA.Service.isCreateFolder(perms),
+                        menuItems = {
+                            separator: { text: "<div>&nbsp;</div>", disabled:true, classname:"menu-separator" }
+                        };
 
                     if (isWrite == true) {
                         if (this.isContainer) {
@@ -591,6 +597,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         }
 
                         if(oCurrentTextNode.data.uri.indexOf("/templates") != -1) {
+                            // this.aMenuItems.push( menuItems["separator"]);
                             this.aMenuItems.push(this.menuItems["assetsFolderTemplate"]);
                         }
 
@@ -683,29 +690,40 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                     }
 
-                    this.aMenuItems.push({
-                        text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
-                        onclick: { fn: function(){
-                            var callback = {
-                                success: function(contentTO) {
-                                    var selectedContent = [];
-                                    selectedContent.push(contentTO.item);
+                    if(!isAssetsFolder) {
+                        this.aMenuItems.push( menuItems.separator);
 
-                                    CStudioAuthoring.Operations.viewDependencies(
-                                        CStudioAuthoringContext.site,
-                                        selectedContent,
-                                        false
-                                    );
-                                },
-                                failure: function() {
+                        this.aMenuItems.push({
+                            text: 'History',
+                            onclick: { fn: function(){
+                                CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data);
+                            } }
+                        });
 
-                                }
-                            };
+                        this.aMenuItems.push({
+                            text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
+                            onclick: { fn: function(){
+                                var callback = {
+                                    success: function(contentTO) {
+                                        var selectedContent = [];
+                                        selectedContent.push(contentTO.item);
 
-                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                        CStudioAuthoring.Operations.viewDependencies(
+                                            CStudioAuthoringContext.site,
+                                            selectedContent,
+                                            false
+                                        );
+                                    },
+                                    failure: function() {
 
-                        } }
-                    });
+                                    }
+                                };
+
+                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+
+                            } }
+                        });
+                    }
 
                     var checkClipboardCb = {
                         success: function(collection) {

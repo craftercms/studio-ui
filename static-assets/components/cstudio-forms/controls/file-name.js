@@ -319,7 +319,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
             this.inputEl.disabled=true;
 
-            var createWarningDialog = function(){
+            var createWarningDialog = function(elemPath){
                 var dialogEl = document.getElementById("changeNameWar");
                 if(!dialogEl) {
                     var dialog = new YAHOO.widget.SimpleDialog("changeNameWar",
@@ -331,12 +331,25 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
                     var viewDependenciesLink = document.createElement("a");
                     viewDependenciesLink.innerHTML="here";
                     viewDependenciesLink.onclick = function() {
-                        window.parent.CStudioAuthoring.Operations.viewDependencies(
-                            window.parent.CStudioAuthoringContext.site,
-                            window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
-                            false,
-                            'depends-on-me'
-                        );
+
+                        var callback = {
+                            success: function(contentTO) {
+                                var selectedContent = [];
+                                selectedContent.push(contentTO.item);
+
+                                window.parent.CStudioAuthoring.Operations.viewDependencies(
+                                    CStudioAuthoringContext.site,
+                                    selectedContent,
+                                    false,
+                                    'depends-on'
+                                );
+                            },
+                            failure: function() {
+
+                            }
+                        };
+
+                        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, elemPath, callback, false, false);
                     };
 
                     dialog.setHeader("Warning");
@@ -369,7 +382,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
             YAHOO.util.Event.on(editFileNameBtn, 'click', function(){
                 _self.form.setFocusedField(_self);
             	if(_self.showWarnOnEdit){
-                    createWarningDialog();
+                    createWarningDialog(_self.form.path);
             	}
             });
         }

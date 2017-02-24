@@ -161,11 +161,10 @@
 
                     $.each(item, function(index, dependency){
                         var elem = {};
-                        elem.uri = dependency.uri;     // TODO: Full path - uri
+                        elem.uri = dependency.uri;
                         elem.internalName = dependency.internalName;
                         elem.scheduledDate = '';
                         elem.index = itemDependenciesClass;
-                        // $parentRow.after(agent.get('SUBITEM_ROW', elem));
 
                         var row = agent.get('SUBITEM_ROW', elem);
                         row = $container.append(row);
@@ -181,8 +180,6 @@
                             && dependency.uri.indexOf(".hbs") == -1
                             && dependency.uri.indexOf(".xml") == -1) {
                             editLink.hide();
-                        }else{
-
                         }
 
                     });
@@ -233,17 +230,16 @@
                         });
                     });
                 }
-            }
+            };
 
-            //TODO: callback should be the same - waiting for service
             if(optionSelected == 'depends-on'){
-                CStudioAuthoring.Service.loadDependencies(
+                CStudioAuthoring.Service.loadDependantItems(
                     CStudioAuthoringContext.site,
                     item.uri,
                     depsCallback
                 );
             }else{
-                CStudioAuthoring.Service.loadDependantItems(
+                CStudioAuthoring.Service.loadDependencies(
                     CStudioAuthoringContext.site,
                     item.uri,
                     depsCallback
