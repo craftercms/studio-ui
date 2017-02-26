@@ -697,7 +697,7 @@ var nodeOpen = false;
             viewDependencies: function (site, items, approveType, defaultSelection) {
                 //defaultSelection may be: 'depends-on' (default) or 'depends-on-me', 
 
-                var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on' 
+                var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on-me'
 
                 CSA.Operations._showDialogueView({
                     fn: CSA.Service.getDependenciesView,
