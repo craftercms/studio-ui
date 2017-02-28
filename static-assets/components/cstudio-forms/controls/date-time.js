@@ -450,13 +450,27 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		//parse the value using patterns and retrive the date with format
 		var inputTime = parseTimeString(this.timeEl.value);
 
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+        var self_ = this;
+
 		if(inputTime == undefined) {
 			if(this.timeEl.value != ""){
-				alert('( '+this.timeEl.value+' ) is not a valid time format, please provide a valid time');
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "timeFormatError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, "notification"),
+                    '( '+this.timeEl.value+' ) ' + CMgs.format(langBundle, "invalidFormat"),
+                    [{ text: "OK",  handler:function(){
+                        this.hide();
+                        self_.timeEl.value = "";
+                        self_.setDateTime("", "time");
+                        return;
+                    }, isDefault:false }],
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
 			}
-			this.timeEl.value = "";
-			this.setDateTime("", "time");
-			return;
 		} else {
 			var finalTimeFormat = inputTime.split("~");
 			var timeStamp = this.setTimeStamp.call(this, new Date(finalTimeFormat[0]), finalTimeFormat[1]);
@@ -465,10 +479,20 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			if (timeSplit.length == 3) {
 				var hours = parseInt(timeSplit[0], 10);
 				if (hours == 0 || hours > 12) {
-					alert('( '+this.timeEl.value+' ) is not a valid time format, please provide a valid time');
-					this.timeEl.focus();
-					this.setDateTime("", "time");
-					return;
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "timeFormatError-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                            '( '+this.timeEl.value+' ) ' + CMgs.format(langBundle, "invalidFormat"),
+                        [{ text: "OK",  handler:function(){
+                            this.hide();
+                            self_.timeEl.focus();
+                            self_.setDateTime("", "time");
+                            return;
+                        }, isDefault:false }],
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}
 			}
 			//set the value
@@ -707,7 +731,15 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 					_self.form.updateModel(_self.id, _self.value);
 					_self.form.updateModel(_self.timezoneId, _self.timezone);
 				} else {
-					alert("Unable to save Date/Time field. Please contact your system administrator");
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "saveDateError-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "saveDateError"),
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}
 			},
 			context: this

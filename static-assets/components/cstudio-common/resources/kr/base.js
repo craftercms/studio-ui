@@ -108,7 +108,10 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
 
     logout: "로그 아웃",
 
-    networkError: "네트워크 오류. 일부 기능은 사용할 수 없습니다."
+    networkError: "네트워크 오류. 일부 기능은 사용할 수 없습니다.",
+
+    notification: "공고",
+    noEventError: "연관된 이벤트 핸들러가 없습니다."
 
 });
 
@@ -222,7 +225,15 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     statusDisabled: "장애인",
     wcmContentSubmit: "요청 게시",
     wcmContentApprove: "승인 및 게시",
-    wcmContentDependencies: "View Dependencies"
+
+    wcmContentDependencies: "View Dependencies",
+
+    notification: "공고",
+    previewInitiated: "미리보기 서버 동기화 - 모두 시작됨.",
+
+    lookUpItemError: "항목을 찾을 수 없습니다. 시스템 관리자에게 문의하십시오.",
+    pathSameError: "출발지와 도착지 경로가 동일 함.",
+    pageExistError: "페이지가 이미 대상에 있습니다."
 
 });
 
@@ -255,6 +266,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     viewSample: "샘플보기",
     hideSample: "숨기기 샘플",
     continueEditing: "편집을 계속",
+    notification: "공고",
+    previewLoaded : "미리로드 됨.",
 
     cancelDialogHeader:"크래프터 스튜디오",
     cancelDialogBody:"변경 사항을 저장하지 않고이 양식을 닫습니다?",
@@ -343,7 +356,33 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     setStatedDialogSetStates: "설정 미국",
     setStatedDialogSystemProcessing: "시스템 처리",
 
-    currentPage: "현재 페이지"
+    currentPage: "현재 페이지",
+
+    /*Error*/
+    legacyFormNoSupported: "더 이상 지원되지 않는 레거시 양식 서버.",
+    loadContentsError: "내용을로드 할 수 없습니다. 대화창을 닫고 다시 시도하십시오.",
+    taxonomyError: "사용할 수있는 택 소노 미 유형이 없습니다",
+    getDomainNameError: "Service.getDomainName은 더 이상 사용되지 않습니다.",
+    changeContTypeError: "콘텐츠 유형 변경 오류.",
+    notImplemented: "구현되지 않음.",
+    timeFormatError: "유효한 시간 형식이 아닙니다. 올바른 시간을 제공하십시오.",
+    localStoreExceeded: "당신의 로컬 저장소 할당량을 초과했습니다.",
+    invalidFormat: "유효한 시간 형식이 아닙니다. 올바른 시간을 제공하십시오.",
+    addMoreItemsError: "더 이상 항목을 추가 할 수 없으며 항목을 제거하고 다시 시도하십시오.",
+    imgReq: "이미지 설명이 필요합니다.",
+    datasourceNotImageManager: "구성된 데이터 소스는 이미지 관리자가 아닙니다.",
+    noDatasourceAssociated:"이 편집기와 연결된 데이터 소스가 없습니다.",
+    notAComponent: " 구성 요소가 아니거나 항목이 없습니다.",
+    unableLoad: "시스템을로드 할 수 없습니다 ",
+    failure: "실패",
+    loadFormDefError: "양식 정의를로드하지 못했습니다.",
+    loadModelError: "모델을로드하지 못했습니다.",
+    controllerError: "컨트롤러가 없습니다.",
+    notExist:" 존재하지 않는다.",
+    translationSubmitted: "번역이 제출되었습니다.",
+    numberPerPage: "페이지 당 표시 항목에 숫자를 입력하십시오.",
+    revertError: "되돌리기에 실패했습니다.",
+    legacyError: "레거시 양식 서버는 더 이상 지원되지 않습니다."
 
 });
 
@@ -376,7 +415,10 @@ CStudioAuthoring.Messages.registerBundle("browse", "kr", {
     labelAddClose: "추가 및 닫기",
     selectAll: "모두 선택",
     clearAll: "선택 지우기",
-    uploadLabel: "업로드"
+    uploadLabel: "업로드",
+    notification: "공고",
+    lookUpChildError : "검색을 위해 하위 양식 콜백을 조회 할 수 없음 : ",
+    lookUpParentError : "검색을 위해 상위 컨텍스트를 조회 할 수 없음 : "
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
@@ -419,6 +461,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     defaultOpen: "기본 열기",
     showInNav: "탐색에 표시",
     descriptorMapper: "매퍼",
+    notification: "공고",
+    deploymentCanceled: "배포 항목이 취소되었습니다.",
 
     /*Controls*/
     textArea: "텍스트 영역",
@@ -587,9 +631,18 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabSiteConfDesc: "일반 사이트 구성을 정의",
     confTabWorkflowConf: "워크 플로우 구성",
     confTabWorkflowConfDesc: "시스템에서 사용할 수있는 워크 플로우를 정의",
+    confCacheCleared : "구성 캐시가 지워졌습니다.",
 
     /* Errors */
+    error: "오류",
     errorTitle: ". 필드와 데이터 소스에 대한 모든 제목을 입력 해주세요.",
     errorName: ". 대한 변수 이름을 기입하십시오: ",
-    contentTypeNotFound: "구성 요소의 콘텐츠 형식을 찾을 수 없습니다."
+    contentTypeNotFound: "구성 요소의 콘텐츠 형식을 찾을 수 없습니다.",
+    failConfig: "구성을로드하지 못했습니다.",
+    noConfPathError: "구성 경로가 정의되지 않았습니다.",
+    clearCacheError : "구성 캐시를 지우지 못했습니다.",
+    endpointsError: "엔드 포인트로드 실패.",
+    jobsError : "작업을로드하지 못했습니다.",
+    cancelDeploymentError: "배포를 취소하지 못했습니다.",
+    saveDateError: "날짜 / 시간 필드를 저장할 수 없습니다. 시스템 관리자에게 문의하십시오."
 });

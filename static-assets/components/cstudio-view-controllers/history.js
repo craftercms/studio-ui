@@ -179,7 +179,17 @@
                                                         _this.end();
                                                     },
                                                     failure: function () {
-                                                        alert("revert failed");
+                                                        var CMgs = CStudioAuthoring.Messages;
+                                                        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                                            "revertError-dialog",
+                                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                            CMgs.format(langBundle, "notification"),
+                                                            CMgs.format(langBundle, "revertError"),
+                                                            null,
+                                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                            "studioDialog"
+                                                        );
                                                     }
                                                 });
                                         });

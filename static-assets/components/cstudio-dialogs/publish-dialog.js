@@ -207,8 +207,18 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.reset = function () {
 
 CStudioAuthoring.Dialogs.PublishDialog.prototype.pageRedirect = function(response) {
 	if (response && response.status == 401) {
-		alert ("Authentication failed, redirecting to login page.");
-		window.location.reload(true);
+        CStudioAuthoring.Operations.showSimpleDialog(
+            "authenticationError-dialog",
+            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+            "Notification",
+            "Authentication failed, redirecting to login page.",
+            [{ text: "OK",  handler:function(){
+                this.hide();
+                window.location.reload(true);
+            }, isDefault:false }],
+            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+            "studioDialog"
+        );
 	}            
 };
 
@@ -788,9 +798,25 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
 	if (alertFlag) {
 		if (isSubmittedForDeletion) {
 			if (multipleChilds) {
-				alert ("The parent page (" + parentPageIntName + ") cannot be deleted before the children pages below:" + childPageIntName);
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "deleted-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    "The parent page (" + parentPageIntName + ") cannot be deleted before the children pages below:" + childPageIntName,
+                    null, //default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
 			} else {
-				alert ("The parent page (" + parentPageIntName + ") cannot be deleted before the child page (" +  childPageIntName + ").");
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "deleted-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    "The parent page (" + parentPageIntName + ") cannot be deleted before the child page (" +  childPageIntName + ").",
+                    null, //default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
 			}
 		} else {
 			var errorMsg = "";
@@ -812,9 +838,26 @@ CStudioAuthoring.Dialogs.PublishDialog.prototype.checkParentSchedule = function 
 			}
 
 			if (errorMsg != "") {
-				alert(errorMsg);
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "errorMsg-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    errorMsg,
+                    null, //default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
+
 			} else {
-				alert("Invalid parent child scheduling.");
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "invalidParent-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    "Invalid parent child scheduling.",
+                    null, //default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
 			}
 		}
 		return false;

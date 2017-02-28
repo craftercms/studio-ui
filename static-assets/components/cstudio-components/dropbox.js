@@ -496,8 +496,15 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                     ], ' ').indexOf('false') !== -1;
             }) ()) {
             // TODO fallback to input[type="file"]?
-            // TODO use modal instead of an alert?
-            alert ('Your browser does not support the necessary features to use drag and drop file uploading');
+            CStudioAuthoring.Operations.showSimpleDialog(
+                "browserError-dialog",
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                "Notification",
+                'Your browser does not support the necessary features to use drag and drop file uploading',
+                null, // use default button
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                "studioDialog"
+            );
         };
 
         var me = this,

@@ -200,7 +200,15 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 					for(var i=0; i < r.errors.length; i++){
 						errorString += r.errors[i];
 					}
-					alert(errorString);
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "error-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        "Notification",
+                        errorString,
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}else{
 					CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
 					if(r.fileExtension) {
@@ -231,7 +239,16 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 						YAHOO.util.Dom.setStyle('indicator', 'visibility', 'hidden');
 						var r = eval('(' + o.responseText + ')');
 						if(r.success){
-							alert(r.message);
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "upload-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                "Notification",
+                                r.message,
+                                null,
+                                YAHOO.widget.SimpleDialog.ICON_INFO,
+                                "success studioDialog"
+                            );
+
 						}else{
 							CStudioAuthoring.Dialogs.UploadDialog.closeDialog();				
 						    args.self.callback.success(r);

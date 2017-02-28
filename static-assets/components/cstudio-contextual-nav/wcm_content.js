@@ -759,7 +759,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         }, isDefault:false },
                                         { text:CMgs.format(formsLangBundle, "cancel"),  handler:function(){this.hide();}, isDefault:true }],
                                         YAHOO.widget.SimpleDialog.ICON_WARN,
-                                        "errorDialog"
+                                        "studioDialog"
                                     );
                                 };
 
@@ -1050,7 +1050,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 if(item.onclick) {
                                     linkEl.onclick = item.onclick;
                                 } else {
-                                    linkEl.onclick = function(){ alert("no event handler associated"); };
+                                    linkEl.onclick = function(){
+                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                            "noEventError-dialog",
+                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                            CMgs.format(contextNavLangBundle, "notification"),
+                                            CMgs.format(contextNavLangBundle, "noEventError"),
+                                            null, // use default button
+                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                            "studioDialog"
+                                        );
+                                    };
                                 }
                             }
 
