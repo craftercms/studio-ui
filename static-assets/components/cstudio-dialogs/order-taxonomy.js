@@ -78,7 +78,15 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy = CStudioAuthoring.Dialogs.DialogOr
             },
             
             failure: function() {
-                alert("update taxonomy failure");
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "taxonomyError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    'Update taxonomy failure.',
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             },
             
             dialog: dialog
@@ -287,8 +295,6 @@ CStudioAuthoring.Dialogs.DialogOrderTaxonomy.DDListClass = {
                 DDM.refreshCache();
             }
         }
-
-        //alert(this.id);
     },
 
     onDrag: function(e) {

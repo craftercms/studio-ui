@@ -379,11 +379,29 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
                             setDisabled(ENABLED);
                             YDom.get("golivecancelButton").disabled = false;
                             if (oResponse.status == -1) {
-                                alert('Go live is taking longer. The icon status will be updated once the content goes live.');
-                                self.dialog.hide();
-                                CSA.Operations.pageReload();
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "goLiveError-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "Notification",
+                                    "Go live is taking longer. The icon status will be updated once the content goes live.",
+                                    [{ text: "OK",  handler:function(){
+                                        this.hide();
+                                        self.dialog.hide();
+                                        CSA.Operations.pageReload();
+                                    }, isDefault:false }],
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             } else {
-                                alert('go live call failed ' + oResponse.statusText);
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "goLiveError-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "Notification",
+                                    'Go live call failed ' + oResponse.statusText,
+                                    null, // use default button
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             }
                         },
                         timeout: CSA.Request.Timeout.GoLiveTimeout
@@ -409,7 +427,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
                     serviceCallback,
                     jsonSubmitString);
             } else {
-                alert('no items selected');
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "noItemsError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    'no items selected',
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             }
         };
 
@@ -653,12 +679,28 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
                     },
                     failure: function (o) {
                         me.pageRedirect(o);
-                        alert(o.statusText);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "error-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            "Notification",
+                            o.statusText,
+                            null, // use default button
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                 }, xmlString);
 
             } else {
-                alert('No items selected');
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "noItemsError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    "No items selected.",
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             }
         }
 
@@ -784,7 +826,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
                 },
                 failure: function (o) {
                     self.pageRedirect(o);
-                    alert(o.statusText);
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "error-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        "Notification",
+                        o.statusText,
+                        null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
                 }
             }, xmlString);
 
@@ -843,8 +893,18 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
             var dateValue = YDom.get('datepicker').value;
             var timeValue = YDom.get('timepicker').value;
             if (((dateValue == 'Date...') || (timeValue == 'Time...') || (timeValue == '')) && YDom.get('settime').checked == true) {
-                alert('Please provide a date and/or time');
-                return;
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "dateError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    "Please provide a date and/or time.",
+                    [{ text: "OK",  handler:function(){
+                        this.hide();
+                        return;
+                    }, isDefault:false }],
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             }
 
             YDom.get('goLivePopWrapper').style.display = 'none';

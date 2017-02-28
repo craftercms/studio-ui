@@ -115,7 +115,15 @@ CStudioAuthoring.Module.requireModule(
 							}
 						},
 						failure: function() {
-							alert("Failed to load configuration");
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "errorDialog-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, "notification"),
+                                CMgs.format(langBundle, "failConfig"),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
 						}
 					}
 				);
@@ -220,8 +228,21 @@ CStudioAuthoring.Module.requireModule(
 				// save the configuration file back to repo 
 				saveButtonEl.onclick = function () { 
 					var selectedIndex = itemSelectEl.selectedIndex;
-					var saveCb = { success: function() { alert('Saved'); }, 
-						failure: function() { alert('Save Failed'); } 
+					var saveCb = {
+                        success: function() {
+                            CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "bottom right", "success");
+                        },
+						failure: function() {
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "errorDialog-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, "notification"),
+                                CMgs.format(langBundle, "saveFailed"),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
+                        }
 					};
 					var xml = editor.getValue();
 					var savePath = itemSelectEl[selectedIndex].value;
@@ -239,7 +260,15 @@ CStudioAuthoring.Module.requireModule(
 						YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
 						YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, xml);
 					} else {
-						alert("No configuration path is defined.");
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "errorDialog-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(langBundle, "notification"),
+                            CMgs.format(langBundle, "noConfPathError"),
+                            null, // use default button
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
 					}
 
 				}; // end of save
@@ -277,11 +306,27 @@ CStudioAuthoring.Module.requireModule(
 
                 var clearCacheCb = {
                     success: function() {
-                        alert("Configuration cache cleared");
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "cache-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(langBundle, "notification"),
+                            CMgs.format(langBundle, "confCacheCleared"),
+                            null, // use default button
+                            YAHOO.widget.SimpleDialog.ICON_INFO,
+                            "success studioDialog"
+                        );
                     },
 
                     failure: function() {
-                        alert("Failed to clear configuration cache");
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "cacheError-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(langBundle, "notification"),
+                            CMgs.format(langBundle, "clearCacheError"),
+                            null, // use default button
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                 };
 

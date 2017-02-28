@@ -727,14 +727,30 @@ var CStudioForms = CStudioForms || function() {
                                                                     dom = (new window.DOMParser()).parseFromString(content, "text/xml");
                                                                     dom = dom.documentElement;
                                                                 } catch(err) {
-                                                                    alert(CMgs.format(formsLangBundle, "errFailedToLoadContent", "parse: "+err));
+                                                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                                                        "loadContentError-dialog",
+                                                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                                        CMgs.format(formsLangBundle, "notification"),
+                                                                        CMgs.format(formsLangBundle, "errFailedToLoadContent", "parse: "+err),
+                                                                        null,
+                                                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                                        "studioDialog"
+                                                                    );
                                                                 }
 
                                                                 _self._renderFormWithContent(dom, formId, formDef, style, customControllerClass, readonly);
 
                                                             },
                                                             failure: function(err) {
-                                                                alert(CMgs.format(formsLangBundle, "errFailedToLoadContent", ""+err));
+                                                                CStudioAuthoring.Operations.showSimpleDialog(
+                                                                    "loadContentError-dialog",
+                                                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                                    CMgs.format(formsLangBundle, "notification"),
+                                                                    CMgs.format(formsLangBundle, "errFailedToLoadContent", ""+err),
+                                                                    null,
+                                                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                                    "studioDialog"
+                                                                );
                                                             }
                                                         });
                                                     }
@@ -989,7 +1005,15 @@ var CStudioForms = CStudioForms || function() {
                         index_html = "/index.xml";
                         if (fileName != index_html.substring(1))
                         {
-                            alert(CMgs.format(formsLangBundle, "errExpectedIndexXml"));
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "errExpectedIndexXml-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(formsLangBundle, "notification"),
+                                CMgs.format(formsLangBundle, "errExpectedIndexXml"),
+                                null,
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
                         }
                         if (entityId.indexOf(index_html) == length - 10)
                             entityId = entityId.substring(0, length - 10);
@@ -1162,12 +1186,24 @@ var CStudioForms = CStudioForms || function() {
                                     }
                                 },
                                 failure: function (err) {
-                                    alert(err);
-                                    form.onAfterSave();
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "error-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(formsLangBundle, "notification"),
+                                        err,
+                                        [{ text: "OK",  handler:function(){
+                                            this.hide();
 
-                                    if(saveAndCloseEl) saveAndCloseEl.disabled = false;
-                                    if(saveAndPreviewEl) saveAndPreviewEl.disabled = false;
-                                    if(saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = false;
+                                            form.onAfterSave();
+
+                                            if(saveAndCloseEl) saveAndCloseEl.disabled = false;
+                                            if(saveAndPreviewEl) saveAndPreviewEl.disabled = false;
+                                            if(saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = false;
+
+                                        }, isDefault:false }],
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog"
+                                    );
 
                                 }
                             };
@@ -1181,9 +1217,25 @@ var CStudioForms = CStudioForms || function() {
                         },
                         failure: function(err) {
                             try{
-                                alert(YAHOO.lang.JSON.parse(err.responseText).callstack[1].substring( YAHOO.lang.JSON.parse(err.responseText).callstack[1].indexOf(':')+1))
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "error-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(formsLangBundle, "notification"),
+                                    YAHOO.lang.JSON.parse(err.responseText).callstack[1].substring( YAHOO.lang.JSON.parse(err.responseText).callstack[1].indexOf(':')+1),
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             }catch (e) {
-                                alert(CMgs.format(formsLangBundle, "errSaveFailed"));
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "error-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(formsLangBundle, "notification"),
+                                    CMgs.format(formsLangBundle, "errSaveFailed"),
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             }
                             if(saveAndCloseEl) saveAndCloseEl.disabled = false;
                             if(saveAndPreviewEl) saveAndPreviewEl.disabled = false;
@@ -2275,7 +2327,15 @@ var CStudioForms = CStudioForms || function() {
                         }
                     }
                     catch(repeatErr) {
-                        alert(CMgs.format(formsLangBundle, "errOnRepeat"), ""+repeatErr);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "error-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(formsLangBundle, "notification"),
+                            CMgs.format(formsLangBundle, "errOnRepeat"), ""+repeatErr,
+                            null,
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                 }
             },
@@ -2334,7 +2394,15 @@ var CStudioForms = CStudioForms || function() {
                                 }
                             }
                             catch(err) {
-                                alert(err)
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "error-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(formsLangBundle, "notification"),
+                                    err,
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             }
                         }
                     }
@@ -2365,7 +2433,15 @@ var CStudioForms = CStudioForms || function() {
                         }
                     }
                     catch(err) {
-                        alert(err);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "error-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(formsLangBundle, "notification"),
+                            err,
+                            null,
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
 
                     // Because we added start and end elements, we can be sure that any field names will

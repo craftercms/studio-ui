@@ -23,6 +23,8 @@ var expandedElement = "";
 YAHOO.extend(CStudioForms.Datasources.TreeContent, CStudioForms.CStudioFormDatasource, {
 
 	add: function(control) {
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
 		var _self = this;
 		control.parentControl = this;
 
@@ -52,7 +54,15 @@ YAHOO.extend(CStudioForms.Datasources.TreeContent, CStudioForms.CStudioFormDatas
 		    	},
 	
 				failure:function() {
-					alert('failure');
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "failure-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "failure"),
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}
 			};
 	
@@ -115,6 +125,8 @@ YAHOO.extend(CStudioForms.Datasources.TreeContent, CStudioForms.CStudioFormDatas
 	},
 
 	expandTree: function() {
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
 		if (currentItem != this.innerHTML) {
 			var wait = 500;
 			var date = new Date();
@@ -149,7 +161,15 @@ YAHOO.extend(CStudioForms.Datasources.TreeContent, CStudioForms.CStudioFormDatas
 		    	},
 
 				failure:function() {
-					alert('failure');
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "failure-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "failure"),
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}
 			};
 

@@ -91,7 +91,17 @@
                                     },
                                     failure: function () {
                                         amplify.publish('/operation/failed');
-                                        alert("failed to load form definition");
+                                        var CMgs = CStudioAuthoring.Messages;
+                                        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                            "loadFormDefError-dialog",
+                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                            CMgs.format(langBundle, "notification"),
+                                            CMgs.format(langBundle, "loadFormDefError"),
+                                            null,
+                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                            "studioDialog"
+                                        );
                                     }
                                 });
                                 return;
@@ -272,7 +282,17 @@
                 failure: function (err) {
                     // The operation must be completed if there was a failure
                     amplify.publish('/operation/failed');
-                    alert("failed to load model");
+                    var CMgs = CStudioAuthoring.Messages;
+                    var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "loadFormDefError-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "loadFormDefError"),
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
                 }
             });
         },

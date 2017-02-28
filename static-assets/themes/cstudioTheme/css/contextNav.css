@@ -635,7 +635,7 @@ body.yui-skin-cstudioTheme .mask{
   padding: 0px 10px 10px;
 }
 
-#errMissingRequirements .ft .button-group, .errorDialog .ft .button-group{
+#errMissingRequirements .ft .button-group, .studioDialog .ft .button-group{
     display: block;
 }
 
@@ -722,12 +722,14 @@ body.yui-skin-cstudioTheme .mask{
     border: none;
 }
 
-#closeUserWarning .bd, #saveDraftWar .bd, #errMissingRequirements .bd, .errorDialog .bd{
+#closeUserWarning .bd, #saveDraftWar .bd, #errMissingRequirements .bd, .studioDialog .bd{
   height: 63px!important;
   padding: 24px;
 }
 
-#errMissingRequirements .bd, .errorDialog .bd{
+#errMissingRequirements .bd, .studioDialog .bd{
+    font-size: 12px;
+    line-height: normal;
     height: auto!important;
 }
 
@@ -735,22 +737,22 @@ body.yui-skin-cstudioTheme .mask{
     border-radius: 0 0 6px 6px;
 }
 
-#errMissingRequirements .bd, .errorDialog .bd{
+#errMissingRequirements .bd, .studioDialog .bd{
     padding: 24px 25px;
 }
 
-#closeUserWarning .hd, #saveDraftWar .hd, #errMissingRequirements .hd, .yui-dialog .yui-overlay.yui-panel.errorDialog .hd{
+#closeUserWarning .hd, #saveDraftWar .hd, #errMissingRequirements .hd, .yui-dialog .yui-overlay.yui-panel.studioDialog .hd{
   border-radius: 6px 6px 0 0;
   font-size: 15px;
   padding: 7px 10px;
 }
 
-#closeUserWarning .ft, #saveDraftWar .ft, #errMissingRequirements .ft, .errorDialog .ft{
+#closeUserWarning .ft, #saveDraftWar .ft, #errMissingRequirements .ft, .studioDialog .ft{
   border-radius: 0 0 6px 6px;
 }
 
 #closeUserWarning .ft span.button-group, #saveDraftWar .ft span.button-group, #errMissingRequirements .ft span.button-group,
-.errorDialog .ft span.button-group{
+.studioDialog .ft span.button-group{
     margin: 12px 0 6px;
 }
 
@@ -762,6 +764,9 @@ body.yui-skin-cstudioTheme .mask{
   margin-bottom: 10px;
 }
 
+.yui-skin-cstudioTheme .yui-simple-dialog .success .bd span.infoicon{
+    background: url("../images/icons/success-icon.png") no-repeat 0 0;
+}
 
 /*Crop Dialog*/
 

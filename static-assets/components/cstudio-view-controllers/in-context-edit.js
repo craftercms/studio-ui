@@ -154,7 +154,17 @@
          * provide support for legacy form server
          */
         constructUrlWebFormLegacyFormServer: function(item, field, site) {
-            alert("legacy form server is no longer supported");
+            var CMgs = CStudioAuthoring.Messages;
+            var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+            CStudioAuthoring.Operations.showSimpleDialog(
+                "legacyError-dialog",
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(langBundle, "notification"),
+                CMgs.format(langBundle, "legacyError"),
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                "studioDialog"
+            );
         }
     });
 

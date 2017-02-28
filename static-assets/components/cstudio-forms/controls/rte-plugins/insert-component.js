@@ -141,7 +141,17 @@ CStudioForms.Controls.RTE.InsertComponent = CStudioForms.Controls.RTE.InsertComp
 											success: function(result){
 
 												if(result == null){
-													alert(networkErrorMsg);
+                                                    var CMgs = CStudioAuthoring.Messages;
+                                                    var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                                        "networkErrorMsg-dialog",
+                                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                        CMgs.format(langBundle, "notification"),
+                                                        networkErrorMsg,
+                                                        null,
+                                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                        "studioDialog"
+                                                    );
 												}else {
 													CStudioAuthoring.Operations.openContentWebForm(
 														contentType,

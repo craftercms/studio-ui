@@ -80,8 +80,18 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 							// check if rejection reason is filled out
 							var tempStr = YAHOO.lang.trim(YDom.get('rejectMessageArea').value);
 							if (tempStr && tempStr.length == 0) {
-								alert('please choose a reason');
-								return;
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "reason-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "Notification",
+                                    "Please choose a reason.",
+                                    [{ text: "OK",  handler:function(){
+                                        this.hide();
+                                        return;
+                                    }, isDefault:false }],
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
 							}
 							
 							// remove unchecked items and dependencies from dependencyJsonObj
@@ -110,12 +120,31 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 										failure: function (oResponse) {
 											self.pageRedirect(oResponse);
 											if (oResponse.status == -1) {
-												alert('Reject is taking longer. The icon status will be updated once the content rejected.');
-												window.location.reload(true);
-												//CStudioAuthoring.Operations.pageReload();
+                                                CStudioAuthoring.Operations.showSimpleDialog(
+                                                    "Reject-dialog",
+                                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                    "Notification",
+                                                    "Reject is taking longer. The icon status will be updated once the content rejected.",
+                                                    [{ text: "OK",  handler:function(){
+                                                        this.hide();
+                                                        window.location.reload(true);
+                                                    }, isDefault:false }],
+                                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                    "studioDialog"
+                                                );
 											} else {
-												alert('reject items call failed ' + oResponse.statusText);
-                                                self.dialog.hide();
+                                                CStudioAuthoring.Operations.showSimpleDialog(
+                                                    "reject-dialog",
+                                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                    "Notification",
+                                                    "Reject items call failed " + oResponse.statusText + ".",
+                                                    [{ text: "OK",  handler:function(){
+                                                        this.hide();
+                                                        self.dialog.hide();
+                                                    }, isDefault:false }],
+                                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                    "studioDialog"
+                                                );
 											}
 										},
 										timeout: CStudioAuthoring.Request.Timeout.GoLiveTimeout
@@ -142,7 +171,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 										serviceCallback, 
 										jsonSubmitString);
 							} else {
-								alert('no items selected');
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "reject-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "Notification",
+                                    "No items selected.",
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
 							}
 						};
 						
@@ -339,7 +376,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 									},
 									failure: function (o) {
 										self.pageRedirect(o);
-										alert(o.statusText);
+                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                            "error-dialog",
+                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                            "Notification",
+                                            o.statusText,
+                                            null,
+                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                            "studioDialog"
+                                        );
 									}    
 								};
 						
@@ -351,7 +396,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 								YConnect.asyncRequest('POST', dependencyUrl, serviceCallback, xmlString);
 								
 							} else {
-								alert('No items selected');
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "error-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "Notification",
+                                    'No items selected',
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
 							}
 						};
 						

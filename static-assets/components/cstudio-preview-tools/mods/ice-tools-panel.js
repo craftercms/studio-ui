@@ -192,7 +192,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                     dialogEl = document.getElementById("errNoTemplAssoc");
                     dialogEl.dialog = dialog;
                 }
-                dialogEl.className +=(' errorDialog');
+                dialogEl.className +=(' studioDialog');
                 dialogEl.dialog.show();
             }
 		};
@@ -251,7 +251,17 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 })(contentType[contentType.length - 1] + ".groovy");
 
             }else{
-                alert("No controller found");
+                var CMgs = CStudioAuthoring.Messages;
+                var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "loadModelError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, "notification"),
+                    CMgs.format(langBundle, "controllerError"),
+                    null,
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             }
         };
         var contextNavImg = YDom.get("acn-ice-tools-image");

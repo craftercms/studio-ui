@@ -115,7 +115,10 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
 
     variableLabel: "Template code examples",
 
-    networkError: "Network Error. Some functionality may be unavailable."
+    networkError: "Network Error. Some functionality may be unavailable.",
+
+    notification: "Notification",
+    noEventError: "No event handler associated."
 
 });
 
@@ -227,7 +230,14 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     statusScheduled: "Scheduled",
     statusDisabled: "Disabled",
     wcmContentSubmit: "Request Publish",
-    wcmContentApprove: "Approve & Publish"
+    wcmContentApprove: "Approve & Publish",
+
+    notification: "Notification",
+    previewInitiated: "Preview server synch-all initiated.",
+
+    lookUpItemError: "Unable to look up item. Please contact your system administrator.",
+    pathSameError: "Source and destination path are same.",
+    pageExistError: "Page already exist at the destination."
 
 });
 
@@ -262,6 +272,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     hideSample: "Hide Sample",
     clearCache: "Clear Cache",
     continueEditing: "Continue Editing",
+    notification: "Notification",
+    previewLoaded : "Preview Loaded.",
 
     copy: "Copy",
     copyDescription: "Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained.",
@@ -376,6 +388,31 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     wcmContentSavedAsDraft: "Content was saved as DRAFT. Some required fields may not be populated. This can cause errors when previewed or deployed.",
 
+    /*Error*/
+    legacyFormNoSupported: "legacy form server no longer supported.",
+    loadContentsError: "Unable to load contents. Please close the dialogue window and try again.",
+    taxonomyError: "No taxonomy types available for",
+    getDomainNameError: "Service.getDomainName depricated.",
+    changeContTypeError: "Error changing Content Type.",
+    notImplemented: "Not Implemented.",
+    timeFormatError: "is not a valid time format, please provide a valid time.",
+    localStoreExceeded: "Your local Storage Quota exceeded.",
+    invalidFormat: "Is not a valid time format, please provide a valid time",
+    addMoreItemsError: "You can't add more items, Remove one and try again.",
+    imgReq: "Image description is required.",
+    datasourceNotImageManager: "The configured datasource is not an image manager.",
+    noDatasourceAssociated:"No datasource has been associated with this editor.",
+    notAComponent: " is not a component or does not have items.",
+    unableLoad: "The system was unable to load ",
+    failure: "Failure.",
+    loadFormDefError: "Failed to load form definition.",
+    loadModelError: "Failed to load model.",
+    controllerError: "No controller found.",
+    notExist:" does not exist.",
+    translationSubmitted: "Translation submitted.",
+    numberPerPage: "Enter a number in show item per page.",
+    revertError: "Revert failed.",
+    legacyError: "legacy form server is no longer supported"
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "en", {
@@ -407,7 +444,11 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
     labelAddClose: "Add & Close",
     selectAll: "Select All",
     clearAll: "Clear Selection",
-    uploadLabel: "Upload"
+    uploadLabel: "Upload",
+    notification: "Notification",
+    lookUpChildError : "Unable to lookup child form callback for search: ",
+    lookUpParentError : "Unable to lookup parent context for search: "
+
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
@@ -451,6 +492,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     defaultOpen: "Default Open",
     showInNav: "Show In Nav",
     descriptorMapper: "Descriptor Mapper",
+    notification: "Notification",
+    deploymentCanceled: "Deployment items canceled.",
 
     /*Controls*/
     textArea: "Text Area",
@@ -639,11 +682,19 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabSiteConfDesc: "Defines the general site configuration",
     confTabWorkflowConf: "Workflow Configuration",
     confTabWorkflowConfDesc: "Defines workflows available in the system",
+    confCacheCleared : "Configuration cache cleared.",
 
     /* Errors */
+    error: "Error",
     errorTitle: ". Please fill every title for fields and datasources.",
     errorName: ". Please fill variable name for: ",
-    contentTypeNotFound: "Component's content type not found."
-
+    contentTypeNotFound: "Component's content type not found.",
+    failConfig: "Failed to load configuration.",
+    noConfPathError: "No configuration path is defined.",
+    clearCacheError : "Failed to clear configuration cache",
+    endpointsError: "Failed to load endpoints.",
+    jobsError : "Failed to load jobs.",
+    cancelDeploymentError: "Failed to cancel deployment.",
+    saveDateError: "Unable to save Date/Time field. Please contact your system administrator."
 
 });
