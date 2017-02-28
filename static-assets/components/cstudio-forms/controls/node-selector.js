@@ -273,7 +273,17 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                     var selectItemsCount = _self.getItemsLeftCount();
                     _self.form.setFocusedField(_self);
                     if (selectItemsCount == 0) {
-                        alert("You can't add more items, Remove one and try again.");
+                        var CMgs = CStudioAuthoring.Messages;
+                        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "message-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(langBundle, "notification"),
+                            CMgs.format(langBundle, "addMoreItemsError"),
+                            null,
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                     else{
 
@@ -484,7 +494,17 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             this.count();
             this._onChangeVal(this);
         }else{
-            alert(message);
+            var CMgs = CStudioAuthoring.Messages;
+            var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+            CStudioAuthoring.Operations.showSimpleDialog(
+                "message-dialog",
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(langBundle, "notification"),
+                message,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                "studioDialog"
+            );
         }
         this.count();
         this._onChangeVal(this);

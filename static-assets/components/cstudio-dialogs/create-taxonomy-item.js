@@ -158,8 +158,18 @@ CStudioAuthoring.Dialogs.DialogCreateTaxonomy = CStudioAuthoring.Dialogs.DialogC
 				args.self.onSaveCallback.success();
 			},
 			failure: function(response) {
-				alert(response);
-				CStudioAuthoring.Dialogs.DialogCreateTaxonomy.closeDialog();
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "taxonomy-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Notification",
+                    response,
+                    [{ text: "OK",  handler:function(){
+                        this.hide();
+                        CStudioAuthoring.Dialogs.DialogCreateTaxonomy.closeDialog();
+                    }, isDefault:false }],
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
 			}
 		};
 		

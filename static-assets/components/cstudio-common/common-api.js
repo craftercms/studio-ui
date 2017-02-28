@@ -1319,7 +1319,15 @@ var nodeOpen = false;
              * this method is maintained for backward compatability and for extremely complex use cases
              */
             openContentWebFormLegacyFormServer: function(formId, id, noderef, path, edit, asPopup, callback, readOnly,auxParams,includeMetaData) {
-                alert("legacy form server no longer supported");
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "error-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(formsLangBundle, "notification"),
+                    CMgs.format(formsLangBundle, "legacyFormNoSupported"),
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_INFO,
+                    "studioDialog"
+                );
             },
 
             addMetadata: function(params) {
@@ -1623,7 +1631,15 @@ var nodeOpen = false;
 
                             },
                             failure:function() {
-                                alert("Unable to load contents. Please close the dialogue window and try again.");
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "error-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(formsLangBundle, "notification"),
+                                    CMgs.format(formsLangBundle, "loadContentsError"),
+                                    null, // use default button
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             }
                         };
                         // Call to get the dialog contents
@@ -2162,7 +2178,15 @@ var nodeOpen = false;
                 var callback = {
                     success: function(contentTypes) {
                         if (contentTypes.types.length == 0) {
-                            alert("no taxonomy types available for [" + site + ":" + path + "]");
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "taxonomy-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(formsLangBundle, "notification"),
+                                CMgs.format(formsLangBundle, "taxonomyError") + " [" + site + ":" + path + "]",
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
                         }
                         //else if (contentTypes.types.length == 1) {
                         // fill in this case
@@ -2658,7 +2682,16 @@ var nodeOpen = false;
              * get domain name
              */
             getDomainName: function(site) {
-                alert("Service.getDomainName depricated");
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "info-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(formsLangBundle, "notification"),
+                    CMgs.format(formsLangBundle, "getDomainNameError"),
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_INFO,
+                    "studioDialog"
+                );
+
             },
 
             /**
@@ -3193,8 +3226,18 @@ var nodeOpen = false;
                         //window.location.reload();
                     },
                     failure: function(response) {
-                        alert("Error changing Content Type");
-                        changeContentTypeCb.failure();
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "changeContTypeError-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(formsLangBundle, "notification"),
+                            CMgs.format(formsLangBundle, "changeContTypeError"),
+                            [{ text: "OK",  handler:function(){
+                                this.hide();
+                                changeContentTypeCb.failure();
+                            }, isDefault:false }],
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                 };
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback);
@@ -3348,8 +3391,18 @@ var nodeOpen = false;
                     },
                     failure: function(response) {
                         var errorResponse = eval("(" + response.responseText + ")");
-                        alert(errorResponse.error);
-                        callback.failure(response);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "pasteContentFromClipboardError-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(formsLangBundle, "notification"),
+                            errorResponse.error,
+                            [{ text: "OK",  handler:function(){
+                                this.hide();
+                                callback.failure(response);
+                            }, isDefault:false }],
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                 };
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
@@ -4450,8 +4503,18 @@ var nodeOpen = false;
              * return all taxonomies
              */
             getTaxonomies: function(site, callback) {
-                alert("NOT IMPLEMENTED");
-                callback.failure();
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "notImplemented-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(formsLangBundle, "notification"),
+                    CMgs.format(formsLangBundle, "notImplemented"),
+                    [{ text: "OK",  handler:function(){
+                        this.hide();
+                        callback.failure();
+                    }, isDefault:false }],
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             },
 
             /**
@@ -4708,7 +4771,6 @@ var nodeOpen = false;
                         callback.success(results);
                     },
                     failure: function(response) {
-                        //alert(response.responseText);
                         callback.failure(response);
                     }
                 };
@@ -5909,30 +5971,14 @@ var nodeOpen = false;
                     var inputTime = parseTimeString(this.value);
 
                     if(inputTime == undefined) {
-                        alert('( '+this.value+' ) is not a valid time format, please provide a valid time');
-                        Dom.get(targetElement).value = "";
-                        var oTimeIncBtn = Dom.get('timeIncrementButton');
-                        if (!isShiftPlusTabPressed && isTabPressed && oTimeIncBtn) {
-                            oTimeIncBtn.focus();
-                            isTabPressed = false;
-                        } else {
-                            var oDatePicker = Dom.get('datepicker');
-                            if (isShiftPlusTabPressed && oDatePicker) {
-                                oDatePicker.focus();
-                                isShiftPlusTabPressed = false;
-                            }
-                        }
-                        return;
-                    } else {
-                        var finalTimeFormat = inputTime.split("~");
-                        var timeStamp = setTimeStamp(new Date(finalTimeFormat[0]), finalTimeFormat[1]);
-                        //Check for 12 hours format time
-                        var timeSplit = timeStamp.split(":");
-                        if (timeSplit.length == 3) {
-                            var hours = parseInt(timeSplit[0], 10);
-                            if (hours == 0 || hours > 12) {
-                                alert('( '+this.value+' ) is not a valid time format, please provide a valid time');
-                                Dom.get("timepicker").focus();
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "timeFormatError-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(formsLangBundle, "notification"),
+                            '( '+this.value+' ) ' + CMgs.format(formsLangBundle, "timeFormatError"),
+                            [{ text: "OK",  handler:function(){
+                                this.hide();
+                                Dom.get(targetElement).value = "";
                                 var oTimeIncBtn = Dom.get('timeIncrementButton');
                                 if (!isShiftPlusTabPressed && isTabPressed && oTimeIncBtn) {
                                     oTimeIncBtn.focus();
@@ -5945,6 +5991,42 @@ var nodeOpen = false;
                                     }
                                 }
                                 return;
+                            }, isDefault:false }],
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
+                    } else {
+                        var finalTimeFormat = inputTime.split("~");
+                        var timeStamp = setTimeStamp(new Date(finalTimeFormat[0]), finalTimeFormat[1]);
+                        //Check for 12 hours format time
+                        var timeSplit = timeStamp.split(":");
+                        if (timeSplit.length == 3) {
+                            var hours = parseInt(timeSplit[0], 10);
+                            if (hours == 0 || hours > 12) {
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "timeFormatError-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(formsLangBundle, "notification"),
+                                    '( '+this.value+' ) ' + CMgs.format(formsLangBundle, "timeFormatError"),
+                                    [{ text: "OK",  handler:function(){
+                                        this.hide();
+                                        Dom.get("timepicker").focus();
+                                        var oTimeIncBtn = Dom.get('timeIncrementButton');
+                                        if (!isShiftPlusTabPressed && isTabPressed && oTimeIncBtn) {
+                                            oTimeIncBtn.focus();
+                                            isTabPressed = false;
+                                        } else {
+                                            var oDatePicker = Dom.get('datepicker');
+                                            if (isShiftPlusTabPressed && oDatePicker) {
+                                                oDatePicker.focus();
+                                                isShiftPlusTabPressed = false;
+                                            }
+                                        }
+                                        return;
+                                    }, isDefault:false }],
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             }
                         }
                         //set the value
@@ -6813,7 +6895,17 @@ var nodeOpen = false;
                     try {
                         this.ls.setItem(key, value);
                     } catch (e) {
-                        if (e == QUOTA_EXCEEDED_ERR) alert('Your local Storage Quota exeeded.');
+                        if (e == QUOTA_EXCEEDED_ERR){
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "error-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(formsLangBundle, "notification"),
+                                CMgs.format(formsLangBundle, "localStoreExceeded"),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
+                        }
                         this.write(key, value, hours);
                     }
                 } else {
@@ -7173,7 +7265,15 @@ var nodeOpen = false;
                             // this message shows up on the dashboard because the cookie does not get erased.  
                             // The basic assumption here is preview is not rooted below authoring url
                             YAHOO.lang.later(2000, this, function() {
-                                alert("Preview Loaded");
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "previewLoaded-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(formsLangBundle, "notification"),
+                                    CMgs.format(formsLangBundle, "previewLoaded"),
+                                    null, // use default button
+                                    YAHOO.widget.SimpleDialog.ICON_INFO,
+                                    "studioDialog"
+                                );
                             });
                         }
 

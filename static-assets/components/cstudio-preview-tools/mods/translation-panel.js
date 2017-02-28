@@ -104,7 +104,17 @@ CStudioAuthoring.TranslationPanel = CStudioAuthoring.TranslationPanel || {
 
 							CStudioAuthoring.Service.createWorkflowJobs(createWorkflowRequest, {
 								success: function() {
-									alert("Translation submitted");
+                                    var CMgs = CStudioAuthoring.Messages;
+                                    var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "translationSubmitted-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(langBundle, "notification"),
+                                        CMgs.format(langBundle, "translationSubmitted"),
+                                        null,
+                                        YAHOO.widget.SimpleDialog.ICON_INFO,
+                                        "success studioDialog"
+                                    );
 								},
 
 								failure: function() {

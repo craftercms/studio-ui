@@ -159,7 +159,15 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
                 }
             },
             failure: function() {
-                alert("Failed to load endpoints");
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "cacheError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, "notification"),
+                    CMgs.format(langBundle, "endpointsError"),
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             },
             self: this
         };
@@ -360,7 +368,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
 	},
 
     cancelDeployment: function() {
-        alert("BRLE!");
         var items = document.getElementsByClassName('act');
 
         for(var idx=0; idx<items.length; idx++) {
@@ -377,12 +384,33 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
 
             cb = {
                 success:function() {
-                    alert("Deployment items canceled");
-                    CStudioAdminConsole.Tool.DeploymentTools.prototype.renderQueueTable();
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "deployment-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "deploymentCanceled"),
+                        [{ text: "OK",  handler:function(){
+                            this.hide();
+                            CStudioAdminConsole.Tool.DeploymentTools.prototype.renderQueueTable();
+                        }, isDefault:false }],
+                        YAHOO.widget.SimpleDialog.ICON_INFO,
+                        "success studioDialog"
+                    );
                 },
                 failure: function() {
-                    alert("Failed to cancel deployment");
-                    CStudioAdminConsole.Tool.DeploymentTools.prototype.renderQueueTable();
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "deploymentError-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "cancelDeploymentError"),
+                        [{ text: "OK",  handler:function(){
+                            this.hide();
+                            CStudioAdminConsole.Tool.DeploymentTools.prototype.renderQueueTable();
+                        }, isDefault:false }],
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
+
                 }
             };
 
@@ -432,7 +460,15 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
                 }
             },
             failure: function() {
-                alert("Failed to load jobs");
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "jobsError-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, "notification"),
+                    CMgs.format(langBundle, "jobsError"),
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
             },
             self: this
         };

@@ -115,7 +115,10 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
 
     variableLabel: "Ejemplos de Código de Plantilla",
 
-    networkError: "Error de red. Ciertas funcionalidades pueden no estar disponibles."
+    networkError: "Error de red. Ciertas funcionalidades pueden no estar disponibles.",
+
+    notification: "Notificación",
+    noEventError: "No se ha asociado ningún controlador de eventos."
 
 });
 
@@ -229,7 +232,15 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     statusDisabled: "Deshabilitado",
     wcmContentSubmit: "Solicitud de Publicación",
     wcmContentApprove: "Aprobar y Publicar",
-    wcmContentDependencies: "View Dependencies"
+
+    wcmContentDependencies: "View Dependencies",
+
+    notification: "Notificación",
+    previewInitiated: "Sincronización del servidor de previsualización iniciado.",
+
+    lookUpItemError: "No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.",
+    pathSameError: "Las rutas de origen y destino son las mismas.",
+    pageExistError: "Página ya existe en el destino."
 
 });
 
@@ -262,6 +273,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     viewSample: "Ver Ejemplo",
     hideSample: "Esconder Ejemplo",
     continueEditing: "Continuar Editando",
+    notification: "Notificación",
+    previewLoaded : "Vista previa cargada.",
 
     copy: "Copiar",
     copyDescription: "Por favor seleccione las subpaginas que le gustaria copar.<br/> Al pegar, se conservarán las sub-páginas seleccionadas y su jerarquía posicional.",
@@ -368,7 +381,33 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     setStatedDialogSetStates: "Establezca Estados",
     setStatedDialogSystemProcessing: "Procesamiento de Sistema",
 
-    currentPage: "Página Actual"
+    currentPage: "Página Actual",
+
+    /*Error*/
+    legacyFormNoSupported: "Servidor de formulario heredado ya no es soportado.",
+    loadContentsError: "No se puede cargar contenido. Por favor, cierre la ventana de diálogo e inténtelo de nuevo.",
+    taxonomyError: "No hay tipos de taxonomía disponibles para",
+    getDomainNameError: "Service.getDomainName obsoleto.",
+    changeContTypeError: "Error al cambiar el tipo de contenido.",
+    notImplemented: "No esta implementado.",
+    timeFormatError: "No es un formato de hora válido, proporcione un tiempo válido.",
+    localStoreExceeded: "Se sobrepasó la cuota de almacenamiento local.",
+    invalidFormat: "No es un formato de hora válido, proporcione un tiempo válido.",
+    addMoreItemsError: "No puede agregar más elementos, Quite uno e inténtelo de nuevo.",
+    imgReq: "Se requiere descripción de la imagen.",
+    datasourceNotImageManager: "El origen de datos configurado no es un gestor de imágenes.",
+    noDatasourceAssociated:"No se ha asociado ninguna fuente de datos con este editor.",
+    notAComponent: " no es un componente o no tiene elementos.",
+    unableLoad: "El sistema no pudo cargar ",
+    failure: "Fallo.",
+    loadFormDefError: "Error al cargar la definición del formulario.",
+    loadModelError: "Error al cargar el modelo.",
+    controllerError: "No se encontró ningún controlador.",
+    notExist:" no existe.",
+    translationSubmitted: "Traducción presentada.",
+    numberPerPage: "Introduzca un número en el elemento de muestra por página.",
+    revertError: "Error al revertir.",
+    legacyError: "El servidor de formulario heredado ya no es compatible."
 
 });
 
@@ -401,7 +440,10 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
     labelAddClose: "Agregar & Cerrar",
     selectAll: "Seleccionar Todo",
     clearAll: "Limpiar Selección",
-    uploadLabel: "Subir"
+    uploadLabel: "Subir",
+    notification: "Notificación",
+    lookUpChildError : "No puede buscar la devolución de llamada del formulario secundario para la búsqueda: ",
+    lookUpParentError : "No puede buscar el contexto del padre para la búsqueda: "
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
@@ -444,6 +486,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     defaultOpen: "Abrir por Defecto",
     showInNav: "Mostrar en Navegación",
     descriptorMapper: "Descriptor del Mapeo",
+    notification: "Notificación",
+    deploymentCanceled: "Elementos de implementación cancelados.",
 
     /*Controls*/
     textArea: "Área de Texto",
@@ -616,9 +660,18 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabSiteConfDesc: "Define la configuración general del sitio",
     confTabWorkflowConf: "Configuración del Flujo de Trabajo",
     confTabWorkflowConfDesc: "Define los flujos de trabajo disponibles en el sistema",
+    confCacheCleared : "Se ha eliminado el caché de configuración.",
 
     /* Errors */
+    error: "Error",
     errorTitle: ". Rellene todos los títulos de los campos y fuentes de datos.",
     errorName: ". Por favor, rellene el nombre de variable para: ",
-    contentTypeNotFound: "El content type del componente no fue encontrado."
+    contentTypeNotFound: "El content type del componente no fue encontrado.",
+    failConfig: "La configuracioón no pudo ser cargada.",
+    noConfPathError: "No se ha definido ninguna ruta de configuración",
+    clearCacheError : "Error al borrar la caché de configuración.",
+    endpointsError: "Error al cargar los puntos finales.",
+    jobsError : "Error al cargar trabajos.",
+    cancelDeploymentError: "Error al cancelar la implementación.",
+    saveDateError: "No se puede guardar el campo Fecha / Hora. Por favor, póngase en contacto con el administrador del sistema."
 });

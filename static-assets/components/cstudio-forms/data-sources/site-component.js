@@ -18,6 +18,8 @@ function(id, form, properties, constraints)  {
 					var idContent = JSON.parse(context.responseText);
 					var url = property.value;
 					var getItemServiceUrl = this.getItemServiceUrl + "?url=" + url + "&contextId=" + idContent.id;
+                    var CMgs = CStudioAuthoring.Messages;
+                    var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
 
 					var getItemCallBack = {
 						success: function(response) {
@@ -25,7 +27,15 @@ function(id, form, properties, constraints)  {
 							var res = response.responseText || "null";
 							var config = YAHOO.lang.JSON.parse(res).descriptorDom;
 							if (config.component == undefined || config.component.items == undefined || config.component.items.item == undefined) {
-								alert(property.value + " is not a component or does not have items.");
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "notAComponent-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(langBundle, "notification"),
+                                    property.value + CMgs.format(langBundle, "notAComponent"),
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
 							} else {
 								var items = config.component.items.item;
 								if (items.length == undefined) {
@@ -39,7 +49,15 @@ function(id, form, properties, constraints)  {
 							}
 						},
 						failure: function() {
-							alert("The system was unable to load " + property.value + ".");
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "unableLoad-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, "notification"),
+                                CMgs.format(langBundle, "unableLoad") + property.value + ".",
+                                null,
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
 						}
 					}; // end of getItemCallBack
 

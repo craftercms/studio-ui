@@ -47,8 +47,18 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 								var dateValue = Dom.get('datepicker').value;
 								var timeValue = Dom.get('timepicker').value;
 								if ((dateValue == 'Date...') || (timeValue == 'Time...') || (timeValue == '')) {
-									alert('Please provide a date and/or time');
-									return;
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "daterrror-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        "Notification",
+                                        'Please provide a date and/or time',
+                                        [{ text: "OK",  handler:function(){
+                                            this.hide();
+                                            return;
+                                        }, isDefault:false }],
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog"
+                                    );
 								}
 								var scheduledDate = this.getScheduledDateTimeForJson(dateValue, timeValue);
 								// insert date in GoLiveItems.dependencyJsonObj
@@ -80,11 +90,29 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 											YDom.get("golivesubmitButton").disabled = false;
 											YDom.get("golivecancelButton").disabled = false;
 											if (oResponse.status == -1) {
-												alert('Schedule To Go Live is taking longer. The icon status will be updated once the content scheduled to Go Live.');
-												self.dialog.hide();
-												CStudioAuthoring.Operations.pageReload();
+                                                CStudioAuthoring.Operations.showSimpleDialog(
+                                                    "scheduleError-dialog",
+                                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                    "Notification",
+                                                    'Schedule To Go Live is taking longer. The icon status will be updated once the content scheduled to Go Live.',
+                                                    [{ text: "OK",  handler:function(){
+                                                        this.hide();
+                                                        self.dialog.hide();
+                                                        CStudioAuthoring.Operations.pageReload();
+                                                    }, isDefault:false }],
+                                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                    "studioDialog"
+                                                );
 											} else {
-												alert('Schedule To Go Live Call Failed' + oResponse.statusText);
+                                                CStudioAuthoring.Operations.showSimpleDialog(
+                                                    "error-dialog",
+                                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                    "Notification",
+                                                    'Schedule To Go Live Call Failed ' + oResponse.statusText,
+                                                    null,
+                                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                    "studioDialog"
+                                                );
 											}
 										},
 										timeout: CStudioAuthoring.Request.Timeout.GoLiveTimeout
@@ -110,7 +138,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 										serviceCallback, 
 										jsonSubmitString);
 							} else {
-								alert('no items selected');
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "itemsSelectedError-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "Notification",
+                                    "No items selected.",
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
 							}
 						};
 						
@@ -394,7 +430,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 									},
 									failure: function (o) {
 										self.pageRedirect(o);
-										alert(o.statusText);
+                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                            "error-dialog",
+                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                            "Notification",
+                                            o.statusText,
+                                            null,
+                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                            "studioDialog"
+                                        );
 									}    
 								};
 						
@@ -406,7 +450,15 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 								YConnect.asyncRequest('POST', dependencyUrl, serviceCallback, xmlString);
 								
 							} else {
-								alert('No items selected');
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "itemsSelectedError-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "Notification",
+                                    "No items selected.",
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
 							}
 						};
 						

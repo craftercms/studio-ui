@@ -314,8 +314,20 @@ CStudioSearch.executeSearch = function() {
 	
 	var ipp = document.getElementById('cstudio-wcm-search-item-per-page-textbox').value;
 	if (ipp && ipp != '' && isNaN(parseInt(ipp))) {
-		alert("Enter a number in show item per page");
-		return;
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+        CStudioAuthoring.Operations.showSimpleDialog(
+            "numberPerPage-dialog",
+            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+            CMgs.format(langBundle, "notification"),
+            CMgs.format(langBundle, "numberPerPage"),
+            [{ text: "OK",  handler:function(){
+                this.hide();
+                return;
+            }, isDefault:false }],
+            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+            "studioDialog"
+        );
 	}
 	
 	CStudioSearch.updateSearchContextWithBaseOptions();

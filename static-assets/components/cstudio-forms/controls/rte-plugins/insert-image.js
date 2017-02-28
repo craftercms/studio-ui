@@ -34,6 +34,8 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
 
                         // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceExample');
                         ed.addCommand('mceInsertManagedImage', function(param, datasource) {
+                            var CMgs = CStudioAuthoring.Messages;
+                            var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
                             var actualCaretPositionBookmark = ed.selection.getBookmark();
                         	if(datasource) {
                         		if(datasource.insertImageAction) {
@@ -62,16 +64,40 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
 
 	                        			},
 	                        			failure: function(message) {
-	                        				alert(message);
+                                            CStudioAuthoring.Operations.showSimpleDialog(
+                                                "message-dialog",
+                                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                                CMgs.format(langBundle, "notification"),
+                                                message,
+                                                null,
+                                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                                "studioDialog"
+                                            );
 	                        			}
 	                        		});
                         		}
                         		else {
-                        		    alert("The configured datasource is not an image manager");
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "message-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(langBundle, "notification"),
+                                        CMgs.format(langBundle, "datasourceNotImageManager"),
+                                        null,
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog"
+                                    );
                         		}
                         	}
                         	else {
-                        		alert("No datasource has been associated with this editor");
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "message-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(langBundle, "notification"),
+                                    CMgs.format(langBundle, "noDatasourceAssociated"),
+                                    null,
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                         	}
                         });
 

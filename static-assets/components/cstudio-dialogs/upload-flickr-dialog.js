@@ -198,7 +198,15 @@ CStudioAuthoring.Dialogs.UploadFlickrDialog = CStudioAuthoring.Dialogs.UploadFli
 					for(var i=0; i < r.errors.length; i++){
 						errorString += r.errors[i];
 					}
-					alert(errorString);
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "error-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        "Notification",
+                        errorString,
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}else{
 					CStudioAuthoring.Dialogs.UploadDialog.closeDialog();				
 					args.self.callback.success(r);
@@ -230,7 +238,15 @@ CStudioAuthoring.Dialogs.UploadFlickrDialog = CStudioAuthoring.Dialogs.UploadFli
 							for(var i=0; i < r.errors.length; i++){
 								errorString += r.errors[i];
 							}
-							alert(errorString);
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "error-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                "Notification",
+                                errorString,
+                                null,
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
 						}else{
 							CStudioAuthoring.Dialogs.UploadDialog.closeDialog();				
 						    args.self.callback.success(r);
