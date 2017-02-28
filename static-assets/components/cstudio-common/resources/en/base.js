@@ -83,6 +83,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
     dashletIconGuideStateSystemProcessing: "Processing",
     dashletIconGuideStateLocked: "Locked for edit"
 
+
 });
 
 CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
@@ -91,6 +92,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     wcmContentEdit: "Edit",
     wcmContentView: "View",
     wcmContentSubmit: "Request Publish",
+    wcmContentDependencies: "View Dependencies",
     wcmContentDelete: "Delete",
     wcmContentSubmitDelete: "Request Delete",
     wcmContentReject: "Reject",
@@ -237,7 +239,9 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
 
     lookUpItemError: "Unable to look up item. Please contact your system administrator.",
     pathSameError: "Source and destination path are same.",
-    pageExistError: "Page already exist at the destination."
+    pageExistError: "Page already exist at the destination.",
+    wcmContentDependencies: "View Dependencies",
+    wcmContentApprove: "Approve & Publish"
 
 });
 
@@ -335,6 +339,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     approveDialogTitle: "Approve for Publish",
     approveDialogSubTitle: "The following checked items will go live.",
+    dependenciesDialogTitle: "Dependencies",
+    dependenciesDialogSubTitle: "Dependencies shown for:",
+    dependsOn: "Refers to this item",
+    dependsOnMe: "Is referenced by this item",
+    selectDeps: "Show content that:",
+    dependenciesDialogItem: "Item",
     approveDialogPage: "Page",
     approveDialogOriginalSchedule: "Original Schedule",
     approveDialogSubmissionComment: "Submission Comment",
@@ -494,6 +504,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     descriptorMapper: "Descriptor Mapper",
     notification: "Notification",
     deploymentCanceled: "Deployment items canceled.",
+    warning: "Warning",
+    warningBody: "Changing this value may result in broken links.",
+    warningViewDeps: "To view the possible broken elements click ",
+    warningLink: "here",
 
     /*Controls*/
     textArea: "Text Area",

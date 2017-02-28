@@ -86,6 +86,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     wcmContentEdit: "편집",
     wcmContentView: "보기",
     wcmContentSubmit: "요청 게시",
+    wcmContentDependencies: "View Dependencies",
     wcmContentDelete: "삭제",
     wcmContentSubmitDelete: "요청 삭제",
     wcmContentReject: "거부",
@@ -229,7 +230,8 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
 
     lookUpItemError: "항목을 찾을 수 없습니다. 시스템 관리자에게 문의하십시오.",
     pathSameError: "출발지와 도착지 경로가 동일 함.",
-    pageExistError: "페이지가 이미 대상에 있습니다."
+    pageExistError: "페이지가 이미 대상에 있습니다.",
+    wcmContentDependencies: "View Dependencies"
 
 });
 
@@ -307,6 +309,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 
     approveDialogTitle: "게시에 대한 승인",
     approveDialogSubTitle: "다음 선택 항목이 게재됩니다.",
+    dependenciesDialogTitle: "Dependencies",
+    dependenciesDialogSubTitle: "Dependencies shown for:",
+    dependsOn: "Depends On",
+    dependsOnMe: "Depends On Me",
+    selectDeps: "Show content that:",
+    dependenciesDialogItem: "Item",
     approveDialogPage: "페이지",
     approveDialogOriginalSchedule: "원래 일정",
     approveDialogSubmissionComment: "제출 코멘트",

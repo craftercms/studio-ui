@@ -2117,6 +2117,33 @@ treeNode.getHtml = function() {
 			                            if(isUserAllowed) {
 			                            	this.args.addItems([ menuItems.separator ]);
 			                            	this.args.addItems([ menuItems.revertOption ]);
+                                            if(oCurrentTextNode.data.contentType != "folder") {
+                                                //dependencies dialog
+                                                p_aArgs.addItems([
+                                                    {
+                                                        text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
+                                                        onclick: { fn: function(){
+                                                            var callback = {
+                                                                success: function(contentTO) {
+                                                                    var selectedContent = [];
+                                                                    selectedContent.push(contentTO.item);
+
+                                                                    CStudioAuthoring.Operations.viewDependencies(
+                                                                        CStudioAuthoringContext.site,
+                                                                        selectedContent,
+                                                                        false
+                                                                    );
+                                                                },
+                                                                failure: function() {
+
+                                                                }
+                                                            }
+
+                                                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                                        } }
+                                                    }
+                                                ]);
+                                            }
 		                   	            }
 
                                         menuId.removeChild(d);  // Remove the "Loading ..." message
@@ -2207,7 +2234,6 @@ treeNode.getHtml = function() {
                                     ]);
                                 }
                             }
-
                         },
                         failure: function() { }
                     };

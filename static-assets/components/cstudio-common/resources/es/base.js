@@ -91,6 +91,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     wcmContentEdit: "Editar",
     wcmContentView: "Ver",
     wcmContentSubmit: "Solicitud de Publicación",
+    wcmContentDependencies: "Ver Dependencias",
     wcmContentDelete: "Eliminar",
     wcmContentSubmitDelete: "Solicitud de Eliminación",
     wcmContentReject: "Rechazar",
@@ -236,7 +237,8 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
 
     lookUpItemError: "No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.",
     pathSameError: "Las rutas de origen y destino son las mismas.",
-    pageExistError: "Página ya existe en el destino."
+    pageExistError: "Página ya existe en el destino.",
+    wcmContentDependencies: "View Dependencies"
 
 });
 
@@ -332,6 +334,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 
     approveDialogTitle: "Aprobar para Publicar",
     approveDialogSubTitle: "Los siguientes elementos seleccionados estarán en vivo.",
+    dependenciesDialogTitle: "Dependencias",
+    dependenciesDialogSubTitle: "Dependencias mostradas para:",
+    dependsOn: "Depende de",
+    dependsOnMe: "Dependen de mi",
+    selectDeps: "Mostrar contenido que:",
+    dependenciesDialogItem: "Item",
     approveDialogPage: "Página",
     approveDialogOriginalSchedule: "Horario original",
     approveDialogSubmissionComment: "Comentario de envio",
@@ -421,7 +429,7 @@ CStudioAuthoring.Messages.registerBundle("search", "es", {
     resultsUnknownType: "Tipo Desconocido",
     resultsTemplate: "Plantilla",
     errSearchFailed: "Busqueda Fallida. Trate de ajustar sus filtros. Causa: Si el problema persiste contacte al administrador y consultele el siguiente error: {0}",
-    errNoResults: "Su búsqueda no produjo resultados.",
+    errNoResults: "Su búsqueda no produjo resultados."
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "es", {

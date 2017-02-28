@@ -694,6 +694,23 @@ var nodeOpen = false;
 
             },
 
+            viewDependencies: function (site, items, approveType, defaultSelection) {
+                //defaultSelection may be: 'depends-on' (default) or 'depends-on-me', 
+
+                var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on-me'
+
+                CSA.Operations._showDialogueView({
+                    fn: CSA.Service.getDependenciesView,
+                    controller: 'viewcontroller-dependencies',
+                    callback: function(dialogue) {
+                        CSA.Operations.translateContent(formsLangBundle);
+                        this.loadItems(items, dependenciesSelection);
+
+                    }
+                }, true, '800px', approveType);
+
+            },
+
             submitContent: function(site, contentItems) {
 
                 CSA.Operations._showDialogueView({
@@ -2469,6 +2486,10 @@ var nodeOpen = false;
                 CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/approve.html?site={site}', callback);
             },
 
+            getDependenciesView: function(callback) {
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/dependencies.html?site={site}', callback);
+            },
+
             getRequestPublishView: function (callback) {
                 CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/request-publish.html?site={site}', callback);
             },
@@ -3464,6 +3485,28 @@ var nodeOpen = false;
                 CStudioAuthoring.Service.request({
                     method: "POST",
                     data: data,
+                    resetFormState: true,
+                    url: CStudioAuthoringContext.baseUri + serviceUrl,
+                    callback: callback
+                });
+            },
+
+            loadDependencies: function(site, path, callback) {
+                var serviceUrl = '/api/1/services/api/1/dependency/get-simple-dependencies.json' + '?site=' + site + '&path=' + path;
+
+                CStudioAuthoring.Service.request({
+                    method: "POST",
+                    resetFormState: true,
+                    url: CStudioAuthoringContext.baseUri + serviceUrl,
+                    callback: callback
+                });
+            },
+
+            loadDependantItems: function(site, path, callback) {
+                var serviceUrl = '/api/1/services/api/1/dependency/get-dependant.json' + '?site=' + site + '&path=' + path;
+
+                CStudioAuthoring.Service.request({
+                    method: "POST",
                     resetFormState: true,
                     url: CStudioAuthoringContext.baseUri + serviceUrl,
                     callback: callback
