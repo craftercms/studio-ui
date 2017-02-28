@@ -19,7 +19,7 @@
             '<tr class="{index}">',
                 '<td style="width:3%; min-width: 270px;">{internalName}</td>',
                 '<td class="name large" title="{uri}"><div class="in">{uri}</div></td>',
-                '<td class="small" style="text-align: right;"><a href="javascript:" data-url="{uri}" class="editLink">Edit</a></td>',
+                '<td class="small" style="text-align: right;"><a href="javascript:" data-url="{uri}" class="editLink {hidden}">Edit</a></td>',
             '</tr>'
         ].join("")
     });

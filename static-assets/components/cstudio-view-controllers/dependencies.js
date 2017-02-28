@@ -161,16 +161,10 @@
 
                     $.each(item, function(index, dependency){
                         var elem = {};
-                        elem.uri = dependency.uri;     // TODO: Full path - uri
+                        elem.uri = dependency.uri;
                         elem.internalName = dependency.internalName;
                         elem.scheduledDate = '';
                         elem.index = itemDependenciesClass;
-                        // $parentRow.after(agent.get('SUBITEM_ROW', elem));
-
-                        var row = agent.get('SUBITEM_ROW', elem);
-                        row = $container.append(row);
-
-                        var editLink = $(row).find('.editLink');
 
                         if (dependency.uri.indexOf(".ftl") == -1
                             && dependency.uri.indexOf(".css") == -1
@@ -180,10 +174,13 @@
                             && dependency.uri.indexOf(".html") == -1
                             && dependency.uri.indexOf(".hbs") == -1
                             && dependency.uri.indexOf(".xml") == -1) {
-                            editLink.hide();
-                        }else{
-
+                            // editLink.hide();
+                            elem.hidden = "hidden";
                         }
+
+                        var row = agent.get('SUBITEM_ROW', elem);
+                        // var editLink = $(row).find('.editLink');
+                        row = $container.append(row);
 
                     });
 
@@ -223,8 +220,6 @@
                                     };
 
                                     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
-                                }else{
-                                    editLink.hide();
                                 }
                             },
                             failure: function () {
@@ -235,15 +230,14 @@
                 }
             }
 
-            //TODO: callback should be the same - waiting for service
             if(optionSelected == 'depends-on'){
-                CStudioAuthoring.Service.loadDependencies(
+                CStudioAuthoring.Service.loadDependantItems(
                     CStudioAuthoringContext.site,
                     item.uri,
                     depsCallback
                 );
             }else{
-                CStudioAuthoring.Service.loadDependantItems(
+                CStudioAuthoring.Service.loadDependencies(
                     CStudioAuthoringContext.site,
                     item.uri,
                     depsCallback
