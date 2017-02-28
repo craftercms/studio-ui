@@ -188,31 +188,31 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 		var contentTypeCb = {
 			success: function() {
 				var controllerContent =
-					'import scripts.libs.ExtractMetadataApi;\r\n\r\n' +
-                	'def extractMetadataParams =[:];\r\n' +
-                	'extractMetadataParams.site = site;\r\n' +
-                	'extractMetadataParams.path = path;\r\n' +
-                	'extractMetadataParams.user = user;\r\n' +
-                	'extractMetadataParams.contentType = contentType;\r\n' +
-                	'extractMetadataParams.contentXml = contentXml;\r\n' +
-                	'extractMetadataParams.applicationContext = applicationContext;\r\n\r\n' +
-                	'def extractor = new ExtractMetadataApi(extractMetadataParams);\r\n' +
-                	'extractor.execute();\r\n';
+                    'import scripts.libs.CommonLifecycleApi;\r\n\r\n' +
+                    'def contentLifecycleParams =[:];\r\n' +
+                    'contentLifecycleParams.site = site;\r\n' +
+                    'contentLifecycleParams.path = path;\r\n' +
+                    'contentLifecycleParams.user = user;\r\n' +
+                    'contentLifecycleParams.contentType = contentType;\r\n' +
+                    'contentLifecycleParams.contentLifecycleOperation = contentLifecycleOperation;\r\n' +
+                    'contentLifecycleParams.contentLoader = contentLoader;\r\n' +
+                    'contentLifecycleParams.applicationContext = applicationContext;\r\n\r\n' +
+                    'def controller = new CommonLifecycleApi(contentLifecycleParams);\r\n' +
+                    'controller.execute();\r\n';
 
 				var writeControllerCb = {
 					success: function() {
 						var extractionContent =
-							'import scripts.libs.CommonLifecycleApi;\r\n\r\n' +
-							'def contentLifecycleParams =[:];\r\n' +
-							'contentLifecycleParams.site = site;\r\n' +
-							'contentLifecycleParams.path = path;\r\n' +
-							'contentLifecycleParams.user = user;\r\n' +
-							'contentLifecycleParams.contentType = contentType;\r\n' +
-							'contentLifecycleParams.contentLifecycleOperation = contentLifecycleOperation;\r\n' +
-							'contentLifecycleParams.contentLoader = contentLoader;\r\n' +
-							'contentLifecycleParams.applicationContext = applicationContext;\r\n\r\n' +
-							'def controller = new CommonLifecycleApi(contentLifecycleParams);\r\n' +
-							'controller.execute();\r\n';
+                            'import scripts.libs.ExtractMetadataApi;\r\n\r\n' +
+                            'def extractMetadataParams =[:];\r\n' +
+                            'extractMetadataParams.site = site;\r\n' +
+                            'extractMetadataParams.path = path;\r\n' +
+                            'extractMetadataParams.user = user;\r\n' +
+                            'extractMetadataParams.contentType = contentType;\r\n' +
+                            'extractMetadataParams.contentXml = contentXml;\r\n' +
+                            'extractMetadataParams.applicationContext = applicationContext;\r\n\r\n' +
+                            'def extractor = new ExtractMetadataApi(extractMetadataParams);\r\n' +
+                            'extractor.execute();\r\n';
 
 						var writeExtractionCb = {
 							success: function() {
