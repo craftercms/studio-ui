@@ -210,7 +210,17 @@ CStudioAuthoring.StaticAssetsPanel = CStudioAuthoring.StaticAssetsPanel || {
 						if (result == 'true') {
 							CStudioAuthoring.Operations.openTemplateEditor(itemUrl, "default", onSaveCb);
 						} else {
-							alert(itemUrl + " does not exist.");
+                            var CMgs = CStudioAuthoring.Messages;
+                            var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "notExistError-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, "notification"),
+                                itemUrl + CMgs.format(langBundle, "notExist"),
+                                null,
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
 						}
 					},
 					failure: function() {

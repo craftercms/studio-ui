@@ -2255,7 +2255,15 @@ treeNode.getHtml = function() {
                             CStudioAuthoring.Clipboard.getPermissions.call({}, (oCurrentTextNode.data.uri), checkPermissionsCb);
                         },
                         failure: function () {
-                            alert("Unable to look up item. Please contact your system administrator.");
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "lookUpItemError-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(siteDropdownLangBundle, "notification"),
+                                CMgs.format(siteDropdownLangBundle, "lookUpItemError"),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
                         }
                     }, false, false);
 			},
@@ -2643,8 +2651,18 @@ treeNode.getHtml = function() {
                 //Check source and destination paths.
                 if ((Self.cutItem != null && Self.cutItem.contentElId == oCurrentTextNode.contentElId) ||
                     (Self.copiedItem != null && (Self.copiedItem.contentElId == oCurrentTextNode.contentElId) || Self.copiedItem == oCurrentTextNode.data.uri)){
-                    alert("Source and destination path are same");
-                    return false;
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "pathSameError-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(siteDropdownLangBundle, "notification"),
+                        CMgs.format(siteDropdownLangBundle, "pathSameError"),
+                        [{ text: "OK",  handler:function(){
+                            this.hide();
+                            return false;
+                        }, isDefault:false }],
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
                 }
 
                 window.pasteFlag = true;
@@ -2668,7 +2686,15 @@ treeNode.getHtml = function() {
 
                             //code below to alert user if destination node url already exist during cut/paste
                             if (errorMsgExist && errorMsg=='DESTINATION_NODE_EXIST'){
-                                alert("Page already exist at the destination");
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "pageExistError-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(siteDropdownLangBundle, "notification"),
+                                    CMgs.format(siteDropdownLangBundle, "pageExistError"),
+                                    null, // use default button
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
                             }else{
                                 Self.cutItem = null;
                                 Self.copiedItem = null;

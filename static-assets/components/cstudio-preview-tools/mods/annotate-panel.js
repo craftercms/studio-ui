@@ -120,7 +120,17 @@ CStudioAuthoring.AnnotatePanel = CStudioAuthoring.AnnotatePanel || {
 		
 		}
 		catch(err) {
-			alert(err)
+            var CMgs = CStudioAuthoring.Messages;
+            var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+            CStudioAuthoring.Operations.showSimpleDialog(
+                "err-dialog",
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(langBundle, "notification"),
+                err,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                "studioDialog"
+            );
 		}
 
 	},

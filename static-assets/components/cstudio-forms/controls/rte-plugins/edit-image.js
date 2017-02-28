@@ -6,8 +6,18 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 				var altTextEl  = document.getElementById("rteImageAltText"),
 					value = altTextEl.value.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 
-				if (!value) { 
-					alert("Image description is required.");
+				if (!value) {
+                    var CMgs = CStudioAuthoring.Messages;
+                    var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "imgReq-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "imgReq"),
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 			    }
 			    else {
 			    	imageEditor.hide();

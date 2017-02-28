@@ -27,7 +27,15 @@ CStudioAuthoring.ContextualNav.PreviewSync = CStudioAuthoring.ContextualNav.Prev
             parentFolderLinkEl.onclick = function() {
                 CStudioAuthoring.Service.previewServerSyncAll(CStudioAuthoringContext.site, {
                    success: function() {
-                      alert("Preview server synch-all initiated.");
+                       CStudioAuthoring.Operations.showSimpleDialog(
+                           "previewInitiated-dialog",
+                           CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                           CMgs.format(siteDropdownLangBundle, "notification"),
+                           CMgs.format(siteDropdownLangBundle, "previewInitiated"),
+                           null, // use default button
+                           YAHOO.widget.SimpleDialog.ICON_INFO,
+                           "success studioDialog"
+                       );
                    },
                    failure: function() {}
                 });

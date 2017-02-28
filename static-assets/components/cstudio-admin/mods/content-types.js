@@ -108,13 +108,22 @@ CStudioAuthoring.Module.requireModule(
 							var saveFn = function(){
 								var xml = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef);
 
-								var cb = { success: function () {
+								var cb = {
+                                    success: function () {
 									CStudioAdminConsole.isDirty = false;
 									CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "bottom right", "success");
 
 								},
 									failure: function () {
-										alert(CMgs.format(langBundle, "saveFailed"));
+                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                            "errorDialog-dialog",
+                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                            CMgs.format(langBundle, "notification"),
+                                            CMgs.format(langBundle, "saveFailed"),
+                                            null, // use default button
+                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                            "studioDialog"
+                                        );
 									},
 									CMgs: CMgs,
 									langBundle: langBundle
@@ -138,11 +147,27 @@ CStudioAuthoring.Module.requireModule(
 							var istemplate = _self.templateValidation(formDef);
 
 							if(validation.flagTitleError){
-								alert(CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorTitle"));
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "errorTitle-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    CMgs.format(langBundle, "notification"),
+                                    CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorTitle"),
+                                    null, // use default button
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
 							}else {
 								if (validation.idError.length > 0) {
-									alert(CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorName") + validation.idError.toString().replace(/,/g, ", "));
-								} else {
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "errorName-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(langBundle, "notification"),
+                                        CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorName") + validation.idError.toString().replace(/,/g, ", "),
+                                        null, // use default button
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog"
+                                    );
+                                } else {
 									if (!istemplate.flagTemplateError) {
 										var dialogEl = document.getElementById("errTemplates");
 										if(!dialogEl){
@@ -158,7 +183,7 @@ CStudioAuthoring.Module.requireModule(
 											dialogEl = document.getElementById("errTemplates");
 											dialogEl.dialog = dialog;
 										}
-										dialogEl.className +=(' errorDialog');
+										dialogEl.className +=(' studioDialog');
 										dialogEl.dialog.show();
 									} else {
 										saveFn();
@@ -1267,7 +1292,15 @@ CStudioAuthoring.Module.requireModule(
 					}
 				}
 				catch(err) {
-					alert(err);
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "error-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        err,
+                        null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}
 			},
 

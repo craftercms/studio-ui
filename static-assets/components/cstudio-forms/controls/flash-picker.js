@@ -162,6 +162,8 @@ YAHOO.extend(CStudioForms.Controls.FlashPicker, CStudioForms.CStudioFormField, {
 
     _addFlash: function(datasourceEl) {
         var datasource = datasourceEl;
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
         if(datasource) {
             if(datasource.insertFlashAction) {
                 var callback = {
@@ -178,7 +180,15 @@ YAHOO.extend(CStudioForms.Controls.FlashPicker, CStudioForms.CStudioFormField, {
                         }
 
                         if (! valid) {
-                            alert(message);
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "message-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, "notification"),
+                                message,
+                                null,
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
                             this.flashPicker.deleteFlash();
                         } else {
                             this.flashPicker.previewEl.src = flashData.previewUrl;
@@ -197,7 +207,15 @@ YAHOO.extend(CStudioForms.Controls.FlashPicker, CStudioForms.CStudioFormField, {
                         }
                     },
                     failure: function(message) {
-                        alert(message);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "message-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(langBundle, "notification"),
+                            message,
+                            null,
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                 };
                 callback.flashPicker = this;

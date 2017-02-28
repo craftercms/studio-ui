@@ -335,18 +335,43 @@
                             //TODO PUT THIS BACK
                             //alert("no success callback provided for seach: " + searchId);
                         }
+
+                        window.close();
+                        $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+
                     }
                     else {
-                        alert("unable to lookup child form callback for search:" + searchId);
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                            "lookUpChildError-dialog",
+                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                            CMgs.format(browseLangBundle, "notification"),
+                            CMgs.format(browseLangBundle, "lookUpChildError") + searchId,
+                            [{ text: "OK",  handler:function(){
+                                this.hide();
+                                window.close();
+                                $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+                            }, isDefault:false }],
+                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                            "studioDialog"
+                        );
                     }
                 }
                 else {
-                    alert("unable to lookup parent context for search:" + searchId);
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "lookUpParentError-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(browseLangBundle, "notification"),
+                        CMgs.format(browseLangBundle, "lookUpParentError") + searchId,
+                        [{ text: "OK",  handler:function(){
+                            this.hide();
+                            window.close();
+                            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+                        }, isDefault:false }],
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
                 }
             }
-
-            window.close();
-            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
         }
         else {
             // no window opening context or cross server call

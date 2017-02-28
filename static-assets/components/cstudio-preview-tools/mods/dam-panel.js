@@ -22,6 +22,8 @@ CStudioAuthoring.Module.requireModule(
 		dcWrapperClass = "cstudio-component-ice",
 		dcContainerClass = "cstudio-component-zone",
 		componentsUpdated = false,
+        CMgs = CStudioAuthoring.Messages,
+        langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang),
 		copyStyles = ['border-collapse', 'border-spacing', 'caption-side', 'color', 'direction', 'empty-cells', 
 												'font-family', 'font-size', 'font-style', 'font-weight', 'letter-spacing', 'line-height',
 												'list-style-image', 'list-style-position', 'list-style-type', 'quotes', 'text-align', 
@@ -89,7 +91,15 @@ CStudioAuthoring.Module.requireModule(
 								},
 								failure: function() {
 									amplify.publish('/operation/failed');
-									alert("failed to load form definition");
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "loadFormDefError-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(langBundle, "notification"),
+                                        CMgs.format(langBundle, "loadFormDefError"),
+                                        null,
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog"
+                                    );
 								}
 							});
 				  			return;
@@ -106,7 +116,15 @@ CStudioAuthoring.Module.requireModule(
 								},
 								failure: function() {
 									amplify.publish('/operation/failed');
-									alert("failed to load form definition");
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "loadFormDefError-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(langBundle, "notification"),
+                                        CMgs.format(langBundle, "loadFormDefError"),
+                                        null,
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog"
+                                    );
 								}
 							});
 				  			return;
@@ -176,13 +194,21 @@ CStudioAuthoring.Module.requireModule(
 						"model": model, 
 						"operation": operation });
 					if (complete) {
-						amplify.publish('/dam/operation/completed');	
+						amplify.publish('/dam/operation/completed');
 					}
 				},
 				failure: function(err) {
 					// The operation must be completed if there was a failure
 					amplify.publish('/operation/failed');
-					alert("failed to load model");
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "loadModelError-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "loadModelError"),
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
 				}
 			}
 		               
