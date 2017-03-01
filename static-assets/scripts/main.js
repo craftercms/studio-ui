@@ -292,6 +292,12 @@
                 return $http.post(api('create-site'),site);
             };
 
+            this.exists = function (site) {
+                return $http.get(api('exists'), {
+                    params: { site: site.site}
+                });
+            };
+
             this.removeSite = function(site) {
                 return $http.post(api('delete-site'), {
                     siteId: site.siteId
@@ -581,6 +587,7 @@
             // View models
             $scope.site = null;
             $scope.blueprints = [];
+            $scope.isValid = false;
 
             function getBlueprints() {
                 sitesService.getAvailableBlueprints().success(function (data) {
@@ -598,6 +605,7 @@
             $scope.select = select;
             $scope.create = create;
             $scope.setSiteId = setSiteId;
+            $scope.isValidSite = isValidSite;
 
             $scope.$watch('site', getSite);
 
@@ -607,6 +615,7 @@
                 }else{
                     $scope.site.siteId = '';
                 }
+                isValidSite();
             }
 
             function percent(data) {
@@ -640,6 +649,15 @@
                 }
             }
 
+            function isValidSite() {
+                sitesService.exists({
+                    site: $scope.site.siteId
+                }).success(function (data) {
+                    $scope.isValid = data.exists;
+
+                });
+            }
+
             function create() {
                 var createModalInstance = $modal.open({
                     templateUrl: 'creatingSiteConfirmation.html',
@@ -648,6 +666,7 @@
                     size: 'sm'
                 });
                 $scope.adminModal.close();
+
                 sitesService.create({
                     siteId: $scope.site.siteId,
                     siteName: $scope.site.siteName,
