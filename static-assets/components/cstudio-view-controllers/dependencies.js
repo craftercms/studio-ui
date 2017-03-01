@@ -166,11 +166,6 @@
                         elem.scheduledDate = '';
                         elem.index = itemDependenciesClass;
 
-                        var row = agent.get('SUBITEM_ROW', elem);
-                        row = $container.append(row);
-
-                        var editLink = $(row).find('.editLink');
-
                         if (dependency.uri.indexOf(".ftl") == -1
                             && dependency.uri.indexOf(".css") == -1
                             && dependency.uri.indexOf(".js") == -1
@@ -179,8 +174,13 @@
                             && dependency.uri.indexOf(".html") == -1
                             && dependency.uri.indexOf(".hbs") == -1
                             && dependency.uri.indexOf(".xml") == -1) {
-                            editLink.hide();
+                            // editLink.hide();
+                            elem.hidden = "hidden";
                         }
+
+                        var row = agent.get('SUBITEM_ROW', elem);
+                        // var editLink = $(row).find('.editLink');
+                        row = $container.append(row);
 
                     });
 
@@ -220,8 +220,6 @@
                                     };
 
                                     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
-                                }else{
-                                    editLink.hide();
                                 }
                             },
                             failure: function () {
