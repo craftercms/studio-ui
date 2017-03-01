@@ -20,20 +20,19 @@
         </div>
 
         <div class="form-group">
-            <label for="name">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label>
-            <input id="siteId" name="siteId" ng-change="site.siteExists = false" type="text" class="form-control" ng-model="site.siteId" required/>
+            <label for="siteId">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label>
+            <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" ng-change="isValidSite()" required/>
 
             <div class="error-container"
-                 ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
+                 ng-show="(createNameForm.siteId.$dirty && createNameForm.siteId.$invalid) || (createNameForm.siteId.$touched && createNameForm.siteId.$invalid)">
                 <small class="error"
-                       ng-show="createNameForm.name.$error.required">
+                       ng-show="createNameForm.siteId.$error.required">
                     {{ 'dashboard.sites.create.SITE_ID' | translate }} is required.
                 </small>
             </div>
-            <div class="error-container"
-                 ng-show="site.siteExists">
-                <small class="error ng-binding">
-                    There is an existing site with the same id.
+            <div class="error-container" ng-show="isValid">
+                <small class="error">
+                    {{ 'dashboard.sites.create.SITE_ID' | translate }} already exist.
                 </small>
             </div>
         </div>
@@ -55,7 +54,7 @@
 
         <div class="form-group">
             <button class="btn btn-primary text-capitalize"
-                    ng-click="create()" ng-disabled="createNameForm.$invalid">
+                    ng-click="create()" ng-disabled="createNameForm.$invalid || isValid">
                 {{ 'common.CREATE' | translate }}
             </button>
             <button ng-click="adminModal.close()" class="btn btn-default">

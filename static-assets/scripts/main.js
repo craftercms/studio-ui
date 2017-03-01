@@ -333,6 +333,12 @@
                 return $http.post(api('create-site'),site);
             };
 
+            this.exists = function (site) {
+                return $http.get(api('exists'), {
+                    params: { site: site.site}
+                });
+            };
+
             this.removeSite = function(site) {
                 return $http.post(api('delete-site'), {
                     siteId: site.siteId
@@ -632,6 +638,7 @@
             // View models
             $scope.site = null;
             $scope.blueprints = [];
+            $scope.isValid = false;
 
             function getBlueprints() {
                 sitesService.getAvailableBlueprints().success(function (data) {
@@ -649,6 +656,7 @@
             $scope.select = select;
             $scope.create = create;
             $scope.setSiteId = setSiteId;
+            $scope.isValidSite = isValidSite;
 
             $scope.$watch('site', getSite);
 
@@ -658,6 +666,7 @@
                 }else{
                     $scope.site.siteId = '';
                 }
+                isValidSite();
             }
 
             function percent(data) {
@@ -691,57 +700,38 @@
                 }
             }
 
-            $scope.siteExists = function(siteId) {
-                var exists = false;
+            function isValidSite() {
+                sitesService.exists({
+                    site: $scope.site.siteId
+                }).success(function (data) {
+                    $scope.isValid = data.exists;
 
-                if (!$scope.sites) {
-                    return false;
-                }
-
-                for (var i = 0,
-                         sites = $scope.sites,
-                         site = sites[i],
-                         l = sites.length;
-                     i < l;
-                     site = sites[++i]) {
-                    if ((site.siteId + '') === (siteId + '')) {
-                        exists = true;
-                    }
-                }
-
-                return exists;
+                });
             }
 
             function create() {
-                var siteExists = $scope.siteExists($scope.site.siteId);
+                var createModalInstance = $modal.open({
+                    templateUrl: 'creatingSiteConfirmation.html',
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'sm'
+                });
+                $scope.adminModal.close();
+                sitesService.create({
+                    siteId: $scope.site.siteId,
+                    siteName: $scope.site.siteName,
+                    blueprintName: $scope.site.blueprint.id,
+                    description: $scope.site.description
+                }).success(function (data) {
+                    $timeout(function () {
+                        sitesService.editSite($scope.site);
+                        createModalInstance.close();
+                    }, 12000, false);
 
-                if(!siteExists) {
-                    var createModalInstance = $modal.open({
-                        templateUrl: 'creatingSiteConfirmation.html',
-                        backdrop: 'static',
-                        keyboard: false,
-                        size: 'sm'
-                    });
-                    $scope.adminModal.close();
-
-                    sitesService.create({
-                        siteId: $scope.site.siteId,
-                        siteName: $scope.site.siteName,
-                        blueprintName: $scope.site.blueprint.id,
-                        description: $scope.site.description
-                    }).success(function (data) {
-                        $timeout(function () {
-                            sitesService.editSite($scope.site);
-                            createModalInstance.close();
-                        }, 12000, false);
-
-                    });
-                }else{
-                    $scope.site.siteExists = true;
-                    console.log('site already exists');
-                }
+                });
 
             }
+
         }
     ]);
 
