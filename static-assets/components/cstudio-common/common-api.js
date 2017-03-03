@@ -3450,7 +3450,9 @@ var nodeOpen = false;
 
             syncFromRepo: function(site, callback){
                 var serviceUrl = this.syncRepoServiceUrl;
-                var postData = "site_id=" + site;
+                var postData = {
+                    "site_id": site
+                };
 
                 var serviceCallback = {
                     success: function(jsonResponse) {
@@ -3466,7 +3468,9 @@ var nodeOpen = false;
                     }
                 };
 
-                YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, postData);
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(postData));
             },
             /**
              * crop image
