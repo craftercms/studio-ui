@@ -1310,6 +1310,7 @@ CStudioAuthoring.Module.requireModule(
 				this.createRowFn(CMgs.format(langBundle, "description"), "description", item.description, "", "string", sheetEl,  function(e, el) { item.description = el.value; });
 				this.createRowFn(CMgs.format(langBundle, "objectType"), "objectType", item.objectType, "", "readonly", sheetEl,  function(e, el) { item.objectType = el.value; });
 				this.createRowFn(CMgs.format(langBundle, "contentType"), "content-type", item.contentType, "", "readonly", sheetEl,  function(e, el) { item["content-type"] = el.value; });
+				this.createRowFn("Config", "config", "config.xml", item.contentType, "config", sheetEl,  function(e, el) {});
 
 				for(var i=0; i<item.properties.length; i++) {
 					var property = item.properties[i];
@@ -1356,7 +1357,9 @@ CStudioAuthoring.Module.requireModule(
 					}else{
 						propertyLabel = property.label;
 					}
-					this.createRowFn(CMgs.format(langBundle,propertyLabel) , property.name, value,  item.defaultValue, property.type,  sheetEl,   function(e, el) { updatePropertyFn(el.fieldName, el.value); });
+					this.createRowFn(CMgs.format(langBundle,propertyLabel) , property.name, value,  item.defaultValue, property.type,  sheetEl,   function(e, el) {
+						updatePropertyFn(el.fieldName, el.value);
+					});
 				}
 
 			},
@@ -1659,12 +1662,12 @@ CStudioAuthoring.Module.requireModule(
 				YAHOO.util.Dom.addClass(labelEl, "property-label");
 				labelEl.innerHTML = label;
 				propertyContainerEl.appendChild(labelEl);
-
+				
 				var propTypeCb = {
 					moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
 						try {
 							var propControl = new moduleClass(fName, propertyContainerEl, this.self.form, type);
-							propControl.render(value, fn, fName, itemId);
+							propControl.render(value, fn, fName, itemId, defaultValue);
 						}
 						catch (e) {
 						}
