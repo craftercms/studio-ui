@@ -726,7 +726,7 @@
                     $timeout(function () {
                         sitesService.editSite($scope.site);
                         createModalInstance.close();
-                    }, 12000, false);
+                    }, 3000, false);
 
                 });
 
