@@ -29,32 +29,30 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <!--<div class="col-sm-6">
+
             <h2>Change Password</h2>
-            <div class="form well">
+            <form class="form well">
                 <div class="form-group">
                     <label for="current">Current Password</label>
-                    <input class="form-control" type="password" id="current" ng-model="data.original"/>
+                    <input class="form-control" type="password" id="current" ng-model="data.current"/>
                 </div>
                 <div class="form-group">
                     <label for="password">New Password</label>
-                    <input class="form-control" type="password" id="password" ng-model="data.password"/>
+                    <input class="form-control" type="password" id="password" ng-model="data.new"/>
                 </div>
                 <div class="form-group">
                     <label for="confirm">Confirm Password</label>
                     <input class="form-control" type="password" id="confirm" ng-model="data.confirmation"/>
                 </div>
                 <div class="form-group">
-                    <div ng-if="error" class="alert alert-danger">{{error}}</div>
-                    <div ng-if="message" class="alert alert-success">{{message}}</div>
-                    <button class="btn btn-primary btn-lg" ng-click="changePassword()">
+                    <div ng-show="error" class="alert alert-danger">{{error}}</div>
+                    <div ng-show="message" class="alert alert-success">{{message}}</div>
+                    <button class="btn btn-primary" ng-click="changePassword()">
                         Submit
                     </button>
                 </div>
-            </div>
-        </div>-->
-
+            </form>
+        </div>
     </div>
 </div>
 <script type="text/ng-template" id="settingLanguajeConfirmation.html">

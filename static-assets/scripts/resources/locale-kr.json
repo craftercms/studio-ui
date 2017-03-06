@@ -77,6 +77,23 @@
       "QUOTA": "몫",
       "PASSWORD": "암호",
       "PASSWORD_VERIFICATION": "비밀번호 확인"
+    },
+    "audit": {
+      "AUDIT": "심사",
+      "ALL_USERS": "모든 사용자들",
+      "actions": {
+        "ACTIONS": "행위",
+        "ALL_ACTIONS": "모든 작업",
+        "CREATED": "만들어진",
+        "UPDATED": "업데이트 됨",
+        "DELETED": "삭제됨"
+      },
+      "USER": "사용자",
+      "CONTENT": "함유량",
+      "TYPE": "유형",
+      "CREATED": "만들어진",
+      "MODIFIED": "수정 됨",
+      "SITE": "대지"
     }
   },
   "common": {

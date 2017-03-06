@@ -6129,6 +6129,10 @@ table td {
     .assign-users .actions a {
       visibility: hidden; }
 
+.audit-actions .dropdown-menu a.active {
+  background-color: #7e9dbb;
+  border-bottom: 1px solid #bfbfbf; }
+
 .modal-backdrop {
   height: 100%;
   background-color: #444; }
