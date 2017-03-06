@@ -9,12 +9,19 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Config, CStudioA
         var _self = this;
         var containerEl = this.containerEl;
         var valueEl = document.createElement("input");
+
+        // Using styles to disable element - disable property prevent events on input
+        YAHOO.util.Dom.setStyle(valueEl, 'cursor', 'default');
+        YAHOO.util.Dom.setStyle(valueEl, 'outline', 'none');
+        YAHOO.util.Dom.setStyle(valueEl, 'color', 'transparent');
+        YAHOO.util.Dom.setStyle(valueEl, 'text-shadow', '0 0 0 #BBB');
+
         YAHOO.util.Dom.addClass(valueEl, "content-type-property-sheet-property-value");
         containerEl.appendChild(valueEl);
         valueEl.value = value;
         valueEl.fieldName = this.fieldName;
         this.updateFn = updateFn;
-
+        
         // don't let the user type anything
         YAHOO.util.Event.on(valueEl, 'keydown', function(evt) { YAHOO.util.Event.stopEvent(evt); }, valueEl);
 
