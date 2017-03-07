@@ -202,187 +202,166 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
 				var writeControllerCb = {
 					success: function() {
-						var extractionContent =
-                            'import scripts.libs.ExtractMetadataApi;\r\n\r\n' +
-                            'def extractMetadataParams =[:];\r\n' +
-                            'extractMetadataParams.site = site;\r\n' +
-                            'extractMetadataParams.path = path;\r\n' +
-                            'extractMetadataParams.user = user;\r\n' +
-                            'extractMetadataParams.contentType = contentType;\r\n' +
-                            'extractMetadataParams.contentXml = contentXml;\r\n' +
-                            'extractMetadataParams.applicationContext = applicationContext;\r\n\r\n' +
-                            'def extractor = new ExtractMetadataApi(extractMetadataParams);\r\n' +
-                            'extractor.execute();\r\n';
+						var fileNameLabel = "Page URL";
+						if(type == "component") {
+							var fileNameLabel = "Component ID";
+						}
+						var formDefContent =
+							'<form>\r\n'+
+							'<title>'+label+'</title>\r\n'+
+							'<description></description>\r\n' +
+							'<content-type>/'+type+'/'+name+'</content-type>\r\n' +
+							'<objectType>'+type+'</objectType>\r\n' +
+							'<properties>\r\n' +
+								"<property>\r\n"+
+								"<name>content-type</name>\r\n"+
+								"<label>Content Type</label>\r\n"+
+								"<value>/"+type+'/'+name+"</value>\r\n"+
+								"<type>string</type>\r\n"+
+								"</property>\r\n";
 
-						var writeExtractionCb = {
-							success: function() {
-								var fileNameLabel = "Page URL";
-								if(type == "component") {
-									var fileNameLabel = "Component ID";
+						if(!this.context.config.objectTypes.type.length) {
+							this.context.config.objectTypes.type = [ this.context.config.objectTypes.type ];
+						}
+
+						for(var k=0; k<this.context.config.objectTypes.type.length; k++) {
+							var objectType = this.context.config.objectTypes.type[k];
+
+							if(objectType.name == type) {
+								if(!objectType.properties.property.length) {
+									objectType.properties.property = [ objectType.properties.property];
 								}
-								var formDefContent =
-									'<form>\r\n'+
-									'<title>'+label+'</title>\r\n'+
+
+								var typeProps = objectType.properties.property;
+
+								for(var j=0; j<typeProps.length; j++) {
+									var typeProperty = typeProps[j];
+
+									formDefContent +=
+									"<property>\r\n"+
+										"<name>" + typeProperty.name + "</name>\r\n"+
+										"<label>" + typeProperty.label + "</label>\r\n"+
+										"<value>" + typeProperty.value + "</value>\r\n"+
+										"<type>" + typeProperty.type + "</type>\r\n"+
+									"</property>\r\n";
+								}
+								break;
+							}
+						}
+
+						formDefContent +=
+							'</properties>\r\n' +
+							'<sections>\r\n' +
+								'<section>\r\n' +
+									'<title>'+label+' Properties</title>\r\n' +
 									'<description></description>\r\n' +
-									'<content-type>/'+type+'/'+name+'</content-type>\r\n' +
-									'<objectType>'+type+'</objectType>\r\n' +
-									'<properties>\r\n' +
-										"<property>\r\n"+
-										"<name>content-type</name>\r\n"+
-										"<label>Content Type</label>\r\n"+
-										"<value>/"+type+'/'+name+"</value>\r\n"+
-										"<type>string</type>\r\n"+
-										"</property>\r\n";
+									'<defaultOpen>true</defaultOpen>\r\n' +
+									'<fields>\r\n' +
 
-								if(!this.context.config.objectTypes.type.length) {
-									this.context.config.objectTypes.type = [ this.context.config.objectTypes.type ];
-								}
 
-								for(var k=0; k<this.context.config.objectTypes.type.length; k++) {
-									var objectType = this.context.config.objectTypes.type[k];
-
-									if(objectType.name == type) {
-										if(!objectType.properties.property.length) {
-											objectType.properties.property = [ objectType.properties.property];
-										}
-
-										var typeProps = objectType.properties.property;
-
-										for(var j=0; j<typeProps.length; j++) {
-											var typeProperty = typeProps[j];
-
-											formDefContent +=
-											"<property>\r\n"+
-												"<name>" + typeProperty.name + "</name>\r\n"+
-												"<label>" + typeProperty.label + "</label>\r\n"+
-												"<value>" + typeProperty.value + "</value>\r\n"+
-												"<type>" + typeProperty.type + "</type>\r\n"+
-											"</property>\r\n";
-										}
-										break;
-									}
-								}
-
-								formDefContent +=
-									'</properties>\r\n' +
-									'<sections>\r\n' +
-										'<section>\r\n' +
-											'<title>'+label+' Properties</title>\r\n' +
+										'<field>\r\n' +
+											'<type>file-name</type>\r\n' +
+											'<id>file-name</id>\r\n' +
+											'<iceId></iceId>\r\n' +
+											'<title>'+fileNameLabel+'</title>\r\n' +
 											'<description></description>\r\n' +
-											'<defaultOpen>true</defaultOpen>\r\n' +
-											'<fields>\r\n' +
+											'<defaultValue></defaultValue>\r\n' +
+											'<help></help>\r\n' +
+											'<properties>\r\n' +
+												'<property>\r\n' +
+													'<name>size</name>\r\n' +
+													'<value>50</value>\r\n' +
+													'<type>int</type>\r\n' +
+												'</property>\r\n' +
+												'<property>\r\n' +
+													'<name>maxlength</name>\r\n' +
+													'<value>50</value>\r\n' +
+													'<type>int</type>\r\n' +
+												'</property>\r\n' +
+												'<property>\r\n' +
+													'<name>readonly</name>\r\n' +
+													'<value></value>\r\n' +
+													'<type>boolean</type>\r\n' +
+												'</property>\r\n' +
+											'</properties>\r\n' +
+											'<constraints>\r\n' +
+											'</constraints>\r\n' +
+										'</field>\r\n' +
+										'<field>\r\n' +
+											'<type>input</type>\r\n' +
+											'<id>internal-name</id>\r\n' +
+											'<iceId></iceId>\r\n' +
+											'<title>Internal Name</title>\r\n' +
+											'<description></description>\r\n' +
+											'<defaultValue></defaultValue>\r\n' +
+											'<help></help>\r\n' +
+											'<properties>\r\n' +
+												'<property>\r\n' +
+													'<name>size</name>\r\n' +
+													'<value>50</value>\r\n' +
+													'<type>int</type>\r\n' +
+												'</property>\r\n' +
+												'<property>\r\n' +
+													'<name>maxlength</name>\r\n' +
+													'<value>50</value>\r\n' +
+													'<type>int</type>\r\n' +
+												'</property>\r\n' +
+											'</properties>\r\n' +
+											'<constraints>\r\n' +
+												'<constraint>\r\n' +
+													'<name>required</name>\r\n' +
+													'<value>true</value>\r\n' +
+													'<type>boolean</type>\r\n' +
+												'</constraint>\r\n' +
+											'</constraints>\r\n' +
+										'</field>\r\n';
 
+									if(type == "page") {
+										formDefContent +=
+											'<field>\r\n' +
+												'<type>page-nav-order</type>\r\n' +
+												'<id>placeInNav</id>\r\n' +
+												'<iceId></iceId>\r\n' +
+												'<title>Place in Nav</title>\r\n' +
+												'<description></description>\r\n' +
+												'<defaultValue></defaultValue>\r\n' +
+												'<help></help>\r\n' +
+												'<properties>\r\n' +
+													'<property>\r\n' +
+														'<name>readonly</name>\r\n' +
+														'<value>[]</value>\r\n' +
+														'<type>boolean</type>\r\n' +
+													'</property>\r\n' +
+												'</properties>\r\n' +
+												'<constraints>\r\n' +
+													'<constraint>\r\n' +
+														'<name>required</name>\r\n' +
+														'<value><![CDATA[]]></value>\r\n' +
+														'<type>boolean</type>\r\n' +
+													'</constraint>\r\n' +
+												'</constraints>\r\n' +
+											'</field>';
+									}
 
-												'<field>\r\n' +
-													'<type>file-name</type>\r\n' +
-													'<id>file-name</id>\r\n' +
-													'<iceId></iceId>\r\n' +
-													'<title>'+fileNameLabel+'</title>\r\n' +
-													'<description></description>\r\n' +
-													'<defaultValue></defaultValue>\r\n' +
-													'<help></help>\r\n' +
-													'<properties>\r\n' +
-														'<property>\r\n' +
-															'<name>size</name>\r\n' +
-															'<value>50</value>\r\n' +
-															'<type>int</type>\r\n' +
-														'</property>\r\n' +
-														'<property>\r\n' +
-															'<name>maxlength</name>\r\n' +
-															'<value>50</value>\r\n' +
-															'<type>int</type>\r\n' +
-														'</property>\r\n' +
-														'<property>\r\n' +
-															'<name>readonly</name>\r\n' +
-															'<value></value>\r\n' +
-															'<type>boolean</type>\r\n' +
-														'</property>\r\n' +
-													'</properties>\r\n' +
-													'<constraints>\r\n' +
-													'</constraints>\r\n' +
-												'</field>\r\n' +
-												'<field>\r\n' +
-													'<type>input</type>\r\n' +
-													'<id>internal-name</id>\r\n' +
-													'<iceId></iceId>\r\n' +
-													'<title>Internal Name</title>\r\n' +
-													'<description></description>\r\n' +
-													'<defaultValue></defaultValue>\r\n' +
-													'<help></help>\r\n' +
-													'<properties>\r\n' +
-														'<property>\r\n' +
-															'<name>size</name>\r\n' +
-															'<value>50</value>\r\n' +
-															'<type>int</type>\r\n' +
-														'</property>\r\n' +
-														'<property>\r\n' +
-															'<name>maxlength</name>\r\n' +
-															'<value>50</value>\r\n' +
-															'<type>int</type>\r\n' +
-														'</property>\r\n' +
-													'</properties>\r\n' +
-													'<constraints>\r\n' +
-														'<constraint>\r\n' +
-															'<name>required</name>\r\n' +
-															'<value>true</value>\r\n' +
-															'<type>boolean</type>\r\n' +
-														'</constraint>\r\n' +
-													'</constraints>\r\n' +
-												'</field>\r\n';
+									formDefContent +=
+												'</fields>\r\n' +
+											'</section>\r\n' +
+										'</sections>\r\n' +
+										'</form>';
 
-											if(type == "page") {
-												formDefContent +=
-													'<field>\r\n' +
-														'<type>page-nav-order</type>\r\n' +
-														'<id>placeInNav</id>\r\n' +
-														'<iceId></iceId>\r\n' +
-														'<title>Place in Nav</title>\r\n' +
-														'<description></description>\r\n' +
-														'<defaultValue></defaultValue>\r\n' +
-														'<help></help>\r\n' +
-														'<properties>\r\n' +
-															'<property>\r\n' +
-																'<name>readonly</name>\r\n' +
-																'<value>[]</value>\r\n' +
-																'<type>boolean</type>\r\n' +
-															'</property>\r\n' +
-														'</properties>\r\n' +
-														'<constraints>\r\n' +
-															'<constraint>\r\n' +
-																'<name>required</name>\r\n' +
-																'<value><![CDATA[]]></value>\r\n' +
-																'<type>boolean</type>\r\n' +
-															'</constraint>\r\n' +
-														'</constraints>\r\n' +
-													'</field>';
+									var writeFormDefCb = {
+										success: function() {
+											CStudioAuthoring.Dialogs.NewContentType.closeDialog();
+											CStudioAuthoring.Dialogs.NewContentType.cb.success("/"+type + '/' + name);
+										},
 
-											}
+										failure: function() {
+										},
+										context: this.context.context
 
-								formDefContent +=
-											'</fields>\r\n' +
-										'</section>\r\n' +
-									'</sections>\r\n' +
-									'</form>';
-
-								var writeFormDefCb = {
-									success: function() {
-										CStudioAuthoring.Dialogs.NewContentType.closeDialog();
-										CStudioAuthoring.Dialogs.NewContentType.cb.success("/"+type + '/' + name);
-									},
-
-									failure: function() {
-									},
-									context: this.context.context
-
-								};
+									};
 
 								this.context.writeConfig(baseServicePath + 'form-definition.xml', formDefContent, writeFormDefCb);
-							},
-							failure: function() {
-							},
-							context: this.context
-						}
-						this.context.writeConfig(baseServicePath + 'extract.groovy', extractionContent, writeExtractionCb);
 					},
 					failure: function() {
 					},
