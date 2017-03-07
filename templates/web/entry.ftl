@@ -28,6 +28,7 @@
     <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.min.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/ng-file-upload/dist/ng-file-upload-shim.min.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/ng-file-upload/dist/ng-file-upload.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!''}"></script>
     <link rel="shortcut icon" href="/studio/static-assets/img/favicon.png?version=${UIBuildId!''}">

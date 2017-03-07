@@ -36,7 +36,8 @@
 
         <tr ng-repeat="group in displayedCollection">
             <td>{{group.group_name}}</td>
-            <td>{{group.description}}</td>
+            <!--<td>{{group.description}}</td>-->
+            <td>{{group.group_description}}</td>
             <td>{{group.site_id}}</td>
             <td>
                 <a ng-click="editGroupDialog(group)" class="btn btn-sm">
@@ -117,18 +118,18 @@
     </div>
     <div class="modal-body clearfix">
         <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
-            <div class="form-group">
-                <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
-                <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" required>
+            <div class="form-group"></div>
+            <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
+            <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" required>
 
-                <div class="error-container"
-                     ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">
-                    <small class="error"
-                           ng-show="createNameForm.identifier.$error.required">
-                        {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
-                    </small>
-                </div>
+            <div class="error-container"
+                 ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.identifier.$error.required">
+                    {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
+                </small>
             </div>
+
             <div class="form-group">
                 <label for="description" class="control-label">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
                 <input type="text" class="form-control" id="description" name="description" ng-model="group.description" ng-change="" required>

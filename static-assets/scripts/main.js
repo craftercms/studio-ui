@@ -7,7 +7,8 @@
         'ui.bootstrap',
         'smart-table',
         'ngFileUpload',
-        'pascalprecht.translate'
+        'pascalprecht.translate',
+        'angularUtils.directives.dirPagination'
     ]);
 
     app.run([
@@ -100,6 +101,11 @@
                     url: '/group?identifier',
                     templateUrl: '/studio/static-assets/ng-views/admin-group.html',
                     controller: "AdminCtrl"
+                })
+                .state('home.admin.audit', {
+                    url: '/audit',
+                    templateUrl: '/studio/static-assets/ng-views/audit.html',
+                    controller: 'AdminCtrl'
                 })
                 .state('login', {
                     url: '/login',
@@ -258,6 +264,10 @@
 
             this.setPassword = function (data) {
                 return $http.post(api('set-password'), data);
+            };
+
+            this.changePassword = function (data) {
+                return $http.post(api('change-password'), data);
             };
 
             this.getLoginLogo = function() {
@@ -429,16 +439,33 @@
                     authService.changePassword($scope.data)
                         .then(function (data) {
                             $scope.error = $scope.message = null;
+
                             if (data.type === 'error') {
                                 $scope.error = data.message;
                             } else if (data.error) {
                                 $scope.error = data.error;
                             } else {
                                 $scope.message = data.message;
+
+                                $rootScope.modalInstance = $modal.open({
+                                    templateUrl: 'settingLanguajeConfirmation.html',
+                                    windowClass: 'centered-dialog',
+                                    controller: 'AppCtrl',
+                                    backdrop: 'static',
+                                    backdropClass: 'hidden',
+                                    keyboard: false,
+                                    size: 'sm'
+                                });
+                                $timeout(function () {
+                                    $rootScope.modalInstance.close();
+                                    $scope.data = {};
+                                }, 1500, false);
                             }
+                        }, function(error){
+                            $scope.error = error.data.status;
                         });
                 }else{
-
+                    $scope.error = "Passwords don't match.";
                 }
             }
 
@@ -475,6 +502,18 @@
             };
 
             $scope.user = authService.getUser();
+
+            sitesService.getPermissions('', '/', $scope.user.username || $scope.user)
+                .success(function (data) {
+                    for(var i=0; i<data.permissions.length;i++){
+                        if(data.permissions[i]=='create-site'){
+                            $scope.createSites = true;
+                        }
+                    }
+                })
+                .error(function () {
+                });
+
             $scope.data = { email: ($scope.user || { 'email': '' }).email };
             $scope.error = null;
 
