@@ -503,6 +503,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     defaultOpen: "Default Open",
     showInNav: "Show In Nav",
     descriptorMapper: "Descriptor Mapper",
+    previewImage: "Preview Image ",
 
     warning: "Warning",
     warningBody: "Changing this value may result in broken links.",

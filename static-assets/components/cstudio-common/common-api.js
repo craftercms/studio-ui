@@ -192,7 +192,8 @@ var nodeOpen = false;
             PERMISSION_WRITE: new CStudioConstant("write"),
             PERMISSION_DELETE: new CStudioConstant("delete"),
             PERMISSION_CREATE_FOLDER: new CStudioConstant("create folder"),
-            CONFIG_FILES_PATH: '/config/studio'
+            CONFIG_FILES_PATH: '/config/studio',
+            IMAGE_VALID_EXTENSIONS: ["jpg", "jpeg", "gif", "png", "tiff", "tif", "bmp", "svg", "JPG", "JPEG", "GIF", "PNG", "TIFF", "TIF", "BMP", "SVG"]
             // CONFIG_FILES_PATH: "/cstudio/config/sites/"
         },
         /**

@@ -253,12 +253,12 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 				
 						var imageName = (contentTypes[k].image && contentTypes[k].image != "") ? contentTypes[k].image : contentTypes[k].imageThumbnail;
 						
-						contentTypePreviewImg.src = 
+						contentTypePreviewImg.src =
 								CStudioAuthoringContext.baseUri+
 								'/api/1/services/api/1/content/get-content-at-path.bin?site=' + CStudioAuthoringContext.site +
-								'path=' + configFilesPath +
-								"/content-types" + 
-								contentTypesSelect.value + 
+								'&path=' + configFilesPath +
+								"/content-types" +
+								contentTypesSelect.value +
 								"/"+imageName;
 					}
 					else{

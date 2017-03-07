@@ -2180,6 +2180,30 @@ var CStudioForms = CStudioForms || function() {
                 CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, "/content-types/" + formId + "/form-definition.xml", configCb);
             },
 
+            /**
+             * internal menthod
+             * load Config from repository
+             * @param formId
+             *      path to the form you want to render
+             */
+            loadConfig: function(formId, cb) {
+                var configCb = {
+                    success: function(config) {
+                        // make sure the json is correct
+                        var conf = config;
+                        conf.contentType = formId;
+
+                        // notify
+                        cb.success(conf);
+
+                    },
+                    failure: function() {
+                    }
+                }
+
+                CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, "/content-types/" + formId + "/config.xml", configCb);
+            },
+
 
             /**
              * Load the form field controller and form configuration
