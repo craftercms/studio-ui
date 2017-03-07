@@ -1417,6 +1417,12 @@ var nodeOpen = false;
                 var $modal = $('<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container-'+editorId+'" style="display:none"><div class="bd"></div></div></div>');
                 $modal.find('.bd').attr('id', id);
 
+                for(var j=0; j<aux.length; j++) {
+                    if(aux[j].ontop){
+                        $modal.find('.studio-ice-dialog').css('z-index', 103000);
+                    }
+                }
+
                 animator = new crafter.studio.Animator($modal.find('.studio-ice-container-'+editorId));
 
                 (!callback) && (callback = {
