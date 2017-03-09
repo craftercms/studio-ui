@@ -207,11 +207,8 @@
                                                 contentTO.nodeRef,
                                                 contentTO.uri,
                                                 false,
-                                                {});                ///TODO: complete
-
-                                            setTimeout(function(){
-                                                $('.studio-ice-dialog').last().css('z-index', 100103);
-                                            }, 1000);
+                                                {},
+                                                [{"ontop": true}]);
                                         },
 
                                         failure: function () {

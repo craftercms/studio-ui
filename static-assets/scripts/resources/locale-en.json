@@ -77,6 +77,23 @@
       "QUOTA": "Quota",
       "PASSWORD": "Password",
       "PASSWORD_VERIFICATION": "Password Verification"
+    },
+    "audit": {
+      "AUDIT": "Audit",
+      "ALL_USERS": "All Users",
+      "actions": {
+        "ACTIONS": "Actions",
+        "ALL_ACTIONS": "All Actions",
+        "CREATED": "Created",
+        "UPDATED": "Updated",
+        "DELETED": "Deleted"
+      },
+      "USER": "User",
+      "CONTENT": "Content",
+      "TYPE": "Type",
+      "CREATED": "Created",
+      "MODIFIED": "Modified",
+      "SITE": "Site"
     }
   },
   "common": {

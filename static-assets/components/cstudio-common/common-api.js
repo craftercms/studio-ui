@@ -1418,6 +1418,14 @@ var nodeOpen = false;
                 var $modal = $('<div><div class="no-ice-mask"></div><div class="studio-ice-dialog studio-ice-container-'+editorId+'" style="display:none"><div class="bd"></div></div></div>');
                 $modal.find('.bd').attr('id', id);
 
+                if(aux && aux.length){
+                    for(var j=0; j<aux.length; j++) {
+                        if(aux[j].ontop){
+                            $modal.find('.studio-ice-dialog').css('z-index', 103000);
+                        }
+                    }
+                }
+
                 animator = new crafter.studio.Animator($modal.find('.studio-ice-container-'+editorId));
 
                 (!callback) && (callback = {
@@ -3451,7 +3459,9 @@ var nodeOpen = false;
 
             syncFromRepo: function(site, callback){
                 var serviceUrl = this.syncRepoServiceUrl;
-                var postData = "site_id=" + site;
+                var postData = {
+                    "site_id": site
+                };
 
                 var serviceCallback = {
                     success: function(jsonResponse) {
@@ -3467,7 +3477,9 @@ var nodeOpen = false;
                     }
                 };
 
-                YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, postData);
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(postData));
             },
             /**
              * crop image
