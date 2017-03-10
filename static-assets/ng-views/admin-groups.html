@@ -15,9 +15,14 @@
     </ul>
 </div>
 
-<div class="actions clearfix">
+<div class="actions clearfix pull-right mb10">
     <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.groups.NEW_GROUP' | translate }}</a>
     <a class="btn btn-default" ng-click="toggleAssignUsers()" role="button" style="float: right; margin-right: 15px;">{{toggleAssignUsersLabel}}</a>
+    <div class="pull-right mr15">
+        <label>Groups per page: </label>
+        <input class="audit-number-logs" type="number" name="input" ng-model="itemsByPage"
+               min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
+    </div>
 </div>
 
 <table ng-show="!assignUsers" st-table="displayedCollection" st-safe-src="groupsCollection.groups" class="table table-striped">
@@ -36,8 +41,7 @@
 
         <tr ng-repeat="group in displayedCollection">
             <td>{{group.group_name}}</td>
-            <!--<td>{{group.description}}</td>-->
-            <td>{{group.group_description}}</td>
+            <td>{{group.description}}</td>
             <td>{{group.site_id}}</td>
             <td>
                 <a ng-click="editGroupDialog(group)" class="btn btn-sm">
@@ -118,9 +122,10 @@
     </div>
     <div class="modal-body clearfix">
         <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
-            <div class="form-group"></div>
-            <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
-            <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" required>
+            <div class="form-group">
+                <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
+                <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" required>
+            </div>
 
             <div class="error-container"
                  ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">

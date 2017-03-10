@@ -51,6 +51,11 @@
                 return $http.post(users('set-password'), data);
             };
 
+            //Allow the administrator to reset Crafter Studio’s user password provided.
+            this.resetPassword = function(data){
+                return $http.post(users('reset-password'), data);
+            };
+
             this.changePassword = function(data){
                 return $http.post(users('change-password'), data);
             };
@@ -145,6 +150,8 @@
             var current = $state.current.name.replace(/\./g, '');
 
             this.init = function() {
+                $scope.debounceDelay = 500;
+
                 adminService.getSites()
                     .success(function (data) {
                         $scope.sites = data;
@@ -229,7 +236,7 @@
                 this.init();
                 
                 //table setup
-                $scope.itemsByPage=8;
+                $scope.itemsByPage=10;
                 $scope.usersCollection = {};
 
                 var getUsers = function(site) {
@@ -303,11 +310,9 @@
                     });
 
                     if(user.newPassword){
-                        adminService.setPassword({
+                        adminService.resetPassword({
                             "username" : user.username,
                             "new" : user.newPassword
-                        }).success(function (data) {
-
                         });
                     }
                 };
@@ -375,7 +380,7 @@
                 $scope.noGroupSelected = true;
                 
                 //table setup
-                $scope.itemsByPage=8;
+                $scope.itemsByPage=10;
                 $scope.groupsCollection = [];
 
                 var getGroups = function(site) {
@@ -483,7 +488,7 @@
                         console.log(error);
                         //TODO: properly display error.
                     });
-                }
+                };
                 $scope.removeGroup = function(group) {
                     var deleteGroup = function() {
                         adminService.deleteGroup(group).success(function (data) {
@@ -699,7 +704,7 @@
 
                     audit.actionsInputVal = audit.actions.toString();
 
-                    $timeout.cancel(delayTimer)
+                    $timeout.cancel(delayTimer);
                     delayTimer = $timeout(function() {
                         getAudit($scope.currentSite.id);
                     }, audit.defaultDelay);

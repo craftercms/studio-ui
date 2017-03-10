@@ -169,12 +169,27 @@
                 })
                 .state('home.reset', {
                     url: 'reset-password',
-                    views: {
-                        content: {
-                            templateUrl: '/studio/static-assets/ng-views/reset-password.html',
-                            controller: 'ResetCtrl'
+                    onEnter: [
+                        '$rootScope', '$state', '$modal',
+                        function ($rootScope, $state, $modal) {
+
+                            $rootScope.resetModal = $modal.open({
+                                templateUrl: '/studio/static-assets/ng-views/reset-password.html',
+                                controller: 'ResetCtrl',
+                                backdrop: 'static',
+                                keyboard: false,
+                                size: 'sm'
+                            });
                         }
-                    }
+                    ],
+                    onExit: [
+                        '$rootScope',
+                        function ($rootScope) {
+                            if ($rootScope.resetModal) {
+                                $rootScope.resetModal.close();
+                            }
+                        }
+                    ]
                 })
                 .state('logout', {
                     url: 'logout',
@@ -270,6 +285,10 @@
                 return $http.post(api('change-password'), data);
             };
 
+            this.validateToken = function (data){
+                return $http.post(api('validate-token'), data);
+            };
+
             this.getLoginLogo = function() {
                 return $http.get(api('get-ui-resource-override', true), {
                     params: { resource : 'logo.jpg' }
@@ -278,7 +297,7 @@
 
             this.getLoginUrl = function() {
                 return api('get-ui-resource-override', true) + '?resource=logo.jpg';
-            }
+            };
 
             function api(action, server) {
                 var api = "user/";
@@ -363,11 +382,11 @@
                 return $http.get(security('get-user-permissions'), {
                     params: { site: siteId,  path: path, user: user}
                 });
-            }
+            };
 
             this.getAvailableLanguages = function(){
                 return $http.get(server('get-available-languages'));
-            }
+            };
 
             this.getLanguages = function(scope, setLang) {
                 this.getAvailableLanguages()
@@ -503,16 +522,16 @@
 
             $scope.user = authService.getUser();
 
-            sitesService.getPermissions('', '/', $scope.user.username || $scope.user)
-                .success(function (data) {
-                    for(var i=0; i<data.permissions.length;i++){
-                        if(data.permissions[i]=='create-site'){
-                            $scope.createSites = true;
+            if($scope.user && $scope.user.username) {
+                sitesService.getPermissions('', '/', $scope.user.username || $scope.user)
+                    .success(function (data) {
+                        for(var i=0; i<data.permissions.length;i++){
+                            if(data.permissions[i]=='create-site'){
+                                $scope.createSites = true;
+                            }
                         }
-                    }
-                })
-                .error(function () {
-                });
+                    })
+            }
 
             $scope.data = { email: ($scope.user || { 'email': '' }).email };
             $scope.error = null;
@@ -861,13 +880,16 @@
             $scope.forgotPassword = function recover() {
                 authService.forgotPassword(credentials.username).success(function(data) {
                     if(data.message === 'OK') {
-                        $scope.error = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
+                        $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
                         $scope.recoverSuccess = true;
-                    }else{
-                        $scope.error = data.message;
                     }
-                }).error(function(error) {
-                    // $scope.error = error;
+                }).error(function(error, status) {
+                    if(status == 500) {
+                        var errorMessage = error.message + " - " + $translate.instant('dashboard.login.RECOVER_ERROR');
+                        $scope.error = errorMessage;
+                    }else{
+                        $scope.error = error.message;
+                    }
                 });
             };
 
@@ -877,46 +899,42 @@
     app.controller('ResetCtrl', [
         '$scope', '$state', '$location', 'authService', '$modal', '$timeout', '$translate',
         function ($scope, $state, $location, authService, $modal, $timeout, $translate) {
-            
+
+            var successDelay = 2500;
             $scope.user = {};
+            $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
 
-            $scope.setPassword = function() {
-                authService.setPassword({
-                    'token': $location.search().token,
-                    'new': $scope.user.password
-                }).success(function(data) {
-                    $scope.notificationText = $translate.instant('dashboard.login.PASSWORD_UPDATED');
-                    $scope.notificationType = 'info-sign';
+            authService.getLoginLogo().then(
+                function successCallback(response) {
+                    $scope.crafterLogo = authService.getLoginUrl();
+                }, function errorCallback(response) {
+                    $scope.crafterLogo = "/studio/static-assets/images/crafter_studio_360.png";
+                }
+            );
 
-                    var modal = $modal.open({
-                        templateUrl: 'notificationModal.html',
-                        windowClass: 'centered-dialog',
-                        backdrop: 'static',
-                        keyboard: false,
-                        controller: 'ResetCtrl',
-                        scope: $scope,
-                        size: 'sm'
+            authService.validateToken({
+                'token': $location.search().token,
+            }).then(function(data){
+                $scope.validToken = true;
+
+                $scope.setPassword = function() {
+                    authService.setPassword({
+                        'token': $location.search().token,
+                        'new': $scope.user.password
+                    }).success(function(data) {
+                        $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
+
+                        $timeout(function() {
+                            $state.go('login');
+                        }, successDelay);
+                    }).error(function(error){
+                        $scope.error = error.status;
                     });
-                }).error(function(error){
-                    $scope.notificationText = $translate.instant('dashboard.login.PASSWORD_UPDATED');
-                    $scope.notificationType = 'info-sign';
-
-                    var modal = $modal.open({
-                        templateUrl: 'notificationModal.html',
-                        windowClass: 'centered-dialog',
-                        backdrop: 'static',
-                        keyboard: false,
-                        controller: 'ResetCtrl',
-                        scope: $scope,
-                        size: 'sm'
-                    });
-
-                    $timeout(function() {
-                        modal.close();
-                        $state.go('login');
-                    }, 2000);
-                });
-            };
+                };
+            },function(error){
+                $scope.validToken = false;
+                //console.log(error.message);
+            });
 
         }
     ]);
@@ -989,6 +1007,31 @@
                 scope.$watch("otherModelValue", function() {
                     ngModel.$validate();
                 });
+            }
+        };
+    });
+
+    app.directive('onlyDigits', function () {
+        return {
+            require: 'ngModel',
+            restrict: 'A',
+            link: function (scope, element, attr, ctrl) {
+                function inputValue(val) {
+                    if (val) {
+                        if(!val.replace){
+                            val = val.toString();
+                        }
+                        var digits = val.replace(/[^0-9]/g, '');
+
+                        if (digits !== val) {
+                            ctrl.$setViewValue(digits);
+                            ctrl.$render();
+                        }
+                        return parseInt(digits,10);
+                    }
+                    return undefined;
+                }
+                ctrl.$parsers.push(inputValue);
             }
         };
     });

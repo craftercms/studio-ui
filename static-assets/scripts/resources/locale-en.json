@@ -5,13 +5,20 @@
       "USERNAME": "Username",
       "PASSWORD": "Password",
       "SIGN_IN": "Sign in",
-      "EMAIL_CONFIRMATION": "Please check your email for a message with an URL to reset your password.",
+      "EMAIL_CONFIRMATION": "Please check your email for a link to reset your password.",
       "PASSWORD_UPDATED": "Your password has been updated, you will be redirected to the login page.",
       "RECOVER": "Recover",
       "BACK": "back",
       "BACK_TO_LOGIN": "Back to Login",
       "SUBMIT": "Submit",
-      "FORGOT_PASSWORD": "Forgot your Password?"
+      "FORGOT_PASSWORD": "Forgot your Password?",
+      "PASSWORD_REQUIREMENTS": "Password must be 8 characters long and should contain one number,one character and one special character.",
+      "INVALID_LINK": "It seems like you clicked on an invalid password reset link. Please try again.",
+      "RECOVER_LABEL": "Please enter your username and we will send you a link to reset you password.",
+      "INVALID_PASSWORD": "Password does not meet requirements.",
+      "PASSWORDS_MUST_MATCH": "Passwords must match.",
+      "CHANGE_PASSWORD": "Change Password",
+      "RECOVER_ERROR": "Please check with your sysadmin to make sure an SMTP server is configured."
     },
     "sites": {
       "SITES_LABEL": "Sites",
