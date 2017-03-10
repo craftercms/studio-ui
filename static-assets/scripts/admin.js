@@ -454,9 +454,7 @@
                     $scope.dialogTitle = $translate.instant('admin.groups.EDIT_GROUP');
 
                     adminService.getGroup(group).success(function (data) {
-                        $scope.group.group_name = data.GROUP_NAME;
-                        $scope.group.description = data.GROUP_DESCRIPTION;
-                        $scope.group.site_id = data.SITE_ID;
+                        $scope.group = data;
                     }).error(function () {
                         //TODO: properly display error.
                     });
@@ -548,13 +546,14 @@
                         var users = data;
                         $scope.usersFromGroupCollection = users;
 
+                        console.log($scope.usersFromGroupCollection);
                     }).error(function () {
                         //TODO: properly display error
+                        console.log($scope.usersFromGroupCollection);
                     });
                 };
                 $scope.addUserToGroupDialog = function () {
                     $scope.userSelected = {};
-                    // $scope.usersFromGroupCollection = [];
 
                     $scope.adminModal = $scope.showModal('addUsersView.html');
 
@@ -581,12 +580,16 @@
                         }else{
                             $scope.usersCollection = data;
                         }
+
+                        console.log($scope.usersFromGroupCollection);
+                        $scope.test = $scope.usersFromGroupCollection;
                     }).error(function (error) {
                         // console.log(error);
                     });
-                }
+                };
                 $scope.addUserToGroup = function (user) {
                     var activeGroup = $scope.activeGroup;
+                    $scope.usersFromGroupCollection = $scope.test;
 
                     adminService.addUserToGroup({
                         "username": user.username,
@@ -609,6 +612,9 @@
 
                 $scope.audit = {};
                 var audit = $scope.audit;
+                audit.logsPerPage = 10;
+                audit.defaultDelay = 500;
+                var delayTimer;
 
                 var getUsers = function(site) {
                     adminService.getUsers(site)
@@ -623,7 +629,6 @@
 
                 var getAudit = function(site) {
                     audit.totalLogs = 0;
-                    audit.logsPerPage = 7;
                     getResultsPage(1);
 
                     audit.pagination = {
@@ -670,11 +675,13 @@
                         audit.userSelected = '';
                     }
 
-                    getAudit($scope.currentSite.id);
+                    $timeout.cancel(delayTimer)
+                    delayTimer = $timeout(function() {
+                        getAudit($scope.currentSite.id);
+                    }, audit.defaultDelay);
                 };
 
                 audit.actions = [];
-
                 audit.updateActions = function(action) {
                     if(action === "all"){
                         audit.actions = [];
@@ -691,7 +698,12 @@
                     }
 
                     audit.actionsInputVal = audit.actions.toString();
-                    getAudit($scope.currentSite.id);
+
+                    $timeout.cancel(delayTimer)
+                    delayTimer = $timeout(function() {
+                        getAudit($scope.currentSite.id);
+                    }, audit.defaultDelay);
+
                 };
 
                 $scope.$watch('sites', function(){
@@ -705,9 +717,12 @@
                     }
                 });
 
-                $scope.$watch('currentSite', function() {
-                    getUsers($scope.currentSite.id);
-                    getAudit($scope.currentSite.id);
+                $scope.$watch('currentSite', function(e) {
+                    $timeout.cancel(delayTimer)
+                    delayTimer = $timeout(function() {
+                        getUsers($scope.currentSite.id);
+                        getAudit($scope.currentSite.id);
+                    }, audit.defaultDelay);
                 });
             };
 
