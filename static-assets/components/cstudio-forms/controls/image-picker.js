@@ -131,8 +131,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         dialog.innerElement.parentElement.style.setProperty("z-index", "100104", "important");
     },
 
-    
-
     cropPopupCancel: function(event) {
         this.crop_dialog.destroy();
         self.decreaseFormDialog();
