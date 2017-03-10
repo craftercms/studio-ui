@@ -504,6 +504,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     defaultOpen: "Default Open",
     showInNav: "Show In Nav",
     descriptorMapper: "Descriptor Mapper",
+    previewImage: "Preview Image ",
 
     warning: "Warning",
     warningBody: "Changing this value may result in broken links.",
@@ -701,6 +702,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabWorkflowConf: "Workflow Configuration",
     confTabWorkflowConfDesc: "Defines workflows available in the system",
     confCacheCleared : "Configuration cache cleared.",
+
+    /* Image */
+    constraintsError: "The uploaded file does not meet the specified width & height constraints",
+    sizeError: "Image is smaller than the constraint size",
+    fileNotImage: "The uploaded file is not of type image",
+    loadImageError:"Unable to load the selected image. Please try again or select another image",
 
     /* Errors */
     error: "Error",
