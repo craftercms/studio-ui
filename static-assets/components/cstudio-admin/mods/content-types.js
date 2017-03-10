@@ -174,8 +174,6 @@ CStudioAuthoring.Module.requireModule(
                                         YAHOO.util.Connect.setDefaultPostHeader(false);
                                         YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
                                         YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xmlFormDef);
-
-                                        console.log("xmlConfig: " + xmlConfig);
                                     }
 
                                     var validation = _self.titleNameValidation(formDef);

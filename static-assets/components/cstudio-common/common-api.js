@@ -2406,6 +2406,39 @@ var nodeOpen = false;
                 CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
             },
 
+            cropperImage: function(site, Message, imageData, imageWidth, imageHeight, repoImage, callback) {
+                CStudioAuthoring.Operations.openCropDialog(site, Message, imageData, imageWidth, imageHeight, repoImage, callback);
+            },
+
+                /**
+             *  opens a dialog to crop an image
+             */
+            openCropDialog: function(site, Message, imageData, imageWidth, imageHeight, repoImage, callback) {
+
+                var openCropperDialogCb = {
+                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                        dialogClass.showDialog(moduleConfig.site, moduleConfig.message, moduleConfig.imageData, moduleConfig.imageWidth,
+                                               moduleConfig.imageHeight, moduleConfig.repoImage, moduleConfig.callback);
+                    }
+                };
+
+                var moduleConfig = {
+                    site: site,
+                    message: Message,
+                    imageData: imageData,
+                    imageWidth: imageWidth,
+                    imageHeight: imageHeight,
+                    repoImage: repoImage,
+                    callback: callback
+                }
+
+                CSA.Utils.addCss('/static-assets/libs/cropper/dist/cropper.css');
+                CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
+
+                CStudioAuthoring.Module.requireModule("crop-dialog", "/static-assets/components/cstudio-dialogs/crop-dialog.js", moduleConfig, openCropperDialogCb);
+                CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
+            },
+
             /**
              * create a folder at a given location within the web project
              */

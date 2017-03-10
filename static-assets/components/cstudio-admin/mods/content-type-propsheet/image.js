@@ -7,8 +7,6 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image = CStudioAdminConsole.T
 YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
 	render: function(value, updateFn) {
         var _self = this;
-		// note THIS IS NOT DONE - CURRENTLY SAME AS STRING BUT
-		// SHOULD SHOW LIST OF DATASOURCE THAT CAN PROVIDE TYPE IMAGE
 		var containerEl = this.containerEl;
 		var valueEl = document.createElement("input");
 		YAHOO.util.Dom.addClass(valueEl, "content-type-property-sheet-property-value");		
@@ -50,7 +48,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
             YAHOO.util.Dom.addClass(controlsContainerEl, "options");
 
             var uploadEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(uploadEl, "edit");
+            YAHOO.util.Dom.addClass(uploadEl, "upload");
 
             controlsContainerEl.appendChild(uploadEl);
 
@@ -59,9 +57,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
             this.controlsContainerEl = controlsContainerEl;
 
             uploadEl.onclick = function() {
-                var imagePath = _self.valueEl.value;
                 var uploadCb = {
                     success: function(to) {
+                        var imageData = to;
+                        _self.createImageData(imageData,  configFilesPath +"/content-types" + CStudioAdminConsole.contentTypeSelected + "/" + to.fileName);
+
                         var valid = false,
                             message = "";
                         if (validExtensions.indexOf(to.fileExtension) != -1) {
@@ -70,7 +70,81 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                             message = "The uploaded file is not of type image";
                         }
 
-                        if (!valid) {
+                        if (valid) {
+                            var image = new Image();
+
+                            function imageLoaded(){
+                                var originalWidth = this.width,
+                                    originalHeight = this.height,
+                                    widthConstrains = 775,
+                                    heightConstrains = 767;
+                                message = "The uploaded file does not meet the specified width & height constraints";
+
+                                valid = _self.isImageValid(widthConstrains, originalWidth, heightConstrains, originalHeight);
+
+                                if(valid){
+                                    var itemURL = to.fileName;
+                                    _self.valueEl.value = itemURL;
+                                    _self.value = itemURL;
+                                    _self.updateFn(null, _self.valueEl);
+                                }else {
+
+                                    if ((widthConstrains && originalWidth < widthConstrains)
+                                        || (heightConstrains && originalHeight < heightConstrains)) {
+                                        message = "Image is smaller than the constraint size";
+                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                            "error-dialog",
+                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                            "notification",
+                                            message,
+                                            null, // use default button
+                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                            "studioDialog"
+                                        );
+                                    } else { //site, Message, imageData, imageWidth, imageHeight, repoImage, callback
+
+                                        var callback =  {
+                                            success: function(content) {
+                                                var itemURL = content.message.internalName;
+                                                _self.valueEl.value = itemURL;
+                                                _self.value = itemURL;
+                                                _self.updateFn(null, _self.valueEl);
+                                            }
+                                        }
+
+                                        CStudioAuthoring.Operations.cropperImage(
+                                            CStudioAuthoringContext.site,
+                                            message,
+                                            imageData,
+                                            widthConstrains,
+                                            heightConstrains,
+                                            null,
+                                            callback);
+
+                                    }
+                                }
+
+                            };
+                            image.addEventListener('load', imageLoaded, false);
+                            image.addEventListener('error', function () {
+                                message = "Unable to load the selected image. Please try again or select another image";
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                    "error-dialog",
+                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                    "notification",
+                                    message,
+                                    null, // use default button
+                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                    "studioDialog"
+                                );
+                            });
+
+                            CStudioAuthoring.Operations.getImageRequest({
+                                url: imageData.previewUrl,
+                                image: image
+                            });
+
+                        }else {
                             CStudioAuthoring.Operations.showSimpleDialog(
                                 "error-dialog",
                                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -80,11 +154,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                 "studioDialog"
                             );
-                        }else {
-                            var itemURL = to.fileName;
-                            _self.valueEl.value = itemURL;
-                            _self.value = itemURL;
-                            _self.updateFn(null, _self.valueEl);
                         }
                     },
 
@@ -99,6 +168,53 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                     uploadCb);
             }
         }
+    },
+
+    /**
+     * create preview URL
+     */
+    createPreviewUrl: function(imagePath) {
+        return CStudioAuthoringContext.previewAppBaseUri + imagePath + "";
+    },
+
+    createImageData: function(imageData, path){
+        var url = this.createPreviewUrl(CStudioAuthoringContext.baseUri+'/api/1/services/api/1/content/get-content-at-path.bin?site=' + CStudioAuthoringContext.site +
+            '&path=' + path);
+        imageData.previewUrl = url;
+        imageData.relativeUrl = path;
+    },
+
+    isImageValid: function(width, originalWidth, height, originalHeight) {
+        var result =  true;
+
+        var checkFn = function(value, srcValue){
+            var internalResult =  true;
+
+            if(value){
+                internalResult = false;
+
+                var obj =  (typeof value == "string") ? eval("(" + value + ")") : value;
+
+                if(typeof obj == 'number' && obj == srcValue){
+                    internalResult = true;
+                }else{
+                    if(obj.exact != "") {
+                        if( obj.exact == srcValue ){
+                            internalResult = true;
+                        }
+                    }else if( ( ( obj.min != "" && obj.min <= srcValue) || obj.min == "" ) &&
+                        ( (obj.max != "" && obj.max >= srcValue) || obj.max == "" ) ){
+                        internalResult = true;
+                    }
+                }
+            }
+
+            return internalResult;
+        }
+
+        result = checkFn(width, originalWidth) && checkFn(height, originalHeight);
+
+        return result;
     }
 });
 
