@@ -424,17 +424,6 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         CStudioAuthoring.Dialogs.CropDialog.closeDialog();
     },
 
-	/**
-	 * event fired when the ok is pressed
-	 */
-	uploadPopupCancel: function(event) {
-		CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
-        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
-            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
-        }
-	}
-
 
 };
 
