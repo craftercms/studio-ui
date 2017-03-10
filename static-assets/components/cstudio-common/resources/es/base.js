@@ -91,7 +91,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     wcmContentEdit: "Editar",
     wcmContentView: "Ver",
     wcmContentSubmit: "Solicitud de Publicación",
-    wcmContentDependencies: "Ver Dependencias",
+    wcmContentDependencies: "Dependencias",
     wcmContentDelete: "Eliminar",
     wcmContentSubmitDelete: "Solicitud de Eliminación",
     wcmContentReject: "Rechazar",
@@ -238,7 +238,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     lookUpItemError: "No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.",
     pathSameError: "Las rutas de origen y destino son las mismas.",
     pageExistError: "Página ya existe en el destino.",
-    wcmContentDependencies: "View Dependencies"
+    wcmContentDependencies: "Dependencias"
 
 });
 

@@ -92,7 +92,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     wcmContentEdit: "Edit",
     wcmContentView: "View",
     wcmContentSubmit: "Request Publish",
-    wcmContentDependencies: "View Dependencies",
+    wcmContentDependencies: "Dependencies",
     wcmContentDelete: "Delete",
     wcmContentSubmitDelete: "Request Delete",
     wcmContentReject: "Reject",
@@ -240,7 +240,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     lookUpItemError: "Unable to look up item. Please contact your system administrator.",
     pathSameError: "Source and destination path are same.",
     pageExistError: "Page already exist at the destination.",
-    wcmContentDependencies: "View Dependencies",
+    wcmContentDependencies: "Dependencies",
     wcmContentApprove: "Approve & Publish"
 
 });
