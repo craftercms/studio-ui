@@ -36,7 +36,7 @@
     <button type="button" class="btn btn-default dropdown-toggle" style="text-transform: capitalize;" dropdown-toggle>
         {{ audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate }} <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu" role="menu">
+    <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
         <li>
             <a ng-click="audit.updateActions('all')">{{ 'admin.audit.actions.ALL_ACTIONS' | translate }}</a>
         </li>
@@ -50,6 +50,12 @@
             {{ 'admin.audit.actions.DELETED' | translate }}
         </a></li>
     </ul>
+</div>
+
+<div class="pull-right">
+    <label>Logs per page: </label>
+    <input class="audit-number-logs" type="number" name="input" ng-model="audit.logsPerPage"
+           min="0" max="99" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
 </div>
 
 <table class="table table-striped">

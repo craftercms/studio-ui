@@ -212,4 +212,21 @@ table {
 .audit-actions .dropdown-menu a.active{
   background-color: #7e9dbb;
   border-bottom: 1px solid #bfbfbf;
+  color: #fff;
+
+  &:after {
+    display: inline-block;
+    content: 'x';
+    margin-right: -10px;
+    float: right;
+  }
+}
+
+.audit-number-logs {
+  border: 1px solid #ccc;
+  padding: 6px;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 20px;
+  min-width: 50px;
 }
