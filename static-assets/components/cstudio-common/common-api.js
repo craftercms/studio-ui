@@ -1578,7 +1578,7 @@ var nodeOpen = false;
                             overlayContainer = dialogContainer.find('.overlay'),
                             iframe = dialog.find('iframe');
 
-                        if( Math.floor($(dialog).height()) != 60){
+                        if(!controlContainer.hasClass("collapseForm")){
                             CStudioAuthoring.Utils.Cookies.createCookie("formEngineHeight", $(dialog).height().toString());
                             $(dialog).height(60);
                             controlContainer.addClass("collapseForm");
@@ -7483,19 +7483,24 @@ CStudioAuthoring.InContextEdit = {
     collapseDialog: function(editorId) {
         var dialog = window.parent.$( ".studio-ice-container-"+editorId),
             controlBar = $("#formContainer .cstudio-form-controls-container")[0],
+            ctrlBar = $(controlBar),
             colExpButtonBtn = $('#colExpButtonBtn'),
             overlayContainer = dialog.find('.overlay');
 
-        if( Math.floor($(dialog).height()) != 49){
+        if(!ctrlBar.hasClass("collapseForm")){
             CStudioAuthoring.Utils.Cookies.createCookie("formEngineHeight", $(dialog).height().toString());
             $(dialog).height(49);
-            $(controlBar).css({ "backgroundColor": "#7E9DBB" });
-            $(controlBar).addClass("collapseForm");
+            ctrlBar.css({ "backgroundColor": "#7E9DBB" });
+            ctrlBar.addClass("collapseForm");
             overlayContainer && overlayContainer.addClass('overlay-collapsed');
         } else{
-            $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie("formEngineHeight")));
-            $(controlBar).css({ "backgroundColor": "#f8f8f8" });
-            $(controlBar).removeClass("collapseForm");
+            if(parseInt(CStudioAuthoring.Utils.Cookies.readCookie("formEngineHeight")) < 50 ){
+                $(dialog).height(300);
+            }else{
+                $(dialog).height(parseInt(CStudioAuthoring.Utils.Cookies.readCookie("formEngineHeight")));
+            }
+            ctrlBar.css({ "backgroundColor": "#f8f8f8" });
+            ctrlBar.removeClass("collapseForm");
             overlayContainer && overlayContainer.removeClass('overlay-collapsed');
         }
 
