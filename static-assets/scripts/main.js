@@ -443,8 +443,8 @@
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
-
             $scope.authenticated = authService.isAuthenticated();
+            $scope.helpUrl = 'http://docs.craftercms.org';
 
             function logout() {
                 authService.logout();
