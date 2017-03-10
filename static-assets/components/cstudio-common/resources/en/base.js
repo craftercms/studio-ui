@@ -505,6 +505,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     showInNav: "Show In Nav",
     descriptorMapper: "Descriptor Mapper",
     previewImage: "Preview Image ",
+    config: "Configuration",
+    controller: "Controller",
 
     warning: "Warning",
     warningBody: "Changing this value may result in broken links.",

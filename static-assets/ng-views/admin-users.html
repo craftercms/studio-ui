@@ -17,10 +17,16 @@
 
 <a class="btn btn-default" ng-click="createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
 
+<div class="pull-right mr15">
+    <label>Users per page: </label>
+    <input class="audit-number-logs" type="number" name="input" ng-model="itemsByPage"
+           min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
+</div>
+
 <table st-table="displayedCollection" st-safe-src="usersCollection.users" class="table table-striped">
     <thead>
     <tr>
-        <th st-sort="">#</th>
+        <!--<th st-sort="">#</th>-->
         <th st-sort="displayName">{{ 'admin.users.FIRST_NAME' | translate }}</th>
         <th st-sort="displayName">{{ 'admin.users.LAST_NAME' | translate }}</th>
         <th st-sort="userName">{{ 'admin.users.USER_NAME' | translate }}</th>
@@ -34,11 +40,11 @@
     </thead>
     <tbody>
     <tr ng-repeat="user in displayedCollection">
-        <td>
-            <a ng-click="viewUser(user)">
-                <img class="user-image" src="https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=50&amp;h=50">
-            </a>
-        </td>
+        <!--<td>-->
+            <!--<a ng-click="viewUser(user)">-->
+                <!--<img class="user-image" src="https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=50&amp;h=50">-->
+            <!--</a>-->
+        <!--</td>-->
         <td><a ng-click="viewUser(user)">{{user.first_name}}</a></td>
         <td>{{user.last_name}}</td>
         <td>{{user.username}}</td>
@@ -75,20 +81,20 @@
     <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
         <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
 
-            <div class="form-group pull-left image-group">
-                <button type="file" ng-model="picFile" ngf-select="uploadFiles($file, $invalidFiles)"
-                        accept="image/*" ngf-max-size="10MB">
-                    +
-                </button>
+            <!--<div class="form-group pull-left image-group">-->
+                <!--<button type="file" ng-model="picFile" ngf-select="uploadFiles($file, $invalidFiles)"-->
+                        <!--accept="image/*" ngf-max-size="10MB">-->
+                    <!--+-->
+                <!--</button>-->
 
-                <img class="user-image" ngf-thumbnail="picFile || 'https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=100&amp;h=100'" class="thumb"
-                     style="width: 100px; height: 100px;">
+                <!--<img class="user-image" ngf-thumbnail="picFile || 'https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=100&amp;h=100'" class="thumb"-->
+                     <!--style="width: 100px; height: 100px;">-->
 
-                <span class="progress" ng-show="f.progress >= 0">
-                  <div style="width:{{f.progress}}%;" class="{{f.uploaded}}">
-                  </div>
-                </span>
-            </div>
+                <!--<span class="progress" ng-show="f.progress >= 0">-->
+                  <!--<div style="width:{{f.progress}}%;" class="{{f.uploaded}}">-->
+                  <!--</div>-->
+                <!--</span>-->
+            <!--</div>-->
 
             <div class="form-group" ng-if="!(dialogMode == 'create')">
                 <label for="enabled" class="control-label">Enabled</label>
@@ -219,20 +225,18 @@
             </div>
             <div class="form-group" ng-if="dialogMode == 'edit'">
                 <hr/>
-                <label for="newPassword" class="control-label">Reset Password -
-                    <a ng-click="resetPassword = !resetPassword; resetLabel = resetPassword ? 'Disable' : 'Enable'">
-                        {{ resetLabel || 'Enable' }}
-                    </a>
+                <label for="newPassword" class="control-label">Reset Password
                 </label>
-                <input ng-disabled="!resetPassword" type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword" ng-required="resetPassword">
+                <input type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword"
+                       placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'>
 
-                <div class="error-container" ng-if="dialogMode"
-                     ng-show="(createNameForm.newPassword.$dirty && createNameForm.newPassword.$invalid) || (createNameForm.newPassword.$touched && createNameForm.newPassword.$invalid)">
-                    <small class="error"
-                           ng-show="createNameForm.newPassword.$error.required">
-                        {{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-                    </small>
-                </div>
+                <!--<div class="error-container" ng-if="dialogMode"-->
+                     <!--ng-show="(createNameForm.newPassword.$dirty && createNameForm.newPassword.$invalid) || (createNameForm.newPassword.$touched && createNameForm.newPassword.$invalid)">-->
+                    <!--<small class="error"-->
+                           <!--ng-show="createNameForm.newPassword.$error.required">-->
+                        <!--{{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}-->
+                    <!--</small>-->
+                <!--</div>-->
             </div>
         </form>
     </div>

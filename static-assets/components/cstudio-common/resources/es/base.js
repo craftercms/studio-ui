@@ -485,6 +485,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     defaultOpen: "Abrir por Defecto",
     showInNav: "Mostrar en Navegación",
     descriptorMapper: "Descriptor del Mapeo",
+    previewImage: "Imagen (vista previa)",
+    config: "Configuración",
+    controller: "Controlador",
     notification: "Notificación",
     deploymentCanceled: "Elementos de implementación cancelados.",
 

@@ -16,7 +16,7 @@
         <div class="row" ng-if="!success">
             <div class="col-lg-12 columns">
                 <div class="form-group">
-                    <label for="username">{{ 'dashboard.login.USERNAME' | translate }}</label>
+                    <label for="username" style="margin-top: 15px; margin-bottom: 10px;">{{ 'dashboard.login.RECOVER_LABEL' | translate }}</label>
                     <input type="text" id="username"
                            class="form-control" placeholder=""
                            ng-model="credentials.username" required/>
@@ -32,7 +32,8 @@
             </div>
 
             <div ng-show="recoverSuccess" class="col-lg-12 columns">
-                <div class="alert alert-danger" ng-if="error">{{error}}</div>
+                <div class="alert alert-success" ng-if="successMessage">{{successMessage}}</div>
+
                 <button type="submit" class="btn btn-primary"
                         ui-sref="login">
                     {{ 'dashboard.login.BACK_TO_LOGIN' | translate }}
