@@ -412,7 +412,7 @@ body,tbody {
     border-left: 1px solid #A0A0A0;
     margin-left: -1px;
     color: #555555;
-    padding: 4px 2%;
+    padding: 4px 18px 4px 2%;
     float: left;
     width: 55%;
     text-overflow: ellipsis;
@@ -645,6 +645,17 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
     top: -16px;
     width: 20px;
     cursor: pointer;
+}
+
+.property-wrapper .options .upload {
+    background:url(../../../themes/cstudioTheme/images/icons/upload_icon.png) no-repeat left;
+    float: right;
+    height: 20px;
+    position: relative;
+    top: -15px;
+    width: 20px;
+    cursor: pointer;
+    background-size: 90%;
 }
 
 

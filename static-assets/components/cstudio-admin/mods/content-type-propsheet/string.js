@@ -1,4 +1,4 @@
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.String = CStudioAdminConsole.Tool.ContentTypes.PropertyType.String ||  function(fieldName, containerEl)  {
+ CStudioAdminConsole.Tool.ContentTypes.PropertyType.String = CStudioAdminConsole.Tool.ContentTypes.PropertyType.String ||  function(fieldName, containerEl)  {
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     return this;

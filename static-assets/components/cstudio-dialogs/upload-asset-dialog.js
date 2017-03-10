@@ -34,10 +34,12 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 		this.dialog.show();
 		document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
 
-        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        var formSize = parent.getFormSize(id);
-        if(formSize < 320){
-            parent.setFormSize(320, id);
+        if(window.frameElement){
+            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+            var formSize = parent.getFormSize(id);
+            if(formSize < 320){
+                parent.setFormSize(320, id);
+            }
         }
 	},
 	
@@ -275,10 +277,13 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	 */
 	uploadPopupCancel: function(event) {
 		CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
-        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
-            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
+        if(window.frameElement){
+            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+            if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
+                $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
+            }
         }
+
 	}
 
 
