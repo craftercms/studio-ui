@@ -91,7 +91,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     wcmContentEdit: "Editar",
     wcmContentView: "Ver",
     wcmContentSubmit: "Solicitud de Publicación",
-    wcmContentDependencies: "Ver Dependencias",
+    wcmContentDependencies: "Dependencias",
     wcmContentDelete: "Eliminar",
     wcmContentSubmitDelete: "Solicitud de Eliminación",
     wcmContentReject: "Rechazar",
@@ -233,14 +233,13 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     wcmContentSubmit: "Solicitud de Publicación",
     wcmContentApprove: "Aprobar y Publicar",
 
-    wcmContentDependencies: "View Dependencies",
-
     notification: "Notificación",
     previewInitiated: "Sincronización del servidor de previsualización iniciado.",
 
     lookUpItemError: "No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.",
     pathSameError: "Las rutas de origen y destino son las mismas.",
-    pageExistError: "Página ya existe en el destino."
+    pageExistError: "Página ya existe en el destino.",
+    wcmContentDependencies: "Dependencias"
 
 });
 

@@ -45,7 +45,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         { name: CMgs.format(contextNavLangBundle, "wcmContentApprove"), allowAuthor: true, allowAdmin: true, allowBulk: true, renderId: "ApproveCommon"  },
                         { name: CMgs.format(contextNavLangBundle, "wcmContentDuplicate"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "Duplicate" },
                         { name: CMgs.format(contextNavLangBundle, "wcmContentHistory"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "VersionHistory" },
-                        { name: "View Dependencies", allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "ViewDependencies" }
+                        { name: CMgs.format(contextNavLangBundle, "wcmContentDependencies"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "ViewDependencies" }
                     ],
 
                     /**
