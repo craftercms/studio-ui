@@ -702,6 +702,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabWorkflowConfDesc: "Defines workflows available in the system",
     confCacheCleared : "Configuration cache cleared.",
 
+    /* Image */
+    constraintsError: "The uploaded file does not meet the specified width & height constraints",
+    sizeError: "Image is smaller than the constraint size",
+    fileNotImage: "The uploaded file is not of type image",
+    loadImageError:"Unable to load the selected image. Please try again or select another image",
+
     /* Errors */
     error: "Error",
     errorTitle: ". Please fill every title for fields and datasources.",

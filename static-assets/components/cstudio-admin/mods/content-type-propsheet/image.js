@@ -67,7 +67,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                         if (validExtensions.indexOf(to.fileExtension) != -1) {
                             valid = true;
                         } else {
-                            message = "The uploaded file is not of type image";
+                            message = CMgs.format(langBundle, "fileNotImage");
                         }
 
                         if (valid) {
@@ -78,7 +78,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                                     originalHeight = this.height,
                                     widthConstrains = 775,
                                     heightConstrains = 767;
-                                message = "The uploaded file does not meet the specified width & height constraints";
+                                message = CMgs.format(langBundle, "constraintsError");
 
                                 valid = _self.isImageValid(widthConstrains, originalWidth, heightConstrains, originalHeight);
 
@@ -91,17 +91,17 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
 
                                     if ((widthConstrains && originalWidth < widthConstrains)
                                         || (heightConstrains && originalHeight < heightConstrains)) {
-                                        message = "Image is smaller than the constraint size";
+                                        message = CMgs.format(langBundle, "sizeError");
                                         CStudioAuthoring.Operations.showSimpleDialog(
                                             "error-dialog",
                                             CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                            "notification",
+                                            CMgs.format(langBundle, "notification"),
                                             message,
                                             null, // use default button
                                             YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                             "studioDialog"
                                         );
-                                    } else { //site, Message, imageData, imageWidth, imageHeight, repoImage, callback
+                                    } else {
 
                                         var callback =  {
                                             success: function(content) {
@@ -127,11 +127,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                             };
                             image.addEventListener('load', imageLoaded, false);
                             image.addEventListener('error', function () {
-                                message = "Unable to load the selected image. Please try again or select another image";
+                                message = CMgs.format(langBundle, "loadImageError");
                                 CStudioAuthoring.Operations.showSimpleDialog(
                                     "error-dialog",
                                     CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                    "notification",
+                                    CMgs.format(langBundle, "notification"),
                                     message,
                                     null, // use default button
                                     YAHOO.widget.SimpleDialog.ICON_BLOCK,
@@ -148,7 +148,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                             CStudioAuthoring.Operations.showSimpleDialog(
                                 "error-dialog",
                                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                "notification",
+                                CMgs.format(langBundle, "notification"),
                                 message,
                                 null, // use default button
                                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
