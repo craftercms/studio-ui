@@ -61,6 +61,8 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
         self.repoImage = repoImage;
 
+        self.increaseFormDialogForCrop();
+
         var newdiv = YDom.get("cstudio-wcm-popup-div");
         if (newdiv == undefined) {
             newdiv = document.createElement("div");
@@ -422,7 +424,28 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
     cropPopupCancel: function(event) {
         CStudioAuthoring.Dialogs.CropDialog.closeDialog();
+        this.decreaseFormDialog();
     },
+
+    decreaseFormDialog: function(){
+        if( window.frameElement){
+            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+            if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
+                $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
+            }
+        }
+
+    },
+
+    increaseFormDialogForCrop: function(){
+        if( window.frameElement) {
+            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+            var formSize = parent.getFormSize(id);
+            if (formSize < 557) {
+                parent.setFormSize(557, id);
+            }
+        }
+    }
 
 
 };
