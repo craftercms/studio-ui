@@ -461,6 +461,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     defaultOpen: "기본 열기",
     showInNav: "탐색에 표시",
     descriptorMapper: "매퍼",
+    previewImage: "Preview Image ",
+    config: "Configuration",
+    controller: "Controller",
     notification: "공고",
     deploymentCanceled: "배포 항목이 취소되었습니다.",
 

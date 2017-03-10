@@ -1361,7 +1361,8 @@ CStudioAuthoring.Module.requireModule(
 				this.createRowFn(CMgs.format(langBundle, "objectType"), "objectType", item.objectType, "", "readonly", sheetEl,  function(e, el) { item.objectType = el.value; });
 				this.createRowFn(CMgs.format(langBundle, "contentType"), "content-type", item.contentType, "", "readonly", sheetEl,  function(e, el) { item["content-type"] = el.value; });
                 this.createRowFn(CMgs.format(langBundle, "previewImage"), "imageThumbnail", item.imageThumbnail ? item.imageThumbnail : "", "", "image", sheetEl,  function(e, el) { item.imageThumbnail = el.value; });
-				this.createRowFn("Config", "config", "config.xml", item.contentType, "config", sheetEl,  function(e, el) {});
+				this.createRowFn(CMgs.format(langBundle, "config"), "config", "config.xml", item.contentType, "config", sheetEl,  function(e, el) {});
+				this.createRowFn(CMgs.format(langBundle, "controller"), "controller", "controller.groovy", item.contentType, "controller", sheetEl,  function(e, el) {});
 
 				for(var i=0; i<item.properties.length; i++) {
 					var property = item.properties[i];
