@@ -2406,19 +2406,19 @@ var nodeOpen = false;
                 CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
             },
 
-            cropperImage: function(site, Message, imageData, imageWidth, imageHeight, repoImage, callback) {
-                CStudioAuthoring.Operations.openCropDialog(site, Message, imageData, imageWidth, imageHeight, repoImage, callback);
+            cropperImage: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
+                CStudioAuthoring.Operations.openCropDialog(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback);
             },
 
                 /**
              *  opens a dialog to crop an image
              */
-            openCropDialog: function(site, Message, imageData, imageWidth, imageHeight, repoImage, callback) {
+            openCropDialog: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
 
                 var openCropperDialogCb = {
                     moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
                         dialogClass.showDialog(moduleConfig.site, moduleConfig.message, moduleConfig.imageData, moduleConfig.imageWidth,
-                                               moduleConfig.imageHeight, moduleConfig.repoImage, moduleConfig.callback);
+                                               moduleConfig.imageHeight, moduleConfig.aspectRatio, moduleConfig.repoImage, moduleConfig.callback);
                     }
                 };
 
@@ -2428,6 +2428,7 @@ var nodeOpen = false;
                     imageData: imageData,
                     imageWidth: imageWidth,
                     imageHeight: imageHeight,
+                    aspectRatio : aspectRatio,
                     repoImage: repoImage,
                     callback: callback
                 }
