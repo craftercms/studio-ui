@@ -162,9 +162,19 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
 
     function initOverlay(elt) {
         var position = elt.offset(),
-            width = elt.width() - 4, // border-left-width + border-right-width = 4,
-            height = elt.height() - 4, // border-top-width + border-bottom-width = 4
-            props = {
+            width,
+            height,
+            boxSizing = window.getComputedStyle(elt[0], ':before').getPropertyValue('box-sizing');
+
+        if(boxSizing == "border-box"){
+            width = elt.outerWidth();
+            height = elt.outerHeight();
+        }else{
+            width = elt.width() - 4; // border-left-width + border-right-width = 4,
+            height = elt.height() - 4; // border-top-width + border-bottom-width = 4
+        }
+
+        var props = {
                 top: position.top,
                 left: position.left,
                 width: width,
