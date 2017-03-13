@@ -20,7 +20,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 	/**
 	 * show dialog
 	 */
-	showDialog: function(site, Message, imageData, imageWidth, imageHeight, repoImage, callback) {
+	showDialog: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
 		this._self = this;
         this.site = site;
         this.message = Message;
@@ -28,6 +28,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         this.imageData = imageData;
         this.width = imageWidth;
         this.height = imageHeight;
+        this.aspectRatio = aspectRatio ? aspectRatio : null;
         this.callback = callback;
         this.repoImage = repoImage;
 
@@ -216,6 +217,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         }
 
         $image.cropper({
+            aspectRatio: this.aspectRatio,
             minCropBoxWidth: this,
             dragCrop: false,
             cropBoxResizable: boxResizable,

@@ -1,6 +1,8 @@
 CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image ||  function(fieldName, containerEl)  {
 	this.fieldName = fieldName;
 	this.containerEl = containerEl;
+    this.WIDTHCONSTRAINS = 775;
+    this.HEIGHTCONSTRAINS = 767;
 	return this;
 }
 
@@ -9,6 +11,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
         var _self = this;
 		var containerEl = this.containerEl;
 		var valueEl = document.createElement("input");
+        YAHOO.util.Dom.setStyle(valueEl, 'cursor', 'default');
+        YAHOO.util.Dom.setStyle(valueEl, 'outline', 'none');
+        YAHOO.util.Dom.setStyle(valueEl, 'color', 'transparent');
+        YAHOO.util.Dom.setStyle(valueEl, 'text-shadow', '0 0 0 #BBB');
 		YAHOO.util.Dom.addClass(valueEl, "content-type-property-sheet-property-value");		
 		containerEl.appendChild(valueEl);
 		valueEl.value = value;
@@ -76,52 +82,39 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                             function imageLoaded(){
                                 var originalWidth = this.width,
                                     originalHeight = this.height,
-                                    widthConstrains = 775,
-                                    heightConstrains = 767;
+                                    widthConstrains = _self.WIDTHCONSTRAINS,
+                                    heightConstrains = _self.HEIGHTCONSTRAINS;
                                 message = CMgs.format(langBundle, "constraintsError");
 
-                                valid = _self.isImageValid(widthConstrains, originalWidth, heightConstrains, originalHeight);
+                                //valid = _self.isImageValid(widthConstrains, originalWidth, heightConstrains, originalHeight);
 
-                                if(valid){
+                                if ((widthConstrains && originalWidth <= widthConstrains)
+                                    && (heightConstrains && originalHeight <= heightConstrains)) {
                                     var itemURL = to.fileName;
                                     _self.valueEl.value = itemURL;
                                     _self.value = itemURL;
                                     _self.updateFn(null, _self.valueEl);
-                                }else {
+                                } else {
 
-                                    if ((widthConstrains && originalWidth < widthConstrains)
-                                        || (heightConstrains && originalHeight < heightConstrains)) {
-                                        message = CMgs.format(langBundle, "sizeError");
-                                        CStudioAuthoring.Operations.showSimpleDialog(
-                                            "error-dialog",
-                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                            CMgs.format(langBundle, "notification"),
-                                            message,
-                                            null, // use default button
-                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                            "studioDialog"
-                                        );
-                                    } else {
-
-                                        var callback =  {
-                                            success: function(content) {
-                                                var itemURL = content.message.internalName;
-                                                _self.valueEl.value = itemURL;
-                                                _self.value = itemURL;
-                                                _self.updateFn(null, _self.valueEl);
-                                            }
+                                    var callback =  {
+                                        success: function(content) {
+                                            var itemURL = content.message.internalName;
+                                            _self.valueEl.value = itemURL;
+                                            _self.value = itemURL;
+                                            _self.updateFn(null, _self.valueEl);
                                         }
-
-                                        CStudioAuthoring.Operations.cropperImage(
-                                            CStudioAuthoringContext.site,
-                                            message,
-                                            imageData,
-                                            widthConstrains,
-                                            heightConstrains,
-                                            null,
-                                            callback);
-
                                     }
+
+                                    CStudioAuthoring.Operations.cropperImage(
+                                        CStudioAuthoringContext.site,
+                                        message,
+                                        imageData,
+                                        widthConstrains,
+                                        heightConstrains,
+                                        widthConstrains/heightConstrains,
+                                        null,
+                                        callback);
+
                                 }
 
                             };
