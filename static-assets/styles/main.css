@@ -6024,8 +6024,6 @@ table td {
   #main {
     width: calc(100% - 300px);
     float: right; } }
-.modal-dialog .admin-dialog .form-group {
-  padding-left: 120px; }
 .modal-dialog .admin-dialog .image-group {
   padding-left: 0;
   position: relative; }

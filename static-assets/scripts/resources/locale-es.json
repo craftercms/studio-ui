@@ -11,7 +11,14 @@
       "BACK": "atrás",
       "BACK_TO_LOGIN": "Regresar al login",
       "SUBMIT": "Enviar",
-      "FORGOT_PASSWORD": "Olvidó su Contraseña?"
+      "FORGOT_PASSWORD": "Olvidó su Contraseña?",
+      "PASSWORD_REQUIREMENTS": "La contraseña debe tener al menos 8 caracteres y debe tener al menos un número, un caracter, y un caracter especial.",
+      "INVALID_LINK": "Parece que ha hecho click en un enlace inválido. Por favor intente de nuevo.",
+      "RECOVER_LABEL": "Por favor ingrese su nombre de usuario y enviaremos un enlace para resetear su contraseña.",
+      "INVALID_PASSWORD": "La contraseña no cumple los requisitos.",
+      "PASSWORDS_MUST_MATCH": "Las contraseñas deben coincidir.",
+      "CHANGE_PASSWORD": "Cambiar contraseña",
+      "RECOVER_ERROR": "Por favor verifique con su sysadmin para asegurarse de que un servidor SMTP esté configurado."
     },
     "sites": {
       "SITES_LABEL": "Sitios",
