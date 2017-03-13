@@ -315,6 +315,8 @@
                             "new" : user.newPassword
                         });
                     }
+
+                    $scope.toggleUserStatus(user);
                 };
                 $scope.viewUser = function(user){
                     $scope.user = {};
@@ -339,13 +341,7 @@
                     var currentStatus = user.status.enabled,
                         newStatus = currentStatus == true ? 'disable' : 'enable';
 
-                    adminService.toggleUserStatus(user, newStatus).success(function(data){
-                        user.status.enabled = !currentStatus;
-                        var notificationText = user.status.enabled ? 'enabled' : 'disabled';
-                        $scope.notification('User ' + notificationText, true);
-                    }).error(function() {
-                        // user.status.enabled = !currentStatus;
-                    });
+                    adminService.toggleUserStatus(user, newStatus);
                 };
                 $scope.removeUser = function(user) {
 

@@ -83,7 +83,8 @@
       "USAGE": "Usage",
       "QUOTA": "Quota",
       "PASSWORD": "Password",
-      "PASSWORD_VERIFICATION": "Password Verification"
+      "PASSWORD_VERIFICATION": "Password Verification",
+      "SAVE": "Save"
     },
     "audit": {
       "AUDIT": "Audit",
