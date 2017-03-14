@@ -83,7 +83,8 @@
       "USAGE": "용법",
       "QUOTA": "몫",
       "PASSWORD": "암호",
-      "PASSWORD_VERIFICATION": "비밀번호 확인"
+      "PASSWORD_VERIFICATION": "비밀번호 확인",
+      "SAVE": "구하다"
     },
     "audit": {
       "AUDIT": "심사",
