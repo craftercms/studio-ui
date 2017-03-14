@@ -1,4 +1,4 @@
-define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller'], function (crafter, $, Communicator, ICEOverlay, DnDController, PointerController) {
+define('guest', ['crafter', 'jquery', 'js-resize', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller'], function (crafter, $, $resize, Communicator, ICEOverlay, DnDController, PointerController) {
     'use strict';
 
     $.noConflict(true);
@@ -144,6 +144,22 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
 
     });
 
+    function initEltResize() {
+        var elems = document.querySelectorAll('[data-studio-ice]');
+
+        for (var i = 0; i < elems.length; ++i) {
+            var resizeElement = elems[i],
+                resizeCallback = function() {
+                    removeICERegions();
+                    if (!!(sessionStorage.getItem('ice-on'))) {
+                        initICERegions();
+                    }
+                };
+
+            addResizeListener(resizeElement, resizeCallback);
+        }
+    }
+
     function initICERegions() {
         removeICERegions();
         var elems = document.querySelectorAll('[data-studio-ice]');
@@ -251,6 +267,7 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
         initICERegions();
     }
 
+    initEltResize();
     setRegionsCookie();
     window.parent.initRegCookie();
 
