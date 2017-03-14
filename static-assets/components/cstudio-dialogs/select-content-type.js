@@ -186,7 +186,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 
 		for(var k=0; k<contentTypes.length; k++) {
 			if(contentTypesSelect.value == contentTypes[k].form){
-				if((contentTypes[k].image && contentTypes[k].image != "") || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != "")){
+				if((contentTypes[k].image && contentTypes[k].image != "") || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != "" && contentTypes[k].imageThumbnail != "undefined")){
 				
 				var imageName = (contentTypes[k].image && contentTypes[k].image != "") ? contentTypes[k].image : contentTypes[k].imageThumbnail;
 
@@ -249,7 +249,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 
 			for(var k=0; k<contentTypes.length; k++) {
 				if(this.value == contentTypes[k].form){
-					if((contentTypes[k].image && contentTypes[k].image != "") || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != "")){
+					if((contentTypes[k].image && contentTypes[k].image != "") || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != "" && contentTypes[k].imageThumbnail != "undefined")){
 				
 						var imageName = (contentTypes[k].image && contentTypes[k].image != "") ? contentTypes[k].image : contentTypes[k].imageThumbnail;
 						
