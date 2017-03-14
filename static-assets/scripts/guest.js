@@ -1,4 +1,4 @@
-define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller'], function (crafter, $, Communicator, ICEOverlay, DnDController, PointerController) {
+define('guest', ['crafter', 'jquery', 'js-resize', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller'], function (crafter, $, $resize, Communicator, ICEOverlay, DnDController, PointerController) {
     'use strict';
 
     $.noConflict(true);
@@ -144,6 +144,22 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
 
     });
 
+    function initEltResize() {
+        var elems = document.querySelectorAll('[data-studio-ice]');
+
+        for (var i = 0; i < elems.length; ++i) {
+            var resizeElement = elems[i],
+                resizeCallback = function() {
+                    removeICERegions();
+                    if (!!(sessionStorage.getItem('ice-on'))) {
+                        initICERegions();
+                    }
+                };
+
+            addResizeListener(resizeElement, resizeCallback);
+        }
+    }
+
     function initICERegions() {
         removeICERegions();
         var elems = document.querySelectorAll('[data-studio-ice]');
@@ -162,9 +178,19 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
 
     function initOverlay(elt) {
         var position = elt.offset(),
-            width = elt.width() - 4, // border-left-width + border-right-width = 4,
-            height = elt.height() - 4, // border-top-width + border-bottom-width = 4
-            props = {
+            width,
+            height,
+            boxSizing = window.getComputedStyle(elt[0], ':before').getPropertyValue('box-sizing');
+
+        if(boxSizing == "border-box"){
+            width = elt.outerWidth();
+            height = elt.outerHeight();
+        }else{
+            width = elt.width() - 4; // border-left-width + border-right-width = 4,
+            height = elt.height() - 4; // border-top-width + border-bottom-width = 4
+        }
+
+        var props = {
                 top: position.top,
                 left: position.left,
                 width: width,
@@ -241,6 +267,7 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
         initICERegions();
     }
 
+    initEltResize();
     setRegionsCookie();
     window.parent.initRegCookie();
 
