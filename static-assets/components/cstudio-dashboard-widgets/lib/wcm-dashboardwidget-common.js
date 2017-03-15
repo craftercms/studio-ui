@@ -936,7 +936,8 @@ WcmDashboardWidgetCommon.getContentItemForMatchedElement = function (matchedElem
         return el.getAttribute('title') == 'fullUri';
     });
 
-    if (!urlEl) { // if url null return    	
+    if (!urlEl) { // if url null return
+        callback.failure();
         return;
     }
     else {
