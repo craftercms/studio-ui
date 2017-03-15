@@ -141,6 +141,7 @@ CStudioAuthoring.Module.requireModule(
 						var getConfigCb = {
 							success: function(response) {
 								editor.setValue(response.responseText);
+                                editor.clearHistory();
 								CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditor(editor);
 							},
 							failure: function() {
