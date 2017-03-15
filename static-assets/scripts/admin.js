@@ -182,7 +182,7 @@
                         scope: $scope,
                         size: size ? size : ''
                     });
-                }
+                };
                 $scope.hideModal = function() {
                     $scope.adminModal.close();
                 };
@@ -608,128 +608,117 @@
                 }
             };
 
-            this.homeadminaudit = function() {
-                this.init();
-
-                $scope.audit = {};
-                var audit = $scope.audit;
-                audit.logsPerPage = 10;
-                audit.defaultDelay = 500;
-                var delayTimer;
-
-                var getUsers = function(site) {
-                    adminService.getUsers(site)
-                        .success(function (data) {
-                            audit.users = data.users;
-                            audit.userSelected = '';
-                        })
-                        .error(function () {
-                            audit.users = null;
-                        });
-                };
-
-                var getAudit = function(site) {
-                    audit.totalLogs = 0;
-                    getResultsPage(1);
-
-                    audit.pagination = {
-                        current: 1
-                    };
-
-                    audit.pageChanged = function(newPage) {
-                        getResultsPage(newPage);
-                    };
-
-                    function getResultsPage(pageNumber) {
-
-                        var params = {};
-                        params.site_id = site;
-                        if(audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
-
-                        if(audit.actions.length > 0){
-                            params.actions = JSON.stringify(audit.actions);
-                        }
-                        
-                        //TODO: totalItems should be without pagination params - only including site/action/user
-
-                        adminService.getAudit(params).success(function (data) {
-                            audit.totalLogs = data.total;
-
-                            if(audit.totalLogs > 0){
-                                var start = (pageNumber - 1) * audit.logsPerPage,
-                                    end = start + audit.logsPerPage;
-                                params.start = start;
-                                params.end = end;
-                            }
-
-                            adminService.getAudit(params).success(function (data) {
-                                audit.logs = data.items;
-                            });
-                        });
-                    }
-                };
-
-                audit.updateUser = function(user){
-                    if(user){
-                        audit.userSelected = user.username;
-                    }else{
-                        audit.userSelected = '';
-                    }
-
-                    $timeout.cancel(delayTimer)
-                    delayTimer = $timeout(function() {
-                        getAudit($scope.currentSite.id);
-                    }, audit.defaultDelay);
-                };
-
-                audit.actions = [];
-                audit.updateActions = function(action) {
-                    if(action === "all"){
-                        audit.actions = [];
-                    }else{
-                        if(audit.actions.indexOf(action) != -1){
-                            var index = audit.actions.indexOf(action);
-
-                            if (index !== -1) {
-                                audit.actions.splice(index, 1);
-                            }
-                        }else{
-                            audit.actions.push(action);
-                        }
-                    }
-
-                    audit.actionsInputVal = audit.actions.toString();
-
-                    $timeout.cancel(delayTimer);
-                    delayTimer = $timeout(function() {
-                        getAudit($scope.currentSite.id);
-                    }, audit.defaultDelay);
-
-                };
-
-                $scope.$watch('sites', function(){
-                    if($scope.sites){
-                        var sites = $scope.sites;
-
-                        $scope.currentSite = {
-                            name : sites[0].name,
-                            id: sites[0].siteId
-                        };
-                    }
-                });
-
-                $scope.$watch('currentSite', function(e) {
-                    $timeout.cancel(delayTimer)
-                    delayTimer = $timeout(function() {
-                        getUsers($scope.currentSite.id);
-                        getAudit($scope.currentSite.id);
-                    }, audit.defaultDelay);
-                });
-            };
-
             this[current]();
 
         }
     ])
+
+    app.controller('AuditCtrl', [
+        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        'Upload', '$stateParams', '$translate', '$location',
+        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+                  Upload, $stateParams, $translate, $location) {
+
+            $scope.audit = {};
+            var audit = $scope.audit;
+            audit.logsPerPage = 10;
+            audit.defaultDelay = 500;
+            audit.site = $location.search().site;
+            var delayTimer;
+
+            var getUsers = function(site) {
+                adminService.getUsers(site)
+                    .success(function (data) {
+                        audit.users = data.users;
+                        audit.userSelected = '';
+                    })
+                    .error(function () {
+                        audit.users = null;
+                    });
+            };
+
+            var getAudit = function(site) {
+                audit.totalLogs = 0;
+                getResultsPage(1);
+
+                audit.pagination = {
+                    current: 1
+                };
+
+                audit.pageChanged = function(newPage) {
+                    getResultsPage(newPage);
+                };
+
+                function getResultsPage(pageNumber) {
+
+                    var params = {};
+                    params.site_id = site;
+                    if(audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
+
+                    if(audit.actions.length > 0){
+                        params.actions = JSON.stringify(audit.actions);
+                    }
+
+                    //TODO: totalItems should be without pagination params - only including site/action/user
+
+                    adminService.getAudit(params).success(function (data) {
+                        audit.totalLogs = data.total;
+
+                        if(audit.totalLogs > 0){
+                            var start = (pageNumber - 1) * audit.logsPerPage,
+                                end = start + audit.logsPerPage;
+                            params.start = start;
+                            params.number = audit.logsPerPage;
+                        }
+
+                        adminService.getAudit(params).success(function (data) {
+                            audit.logs = data.items;
+                        });
+                    });
+                }
+            };
+
+            audit.updateUser = function(user){
+                if(user){
+                    audit.userSelected = user.username;
+                }else{
+                    audit.userSelected = '';
+                }
+
+                $timeout.cancel(delayTimer)
+                delayTimer = $timeout(function() {
+                    getAudit(audit.site);
+                }, audit.defaultDelay);
+            };
+
+            audit.actions = [];
+            audit.updateActions = function(action) {
+                if(action === "all"){
+                    audit.actions = [];
+                }else{
+                    if(audit.actions.indexOf(action) != -1){
+                        var index = audit.actions.indexOf(action);
+
+                        if (index !== -1) {
+                            audit.actions.splice(index, 1);
+                        }
+                    }else{
+                        audit.actions.push(action);
+                    }
+                }
+
+                audit.actionsInputVal = audit.actions.toString();
+
+                $timeout.cancel(delayTimer);
+                delayTimer = $timeout(function() {
+                    getAudit(audit.site);
+                }, audit.defaultDelay);
+
+            };
+
+            getAudit(audit.site);
+
+        }
+    ]);
 
 })(angular);
