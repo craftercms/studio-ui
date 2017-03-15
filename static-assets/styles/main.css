@@ -5997,6 +5997,11 @@ a[ng-click] {
   display: block;
   margin: 0 auto; }
 
+.iframe .cstudio-navbar {
+  display: none; }
+.iframe + #container {
+  top: 0; }
+
 table td {
   vertical-align: middle !important; }
   table td .user-image {
@@ -6127,23 +6132,24 @@ table td {
     .assign-users .actions a {
       visibility: hidden; }
 
-.audit-actions .dropdown-menu a.active {
-  background-color: #7e9dbb;
-  border-bottom: 1px solid #bfbfbf;
-  color: #fff; }
-  .audit-actions .dropdown-menu a.active:after {
-    display: inline-block;
-    content: 'x';
-    margin-right: -10px;
-    float: right; }
-
-.audit-number-logs {
-  border: 1px solid #ccc;
-  padding: 6px;
-  border-radius: 4px;
-  text-align: center;
-  margin-bottom: 20px;
-  min-width: 50px; }
+.audit-view {
+  padding: 0 20px; }
+  .audit-view .audit-actions .dropdown-menu a.active {
+    background-color: #7e9dbb;
+    border-bottom: 1px solid #bfbfbf;
+    color: #fff; }
+    .audit-view .audit-actions .dropdown-menu a.active:after {
+      display: inline-block;
+      content: 'x';
+      margin-right: -10px;
+      float: right; }
+  .audit-view .audit-number-logs {
+    border: 1px solid #ccc;
+    padding: 6px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 20px;
+    min-width: 50px; }
 
 .modal-backdrop {
   height: 100%;

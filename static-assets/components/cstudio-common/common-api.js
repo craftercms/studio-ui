@@ -2649,6 +2649,7 @@ var nodeOpen = false;
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
+            validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/user/logout.json",
 
             // Configuration Services
@@ -8053,7 +8054,7 @@ CStudioAuthoring.FilesDiff = {
                         serviceCallback,
                         delay = 60000;  // poll once every minute
 
-                        serviceUri = CStudioAuthoring.Service.verifyAuthTicketUrl;
+                        serviceUri = CStudioAuthoring.Service.validateSessionUrl;
 
                         var CMgs = CStudioAuthoring.Messages;
                         var formsLangBundle = CStudioAuthoring.Messages.getBundle("contextnav", CStudioAuthoringContext.lang);

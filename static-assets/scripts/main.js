@@ -102,10 +102,14 @@
                     templateUrl: '/studio/static-assets/ng-views/admin-group.html',
                     controller: "AdminCtrl"
                 })
-                .state('home.admin.audit', {
-                    url: '/audit',
-                    templateUrl: '/studio/static-assets/ng-views/audit.html',
-                    controller: 'AdminCtrl'
+                .state('home.audit', {
+                    url: 'audit',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/audit.html',
+                            controller: 'AuditCtrl'
+                        }
+                    }
                 })
                 .state('login', {
                     url: '/login',
@@ -438,13 +442,14 @@
     ]);
 
     app.controller('AppCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout',
-        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout) {
+        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout', '$location',
+        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout, $location) {
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
             $scope.authenticated = authService.isAuthenticated();
             $scope.helpUrl = 'http://docs.craftercms.org';
+            $scope.isIframeClass = $location.search().iframe ? 'iframe' : '';
 
             function logout() {
                 authService.logout();
