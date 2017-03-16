@@ -1,65 +1,54 @@
-<h2 class="page-header">{{ 'admin.audit.AUDIT' | translate }}</h2>
+<div class="audit-view">
+    <h2 class="page-header">{{ 'admin.audit.AUDIT' | translate }}</h2>
 
-<label>{{ 'admin.audit.SITE' | translate }}: </label>
+    <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label><span class="pr20">{{ audit.site }}</span>
 
-<div class="btn-group" dropdown is-open="siteDropdown.isopen" style="margin-right: 20px;">
-    <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-        {{ currentSite.name }} <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li ng-repeat="site in sites">
-            <span class="hidden">{{site}}</span>
-            <a ng-click="updateDropdown(site.siteId, site.name)">{{site.name}}</a>
-        </li>
-    </ul>
-</div>
+    <label>{{ 'admin.audit.USER' | translate }}: </label>
 
-<label>{{ 'admin.audit.USER' | translate }}: </label>
+    <div class="btn-group" dropdown is-open="usersDropdown.isopen" style="margin-right: 20px;">
+        <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle >
+            {{audit.userSelected || 'All Users' }}  <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li>
+                <a ng-click="audit.updateUser()">{{ 'admin.audit.ALL_USERS' | translate }}</a>
+            </li>
+            <li ng-repeat="user in audit.users">
+                <a ng-click="audit.updateUser(user)">{{user.username}}</a>
+            </li>
+        </ul>
+    </div>
 
-<div class="btn-group" dropdown is-open="usersDropdown.isopen" style="margin-right: 20px;">
-    <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle >
-        {{audit.userSelected || 'All Users' }}  <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="audit.updateUser()">{{ 'admin.audit.ALL_USERS' | translate }}</a>
-        </li>
-        <li ng-repeat="user in audit.users">
-            <a ng-click="audit.updateUser(user)">{{user.username}}</a>
-        </li>
-    </ul>
-</div>
+    <label>{{ 'admin.audit.actions.ACTIONS' | translate }}: </label>
 
-<label>{{ 'admin.audit.actions.ACTIONS' | translate }}: </label>
+    <div class="btn-group audit-actions" dropdown is-open="actionsDropdown.isopen" style="margin-right: 20px;">
+        <button type="button" class="btn btn-default dropdown-toggle" style="text-transform: capitalize;" dropdown-toggle>
+            {{ audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate }} <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
+            <li>
+                <a ng-click="audit.updateActions('all')">{{ 'admin.audit.actions.ALL_ACTIONS' | translate }}</a>
+            </li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('created') > -1 )}" ng-click="audit.updateActions('created')">
+                {{ 'admin.audit.actions.CREATED' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('updated') > -1 )}" ng-click="audit.updateActions('updated')">
+                {{ 'admin.audit.actions.UPDATED' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('deleted') > -1 )}" ng-click="audit.updateActions('deleted')">
+                {{ 'admin.audit.actions.DELETED' | translate }}
+            </a></li>
+        </ul>
+    </div>
 
-<div class="btn-group audit-actions" dropdown is-open="actionsDropdown.isopen" style="margin-right: 20px;">
-    <button type="button" class="btn btn-default dropdown-toggle" style="text-transform: capitalize;" dropdown-toggle>
-        {{ audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate }} <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
-        <li>
-            <a ng-click="audit.updateActions('all')">{{ 'admin.audit.actions.ALL_ACTIONS' | translate }}</a>
-        </li>
-        <li><a ng-class="{'active':( audit.actions.indexOf('created') > -1 )}" ng-click="audit.updateActions('created')">
-            {{ 'admin.audit.actions.CREATED' | translate }}
-        </a></li>
-        <li><a ng-class="{'active':( audit.actions.indexOf('updated') > -1 )}" ng-click="audit.updateActions('updated')">
-            {{ 'admin.audit.actions.UPDATED' | translate }}
-        </a></li>
-        <li><a ng-class="{'active':( audit.actions.indexOf('deleted') > -1 )}" ng-click="audit.updateActions('deleted')">
-            {{ 'admin.audit.actions.DELETED' | translate }}
-        </a></li>
-    </ul>
-</div>
+    <div class="pull-right">
+        <label>Logs per page: </label>
+        <input class="audit-number-logs" type="number" name="input" ng-model="audit.logsPerPage"
+               min="0" max="500" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
+    </div>
 
-<div class="pull-right">
-    <label>Logs per page: </label>
-    <input class="audit-number-logs" type="number" name="input" ng-model="audit.logsPerPage"
-           min="0" max="99" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
-</div>
-
-<table class="table table-striped">
-    <thead>
+    <table class="table table-striped">
+        <thead>
         <tr>
             <th>{{ 'admin.audit.USER' | translate }}</th>
             <th>{{ 'admin.audit.CONTENT' | translate }}</th>
@@ -67,8 +56,8 @@
             <th>{{ 'admin.audit.CREATED' | translate }}</th>
             <th>{{ 'admin.audit.MODIFIED' | translate }}</th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <tr dir-paginate="log in audit.logs | itemsPerPage: audit.logsPerPage"
             total-items="audit.totalLogs"
             current-page="audit.pagination.current">
@@ -78,7 +67,8 @@
             <td>{{log.creationDate | date:'MM-dd-yyyy HH:mm:ss'}}</td>
             <td>{{log.modifiedDate | date:'MM-dd-yyyy HH:mm:ss'}}</td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<dir-pagination-controls on-page-change="audit.pageChanged(newPageNumber)"></dir-pagination-controls>
+    <dir-pagination-controls on-page-change="audit.pageChanged(newPageNumber)"></dir-pagination-controls>
+</div>
