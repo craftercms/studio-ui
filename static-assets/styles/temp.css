@@ -4811,11 +4811,16 @@ span.acn-canned-search {
 .copy-content-container ul div div {
   margin-left: 17px; }
 
+.copy-content-container #copyCheckBoxItems {
+  margin-left: 11px;
+  margin-top: 14px; }
+
 .copy-content-container ul {
-  margin: 0; }
+  margin: 0;
+  padding-left: 18px; }
 
 .copy-content-container ul li {
-  margin: 5px 0px 5px 15px;
+  margin: 5px 0px 5px 0;
   list-style-type: none; }
 
 .copy-content-container ul input {
@@ -15137,7 +15142,8 @@ margin-left: -3px; */
 .cstudio-dialogue[id^="viewcontroller-dependencies"] .full-height {
   height: 100%; }
 .cstudio-dialogue[id^="viewcontroller-dependencies"] .studio-view .dependencies-option {
-  width: 160px;
+  width: initial;
+  min-width: 160px;
   margin-bottom: 10px;
   margin-left: 10px;
   display: inline-block; }
@@ -15229,3 +15235,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */
