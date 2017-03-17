@@ -191,7 +191,10 @@ var nodeOpen = false;
             PERMISSION_READ: new CStudioConstant("read"),
             PERMISSION_WRITE: new CStudioConstant("write"),
             PERMISSION_DELETE: new CStudioConstant("delete"),
-            PERMISSION_CREATE_FOLDER: new CStudioConstant("create folder")
+            PERMISSION_CREATE_FOLDER: new CStudioConstant("create folder"),
+            CONFIG_FILES_PATH: '/config/studio',
+            IMAGE_VALID_EXTENSIONS: ["jpg", "jpeg", "gif", "png", "tiff", "tif", "bmp", "svg", "JPG", "JPEG", "GIF", "PNG", "TIFF", "TIF", "BMP", "SVG"],
+            MAX_INT_VALUE: 2147483647
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -1612,7 +1615,7 @@ var nodeOpen = false;
                     folderPath = uri.substring(0, uri.lastIndexOf("index.xml"));
                 }
                 var cut = false,  // args.cut was the original value, but this parameter is always returning undefined
-                    serviceUri = CSA.Service.getPagesServiceUrl + "?site=" + site + "&path=" + folderPath + "&depth=-1&order=default",
+                    serviceUri = CSA.Service.getPagesServiceUrl + "?site=" + site + "&path=" + folderPath + "&depth=" + CStudioAuthoring.Constants.MAX_INT_VALUE + "&order=default",
                     getCopyTreeItemRequest = CStudioAuthoring.Service.createServiceUri(serviceUri);
 
                 submitDialogCb = {
