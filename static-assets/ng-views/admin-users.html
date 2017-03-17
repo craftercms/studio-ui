@@ -1,77 +1,80 @@
-<h2 class="page-header">{{ 'admin.users.HEADER_LABEL' | translate }}</h2>
+<div class="container-fluid admin-view">
+    <div class="row full">
+        <div id="" class="col-lg-10 col-lg-offset-1">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="page-header">{{ 'admin.users.HEADER_LABEL' | translate }}</h2>
 
-<div class="btn-group" dropdown is-open="dropdownStatus.isopen">
-    <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-        {{ currentSite.name }} <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="updateDropdown('all', 'All Sites')">All Sites</a>
-        </li>
-        <li ng-repeat="site in sites">
-            <span class="hidden">{{site}}</span>
-            <a ng-click="updateDropdown(site.siteId, site.name)">{{site.name}}</a>
-        </li>
-    </ul>
+                    <div class="btn-group" dropdown is-open="dropdownStatus.isopen">
+                        <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                            {{ currentSite.name }} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ng-click="updateDropdown('all', 'All Sites')">All Sites</a>
+                            </li>
+                            <li ng-repeat="site in sites">
+                                <span class="hidden">{{site}}</span>
+                                <a ng-click="updateDropdown(site.siteId, site.name)">{{site.name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <a class="btn btn-default" ng-click="users.createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
+
+                    <div class="pull-right mr15">
+                        <label>Users per page: </label>
+                        <input class="audit-number-logs" type="number" name="input" ng-model="users.itemsPerPage"
+                               min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
+                    </div>
+
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>{{ 'admin.users.FIRST_NAME' | translate }}</th>
+                            <th>{{ 'admin.users.LAST_NAME' | translate }}</th>
+                            <th>{{ 'admin.users.USER_NAME' | translate }}</th>
+                            <th>{{ 'admin.users.EMAIL' | translate }}</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th colspan="12">
+                                <input ng-model="q" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr dir-paginate="user in usersCollection.users | filter:q | itemsPerPage: users.itemsPerPage"
+                            current-page="users.pagination.current" total-items="users.totalLogs">
+                            <td><a ng-click="users.viewUser(user)">{{user.first_name}}</a></td>
+                            <td>{{user.last_name}}</td>
+                            <td>{{user.username}}</td>
+                            <td>{{user.email}}</td>
+
+                            <td>
+                                <a ng-click="users.editUserDialog(user)" class="btn btn-sm">
+                                    <i class="glyphicon glyphicon-pencil">
+                                    </i>
+                                </a>
+                            </td>
+                            <td>
+                                <a ng-click="users.removeUser(user)" class="btn btn-sm">
+                                    <i class="glyphicon glyphicon-trash">
+                                    </i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <dir-pagination-controls on-page-change="users.pageChanged(newPageNumber)"></dir-pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<a class="btn btn-default" ng-click="createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
-
-<div class="pull-right mr15">
-    <label>Users per page: </label>
-    <input class="audit-number-logs" type="number" name="input" ng-model="itemsByPage"
-           min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
-</div>
-
-<table st-table="displayedCollection" st-safe-src="usersCollection.users" class="table table-striped">
-    <thead>
-    <tr>
-        <!--<th st-sort="">#</th>-->
-        <th st-sort="displayName">{{ 'admin.users.FIRST_NAME' | translate }}</th>
-        <th st-sort="displayName">{{ 'admin.users.LAST_NAME' | translate }}</th>
-        <th st-sort="userName">{{ 'admin.users.USER_NAME' | translate }}</th>
-        <th st-sort="email">{{ 'admin.users.EMAIL' | translate }}</th>
-        <th></th>
-        <th></th>
-    </tr>
-    <tr>
-        <th colspan="12"><input st-search="" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="user in displayedCollection">
-        <!--<td>-->
-            <!--<a ng-click="viewUser(user)">-->
-                <!--<img class="user-image" src="https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=50&amp;h=50">-->
-            <!--</a>-->
-        <!--</td>-->
-        <td><a ng-click="viewUser(user)">{{user.first_name}}</a></td>
-        <td>{{user.last_name}}</td>
-        <td>{{user.username}}</td>
-        <td>{{user.email}}</td>
-
-        <td>
-            <a ng-click="editUserDialog(user)" class="btn btn-sm">
-                <i class="glyphicon glyphicon-pencil">
-                </i>
-            </a>
-        </td>
-        <td>
-            <a ng-click="removeUser(user)" class="btn btn-sm">
-                <i class="glyphicon glyphicon-trash">
-                </i>
-            </a>
-        </td>
-    </tr>
-    </tbody>
-    <tfoot>
-    <tr>
-        <td colspan="12" class="text-center">
-            <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
-        </td>
-    </tr>
-    </tfoot>
-</table>
 
 <script type="text/ng-template" id="modalView.html">
     <div class="modal-header">
@@ -80,21 +83,6 @@
     </div>
     <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
         <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
-
-            <!--<div class="form-group pull-left image-group">-->
-                <!--<button type="file" ng-model="picFile" ngf-select="uploadFiles($file, $invalidFiles)"-->
-                        <!--accept="image/*" ngf-max-size="10MB">-->
-                    <!--+-->
-                <!--</button>-->
-
-                <!--<img class="user-image" ngf-thumbnail="picFile || 'https://placeholdit.imgix.net/~text?txtsize=20&amp;txt=&amp;w=100&amp;h=100'" class="thumb"-->
-                     <!--style="width: 100px; height: 100px;">-->
-
-                <!--<span class="progress" ng-show="f.progress >= 0">-->
-                  <!--<div style="width:{{f.progress}}%;" class="{{f.uploaded}}">-->
-                  <!--</div>-->
-                <!--</span>-->
-            <!--</div>-->
 
             <div class="form-group" ng-if="!(dialogMode == 'create')">
                 <label for="enabled" class="control-label">Enabled</label>
@@ -256,5 +244,27 @@
     </div>
     <div class="modal-body">
         <img class="creatingSpinner" src="/studio/static-assets/img/spinner_tra.gif" />
+    </div>
+</script>
+
+<script type="text/ng-template" id="confirmationModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        {{ confirmationText }}
+    </div>
+    <div class="modal-footer">
+        <button class="btn" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+        <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="notificationModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Notification</h3>
+    </div>
+    <div class="modal-body">
+        <h4><span class="glyphicon glyphicon-{{ notificationType }}" style="color: #CE021F;"></span> {{ notificationText }} </h4>
     </div>
 </script>

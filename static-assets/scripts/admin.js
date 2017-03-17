@@ -15,11 +15,16 @@
 
             //USERS
 
-            this.getUsers = function(site) {
-                if(site && site != "all"){
-                    return $http.get(users('get-per-site', 'site_id=' + site));
+            this.getUsers = function(params) {
+
+                if(params.site_id && params.site_id != "all"){
+                    return $http.get(users('get-per-site'), {
+                        params: params
+                    });
                 }else{
-                    return $http.get(users('get-all'));
+                    return $http.get(users('get-all'), {
+                        params: params
+                    });
                 }
             };
 
@@ -66,11 +71,15 @@
 
             //GROUPS
 
-            this.getGroups = function(site) {
-                if(site && site != "all"){
-                    return $http.get(groups('get-per-site', 'site_id=' + site));
+            this.getGroups = function(params) {
+                if(params.site_id && params.site_id != "all"){
+                    return $http.get(groups('get-per-site'), {
+                        params: params
+                    });
                 }else{
-                    return $http.get(groups('get-all'));
+                    return $http.get(groups('get-all'), {
+                        params: params
+                    });
                 }
             };
 
@@ -228,146 +237,12 @@
             };
             
             this.homeadmin = function() {
-                $location.path('/admin/groups');
             };
 
-            this.homeadminusers = function() {
+            this.homegroups = function() {
 
-                this.init();
-                
-                //table setup
-                $scope.itemsByPage=10;
-                $scope.usersCollection = {};
-
-                var getUsers = function(site) {
-                    adminService.getUsers(site).success(function (data) {
-                        $scope.usersCollection = data;
-                    }).error(function (error) {
-                        console.log(error);
-                        //TODO: properly show error
-                    });
-                };
-                getUsers();
-                $scope.$watch('currentSite', function() {
-                    getUsers($scope.currentSite.id);
-                });
-
-                $scope.createUserDialog = function() {
-                    $scope.user = {};
-                    $scope.okModalFunction = $scope.createUser;
-
-                    $scope.adminModal = $scope.showModal('modalView.html');
-                    $scope.dialogMode = $translate.instant('common.CREATE');
-                };
-                $scope.createUser = function(user) {
-                    $scope.hideModal();
-
-                    adminService.createUser(user).success(function (data) {
-                        $scope.usersCollection.users.push(user);
-                        $scope.notification('\''+ user.username + '\' created.');
-                    }).error(function(error){
-                        console.log(error);
-                    });
-
-                };
-                $scope.editUserDialog = function(user) {
-                    $scope.editedUser = user;
-                    $scope.user = {};
-                    $scope.okModalFunction = $scope.editUser;
-
-                    $scope.adminModal = $scope.showModal('modalView.html');
-                    $scope.dialogMode = $translate.instant('common.EDIT');
-
-                    adminService.getUser(user.username).success(function (data) {
-                        $scope.user = data;
-
-                        adminService.getUserStatus(user.username).success(function(data){
-                            $scope.user.status = data;
-                        }).error(function(error){
-                            console.log(error);
-                            //TODO: properly display error
-                        });
-                    }).error(function (error) {
-                        console.log(error);
-                        //TODO: properly display error
-                    });
-                };
-                $scope.editUser = function(user) {
-                    $scope.hideModal();
-
-                    adminService.editUser(user).success(function (data) {
-                        var index = $scope.usersCollection.users.indexOf($scope.editedUser);
-
-                        if(index != -1){
-                            $scope.usersCollection.users[index] = user;
-                            $scope.displayedCollection = $scope.usersCollection.users;
-                        }
-
-                        $scope.notification('\''+ user.username + '\' edited.');
-                    }).error(function(error){
-                        console.log(error);
-                        //TODO: properly display the error.
-                    });
-
-                    if(user.newPassword){
-                        adminService.resetPassword({
-                            "username" : user.username,
-                            "new" : user.newPassword
-                        });
-                    }
-
-                    $scope.toggleUserStatus(user);
-                };
-                $scope.viewUser = function(user){
-                    $scope.user = {};
-                    $scope.dialogMode = false;
-
-                    $scope.adminModal = $scope.showModal('modalView.html');
-
-                    adminService.getUser(user.username).success(function (data) {
-                        $scope.user = data;
-
-                        adminService.getUserStatus(user.username).success(function(status){
-                            $scope.user.status = status;
-                        }).error(function(error){
-                            console.log(error);
-                        });
-                    }).error(function (error) {
-                        console.log(error);
-                        //TODO: properly display error
-                    });
-                };
-                $scope.toggleUserStatus = function(user){
-                    var currentStatus = user.status.enabled,
-                        newStatus = currentStatus == true ? 'disable' : 'enable';
-
-                    adminService.toggleUserStatus(user, newStatus);
-                };
-                $scope.removeUser = function(user) {
-
-                    var deleteUser = function() {
-                        adminService.deleteUser(user).success(function (data) {
-                            var index = $scope.usersCollection.users.indexOf(user);
-                            if (index !== -1) {
-                                $scope.usersCollection.users.splice(index, 1);
-                            }
-
-                            $scope.notification('\''+ user.username + '\' deleted.');
-                        }).error(function (error) {
-                            console.log(error);
-                            //TODO: properly display error.
-                        });
-                    }
-
-                    $scope.confirmationAction = deleteUser;
-                    $scope.confirmationText = "Do you want to delete " + user.username + "?";
-
-                    $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true);
-                };
-
-            };
-
-            this.homeadmingroups = function() {
+                $scope.groups = {};
+                var groups = $scope.groups;
 
                 this.init();
 
@@ -376,39 +251,90 @@
                 $scope.noGroupSelected = true;
                 
                 //table setup
-                $scope.itemsByPage=10;
+                groups.itemsPerPage=10;
                 $scope.groupsCollection = [];
 
                 var getGroups = function(site) {
-                    adminService.getGroups(site).success(function (data) {
-                        if(data.sites){
-                            var groups = {
-                                "groups": []
-                            };
-                            for(var x = 0; x < data.sites.length; x++){
-                                var site = data.sites[x],
-                                    site_id = site.site_id;
 
-                                for(var y = 0; y < site.groups.length; y++){
-                                    var group = site.groups[y];
-                                    group.site_id = site_id;
-                                    groups.groups.push(group);
+                    groups.totalUsers = 0;
+                    getResultsPage(1);
+
+                    groups.pagination = {
+                        current: 1
+                    };
+
+                    groups.pageChanged = function(newPage) {
+                        getResultsPage(newPage);
+                    };
+
+                    function getResultsPage(pageNumber) {
+
+                        var params = {};
+
+                        params.site_id = site;
+
+                        adminService.getGroups(params).success(function (data) {
+                            if(data.sites){
+                                var groupsCollection = {
+                                    "groups": []
+                                };
+                                for(var x = 0; x < data.sites.length; x++){
+                                    var site = data.sites[x],
+                                        site_id = site.site_id;
+
+                                    for(var y = 0; y < site.groups.length; y++){
+                                        var group = site.groups[y];
+                                        group.site_id = site_id;
+                                        groupsCollection.groups.push(group);
+                                    }
                                 }
+
+                                $scope.groupsCollection = groupsCollection;
+
+                                groups.totalLogs = $scope.groupsCollection.groups.length;
+
+                                if(groups.totalLogs > 0){
+                                    var start = (pageNumber - 1) * groups.itemsPerPage,
+                                        end = start + groups.itemsPerPage;
+                                    params.start = start;
+                                    params.number = groups.itemsPerPage;
+                                }
+
+                                adminService.getGroups(params).success(function (data) {
+                                    if(data.sites){
+                                        var groupsCollection = {
+                                            "groups": []
+                                        };
+                                        for(var x = 0; x < data.sites.length; x++){
+                                            var site = data.sites[x],
+                                                site_id = site.site_id;
+
+                                            for(var y = 0; y < site.groups.length; y++){
+                                                var group = site.groups[y];
+                                                group.site_id = site_id;
+                                                groupsCollection.groups.push(group);
+                                            }
+                                        }
+
+                                        $scope.groupsCollection = groupsCollection;
+                                    }else{
+                                        $scope.groupsCollection = data;
+                                    }
+                                });
+
+                            }else{
+                                // $scope.groupsCollection = data;
                             }
 
-                            $scope.groupsCollection = groups;
-                        }else{
-                            $scope.groupsCollection = data;
-                        }
 
 
-
-                    }).error(function (error) {
-                        console.log(error);
-                        //TODO: properly display the error.
-                    });
+                        }).error(function (error) {
+                            console.log(error);
+                            //TODO: properly display the error.
+                        });
+                    }
                 };
-                getGroups();
+                // getGroups();
 
                 $scope.$watch('currentSite', function() {
                     getGroups($scope.currentSite.id);
@@ -607,7 +533,7 @@
                     });
                 }
             };
-
+            
             this[current]();
 
         }
@@ -621,7 +547,7 @@
 
             $scope.audit = {};
             var audit = $scope.audit;
-            audit.logsPerPage = 10;
+            audit.logsPerPage = 15;
             audit.defaultDelay = 500;
             audit.site = $location.search().site;
             var delayTimer;
@@ -659,21 +585,19 @@
                         params.actions = JSON.stringify(audit.actions);
                     }
 
-                    //TODO: totalItems should be without pagination params - only including site/action/user
+                    if(audit.totalLogs && audit.totalLogs > 0) {
+                        var start = (pageNumber - 1) * audit.logsPerPage,
+                            end = start + audit.logsPerPage;
+                        params.start = start;
+                        params.number = audit.logsPerPage;
+                    }else{
+                        params.start = 0;
+                        params.number = audit.logsPerPage;
+                    }
 
                     adminService.getAudit(params).success(function (data) {
                         audit.totalLogs = data.total;
-
-                        if(audit.totalLogs > 0){
-                            var start = (pageNumber - 1) * audit.logsPerPage,
-                                end = start + audit.logsPerPage;
-                            params.start = start;
-                            params.number = audit.logsPerPage;
-                        }
-
-                        adminService.getAudit(params).success(function (data) {
-                            audit.logs = data.items;
-                        });
+                        audit.logs = data.items;
                     });
                 }
             };
@@ -718,6 +642,237 @@
 
             getAudit(audit.site);
 
+        }
+    ]);
+
+    app.controller('UsersCtrl', [
+        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        'Upload', '$stateParams', '$translate', '$location',
+        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+                  Upload, $stateParams, $translate, $location) {
+
+            $scope.users = {};
+            var users = $scope.users;
+
+            this.init = function() {
+                $scope.debounceDelay = 500;
+
+                adminService.getSites()
+                    .success(function (data) {
+                        $scope.sites = data;
+                    })
+                    .error(function () {
+                        $scope.sites = null;
+                    });
+
+                //sites dropdown
+                $scope.currentSite = {
+                    name : "All Sites",
+                    id: "all"
+                };
+                $scope.updateDropdown = function(siteId, siteName) {
+                    $scope.currentSite = {
+                        name: siteName,
+                        id: siteId
+                    };
+                };
+
+                $scope.showModal = function(template, size, verticalCentered){
+                    return $modal.open({
+                        templateUrl: template,
+                        windowClass: verticalCentered ? 'centered-dialog' : '',
+                        backdrop: 'static',
+                        keyboard: false,
+                        controller: 'UsersCtrl',
+                        scope: $scope,
+                        size: size ? size : ''
+                    });
+                };
+                $scope.hideModal = function() {
+                    $scope.adminModal.close();
+                };
+                $scope.notification = function(notificationText, showOnTop){
+                    var verticalAlign = showOnTop ? false : true;
+                    $scope.notificationText = notificationText;
+                    $scope.notificationType = 'alert';
+
+                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign);
+
+                    $timeout(function () {
+                        modal.close();
+                    }, 1500, false);
+
+                };
+            };
+            this.init();
+
+            //table setup
+            users.itemsPerPage = 10;
+            $scope.usersCollection = {};
+
+            var getUsers = function(site) {
+                users.totalUsers = 0;
+                getResultsPage(1);
+
+                users.pagination = {
+                    current: 1
+                };
+
+                users.pageChanged = function(newPage) {
+                    getResultsPage(newPage);
+                };
+
+                function getResultsPage(pageNumber) {
+
+                    var params = {};
+
+                    params.site_id = site;
+
+                    adminService.getUsers(params).success(function (data) {
+                        users.totalLogs = data.users.length;
+
+                        if(users.totalLogs > 0){
+                            var start = (pageNumber - 1) * users.itemsPerPage,
+                                end = start + users.itemsPerPage;
+                            params.start = start;
+                            params.number = users.itemsPerPage;
+                        }
+
+                        $scope.usersCollection = data;
+
+                        adminService.getUsers(params).success(function (data) {
+                            $scope.usersCollection = data;
+                        });
+                    });
+                }
+            };
+
+            //TODO: check currentSite changes, that's the reason why get-all sites is called many times
+            $scope.$watch('currentSite', function() {
+                getUsers($scope.currentSite.id);
+            });
+
+            users.createUserDialog = function() {
+                $scope.user = {};
+                $scope.okModalFunction = users.createUser;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+                $scope.dialogMode = $translate.instant('common.CREATE');
+            };
+            users.createUser = function(user) {
+                $scope.hideModal();
+
+                adminService.createUser(user).success(function (data) {
+                    $scope.usersCollection.users.push(user);
+                    $scope.notification('\''+ user.username + '\' created.');
+                }).error(function(error){
+                    console.log(error);
+                });
+
+            };
+            users.editUserDialog = function(user) {
+                $scope.editedUser = user;
+                $scope.user = {};
+                $scope.okModalFunction = users.editUser;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+                $scope.dialogMode = $translate.instant('common.EDIT');
+
+                adminService.getUser(user.username).success(function (data) {
+                    $scope.user = data;
+
+                    adminService.getUserStatus(user.username).success(function(data){
+                        $scope.user.status = data;
+                    }).error(function(error){
+                        console.log(error);
+                        //TODO: properly display error
+                    });
+                }).error(function (error) {
+                    console.log(error);
+                    //TODO: properly display error
+                });
+            };
+            users.editUser = function(user) {
+                $scope.hideModal();
+
+                adminService.editUser(user).success(function (data) {
+                    var index = $scope.usersCollection.users.indexOf($scope.editedUser);
+
+                    if(index != -1){
+                        $scope.usersCollection.users[index] = user;
+                        $scope.displayedCollection = $scope.usersCollection.users;
+                    }
+
+                    $scope.notification('\''+ user.username + '\' edited.');
+                }).error(function(error){
+                    console.log(error);
+                    //TODO: properly display the error.
+                });
+
+                if(user.newPassword){
+                    adminService.resetPassword({
+                        "username" : user.username,
+                        "new" : user.newPassword
+                    });
+                }
+
+                users.toggleUserStatus(user);
+            };
+            users.viewUser = function(user){
+                $scope.user = {};
+                $scope.dialogMode = false;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+
+                adminService.getUser(user.username).success(function (data) {
+                    $scope.user = data;
+
+                    adminService.getUserStatus(user.username).success(function(status){
+                        $scope.user.status = status;
+                    }).error(function(error){
+                        console.log(error);
+                    });
+                }).error(function (error) {
+                    console.log(error);
+                    //TODO: properly display error
+                });
+            };
+            users.toggleUserStatus = function(user){
+                var currentStatus = user.status.enabled,
+                    newStatus = currentStatus == true ? 'disable' : 'enable';
+
+                adminService.toggleUserStatus(user, newStatus);
+            };
+            users.removeUser = function(user) {
+
+                var deleteUser = function() {
+                    adminService.deleteUser(user).success(function (data) {
+                        var index = $scope.usersCollection.users.indexOf(user);
+                        if (index !== -1) {
+                            $scope.usersCollection.users.splice(index, 1);
+                        }
+
+                        $scope.notification('\''+ user.username + '\' deleted.');
+                    }).error(function (error) {
+                        console.log(error);
+                    });
+                }
+
+                $scope.confirmationAction = deleteUser;
+                $scope.confirmationText = "Do you want to delete " + user.username + "?";
+
+                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true);
+            };
+        }
+    ]);
+
+    app.controller('GroupsCtrl', [
+        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        'Upload', '$stateParams', '$translate', '$location',
+        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+                  Upload, $stateParams, $translate, $location) {
+
+            $scope.groups = {};
         }
     ]);
 
