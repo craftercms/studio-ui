@@ -1,4 +1,3 @@
-// CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/log-view.css");
 CStudioAdminConsole.Tool.Audit = CStudioAdminConsole.Tool.Audit ||  function(config, el)  {
         this.containerEl = el;
         this.config = config;

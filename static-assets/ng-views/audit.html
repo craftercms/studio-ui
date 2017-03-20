@@ -58,9 +58,9 @@
         </tr>
         </thead>
         <tbody>
-        <tr dir-paginate="log in audit.logs | itemsPerPage: audit.logsPerPage"
-            total-items="audit.totalLogs"
-            current-page="audit.pagination.current">
+
+        <tr dir-paginate="log in audit.logs | filter:q | itemsPerPage: audit.logsPerPage"
+            current-page="audit.pagination.current" total-items="audit.totalLogs">
             <td>{{log.userId}}</td>
             <td>{{log.contentId}}</td>
             <td>{{log.type}}</td>
