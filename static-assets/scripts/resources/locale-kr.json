@@ -61,7 +61,7 @@
       "SEARCH_USERS": "사용자 검색",
       "ADD_USER_TOOLTIP": "그룹에 사용자 추가",
       "ASSIGN_USERS_LABEL": "사용자 지정",
-      "VIEW_GROUPS_LABEL": "그룹보기",,
+      "VIEW_GROUPS_LABEL": "그룹보기",
       "PASSWORD_REQUIREMENTS": "Password must be 8 characters long and should contain one number,one character and one special character.",
       "INVALID_LINK": "It seems like you clicked on an invalid password reset link. Please try again.",
       "RECOVER_LABEL": "Please enter your username and we will send you a link to reset you password.",
@@ -120,6 +120,8 @@
     "NO": "아니",
     "HELP": "도움",
     "SETTINGS": "설정",
-    "SIGN_OUT": "로그 아웃"
+    "SIGN_OUT": "로그 아웃",
+    "NOTIFICATION": "Notification",
+    "CANCEL" : "Cancel"
   }
 }

@@ -66,3 +66,15 @@
         <button class="btn btn-default" ng-click="cancel()">{{ 'common.NO' | translate }}</button>
     </div>
 </script>
+
+<script type="text/ng-template" id="invalidSite.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+        <p>"{{siteValidation}}" {{ 'dashboard.sites.SITE_ERROR' | translate }}</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel()">{{ 'common.CANCEL' | translate }}</button>
+    </div>
+</script>
