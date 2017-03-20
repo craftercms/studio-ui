@@ -555,8 +555,8 @@
     ]);
 
     app.controller('SitesCtrl', [
-        '$scope', '$state', 'sitesService', 'authService', '$modal',
-        function ($scope, $state, sitesService, authService, $modal) {
+        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal',
+        function ($scope, $state, $location, sitesService, authService, $modal) {
 
             $scope.sites = null;
 
@@ -567,6 +567,8 @@
             $scope.createSites = false;
 
             $scope.user = authService.getUser();
+
+            $scope.siteValidation = $location.$$search.siteValidation;
 
 
             function getSites () {
@@ -654,6 +656,18 @@
                 });
             }
 
+            if($scope.siteValidation){
+                $scope.adminModal = $modal.open({
+                    templateUrl: 'invalidSite.html',
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'sm',
+                    controller: 'ErrorSiteCtrl',
+                    scope: $scope
+                });
+            }
+
+
         }
 
 
@@ -679,6 +693,18 @@
             $scope.ok = function () {
                 removeSiteSitesModal(siteToRemove);
             };
+
+            $scope.cancel = function () {
+                $modalInstance.dismiss('cancel');
+            };
+
+        }
+
+    ]);
+
+    app.controller('ErrorSiteCtrl', [
+        '$scope', '$state', 'sitesService', '$modalInstance',
+        function ($scope, $state, sitesService, $modalInstance) {
 
             $scope.cancel = function () {
                 $modalInstance.dismiss('cancel');
@@ -779,13 +805,23 @@
                     siteName: $scope.site.siteName,
                     blueprintName: $scope.site.blueprint.id,
                     description: $scope.site.description
-                }).success(function (data) {
-                    $timeout(function () {
-                        sitesService.editSite($scope.site);
-                        createModalInstance.close();
-                    }, 3000, false);
-
-                });
+                })
+                    .success(function (data) {
+                        $timeout(function () {
+                            sitesService.editSite($scope.site);
+                            createModalInstance.close();
+                        }, 3000, false);
+                    })
+                    .error(function (data) {
+                        $scope.adminModal = $modal.open({
+                            templateUrl: 'createSiteError.html',
+                            backdrop: 'static',
+                            keyboard: false,
+                            size: 'sm',
+                            controller: 'ErrorSiteCtrl',
+                            scope: $scope
+                        });
+                    });
 
             }
 

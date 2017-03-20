@@ -120,6 +120,8 @@
     "NO": "No",
     "HELP": "Ayuda",
     "SETTINGS": "Preferencias",
-    "SIGN_OUT": "Desloguearse"
+    "SIGN_OUT": "Desloguearse",
+    "NOTIFICATION": "Notificación",
+    "CANCEL" : "Cancelar"
   }
 }
