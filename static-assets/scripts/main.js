@@ -78,29 +78,23 @@
                         }
                     }
                 })
-                .state('home.admin', {
-                    url: 'admin',
+                .state('home.users', {
+                    url: 'users',
                     views: {
                         content: {
-                            templateUrl: '/studio/static-assets/ng-views/admin.html',
-                            controller: 'AdminCtrl'
+                            templateUrl: '/studio/static-assets/ng-views/admin-users.html',
+                            controller: 'UsersCtrl'
                         }
                     }
                 })
-                .state('home.admin.groups', {
-                    url: '/groups',
-                    templateUrl: '/studio/static-assets/ng-views/admin-groups.html',
-                    controller: 'AdminCtrl'
-                })
-                .state('home.admin.users', {
-                    url: '/users',
-                    templateUrl: '/studio/static-assets/ng-views/admin-users.html',
-                    controller: 'AdminCtrl'
-                })
-                .state('home.admin.group',{
-                    url: '/group?identifier',
-                    templateUrl: '/studio/static-assets/ng-views/admin-group.html',
-                    controller: "AdminCtrl"
+                .state('home.groups', {
+                    url: 'groups',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/admin-groups.html',
+                            controller: 'AdminCtrl'
+                        }
+                    }
                 })
                 .state('home.audit', {
                     url: 'audit',
