@@ -772,3 +772,7 @@ html, body {
 .content-form-link a:hover {
     cursor: pointer;
 }
+
+.notifyjs-bootstrap-success span{
+    font-size: 14px;
+}

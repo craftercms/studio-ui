@@ -119,7 +119,7 @@ CStudioAuthoring.Module.requireModule(
                                                 var callBack = {
                                                     success: function () {
                                                         CStudioAdminConsole.isDirty = false;
-                                                        CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top left", "success");
+                                                        CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveContentType");
 
                                                     },
                                                     failure: function () {
