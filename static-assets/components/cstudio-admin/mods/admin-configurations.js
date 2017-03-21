@@ -236,7 +236,7 @@ CStudioAuthoring.Module.requireModule(
 					var selectedIndex = itemSelectEl.selectedIndex;
 					var saveCb = {
                         success: function() {
-                            CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "bottom", "right", "success");
+                            CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
                         },
 						failure: function() {
                             CStudioAuthoring.Operations.showSimpleDialog(
