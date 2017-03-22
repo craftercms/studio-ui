@@ -41,11 +41,11 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="site in sites">
-                    <td>{{site.site_id}}</td>
-                    <td><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
-                    <td><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
-                    <td>{{site.description}}</td>
-                    <td><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="glyphicon glyphicon-trash"></i></a></td>
+                    <td align="center">{{site.name}}</td>
+                    <td align="center"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
+                    <td align="center"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
+                    <td align="center" class="site-description">{{site.description}}</td>
+                    <td align="center"><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="glyphicon glyphicon-trash"></i></a></td>
                 </tr>
                 </tbody>
             </table>

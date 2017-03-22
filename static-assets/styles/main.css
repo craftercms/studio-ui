@@ -5968,6 +5968,8 @@ a[ng-click] {
   padding: 15px 10px; }
 .table.site-list tbody td {
   padding: 10px; }
+.table.site-list tbody .site-description {
+  max-width: 100px; }
 
 .site-view {
   padding: 0 20px; }
@@ -6198,3 +6200,5 @@ small .text-sm {
   border-bottom: 1px solid #eeeeee;
   padding-bottom: 15px;
   margin-bottom: 15px; }
+
+/*# sourceMappingURL=main.css.map */
