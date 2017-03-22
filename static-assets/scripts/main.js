@@ -318,8 +318,12 @@
 
             var me = this;
 
-            this.getSites = function() {
-                return $http.get(json('get-sites-3'));
+            this.getSites = function(username) {
+                return $http.get(api('get-per-user'), {
+                    params: { number: 25,
+                              start: 0,
+                              username: username}
+                });
             };
 
             this.getSite = function(id) {
@@ -357,7 +361,7 @@
             };
 
             this.create = function (site) {
-                return $http.post(api('create-site'),site);
+                return $http.post(api('create'),site);
             };
 
             this.exists = function (site) {
@@ -572,9 +576,9 @@
 
 
             function getSites () {
-                sitesService.getSites()
+                sitesService.getSites($scope.user.username)
                     .success(function (data) {
-                        $scope.sites = data;
+                        $scope.sites = data.sites;
                         isRemove();
                         createSitePermission();
                     })
@@ -801,10 +805,9 @@
                 });
                 $scope.adminModal.close();
                 sitesService.create({
-                    siteId: $scope.site.siteId,
-                    siteName: $scope.site.siteName,
-                    blueprintName: $scope.site.blueprint.id,
-                    description: $scope.site.description
+                    site_id: $scope.site.siteId,
+                    description: $scope.site.description,
+                    blueprint: $scope.site.blueprint.id
                 })
                     .success(function (data) {
                         $timeout(function () {
