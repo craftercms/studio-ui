@@ -319,8 +319,12 @@
 
             var me = this;
 
-            this.getSites = function() {
-                return $http.get(json('get-sites-3'));
+            this.getSites = function(username) {
+                return $http.get(api('get-per-user'), {
+                    params: { number: 25,
+                              start: 0,
+                              username: username}
+                });
             };
 
             this.getSite = function(id) {
@@ -358,7 +362,7 @@
             };
 
             this.create = function (site) {
-                return $http.post(api('create-site'),site);
+                return $http.post(api('create'),site);
             };
 
             this.exists = function (site) {
@@ -556,8 +560,8 @@
     ]);
 
     app.controller('SitesCtrl', [
-        '$scope', '$state', 'sitesService', 'authService', '$modal',
-        function ($scope, $state, sitesService, authService, $modal) {
+        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal',
+        function ($scope, $state, $location, sitesService, authService, $modal) {
 
             $scope.sites = null;
 
@@ -569,11 +573,13 @@
 
             $scope.user = authService.getUser();
 
+            $scope.siteValidation = $location.$$search.siteValidation;
+
 
             function getSites () {
-                sitesService.getSites()
+                sitesService.getSites($scope.user.username)
                     .success(function (data) {
-                        $scope.sites = data;
+                        $scope.sites = data.sites;
                         isRemove();
                         createSitePermission();
                     })
@@ -655,6 +661,18 @@
                 });
             }
 
+            if($scope.siteValidation){
+                $scope.adminModal = $modal.open({
+                    templateUrl: 'invalidSite.html',
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'sm',
+                    controller: 'ErrorSiteCtrl',
+                    scope: $scope
+                });
+            }
+
+
         }
 
 
@@ -680,6 +698,18 @@
             $scope.ok = function () {
                 removeSiteSitesModal(siteToRemove);
             };
+
+            $scope.cancel = function () {
+                $modalInstance.dismiss('cancel');
+            };
+
+        }
+
+    ]);
+
+    app.controller('ErrorSiteCtrl', [
+        '$scope', '$state', 'sitesService', '$modalInstance',
+        function ($scope, $state, sitesService, $modalInstance) {
 
             $scope.cancel = function () {
                 $modalInstance.dismiss('cancel');
@@ -776,17 +806,26 @@
                 });
                 $scope.adminModal.close();
                 sitesService.create({
-                    siteId: $scope.site.siteId,
-                    siteName: $scope.site.siteName,
-                    blueprintName: $scope.site.blueprint.id,
-                    description: $scope.site.description
-                }).success(function (data) {
-                    $timeout(function () {
-                        sitesService.editSite($scope.site);
-                        createModalInstance.close();
-                    }, 3000, false);
-
-                });
+                    site_id: $scope.site.siteId,
+                    description: $scope.site.description,
+                    blueprint: $scope.site.blueprint.id
+                })
+                    .success(function (data) {
+                        $timeout(function () {
+                            sitesService.editSite($scope.site);
+                            createModalInstance.close();
+                        }, 3000, false);
+                    })
+                    .error(function (data) {
+                        $scope.adminModal = $modal.open({
+                            templateUrl: 'createSiteError.html',
+                            backdrop: 'static',
+                            keyboard: false,
+                            size: 'sm',
+                            controller: 'ErrorSiteCtrl',
+                            scope: $scope
+                        });
+                    });
 
             }
 

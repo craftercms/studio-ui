@@ -41,11 +41,11 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="site in sites">
-                    <td>{{site.name}}</td>
-                    <td><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
-                    <td><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
-                    <td><a href="{{site.liveUrl}}" target="_blank">{{ 'dashboard.sites.LIVE_SITE' | translate }} &raquo;</a></td>
-                    <td><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="glyphicon glyphicon-trash"></i></a></td>
+                    <td align="center">{{site.name}}</td>
+                    <td align="center"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
+                    <td align="center"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
+                    <td align="center" class="site-description">{{site.description}}</td>
+                    <td align="center"><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="glyphicon glyphicon-trash"></i></a></td>
                 </tr>
                 </tbody>
             </table>
@@ -64,5 +64,17 @@
     <div class="modal-footer">
         <button class="btn btn-primary" ng-click="ok()">{{ 'common.YES' | translate }}</button>
         <button class="btn btn-default" ng-click="cancel()">{{ 'common.NO' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="invalidSite.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+        <p>"{{siteValidation}}" {{ 'dashboard.sites.SITE_ERROR' | translate }}</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel()">{{ 'common.CANCEL' | translate }}</button>
     </div>
 </script>

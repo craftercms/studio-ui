@@ -33,6 +33,7 @@
       "REMOVE_SITE_CONFIRMATION_MSG": "Do you want to remove the site?",
       "TOGGLE_NAV": "Toggle navigation",
       "ACCOUNT": "Account",
+      "SITE_ERROR" : "is not a valid site.",
 
       "create": {
         "HEADER_LABEL": "Create Site",
@@ -40,7 +41,8 @@
         "SITE_ID": "Site Id",
         "DESCRIPTION": "Description",
         "BLUEPRINT": "Blueprint",
-        "CREATING_SITE": "Creating Site"
+        "CREATING_SITE": "Creating Site",
+        "CREATE_ERROR": "System can't create the site. Please contact the administrator."
       }
     }
   },
@@ -126,6 +128,8 @@
     "NO": "No",
     "HELP": "Help",
     "SETTINGS": "Settings",
-    "SIGN_OUT": "Sign out"
+    "SIGN_OUT": "Sign out",
+    "NOTIFICATION": "Notification",
+    "CANCEL" : "Cancel"
   }
 }

@@ -248,13 +248,16 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
 										overlayHtml += "<table>";
 									 
 									if(persona.settings) {
-										if(persona.settings.property || Array.isArray(persona.settings)) {	
-											if(!persona.settings.length) {
-												persona.settings = persona.settings.property;
-											}							
+                                        var currentPersonaSettings = [];
+										if(persona.settings || Array.isArray(persona.settings.property)) {
+											if(persona.settings.property ? !persona.settings.property.length : !persona.settings.length) {
+                                                persona.settings.property ? currentPersonaSettings[0] = persona.settings.property : currentPersonaSettings[0] = persona.settings;
+											}else{
+                                                currentPersonaSettings = persona.settings.property;
+                                            }
 											
-											for(var j=0; j<persona.settings.length; j++){
-												var property =  persona.settings[j];
+											for(var j=0; j<currentPersonaSettings.length; j++){
+												var property =  currentPersonaSettings[j];
 												
 												overlayHtml += "<tr>" +
 												     "<td style='font-weight:bold; padding: 5px 16px 5px 0'; >" + property.label + "</td>";

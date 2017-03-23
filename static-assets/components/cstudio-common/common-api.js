@@ -6802,18 +6802,44 @@ var nodeOpen = false;
             },
 
             //More configuration on https://notifyjs.com/
-            showNotification: function(message, position, type){
-                var globalPosition = position ? position : 'top right',
-                    type = type ? type : 'success';
+            showNotification: function(message, positionx, positiony, type, originalx, originaly, classElt){
+                var globalPositionx = positionx ? positionx : 'top',
+                    globalPositiony = positiony ? positiony : 'right',
+                    globalPosition = globalPositionx + " " + globalPositiony,
+                    type = type ? type : 'success',
+                    currentClassElt = classElt ? " " + classElt: ""
+                    currentType = type + currentClassElt;
+                originalx = originalx ? originalx : 0;
+                originaly = originaly ? originaly : 0;
 
                 $.notify(
                     message,
                     {
                         globalPosition: globalPosition,
-                        className: type,
+                        className: currentType,
                         autoHideDelay: 4000
                     }
                 );
+
+                var element;
+                if(classElt){
+                    element = $(".notifyjs-corner").has( "."+classElt );
+                }else{
+                    element = $(".notifyjs-corner").has( ".notifyjs-bootstrap-"+type );
+                }
+
+                if(positionx == "top") {
+                    if((positiony == "left"))
+                        element.css({ top: originalx + "px", left: originaly + "px"});
+                    if((positiony == "right"))
+                        element.css({ top: originalx + "px", right: originaly + "px"});
+                }
+                if(positionx == "bottom") {
+                    if((positiony == "left"))
+                        element.css({ bottom: originalx + "px", left: originaly + "px"});
+                    if((positiony == "right"))
+                        element.css({ bottom: originalx + "px", right: originaly + "px"});
+                }
             }
         },
         "Utils.Doc": {
@@ -8078,7 +8104,7 @@ CStudioAuthoring.FilesDiff = {
                                 if(response.status == 401){
                                     authRedirect(configObj);
                                 }else{
-                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom right", "error");
+                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0 ,0, "errorNotify");
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 }
                             }

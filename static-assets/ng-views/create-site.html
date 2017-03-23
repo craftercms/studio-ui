@@ -6,20 +6,6 @@
     <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
 
         <div class="form-group">
-            <label for="name">{{ 'dashboard.sites.create.SITE_NAME' | translate }}</label>
-            <input id="name" name="name" type="text" class="form-control" ng-model="site.siteName"
-                   ng-change="setSiteId()" required/>
-
-            <div class="error-container"
-                 ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
-                <small class="error"
-                       ng-show="createNameForm.name.$error.required">
-                    {{ 'dashboard.sites.create.SITE_NAME' | translate }} is required.
-                </small>
-            </div>
-        </div>
-
-        <div class="form-group">
             <label for="siteId">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label>
             <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" ng-change="isValidSite()" required/>
 
@@ -71,5 +57,17 @@
     </div>
     <div class="modal-body">
         <img class="creatingSpinner" src="/studio/static-assets/img/spinner_tra.gif" />
+    </div>
+</script>
+
+<script type="text/ng-template" id="createSiteError.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+        <p>{{ 'dashboard.sites.create.CREATE_ERROR' | translate }}</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="cancel()">{{ 'common.CANCEL' | translate }}</button>
     </div>
 </script>

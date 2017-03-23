@@ -126,6 +126,8 @@
     "NO": "아니",
     "HELP": "도움",
     "SETTINGS": "설정",
-    "SIGN_OUT": "로그 아웃"
+    "SIGN_OUT": "로그 아웃",
+    "NOTIFICATION": "Notification",
+    "CANCEL" : "Cancel"
   }
 }
