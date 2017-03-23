@@ -1,118 +1,138 @@
-<h2 class="page-header">{{ 'admin.groups.HEADER_LABEL' | translate }}</h2>
+<div class="container-fluid admin-view">
+    <div class="row full">
+        <div ng-show="!groups.groupView" class="col-md-12">
+            <h2 class="page-header">{{ groups.site }}</h2>
 
-<div class="btn-group" dropdown is-open="dropdownStatus.isopen">
-    <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-        {{ currentSite.name }} <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu">
-        <li>
-            <a ng-click="updateDropdown('all', 'All Sites')">All Sites</a>
-        </li>
-        <li ng-repeat="site in sites">
-            <span class="hidden">{{site}}</span>
-            <a ng-click="updateDropdown(site.siteId, site.name)">{{site.name}}</a>
-        </li>
-    </ul>
-</div>
 
-<div class="actions clearfix pull-right mb10">
-    <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.groups.NEW_GROUP' | translate }}</a>
-    <a class="btn btn-default" ng-click="toggleAssignUsers()" role="button" style="float: right; margin-right: 15px;">{{toggleAssignUsersLabel}}</a>
-    <div class="pull-right mr15">
-        <label>Groups per page: </label>
-        <input class="audit-number-logs" type="number" name="input" ng-model="itemsByPage"
-               min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
-    </div>
-</div>
+            <div class="actions clearfix pull-right mb10" style="width: 100%;">
+                <h3 class="pull-left mt5">{{ 'admin.groups.HEADER_LABEL' | translate }}</h3>
 
-<table ng-show="!assignUsers" st-table="displayedCollection" st-safe-src="groupsCollection.groups" class="table table-striped">
-    <thead>
-        <tr>
-            <th st-sort="id">{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
-            <th st-sort="displayName">{{ 'admin.groups.DESCRIPTION' | translate }}</th>
-            <th st-sort="site">{{ 'admin.groups.SITE' | translate }}</th>
-            <th></th>
-        </tr>
-        <tr>
-            <th colspan="5"><input st-search="" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/></th>
-        </tr>
-    </thead>
-    <tbody>
+                <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.groups.NEW_GROUP' | translate }}</a>
+                <div class="pull-right mr15">
+                    <label>{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
+                    <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
+                           min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
+                </div>
+            </div>
 
-        <tr ng-repeat="group in displayedCollection">
-            <td>{{group.group_name}}</td>
-            <td>{{group.description}}</td>
-            <td>{{group.site_id}}</td>
-            <td>
-                <a ng-click="editGroupDialog(group)" class="btn btn-sm">
-                    <i class="glyphicon glyphicon-pencil"></i>
-                </a>
-            </td>
-            <td>
-                <a ng-click="removeGroup(group)" class="btn btn-sm">
-                    <i class="glyphicon glyphicon-trash"></i>
-                </a>
-            </td>
-        </tr>
-    </tbody>
-    <tfoot>
-    <tr>
-        <td colspan="5" class="text-center">
-            <div st-pagination="" st-items-by-page="itemsByPage" st-displayed-pages="7"></div>
-        </td>
-    </tr>
-    </tfoot>
-</table>
+            <div class="">
+                <input ng-model="q" class="form-control mb10" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
 
-<div ng-show="assignUsers" class="row assign-users">
-    <div class="col-md-6 col-xs-6">
-        <table st-table="displayedCollection2" st-safe-src="groupsCollection.groups" class="table ">
-            <thead>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
+                            <th>{{ 'admin.groups.DESCRIPTION' | translate }}</th>
+                            <th>{{ 'admin.groups.EDIT_MEMBERSHIP' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr dir-paginate="group in groupsCollection.groups | filter:q | itemsPerPage: groups.itemsPerPage"
+                        current-page="groups.pagination.current" total-items="groups.totalLogs">
+                        <td>{{group.group_name}}</td>
+                        <td>{{group.description}}</td>
+                        <td>
+                            <a ng-click="groups.viewGroup(group)" class="btn btn-sm">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a ng-click="removeGroup(group)" class="btn btn-sm">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <dir-pagination-controls on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
+            </div>
+        </div>
+        <div ng-show="groups.groupView" class="col-md-12">
+            <h2 class="page-header">
+                {{ groups.site }}
+                <button class="close" ng-click="groups.groupView = false">« {{ 'admin.groups.BACK_TO_GROUPS'| translate }}</button>
+            </h2>
+            <form class="form-horizontal" style="max-width: 600px;">
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;">Group Name</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputPassword3" ng-model="groups.selectedGroup.group_name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputPassword3" ng-model="groups.selectedGroup.description">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" ng-click="editGroup(groups.selectedGroup)" class="btn btn-default pull-right text-capitalize">{{ 'common.EDIT' | translate }}</button>
+                    </div>
+                </div>
+            </form>
+            <hr>
+
+            <h3>{{ 'admin.groups.ADD_NEW_MEMBERS' | translate }}</h3>
+
+            <tags-input id="users-tags-input"
+                        class="tags-input"
+                        ng-model="groups.usersToAdd"
+                        add-on-paste="true"
+                        placeholder="Type names, usernames, email addresses"
+                        display-property="username"
+                        template="tag-template"
+                        add-on-comma="true"
+                        min-length="1"
+                        on-tag-adding="validateTag($tag)">
+                <auto-complete class="auto-complete"
+                               source="loadTags($query)"
+                               min-length="1"
+                               load-on-down-arrow="true"
+                               template="autocomplete-template"></auto-complete>
+            </tags-input>
+
+            <div class="actions clearfix">
+                <a class="btn btn-default" ng-disabled="groups.usersToAdd.length <= 0" ng-click="groups.addUsers()" role="button" style="float: right;">{{ 'admin.groups.ADD_MEMBERS' | translate }}</a>
+            </div>
+
+            <hr>
+
+            <h3>{{ 'admin.groups.MEMBERS' | translate }}</h3>
+
+            <table st-table="displayedCollection" st-safe-src="groups.usersFromGroupCollection.users" class="table table-striped">
+                <thead>
                 <tr>
-                    <th colspan="5"><input st-search="" class="form-control" placeholder="{{ 'admin.groups.SEARCH_GROUPS' | translate }}" type="text"/></th>
+                    <th colspan="12"><input st-search="" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/></th>
                 </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="group in displayedCollection2" ng-click="getUsersFromGroup(group)"
-                    ng-class="{active : (activeGroup.group_name === group.group_name) && (activeGroup.site_id === group.site_id)}">
-                    <td>{{group.group_name}}</td>
-                    <td class="actions">
-                        <a ng-click="editGroupDialog(group)" class="btn btn-sm">
-                            <i class="glyphicon glyphicon-pencil">
-                            </i>
-                        </a>
-                        <a ng-click="removeGroup(group)" class="btn btn-sm">
-                            <i class="glyphicon glyphicon-trash">
-                            </i>
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-6 col-xs-6">
-        <table st-table="displayedCollection3" st-safe-src="usersFromGroupCollection.users" class="table ">
-            <thead>
                 <tr>
-                    <th colspan="5">
-                        <input st-search="" class="form-control search-users" placeholder="{{ 'admin.groups.SEARCH_USERS' | translate }}" type="text"/>
-                        <button ng-click="!noGroupSelected && addUserToGroupDialog()" class="add-user glyphicon glyphicon-plus"
-                           tooltip="{{ !noGroupSelected && 'admin.groups.ADD_USER_TOOLTIP' | translate }}" tooltip-placement="top"></button>
-                    </th>
+                    <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
+                    <th>Email</th>
+                    <th></th>
                 </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="user in displayedCollection3">
+                </thead>
+                <tbody>
+                <tr ng-repeat="user in displayedCollection">
                     <td>{{user.username}}</td>
-                    <td class="actions">
-                        <a ng-click="removeUserFromGroup(user)" class="btn btn-sm">
-                            <i class="glyphicon glyphicon-trash">
-                            </i>
+                    <td>{{user.email}}</td>
+                    <td>
+                        <a ng-click="removeUserFromGroup(user, groups.selectedGroup)" class="btn btn-sm">
+                            <i class="glyphicon glyphicon-trash"></i>
                         </a>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="12" class="">
+                        <div st-pagination="" st-items-by-page="15" st-displayed-pages="7"></div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -147,24 +167,6 @@
                     </small>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label for="site" class="control-label">{{ 'admin.groups.SITE' | translate }}</label>
-
-                <select class="form-control"
-                        id="site"
-                        ng-options="site.siteId as site.name for site in sites"
-                        ng-model="group.site_id"
-                        required></select>
-
-                <div class="error-container"
-                     ng-show="(createNameForm.site.$dirty && createNameForm.site.$invalid) || (createNameForm.site.$touched && createNameForm.site.$invalid)">
-                    <small class="error"
-                           ng-show="createNameForm.site.$error.required">
-                        {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
-                    </small>
-                </div>
-            </div>
         </form>
     </div>
 
@@ -175,39 +177,56 @@
     </div>
 </script>
 
-<script type="text/ng-template" id="addUsersView.html">
-    <div class="modal-header">
-        <h3 class="modal-title">{{ 'admin.groups.ADD_USERS' | translate }}</h3>
-    </div>
-
-    <div class="modal-body">
-        <table st-table="displayedCollection3" st-safe-src="usersCollection.users" class="table add-users-table">
-            <thead>
-            <tr>
-                <th colspan="5">
-                    <input st-search="" class="form-control search-users" placeholder="{{ 'admin.groups.SEARCH_USERS' | translate }}" type="text"/>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="user in displayedCollection3">
-                    <td>{{user.username}}</td>
-                    <td style="text-align: right;"><a ng-click="addUserToGroup(user)">{{ 'common.ADD_LABEL' | translate }}</a></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="modal-footer">
-        <button class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-    </div>
-</script>
-
 <script type="text/ng-template" id="creatingGroupConfirmation.html">
     <div class="modal-header">
         <h3 class="modal-title">Creating Group</h3>         <!-- TODO: pending display current action & translate -->
     </div>
     <div class="modal-body">
         <img class="creatingSpinner" src="/studio/static-assets/img/spinner_tra.gif" />
+    </div>
+</script>
+
+<script type="text/ng-template" id="confirmationModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        {{ confirmationText }}
+    </div>
+    <div class="modal-footer">
+        <button class="btn" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+        <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="notificationModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Notification</h3>
+    </div>
+    <div class="modal-body">
+        <h4><span class="glyphicon glyphicon-{{ notificationType }}" style="color: #CE021F;"></span> {{ notificationText }} </h4>
+    </div>
+</script>
+
+<script type="text/ng-template" id="tag-template">
+    <div class="tag-template {{ data.display }}">
+        <div class="left-panel">
+            <span>{{$getDisplayText()}}</span>
+            <a class="remove-button" ng-click="$removeTag()">&#10006;</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="autocomplete-template">
+    <div class="autocomplete-template">
+        <div class="left-panel">
+            <span ng-bind-html="$highlight($getDisplayText())"></span>
+            <span>({{data.email}})</span>
+        </div>
+        <div class="right-panel">
+            <!--<span ng-bind-html="$highlight($getDisplayText())"></span>-->
+            <!--<span>({{data.email}})</span>-->
+            <!--<span>{{data.confederation}}</span>-->
+        </div>
     </div>
 </script>

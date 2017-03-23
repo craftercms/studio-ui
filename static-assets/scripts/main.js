@@ -8,7 +8,8 @@
         'smart-table',
         'ngFileUpload',
         'pascalprecht.translate',
-        'angularUtils.directives.dirPagination'
+        'angularUtils.directives.dirPagination',
+        'ngTagsInput'
     ]);
 
     app.run([
@@ -92,7 +93,7 @@
                     views: {
                         content: {
                             templateUrl: '/studio/static-assets/ng-views/admin-groups.html',
-                            controller: 'AdminCtrl'
+                            controller: 'GroupsCtrl'
                         }
                     }
                 })

@@ -17,7 +17,7 @@
 
             this.getUsers = function(params) {
 
-                if(params.site_id && params.site_id != "all"){
+                if(params && params.site_id && params.site_id != "all"){
                     return $http.get(users('get-per-site'), {
                         params: params
                     });
@@ -533,8 +533,8 @@
                     });
                 }
             };
-            
-            this[current]();
+
+            // this[current]();
 
         }
     ])
@@ -728,26 +728,23 @@
 
                     params.site_id = site;
 
+                    if(users.totalLogs && users.totalLogs > 0) {
+                        var start = (pageNumber - 1) * users.itemsPerPage,
+                            end = start + users.itemsPerPage;
+                        params.start = start;
+                        params.number = users.itemsPerPage;
+                    }else{
+                        params.start = 0;
+                        params.number = users.itemsPerPage;
+                    }
+
                     adminService.getUsers(params).success(function (data) {
-                        users.totalLogs = data.users.length;
-
-                        if(users.totalLogs > 0){
-                            var start = (pageNumber - 1) * users.itemsPerPage,
-                                end = start + users.itemsPerPage;
-                            params.start = start;
-                            params.number = users.itemsPerPage;
-                        }
-
+                        users.totalLogs = data.total;
                         $scope.usersCollection = data;
-
-                        adminService.getUsers(params).success(function (data) {
-                            $scope.usersCollection = data;
-                        });
                     });
                 }
             };
 
-            //TODO: check currentSite changes, that's the reason why get-all sites is called many times
             $scope.$watch('currentSite', function() {
                 getUsers($scope.currentSite.id);
             });
@@ -868,11 +865,283 @@
 
     app.controller('GroupsCtrl', [
         '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
-        'Upload', '$stateParams', '$translate', '$location',
+        'Upload', '$stateParams', '$translate', '$location', '$q',
         function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
-                  Upload, $stateParams, $translate, $location) {
+                  Upload, $stateParams, $translate, $location, $q) {
 
             $scope.groups = {};
+            var groups = $scope.groups;
+            groups.site = $location.search().site;
+
+            this.init = function() {
+                $scope.debounceDelay = 500;
+
+                $scope.showModal = function(template, size, verticalCentered){
+                    return $modal.open({
+                        templateUrl: template,
+                        windowClass: verticalCentered ? 'centered-dialog' : '',
+                        backdrop: 'static',
+                        keyboard: false,
+                        controller: 'AdminCtrl',
+                        scope: $scope,
+                        size: size ? size : ''
+                    });
+                };
+                $scope.hideModal = function() {
+                    $scope.adminModal.close();
+                };
+
+                $scope.notification = function(notificationText, showOnTop){
+                    var verticalAlign = showOnTop ? false : true;
+                    $scope.notificationText = notificationText;
+                    $scope.notificationType = 'alert';
+
+                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign);
+
+                    $timeout(function () {
+                        modal.close();
+                    }, 1500, false);
+
+                };
+            };
+            this.init();
+
+            //table setup
+            groups.itemsPerPage=10;
+            $scope.groupsCollection = [];
+
+            /////////////////// MULTIPLE GROUPS VIEW ////////////////////
+
+            var getGroups = function(site) {
+
+                groups.totalLogs = 0;
+                getResultsPage(1);
+
+                groups.pagination = {
+                    current: 1
+                };
+
+                groups.pageChanged = function(newPage) {
+                    getResultsPage(newPage);
+                };
+
+                function getResultsPage(pageNumber) {
+
+                    var params = {};
+
+                    params.site_id = site;
+
+                    if(groups.totalLogs && groups.totalLogs > 0) {
+                        var start = (pageNumber - 1) * groups.itemsPerPage,
+                            end = start + groups.itemsPerPage;
+                        params.start = start;
+                        params.number = groups.itemsPerPage;
+                    }else{
+                        params.start = 0;
+                        params.number = groups.itemsPerPage;
+                    }
+
+                    adminService.getGroups(params).success(function (data) {
+                        groups.totalLogs = data.total;
+                        $scope.groupsCollection = data;
+                    });
+
+                }
+            };
+            getGroups(groups.site);
+
+            $scope.createGroupDialog = function(){
+                $scope.group = {};
+                $scope.okModalFunction = $scope.createGroup;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+
+                $scope.dialogMode = $translate.instant('common.CREATE');
+                $scope.dialogTitle = $translate.instant('admin.groups.CREATE_GROUP');
+            }
+            $scope.createGroup = function(group) {
+                $scope.hideModal();
+                group.site_id = groups.site;
+
+                adminService.createGroup(group).success(function (data) {
+                    $scope.groupsCollection.groups.push(group);
+                    $scope.notification('\''+ group.group_name + '\' created.');
+                }).error(function(error){
+                    console.log(error);
+                    //TODO: properly display error.
+                });
+
+            };
+            $scope.editGroupDialog = function(group){
+                group.site_id = groups.site;
+
+                $scope.editedGroup = group;
+                $scope.group = {};
+                $scope.okModalFunction = $scope.editGroup;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+                $scope.dialogMode = $translate.instant('common.EDIT');
+                $scope.dialogTitle = $translate.instant('admin.groups.EDIT_GROUP');
+
+                adminService.getGroup(group).success(function (data) {
+                    $scope.group = data;
+                }).error(function () {
+                    //TODO: properly display error.
+                });
+            };
+            $scope.editGroup = function(group) {
+                group.site_id = groups.site;
+
+                adminService.editGroup(group).success(function (data) {
+                    $scope.notification('\''+ group.group_name + '\' edited.');
+                }).error(function(error){
+                    console.log(error);
+                    //TODO: properly display error.
+                });
+            };
+            $scope.removeGroup = function(group) {
+                var deleteGroup = function() {
+                    group.site_id = groups.site;
+
+                    adminService.deleteGroup(group).success(function (data) {
+                        var index = $scope.groupsCollection.groups.indexOf(group);
+                        if (index !== -1) {
+                            $scope.groupsCollection.groups.splice(index, 1);
+                        }
+
+                        $scope.usersFromGroupCollection = [];
+                        $scope.noGroupSelected = true;
+
+                        $scope.notification('\''+ group.group_name + '\' group deleted.');
+
+                    }).error(function (error) {
+                        console.log(error);
+                        //TODO: properly display error;
+                    });
+                };
+
+                $scope.confirmationAction = deleteGroup;
+                $scope.confirmationText = "Do you want to delete " + group.group_name + "?";
+
+                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true);
+            };
+
+
+            /////////////////// SINGLE GROUP VIEW ////////////////////
+
+            groups.viewGroup = function(group) {
+                groups.selectedGroup = group;
+                groups.groupView = true;
+                groups.usersToAdd = [];
+
+                $scope.getUsersFromGroup(group);
+            };
+
+            groups.getUsersAutocomplete = function() {
+                adminService.getUsers().success(function(data){
+                    groups.usersAutocomplete = [];
+
+                    data.users.forEach(function(user){
+                        var added = false;
+                        groups.usersFromGroupCollection.users.forEach(function(userCompare){
+                            if(user.username == userCompare.username){
+                                added = true;
+                            }
+                        });
+
+                        if(!added){
+                            groups.usersAutocomplete.push(user);
+                        }
+                    });
+                });
+            };
+
+            groups.addUsers = function() {
+
+                var calls = [];
+
+                groups.usersToAdd.forEach(function(user){
+                    calls.push($scope.addUserToGroup(user));
+                });
+
+                $q.all(calls).then(function() {
+                    $scope.notification('Users successfully added.');
+                });
+
+                groups.usersToAdd = [];
+            };
+
+            $scope.loadTags = function($query) {
+                var users = groups.usersAutocomplete;
+
+                return users.filter(function(user) {
+                    var username= user.username.toLowerCase().indexOf($query.toLowerCase()) != -1,
+                        email = user.email.toLowerCase().indexOf($query.toLowerCase()) != -1,
+                        first_name = user.first_name.toLowerCase().indexOf($query.toLowerCase()) != -1,
+                        last_name = user.last_name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+                    return username || email || first_name || last_name;
+                });
+
+            };
+
+            $scope.validateTag = function($tag) {
+                for(var x = 0; x < groups.usersAutocomplete.length; x++){
+                    var user = groups.usersAutocomplete[x];
+
+                    if($tag.username == user.username){
+                        return true;
+                    }
+                };
+
+                return false;
+            };
+
+            $scope.getUsersFromGroup = function(group){
+                groups.usersFromGroupCollection = {};
+                $scope.activeGroup = group;
+                $scope.noGroupSelected = false;
+
+                group.site_id = groups.site;
+
+                adminService.getUsersFromGroup(group).success(function (data) {
+                    groups.usersFromGroupCollection = data;
+                    groups.getUsersAutocomplete();
+                }).error(function () {
+                    //TODO: properly display error
+                });
+            };
+
+            $scope.removeUserFromGroup = function(user, group) {
+
+                user.group_name = group.group_name;
+                user.site_id = groups.site;
+
+                var removeUserFromGroup = function() {
+                    adminService.deleteUserFromGroup(user).success(function () {
+                        $scope.getUsersFromGroup(group);
+                    }).error(function () {
+                    });
+                };
+
+                $scope.confirmationAction = removeUserFromGroup;
+                $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.group_name + "?";
+
+                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm');
+            };
+
+            $scope.addUserToGroup = function (user) {
+                var activeGroup = groups.selectedGroup;
+
+                return adminService.addUserToGroup({
+                    "username": user.username,
+                    "group_name": activeGroup.group_name,
+                    "site_id": groups.site
+                }).success(function (data) {
+                    $scope.getUsersFromGroup(activeGroup);
+                }).error(function () {
+
+                });
+            };
         }
     ]);
 
