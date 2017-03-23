@@ -447,7 +447,7 @@
             $scope.langSelected = '';
             $scope.modalInstance = '';
             $scope.authenticated = authService.isAuthenticated();
-            $scope.helpUrl = 'http://docs.craftercms.org';
+            $scope.helpUrl = 'http://docs.craftercms.org/en/latest/';
             $scope.isIframeClass = $location.search().iframe ? 'iframe' : '';
 
             function logout() {
