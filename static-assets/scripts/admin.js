@@ -657,26 +657,6 @@
             this.init = function() {
                 $scope.debounceDelay = 500;
 
-                adminService.getSites()
-                    .success(function (data) {
-                        $scope.sites = data;
-                    })
-                    .error(function () {
-                        $scope.sites = null;
-                    });
-
-                //sites dropdown
-                $scope.currentSite = {
-                    name : "All Sites",
-                    id: "all"
-                };
-                $scope.updateDropdown = function(siteId, siteName) {
-                    $scope.currentSite = {
-                        name: siteName,
-                        id: siteId
-                    };
-                };
-
                 $scope.showModal = function(template, size, verticalCentered){
                     return $modal.open({
                         templateUrl: template,
@@ -710,7 +690,7 @@
             users.itemsPerPage = 10;
             $scope.usersCollection = {};
 
-            var getUsers = function(site) {
+            var getUsers = function() {
                 users.totalUsers = 0;
                 getResultsPage(1);
 
@@ -725,8 +705,6 @@
                 function getResultsPage(pageNumber) {
 
                     var params = {};
-
-                    params.site_id = site;
 
                     if(users.totalLogs && users.totalLogs > 0) {
                         var start = (pageNumber - 1) * users.itemsPerPage,
@@ -745,9 +723,7 @@
                 }
             };
 
-            $scope.$watch('currentSite', function() {
-                getUsers($scope.currentSite.id);
-            });
+            getUsers();
 
             users.createUserDialog = function() {
                 $scope.user = {};
