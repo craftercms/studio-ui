@@ -5999,6 +5999,10 @@ a[ng-click] {
   display: block;
   margin: 0 auto; }
 
+.validationComment {
+  color: gray;
+  font-size: 9px; }
+
 .iframe .cstudio-navbar {
   display: none; }
 .iframe + #container {

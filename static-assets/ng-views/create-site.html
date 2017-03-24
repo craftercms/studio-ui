@@ -6,8 +6,8 @@
     <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
 
         <div class="form-group">
-            <label for="siteId">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label>
-            <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" ng-change="isValidSite()" required/>
+            <label for="siteId">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.LENGTH_VALIDATION' | translate }}</span>
+            <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" maxlength="50" ng-change="isValidSite()" required/>
 
             <div class="error-container"
                  ng-show="(createNameForm.siteId.$dirty && createNameForm.siteId.$invalid) || (createNameForm.siteId.$touched && createNameForm.siteId.$invalid)">
