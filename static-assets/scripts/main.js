@@ -789,6 +789,7 @@
             }
 
             function isValidSite() {
+                $scope.site.siteId = $scope.site.siteId.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
                 sitesService.exists({
                     site: $scope.site.siteId
                 }).success(function (data) {

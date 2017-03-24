@@ -42,7 +42,8 @@
         "DESCRIPTION": "Description",
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Creating Site",
-        "CREATE_ERROR": "System can't create the site. Please contact the administrator."
+        "CREATE_ERROR": "System can't create the site. Please contact the administrator.",
+        "LENGTH_VALIDATION": "(Max length: 50 characters)"
       }
     }
   },
