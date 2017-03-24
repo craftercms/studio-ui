@@ -232,7 +232,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                         query = YAHOO.util.Selector.query,
                         $ = jQuery;
                     var self = this;
-                    $( "#acn-resize").width(self.oPreferences.width).css('min-width', self.oPreferences.width);
+                    $( "#acn-resize").width(self.oPreferences.width);
                     $(function() {
                         $( "#acn-resize" ).resizable({
                             minHeight: 150,
