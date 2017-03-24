@@ -5,20 +5,7 @@
                 <div class="col-md-12">
                     <h2 class="page-header">{{ 'admin.users.HEADER_LABEL' | translate }}</h2>
 
-                    <div class="btn-group" dropdown is-open="dropdownStatus.isopen">
-                        <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-                            {{ currentSite.name }} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a ng-click="updateDropdown('all', 'All Sites')">All Sites</a>
-                            </li>
-                            <li ng-repeat="site in sites">
-                                <span class="hidden">{{site}}</span>
-                                <a ng-click="updateDropdown(site.siteId, site.name)">{{site.name}}</a>
-                            </li>
-                        </ul>
-                    </div>
+                    <h4 class="pull-left mb20">To add a user to a group/site, please use the admin console for the site.</h4>
 
                     <a class="btn btn-default" ng-click="users.createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
 
@@ -92,6 +79,7 @@
                        name="enabled"
                        ng-checked="user.status.enabled"
                        required
+                       style="margin-left: 12px;"
                 >
             </div>
 
@@ -154,11 +142,28 @@
                     <div class="form-group">
                         <label class="control-label"> Sites </label>
 
-                        <div ng-repeat="site in user.sites">
-                            <span>{{ site.site_name }}</span>
-                            <span ng-repeat="group in site.groups">{{ group.group_name }}, </span>
+                        <!--<div ng-repeat="site in user.sites">-->
+                            <!--<span>{{ site.site_name }}</span>-->
+                            <!--<span ng-repeat="group in site.groups">{{ group.group_name }}, </span>-->
 
-                        </div>
+                        <!--</div>-->
+
+                        <table class="table table-striped" style="margin-left: 128px; width: calc(100% - 128px);">
+                            <thead>
+                                <tr>
+                                    <th>Site</th>
+                                    <th>Groups</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="site in user.sites">
+                                    <td>{{ site.site_name }}</td>
+                                    <td>
+                                        <span ng-repeat="group in site.groups"> {{ group.group_name }} </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                     </div>
                 </div>

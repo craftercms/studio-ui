@@ -68,7 +68,13 @@
       "SEARCH_USERS": "Buscar Usuarios",
       "ADD_USER_TOOLTIP": "Agregar Usuario a Grupo",
       "ASSIGN_USERS_LABEL": "Asignar Usuarios",
-      "VIEW_GROUPS_LABEL": "Ver Grupos"
+      "VIEW_GROUPS_LABEL": "Ver Grupos",
+      "GROUPS_PER_PAGE": "Grupos por Página",
+      "EDIT_MEMBERSHIP": "Editar/Miembros",
+      "BACK_TO_GROUPS": "Volver a grupos",
+      "ADD_NEW_MEMBERS": "Agregar nuevos miembros",
+      "ADD_MEMBERS": "Agregar miembros",
+      "MEMBERS": "Miembros"
     },
     "users": {
       "HEADER_LABEL": "Usuarios",

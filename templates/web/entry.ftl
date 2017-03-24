@@ -14,6 +14,7 @@
     <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
 
     <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!''}">
+    <link rel="stylesheet" href="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.css">
 
     <script src="/studio/static-assets/js/modernizr.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!''}"></script>
@@ -28,6 +29,7 @@
     <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.min.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/ng-file-upload/dist/ng-file-upload-shim.min.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/ng-file-upload/dist/ng-file-upload.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.js"></script>
     <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!''}"></script>

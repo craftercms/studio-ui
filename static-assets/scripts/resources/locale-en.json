@@ -70,7 +70,13 @@
       "SEARCH_USERS": "Search Users",
       "ADD_USER_TOOLTIP": "Add User to Group",
       "ASSIGN_USERS_LABEL": "Assign Users",
-      "VIEW_GROUPS_LABEL": "View Groups"
+      "VIEW_GROUPS_LABEL": "View Groups",
+      "GROUPS_PER_PAGE": "Groups per page",
+      "EDIT_MEMBERSHIP": "Edit/Membership",
+      "BACK_TO_GROUPS": "Back to groups",
+      "ADD_NEW_MEMBERS": "Add new members",
+      "ADD_MEMBERS": "Add members",
+      "MEMBERS": "Members"
     },
     "users": {
       "HEADER_LABEL": "Users",

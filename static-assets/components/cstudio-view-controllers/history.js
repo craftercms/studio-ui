@@ -98,7 +98,7 @@
                                         checkboxEl.maxLength = 300;
                                         checkboxEl.type = "checkbox";
                                         checkboxEl.name = "version";
-                                        checkboxEl.value = versionNumber;
+                                        checkboxEl.value = version.versionNumber;
                                         checkboxEl.style.marginRight = '5px';
                                         col2El.insertBefore(checkboxEl, col2El.firstChild);
                                     }
