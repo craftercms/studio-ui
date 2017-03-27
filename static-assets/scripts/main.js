@@ -789,13 +789,15 @@
             }
 
             function isValidSite() {
-                $scope.site.siteId = $scope.site.siteId.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-                sitesService.exists({
-                    site: $scope.site.siteId
-                }).success(function (data) {
-                    $scope.isValid = data.exists;
+                if($scope.site.siteId) {
+                    $scope.site.siteId = $scope.site.siteId.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                    sitesService.exists({
+                        site: $scope.site.siteId
+                    }).success(function (data) {
+                        $scope.isValid = data.exists;
 
-                });
+                    });
+                }
             }
 
             function create() {
