@@ -1,6 +1,8 @@
 (function (window, $, Handlebars) {
     'use strict';
 
+    var activePromise;
+
     if (typeof CStudioBrowse == "undefined" || !CStudioBrowse) {
         var CStudioBrowse= {};
     }
@@ -483,10 +485,20 @@
         var $resultsContainer = $('#cstudio-wcm-search-result .results'),
             $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
             contentPromise = CStudioBrowse._lookupSiteContent(site, path);
+
+        activePromise = contentPromise;
+
         $resultsContainer.empty();
         $resultsActions.empty();
 
         contentPromise.then(function (results) {
+            if (activePromise != contentPromise) {
+                return;
+            }
+
+            $resultsContainer.empty();
+            $resultsActions.empty();
+
             var filesPresent = false;
             results = results.item.children;
 

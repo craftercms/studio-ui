@@ -60,7 +60,7 @@
           </div>
       </div>
 
-    </div>
+    </div>    
 
       <style>
       #cstudio-wcm-search-result .results > * {
