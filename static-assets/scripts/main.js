@@ -719,6 +719,20 @@
 
     ]);
 
+    app.controller('ErrorCreateSiteCtrl', [
+        '$scope', '$state', 'sitesService', '$modalInstance', 'errorToShow',
+        function ($scope, $state, sitesService, $modalInstance, errorToShow) {
+
+            $scope.error = errorToShow;
+
+            $scope.cancel = function () {
+                $modalInstance.dismiss('cancel');
+            };
+
+        }
+
+    ]);
+
     app.controller('SiteCtrl', [
         '$scope', '$state', 'sitesService', '$timeout', '$window', '$modal',
         function ($scope, $state, sitesService,$timeout, $window, $modal) {
@@ -801,13 +815,18 @@
             }
 
             function create() {
-                var createModalInstance = $modal.open({
+                $scope.modalInstance = null;
+                $scope.createModalInstance = null;
+                $scope.error = "";
+                $scope.adminModal.close();
+
+                $scope.createModalInstance = $modal.open({
                     templateUrl: 'creatingSiteConfirmation.html',
                     backdrop: 'static',
                     keyboard: false,
                     size: 'sm'
                 });
-                $scope.adminModal.close();
+
                 sitesService.create({
                     site_id: $scope.site.siteId,
                     description: $scope.site.description,
@@ -816,22 +835,26 @@
                     .success(function (data) {
                         $timeout(function () {
                             sitesService.editSite($scope.site);
-                            createModalInstance.close();
+                            $scope.createModalInstance.close();
                         }, 3000, false);
                     })
                     .error(function (data) {
-                        $scope.adminModal = $modal.open({
+                        $scope.createModalInstance.close();
+                        $scope.error = data.message;
+                        $scope.modalInstance = $modal.open({
                             templateUrl: 'createSiteError.html',
                             backdrop: 'static',
                             keyboard: false,
-                            size: 'sm',
-                            controller: 'ErrorSiteCtrl',
-                            scope: $scope
+                            size: 'md',
+                            controller: 'ErrorCreateSiteCtrl',
+                            resolve: {
+                                errorToShow: function () {
+                                return $scope.error;
+                            }
+                        }
                         });
                     });
-
             }
-
         }
     ]);
 
