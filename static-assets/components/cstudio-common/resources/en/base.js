@@ -89,6 +89,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
 
 CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     siteContent: "Site Content",
+    sideBar: "Sidebar",
 
     wcmContentEdit: "Edit",
     wcmContentView: "View",

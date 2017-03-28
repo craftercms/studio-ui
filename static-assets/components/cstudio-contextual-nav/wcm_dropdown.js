@@ -40,7 +40,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                 '<div id="acn-dropdown" class="acn-dropdown">' +
                     '<div id="acn-dropdown-inner" class="acn-dropdown-inner">' +
                         '<a id="acn-dropdown-toggler" href="#" class="acn-dropdown-toggler acn-drop-arrow">' +
-                        CMgs.format(contextNavLangBundle, "siteContent") +
+                            CMgs.format(contextNavLangBundle, "sideBar") +
                         '</a>' +
                     '</div>' +
                     '<div id="acn-dropdown-menu-wrapper" style="display:none" class="acn-dropdown-menu-wrapper unselectable">' +

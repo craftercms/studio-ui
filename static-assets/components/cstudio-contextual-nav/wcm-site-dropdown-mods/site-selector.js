@@ -17,23 +17,18 @@ CStudioAuthoring.ContextualNav.SiteSelector = CStudioAuthoring.ContextualNav.Sit
 			this.initialized = true;
 				
 			var dropdownInnerEl = config.containerEl;
-			var siteSelectorEl = document.createElement("select");
-			siteSelectorEl.id = "acn-site-dropdown";
 
-            YDom.addClass(dropdownInnerEl, 'studio-view');
-            YDom.addClass(siteSelectorEl, 'form-control');
-
-            dropdownInnerEl.appendChild(siteSelectorEl);
-
-			/* check first child of dropdown element,
-			 * site select drop down should alway at top.
-			 */
-			if (dropdownInnerEl.firstChild != null) {
-				dropdownInnerEl.insertBefore(siteSelectorEl, dropdownInnerEl.firstChild);
-			} else {
-				dropdownInnerEl.appendChild(siteSelectorEl);
-			}
+			var dashboardLinkEl = document.createElement('a');
+			var linkText = document.createTextNode("Dashboard");
+			dashboardLinkEl.appendChild(linkText);
+			dashboardLinkEl.title = "Dashboard";
+			dashboardLinkEl.href = CStudioAuthoringContext.authoringAppBaseUri + "/#/sites";
+			dashboardLinkEl.id = "acn-sites-link";
 			
+            YDom.addClass(dropdownInnerEl, 'studio-view');
+
+            dropdownInnerEl.appendChild(dashboardLinkEl);
+
 			this.populateSiteDropdownMenu(siteSelectorEl);
 		}
 	    }

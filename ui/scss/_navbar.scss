@@ -10,6 +10,20 @@
 
   }
 
+  .navbar-form[role="search"] {
+    margin-top: 16px;
+    margin-bottom: 16px;
+
+    #acn-searchtext {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      background: url(/studio/static-assets/themes/cstudioTheme/images/icons/search-icon.png) no-repeat;
+      background-size: 100% 100%;
+      cursor: pointer;
+    }
+  }
+
   form[role="search"] {
     padding: {
       left: 5px;

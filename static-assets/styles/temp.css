@@ -3001,6 +3001,12 @@ div#acn-active-content {
   right: 0;
   bottom: 0;
   position: absolute; }
+  .acn-dropdown-wrapper .acn-dropdown-menu #acn-sites-link {
+    background: url(/studio/static-assets/themes/cstudioTheme/images/icons/dashboard-icon.png) no-repeat;
+    display: inline-block;
+    padding-left: 20px;
+    background-size: 22px 22px;
+    background-position: -3px -3px; }
 .acn-dropdown-wrapper .treenode-label {
   margin: 0 0 5px 0; }
 .acn-dropdown-wrapper .acn-dropdown-toggler {
@@ -15225,6 +15231,16 @@ body.masked {
   padding: 2px 15px; }
   .navbar .navbar-brand > img {
     width: 75px; }
+.navbar .navbar-form[role="search"] {
+  margin-top: 16px;
+  margin-bottom: 16px; }
+  .navbar .navbar-form[role="search"] #acn-searchtext {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: url(/studio/static-assets/themes/cstudioTheme/images/icons/search-icon.png) no-repeat;
+    background-size: 100% 100%;
+    cursor: pointer; }
 .navbar form[role="search"] {
   padding-left: 5px;
   padding-right: 5px; }
@@ -15235,5 +15251,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */
