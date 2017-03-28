@@ -203,8 +203,10 @@
         return parsed;
     }
 
-    CStudioBrowse.renderItem = function(item) {
-        var $resultsContainer = $('#cstudio-wcm-search-result .results');
+    CStudioBrowse.renderItem = function(item, $resultsContainer) {
+        if (!$resultsContainer) {
+            $resultsContainer = $('#cstudio-wcm-search-result .results');
+        }
 
         var source = $("#hb-search-result").html();
         var template = Handlebars.compile(source);
@@ -493,12 +495,15 @@
             $('.current-folder .path').html(pathLabel);
 
             if(results.length > 0){
+                var $resultsWrapper = $('<div class="results-wrapper"/>');
+                $resultsContainer.prepend($resultsWrapper);
+
                 $.each(results, function(index, value){
                     if(!value.folder){
-                        CStudioBrowse.renderItem(value);
+                        CStudioBrowse.renderItem(value, $resultsWrapper);
                         filesPresent = true;
                     }
-                })
+                });
 
                 if(filesPresent){
                     CStudioBrowse.renderItemsActions();
