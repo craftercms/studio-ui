@@ -790,7 +790,7 @@
 
             function isValidSite() {
                 if($scope.site.siteId) {
-                    $scope.site.siteId = $scope.site.siteId.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                    $scope.site.siteId = $scope.site.siteId.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
                     sitesService.exists({
                         site: $scope.site.siteId
                     }).success(function (data) {
