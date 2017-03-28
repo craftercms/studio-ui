@@ -334,6 +334,14 @@ div#acn-active-content {
     right: 0;
     bottom: 0;
     position: absolute;
+
+    #acn-sites-link {
+      background: url(/studio/static-assets/themes/cstudioTheme/images/icons/dashboard-icon.png) no-repeat;
+      display: inline-block;
+      padding-left: 20px;
+      background-size: 22px 22px;
+      background-position: -3px -3px;
+    }
   }
   .treenode-label {
     margin: 0 0 5px 0;

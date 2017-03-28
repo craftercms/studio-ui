@@ -25,11 +25,23 @@
 
                 <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
-                <a id="acn-logout-link" class="navbar-text navbar-right" style="margin-left: 0; margin-right:0;">Sign Out</a>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a class="ng-binding" href="/studio/#/users">Users</a></li>
+                    <li><a href="/studio/#/sites">Sites</a></li>
+                    <li><a href="http://docs.craftercms.org/en/latest/" target="_blank" >Help</a></li>
+                    <li class="dropdown" dropdown="">
+                        <a id="account-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">Account <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/studio/#/settings">Settings</a></li>
+                            <li><a id="acn-logout-link">Sign out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
                 <div id="acn-persona" class="navbar-right"></div>
                 <div class="navbar-form navbar-right" role="search">
                     <div class="form-group">
-                        <input type="text" class="form-control" id="acn-searchtext" value="" maxlength="256" />
+                        <span value="" id="acn-searchtext"></span>
                     </div>
                 </div>
                 <div id="acn-preview-tools" class="navbar-right"></div>
