@@ -401,12 +401,14 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
                                                 serviceUri+="&"+property.name + "=" + val.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ');
                                             }
 
-                                            if(persona.settings.property.length){
-                                                for(var l=0; l<persona.settings.property.length; l++){
-                                                    addingParamServiceUri(persona.settings.property[l]);
+                                            if(persona.settings) {
+                                                if (persona.settings.property.length) {
+                                                    for (var l = 0; l < persona.settings.property.length; l++) {
+                                                        addingParamServiceUri(persona.settings.property[l]);
+                                                    }
+                                                } else {
+                                                    addingParamServiceUri(persona.settings.property);
                                                 }
-                                            }else{
-                                                addingParamServiceUri(persona.settings.property);
                                             }
 
                                             serviceUri = serviceUri + "&" + new Date();
