@@ -71,7 +71,7 @@
       <div class="form-group">
           <label><script>CMgs.display(langBundle, "keywordsLabel")</script></label>
           <br />
-          <input type="text" name="keywords" id="cstudio-wcm-search-keyword-textbox" class="form-control"  value="${RequestParameters["s"]!''}"/>
+          <input type="text" name="keywords" id="cstudio-wcm-search-keyword-textbox" class="form-control" value="${RequestParameters["s"]!''}" autofocus="autofocus" />
 
           <input type="hidden" id="cstudio-wcm-search-presearch"  value="true" />
       </div>

@@ -157,6 +157,11 @@ CStudioSearch.init = function() {
 		    YAHOO.util.Event.addListener("cstudio-wcm-search-sort-dropdown", "change", searchCallback);
 		}
 	});
+
+	setTimeout(function() {
+		$('#cstudio-wcm-search-keyword-textbox').focus();
+	}, 500)
+
 }
 
 CStudioSearch.checkIfNumeric = function() {

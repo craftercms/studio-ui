@@ -24,9 +24,7 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
 			"ContextualNav.WcmSearch": {
 				init: function() { 
 					var e = YDom.get("acn-searchtext");
-					YAHOO.util.Event.addListener(e, "focus", this.focusSearchText);
-					YAHOO.util.Event.addListener(e, "blur", this.blurSearchText);
-					new YAHOO.util.KeyListener(e,{keys: 13},{fn:this.doSearch},"keydown").enable();
+					YAHOO.util.Event.addListener(e, "click", this.doSearch);
 					this.setDefaultSearchText();
 					this.blurSearchText();
 				},
@@ -54,15 +52,13 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
 				setDefaultSearchText: function() {
 					var CMgs = CStudioAuthoring.Messages;
         			var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
-
-					YDom.get("acn-searchtext").value=CMgs.format(contextNavLangBundle, "search");
 				},
 				/**
 				 * perform the search
 				 */
 				doSearch: function() {
 					var searchContext = CStudioAuthoring.Service.createSearchContext();
-					searchContext.keywords = encodeURIComponent(YDom.get("acn-searchtext").value);
+					searchContext.keywords = encodeURIComponent("");
 					searchContext.includeAspects = new Array();
 					searchContext.includeAspects.push("cstudio-core:pageMetadata");
 					searchContext.includeAspects.push("cstudio-core:documentMetadata");

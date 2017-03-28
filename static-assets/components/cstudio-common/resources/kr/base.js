@@ -82,6 +82,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
 
 CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     siteContent: "사이트 콘텐츠",
+    sideBar: "사이드 바",
 
     wcmContentEdit: "편집",
     wcmContentView: "보기",
