@@ -9,6 +9,7 @@
     var Topics = crafter.studio.preview.Topics;
     var origin = window.location.origin; // 'http://127.0.0.1:8080';
     var communicator = new crafter.studio.Communicator(origin);
+    var previewWidth;
     // CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
 
     communicator.subscribe(Topics.GUEST_CHECKIN, function (url) {
@@ -66,24 +67,24 @@
 
                 if (!message.itemId) {
                     // base page edit
-                            isLockOwner(CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner);
-                            CStudioAuthoring.Operations.performSimpleIceEdit(
-                                CStudioAuthoring.SelectedContent.getSelectedContent()[0],
-                                message.iceId, //field
-                                isWrite,
-                                editCb,
-                                par);
+                    isLockOwner(CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner);
+                    CStudioAuthoring.Operations.performSimpleIceEdit(
+                        CStudioAuthoring.SelectedContent.getSelectedContent()[0],
+                        message.iceId, //field
+                        isWrite,
+                        editCb,
+                        par);
 
                 } else {
                     var getContentItemsCb = {
                         success: function (contentTO) {
                             isLockOwner(contentTO.item.lockOwner);
                             CStudioAuthoring.Operations.performSimpleIceEdit(
-                                        contentTO.item,
-                                        this.iceId, //field
-                                        isWrite,
-                                        this.editCb,
-                                        par);
+                                contentTO.item,
+                                this.iceId, //field
+                                isWrite,
+                                this.editCb,
+                                par);
                         },
                         failure: function () {
                             callback.failure();
@@ -184,8 +185,10 @@
     });
 
     communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
-        CStudioAuthoring.PreviewTools.panel.show();
-        YDom.replaceClass('component-panel-elem', 'expanded', 'contracted');
+        $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function(){
+            $('.studio-preview').css('right', previewWidth);
+            YDom.replaceClass('component-panel-elem', 'expanded', 'contracted');
+        });
     });
 
     communicator.subscribe(Topics.COMPONENT_DROPPED, function (message) {
@@ -280,8 +283,8 @@
 
     communicator.subscribe(Topics.DND_ZONES_MODEL_REQUEST, function (message) {
         amplify.publish(cstopic('DND_ZONES_MODEL_REQUEST'),
-                message.aNotFound
-            );
+            message.aNotFound
+        );
 
     });
 
@@ -291,66 +294,67 @@
 
     var initialContentModel;
     amplify.subscribe(cstopic('START_DRAG_AND_DROP'), function (config) {
-        CStudioAuthoring.PreviewTools.panel.hide();
+        previewWidth = $('.studio-preview').css('right');
+        $('.studio-preview').css('right', 0);
+        $(CStudioAuthoring.PreviewTools.panel.element).hide('fast', function(){
+            var data, dataBrowse;
+            if (config.components.category){
+                data = config.components.category;
+            }else{
+                data = config.components;
+            }
 
-        var data, dataBrowse;
-        if (config.components.category){
-            data = config.components.category;
-        }else{
-            data = config.components;
-        }
+            if (config.components.browse){
+                dataBrowse = config.components.browse;
+            }
 
-        if (config.components.browse){
-            dataBrowse = config.components.browse;
-        }
+            var categories = [], browse = [];
 
-        var categories = [], browse = [];
+            if(data) {
+                if ($.isArray(data)) {
+                    $.each(data, function (i, c) {
+                        if (c.component) {
+                            categories.push({ label: c.label, components: c.component });
+                        } else {
+                            categories.push({ label: c.label, components: c.components });
+                        }
 
-        if(data) {
-            if ($.isArray(data)) {
-                $.each(data, function (i, c) {
-                    if (c.component) {
-                        categories.push({ label: c.label, components: c.component });
-                    } else {
-                        categories.push({ label: c.label, components: c.components });
-                    }
-
-                });
-            } else {
-                if (data.component) {
-                    categories.push({ label: data.label, components: data.component });
+                    });
                 } else {
-                    categories.push({ label: data.label, components: data.components });
+                    if (data.component) {
+                        categories.push({ label: data.label, components: data.component });
+                    } else {
+                        categories.push({ label: data.label, components: data.components });
+                    }
                 }
             }
-        }
 
-        if(dataBrowse) {
-            if ($.isArray(dataBrowse)) {
-                $.each(dataBrowse, function (i, c) {
-                    browse.push({ label: c.label, path: c.path });
-                });
-            } else {
-                browse.push({ label: dataBrowse.label, path: dataBrowse.path });
+            if(dataBrowse) {
+                if ($.isArray(dataBrowse)) {
+                    $.each(dataBrowse, function (i, c) {
+                        browse.push({ label: c.label, path: c.path });
+                    });
+                } else {
+                    browse.push({ label: dataBrowse.label, path: dataBrowse.path });
+                }
             }
-        }
 
-        var text = {};
-        text.done = CMgs.format(previewLangBundle, "done");
-        text.components = CMgs.format(previewLangBundle, "components");
-        text.addComponent = CMgs.format(previewLangBundle, "addComponent");
+            var text = {};
+            text.done = CMgs.format(previewLangBundle, "done");
+            text.components = CMgs.format(previewLangBundle, "components");
+            text.addComponent = CMgs.format(previewLangBundle, "addComponent");
 
-        communicator.publish(Topics.START_DRAG_AND_DROP, {
-            components: categories,
-            contentModel: initialContentModel,
-            translation: text,
-            browse: browse
+            communicator.publish(Topics.START_DRAG_AND_DROP, {
+                components: categories,
+                contentModel: initialContentModel,
+                translation: text,
+                browse: browse
+            });
         });
-
     });
 
     amplify.subscribe(cstopic('CHANGE_GUEST_REQUEST'), function (url) {
-       // console.log(arguments);
+        // console.log(arguments);
     });
 
     amplify.subscribe(cstopic('DND_COMPONENT_MODEL_LOAD'), function (data) {
