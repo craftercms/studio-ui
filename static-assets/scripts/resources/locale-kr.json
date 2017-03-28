@@ -40,7 +40,9 @@
         "SITE_ID": "사이트 신분증",
         "DESCRIPTION": "기술",
         "BLUEPRINT": "청사진",
-        "CREATING_SITE": "사이트 만들기"
+        "CREATING_SITE": "사이트 만들기",
+        "LENGTH_VALIDATION_50": "(최대 길이 : 50 자)",
+        "LENGTH_VALIDATION_4000": "(최대 길이 : 4000 자)"
       }
     }
   },

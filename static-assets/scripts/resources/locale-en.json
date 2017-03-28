@@ -33,7 +33,7 @@
       "REMOVE_SITE_CONFIRMATION_MSG": "Do you want to remove the site?",
       "TOGGLE_NAV": "Toggle navigation",
       "ACCOUNT": "Account",
-      "SITE_ERROR" : "is not a valid site.",
+      "SITE_ERROR" : "is an invalid site.",
 
       "create": {
         "HEADER_LABEL": "Create Site",
@@ -42,7 +42,9 @@
         "DESCRIPTION": "Description",
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Creating Site",
-        "CREATE_ERROR": "System can't create the site. Please contact the administrator."
+        "CREATE_ERROR": "System can't create the site. Please contact the administrator.",
+        "LENGTH_VALIDATION_50": "(Max length: 50 characters)",
+        "LENGTH_VALIDATION_4000": "(Max length: 4000 characters)"
       }
     }
   },

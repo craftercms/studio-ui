@@ -40,7 +40,9 @@
         "SITE_ID": "Id de Sitio",
         "DESCRIPTION": "Descripción",
         "BLUEPRINT": "Blueprint",
-        "CREATING_SITE": "Creando Sitio"
+        "CREATING_SITE": "Creando Sitio",
+        "LENGTH_VALIDATION_50": "(Longitud máxima: 50 caracteres)",
+        "LENGTH_VALIDATION_4000": "(Longitud máxima: 4000 caracteres)"
       }
     }
   },
