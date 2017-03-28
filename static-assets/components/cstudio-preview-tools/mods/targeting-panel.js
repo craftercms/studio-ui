@@ -393,8 +393,8 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
 											
 											var serviceUri = "/api/1/profile/set" +
 												"?username=" + item.personaName;
-											for(var l=0; l<persona.settings.length; l++){
-												var property =  persona.settings[l];
+											for(var l=0; l<persona.settings.property.length; l++){
+												var property =  persona.settings.property[l];
 												var valEl = document.getElementById("crPersona_" + property.name);
 												var val =  (valEl.tagName == "INPUT") ? valEl.value : valEl.innerHTML;
 												serviceUri+="&"+property.name + "=" + val.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ');
