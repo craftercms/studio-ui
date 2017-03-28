@@ -1,8 +1,10 @@
 (function (window, $, Handlebars) {
     'use strict';
 
+    var activePromise;
+
     if (typeof CStudioBrowse == "undefined" || !CStudioBrowse) {
-       var CStudioBrowse= {};
+        var CStudioBrowse= {};
     }
 
     CStudioBrowse.init = function() {
@@ -175,16 +177,16 @@
     CStudioBrowse.parseObjForTree = function(obj){
         var parsed = JSON.parse(JSON.stringify(obj), function(key, value) {
             if (key === "children"){
-                    $.each(value, function(index, elem){
-                        if(elem.numOfChildren === 0){
-                            value[index].li_attr = {
-                                "data-display" : 'hidden-node'
-                            };
-                        } else {
-                            value[index].state = {'closed': true};
-                            value[index].children = true;
-                        }
-                    })
+                $.each(value, function(index, elem){
+                    if(elem.numOfChildren === 0){
+                        value[index].li_attr = {
+                            "data-display" : 'hidden-node'
+                        };
+                    } else {
+                        value[index].state = {'closed': true};
+                        value[index].children = true;
+                    }
+                })
             }
             if (key === "path"){
                 this.a_attr = {
@@ -420,7 +422,7 @@
                             CStudioBrowse.refreshCurrentResults();
                         })
                     },
-                    items: {    
+                    items: {
                         "upload": {name: CMgs.format(browseLangBundle, 'uploadLabel')}          //TODO: change to resources
                     }
                 });
@@ -484,10 +486,19 @@
             $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
             contentPromise = CStudioBrowse._lookupSiteContent(site, path);
 
+        activePromise = contentPromise;
+
         $resultsContainer.empty();
         $resultsActions.empty();
 
         contentPromise.then(function (results) {
+            if (activePromise != contentPromise) {
+                return;
+            }
+
+            $resultsContainer.empty();
+            $resultsActions.empty();
+
             var filesPresent = false;
             results = results.item.children;
 
