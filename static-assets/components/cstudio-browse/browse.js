@@ -2,7 +2,7 @@
     'use strict';
 
     if (typeof CStudioBrowse == "undefined" || !CStudioBrowse) {
-       var CStudioBrowse= {};
+        var CStudioBrowse= {};
     }
 
     CStudioBrowse.init = function() {
@@ -175,16 +175,16 @@
     CStudioBrowse.parseObjForTree = function(obj){
         var parsed = JSON.parse(JSON.stringify(obj), function(key, value) {
             if (key === "children"){
-                    $.each(value, function(index, elem){
-                        if(elem.numOfChildren === 0){
-                            value[index].li_attr = {
-                                "data-display" : 'hidden-node'
-                            };
-                        } else {
-                            value[index].state = {'closed': true};
-                            value[index].children = true;
-                        }
-                    })
+                $.each(value, function(index, elem){
+                    if(elem.numOfChildren === 0){
+                        value[index].li_attr = {
+                            "data-display" : 'hidden-node'
+                        };
+                    } else {
+                        value[index].state = {'closed': true};
+                        value[index].children = true;
+                    }
+                })
             }
             if (key === "path"){
                 this.a_attr = {
@@ -203,8 +203,10 @@
         return parsed;
     }
 
-    CStudioBrowse.renderItem = function(item) {
-        var $resultsContainer = $('#cstudio-wcm-search-result .results');
+    CStudioBrowse.renderItem = function(item, $resultsContainer) {
+        if (!$resultsContainer) {
+            $resultsContainer = $('#cstudio-wcm-search-result .results');
+        }
 
         var source = $("#hb-search-result").html();
         var template = Handlebars.compile(source);
@@ -418,7 +420,7 @@
                             CStudioBrowse.refreshCurrentResults();
                         })
                     },
-                    items: {    
+                    items: {
                         "upload": {name: CMgs.format(browseLangBundle, 'uploadLabel')}          //TODO: change to resources
                     }
                 });
@@ -481,7 +483,6 @@
         var $resultsContainer = $('#cstudio-wcm-search-result .results'),
             $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
             contentPromise = CStudioBrowse._lookupSiteContent(site, path);
-
         $resultsContainer.empty();
         $resultsActions.empty();
 
@@ -493,12 +494,15 @@
             $('.current-folder .path').html(pathLabel);
 
             if(results.length > 0){
+                var $resultsWrapper = $('<div class="results-wrapper"/>');
+                $resultsContainer.prepend($resultsWrapper);
+
                 $.each(results, function(index, value){
                     if(!value.folder){
-                        CStudioBrowse.renderItem(value);
+                        CStudioBrowse.renderItem(value, $resultsWrapper);
                         filesPresent = true;
                     }
-                })
+                });
 
                 if(filesPresent){
                     CStudioBrowse.renderItemsActions();
