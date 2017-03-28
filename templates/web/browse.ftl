@@ -60,7 +60,16 @@
           </div>
       </div>
 
-    </div>    
+    </div>
+
+      <style>
+      #cstudio-wcm-search-result .results > * {
+          display: none
+      }
+      #cstudio-wcm-search-result .results > .results-wrapper {
+                display: block
+            }
+      </style>
 
     <div id="cstudio-command-controls">
       <div id="submission-controls" class="cstudio-form-controls-button-container">
