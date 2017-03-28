@@ -66,8 +66,9 @@
     </div>
     <div class="modal-body">
         <p>{{ 'dashboard.sites.create.CREATE_ERROR' | translate }}</p>
+        <p class="word-wrap errorMessage">{{ 'dashboard.sites.create.ERROR' | translate }} {{error}}</p>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-default" ng-click="cancel()">{{ 'common.CANCEL' | translate }}</button>
+        <button class="btn btn-default" ng-click="cancel()">{{ 'common.CLOSE_LABEL' | translate }}</button>
     </div>
 </script>

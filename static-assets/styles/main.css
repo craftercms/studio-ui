@@ -6003,6 +6003,12 @@ a[ng-click] {
   color: gray;
   font-size: 9px; }
 
+.word-wrap {
+  word-wrap: break-word; }
+
+.errorMessage {
+  margin-top: 22px; }
+
 .iframe .cstudio-navbar {
   display: none; }
 .iframe + #container {
