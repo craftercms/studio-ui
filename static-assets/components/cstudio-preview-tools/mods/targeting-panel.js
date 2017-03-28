@@ -390,16 +390,24 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
 												
 												event: e
 											};
-											
-											var serviceUri = "/api/1/profile/set" +
-												"?username=" + item.personaName;
-											for(var l=0; l<persona.settings.property.length; l++){
-												var property =  persona.settings.property[l];
-												var valEl = document.getElementById("crPersona_" + property.name);
-												var val =  (valEl.tagName == "INPUT") ? valEl.value : valEl.innerHTML;
-												serviceUri+="&"+property.name + "=" + val.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ');
-;	
-											}
+
+                                            var serviceUri = "/api/1/profile/set" +
+                                                "?username=" + item.personaName;
+
+                                            var addingParamServiceUri = function(persona){
+                                                var property =  persona;
+                                                var valEl = document.getElementById("crPersona_" + property.name);
+                                                var val =  (valEl.tagName == "INPUT") ? valEl.value : valEl.innerHTML;
+                                                serviceUri+="&"+property.name + "=" + val.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'').replace(/\s+/g,' ');
+                                            }
+
+                                            if(persona.settings.property.length){
+                                                for(var l=0; l<persona.settings.property.length; l++){
+                                                    addingParamServiceUri(persona.settings.property[l]);
+                                                }
+                                            }else{
+                                                addingParamServiceUri(persona.settings.property);
+                                            }
 
                                             serviceUri = serviceUri + "&" + new Date();
 	
