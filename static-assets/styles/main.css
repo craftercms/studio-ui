@@ -5943,6 +5943,9 @@ a[ng-click] {
     margin: 0;
     float: left; }
 
+.createSitesBtn {
+  width: 194px; }
+
 .nav-panel {
   left: 0;
   bottom: 0;
@@ -5965,9 +5968,16 @@ a[ng-click] {
   border-style: none solid none none; }
 
 .table.site-list thead th {
-  padding: 15px 10px; }
+  padding: 0; }
 .table.site-list tbody td {
   padding: 10px; }
+  .table.site-list tbody td.preview, .table.site-list tbody td.dashboard {
+    text-align: center; }
+  .table.site-list tbody td.name {
+    padding-left: 17px; }
+  .table.site-list tbody td.remove {
+    text-align: right;
+    padding-right: 30px; }
 .table.site-list tbody .site-description {
   max-width: 100px; }
 
