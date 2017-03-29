@@ -186,6 +186,10 @@
 
     communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
         $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function(){
+
+            if(!previewWidth || previewWidth == 0 || previewWidth == "0px") {
+                previewWidth = 265;
+            }
             $('.studio-preview').css('right', previewWidth);
             YDom.replaceClass('component-panel-elem', 'expanded', 'contracted');
         });
