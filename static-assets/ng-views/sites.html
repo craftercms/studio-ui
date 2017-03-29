@@ -5,47 +5,28 @@
     </header>
 
     <div ng-if="sites">
-        <div class="nav-panel">
-
-            <div ng-show="createSites" class="m10">
-                <button class="btn btn-default btn-pill btn-block" ng-click="createSitesDialog()" ng-class="{ active: $state.includes('create') }">
-                        <!-- ui-sref="home.sites.create" -->
-                    <i class="glyphicon glyphicon-plus"></i> <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
-                </button>
-            </div>
-
-            <div class="list-group">
-                <a class="list-group-item" ui-sref="home.sites"
-                   ng-class="{ 'active': $state.$current.name === 'home.sites' }">
-                    {{ 'common.ALL_LABEL' | translate }}
-                </a>
-                <!--a class="list-group-item"
-                   ui-sref="home.sites.site({ siteId: {{site.id}} })"
-                   ui-sref-active="active"
-                   ng-repeat="site in sites">
-                    {{site.name}}
-                </a-->
-            </div>
-
+        <div ng-show="createSites" class="m10 createSitesBtn">
+            <button class="btn btn-default btn-pill btn-block" ng-click="createSitesDialog()" ng-class="{ active: $state.includes('create') }">
+                <!-- ui-sref="home.sites.create" -->
+                <i class="glyphicon glyphicon-plus"></i> <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
+            </button>
         </div>
-        <div class="action-area" ui-view>
+        <div ui-view>
             <table class="site-list table table-hover">
                 <thead>
                 <tr>
-                    <th>{{ 'dashboard.sites.SITE_NAME' | translate }}</th>
+                    <th><span class="sr-only">{{ 'dashboard.sites.SITE_NAME' | translate }}</span></th>
                     <th><span class="sr-only">{{ 'dashboard.sites.SITE_DASHBOARD_LINK' | translate }}</span></th>
                     <th><span class="sr-only">{{ 'dashboard.sites.PREVIEW_LINK' | translate }}</span></th>
-                    <th><span class="sr-only">{{ 'dashboard.sites.LIVE_SITE_LINK' | translate }}</span></th>
                     <th><span class="sr-only">{{ 'common.REMOVE_LABEL' | translate }}</span></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="site in sites">
-                    <td align="center">{{site.name}}</td>
-                    <td align="center"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
-                    <td align="center"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
-                    <td align="center" class="site-description">{{site.description}}</td>
-                    <td align="center"><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="glyphicon glyphicon-trash"></i></a></td>
+                    <td class="name">{{site.name}}</td>
+                    <td class="preview"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
+                    <td class="dashboard"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
+                    <td class="remove"><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="glyphicon glyphicon-trash"></i></a></td>
                 </tr>
                 </tbody>
             </table>
