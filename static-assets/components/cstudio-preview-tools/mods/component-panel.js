@@ -226,9 +226,12 @@
         },
 
         init: function (){
+            //clean params from currentPath
+            var previewCurrentPath = CStudioAuthoringContext.previewCurrentPath.substring(0, CStudioAuthoringContext.previewCurrentPath.indexOf('?'));
+
             CStudioAuthoring.ComponentsPanel.getPageModel(
                 CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
-                    CStudioAuthoringContext.previewCurrentPath),
+                    previewCurrentPath),
                 'init-components', true, false);
         },
 
