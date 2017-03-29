@@ -22,7 +22,7 @@ CStudioAuthoring.ContextualNav.SiteSelector = CStudioAuthoring.ContextualNav.Sit
 			var linkText = document.createTextNode("Dashboard");
 			dashboardLinkEl.appendChild(linkText);
 			dashboardLinkEl.title = "Dashboard";
-			dashboardLinkEl.href = CStudioAuthoringContext.authoringAppBaseUri + "/#/sites";
+			dashboardLinkEl.href = CStudioAuthoringContext.authoringAppBaseUri + "/site-dashboard";
 			dashboardLinkEl.id = "acn-sites-link";
 			
             YDom.addClass(dropdownInnerEl, 'studio-view');
