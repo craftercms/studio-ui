@@ -93,7 +93,8 @@
       "QUOTA": "Quota",
       "PASSWORD": "Contraseña",
       "PASSWORD_VERIFICATION": "Verificación de Contraseña",
-      "SAVE": "Guardar"
+      "SAVE": "Guardar",
+      "ADD_TO_GROUP_TEXT": "Para agregar un usuario a un grupo/sitio, por favor use la consola de administración del sitio."
     },
     "audit": {
       "AUDIT": "Auditoría",

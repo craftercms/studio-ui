@@ -31,6 +31,29 @@
                     }
                 }
 
+                if(toState.name.indexOf('users') !== -1 ){
+                    // console.log('on users page');
+
+                    var user = authService.getUser();
+                        var createSitePermissions = false;
+
+                    if(user && user.username) {
+                        sitesService.getPermissions('', '/', user.username || user)
+                            .success(function (data) {
+                                for(var i=0; i<data.permissions.length;i++){
+                                    if(data.permissions[i]=='create-site'){
+                                        createSitePermissions = true;
+                                    }
+                                }
+
+                                if(!createSitePermissions){
+                                    $state.go('home.sites');
+                                }
+                            })
+                    }
+
+                }
+
             });
 
             sitesService.getLanguages($rootScope, true);
