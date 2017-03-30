@@ -181,6 +181,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     Components: "구성 요소들",
     component: "구성 요소",
     staticassets: "고정 자산",
+    classes: "Classes",
     templates: "템플릿",
     scripts: "스크립트",
     analyticsDashboard: "웹 로그 분석 대시 보드",
@@ -188,6 +189,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     previewSync: "미리 동기화",
     syncrepo: "저장소에서 동기화",
     allSites: "모든 사이트",
+    dashboard: "Dashboard",
     newContent: "새로운 내용",
     newFolder: "새 폴더",
     upload: "업로드",
@@ -423,6 +425,15 @@ CStudioAuthoring.Messages.registerBundle("browse", "kr", {
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
+    contenttypes: "콘텐츠 형식",
+    bulkoperations: "Bulk Operations",
+    workflowjobs: "워크 플로 작업",
+    workflowstates: "워크 플로우 미국",
+    logginglevels: "로깅 수준",
+    logconsole: "로그인 콘솔",
+    audit: "Audit",
+    groups: "Groups",
+
     contentTypes: "콘텐츠 형식",
     configuration: "구성",
     workflowJobs: "워크 플로 작업",
@@ -496,6 +507,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     fileUploadedDesktop: "파일 바탕 화면에서 업로드",
     flashUploadedDesktop: "플래시 바탕 화면에서 업로드",
     videoUploadedDesktop: "비디오 바탕 화면에서 업로드",
+    videoBrowse: "Video from Repository",
     staticKeyValuePairs: "정적 키 값 쌍",
     configuredListOfPairs: "쌍의 구성 목록",
     fileBrowse: "찾아보기를 파일",

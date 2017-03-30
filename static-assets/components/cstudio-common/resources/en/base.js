@@ -190,6 +190,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     components: "Components",
     Components: "Components",
     component: "Component",
+    classes: "Classes",
     staticassets: "Static Assets",
     templates: "Templates",
     scripts: "Scripts",
@@ -198,6 +199,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     previewSync: "Preview Sync",
     syncrepo: "Sync From Repository",
     allSites: "All Sites",
+    dashboard: "Dashboard",
     newContent: "New Content",
     newFolder: "New Folder",
     upload: "Upload",
@@ -465,6 +467,14 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
+    contenttypes: "Content Types",
+    bulkoperations: "Bulk Operations",
+    workflowjobs: "Workflow Jobs",
+    workflowstates: "Workflow States",
+    logginglevels: "Logging Levels",
+    logconsole: "Log Console",
+    audit: "Audit",
+    groups: "Groups",
     contentTypes: "Content Types",
     configuration: "Configuration",
     workflowJobs: "Workflow Jobs",

@@ -188,6 +188,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     Components: "Componentes",
     component: "Componente",
     staticassets: "Activos Estáticos",
+    classes: "Clases",
     templates: "Plantillas",
     scripts: "Scripts",
     analyticsDashboard: "Panel de Control de Análisis",
@@ -195,6 +196,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     previewSync: "Vista previa de Sincronización",
     syncrepo: "Sincronizar del Repositorio",
     allSites: "Todos los Sitios",
+    dashboard: "Panel de Control",
     newContent: "Nuevo Contenido",
     newFolder: "Nueva Carpeta",
     upload: "Subir",
@@ -447,6 +449,14 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
+    contenttypes: "Tipos de Contenido",
+    bulkoperations: "Operaciones en Cantidades",
+    workflowjobs: "Flujo de Trabajo de Tareas",
+    workflowstates: "Flujo de Trabajo de Estados",
+    logginglevels: "Niveles de Registro",
+    logconsole: "Consola de Registros",
+    audit: "Auditoría",
+    groups: "Grupos",
     contentTypes: "Tipos de Contenido",
     configuration: "Configuración",
     workflowJobs: "Flujo de Trabajo de Empleos",
@@ -523,6 +533,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     fileUploadedDesktop: "Archivo Subido desde el Escritorio",
     flashUploadedDesktop: "Flash Subido desde el Escritorio",
     videoUploadedDesktop: "Video Subido desde el Escritorio",
+    videoBrowse: "Video del repositorio",
     staticKeyValuePairs: "Pares Estáticos de Valores Clave",
     configuredListOfPairs: "Configurado Lista de Pares",
     fileBrowse: "Navegador de Archivos",

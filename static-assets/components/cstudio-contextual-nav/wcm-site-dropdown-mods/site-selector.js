@@ -19,7 +19,7 @@ CStudioAuthoring.ContextualNav.SiteSelector = CStudioAuthoring.ContextualNav.Sit
 			var dropdownInnerEl = config.containerEl;
 
 			var dashboardLinkEl = document.createElement('a');
-			var linkText = document.createTextNode("Dashboard");
+			var linkText = document.createTextNode(CMgs.format(siteDropdownLangBundle, "dashboard"));
 			dashboardLinkEl.appendChild(linkText);
 			dashboardLinkEl.title = "Dashboard";
 			dashboardLinkEl.href = CStudioAuthoringContext.authoringAppBaseUri + "/site-dashboard";

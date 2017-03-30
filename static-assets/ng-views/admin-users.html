@@ -1,11 +1,11 @@
-<div class="container-fluid admin-view">
+<div ng-if="createSites" class="container-fluid admin-view">
     <div class="row full">
         <div id="" class="col-lg-10 col-lg-offset-1">
             <div class="row">
                 <div class="col-md-12">
                     <h2 class="page-header">{{ 'admin.users.HEADER_LABEL' | translate }}</h2>
 
-                    <h4 class="pull-left mb20">To add a user to a group/site, please use the admin console for the site.</h4>
+                    <h4 class="pull-left mb20">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</h4>
 
                     <a class="btn btn-default" ng-click="users.createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
 
