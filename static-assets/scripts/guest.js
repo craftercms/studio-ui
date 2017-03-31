@@ -144,22 +144,6 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
 
     });
 
-    function initEltResize() {
-        var elems = document.querySelectorAll('[data-studio-ice]');
-
-        for (var i = 0; i < elems.length; ++i) {
-            var resizeElement = elems[i],
-                resizeCallback = function() {
-                    removeICERegions();
-                    if (!!(sessionStorage.getItem('ice-on'))) {
-                        initICERegions();
-                    }
-                };
-
-            addResizeListener(resizeElement, resizeCallback);
-        }
-    }
-
     function initICERegions() {
             removeICERegions();
         var elems = document.querySelectorAll('[data-studio-ice]');
