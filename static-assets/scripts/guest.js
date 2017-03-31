@@ -1,4 +1,4 @@
-define('guest', ['crafter', 'jquery', 'js-resize', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller'], function (crafter, $, $resize, Communicator, ICEOverlay, DnDController, PointerController) {
+define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller'], function (crafter, $, Communicator, ICEOverlay, DnDController, PointerController) {
     'use strict';
 
     $.noConflict(true);
@@ -161,7 +161,7 @@ define('guest', ['crafter', 'jquery', 'js-resize', 'communicator', 'ice-overlay'
     }
 
     function initICERegions() {
-        removeICERegions();
+            removeICERegions();
         var elems = document.querySelectorAll('[data-studio-ice]');
 
         for (var i = 0; i < elems.length; ++i) {
@@ -173,7 +173,9 @@ define('guest', ['crafter', 'jquery', 'js-resize', 'communicator', 'ice-overlay'
     }
 
     function removeICERegions(){
-        $('.studio-ice-indicator').remove();
+        if ($('.studio-ice-indicator').length > 0) {
+            $('.studio-ice-indicator').remove();
+        }
     }
 
     function initOverlay(elt) {
@@ -238,28 +240,26 @@ define('guest', ['crafter', 'jquery', 'js-resize', 'communicator', 'ice-overlay'
 
     });
 
-    var rtime;
-    var timeout = false;
-    var delta = 200;
-    $(window).resize(function() {
+    var timeout = null;
+    function clearSetTimeout(time){
         removeICERegions();
-        rtime = new Date();
-        if (timeout === false) {
-            timeout = true;
-            setTimeout(resizeEnd, delta);
-        }
-    });
+        clearTimeout(timeout);
+        timeout = setTimeout(resizeProcess, time);
+    }
 
-    function resizeEnd() {
-        if (new Date() - rtime < delta) {
-            setTimeout(resizeEnd, delta);
-        } else {
-            timeout = false;
-            if (!!(sessionStorage.getItem('ice-on'))) {
-                initICERegions();
-            }
+    function resizeProcess() {
+        if (!!(sessionStorage.getItem('ice-on'))) {
+            initICERegions();
         }
     }
+
+    window.studioICERepaint = function() {
+        clearSetTimeout(600);
+    }
+
+    $(window).resize(function() {
+        clearSetTimeout(700);
+    });
 
     loadCss('/studio/static-assets/styles/guest.css');
 
@@ -267,7 +267,6 @@ define('guest', ['crafter', 'jquery', 'js-resize', 'communicator', 'ice-overlay'
         initICERegions();
     }
 
-    initEltResize();
     setRegionsCookie();
     window.parent.initRegCookie();
 
