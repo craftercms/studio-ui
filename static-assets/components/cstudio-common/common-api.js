@@ -8090,12 +8090,12 @@ CStudioAuthoring.FilesDiff = {
                         serviceCallback = {
                             success: function(response) {
                                 var resObj = response.responseText
- 
-                                if (resObj.indexOf("true") != -1) {
-                                    //ticket is valid
+                                var resJson = JSON.parse(resObj);
+
+                                if (resposne.status == 200 && resJson.message == "OK") {
+                                    // ticket is valid
                                     setTimeout(function() { authLoop(configObj); }, delay);
-                                } 
-                                else {
+                                } else {
                                     //ticket is invalid
                                     authRedirect(configObj);
                                 }
