@@ -95,7 +95,8 @@
       "QUOTA": "Quota",
       "PASSWORD": "Password",
       "PASSWORD_VERIFICATION": "Password Verification",
-      "SAVE": "Save"
+      "SAVE": "Save",
+      "ADD_TO_GROUP_TEXT": "To add a user to a group/site, please use the admin console for the site."
     },
     "audit": {
       "AUDIT": "Audit",

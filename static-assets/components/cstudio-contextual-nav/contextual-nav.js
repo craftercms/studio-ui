@@ -57,6 +57,9 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				var $ = jQuery || function(fn) { fn() };
 				$(function () {
 					document.body.appendChild(bar);
+					if(CStudioAuthoringContext.role != "admin"){
+						$('#studioBar .navbar-right .users-link').hide();
+					}
 					me.context.buildModules(config, bar);
 				});
 			},

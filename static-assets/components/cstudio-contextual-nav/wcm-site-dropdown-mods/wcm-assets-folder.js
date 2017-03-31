@@ -39,7 +39,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
         var parentFolderLinkEl = document.createElement("a");
         parentFolderLinkEl.id = instance.label.toLowerCase() + "-tree";
-        parentFolderLinkEl.innerHTML = CMgs.format(siteDropdownLangBundle, (instance.label));
+
+        var label = instance.label.toLowerCase();
+        label = label.replace(/ /g, '');
+
+        parentFolderLinkEl.innerHTML = CMgs.format(siteDropdownLangBundle, (label));
         parentFolderLinkEl.onclick = CStudioAuthoring.ContextualNav.WcmAssetsFolder.onRootFolderClick;
         parentFolderLinkEl.componentInstance = instance;
 

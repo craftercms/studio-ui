@@ -26,7 +26,7 @@
                 <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a class="ng-binding" href="/studio/#/users">Users</a></li>
+                    <li><a class="ng-binding users-link" href="/studio/#/users">Users</a></li>
                     <li><a href="/studio/#/sites">Sites</a></li>
                     <li><a href="http://docs.craftercms.org/en/latest/" target="_blank" >Help</a></li>
                     <li class="dropdown" dropdown="">

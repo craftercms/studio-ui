@@ -90,7 +90,10 @@ CStudioAdminConsole.Toolbar = function(containerEl) {
 
 CStudioAdminConsole.Toolbar.prototype = {
 	addToolbarItem: function(tool, toolContainerEl) {
-	   	toolContainerEl.innerHTML = CMgs.format(langBundle, tool.config.label);
+		var label = tool.config.label.toLowerCase();
+		label = label.replace(/ /g, '');
+
+	   	toolContainerEl.innerHTML = CMgs.format(langBundle, label);
 	   	YDom.addClass(toolContainerEl, "cstudio-admin-console-item");
 	   	
 	   	var onRenderWorkAreaFn =  function(evt, params) {
