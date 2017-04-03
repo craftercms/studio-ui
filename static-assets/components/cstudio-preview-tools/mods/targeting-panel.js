@@ -167,7 +167,7 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
 						var currentProfile = eval("(" + json + ")");
 						
 						for(var i=0; i<carousel.personas.length; i++) {
-							if(carousel.personas[i].name.lowercase == currentProfile.username.lowercase) {
+							if(carousel.personas[i].name.toLowerCase() == currentProfile.username.toLowerCase()) {
 								carousel.activePersona = currentProfile;
 								CStudioAuthoring.TargetingPanel.selectPersona(i);
 								break;
