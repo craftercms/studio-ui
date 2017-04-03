@@ -462,7 +462,8 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
     uploadLabel: "Upload",
     notification: "Notification",
     lookUpChildError : "Unable to lookup child form callback for search: ",
-    lookUpParentError : "Unable to lookup parent context for search: "
+    lookUpParentError : "Unable to lookup parent context for search: ",
+    loading: "Loading"
 
 });
 
