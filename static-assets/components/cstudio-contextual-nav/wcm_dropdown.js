@@ -33,6 +33,9 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
         var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
         var mainContainerEl = YDom.get('acn-dropdown-wrapper');
 
+        var navBarSiteNameEl = YDom.get('navbar-site-name');
+        navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
+
         if (window.location.pathname.indexOf("search") > -1 || window.location.pathname.indexOf("browse") > -1 || window.location.pathname.indexOf("admin-console") > -1) {
             mainContainerEl.innerHTML = '';
         } else {
