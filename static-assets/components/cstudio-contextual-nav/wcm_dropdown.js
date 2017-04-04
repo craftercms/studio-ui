@@ -362,7 +362,16 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                     if (!module.params || !module.params.roles) {
                         allowed = true;
                     } else {
-                        var roles = (module.params.roles.length) ? module.params.roles : [module.params.roles.role];
+                        var roles;
+                        // var roles = (module.params.roles.length) ? module.params.roles : [module.params.roles.role];
+                        // var roles = (module.params.roles.role.length && module.params.roles.role.length > 1) ? module.params.roles.role : [module.params.role];
+
+                        if(module.params.roles.role instanceof Array){
+                            roles = module.params.roles.role;
+                        }else{
+                            roles = [module.params.roles.role];
+                        }
+
                         if (roles.length == 0 || roles[0] == undefined) {
                             allowed = true;
                         }
