@@ -363,9 +363,6 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                         allowed = true;
                     } else {
                         var roles;
-                        // var roles = (module.params.roles.length) ? module.params.roles : [module.params.roles.role];
-                        // var roles = (module.params.roles.role.length && module.params.roles.role.length > 1) ? module.params.roles.role : [module.params.role];
-
                         if(module.params.roles.role instanceof Array){
                             roles = module.params.roles.role;
                         }else{
