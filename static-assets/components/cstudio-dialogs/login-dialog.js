@@ -48,6 +48,10 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
      * create dialog
      */
     createDialog: function(cb) {
+
+        var CMgs = CStudioAuthoring.Messages;
+        var previewLangBundle = CMgs.getBundle("previewTools", CStudioAuthoringContext.lang);
+
         YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
         var newdiv = YDom.get("cstudio-wcm-popup-div");
@@ -66,16 +70,16 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
         newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
             '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
             '<div class="contentTypePopupHeader loginHeader">' +
-                'Login' +
+            CMgs.format(previewLangBundle, 'login') +
             '</div> ' +
             '<div><form id="login_form">' +
                 '<div class="contentTypeOuter">'+
                     '<div class="form-group">' +
-                        '<label for="username">Email/Username:</label>' +
+                        '<label for="username">'+CMgs.format(previewLangBundle, 'emailUsername')+'</label>' +
                         '<input type="text" name="username" id="username" placeholder="john@domain.com" value="'+CStudioAuthoringContext.user+'" disabled/>' +
                     '</div>' +
                     '<div class="form-group">' +
-                        '<label for="password">Password:</label>' +
+                        '<label for="password">'+CMgs.format(previewLangBundle, 'password')+'</label>' +
                         '<input type="password" name="pass" id="password"/>' +
                     '</div>' +
                     '<div class="alert alert-danger hidden" id="loginError">'+
@@ -83,8 +87,8 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                     '</div>'+
                 '</div>' +
                 '<div class="contentTypePopupBtn"> ' +
-                    '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="loginButton" value="Sign in" />' +
-                    '<input type="button" class="btn btn-default cstudio-xform-button" id="loginCancelButton" value="Sign back in"  />' +
+                    '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="loginButton" value="'+CMgs.format(previewLangBundle, 'signIn')+'" />' +
+                    '<input type="button" class="btn btn-default cstudio-xform-button" id="loginCancelButton" value="'+CMgs.format(previewLangBundle, 'signBackIn')+'"  />' +
                 '</div>' +
             '</form></div>' +
             '</div> ' +
@@ -143,8 +147,11 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                     var loginError = document.getElementById("loginError");
                     var cstudioWcmPopup = document.getElementById("cstudio-wcm-popup-div");
                     loginError.innerHTML = response.message;
-                    loginError.classList.remove("hidden");
-                    $(cstudioWcmPopup).height($(loginError).height() + $(cstudioWcmPopup).height() + 11);
+                    if(loginError.classList.contains("hidden")){
+                        loginError.classList.remove("hidden");
+                        $(cstudioWcmPopup).height($(loginError).height() + $(cstudioWcmPopup).height() + 11);
+                    }
+
                 }
             },
             failure: function(response) {

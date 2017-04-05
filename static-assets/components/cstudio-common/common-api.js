@@ -8123,7 +8123,7 @@ CStudioAuthoring.FilesDiff = {
                     var alfrescoTicket,
                         serviceUri,
                         serviceCallback,
-                        delay = 6000;  // poll once every minute
+                        delay = 60000;  // poll once every minute
 
                         serviceUri = CStudioAuthoring.Service.validateSessionUrl;
 
