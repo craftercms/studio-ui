@@ -2377,6 +2377,25 @@ var nodeOpen = false;
                 //document.dispatchEvent(eventNS);
             },
 
+            /**
+             * Login
+             */
+            loginDialog: function(cb) {
+                CStudioAuthoring.Module.requireModule(
+                    'login-dialog',
+                    '/static-assets/components/cstudio-dialogs/login-dialog.js', {
+                        cb:cb
+                    }, {
+                        moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                            dialogClass.showDialog(moduleConfig.cb);
+                        } });
+
+                var moduleConfig = {
+                    cb: cb
+                };
+
+            },
+
             uploadAsset: function(site, path, isUploadOverwrite, uploadCb) {
                 CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb);                  },
 
@@ -2648,6 +2667,7 @@ var nodeOpen = false;
             getUserActivitiesServiceUrl: "/api/1/services/api/1/activity/get-user-activities.json",
 
             // Security Services
+            loginServiceUrl: "/api/1/services/api/1/user/login.json",
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
@@ -3111,6 +3131,30 @@ var nodeOpen = false;
                     }
                 };
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * login
+             */
+            login: function(user, pass, callback) {
+
+                var serviceUri = this.loginServiceUrl;
+                serviceUri += "?username="+user;
+                serviceUri += "&password="+pass;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        callback.success(response.responseText);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback);
             },
 
             /**
@@ -8098,12 +8142,23 @@ CStudioAuthoring.FilesDiff = {
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 } else {
                                     //ticket is invalid
-                                    authRedirect(configObj);
+                                    var cb = {
+                                        success: function (response) {
+                                            setTimeout(function() { authLoop(configObj); }, delay);
+                                        }
+                                    };
+                                    CStudioAuthoring.Operations.loginDialog(cb);
                                 }
                             },
                             failure: function(response) {
                                 if(response.status == 401){
-                                    authRedirect(configObj);
+                                    var cb = {
+                                        success: function (response) {
+                                            setTimeout(function() { authLoop(configObj); }, delay);
+                                        }
+                                    };
+                                    CStudioAuthoring.Operations.loginDialog(cb);
+
                                 }else{
                                     CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0 ,0, "errorNotify");
                                     setTimeout(function() { authLoop(configObj); }, delay);

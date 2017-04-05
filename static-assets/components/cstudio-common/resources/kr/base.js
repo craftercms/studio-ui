@@ -169,7 +169,14 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     done: "완료",
     components: "구성 요소",
     general: "일반",
-    text: "본문"
+    text: "본문",
+
+    //login
+    login: "로그인",
+    emailUsername: "이메일 / 사용자 이름",
+    password : "이메일 비밀번호",
+    signIn: "로그인",
+    signBackIn: "다시 로그인"
 
 });
 

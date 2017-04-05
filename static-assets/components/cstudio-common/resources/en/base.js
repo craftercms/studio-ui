@@ -179,7 +179,14 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     done: "done",
     components: "Components",
     general: "General",
-    text: "text"
+    text: "text",
+
+    //login
+    login: "Login",
+    emailUsername: "Email/Username",
+    password : "Password",
+    signIn: "Sign in",
+    signBackIn: "Sign back in"
 
 });
 
