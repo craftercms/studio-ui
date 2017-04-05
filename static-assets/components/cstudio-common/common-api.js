@@ -1153,13 +1153,14 @@ var nodeOpen = false;
              * 
              * return {string}
              */
-            getPreviewUrl: function(contentTO, useAppBase) {
+            getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
                 var url = "";
                 var baseUri = (useAppBase === false) ? '' : CStudioAuthoringContext.previewAppBaseUri;
                 var filename = (contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name;
                 if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
                     url = baseUri + contentTO.browserUri;
-                    url = url.replace('.xml', '.html');
+
+                    url = noReplaceExtension ? url : url.replace('.xml', '.html');
 
                     if (contentTO.document && contentTO.assets && contentTO.assets.length == 1) {
                         url = baseUri + contentTO.assets[0].uri;
@@ -8092,7 +8093,7 @@ CStudioAuthoring.FilesDiff = {
                                 var resObj = response.responseText
                                 var resJson = JSON.parse(resObj);
 
-                                if (resposne.status == 200 && resJson.message == "OK") {
+                                if (response.status == 200 && resJson.message == "OK") {
                                     // ticket is valid
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 } else {
