@@ -278,9 +278,11 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
 										}
 									 }
 									  overlayHtml +=  "</table>";
-									
-									
-									
+
+
+                                    overlayHtml +=  "<div class='target-btns'>";
+
+                                     overlayHtml += "<div id='cscancel' class='btn btn-default'>Cancel</div>";
 
 									if(carousel.activePersona.username != item.personaName) {
 										overlayHtml +=	
@@ -290,7 +292,8 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
 									overlayHtml +=	
 									"<div id='csupdatepersona' class='btn btn-primary'>"+CMgs.format(previewLangBundle, "update")+"</div>";
 									}
-									//overlayHtml += "<div id='cscancel' class='btn btn-default'>Cancel</div>";
+
+                                    overlayHtml +=  "</div>";
 
                                     overlayHtml += "</div>";
 									
@@ -310,14 +313,20 @@ CStudioAuthoring.TargetingPanel = CStudioAuthoring.TargetingPanel || {
 									
 									//if(carousel.activePersona != item.personaName) {
 										var assumePersonaEl = document.getElementById("csupdatepersona");
-										//var cancelPersonaEl = document.getElementById("cscancel");
+										var cancelPersonaEl = document.getElementById("cscancel");
 										var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
 										
-										/*cancelPersonaEl.onclick = function(e) {
+										cancelPersonaEl.onclick = function(e) {
 										
-											reportContainerEl.style.display = "none";
+											//reportContainerEl.style.display = "none";
+                                            CStudioAuthoring.TargetingPanel.collapse();
+                                            if (YDom.hasClass("targeting-panel-elem", 'contracted')) {
+                                                YDom.replaceClass("targeting-panel-elem", 'contracted', 'expanded');
+                                            } else {
+                                                YDom.replaceClass("targeting-panel-elem", 'expanded', 'contracted');
+                                            }
 											
-										}; */
+										};
 
 										//assumePersonaEl.toggleFn = this.parentControl.context.toggleFn;
 										assumePersonaEl.onclick = function(e) {

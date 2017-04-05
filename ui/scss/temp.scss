@@ -2720,15 +2720,22 @@ span.acn-canned-search {
 
 }
 
+.target-btns{
+  bottom: 21px;
+  position: absolute;
+  right: 33px;
+}
+
 #csupdatepersona, #cscancel{
   width: 91px;
   height: 30px;
   float: right;
   font-weight: bold;
   cursor: pointer;
-  bottom: 21px;
-  position: absolute;
-  right: 33px;
+}
+
+#csupdatepersona{
+  margin-right: 10px;
 }
 
 #targeting-panel-elem{

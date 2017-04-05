@@ -4961,15 +4961,20 @@ span.acn-canned-search {
   #cstudioPreviewAnalyticsOverlay table {
     margin-bottom: 10px; }
 
+.target-btns {
+  bottom: 21px;
+  position: absolute;
+  right: 33px; }
+
 #csupdatepersona, #cscancel {
   width: 91px;
   height: 30px;
   float: right;
   font-weight: bold;
-  cursor: pointer;
-  bottom: 21px;
-  position: absolute;
-  right: 33px; }
+  cursor: pointer; }
+
+#csupdatepersona {
+  margin-right: 10px; }
 
 #targeting-panel-elem #container {
   width: 229px !important;
@@ -15251,3 +15256,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */
