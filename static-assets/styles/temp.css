@@ -2964,6 +2964,12 @@ div#acn-active-content {
   -webkit-user-select: none;
   user-select: none; }
 
+#navbar-site-name {
+  color: #333;
+  font-weight: bold;
+  line-height: 20px;
+  margin-bottom: -4px; }
+
 .acn-dropdown-wrapper .acn-drop-arrow {
   display: block;
   padding: 18px 10px 15px; }

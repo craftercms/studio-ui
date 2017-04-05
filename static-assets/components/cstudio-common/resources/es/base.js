@@ -452,7 +452,8 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
     uploadLabel: "Subir",
     notification: "Notificación",
     lookUpChildError : "No puede buscar la devolución de llamada del formulario secundario para la búsqueda: ",
-    lookUpParentError : "No puede buscar el contexto del padre para la búsqueda: "
+    lookUpParentError : "No puede buscar el contexto del padre para la búsqueda: ",
+    loading: "Cargando"
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {

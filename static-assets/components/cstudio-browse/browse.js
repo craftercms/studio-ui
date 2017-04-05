@@ -11,7 +11,10 @@
         var searchContext = this.determineSearchContextFromUrl();
         CStudioBrowse.searchContext = searchContext;
         CStudioBrowse.renderSiteFolders(searchContext.site, searchContext.path);
-    }
+
+        var CMgs = CStudioAuthoring.Messages,
+            browseLangBundle = CMgs.getBundle("browse", CStudioAuthoringContext.lang);
+    };
 
     CStudioBrowse.bindEvents = function() {
         var $tree = $('#data'),
@@ -490,6 +493,8 @@
 
         $resultsContainer.empty();
         $resultsActions.empty();
+
+        $resultsContainer.html('<span class="cstudio-spinner"></span>' + CMgs.format(browseLangBundle, "loading") + '...');
 
         contentPromise.then(function (results) {
             if (activePromise != contentPromise) {
