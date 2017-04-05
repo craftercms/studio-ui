@@ -3505,3 +3505,13 @@ input.drop-arrow-button {
     width: 0px;
     height: 0px;
 }
+
+.cstudio-spinner {
+  display: inline-block !important;
+  width: 15px;
+  height: 15px;
+  background: url("/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif") no-repeat;
+  background-size: 100% 100%;
+  margin-right: 5px;
+  margin-bottom: -2px;
+}

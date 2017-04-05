@@ -16,8 +16,10 @@
             </div>
 
             <div class="collapse navbar-collapse">
-
                 <ul class="nav navbar-nav">
+                    <li>
+                        <a id="navbar-site-name" href="/studio/site-dashboard"></a>
+                    </li>
                     <li id="acn-dropdown-wrapper" class="acn-dropdown-wrapper"></li>
                 </ul>
  
