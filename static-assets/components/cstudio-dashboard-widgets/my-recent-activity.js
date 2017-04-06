@@ -219,7 +219,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			'<td id="' + editLinkId + '"></td>',
 			'<td class="urlCol" title="', browserUri, '">', displayBrowserUri, '</td>',
 			'<td title="fullUri" class="width0">', fullUri, '</td>',
-            '<td class="">', item.scheduled ? fmt(item.scheduledDate, 'tooltipformat') : '', '</td>',
+            '<td class="">', item.published ? fmt(item.publishedDate, 'tooltipformat') : '', '</td>',
 			'<td class="alignRight">', WcmDashboardWidgetCommon.getDisplayName(item), '</td>',
 			'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromString(item.eventDate), '</td>'
         ];
