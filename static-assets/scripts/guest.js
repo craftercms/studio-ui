@@ -48,6 +48,7 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
                 if($( this ).attr( "data-translation" ) == "addComponent")$( this ).html(translation.addComponent);
             });
 
+            console.log("test");
         });
     });
 
@@ -232,7 +233,7 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     }
 
     function resizeProcess() {
-        if (!!(sessionStorage.getItem('ice-on'))) {
+        if (!!(sessionStorage.getItem('ice-on'))  && sessionStorage.getItem('components-on') != 'true') {
             initICERegions();
         }
     }
@@ -247,7 +248,7 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
 
     loadCss('/studio/static-assets/styles/guest.css');
 
-    if (!!(sessionStorage.getItem('ice-on'))) {
+    if (!!(sessionStorage.getItem('ice-on')) && sessionStorage.getItem('components-on') != 'true') {
         initICERegions();
     }
 
