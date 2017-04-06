@@ -96,7 +96,9 @@
       "PASSWORD": "Password",
       "PASSWORD_VERIFICATION": "Password Verification",
       "SAVE": "Save",
-      "ADD_TO_GROUP_TEXT": "To add a user to a group/site, please use the admin console for the site."
+      "ADD_TO_GROUP_TEXT": "To add a user to a group/site, please use the admin console for the site.",
+      "DELETE_ERROR": "Unable to delete user. Please contact your system administrator.",
+      "ERROR": "Error:"
     },
     "audit": {
       "AUDIT": "Audit",
@@ -123,6 +125,7 @@
     "ADD_LABEL": "Add",
     "CREATE": "create",
     "EDIT": "edit",
+    "SAVE": "Save",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "is required.",
     "ALL_LABEL": "All",
