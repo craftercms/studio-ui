@@ -47,8 +47,6 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
                 if($( this ).attr( "data-translation" ) == "components")$( this ).html(translation.components);
                 if($( this ).attr( "data-translation" ) == "addComponent")$( this ).html(translation.addComponent);
             });
-
-            console.log("test");
         });
     });
 
