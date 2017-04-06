@@ -125,6 +125,7 @@
     "ADD_LABEL": "Add",
     "CREATE": "create",
     "EDIT": "edit",
+    "SAVE": "Save",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "is required.",
     "ALL_LABEL": "All",

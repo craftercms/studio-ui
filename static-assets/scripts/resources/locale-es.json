@@ -123,6 +123,7 @@
     "ADD_LABEL": "Agregar",
     "CREATE": "create",
     "EDIT": "edit",
+    "SAVE": "Guardar",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "es requerido.",
     "ALL_LABEL": "Todos",
