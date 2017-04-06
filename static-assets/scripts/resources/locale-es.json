@@ -94,7 +94,9 @@
       "PASSWORD": "Contraseña",
       "PASSWORD_VERIFICATION": "Verificación de Contraseña",
       "SAVE": "Guardar",
-      "ADD_TO_GROUP_TEXT": "Para agregar un usuario a un grupo/sitio, por favor use la consola de administración del sitio."
+      "ADD_TO_GROUP_TEXT": "Para agregar un usuario a un grupo/sitio, por favor use la consola de administración del sitio.",
+      "DELETE_ERROR": "No se puede eliminar el usuario. Por favor, póngase en contacto con el administrador del sistema.",
+      "ERROR": "Error:"
     },
     "audit": {
       "AUDIT": "Auditoría",
