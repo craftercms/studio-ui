@@ -826,8 +826,9 @@
                         }
 
                         $scope.notification('\''+ user.username + '\' deleted.');
-                    }).error(function (error) {
-                        console.log(error);
+                    }).error(function (data) {
+                        $scope.error = data.message;
+                        $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
                     });
                 }
 
