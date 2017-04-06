@@ -1129,7 +1129,7 @@ var nodeOpen = false;
                 var previewFrameEl = document.getElementById("engineWindow");
                 if(previewFrameEl){
                     if(!context || context.isComponent){
-                        previewFrameEl.contentWindow.location.reload();
+                        previewFrameEl.src += '';
                     }else{
                         if (context && context.browserUri) {
                             amplify.publish(crafter.studio.preview.Topics.GUEST_CHECKIN, CStudioAuthoring.Operations.getPreviewUrl(context, false));
@@ -1153,13 +1153,14 @@ var nodeOpen = false;
              * 
              * return {string}
              */
-            getPreviewUrl: function(contentTO, useAppBase) {
+            getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
                 var url = "";
                 var baseUri = (useAppBase === false) ? '' : CStudioAuthoringContext.previewAppBaseUri;
                 var filename = (contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name;
                 if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
                     url = baseUri + contentTO.browserUri;
-                    url = url.replace('.xml', '.html');
+
+                    url = noReplaceExtension ? url : url.replace('.xml', '.html');
 
                     if (contentTO.document && contentTO.assets && contentTO.assets.length == 1) {
                         url = baseUri + contentTO.assets[0].uri;
@@ -2376,6 +2377,25 @@ var nodeOpen = false;
                 //document.dispatchEvent(eventNS);
             },
 
+            /**
+             * Login
+             */
+            loginDialog: function(cb) {
+                CStudioAuthoring.Module.requireModule(
+                    'login-dialog',
+                    '/static-assets/components/cstudio-dialogs/login-dialog.js', {
+                        cb:cb
+                    }, {
+                        moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                            dialogClass.showDialog(moduleConfig.cb);
+                        } });
+
+                var moduleConfig = {
+                    cb: cb
+                };
+
+            },
+
             uploadAsset: function(site, path, isUploadOverwrite, uploadCb) {
                 CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb);                  },
 
@@ -2647,6 +2667,7 @@ var nodeOpen = false;
             getUserActivitiesServiceUrl: "/api/1/services/api/1/activity/get-user-activities.json",
 
             // Security Services
+            loginServiceUrl: "/api/1/services/api/1/user/login.json",
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
@@ -3110,6 +3131,30 @@ var nodeOpen = false;
                     }
                 };
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * login
+             */
+            login: function(user, pass, callback) {
+
+                var serviceUri = this.loginServiceUrl;
+                serviceUri += "?username="+user;
+                serviceUri += "&password="+pass;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        callback.success(response.responseText);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback);
             },
 
             /**
@@ -8092,17 +8137,28 @@ CStudioAuthoring.FilesDiff = {
                                 var resObj = response.responseText
                                 var resJson = JSON.parse(resObj);
 
-                                if (resposne.status == 200 && resJson.message == "OK") {
+                                if (response.status == 200 && resJson.message == "OK") {
                                     // ticket is valid
                                     setTimeout(function() { authLoop(configObj); }, delay);
                                 } else {
                                     //ticket is invalid
-                                    authRedirect(configObj);
+                                    var cb = {
+                                        success: function (response) {
+                                            setTimeout(function() { authLoop(configObj); }, delay);
+                                        }
+                                    };
+                                    CStudioAuthoring.Operations.loginDialog(cb);
                                 }
                             },
                             failure: function(response) {
                                 if(response.status == 401){
-                                    authRedirect(configObj);
+                                    var cb = {
+                                        success: function (response) {
+                                            setTimeout(function() { authLoop(configObj); }, delay);
+                                        }
+                                    };
+                                    CStudioAuthoring.Operations.loginDialog(cb);
+
                                 }else{
                                     CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0 ,0, "errorNotify");
                                     setTimeout(function() { authLoop(configObj); }, delay);

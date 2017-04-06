@@ -176,7 +176,14 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "es", {
     done: "Listo",
     components: "Componentes",
     general: "General",
-    text: "Texto"
+    text: "Texto",
+
+    //login
+    login: "Iniciar sesión",
+    emailUsername: "Correo electrónico / Nombre de usuario",
+    password : "Contraseña de Email",
+    signIn: "Registrarse",
+    signBackIn: "Vuelve a iniciar sesión"
 
 });
 
@@ -445,7 +452,8 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
     uploadLabel: "Subir",
     notification: "Notificación",
     lookUpChildError : "No puede buscar la devolución de llamada del formulario secundario para la búsqueda: ",
-    lookUpParentError : "No puede buscar el contexto del padre para la búsqueda: "
+    lookUpParentError : "No puede buscar el contexto del padre para la búsqueda: ",
+    loading: "Cargando"
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {

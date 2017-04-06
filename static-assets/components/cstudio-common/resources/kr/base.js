@@ -169,7 +169,14 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     done: "완료",
     components: "구성 요소",
     general: "일반",
-    text: "본문"
+    text: "본문",
+
+    //login
+    login: "로그인",
+    emailUsername: "이메일 / 사용자 이름",
+    password : "이메일 비밀번호",
+    signIn: "로그인",
+    signBackIn: "다시 로그인"
 
 });
 
@@ -421,7 +428,8 @@ CStudioAuthoring.Messages.registerBundle("browse", "kr", {
     uploadLabel: "업로드",
     notification: "공고",
     lookUpChildError : "검색을 위해 하위 양식 콜백을 조회 할 수 없음 : ",
-    lookUpParentError : "검색을 위해 상위 컨텍스트를 조회 할 수 없음 : "
+    lookUpParentError : "검색을 위해 상위 컨텍스트를 조회 할 수 없음 : ",
+    loading: "로딩"
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {

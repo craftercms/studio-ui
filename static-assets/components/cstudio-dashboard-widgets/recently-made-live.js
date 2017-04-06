@@ -112,7 +112,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
 
         var html = [],
 
-            name = item.internalName,
+            name = item.internalName ? item.internalName : item.name,
             endpoint = item.endpoint,
             displayEndpoint = item.endpoint,
             displayName = WcmDashboardWidgetCommon.getFormattedString(name, 40),
@@ -142,7 +142,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
 
         } else {
 
-            var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false),
+            var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
                 displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80),
                 uri = item.uri;
 

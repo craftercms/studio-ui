@@ -289,6 +289,13 @@ div#acn-active-content {
   user-select: none;
 }
 
+#navbar-site-name{
+  color: #333;
+  font-weight: bold;
+  line-height: 20px;
+  margin-bottom: -4px;
+}
+
 .acn-dropdown-wrapper .acn-drop-arrow {
   display: block;
   padding: 18px 10px 15px;
@@ -2720,15 +2727,22 @@ span.acn-canned-search {
 
 }
 
+.target-btns{
+  bottom: 21px;
+  position: absolute;
+  right: 33px;
+}
+
 #csupdatepersona, #cscancel{
   width: 91px;
   height: 30px;
   float: right;
   font-weight: bold;
   cursor: pointer;
-  bottom: 21px;
-  position: absolute;
-  right: 33px;
+}
+
+#csupdatepersona{
+  margin-right: 10px;
 }
 
 #targeting-panel-elem{

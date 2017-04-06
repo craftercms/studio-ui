@@ -9,8 +9,7 @@ requirejs.config({
         'jquery': '/studio/static-assets/libs/jquery/dist/jquery',
         'jquery-ui': '/studio/static-assets/libs/jquery-ui/jquery-ui',
         'amplify': '/studio/static-assets/libs/amplify/lib/amplify.core',
-        'noty': '/studio/static-assets/libs/notify/notify.min',
-        'js-resize': '/studio/static-assets/libs/resize/detect-element-resize'
+        'noty': '/studio/static-assets/libs/notify/notify.min'
     }
 });
 

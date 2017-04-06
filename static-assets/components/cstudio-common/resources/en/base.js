@@ -179,7 +179,14 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     done: "done",
     components: "Components",
     general: "General",
-    text: "text"
+    text: "text",
+
+    //login
+    login: "Login",
+    emailUsername: "Email/Username",
+    password : "Password",
+    signIn: "Sign in",
+    signBackIn: "Sign back in"
 
 });
 
@@ -462,7 +469,8 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
     uploadLabel: "Upload",
     notification: "Notification",
     lookUpChildError : "Unable to lookup child form callback for search: ",
-    lookUpParentError : "Unable to lookup parent context for search: "
+    lookUpParentError : "Unable to lookup parent context for search: ",
+    loading: "Loading"
 
 });
 

@@ -57,6 +57,7 @@
                                 if(contentType != "asset"){
                                     var actionWrapper = _this.getComponent(".history-view .action-wrapper"),
                                         compareButton = document.createElement('input');
+                                    $('#historyCompareBtn').remove();
                                     compareButton.type = "button";
                                     Dom.addClass(compareButton, "compare-button btn btn-default");
                                     compareButton.value="Compare";
@@ -140,7 +141,6 @@
                                             zIndex: 100103
                                         });
 
-
                                         var compareActionEl = document.createElement("a");
                                         compareActionEl.innerHTML = '<span id="actionCompare' + version.versionNumber + '" class="action glyphicon glyphicon-duplicate"></span>';
                                         compareActionEl.version = version.versionNumber;
@@ -176,7 +176,7 @@
                                                         }
                                                         eventNS.data = item;
                                                         document.dispatchEvent(eventNS);
-                                                        _this.end();
+                                                        _this.loadHistory(_this.selection);
                                                     },
                                                     failure: function () {
                                                         var CMgs = CStudioAuthoring.Messages;

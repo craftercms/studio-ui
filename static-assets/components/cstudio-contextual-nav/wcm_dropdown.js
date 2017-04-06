@@ -33,6 +33,9 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
         var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
         var mainContainerEl = YDom.get('acn-dropdown-wrapper');
 
+        var navBarSiteNameEl = YDom.get('navbar-site-name');
+        navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
+
         if (window.location.pathname.indexOf("search") > -1 || window.location.pathname.indexOf("browse") > -1 || window.location.pathname.indexOf("admin-console") > -1) {
             mainContainerEl.innerHTML = '';
         } else {
@@ -359,7 +362,13 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                     if (!module.params || !module.params.roles) {
                         allowed = true;
                     } else {
-                        var roles = (module.params.roles.length) ? module.params.roles : [module.params.roles.role];
+                        var roles;
+                        if(module.params.roles.role instanceof Array){
+                            roles = module.params.roles.role;
+                        }else{
+                            roles = [module.params.roles.role];
+                        }
+
                         if (roles.length == 0 || roles[0] == undefined) {
                             allowed = true;
                         }
