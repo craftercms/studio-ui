@@ -6251,4 +6251,11 @@ small .text-sm {
   padding-bottom: 15px;
   margin-bottom: 15px; }
 
-/*# sourceMappingURL=main.css.map */
+.cstudio-spinner {
+  display: inline-block !important;
+  width: 15px;
+  height: 15px;
+  background: url("/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif") no-repeat;
+  background-size: 100% 100%;
+  margin-right: 5px;
+  margin-bottom: -2px; }
