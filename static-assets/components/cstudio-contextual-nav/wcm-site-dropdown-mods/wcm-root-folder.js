@@ -1827,6 +1827,91 @@ treeNode.getHtml = function() {
                             // check if the user is allowed to edit the content
                             var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
                             var isDeleteAllowed = CStudioAuthoring.Service.isDeleteAllowed(results.permissions) && !isOpen;
+                            var dependenciesAllowed = function (){
+                                    //dependencies dialog
+                                    p_aArgs.addItems([
+                                        {
+                                            text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
+                                            onclick: { fn: function(){
+                                                var callback = {
+                                                    success: function(contentTO) {
+                                                        var selectedContent = [];
+                                                        selectedContent.push(contentTO.item);
+
+                                                        CStudioAuthoring.Operations.viewDependencies(
+                                                            CStudioAuthoringContext.site,
+                                                            selectedContent,
+                                                            false
+                                                        );
+                                                    },
+                                                    failure: function() {
+
+                                                    }
+                                                }
+
+                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                            } }
+                                        }
+                                    ]);
+                            };
+                            var publishAllowed = function (){
+                                //add publish/request
+                                var isRelevant = !(oCurrentTextNode.data.lockOwner != "") && !(oCurrentTextNode.data.status.toLowerCase().indexOf("live") !== -1);
+
+                                if(isRelevant) {
+
+                                    if( CStudioAuthoring.Service.isPublishAllowed(results.permissions)){
+                                        p_aArgs.addItems([
+                                            {
+                                                text: CMgs.format(siteDropdownLangBundle, "wcmContentApprove"),
+                                                onclick: { fn: function(){
+                                                    var callback = {
+                                                        success: function(contentTO) {
+                                                            var selectedContent = [];
+                                                            selectedContent.push(contentTO.item);
+
+                                                            CStudioAuthoring.Operations.approveCommon(
+                                                                CStudioAuthoringContext.site,
+                                                                selectedContent,
+                                                                false
+                                                            );
+                                                        },
+                                                        failure: function() {
+
+                                                        }
+                                                    }
+
+                                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                                } }
+                                            }
+                                        ]);
+                                    }else {
+                                        p_aArgs.addItems([
+                                            {
+                                                text: CMgs.format(siteDropdownLangBundle, "wcmContentSubmit"),
+                                                onclick: { fn: function(){
+                                                    var callback = {
+                                                        success: function(contentTO) {
+                                                            var selectedContent = [];
+                                                            selectedContent.push(contentTO.item);
+
+                                                            CStudioAuthoring.Operations.submitContent(
+                                                                CStudioAuthoringContext.site,
+                                                                selectedContent
+                                                            );
+                                                        },
+                                                        failure: function() {
+
+                                                        }
+                                                    }
+
+                                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                                } }
+                                            }
+                                        ]);
+                                    }
+                                }
+                            };
 
 		                    if(isLocked == true && isWrite == true) {
 		                    	p_aArgs.addItems([ menuItems.viewOption ]);
@@ -1923,6 +2008,19 @@ treeNode.getHtml = function() {
                                 }
                                 p_aArgs.addItems([ menuItems.separator ]);
                                 p_aArgs.addItems([ menuItems.copyOption ]);
+
+                                if((oCurrentTextNode.data.lockOwner != ""
+                                    && ((CStudioAuthoringContext.role === "admin") || (CStudioAuthoringContext.role === "site_admin")))
+                                    || oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user ) {
+                                    p_aArgs.addItems([ menuItems.separator ]);
+                                    p_aArgs.addItems([ menuItems.unlockOption ]);
+                                }
+
+                                if(oCurrentTextNode.data.contentType != "folder") {
+                                    p_aArgs.addItems([ menuItems.separator ]);
+                                    publishAllowed();
+                                    dependenciesAllowed();
+                                }
 
 		                   		p_aArgs.render();
 								menuId.removeChild(d);
@@ -2118,6 +2216,19 @@ treeNode.getHtml = function() {
                                             Self.copiedItem = Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"));
 			                            }
 
+                                        if((oCurrentTextNode.data.lockOwner != ""
+                                            && ((CStudioAuthoringContext.role === "admin") || (CStudioAuthoringContext.role === "site_admin")))
+                                            || oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user ) {
+                                            p_aArgs.addItems([ menuItems.separator ]);
+                                            p_aArgs.addItems([ menuItems.unlockOption ]);
+                                        }
+
+                                        if(oCurrentTextNode.data.contentType != "folder") {
+                                            p_aArgs.addItems([ menuItems.separator ]);
+                                            publishAllowed();
+                                            dependenciesAllowed();
+                                        }
+
 			                            if(isUserAllowed) {
 			                            	this.args.addItems([ menuItems.separator ]);
 			                            	this.args.addItems([ menuItems.revertOption ]);
@@ -2146,100 +2257,6 @@ treeNode.getHtml = function() {
 			                    CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
 
 		                   	} // end of else
-
-                            if((oCurrentTextNode.data.lockOwner != ""
-                            && ((CStudioAuthoringContext.role === "admin") || (CStudioAuthoringContext.role === "site_admin")))
-                            || oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user ) {
-                               p_aArgs.addItems([ menuItems.separator ]);
-                                p_aArgs.addItems([ menuItems.unlockOption ]);
-                            }
-
-                            //add publish/request
-                            var isRelevant = !(oCurrentTextNode.data.lockOwner != "") && !(oCurrentTextNode.data.status.toLowerCase().indexOf("live") !== -1);
-
-                            if(isRelevant && oCurrentTextNode.data.contentType != "folder") {
-                                p_aArgs.addItems([ menuItems.separator ]);
-
-                                if( CStudioAuthoring.Service.isPublishAllowed(results.permissions)){
-                                    p_aArgs.addItems([
-                                        {
-                                            text: CMgs.format(siteDropdownLangBundle, "wcmContentApprove"),
-                                            onclick: { fn: function(){
-                                                var callback = {
-                                                    success: function(contentTO) {
-                                                        var selectedContent = [];
-                                                        selectedContent.push(contentTO.item);
-
-                                                        CStudioAuthoring.Operations.approveCommon(
-                                                            CStudioAuthoringContext.site,
-                                                            selectedContent,
-                                                            false
-                                                        );
-                                                    },
-                                                    failure: function() {
-
-                                                    }
-                                                }
-
-                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
-                                            } }
-                                        }
-                                    ]);
-                                }else {
-                                    p_aArgs.addItems([
-                                        {
-                                            text: CMgs.format(siteDropdownLangBundle, "wcmContentSubmit"),
-                                            onclick: { fn: function(){
-                                                var callback = {
-                                                    success: function(contentTO) {
-                                                        var selectedContent = [];
-                                                        selectedContent.push(contentTO.item);
-
-                                                        CStudioAuthoring.Operations.submitContent(
-                                                            CStudioAuthoringContext.site,
-                                                            selectedContent
-                                                        );
-                                                    },
-                                                    failure: function() {
-
-                                                    }
-                                                }
-
-                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
-                                            } }
-                                        }
-                                    ]);
-                                }
-                            }
-
-                            if(oCurrentTextNode.data.contentType != "folder") {
-                                //dependencies dialog
-                                p_aArgs.addItems([
-                                    {
-                                        text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
-                                        onclick: { fn: function(){
-                                            var callback = {
-                                                success: function(contentTO) {
-                                                    var selectedContent = [];
-                                                    selectedContent.push(contentTO.item);
-
-                                                    CStudioAuthoring.Operations.viewDependencies(
-                                                        CStudioAuthoringContext.site,
-                                                        selectedContent,
-                                                        false
-                                                    );
-                                                },
-                                                failure: function() {
-
-                                                }
-                                            }
-
-                                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
-                                        } }
-                                    }
-                                ]);
-                            }
-
                         },
                         failure: function() { }
                     };
