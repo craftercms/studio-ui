@@ -157,7 +157,7 @@
 
             <div class="form-group">
                 <label for="description" class="control-label">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
-                <input type="text" class="form-control" id="description" name="description" ng-model="group.description" ng-change="" required>
+                <input type="text" class="form-control" id="description" name="description" ng-model="group.description" ng-change="">
 
                 <div class="error-container"
                      ng-show="(createNameForm.description.$dirty && createNameForm.description.$invalid) || (createNameForm.description.$touched && createNameForm.description.$invalid)">
