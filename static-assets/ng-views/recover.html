@@ -19,16 +19,18 @@
                     <label for="username" style="margin-top: 15px; margin-bottom: 10px;">{{ 'dashboard.login.RECOVER_LABEL' | translate }}</label>
                     <input type="text" id="username"
                            class="form-control" placeholder=""
-                           ng-model="credentials.username" required/>
+                           ng-model="credentials.username" required
+                           ng-disabled="recoverProcessing"/>
                 </div>
             </div>
             <div ng-show="!recoverSuccess" class="col-lg-12 columns">
                 <div class="alert alert-danger" ng-if="error">{{error}}</div>
                 <button type="submit" class="btn btn-primary"
                         ng-click="forgotPassword()"
-                        ng-disabled="!credentials.username">
+                        ng-disabled="!credentials.username || recoverProcessing">
                     {{ 'dashboard.login.SUBMIT' | translate }}
                 </button>
+                <span class="cstudio-spinner ml15" data-ng-show="recoverProcessing"></span>
             </div>
 
             <div ng-show="recoverSuccess" class="col-lg-12 columns">
