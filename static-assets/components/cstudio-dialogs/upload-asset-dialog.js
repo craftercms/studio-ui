@@ -39,6 +39,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
             var formSize = parent.getFormSize(id);
             if(formSize < 320){
                 parent.setFormSize(320, id);
+				$($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease', true);
             }
         }
 	},
@@ -278,8 +279,10 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 		CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
         if(window.frameElement){
             var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-            if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
-                $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
+            if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212 &&
+				$($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease')) {
+
+				$($(".studio-ice-container-"+id,parent.document)[0]).height(212);
             }
         }
 
