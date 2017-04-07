@@ -132,20 +132,22 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             if (treeNodeTO.isContainer == true) {
                 treeNodeTO.style = "acn-parent-folder";
             }
-            var treeNode = this.drawTreeItem(treeNodeTO, tree.getRoot());
-            treeNode.instance = instance;
 
-            if(pathToOpenTo != null && treeNode != null) {
-                if(treeNodeTO.pathSegment == "index.xml") {
-                    if(CStudioAuthoring.Utils.endsWith(treeNodeTO.path, currentLevelPath)) {
-                        nodeToOpen = treeNode;
+            if(!treeItems[i].hideInAuthoring){
+                var treeNode = this.drawTreeItem(treeNodeTO, tree.getRoot());
+                treeNode.instance = instance;
+
+                if(pathToOpenTo != null && treeNode != null) {
+                    if(treeNodeTO.pathSegment == "index.xml") {
+                        if(CStudioAuthoring.Utils.endsWith(treeNodeTO.path, currentLevelPath)) {
+                            nodeToOpen = treeNode;
+                        }
                     }
                 }
+
+                treeNodes.push(treeNode);
+                treeNodesLabels.push(tree.root.children[i].labelElId);
             }
-
-            treeNodes.push(treeNode);
-            treeNodesLabels.push(tree.root.children[i].labelElId);
-
         }
 
         tree.subscribe('clickEvent', function(args) {
@@ -270,20 +272,22 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 treeNodeTO.style = "acn-parent-folder no-preview";
             }
 
-            var treeNode = this.drawTreeItem(treeNodeTO, root);
-            treeNode.instance = instance;
+            if(!treeItems[i].hideInAuthoring){
+                var treeNode = this.drawTreeItem(treeNodeTO, root);
+                treeNode.instance = instance;
 
-            if(pathToOpenTo != null && treeNode != null) {
-                if(CStudioAuthoring.Utils.endsWith(treeNodeTO.path, currentLevelPath)) {
-                    nodeToOpen = treeNode;
+                if(pathToOpenTo != null && treeNode != null) {
+                    if(CStudioAuthoring.Utils.endsWith(treeNodeTO.path, currentLevelPath)) {
+                        nodeToOpen = treeNode;
+                    }
                 }
-            }
 
-            treeNodes.push(treeNode);
-            if(root.children[i]) {
-                treeNodesLabels.push(root.children[i].labelElId);
-            } else {
-                treeNodesLabels.push(treeNode.labelElId);
+                treeNodes.push(treeNode);
+                if(root.children[i]) {
+                    treeNodesLabels.push(root.children[i].labelElId);
+                } else {
+                    treeNodesLabels.push(treeNode.labelElId);
+                }
             }
         }
 
