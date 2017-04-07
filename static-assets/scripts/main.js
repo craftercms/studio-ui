@@ -662,7 +662,7 @@
                 });
 
                 modalInstance.result.then(function () {
-                    getSites();
+                    getResultsPage(1);
                 });
 
             }
