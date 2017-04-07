@@ -94,15 +94,15 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                  var goLiveOpMessage = document.getElementById("bulk-golive-message");
                  var cb = {
                      success:function() {
-                         goLiveOpMessage.innerHTML = "Bulk Go Live successful";
+                         goLiveOpMessage.innerHTML = "Bulk Publish successful";
                      },
                      failure: function() {
-                         goLiveOpMessage.innerHTML = "Bulk Go Live failed";
+                         goLiveOpMessage.innerHTML = "Bulk Publish failed";
                      }
                  }
 
                  YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
-                 goLiveOpMessage.innerHTML = "Executing bulk Go Live ...";
+                 goLiveOpMessage.innerHTML = "Executing bulk Publish ...";
              }
          };
 
@@ -110,7 +110,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
 
         mainEl.innerHTML =
                 "<div id='bulk-golive' class='bulk-op-area'>" +
-                    "<p><h2>Bulk Go Live</h2></p><p>" +
+                    "<p><h2>Bulk Publish</h2></p><p>" +
                     "<div class='bulk-table'>" +
                         "<div class='bulk-table-row'>" +
                             "<div class='bulk-table-cell'>Path to Publish:" +
@@ -132,7 +132,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                         "</div>" +
                     "</div>" +
                     "</br>" +
-                    "<input type='button' class='action-button' value='Go Live' onclick='CStudioAdminConsole.Tool.BulkOperations.golive()' /></p>" +
+                    "<input type='button' class='action-button' value='Publish' onclick='CStudioAdminConsole.Tool.BulkOperations.golive()' /></p>" +
                     "<p id='bulk-golive-message'></p>" +
                 "</div>";
 
@@ -204,13 +204,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
     renderJobsList: function() {
 
 		var actions = [
-				{ name: "Rename", context: this, method: this.renderRename },
-				{ name: "Go Live", context: this, method: this.renderGoLive },
-                { name: "Delete", context: this, method: this.renderDelete }
+				{ name: "Publish", context: this, method: this.renderGoLive }
 		];
 		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 
-        this.renderRename();
+        this.renderGoLive();
     }
 });
 
