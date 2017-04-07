@@ -183,7 +183,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "es", {
     emailUsername: "Correo electrónico / Nombre de usuario",
     password : "Contraseña de Email",
     signIn: "Registrarse",
-    signBackIn: "Vuelve a iniciar sesión"
+    signBackIn: "Vuelve a iniciar sesión",
+    doneSignOut:"He terminado. Desloguearme"
 
 });
 

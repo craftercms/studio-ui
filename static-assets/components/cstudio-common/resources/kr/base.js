@@ -176,7 +176,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     emailUsername: "이메일 / 사용자 이름",
     password : "이메일 비밀번호",
     signIn: "로그인",
-    signBackIn: "다시 로그인"
+    signBackIn: "다시 로그인",
+    doneSignOut:"끝났어. 로그 아웃하다."
 
 });
 

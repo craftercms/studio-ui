@@ -87,8 +87,8 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                     '</div>'+
                 '</div>' +
                 '<div class="contentTypePopupBtn"> ' +
-                    '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="loginButton" value="'+CMgs.format(previewLangBundle, 'signIn')+'" />' +
-                    '<input type="button" class="btn btn-default cstudio-xform-button" id="loginCancelButton" value="'+CMgs.format(previewLangBundle, 'signBackIn')+'"  />' +
+                    '<input type="button" class="btn btn-primary cstudio-xform-buttons" id="loginButton" value="'+CMgs.format(previewLangBundle, 'signBackIn')+'" />' +
+                    '<input type="button" class="btn btn-default cstudio-xform-button" id="loginCancelButton" value="'+CMgs.format(previewLangBundle, 'doneSignOut')+'"  />' +
                 '</div>' +
             '</form></div>' +
             '</div> ' +
