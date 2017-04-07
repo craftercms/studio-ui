@@ -381,10 +381,11 @@
                         }
                     }
 
-                    if (!isSearch && exclude == false) {
-                        var treeNodeTO = this.createTreeNodeTransferObject(treeItems[i]);
+                    if(!treeItems[i].hideInAuthoring){
+                        if (!isSearch && exclude == false) {
+                            var treeNodeTO = this.createTreeNodeTransferObject(treeItems[i]);
 
-                        var treeNode = this.drawTreeItem(treeNodeTO, tree.getRoot(), instance);
+                            var treeNode = this.drawTreeItem(treeNodeTO, tree.getRoot(), instance);
 
                             treeNode.instance = instance;
 
@@ -403,6 +404,7 @@
                                 treeNodesLabels.push(tree.root.children[i].labelElId);
                             }
                         }
+                    }
                 }
 
                 document.addEventListener("setContentDone", function(){
@@ -653,30 +655,32 @@
                     }
 
                     if (renderChild && exclude == false) {
-                        var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
+                        if(!treeItems[i].hideInAuthoring){
+                            var itemCannedSearch = instance.cannedSearchCache[treeNodeTO.path];
 
-                        if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != "append") {
-                            replaceChildren.push(treeNodeTO.path);
-                        } else {
-                            var treeNode = this.drawTreeItem(treeNodeTO, root, instance);
-                            //nodes will not have collapse/expand icon if they do not have any children
-                            if (treeItems[i].numOfChildren == 0) {
-                                treeNode.isLeaf = true;
-                            }
-                            treeNode.instance = instance;
-
-                            if (pathToOpenTo != null && treeNode != null) {
-                                if (CStudioAuthoring.Utils.endsWith(treeNodeTO.path, currentLevelPath)) {
-                                    nodeToOpen = treeNode;
-                                }
-                            }
-
-                            treeNodes.push(treeNode);
-
-                            if (root.children[i]) {
-                                treeNodesLabels.push(root.children[i].labelElId);
+                            if (itemCannedSearch && itemCannedSearch.length != 0 && itemCannedSearch[0].insertAs != "append") {
+                                replaceChildren.push(treeNodeTO.path);
                             } else {
-                                treeNodesLabels.push(treeNode.labelElId);
+                                var treeNode = this.drawTreeItem(treeNodeTO, root, instance);
+                                //nodes will not have collapse/expand icon if they do not have any children
+                                if (treeItems[i].numOfChildren == 0) {
+                                    treeNode.isLeaf = true;
+                                }
+                                treeNode.instance = instance;
+
+                                if (pathToOpenTo != null && treeNode != null) {
+                                    if (CStudioAuthoring.Utils.endsWith(treeNodeTO.path, currentLevelPath)) {
+                                        nodeToOpen = treeNode;
+                                    }
+                                }
+
+                                treeNodes.push(treeNode);
+
+                                if (root.children[i]) {
+                                    treeNodesLabels.push(root.children[i].labelElId);
+                                } else {
+                                    treeNodesLabels.push(treeNode.labelElId);
+                                }
                             }
                         }
                     }
