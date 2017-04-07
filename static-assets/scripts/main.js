@@ -342,11 +342,9 @@
 
             var me = this;
 
-            this.getSites = function(username) {
+            this.getSites = function(params) {
                 return $http.get(api('get-per-user'), {
-                    params: { number: 25,
-                              start: 0,
-                              username: username}
+                    params: params
                 });
             };
 
@@ -584,6 +582,7 @@
 
     app.controller('SitesCtrl', [
         '$scope', '$state', '$location', 'sitesService', 'authService', '$modal',
+
         function ($scope, $state, $location, sitesService, authService, $modal) {
 
             $scope.sites = null;
@@ -598,10 +597,21 @@
 
             $scope.siteValidation = $location.$$search.siteValidation;
 
+            $scope.sitesPag = {
+                sitesPerPage: 15
+            }
 
-            function getSites () {
-                sitesService.getSites($scope.user.username)
+            $scope.totalSites = 0;
+            $scope.defaultDelay = 500;
+
+            $scope.pageChanged = function(newPage) {
+                getResultsPage(newPage);
+            };
+
+            function getSites (params) {
+                sitesService.getSites(params)
                     .success(function (data) {
+                        $scope.totalSites = data.total;
                         $scope.sites = data.sites;
                         isRemove();
                         createSitePermission();
@@ -611,7 +621,30 @@
                     });
             }
 
-            getSites();
+            $scope.pagination = {
+                current: 1
+            };
+
+            function getResultsPage(pageNumber) {
+
+                var params = {
+                    username: $scope.user.username
+                };
+
+                if($scope.totalSites && $scope.totalSites > 0) {
+                    var start = (pageNumber - 1) * $scope.sitesPag.sitesPerPage,
+                        end = start + $scope.sitesPag.sitesPerPage;
+                    params.start = start;
+                    params.number = $scope.sitesPag.sitesPerPage;
+                }else{
+                    params.start = 0;
+                    params.number = $scope.sitesPag.sitesPerPage;
+                }
+
+                getSites(params);
+            }
+
+            getResultsPage(1);
 
             $scope.removeSiteSites = function (site){
 
@@ -697,7 +730,6 @@
 
 
         }
-
 
     ]);
 
