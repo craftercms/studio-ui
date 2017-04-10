@@ -74,6 +74,8 @@
                 "ICE_TOOLS_ON": "ICE_TOOLS_ON",
                 "ICE_TOOLS_OFF": "ICE_TOOLS_OFF",
                 "ICE_TOOLS_REGIONS": "ICE_TOOLS_REGIONS",
+                "ICE_CHANGE_PENCIL_OFF": "ICE_CHANGE_PENCIL_OFF",
+                "ICE_CHANGE_PENCIL_ON": "ICE_CHANGE_PENCIL_ON",
                 "REFRESH_PREVIEW": "REFRESH_PREVIEW",
                 "START_DIALOG": "START_DIALOG",
                 "OPEN_BROWSE": "OPEN_BROWSE",
