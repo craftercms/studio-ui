@@ -998,11 +998,17 @@
             var credentials = $scope.credentials = {};
 
             $scope.forgotPassword = function recover() {
+
+                //disable submit button and add spinner
+                $scope.recoverProcessing = true;
+
                 authService.forgotPassword(credentials.username).success(function(data) {
                     if(data.message === 'OK') {
                         $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
                         $scope.recoverSuccess = true;
                     }
+
+                    $scope.recoverProcessing = false;
                 }).error(function(error, status) {
                     if(status == 500) {
                         var errorMessage = error.message + " - " + $translate.instant('dashboard.login.RECOVER_ERROR');
@@ -1010,6 +1016,8 @@
                     }else{
                         $scope.error = error.message;
                     }
+
+                    $scope.recoverProcessing = false;
                 });
             };
 
