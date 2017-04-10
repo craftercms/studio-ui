@@ -375,13 +375,11 @@
     });
 
     communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
-        var el = YDom.get("acn-ice-tools-container");
-        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+        $("#acn-ice-tools-container img").attr("src", CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png")
     });
 
     communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
-        var el = YDom.get("acn-ice-tools-container");
-        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+        $("#acn-ice-tools-container img").attr("src", CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png")
     });
 
     amplify.subscribe(cstopic('ICE_TOOLS_ON'), function (){
