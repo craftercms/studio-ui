@@ -374,6 +374,14 @@
         communicator.publish(Topics.ICE_TOOLS_OFF);
     });
 
+    communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
+        $("#acn-ice-tools-container img").attr("src", CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png")
+    });
+
+    communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
+        $("#acn-ice-tools-container img").attr("src", CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png")
+    });
+
     amplify.subscribe(cstopic('ICE_TOOLS_ON'), function (){
         communicator.publish(Topics.ICE_TOOLS_ON);
     });

@@ -137,11 +137,16 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         amplify.publish(Topics.ICE_TOOLS_OFF);
         this.stop();
         publish.call(this, Topics.STOP_DRAG_AND_DROP);
+        var iceOn = !!(sessionStorage.getItem('ice-on'));
+        if(iceOn){
+            publish.call(this, Topics.ICE_CHANGE_PENCIL_ON);
+        }
     }
 
     function enableDnD(components, initialComponentModel, browse) {
         amplify.publish(Topics.ICE_TOOLS_OFF);
         sessionStorage.setItem('components-on', 'true');
+        publish.call(this, Topics.ICE_CHANGE_PENCIL_OFF);
 
         if (this.active()) return;
         this.active(true);
