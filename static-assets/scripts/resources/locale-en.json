@@ -43,7 +43,7 @@
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Creating Site",
         "CREATE_ERROR": "Unable to create site. Please contact your system administrator.",
-        "LENGTH_VALIDATION_50": "(Max length: 50 characters)",
+        "SITE_ID_VALIDATION": "(Max length: 50 characters, lowercase, no spaces or special characters)",
         "LENGTH_VALIDATION_4000": "(Max length: 4000 characters)",
         "ERROR": "Error:"
       }
