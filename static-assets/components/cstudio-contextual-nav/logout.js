@@ -33,26 +33,7 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = CStudioAuthoring.ContextualNav.Wcm
 
         };
 
-        var accountDropdown = YDom.get("account-dropdown");
-
-        accountDropdown.onclick = function () {
-            var className = ' ' + this.parentElement.className + ' ';
-
-            if ( ~className.indexOf(' open ') ) {
-                this.parentElement.className = className.replace(' open ', ' ');
-            } else {
-                this.parentElement.className += ' open';
-            }
-
-            document.body.addEventListener('click', dropdownCloser, false);
-
-            function dropdownCloser(e){
-                if(e.target.id != 'account-dropdown'){
-                    document.body.removeEventListener('click', dropdownCloser, false);
-                    accountDropdown.parentElement.className = className.replace(' open ', ' ');
-                }
-            }
-        };
+        CStudioAuthoring.Operations.createNavBarDropDown("account");
 
 	}
 };

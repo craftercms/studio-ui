@@ -132,6 +132,8 @@
     "YES": "예",
     "NO": "아니",
     "HELP": "도움",
+    "DOCUMENTATION": "선적 서류 비치",
+    "ABOUT": "약",
     "SETTINGS": "설정",
     "SIGN_OUT": "로그 아웃",
     "NOTIFICATION": "Notification",

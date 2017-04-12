@@ -30,7 +30,13 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li><a class="ng-binding users-link" href="/studio/#/users">Users</a></li>
                     <li><a href="/studio/#/sites">Sites</a></li>
-                    <li><a href="http://docs.craftercms.org/en/latest/" target="_blank" >Help</a></li>
+                    <li class="dropdown" dropdown>
+                        <a id="help-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">Help <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="http://docs.craftercms.org/en/latest/" target="_blank">Documentation</a></li>
+                            <li><a href="http://docs.craftercms.org/en/latest/" target="_blank">About</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown" dropdown="">
                         <a id="account-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">Account <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
