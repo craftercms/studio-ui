@@ -2924,7 +2924,8 @@ div#acn-active-content {
 #acn-persona-image {
   width: 26px;
   height: 26px;
-  border-radius: 4px; }
+  border-radius: 4px;
+  cursor: pointer; }
 
 #acn-preview-tools-image {
   padding-top: 2px;
