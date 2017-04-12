@@ -62,6 +62,9 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 					}
 					me.context.buildModules(config, bar);
 				});
+
+                CStudioAuthoring.Operations.createNavBarDropDown("help");
+
 			},
 			failure: function() {},
 			context: this
@@ -159,7 +162,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 			}
 
 		};
-	}		
+	}
 };
 
 CStudioAuthoring.ContextualNav.LeftModulesMap = {

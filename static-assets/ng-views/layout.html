@@ -19,7 +19,13 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li ng-show="createSites" ui-sref-active="active"><a ui-sref="home.users">{{ 'admin.users.HEADER_LABEL' | translate }}</a></li>
                     <li ui-sref-active="active"><a ui-sref="home.sites">{{ 'dashboard.sites.SITES_LABEL' | translate }}</a></li>
-                    <li><a href="{{helpUrl}}" target="_blank">{{ 'common.HELP' | translate }}</a></li>
+                    <li class="dropdown" dropdown>
+                        <a class="dropdown-toggle" dropdown-toggle>{{ 'common.HELP' | translate }} <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{{helpUrl}}" target="_blank">{{ 'common.DOCUMENTATION' | translate }}</a></li>
+                            <li><a href="{{helpUrl}}" target="_blank">{{ 'common.ABOUT' | translate }}</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown" dropdown>
                         <a class="dropdown-toggle" dropdown-toggle>{{ 'dashboard.sites.ACCOUNT' | translate }} <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">

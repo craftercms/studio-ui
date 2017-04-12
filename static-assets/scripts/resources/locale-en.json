@@ -134,6 +134,8 @@
     "YES": "Yes",
     "NO": "No",
     "HELP": "Help",
+    "DOCUMENTATION": "Documentation",
+    "ABOUT": "About",
     "SETTINGS": "Settings",
     "SIGN_OUT": "Sign out",
     "NOTIFICATION": "Notification",

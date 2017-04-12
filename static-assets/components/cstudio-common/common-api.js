@@ -560,6 +560,30 @@ var nodeOpen = false;
 
             },
 
+            createNavBarDropDown: function(opt){
+
+                var dropdown = YDom.get(opt+"-dropdown");
+
+                dropdown.onclick = function () {
+                    var className = ' ' + this.parentElement.className + ' ';
+
+                    if ( ~className.indexOf(' open ') ) {
+                        this.parentElement.className = className.replace(' open ', ' ');
+                    } else {
+                        this.parentElement.className += ' open';
+                    }
+
+                    document.body.addEventListener('click', dropdownCloser, false);
+
+                    function dropdownCloser(e){
+                        if(e.target.id != opt+'-dropdown'){
+                            document.body.removeEventListener('click', dropdownCloser, false);
+                            dropdown.parentElement.className = className.replace(' open ', ' ');
+                        }
+                    }
+                };
+            },
+
             translateContent: function(langBundle){
                 var elements = document.querySelectorAll('[data-translation]');
                 for(var i=0; i<elements.length; i++){
