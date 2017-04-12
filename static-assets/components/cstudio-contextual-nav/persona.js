@@ -95,6 +95,16 @@ CStudioAuthoring.ContextualNav.PersonaNavMod = CStudioAuthoring.ContextualNav.Pe
 					containerEl.appendChild(imageEl);
 					el.appendChild(containerEl);
 
+                    containerEl.onclick = function() {
+                        var ptoOn = !!(sessionStorage.getItem('pto-on'));
+                        if(!ptoOn){
+                            CStudioAuthoring.PreviewTools.turnToolsOn();
+                        }
+                        if(!YDom.getElementsByClassName("persona-container", "div", "cstudioPreviewAnalyticsOverlay")[0]) {
+                            YDom.getElementsByClassName("acn-accordion-toggle", "a", "targeting-panel-elem")[0].click();
+                        }
+                    }
+
 				}
 			}
 		});
