@@ -80,14 +80,14 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                     '</div>' +
                     '<div class="form-group">' +
                         '<label for="password">'+CMgs.format(previewLangBundle, 'password')+'</label>' +
-                        '<input type="password" name="pass" id="password"/>' +
+                        '<input type="password" name="pass" id="password" autofocus/>' +
                     '</div>' +
                     '<div class="alert alert-danger hidden" id="loginError">'+
 
                     '</div>'+
                 '</div>' +
                 '<div class="contentTypePopupBtn"> ' +
-                    '<input type="button" class="btn btn-primary cstudio-xform-buttons" id="loginButton" value="'+CMgs.format(previewLangBundle, 'signBackIn')+'" />' +
+                    '<input type="submit" class="btn btn-primary cstudio-xform-button" id="loginButton" value="'+CMgs.format(previewLangBundle, 'signBackIn')+'" />' +
                     '<input type="button" class="btn btn-default cstudio-xform-button" id="loginCancelButton" value="'+CMgs.format(previewLangBundle, 'doneSignOut')+'"  />' +
                 '</div>' +
             '</form></div>' +
@@ -110,7 +110,8 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                 modal:true,
                 close:false,
                 constraintoviewport : true,
-                underlay:"none"
+                underlay:"none",
+                hideaftersubmit:false
             });
 
         // Render the Dialog
