@@ -68,8 +68,9 @@
         <h3 ng-if="dialogMode" class="modal-title text-capitalize">{{dialogMode}} {{ 'admin.users.USER_LABEL' | translate }}</h3>
         <h3 ng-if="!dialogMode" class="modal-title text-capitalize">{{user.name}}</h3>
     </div>
+    <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
     <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
-        <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
+        <div class="col-md-12">
             <fieldset ng-disabled="user.externally_managed">
                 <div class="form-group" ng-if="!(dialogMode == 'create')">
                     <label for="enabled" class="control-label">Enabled</label>
@@ -240,7 +241,7 @@
                     <!--</div>-->
                 </div>
             </fieldset>
-        </form>
+        </div>
     </div>
 
     <div class="modal-footer">
@@ -251,6 +252,7 @@
         <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
         <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
     </div>
+    </form>
 </script>
 
 <script type="text/ng-template" id="creatingUserConfirmation.html">
