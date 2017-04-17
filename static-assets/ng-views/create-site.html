@@ -6,8 +6,8 @@
     <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
 
         <div class="form-group">
-            <label for="siteId">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.LENGTH_VALIDATION_50' | translate }}</span>
-            <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" maxlength="50" ng-change="isValidSite()" required/>
+            <label for="siteId">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SITE_ID_VALIDATION' | translate }}</span>
+            <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" maxlength="50" ng-change="isValidSite()" autofocus focus-me="true" required/>
 
             <div class="error-container"
                  ng-show="(createNameForm.siteId.$dirty && createNameForm.siteId.$invalid) || (createNameForm.siteId.$touched && createNameForm.siteId.$invalid)">
@@ -39,7 +39,7 @@
         </div>
 
         <div class="form-group">
-            <button class="btn btn-primary text-capitalize"
+            <button type="submit" class="btn btn-primary text-capitalize"
                     ng-click="create()" ng-disabled="createNameForm.$invalid || isValid">
                 {{ 'common.CREATE' | translate }}
             </button>

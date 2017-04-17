@@ -41,7 +41,7 @@
         "DESCRIPTION": "Descripción",
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Creando Sitio",
-        "LENGTH_VALIDATION_50": "(Longitud máxima: 50 caracteres)",
+        "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, minúsculas, sin espacios ni caracteres especiales)",
         "LENGTH_VALIDATION_4000": "(Longitud máxima: 4000 caracteres)",
         "ERROR": "Error:"
       }
@@ -132,6 +132,8 @@
     "YES": "Si",
     "NO": "No",
     "HELP": "Ayuda",
+    "DOCUMENTATION": "Documentación",
+    "ABOUT": "Acerca de nosotros",
     "SETTINGS": "Preferencias",
     "SIGN_OUT": "Desloguearse",
     "NOTIFICATION": "Notificación",
