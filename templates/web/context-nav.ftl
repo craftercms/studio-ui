@@ -33,8 +33,8 @@
                     <li class="dropdown" dropdown>
                         <a id="help-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">Help <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="http://docs.craftercms.org/en/latest/" target="_blank">Documentation</a></li>
-                            <li><a href="http://docs.craftercms.org/en/latest/" target="_blank">About</a></li>
+                            <li><a href="http://docs.craftercms.org/en/3.0/" target="_blank">Documentation</a></li>
+                            <li><a href="http://docs.craftercms.org/en/3.0/" target="_blank">About</a></li>
                         </ul>
                     </li>
                     <li class="dropdown" dropdown="">
