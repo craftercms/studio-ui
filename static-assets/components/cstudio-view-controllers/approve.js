@@ -210,7 +210,7 @@
             } else {
                 this.$('[name="schedulingMode"]')[0].checked = false;
                 this.$('[name="schedulingMode"]')[1].checked = true;
-                this.$('#approveSubmit').prop('disabled', true);
+                this.$('#approveSubmit').prop('disabled', false);
                 this.$('#approveSubmitVal').hide();
 
                 this.$('.date-picker-control').show();
