@@ -95,7 +95,7 @@
 
                 <div class="form-group">
                     <label for="firstName" class="control-label">{{ 'admin.users.FIRST_NAME' | translate }}</label>
-                    <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.first_name" required>
+                    <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.first_name" autofocus focus-me="true" required>
 
                     <div class="error-container" ng-if="dialogMode"
                          ng-show="(createNameForm.firstName.$dirty && createNameForm.firstName.$invalid) || (createNameForm.firstName.$touched && createNameForm.firstName.$invalid)">
