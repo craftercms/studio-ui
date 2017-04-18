@@ -1880,8 +1880,17 @@ var CStudioForms = CStudioForms || function() {
                                 formField.setValue("");
                             }
 
-                            form.sectionsMap[section.title].notifyValidation();
                             formField.fieldDef = this.fieldDef;
+                            try{
+                                if(formField.id == formField.form.sections[0].fields[0].id && !formField.form.sections[0].fields[0].inputEl.disabled){
+                                    formField.inputEl.focus();
+                                }
+                            }catch (err){
+                                console.log(err);
+                            }
+                            form.sectionsMap[section.title].notifyValidation();
+
+
                         }
                         catch (e) {
                             //alert(e);
