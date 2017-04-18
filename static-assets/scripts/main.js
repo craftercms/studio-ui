@@ -737,6 +737,7 @@
         '$scope', '$state', 'sitesService', '$modalInstance', 'siteToRemove',
         function ($scope, $state, sitesService, $modalInstance, siteToRemove) {
 
+            $scope.siteToRemove = siteToRemove.siteId;
 
             function removeSiteSitesModal (site){
 
