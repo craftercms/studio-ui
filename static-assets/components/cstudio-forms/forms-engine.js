@@ -1890,7 +1890,6 @@ var CStudioForms = CStudioForms || function() {
                             }
                             form.sectionsMap[section.title].notifyValidation();
 
-
                         }
                         catch (e) {
                             //alert(e);
