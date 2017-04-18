@@ -240,6 +240,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         YAHOO.util.Dom.addClass(inputEl, 'datum');
         YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
         YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-file-name');
+        inputEl.id = 'studioFileName';
         controlWidgetContainerEl.appendChild(inputEl);
 
         this.defaultValue = config.defaultValue;
