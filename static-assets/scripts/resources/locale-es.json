@@ -30,7 +30,7 @@
       "PREVIEW": "Vista Previa",
       "DASHBOARD": "Panel de Control",
       "LIVE_SITE": "Sitio en vivo",
-      "REMOVE_SITE_CONFIRMATION_MSG": "Quiere eliminar el sitio?",
+      "REMOVE_SITE_CONFIRMATION_MSG": "Quiere eliminar ",
       "TOGGLE_NAV": "Toggle navigation",
       "ACCOUNT": "Cuenta",
 
@@ -137,6 +137,7 @@
     "SETTINGS": "Preferencias",
     "SIGN_OUT": "Desloguearse",
     "NOTIFICATION": "Notificación",
-    "CANCEL" : "Cancelar"
+    "CANCEL" : "Cancelar",
+    "INTERROGATION_SIGN": "?"
   }
 }
