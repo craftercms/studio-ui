@@ -68,7 +68,7 @@
         <h3 ng-if="dialogMode" class="modal-title text-capitalize">{{dialogMode}} {{ 'admin.users.USER_LABEL' | translate }}</h3>
         <h3 ng-if="!dialogMode" class="modal-title text-capitalize">{{user.name}}</h3>
     </div>
-    <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+    <form name="createNameForm" id="user-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
     <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
         <div class="col-md-12">
             <fieldset ng-disabled="user.externally_managed">

@@ -15203,8 +15203,7 @@ body.masked {
 .studio-preview {
   top: 50px;
   overflow: auto;
-  background: #f8f8f8;
-  transition: left .5s; }
+  background: #f8f8f8; }
   .site-dropdown-open .studio-preview {
     left: 265px; }
   .studio-preview, .studio-preview iframe {

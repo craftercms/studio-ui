@@ -56,7 +56,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
                            '<div class="content">'+
                              '<div class="contentTypeOuter">'+
                                 '<label for="contentTypeDisplayName"><span>'+CMgs.format(formsLangBundle, 'newContTypeDialogDisplayLabel')+':</span>'+
-                                '<input title="'+CMgs.format(formsLangBundle, 'newContTypeDialogLabelMsg')+'" id="contentTypeDisplayName" type="text"></label>' +
+                                '<input title="'+CMgs.format(formsLangBundle, 'newContTypeDialogLabelMsg')+'" id="contentTypeDisplayName" type="text" autofocus focus-me="true"></label>' +
                                 '<label for="contentTypeName"><span>'+CMgs.format(formsLangBundle, 'newContTypeDialogContentTypeName')+':</span>'+
                                 '<input style="disabled" title="'+CMgs.format(formsLangBundle, 'newContTypeDialogContentTypeNamelMsg')+'" id="contentTypeName" type="text"></label>' +
                                 '<div class="selectInput">' +
@@ -111,6 +111,9 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
 		// Render the Dialog
 		dialog.render();
+		setTimeout(function() {
+			$('#contentTypeDisplayName').focus();
+		}, 200);
 
 		this.buttonValidator("createButton", { "contentTypeDisplayName" : [/^$/] });
 
