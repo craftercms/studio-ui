@@ -51,7 +51,8 @@
     "HEADER_LABEL": "Administración de Cuenta",
     "PROFILE": "Perfil",
     "UPDATE_PROFILE": "Actualizar Perfil",
-    "PROFILE_UPDATED": "Perfil Actualizado"
+    "PROFILE_UPDATED": "Perfil Actualizado",
+    "CHANGE_PASSWORD_ADVERTISEMENT": "Una vez que tu contraseña se haya actualizado correctamente, deberás volver a iniciar sesión."
   },
   "admin": {
     "groups": {

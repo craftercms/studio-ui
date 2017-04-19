@@ -503,7 +503,9 @@
                                 $timeout(function () {
                                     $rootScope.modalInstance.close();
                                     $scope.data = {};
+                                    logout();
                                 }, 1500, false);
+
                             }
                         }, function(error){
                             $scope.error = error.data.status;
@@ -941,6 +943,10 @@
                 return document.getElementById('loginView').parentNode.parentNode.parentNode;
             }
 
+            function getModalBackdrop() {
+                return document.getElementsByClassName('modal-backdrop')[0];
+            }
+
             function showModal() {
                 var loginViewEl = getModalEl();
                 angular.element(loginViewEl).addClass('in');
@@ -949,6 +955,11 @@
             function hideModal() {
                 var loginViewEl = getModalEl();
                 angular.element(loginViewEl).removeClass('in');
+            }
+
+            function removeHiddenClass(){
+                var modalBackdrop = getModalBackdrop();
+                angular.element(modalBackdrop).removeClass('hidden');
             }
 
             $scope.error = null;
@@ -968,6 +979,7 @@
                 if ($state.current.name === 'login.recover') {
                     $timeout(hideModal, 50);
                 }
+                removeHiddenClass();
                 //console.log(angular.element(document.querySelector('#language')));
             });
 
