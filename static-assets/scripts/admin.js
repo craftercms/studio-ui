@@ -436,8 +436,8 @@
                 });
             };
             users.toggleUserStatus = function(user){
-                var currentStatus = user.status.enabled,
-                    newStatus = currentStatus == true ? 'disable' : 'enable';
+                var newStatus = $('#enabled').is(':checked') ? 'enable' : 'disable';
+                user.status.enabled = $('#enabled').is(':checked');
 
                 adminService.toggleUserStatus(user, newStatus);
             };
