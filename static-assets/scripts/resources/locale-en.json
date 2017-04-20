@@ -53,7 +53,8 @@
     "HEADER_LABEL": "Account Management",
     "PROFILE": "Profile",
     "UPDATE_PROFILE": "Update Profile",
-    "PROFILE_UPDATED": "Profile Updated"
+    "PROFILE_UPDATED": "Profile Updated",
+    "CHANGE_PASSWORD_ADVERTISEMENT": "Once your password has been successfully updated, you'll be required to login again."
   },
   "admin": {
     "groups": {
