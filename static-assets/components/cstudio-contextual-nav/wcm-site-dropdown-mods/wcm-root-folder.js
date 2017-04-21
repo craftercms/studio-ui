@@ -1927,6 +1927,13 @@ treeNode.getHtml = function() {
 								//p_aArgs.addItems([ menuItems.cutOption ]);
 	                        	p_aArgs.addItems([ menuItems.copyOption ]);
 
+                                if((oCurrentTextNode.data.lockOwner != ""
+                                    && ((CStudioAuthoringContext.role === "admin") || (CStudioAuthoringContext.role === "site_admin")))
+                                    || oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user ) {
+                                    p_aArgs.addItems([ menuItems.separator ]);
+                                    p_aArgs.addItems([ menuItems.unlockOption ]);
+                                }
+
 								var checkClipboardCb = {
 			                        success: function(collection) {
 										var contextMenuItems = [];
