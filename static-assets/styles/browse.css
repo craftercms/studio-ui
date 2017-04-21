@@ -15,7 +15,7 @@ body {
     background-image: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif") !important; }
   body .status-icon.folder {
     background-position: 0 -97px; }
-  body a[data-disabled=true] {
+  body a[data-disabled] {
     text-decoration-line: line-through !important;
     color: #52779b !important; }
   body .cstudio-search-btn {
