@@ -15,6 +15,9 @@ body {
     background-image: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif") !important; }
   body .status-icon.folder {
     background-position: 0 -97px; }
+  body a[data-disabled=true] {
+    text-decoration-line: line-through !important;
+    color: #52779b !important; }
   body .cstudio-search-btn {
     color: #333;
     border-color: #ccc;
@@ -111,6 +114,9 @@ body {
                 color: #808080 !important;
                 cursor: auto !important;
                 display: inline-block; }
+              body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description span.disabled, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview span.disabled {
+                text-decoration-line: line-through;
+                color: #52779b !important; }
               body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description .cstudio-search-component.cstudio-search-component-button a, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview .cstudio-search-component.cstudio-search-component-button a {
                 margin-top: 20px; }
             body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview {

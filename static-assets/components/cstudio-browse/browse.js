@@ -191,11 +191,21 @@
                     }
                 })
             }
+
             if (key === "path"){
-                this.a_attr = {
-                    "data-path": value
+                if(this.disabled){
+                    this.a_attr = {
+                        "data-path": value,
+                        "data-disabled": "true"
+                    }
+                }else{
+                    this.a_attr = {
+                        "data-path": value
+                    }
                 }
+
             }
+
             if (key === "internalName") {
                 this.text = value;
             }else {
