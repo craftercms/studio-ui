@@ -120,8 +120,8 @@
             </div>
             <div class="cstudio-result-body row" style="overflow: hidden;">
               <div class="cstudio-search-result-description">
-                <span class="browse-icon {{status}}" id="result-status-static-assets-images-brand-bg-png"></span> 
-                <span class="cstudio-search-component cstudio-search-component-title-nopreview">
+                <span class="browse-icon {{status}}" id="result-status-static-assets-images-brand-bg-png"></span>
+                <span class="cstudio-search-component cstudio-search-component-title-nopreview {{#if disabled}}disabled{{/if}}">
                 {{#if internalName}}
                   {{internalName}}
                 {{else}}
