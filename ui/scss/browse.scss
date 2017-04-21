@@ -21,6 +21,11 @@ body {
     	background-position: 0 -97px;
 	}
 
+  a[data-disabled]{
+    text-decoration-line: line-through!important;
+    color: #52779b!important;
+  }
+
 	.cstudio-search-btn {
 		color: #333;
 	    border-color: #ccc;
@@ -152,6 +157,11 @@ body {
 								cursor: auto !important; 
 								display: inline-block;
 				   	 		}
+
+                          span.disabled{
+                            text-decoration-line: line-through;
+                            color: #52779b!important;
+                          }
 
 				   	 		.cstudio-search-component {
 				   	 			&.cstudio-search-component-button {
