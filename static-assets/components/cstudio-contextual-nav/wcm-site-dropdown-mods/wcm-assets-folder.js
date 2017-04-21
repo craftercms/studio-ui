@@ -42,8 +42,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
         var label = instance.label.toLowerCase();
         label = label.replace(/ /g, '');
+        var labelLangBundle = CMgs.format(siteDropdownLangBundle, (label));
+        label = labelLangBundle == label ?
+            instance.label : labelLangBundle;
 
-        parentFolderLinkEl.innerHTML = CMgs.format(siteDropdownLangBundle, (label));
+        parentFolderLinkEl.innerHTML = label;
         parentFolderLinkEl.onclick = CStudioAuthoring.ContextualNav.WcmAssetsFolder.onRootFolderClick;
         parentFolderLinkEl.componentInstance = instance;
 

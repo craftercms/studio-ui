@@ -175,7 +175,12 @@
                 var parentFolderEl = document.createElement("div");
                 var parentFolderLinkEl = document.createElement("a");
                 parentFolderLinkEl.id = instance.label.toLowerCase() + "-tree"; // should be part of class no?
-                parentFolderLinkEl.innerHTML = CMgs.format(siteDropdownLangBundle, instance.label);
+                var label = instance.label.toLowerCase();
+                label = label.replace(/ /g, '');
+                var labelLangBundle = CMgs.format(siteDropdownLangBundle, (label));
+                label = labelLangBundle == label ?
+                    instance.label : labelLangBundle;
+                parentFolderLinkEl.innerHTML = label;
                 parentFolderLinkEl.onclick = Self.onRootFolderClick;
                 parentFolderLinkEl.componentInstance = instance;
 
