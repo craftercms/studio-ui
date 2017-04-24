@@ -412,6 +412,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     wcmContentSavedAsDraft: "Content was saved as DRAFT. Some required fields may not be populated. This can cause errors when previewed or deployed.",
 
+    previewInitiated: "Preview server synch-all initiated.",
+    synchronizationRepo: "Synchronization from Repository initiated.",
+
     /*Error*/
     legacyFormNoSupported: "legacy form server no longer supported.",
     loadContentsError: "Unable to load contents. Please close the dialogue window and try again.",
@@ -491,6 +494,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     workflowStates: "Workflow States",
     loggingLevels: "Logging Levels",
     logConsole: "Log Console",
+    previewsync: "Preview Sync",
+    syncfromrepository: "Sync From Repository",
     deploymentQueues: "Deployment Queues",
     label: "Content Types",
     openExistingType: "Open Existing Type",
