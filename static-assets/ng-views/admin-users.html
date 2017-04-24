@@ -18,9 +18,9 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
+                            <th>{{ 'admin.users.USER_NAME' | translate }}</th>
                             <th>{{ 'admin.users.FIRST_NAME' | translate }}</th>
                             <th>{{ 'admin.users.LAST_NAME' | translate }}</th>
-                            <th>{{ 'admin.users.USER_NAME' | translate }}</th>
                             <th>{{ 'admin.users.EMAIL' | translate }}</th>
                             <th></th>
                             <th></th>
@@ -35,9 +35,9 @@
 
                         <tr dir-paginate="user in usersCollection.users | filter:q | itemsPerPage: users.itemsPerPage"
                             current-page="users.pagination.current" total-items="users.totalLogs">
-                            <td><a ng-click="users.viewUser(user)">{{user.first_name}}</a></td>
+                            <td><a ng-click="users.viewUser(user)">{{user.username}}</a></td>
+                            <td>{{user.first_name}}</td>
                             <td>{{user.last_name}}</td>
-                            <td>{{user.username}}</td>
                             <td>{{user.email}}</td>
 
                             <td>
