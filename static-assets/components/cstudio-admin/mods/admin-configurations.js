@@ -29,14 +29,20 @@ CStudioAuthoring.Module.requireModule(
 			renderWorkarea: function() {
 				var workareaEl = document.getElementById("cstudio-admin-console-workarea");
 		
-					workareaEl.innerHTML = 
-						"<div id='config-area'>" +
-						"</div>";
-						var actions = [
-                            { name: CMgs.format(formsLangBundle, "clearCache"), context: this, method: this.clearCache }
-                        ];
-						CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
-						this.renderJobsList();
+				workareaEl.innerHTML =
+					"<div id='config-area'>" +
+					"</div>";
+				var actions = [
+					{ name: CMgs.format(formsLangBundle, "clearCache"), context: this, method: this.clearCache }
+				];
+				CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+				this.renderJobsList();
+
+				var historyEl = document.createElement("li");
+				historyEl.className = 'acn-link';
+				historyEl.id = 'historyEl';
+
+				document.getElementById('activeContentActions').appendChild(historyEl);
 			},
 	
 			renderJobsList: function() {
@@ -133,18 +139,42 @@ CStudioAuthoring.Module.requireModule(
 					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH,
 						selectedIndex = itemSelectEl.selectedIndex;
 
+					$('#historyEl').empty();
+
 					if(selectedIndex != 0) {
 						editAreaEl.style.display = 'block';
 						var descriptionEl = document.getElementById("config-description");
 						descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute("description");
+
 						// load configuration into editor
 						var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-							CStudioAuthoringContext.site + '&path=' + configFilesPath + itemSelectEl[selectedIndex].value;
+							CStudioAuthoringContext.site + '&path=' + configFilesPath + itemSelectEl[selectedIndex].value,
+							elemPath = configFilesPath + itemSelectEl[selectedIndex].value;
 						var getConfigCb = {
 							success: function(response) {
 								editor.setValue(response.responseText);
                                 editor.clearHistory();
 								CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditor(editor);
+
+								//add history
+
+								var siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
+
+								var historyLink = document.createElement("a");
+								historyLink.className = 'cursor';
+								var textnode = document.createTextNode(CMgs.format(siteDropdownLangBundle, "history"));         // Create a text node
+								historyLink.appendChild(textnode);
+
+								historyLink.onclick = function() {
+									var content = {
+										uri: elemPath
+									};
+
+									CStudioAuthoring.Operations.viewContentHistory(content);
+								};
+
+								document.getElementById('historyEl').append(historyLink);
+
 							},
 							failure: function() {
 								editor.setValue("");
@@ -152,7 +182,8 @@ CStudioAuthoring.Module.requireModule(
 							}
 						};
 						YAHOO.util.Connect.asyncRequest('GET', url, getConfigCb);
-						
+
+						//sample
 						var sampleTextEl = document.getElementById("sample-text");
 
 						// load sample configuration into view sample area
