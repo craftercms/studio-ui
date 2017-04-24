@@ -1,8 +1,4 @@
 CStudioAdminConsole.Tool.PreviewSync = CStudioAdminConsole.Tool.PreviewSync ||  function(config, el)  {
-        this.containerEl = el;
-        this.config = config;
-        this.types = [];
-        this.currMillis = new Date().getTime();
         return this;
     }
 
