@@ -394,6 +394,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 
     currentPage: "Página Actual",
 
+    previewInitiated: "Sincronización del servidor de previsualización iniciado.",
+    synchronizationRepo: "Se inició la sincronización desde el repositorio.",
+
     /*Error*/
     legacyFormNoSupported: "Servidor de formulario heredado ya no es soportado.",
     loadContentsError: "No se puede cargar contenido. Por favor, cierre la ventana de diálogo e inténtelo de nuevo.",
@@ -473,6 +476,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     workflowStates: "Flujo de Trabajo de Estados",
     loggingLevels: "Niveles de Registro",
     logConsole: "Consola de Log",
+    previewsync: "Sincronización de Vista Previa",
+    syncfromrepository: "Sincronización Desde el Repo",
     label: "Tipos de contenido",
     openExistingType: "Abrir un Tipo Existente",
     createNewType: "Crear un Nuevo Tipo",
