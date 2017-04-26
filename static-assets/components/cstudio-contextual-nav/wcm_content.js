@@ -120,13 +120,20 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         document.addEventListener('crafter.create.contenMenu', function (e) {
                             selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
-                            YDom.get("activeContentActions").innerHTML = "";
                             if(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
                                 CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, {
                                     success: function (content) {
-                                        CStudioAuthoring.SelectedContent.setContent(content.item);
+                                        if( CStudioAuthoring.Utils.getIconFWClasses(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) !=
+                                            CStudioAuthoring.Utils.getIconFWClasses(content.item)){
+                                            YDom.get("activeContentActions").innerHTML = "";
+                                            CStudioAuthoring.SelectedContent.setContent(content.item);
+                                            _this.drawNav();
+                                        }
+
                                     }
                                 });
+                            }else{
+                                YDom.get("activeContentActions").innerHTML = "";
                                 _this.drawNav();
                             }
                         }, false);
