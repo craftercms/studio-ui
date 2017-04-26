@@ -708,7 +708,8 @@ var nodeOpen = false;
 
                             var retry = window.setInterval(function(){
                                 //checkIconState
-                                if(document.querySelector('#activeContentActions .status-icon.in-progress')){
+                                var inProgress = document.querySelector('#activeContentActions .status-icon.in-progress');
+                                if(inProgress && !inProgress.classList.contains('scheduled') ){
                                     document.dispatchEvent(eventNS);
                                 }else{
                                     window.clearInterval(retry);
