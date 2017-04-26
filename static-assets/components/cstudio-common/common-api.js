@@ -1524,7 +1524,7 @@ var nodeOpen = false;
                 });
             },
 
-            openDiff: function(site, path, version, versionTO) {
+            openDiff: function(site, path, version, versionTO, escaped) {
 
                 var id = CSA.Utils.getScopedId(),
                     animator,
@@ -1560,6 +1560,7 @@ var nodeOpen = false;
                 diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
                 diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
                 diffUrl += "&mode=iframe";
+                diffUrl += escaped ? '&escaped=true' : '';
 
                 window.open(diffUrl, 'diffDialog');
 
@@ -1638,6 +1639,7 @@ var nodeOpen = false;
                 diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
                 diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
                 diffUrl += "&mode=iframe";
+
 
                 window.open(diffUrl, 'diffDialog');
 
