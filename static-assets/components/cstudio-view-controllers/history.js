@@ -27,7 +27,8 @@
         loadHistory: function (selection) {
             var _this = this,
                 colspan = 5,
-                loadFn;
+                loadFn,
+                escaped = selection.escaped;
 
             _this.selection = selection;
 
@@ -195,11 +196,11 @@
                                         });
 
                                         Event.addListener(viewActionEl, "click", function () {
-                                            CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, this.version);
+                                            CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, this.version, escaped);
                                         });
 
                                         Event.addListener(compareActionEl, "click", function () {
-                                            CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version);
+                                            CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, null, escaped);
                                         });
 
                                         Event.addListener(checkboxEl, "change", function () {
