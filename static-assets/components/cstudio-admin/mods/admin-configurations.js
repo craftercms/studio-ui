@@ -167,9 +167,9 @@ CStudioAuthoring.Module.requireModule(
 
 								historyLink.onclick = function() {
 									var content = {
-										uri: elemPath
+										uri: elemPath,
+										escaped: true
 									};
-
 									CStudioAuthoring.Operations.viewContentHistory(content);
 								};
 
