@@ -242,6 +242,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
 
     notification: "공고",
     previewInitiated: "미리보기 서버 동기화 - 모두 시작됨.",
+    syncfromRepoInitiated: "Synchronization from Repository initiated.",
 
     lookUpItemError: "항목을 찾을 수 없습니다. 시스템 관리자에게 문의하십시오.",
     pathSameError: "출발지와 도착지 경로가 동일 함.",

@@ -250,6 +250,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
 
     notification: "Notification",
     previewInitiated: "Preview server synch-all initiated.",
+    syncfromRepoInitiated: "Synchronization from Repository initiated.",
 
     lookUpItemError: "Unable to look up item. Please contact your system administrator.",
     pathSameError: "Source and destination path are same.",
