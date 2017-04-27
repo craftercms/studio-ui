@@ -15,7 +15,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	hookNavOverlayFromAuthoring: function() {
 		if(!this.initialized) {
 			this.initialized = true;
-			this.updateContextualNavOverlay();
+			this.updateContextualNavOverlay()
 		}
 	},
 
@@ -25,6 +25,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	 * @param content to overlay
 	 */
 	updateContextualNavOverlay: function(context) {
+		var me = this;
 
 		context = (context) ? context : CStudioAuthoringContext.navContext;
 		CStudioAuthoring.Service.retrieveContextualNavContent(context, {
@@ -33,6 +34,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				YAHOO.util.Event.onAvailable("authoringContextNavHeader", function() {
                     document.domain = CStudioAuthoringContext.cookieDomain;
 					CStudioAuthoring.Events.contextNavReady.fire();
+					me.getNavBarContent()
 				}, this);
 			},
 			failure: function() {
@@ -69,6 +71,22 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 			failure: function() {},
 			context: this
 		});
+	},
+
+	getNavBarContent: function() {
+		var callback = {
+			success: function(results) {
+				console.log(results);
+				document.getElementById('nav-user-email').innerHTML = results.email;
+				document.getElementById('account-dropdown').childNodes[0].nodeValue = results.username;
+			},
+			failure: function(response) {
+
+			}
+		};
+
+		CStudioAuthoring.Service.getUserInfo(callback);
+		document.getElementById('account-dropdown').childNodes[0].nodeValue = CStudioAuthoringContext.user;
 	},
 
     /**
