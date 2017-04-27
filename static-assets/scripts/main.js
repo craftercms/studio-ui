@@ -583,9 +583,9 @@
     ]);
 
     app.controller('SitesCtrl', [
-        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal',
+        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies',
 
-        function ($scope, $state, $location, sitesService, authService, $modal) {
+        function ($scope, $state, $location, sitesService, authService, $modal, $cookies) {
 
             $scope.sites = null;
 
@@ -600,7 +600,7 @@
             $scope.siteValidation = $location.$$search.siteValidation;
 
             $scope.sitesPag = {
-                sitesPerPage: 15
+                sitesPerPage: $cookies['crafterStudioSitesPagination'] ? parseInt($cookies['crafterStudioSitesPagination'], 10) : 15
             }
 
             $scope.totalSites = 0;
@@ -608,6 +608,7 @@
 
             $scope.pageChanged = function(newPage) {
                 getResultsPage(newPage);
+                sitesService.setCookie('crafterStudioSitesPagination', $scope.sitesPag.sitesPerPage);
             };
 
             function getSites (params) {
