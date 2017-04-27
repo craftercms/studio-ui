@@ -2698,6 +2698,7 @@ var nodeOpen = false;
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
+            getUserInfoServiceURL: "/api/1/services/api/1/user/get.json",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/user/logout.json",
 
@@ -3814,6 +3815,26 @@ var nodeOpen = false;
                 };
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
             },
+
+            /**
+             * get user info
+             */
+            getUserInfo: function(callback) {
+                var serviceUrl = this.getUserInfoServiceURL;
+                serviceUrl += "?username=" + CStudioAuthoringContext.user;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
             /**
              * get scheduled items
              */
