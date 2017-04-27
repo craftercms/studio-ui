@@ -26,7 +26,15 @@ CStudioAuthoring.ContextualNav.SyncFromRepo = CStudioAuthoring.ContextualNav.Syn
                 parentFolderLinkEl.onclick = function() {
                     CStudioAuthoring.Service.syncFromRepo(CStudioAuthoringContext.site, {
                         success: function(result) {
-                            alert("Synchronization from Repository initiated.");
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "previewInitiated-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(siteDropdownLangBundle, "notification"),
+                                CMgs.format(siteDropdownLangBundle, "syncfromRepoInitiated"),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_INFO,
+                                "success studioDialog"
+                            );
                         },
                         failure: function() {}
                     });

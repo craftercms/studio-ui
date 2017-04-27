@@ -247,6 +247,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
 
     notification: "Notificación",
     previewInitiated: "Sincronización del servidor de previsualización iniciado.",
+    syncfromRepoInitiated: "Sincronización del repositorio iniciado.",
 
     lookUpItemError: "No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.",
     pathSameError: "Las rutas de origen y destino son las mismas.",
