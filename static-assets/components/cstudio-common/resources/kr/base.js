@@ -460,6 +460,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     openExistingType: "열기 기존 유형",
     createNewType: "새로운 유형 만들기",
     save: "저장",
+    cancel: "취소",
+    close: "닫기",
     saved: "저장",
     clearVal: "지우기 값",
     saveFailed: "저장 실패",
@@ -676,5 +678,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     endpointsError: "엔드 포인트로드 실패.",
     jobsError : "작업을로드하지 못했습니다.",
     cancelDeploymentError: "배포를 취소하지 못했습니다.",
-    saveDateError: "날짜 / 시간 필드를 저장할 수 없습니다. 시스템 관리자에게 문의하십시오."
+    saveDateError: "날짜 / 시간 필드를 저장할 수 없습니다. 시스템 관리자에게 문의하십시오.",
+    contentTypeModifiedWarn: "콘텐츠 유형이 수정되었습니다. 변경 사항을 취소 하시겠습니까"
 });

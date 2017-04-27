@@ -483,6 +483,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     openExistingType: "Abrir un Tipo Existente",
     createNewType: "Crear un Nuevo Tipo",
     save: "Guardar",
+    cancel: "Cancelar",
+    close: "Cerrar",
     saved: "Guardado",
     clearVal: "Limpiar Valor",
     saveFailed: "No Se Pudo Guardar",
@@ -703,5 +705,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     endpointsError: "Error al cargar los puntos finales.",
     jobsError : "Error al cargar trabajos.",
     cancelDeploymentError: "Error al cancelar la implementación.",
-    saveDateError: "No se puede guardar el campo Fecha / Hora. Por favor, póngase en contacto con el administrador del sistema."
+    saveDateError: "No se puede guardar el campo Fecha / Hora. Por favor, póngase en contacto con el administrador del sistema.",
+    contentTypeModifiedWarn: "Se ha modificado el tipo de contenido, ¿está seguro de que desea abandonar los cambios?"
 });

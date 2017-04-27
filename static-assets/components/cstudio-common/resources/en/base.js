@@ -502,6 +502,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     openExistingType: "Open Existing Type",
     createNewType: "Create New Type",
     save: "Save",
+    cancel: "Cancel",
+    close: "Close",
     saved: "Saved",
     clearVal: "Clear Value",
     saveFailed: "Save Failed",
@@ -749,6 +751,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     endpointsError: "Failed to load endpoints.",
     jobsError : "Failed to load jobs.",
     cancelDeploymentError: "Failed to cancel deployment.",
-    saveDateError: "Unable to save Date/Time field. Please contact your system administrator."
+    saveDateError: "Unable to save Date/Time field. Please contact your system administrator.",
+    contentTypeModifiedWarn: "Content Type has been modified, are you sure you want to abandon your changes?"
 
 });
