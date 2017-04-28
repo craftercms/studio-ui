@@ -6933,6 +6933,35 @@ var nodeOpen = false;
                     if((positiony == "right"))
                         element.css({ bottom: originalx + "px", right: originaly + "px"});
                 }
+            },
+
+            isReviewer: function(cb){
+                var callback = {
+                    success: function(results) {
+                        var sites = results.sites,
+                            isRev = false;
+                        for(var i=0; i<sites.length; i++){
+                            if(sites[i].site_name == CStudioAuthoringContext.site){
+                                var groups = sites[i].groups;
+                                //console.log(CStudioAuthoringContext.site);
+                                for(var j=0; j<groups.length; j++){
+                                    if(groups[j].group_name == "Reviewer"){
+                                        //console.log(groups[j].group_name);
+                                        isRev = true;
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        cb(isRev);
+                    },
+                    failure: function(response) {
+                        console.log(response);
+                    }
+                };
+
+                CStudioAuthoring.Service.getUserInfo(callback);
             }
         },
         "Utils.Doc": {
