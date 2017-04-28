@@ -24,65 +24,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
         this.renderJobsList();
     },
 
-    renderRename: function() {
-       CStudioAdminConsole.Tool.BulkOperations.rename = function() {
-            var srcPath = document.getElementById("bulk-rename-src-path").value;
-            var targetPath = document.getElementById("bulk-rename-target-path").value;
-            if (srcPath && targetPath) {
-                var serviceUri = "/api/1/services/api/1/content/bulk-rename.json?site="+CStudioAuthoringContext.site+"&srcPath="+srcPath+"&targetPath="+targetPath;
-                var renameOpMessage = document.getElementById("bulk-rename-message");
-
-                var cb = {
-                    success:function() {
-                        renameOpMessage.innerHTML = "Bulk rename successful";
-                    },
-                    failure: function() {
-                        renameOpMessage.innerHTML = "Bulk rename failed";
-                    }
-                }
-                YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
-                renameOpMessage.innerHTML = "Executing bulk rename ...";
-            }
-        };
-
-        var mainEl = document.getElementById("bulk-ops");
-
-        mainEl.innerHTML =
-            "<div id='bulk-rename' class='bulk-op-area'>" +
-                "<p><h2>Bulk Rename</h2></p><p>" +
-                    "<div class='bulk-table'>" +
-                        "<div class='bulk-table-row'>" +
-                            "<div class='bulk-table-cell'>Source path:" +
-                            "</div>" +
-                            "<div class='bulk-table-cell'><input type='text' size=70 id='bulk-rename-src-path' />" +
-                            "</div>" +
-                        "</div>" +
-                        "<div class='bulk-table-row'>" +
-                            "<div class='bulk-table-cell'>" +
-                            "</div>" +
-                            "<div class='bulk-table-cell'>(e.g. /site/website/about-us/index.xml)" +
-                            "</div>" +
-                        "</div>" +
-                        "<div class='bulk-table-row'>" +
-                            "<div class='bulk-table-cell'>Target path:" +
-                            "</div>" +
-                            "<div class='bulk-table-cell'><input type='text' size=70 id='bulk-rename-target-path' />" +
-                            "</div>" +
-                        "</div>" +
-                        "<div class='bulk-table-row'>" +
-                            "<div class='bulk-table-cell'>" +
-                            "</div>" +
-                            "<div class='bulk-table-cell'>(e.g. /site/website/about/index.xml)" +
-                            "</div>" +
-                        "</div>" +
-                    "</div>" +
-                " <br/>" +
-                "<input type='button' class='action-button' value='Rename' onclick='CStudioAdminConsole.Tool.BulkOperations.rename()' /></p>" +
-                "<p id='bulk-rename-message'></p>" +
-            "</div>";
-
-    },
-
     renderGoLive: function() {
          CStudioAdminConsole.Tool.BulkOperations.golive = function() {
          	 var envSelectEl = document.getElementById("go-pub-channel");
@@ -152,53 +93,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
         }
 
         CStudioAuthoring.Service.retrievePublishingChannels(CStudioAuthoringContext.site, publishingOptionsCB)
-    },
-
-    renderDelete: function() {
-        CStudioAdminConsole.Tool.BulkOperations.bulkdelete = function() {
-            var path = document.getElementById("bulk-delete-path").value;
-            if (path) {
-                var serviceUri = "/api/1/services/api/1/deployment/bulk-delete.json?site=" + CStudioAuthoringContext.site
-                    + "&path=" + path;
-                var deleteOpMessage = document.getElementById("bulk-delete-message");
-                var cb = {
-                    success:function() {
-                        deleteOpMessage.innerHTML = "Bulk Delete successful";
-                    },
-                    failure: function() {
-                        deleteOpMessage.innerHTML = "Bulk Delete failed";
-                    }
-                }
-
-                YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
-                deleteOpMessage.innerHTML = "Executing bulk Delete ...";
-            }
-        };
-
-        var mainEl = document.getElementById("bulk-ops");
-
-        mainEl.innerHTML =
-            "<div id='bulk-delete' class='bulk-op-area'>" +
-            "<p><h2>Bulk Delete</h2></p><p>" +
-            "<div class='bulk-table'>" +
-            "<div class='bulk-table-row'>" +
-            "<div class='bulk-table-cell'>Path to Delete:" +
-            "</div>" +
-            "<div class='bulk-table-cell'><input type='text' size=70 id='bulk-delete-path'/>" +
-            "</div>" +
-            "</div>" +
-            "<div class='bulk-table-row'>" +
-            "<div class='bulk-table-cell'>" +
-            "</div>" +
-            "<div class='bulk-table-cell'>(e.g. /site/website/about/index.xml)" +
-            "</div>" +
-            "</div>" +
-            "</div>" +
-            "</br>" +
-            "<input type='button' class='action-button' value='Delete' onclick='CStudioAdminConsole.Tool.BulkOperations.bulkdelete()' /></p>" +
-            "<p id='bulk-delete-message'></p>" +
-            "</div>";
-
     },
 
     renderJobsList: function() {
