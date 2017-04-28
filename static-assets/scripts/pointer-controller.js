@@ -111,7 +111,12 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
             if (compPath != zonePath && compPathChild != compPath ) {
                 componentDropped.call(me, $dropZone, $component);
             } else {
-                return;
+                me.done();
+                publish.call(me, Topics.START_DIALOG, {
+                    message: 'The component is already in drop zone, therefore it cannot be added again.',
+                    height: '212px'
+                });
+                //return;
             }
         });
 

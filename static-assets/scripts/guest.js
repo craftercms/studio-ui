@@ -251,6 +251,6 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     }
 
     setRegionsCookie();
-    window.parent.initRegCookie();
+    if(window.parent.initRegCookie) window.parent.initRegCookie();
 
 });

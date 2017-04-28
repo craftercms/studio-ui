@@ -214,7 +214,7 @@
         newdiv.className = "yui-pe-content";
         newdiv.innerHTML = '<div class="contentTypePopupInner" id="warning">' +
             '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-            '<div class="contentTypePopupHeader">Warning</div> ' +
+            '<div class="contentTypePopupHeader">Notification</div> ' +
             '<div class="contentTypeOuter">'+
             '<div>'+message.message+'</div> ' +
             '<div>' +
@@ -229,7 +229,7 @@
 
         var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", {
             width: "400px",
-            height: "199px",
+            height: message.height ? message.height : "199px",
             fixedcenter: true,
             visible: false,
             modal: true,
