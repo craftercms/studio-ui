@@ -894,7 +894,7 @@
                         $timeout(function () {
                             sitesService.editSite($scope.site);
                             $scope.createModalInstance.close();
-                        }, 3000, false);
+                        }, 0, false);
                     })
                     .error(function (data) {
                         $scope.createModalInstance.close();
