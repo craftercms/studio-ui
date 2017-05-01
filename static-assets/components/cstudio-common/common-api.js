@@ -708,7 +708,8 @@ var nodeOpen = false;
 
                             var retry = window.setInterval(function(){
                                 //checkIconState
-                                if(document.querySelector('#activeContentActions .status-icon.in-progress')){
+                                var inProgress = document.querySelector('#activeContentActions .status-icon.in-progress');
+                                if(inProgress && !inProgress.classList.contains('scheduled') ){
                                     document.dispatchEvent(eventNS);
                                 }else{
                                     window.clearInterval(retry);
@@ -2697,6 +2698,7 @@ var nodeOpen = false;
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
+            getUserInfoServiceURL: "/api/1/services/api/1/user/get.json",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/user/logout.json",
 
@@ -3813,6 +3815,26 @@ var nodeOpen = false;
                 };
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
             },
+
+            /**
+             * get user info
+             */
+            getUserInfo: function(callback) {
+                var serviceUrl = this.getUserInfoServiceURL;
+                serviceUrl += "?username=" + CStudioAuthoringContext.user;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
             /**
              * get scheduled items
              */
@@ -6911,6 +6933,35 @@ var nodeOpen = false;
                     if((positiony == "right"))
                         element.css({ bottom: originalx + "px", right: originaly + "px"});
                 }
+            },
+
+            isReviewer: function(cb){
+                var callback = {
+                    success: function(results) {
+                        var sites = results.sites,
+                            isRev = false;
+                        for(var i=0; i<sites.length; i++){
+                            if(sites[i].site_name == CStudioAuthoringContext.site){
+                                var groups = sites[i].groups;
+                                //console.log(CStudioAuthoringContext.site);
+                                for(var j=0; j<groups.length; j++){
+                                    if(groups[j].group_name == "Reviewer"){
+                                        //console.log(groups[j].group_name);
+                                        isRev = true;
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        cb(isRev);
+                    },
+                    failure: function(response) {
+                        console.log(response);
+                    }
+                };
+
+                CStudioAuthoring.Service.getUserInfo(callback);
             }
         },
         "Utils.Doc": {

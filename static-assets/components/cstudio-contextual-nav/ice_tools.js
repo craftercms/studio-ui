@@ -22,76 +22,80 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 		CStudioAuthoring.register({
 			"ContextualNav.EditorsToolsNav": {
 				init: function() {
-					if(CStudioAuthoringContext.isPreview == true) {
-						if(true){ //CStudioAuthoring.IceTools) {
-							this.render();
+                    var _self = this;
+                    var callback = function(isRev) {
+                        if (CStudioAuthoringContext.isPreview == true && !isRev) {
 
-					       	CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(
-					       			function() {
-					       				var el = YDom.get("acn-ice-tools-container");
-					       				el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
-					       			});
+                            _self.render();
+                            if (CStudioAuthoring.IceTools) { //CStudioAuthoring.IceTools) {
+                                CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(
+                                    function () {
+                                        var el = YDom.get("acn-ice-tools-container");
+                                        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                                    });
 
-					       	CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(
-					       			function() {
-					       				var el = YDom.get("acn-ice-tools-container");
-					       				el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
-					       			});
+                                CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(
+                                    function () {
+                                        var el = YDom.get("acn-ice-tools-container");
+                                        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                                    });
 
 //						}
 //						else {
-							cb = {
-								moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-							   		try {
-						   					
-									       	CStudioAuthoring.IceTools.initialize(moduleConfig);
-									       	if(this.self.initialized == false) {
-									       		this.self.render();
-									       	}
-									       	
-									       	this.self.initialized = true;
+                                cb = {
+                                    moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
+                                        try {
 
-									       	CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(
-									       			function() {
-									       				var el = YDom.get("acn-ice-tools-container");
-									       				el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
-									       			});
+                                            CStudioAuthoring.IceTools.initialize(moduleConfig);
+                                            if (this.self.initialized == false) {
+                                                this.self.render();
+                                            }
 
-									       	CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(
-									       			function() {
-									       				var el = YDom.get("acn-ice-tools-container");
-									       				el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
-									       			});
+                                            this.self.initialized = true;
 
-											CStudioAuthoring.Module.requireModule(
-								                    "preview-tools-controller",
-								                    '/static-assets/components/cstudio-preview-tools/preview-tools.js',
-								                    0,
-								                    {
-								                    	moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                                            CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(
+                                                function () {
+                                                    var el = YDom.get("acn-ice-tools-container");
+                                                    el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                                                });
 
-													       	CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(
-													       			function() {
-													       				CStudioAuthoring.IceTools.turnEditOff();
-													       			});
-								                    	}
-								                    });
-							   		} 
-								   	catch (e) {
-									}
-								},
-								
-								self: this
-							};
-							
-							CStudioAuthoring.Module.requireModule(
-			                    "ice-tools-controller",
-			                    '/static-assets/components/cstudio-preview-tools/ice-tools.js',
-			                    0,
-			                    cb
-			                );
-						}
-					}					
+                                            CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(
+                                                function () {
+                                                    var el = YDom.get("acn-ice-tools-container");
+                                                    el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                                                });
+
+                                            CStudioAuthoring.Module.requireModule(
+                                                "preview-tools-controller",
+                                                '/static-assets/components/cstudio-preview-tools/preview-tools.js',
+                                                0,
+                                                {
+                                                    moduleLoaded: function (moduleName, moduleClass, moduleConfig) {
+
+                                                        CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(
+                                                            function () {
+                                                                CStudioAuthoring.IceTools.turnEditOff();
+                                                            });
+                                                    }
+                                                });
+                                        }
+                                        catch (e) {
+                                        }
+                                    },
+
+                                    self: this
+                                };
+
+                                CStudioAuthoring.Module.requireModule(
+                                    "ice-tools-controller",
+                                    '/static-assets/components/cstudio-preview-tools/ice-tools.js',
+                                    0,
+                                    cb
+                                );
+                            }
+                        }
+                    }
+                    CStudioAuthoring.Utils.isReviewer(callback);
 				},
 				
 				render: function() {
