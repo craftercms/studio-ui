@@ -870,26 +870,8 @@ treeNode.getHtml = function() {
 
 			openLatest: function(instance){
 
-                var latestStored = {};
+                var latestStored = instance.openArray;
                 var index = instance.indexPath;
-                try {
-                    // TODO: revise this way to get the current page in preview
-                    // CStudioAuthoringContext properties isPreview and previewCurrentPath are set on overlayhook.get.html.ftl
-                    if (instance.label == "Pages" && CStudioAuthoringContext.isPreview === true) {
-                        //latestStored = CStudioAuthoringContext.previewCurrentPath;
-                    }
-                } catch (ex) { }
-                if (!Object.keys(latestStored).length) {
-                    var latestStoredVar = storage.read( Self.getStoredPathKey(instance) );
-                    if(latestStoredVar){
-                        if(latestStoredVar.indexOf(',')!=-1 || latestStoredVar.indexOf('[')!=-1 || latestStoredVar.indexOf('{')!=-1){
-                            latestStored = JSON.parse(latestStoredVar);
-                        }else{
-                            latestStored = [];
-                            latestStored.push(latestStoredVar);
-                        }
-                    }
-                }
 
 				if(Object.keys(latestStored).length >= 1){
                     var pathFlag = true;
@@ -988,12 +970,6 @@ treeNode.getHtml = function() {
 						YDom.removeClass(label, "loading");
 						Self.firePathLoaded(instance);
 					} else {
-                        var pathLength;
-                        if (Object.prototype.toString.call(rootPath) === '[object Array]') {
-                            pathLength = rootPath.length ? rootPath.length : 1;
-                        } else {
-                            pathLength = 1;
-                        }
 
                         var ind=0;
                         var servPath;
