@@ -1,6 +1,6 @@
 
 CStudioAuthoring.Messages.registerBundle("siteDashboard", "fr",
-    { dashboardTitle: "{0} Dashboard",
+    { dashboardTitle: "Dashboard",
   
       dashletGoLiveQueueTitle: "FR-Items Waiting For Approval",
 //      dashletGoLiveCollapseAll: "FR-Collapse All",
