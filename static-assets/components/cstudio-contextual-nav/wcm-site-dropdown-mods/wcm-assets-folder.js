@@ -13,8 +13,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     ROOT_OPEN: "open",
     ROOT_CLOSED: "closed",
     ROOT_TOGGLE: "toggle",
-    Self: this,
     treePaths: [],
+    storage: CStudioAuthoring.Storage,
 
     /**
      * initialize module
@@ -25,7 +25,23 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
             var instance = new CStudioAuthoring.ContextualNav.WcmAssetsFolderInstance(config);
 
+            instance.openArray = {};
+
+            var latestStored = CStudioAuthoring.ContextualNav.WcmAssetsFolder.storage.read( this.getStoredPathKey(instance) );
+            if(latestStored){
+                if(latestStored.indexOf(',')!=-1 || latestStored.indexOf('[')!=-1 || latestStored.indexOf('{')!=-1){
+                    instance.openArray = JSON.parse(latestStored);
+                }else{
+                    instance.openArray = [];
+                    instance.openArray.push(latestStored);
+                }
+            }
+
             this.addContentTreeRootFolder(instance);
+
+            window.setTimeout(function() {
+                CStudioAuthoring.ContextualNav.WcmAssetsFolder.openLatest(instance);
+            }, 1000);
         }
     },
 
@@ -107,6 +123,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         });
     },
 
+    getStoredPathKey: function(instance) {
+        return (CStudioAuthoringContext.site + "-"+ instance.label.replace(" ", "").toLowerCase() + '-opened');
+    },
+
     /**
      * render function called on root level elements
      */
@@ -171,6 +191,18 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 nodeId.className = expandedNodeStyle + " acn-expanded-tree-node-label";
             }
 
+            CStudioAuthoring.ContextualNav.WcmAssetsFolder.expandTree(node);
+
+            if (Object.prototype.toString.call(instance.path) === '[object Array]') {
+                var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
+                for (var i = 0; i < treeChild.length; i++) {
+                    treeChild[i].setAttribute("num", instance.path[i].replace(/\//g, "").toLowerCase());
+                }
+            }else{
+                var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
+                treeChild[0].setAttribute("num", instance.path.replace(/\//g, "").toLowerCase());
+            }
+
             return true;
         });
 
@@ -182,6 +214,19 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             var collapsedNodeStyle = nodeId.className;
             collapsedNodeStyle = collapsedNodeStyle.replace(" acn-expanded-tree-node-label","");
             nodeId.className = collapsedNodeStyle + " acn-collapsed-tree-node-label";
+
+            CStudioAuthoring.ContextualNav.WcmAssetsFolder.collapseTree(node);
+
+            if (Object.prototype.toString.call(instance.path) === '[object Array]') {
+                var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
+                for (var i = 0; i < treeChild.length; i++) {
+                    treeChild[i].setAttribute("num", instance.path[i].replace(/\//g, "").toLowerCase());
+                }
+            }else{
+                var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
+                treeChild[0].setAttribute("num", instance.path.replace(/\//g, "").toLowerCase());
+            }
+
             return true;
         });
 
@@ -237,6 +282,16 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         }, tree, false);
 
         tree.draw();
+
+        if (Object.prototype.toString.call(instance.path) === '[object Array]') {
+            var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
+            for (var i = 0; i < treeChild.length; i++) {
+                treeChild[i].setAttribute("num", instance.path[i].replace(/\//g, "").toLowerCase());
+            }
+        }else{
+            var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
+            treeChild[0].setAttribute("num", instance.path.replace(/\//g, "").toLowerCase());
+        }
 
         if(nodeToOpen != null) {
             // opening to a specific path
@@ -353,10 +408,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 instance.rootFolderEl.style.display = 'block';
                 instance.state = WcmAssetsFolder.ROOT_OPEN;
                 this.initializeContentTree(instance.rootFolderEl, path, instance);
+                this.save(instance, WcmAssetsFolder.ROOT_OPENED, null, "root-folder");
             }
             else {
                 instance.rootFolderEl.style.display = 'none';
                 instance.state = WcmAssetsFolder.ROOT_CLOSED;
+                WcmAssetsFolder.storage.eliminate( Self.getStoredPathKey(instance) );
             }
         }
         else {
@@ -434,8 +491,271 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 while ((el = el.parentElement) && !el.hasAttribute("num"));
             }
             if(el) {
-                Self.save(node.instance, plainpath, null, el.getAttribute('num') ? el.getAttribute('num') : "root-folder", "expand");
+                CStudioAuthoring.ContextualNav.WcmAssetsFolder.save(node.instance, plainpath, null, el.getAttribute('num') ? el.getAttribute('num') : "root-folder", "expand");
             }
+        }
+    },
+
+    collapseTree: function(node, fnLoadComplete) {
+        var iniPath;
+        try{
+            iniPath = node.treeNodeTO.path;
+        }catch(er){
+            iniPath = node.path;
+        }
+        var path = iniPath.replace(/\//g, "").toLowerCase();
+        fileName = iniPath.split('/')[node.treeNodeTO.path.split('/').length - 1],
+            plainpath = iniPath.replace("/" + fileName, ""),
+            el = node.getEl(),
+            num = el.getAttribute('num');
+        plainpath = (plainpath == '/site') || path == num ? "root-folder" : plainpath;
+        if(!num){
+            while ((el = el.parentElement) && !el.hasAttribute("num"));
+        }
+        //Self.remove(node.instance, plainpath);
+        CStudioAuthoring.ContextualNav.WcmAssetsFolder.save(node.instance, plainpath, fileName, el.getAttribute('num') ? el.getAttribute('num') : "root-folder", "collapse");
+    },
+
+    save: function(instance, path, fileName, num, mode) {
+        var flag = true;
+        if(!instance.openArray[num]){
+            instance.openArray[num] = [];
+        }
+        for(var i=0; i < instance.openArray[num].length; i++){
+            if(instance.openArray[num][i] && path.indexOf(instance.openArray[num][i]) > -1){
+                instance.openArray[num].splice(i, 1);
+                i--;
+                continue;
+            }else{
+                var aux = path;
+                if(fileName){aux = aux + '/' + fileName;}
+                if(instance.openArray[num][i] && instance.openArray[num][i].indexOf(aux) > -1){
+                    instance.openArray[num].splice(i, 1);
+                    i--;
+                    continue;
+                }
+                if(instance.openArray[num].length > 0 && instance.openArray[num][i]){
+                    if(instance.openArray[num][i] && instance.openArray[num][i].indexOf(path) > -1)
+                        flag = false;
+                }
+            }
+        }
+        if(flag) {
+            if(path == "root-folder"){
+                instance.openArray[num] = [];
+            }
+            instance.openArray[num].push(path);
+        }
+        for(var i=0; i < instance.openArray[num].length; i++){
+
+            if (instance.openArray[num].length > 1 &&
+                (instance.openArray[num][i] && instance.openArray[num][i].indexOf("root-folder") > -1)) {
+                instance.openArray[num].splice(i, 1);
+            }
+
+            if (instance.openArray[num].length < 2 &&
+                (instance.openArray[num][i] && instance.openArray[num][i].indexOf("root-folder") > -1) &&
+                num != "root-folder" && mode != "expand") {
+                delete instance.openArray[num];
+                break;
+            }
+        }
+        //storage.write(Self.getStoredPathKey(instance, path), path, 360);
+        CStudioAuthoring.ContextualNav.WcmAssetsFolder.storage.write(Self.getStoredPathKey(instance), JSON.stringify(instance.openArray), 360);
+    },
+
+    openLatest: function(instance){
+
+        var latestStored = instance.openArray;
+        var index = instance.indexPath;
+
+        if(Object.keys(latestStored).length >= 1){
+            var pathFlag = true;
+            var treeEl = instance.rootFolderEl,
+                site = treeEl.rootFolderSite,
+                rootPath = treeEl.rootFolderPath,
+                tree = instance.tree = new YAHOO.widget.TreeView(treeEl),
+                paths = {},
+                counter = {},
+                recursiveCalls = {},
+                tmp = {},
+                k = {},
+                pathTrace = {},
+                rooth = {},
+                updatePathTrace = function(j, key){
+                    var appendedPath = (paths[key] && paths[key][j]) ? paths[key][j][counter[key][j]++] : "";
+                    appendedPath = (appendedPath !== "") ? ("/" + appendedPath) : "";
+                    return (pathTrace[key][j] = (pathTrace[key][j] + appendedPath));
+                },
+                nextPathTrace = function(j, key){
+                    var cont = j == 0 ? 0 : counter[key][j] + 1;
+                    return (pathTrace[key][j] + "/" + paths[key][j][counter[key][j]]); }
+            YSelector = YAHOO.util.Selector.query;
+            var label = instance.rootFolderEl.previousElementSibling;
+            YDom.addClass(label, "loading");
+            var doCall = function(n, j, key){
+                CStudioAuthoring.ContextualNav.WcmAssetsFolder.onLoadNodeDataOnClick(n, function(){
+                    n.loadComplete();
+                    if (counter[key][j] < recursiveCalls[key][j]) {
+                        updatePathTrace(j, key);
+                        var node = tree.getNodesByProperty("path", pathTrace[key][j]);
+                        if (node != null) {
+                            Self.getNumKey(node, key, function(currentNode) {
+                                var loadEl = YSelector(".ygtvtp", currentNode.getEl(), true);
+                                loadEl == null && (loadEl = YSelector(".ygtvlp", currentNode.getEl(), true));
+                                YDom.addClass(loadEl, "ygtvloading");
+                                doCall(currentNode, j, key);
+                            });
+
+                        } else {
+                            YDom.removeClass(label, "loading");
+                            YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
+                            // Add hover effect to nodes
+                            Self.nodeHoverEffects(this);
+                            Self.firePathLoaded(instance);
+                        }
+                    } else {
+                        k[key]++;
+                        if (latestStored[key].length > k[key]) {
+                            pathTrace[key][k[key]] = rooth[key];
+                            counter[key][k[key]] = 0;
+                            (function () {
+                                tmp[key][k[key]] = latestStored[key][k[key]].replace(rooth[key], "");
+                                paths[key][k[key]] = tmp[key][k[key]].length ? (tmp[key][k[key]].charAt(0) == "/" ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split("/") : null;
+                                recursiveCalls[key][k[key]] = tmp[key][k[key]].length ? paths[key][k[key]].length : 0;
+                            })();
+                            var node, loadEl;
+                            for (var i = 0; recursiveCalls[key][k[key]] > i; i++) {
+                                if (tree.getNodeByProperty("path", nextPathTrace(k[key], key)) != null) {
+                                    updatePathTrace(k[key], key);
+                                }
+                            }
+                            node = tree.getNodesByProperty("path", pathTrace[key][k[key]]);
+                            if (node == null) {
+                                node = tree.getNodesByProperty("path", updatePathTrace(k[key], key));
+                            }
+
+                            if (node != null) {
+                                Self.getNumKey(node, key, function(currentNode) {
+                                    var loadEl = YSelector(".ygtvtp", currentNode.getEl(), true);
+                                    loadEl == null && (loadEl = YSelector(".ygtvlp", currentNode.getEl(), true));
+                                    YDom.addClass(loadEl, "ygtvloading");
+                                    doCall(currentNode, k[key], key);
+                                });
+                            }
+                        } else {
+                            //YDom.removeClass(label, "loading");
+                            //Self.firePathLoaded(instance);
+                        }
+
+                        YDom.removeClass(label, "loading");
+                        YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
+                        // Add hover effect to nodes
+                        Self.nodeHoverEffects(this);
+                        Self.firePathLoaded(instance);
+                    }
+                });
+            }
+            tree.setDynamicLoad(this.onLoadNodeDataOnClick);
+            if (Self.pathOnlyHasCannedSearch(rootPath, instance)) {
+                var dummy = new Object();
+                dummy.path = rootPath;
+                var items = new Array();
+                items.push(dummy);
+                CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, null, instance, pathFlag);
+                YDom.removeClass(label, "loading");
+                Self.firePathLoaded(instance);
+            } else {
+                var ind=0;
+                var servPath;
+                if (Object.prototype.toString.call(rootPath) === '[object Array]') {
+                    servPath = rootPath[ind];
+                } else {
+                    servPath = rootPath;
+                }
+
+                (function (ind) {
+                    function treePrint(servPath){
+                        CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, "default", {
+                            success: function (treeData) {
+                                var key = treeData.item.path.replace(/\//g, "").toLowerCase();
+                                paths[key] = [],
+                                    counter[key] = [],
+                                    recursiveCalls[key] = [],
+                                    tmp[key] = {}
+                                k[key] = 0,
+                                    pathTrace[key] = [],
+                                    rooth[key] = treeData.item.path;
+
+                                //if(servPath == "/site/website")
+                                window.treeData = treeData;
+
+                                var items = treeData.item.children;
+                                if (instance.showRootItem) {
+                                    items = new Array(treeData.item);
+                                }
+                                instance.state = Self.ROOT_OPEN;
+                                CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, null, instance, pathFlag);
+                                pathFlag = false;
+
+                                if (latestStored[key] && latestStored[key][[key]] != Self.ROOT_OPENED) {
+                                    pathTrace[key][k[key]] = treeData.item.path;
+                                    counter[key][k[key]] = 0;
+                                    (function () {
+                                        tmp[key][k[key]] = latestStored[key][k[key]].replace(treeData.item.path, "");
+                                        paths[key][k[key]] = tmp[key][k[key]].length ? (tmp[key][k[key]].charAt(0) == "/" ? tmp[key][k[key]].substr(1) : tmp[key][k[key]]).split("/") : null;
+                                        recursiveCalls[key][k[key]] = tmp[key][k[key]].length ? paths[key][k[key]].length : 0;
+                                    })();
+                                    var nodes, node, loadEl;
+                                    nodes = tree.getNodesByProperty("path", treeData.item.path);
+                                    if (nodes != null) {
+                                        Self.getNumKey(nodes, key, function(currentNode) {
+                                            node = currentNode;
+                                        });
+                                    }
+                                    if (node == null) {
+                                        node = tree.getNodeByProperty("path", updatePathTrace(k[key], key));
+                                        if (node != null) {
+                                            loadEl = YAHOO.util.Selector.query(".ygtvtp", node.getEl(), true);
+                                        }
+                                    } else {
+                                        loadEl = YAHOO.util.Selector.query(".ygtvlp", node.getEl(), true);
+                                    }
+                                    if (node == null) {
+                                        YDom.removeClass(label, "loading");
+                                        Self.firePathLoaded(instance);
+                                    } else {
+                                        YDom.addClass(loadEl, "ygtvloading");
+                                        //YDom.setAttribute ( node , "index" ,instance.pathNumber  );
+                                        doCall(node, k[key], key);
+                                    }
+                                } else {
+                                    YDom.removeClass(label, "loading");
+                                    Self.firePathLoaded(instance);
+                                }
+                                index = instance.indexPath++;
+
+                                ind++;
+                                if (Object.prototype.toString.call(rootPath) === '[object Array]') {
+                                    servPath = rootPath[ind];
+                                } else {
+                                    servPath = rootPath;
+                                }
+                                if(servPath && Object.prototype.toString.call(rootPath) === '[object Array]'){
+                                    treePrint(servPath);
+                                }
+                            },
+                            failure: function () {
+                            }
+                        })
+
+                    }
+                    treePrint(servPath);
+                })(ind);
+
+            }
+        } else {
+            Self.firePathLoaded(instance);
         }
     },
 
@@ -1124,220 +1444,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             }
         }
     },
-
-    /**
-     * methos that fires when new items added to tree.
-     */
-    refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, edit) {
-        var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
-        var tree = tree ? tree : Self.myTree,
-            isMytree = false,
-            currentPath = treeNode.data ? treeNode.data.path : treeNode.path,
-            currentUri = treeNode.data ? treeNode.data.uri : treeNode.uri;
-        if(tree &&  Self.myTree) {
-            for (var i = 0; i < WcmAssetsFolder.treePaths.length; i++) {
-                if (WcmAssetsFolder.treePaths[i] == Self.myTree.id) {
-                    isMytree = true;
-                }
-            }
-            if (!isMytree) {
-                tree = Self.myTree;
-            }
-        }
-        if(tree) {
-            var copiedItemNode = Self.copiedItem;
-            var node = [];
-            node = tree.getNodesByProperty("path", currentPath) ? tree.getNodesByProperty("path", currentPath) : null;
-            if (copiedItemNode != null && (currentPath == copiedItemNode.data.path) && treeNode.parent) {
-                node = tree.getNodesByProperty("path", treeNode.parent.data.path);
-                Self.copiedItem = null;
-            }
-
-            if (node) {
-                for(var i=0; i<node.length; i++) {
-                    node[i] = parent ? node[i].parent : node[i];
-                    if (node[i].isLeaf) node[i].isLeaf = false;
-                }
-            }
-            else {
-                node = parent ? treeNode.parent : treeNode;
-            }
-
-            if(!changeStructure){
-
-                if(instance){
-                    //Self.initializeContentTree(instance.rootFolderEl, null, instance);
-                    var nodeToChange;
-                    if(parent){
-                        nodeToChange = tree.getNodesByProperty("path", currentPath);
-                    }else{
-                        nodeToChange = node;
-                    }
-
-                    if(nodeToChange){
-                        for(var i=0; i<nodeToChange.length;i++) {
-                            (function (nodeToChange,i) {
-                                lookupSiteContent(nodeToChange[i], currentUri);
-                                nodeOpen = true;
-                            })(nodeToChange,i);
-                        }
-                    }
-
-                    function lookupSiteContent(curNode, currentUri, paramCont) {
-                        if (curNode && curNode.label) {
-                            CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, curNode.data.uri, 1, "default", {
-                                success: function (treeData) {
-                                    if (currentUri == treeData.item.uri) {
-                                        var style = "",
-                                            cont = paramCont ? paramCont : 0;
-                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).innerHTML =
-                                            (treeData.item.internalName != "" ? treeData.item.internalName : treeData.item.name) : null;
-                                        style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
-                                        if (treeData.item.isPreviewable) {
-                                            style = style + " preview";
-                                        } else {
-                                            style = style + " no-preview";
-                                        }
-                                        if (treeData.item.contentType == "asset") {
-                                            style = style + " component";
-                                        }
-                                        YDom.get(curNode.labelElId) ? YDom.get(curNode.labelElId).className = style : null;
-                                        if (style.indexOf("deleted") != -1 || treeData.item.isDeleted) {
-                                            var tempSplit = curNode.labelElId.split("labelel");
-                                            var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
-                                            parentNode.style.display = 'none';
-                                            tree.removeNode(curNode);
-                                            if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                                                CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
-                                                    CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
-                                            }
-                                            document.dispatchEvent(eventCM);
-                                            Self.refreshAllDashboards();
-                                        }
-                                        else {
-                                            if (style.indexOf("in-flight") != -1) {
-                                                setTimeout(function () {
-                                                    lookupSiteContent(curNode, currentUri);
-                                                }, 300);
-                                            } else {
-                                                cont++;
-                                                if ((curNode.labelStyle.indexOf("folder") != -1 && cont < 25) || (curNode.labelStyle.indexOf("folder") == -1 && cont < 2)) {
-                                                    setTimeout(function () {
-                                                        lookupSiteContent(curNode, currentUri, cont);
-                                                        if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                                                            CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
-                                                                CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
-                                                        }
-                                                        if((curNode.labelStyle.indexOf("folder") == -1) && (edit != "edit")) {
-                                                            document.dispatchEvent(eventCM);
-                                                            Self.refreshAllDashboards();
-                                                        }
-                                                    }, 300);
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                failure: function () {
-                                }
-                            })
-                        }
-                    }
-
-                }
-            }else {
-                if(node) {
-                    nodeOpen = true;
-                    for(var i=0; i<node.length; i++) {
-                        var curNode = node[i];
-                        if (curNode.nodeType == "CONTENT") {
-                            var itemStore = instance ? storage.read(Self.getStoredPathKey(instance)) : null;
-                            //console.log(itemStore);
-                            if(YDom.get(curNode.labelElId)) {
-                                tree.removeChildren(curNode);
-                                var loadEl = YAHOO.util.Selector.query(".ygtvtp", curNode.getEl(), true);
-                                loadEl == null && (loadEl = YAHOO.util.Selector.query(".ygtvlp", curNode.getEl(), true));
-                                YDom.addClass(loadEl, "ygtvloading");
-                                curNode.renderChildren();
-                                curNode.refresh();
-                                //console.log(itemStore);
-                                if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
-                                self.expandTree(curNode);
-                                Self.refreshAllDashboards();
-                            }
-
-                        } else {
-                            var root = false;
-                            if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-                                var path;
-                                try {
-                                    path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.treeNodeTO.path : treeNode.treeNodeTO.path;
-                                } catch (er) {
-                                    path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.path ? treeNode.path : null : treeNode.path ? treeNode.path : null;
-                                }
-                                for (var i = 0; i <= instance.path.length; i++) {
-                                    if (path == instance.path[i]) {
-                                        root = true;
-                                    }
-                                }
-                            }
-                            if (root && instance) {
-                                Self.initializeContentTree(instance.rootFolderEl, null, instance);
-                                Self.toggleFolderState(instance, "open");
-                            }
-                            Self.refreshAllDashboards();
-                        }
-                        if(i >= (node.length - 1)){
-                            eventYS.parent = null;
-                            eventNS.parent = null;
-                        }
-                    }
-                }
-                if (root && instance) {
-                    var __self = this;
-                    setTimeout(function () {
-                        __self.openLatest(instance);
-                    }, 100);
-                }
-            }
-
-            var treeInner = YDom.get('acn-dropdown-menu-inner');
-            var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
-
-            for (var i = 0; i < previousCutEl.length; i++) {
-
-                if (previousCutEl[i].style.color == Self.CUT_STYLE_RGB || previousCutEl[i].style.color == Self.CUT_STYLE) {
-
-                    if (status) {
-                        var tempSplit = previousCutEl[i].id.split("labelel");
-                        var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
-                        parentNode.style.display = 'none';
-                        if (Self.cutItem != null) {
-                            var parNode = tree.getNodeByProperty("path", Self.cutItem.parent.data.path);
-                            //if parent have single child and we did cut and paste the child,
-                            //we should refresh the parent node to remove expand collapse icon
-                            if (parNode && parNode.children && parNode.children.length == 1) {
-                                tree.removeChildren(parNode);
-                                var parLoadEl = YSelector(".ygtvtp", parNode.getEl(), true);
-                                parLoadEl == null && (parLoadEl = YSelector(".ygtvlp", parNode.getEl(), true));
-                                YDom.addClass(parLoadEl, "ygtvloading");
-                                parNode.renderChildren();
-                                parNode.refresh();
-                            } else if (parNode) {
-                                //remove the only item from parent node.
-                                tree.removeNode(Self.cutItem);
-                            }
-                            Self.cutItem = null;
-                        }
-                    } else {
-                        previousCutEl[i].removeAttribute("style");
-                    }
-                }
-            }
-
-        }
-    }
-
 };
 
 /**
