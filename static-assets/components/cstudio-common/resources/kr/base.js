@@ -1,5 +1,5 @@
 CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
-    dashboardTitle: "{0} 대시 보드",
+    dashboardTitle: "대시 보드",
 
     dashboardCollapseAll: "모든 축소",
     dashboardExpandAll: "모두 확장",
