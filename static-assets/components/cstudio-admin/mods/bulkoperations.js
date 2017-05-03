@@ -31,7 +31,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
              var path = document.getElementById("bulk-golive-path").value;
              if (path) {
                  var serviceUri = "/api/1/services/api/1/deployment/bulk-golive.json?site=" + CStudioAuthoringContext.site
-                 	 + "&path=" + path + "&environment=" + environment;
+                 	 + "&path=" + path + "&environment=" + escape(environment);
                  var goLiveOpMessage = document.getElementById("bulk-golive-message");
                  var cb = {
                      success:function() {
