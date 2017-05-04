@@ -7046,7 +7046,8 @@ address {
   right: 0;
   left: 0;
   bottom: 0;
-  position: absolute; }
+  position: absolute;
+  padding-top: 34px; }
   .site-dashboard div.container {
     width: 92%; }
   .site-dashboard .panel .panel-heading:before, .site-dashboard .panel .panel-heading:after {
@@ -15262,3 +15263,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */
