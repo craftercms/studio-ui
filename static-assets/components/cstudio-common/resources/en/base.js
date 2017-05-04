@@ -1,5 +1,5 @@
 CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
-    dashboardTitle: "{0} Dashboard",
+    dashboardTitle: "Dashboard",
 
     dashboardCollapseAll: "Collapse All",
     dashboardExpandAll: "Expand All",
