@@ -76,7 +76,6 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	getNavBarContent: function() {
 		var callback = {
 			success: function(results) {
-				console.log(results);
 				document.getElementById('nav-user-email').innerHTML = results.email;
 				document.getElementById('account-dropdown').childNodes[0].nodeValue = results.username;
 			},
