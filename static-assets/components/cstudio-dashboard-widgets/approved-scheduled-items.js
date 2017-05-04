@@ -134,7 +134,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
 
         } else {
 
-            var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false),
+            var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
                 displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80),
                 uri = item.uri;
 

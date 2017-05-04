@@ -164,7 +164,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
 
             } else {
 
-                var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false),
+                var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
                     displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, (50 - removeCharCount)),
                     uri = item.uri,
                     fmt = CStudioAuthoring.Utils.formatDateFromString;
