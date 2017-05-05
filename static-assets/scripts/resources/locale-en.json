@@ -18,7 +18,9 @@
       "INVALID_PASSWORD": "Password does not meet requirements.",
       "PASSWORDS_MUST_MATCH": "Passwords must match.",
       "CHANGE_PASSWORD": "Change Password",
-      "RECOVER_ERROR": "Please check with your sysadmin to make sure an SMTP server is configured."
+      "RECOVER_ERROR": "Please check with your sysadmin to make sure an SMTP server is configured.",
+      "USER_PASSWORD_INVALID": "Invalid username or password",
+      "LOGIN_ERROR": "A system error has occurred. Please wait a few minutes or contact an administrator"
     },
     "sites": {
       "SITES_LABEL": "Sites",

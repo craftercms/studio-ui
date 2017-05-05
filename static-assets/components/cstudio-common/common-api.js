@@ -2694,13 +2694,13 @@ var nodeOpen = false;
             getUserActivitiesServiceUrl: "/api/1/services/api/1/activity/get-user-activities.json",
 
             // Security Services
-            loginServiceUrl: "/api/1/services/api/1/user/login.json",
+            loginServiceUrl: "/api/1/services/api/1/security/login.json",
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
             getUserInfoServiceURL: "/api/1/services/api/1/user/get.json",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
-            logoutUrl: "/api/1/services/api/1/user/logout.json",
+            logoutUrl: "/api/1/services/api/1/security/logout.json",
 
             // Configuration Services
             getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
