@@ -1,5 +1,5 @@
 CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
-    dashboardTitle: "Panel de Control de {0}",
+    dashboardTitle: "Panel de Control",
 
     dashboardCollapseAll: "Desplegar todo",
     dashboardExpandAll: "Expandir todo",
@@ -656,8 +656,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabSelectConf: "Seleccione la Configuracioón",
     confTabConfigurations: "Configuraciones",
     confTabConfDesc: "Define esta lista de configuraciones",
-    confTabAdminTools: "Herramientas de Administración",
-    confTabAdminToolsDesc: "Define la lista de herramientas de administración disponibles",
     confTabAnalyticsDashboardConf: "Configuración de Panel de Control de Análisis",
     confTabAnalyticsDashboardConfDesc: "Define los tipos de informes que se muestran en el Panel de Control de Análisis",
     confTabAnalyticsPreviewConf: "Vista previa de Configuración de Análisis",
@@ -688,8 +686,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabPermissionsMappingsDesc: "Define un mapa de permisos y caminos",
     confTabRoleMappings: "Asignaciones de Roles",
     confTabRoleMappingsDesc: "Define una lista de funciones disponibles en el sitio",
-    confTabSiteConf: "Configuración del Sitio",
-    confTabSiteConfDesc: "Define la configuración general del sitio",
+    confTabSiteConfiguration: "Configuración del Sitio",
+    confTabSiteConfigurationDesc: "Define la configuración general del sitio",
+    confTabSiteConf: "Config del Sitio",
+    confTabSiteConfDesc: "Define la lista de herramientas de administración disponibles",
     confTabWorkflowConf: "Configuración del Flujo de Trabajo",
     confTabWorkflowConfDesc: "Define los flujos de trabajo disponibles en el sistema",
     confCacheCleared : "Se ha eliminado el caché de configuración.",

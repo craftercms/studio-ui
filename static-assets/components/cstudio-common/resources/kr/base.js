@@ -1,5 +1,5 @@
 CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
-    dashboardTitle: "{0} 대시 보드",
+    dashboardTitle: "대시 보드",
 
     dashboardCollapseAll: "모든 축소",
     dashboardExpandAll: "모두 확장",
@@ -629,8 +629,6 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabSelectConf: "구성을 선택합니다",
     confTabConfigurations: "구성",
     confTabConfDesc: "구성의 목록을 정의합니다",
-    confTabAdminTools: "관리 도구",
-    confTabAdminToolsDesc: "관리 툴의리스트가 정의 가능한",
     confTabAnalyticsDashboardConf: "웹 로그 분석 대시 보드 구성",
     confTabAnalyticsDashboardConfDesc: "보고서의 유형 분석 대시 보드에 표시를 정의",
     confTabAnalyticsPreviewConf: "웹 로그 분석 미리 구성",
@@ -661,8 +659,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabPermissionsMappingsDesc: "권한 및 경로 맵을 정의",
     confTabRoleMappings: "역할 매핑",
     confTabRoleMappingsDesc: "사이트에서 사용할 수있는 역할의 목록을 정의합니다",
+    confTabSiteConfiguration: "사이트 구성",
+    confTabSiteConfigurationDesc: "일반 사이트 구성을 정의",
     confTabSiteConf: "사이트 구성",
-    confTabSiteConfDesc: "일반 사이트 구성을 정의",
+    confTabSiteConfDesc: "관리 툴의리스트가 정의 가능한",
     confTabWorkflowConf: "워크 플로우 구성",
     confTabWorkflowConfDesc: "시스템에서 사용할 수있는 워크 플로우를 정의",
     confCacheCleared : "구성 캐시가 지워졌습니다.",

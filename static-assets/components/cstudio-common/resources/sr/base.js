@@ -1,6 +1,6 @@
 
 CStudioAuthoring.Messages.registerBundle("siteDashboard", "sr",
-    { dashboardTitle: "{0} Komandna Tabla",
+    { dashboardTitle: "sKomandna Tabla",
   
       dashletFilterPages: "Strane",
       dashletFilterComponents: "Komponente",
