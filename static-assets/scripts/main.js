@@ -256,32 +256,49 @@
                 return !!user;
             };
 
-            this.login = function (data) {
-                return $http({
-                    data: data,
-                    method: 'POST',
-                    url: api('login'),
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    transformRequest: function (obj) {
-                        var str = [];
-                        for (var p in obj) {
-                            str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-                        }
-                        return str.join('&');
-                    }
-                }).then(function (data) {
-                    if (data.data.type === 'success') {
+            // this.login = function (data) {
+            //     return $http({
+            //         data: data,
+            //         method: 'POST',
+            //         url: api('login'),
+            //         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            //         transformRequest: function (obj) {
+            //             var str = [];
+            //             for (var p in obj) {
+            //                 str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+            //             }
+            //             return str.join('&');
+            //         }
+            //     }).then(function (data) {
+            //         if (data.data.type === 'success') {
+            //
+            //             user = data.data.user;
+            //             // $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
+            //
+            //         }
+            //         return data.data;
+            //     });
+            // };
 
-                        user = data.data.user;
+            this.login = function(data) {
+                return $http.post(security('login'), data).then(function (data) {
+                    // if (data.data.type === 'success') {
+                    //
+                    //     user = data.data.user;
+                    //     $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
+                    //
+                    // }
+
+                    if(data.status == 200){
+                        user = data.data;
                         $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
-
                     }
                     return data.data;
                 });
             };
 
             this.logout = function () {
-                $http.post(api('logout'), null);
+                $http.post(security('logout'), null);
                 user = null;
             };
 
@@ -328,6 +345,11 @@
                     api = "server/";
                 }
 
+                return Constants.SERVICE + api + action + '.json';
+            }
+
+            function security(action){
+                var api = "security/";
                 return Constants.SERVICE + api + action + '.json';
             }
 
@@ -927,7 +949,7 @@
             function login() {
 
                 authService.login(credentials)
-                    .then(function (data) {
+                    .then(function success(data) {
                         if (data.type === 'failure') {
                             $scope.error = data;
                         }  else if (data.error) {
@@ -936,6 +958,15 @@
                             $state.go('home.sites');
                             sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
                         }
+                    }, function error(response){
+                        $scope.error = {};
+
+                        if(response.status == 401){
+                            $scope.error.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
+                        }else{
+                            $scope.error.message = $translate.instant('dashboard.login.LOGIN_ERROR');
+                        }
+
                     });
 
             }
