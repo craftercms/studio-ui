@@ -113,7 +113,7 @@ WcmDashboardWidgetCommon.convertDate = function (dateString) {
         var dtArray = dateArray[0].split("-");
         var tmArray = dateArray[1].split(":");
         if (dtArray && dtArray.length == 3 &&
-            tmArray && tmArray.length == 3) {
+            tmArray && tmArray.length >= 3) {
             dateObj = new Date(parseInt(dtArray[0], 10),
                 parseInt(dtArray[1], 10),
                 parseInt(dtArray[2], 10),
