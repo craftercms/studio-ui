@@ -29,6 +29,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
 		this.callingWindow = callingWindow;
 		this.callback = callback;
 		this.dialog.show();
+        YDom.get("folderNameId").focus();
 	},
 	
 	/**
@@ -58,7 +59,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
                            '<div class="contentTypeOuter">'+
                            		'<div style="margin-bottom:10px;font-style:italic;">' + CMgs.format(formsLangBundle, 'newFolderBody') + ' </div> ' +
 						   		'<div>' +
-						   			'<div><table><tr><td><div style="margin-right:10px;">' + CMgs.format(formsLangBundle, 'newFolderLabel') + ' </div></td><td><input type="text" name="folderName" id="folderNameId" style="width:210px" /></td></tr></table></div>' +
+						   			'<div><table><tr><td><div style="margin-right:10px;">' + CMgs.format(formsLangBundle, 'newFolderLabel') + ' </div></td><td><input type="text" name="folderName" id="folderNameId" style="width:210px" autofocus /></td></tr></table></div>' +
 						   		'</div>' +
 						   '</div>' +
 						   '<div class="contentTypePopupBtn"> ' +
@@ -100,6 +101,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
 
 		YAHOO.util.Event.addListener("createButton", "click", this.createPopupSubmit, eventParams);
 		YAHOO.util.Event.addListener("createCancelButton", "click", this.createPopupCancel);
+
 		YAHOO.util.Event.on(inputEl, 'keyup', function (e) {
             if (e.which !== 13) {
                 me.processKey(e, inputEl);
