@@ -36,6 +36,7 @@
             menuOn: false,
             treePathOpenedEvt: new YAHOO.util.CustomEvent("wcmRootFolderTreePathLoaded", Self),
             labelsMenu: [],
+            customIcons: {},
             /**
              * initialize module
              */
@@ -56,6 +57,23 @@
                     }
                     instance.pathNumber = 0;
 
+                    var key = config.params.label;
+                    key = key.replace(/\s/g,'');
+                    Self.customIcons[key] = {};
+
+                    if(config.params['child-icon-closed']) {
+                        Self.customIcons[key].childIcons  = {
+                            open: config.params['child-icon-open'] ? config.params['child-icon-open'] : config.params['child-icon-closed'],
+                            closed: config.params['child-icon-closed']
+                        };
+                    }
+
+                    if(config.params['module-icon-closed']) {
+                        Self.customIcons[key].moduleIcons  = {
+                            open: config.params['module-icon-open'] ? config.params['module-icon-open'] : config.params['module-icon-closed'],
+                            closed: config.params['module-icon-closed']
+                        };
+                    }
 
                     if(config.params.mods) {
                         if ((typeof(config.params.mods) == "object")
@@ -189,6 +207,15 @@
                 parentFolderEl.appendChild(parentFolderLinkEl);
                 parentFolderEl.appendChild(treeEl);
 
+                //add custom icon class
+                var key = instance.label;
+                key = key.replace(/\s/g,'');
+
+                if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
+                    YDom.addClass(parentFolderLinkEl, "custom-icon");
+                    YDom.addClass(parentFolderLinkEl, Self.customIcons[key].moduleIcons.closed);
+                }
+
                 YDom.addClass(parentFolderLinkEl, "acn-parent-folder");
                 parentFolderLinkEl.style.cursor = "pointer";
                 YDom.addClass(parentFolderEl, "acn-parent " + instance.label.toLowerCase() + "-tree");
@@ -251,7 +278,7 @@
                             CStudioAuthoring.Service.lookupSiteContent(site, servPath, 1, "default", {
                                 openToPath: pathToOpen,
                                 success: function (treeData) {
-                                    
+
                                     YDom.removeClass(label, "loading");
                                     //if(servPath == "/site/website")
                                     window.treeData = treeData;
@@ -764,16 +791,16 @@
                 treeNode.labelStyle = "acn-canned-search yui-resize-label";
 				treeNode._yuiGetHtml = treeNode.getHtml();
 
-treeNode.getHtml = function() {
-	var markup = treeNode._yuiGetHtml;
-	markup = markup.replace(/\&gt;/g, ">");
-	markup = markup.replace(/\&lt;/g, "<");
-	markup = markup.replace(/\&amp;/g, "&");
-	markup = markup.replace(/\&#x27;/g, "'");
-	markup = markup.replace(/\&#x2F;/g, "/");
+                treeNode.getHtml = function() {
+                    var markup = treeNode._yuiGetHtml;
+                    markup = markup.replace(/\&gt;/g, ">");
+                    markup = markup.replace(/\&lt;/g, "<");
+                    markup = markup.replace(/\&amp;/g, "&");
+                    markup = markup.replace(/\&#x27;/g, "'");
+                    markup = markup.replace(/\&#x2F;/g, "/");
 
-	return markup;
-};
+                    return markup;
+                };
                 return treeNode;
             },
             /**
@@ -785,6 +812,14 @@ treeNode.getHtml = function() {
 
                     if (!treeNodeTO.style.match(/\bfolder\b/)) {
                         treeNodeTO.linkToPreview = true;
+                    }else{
+                        var key = instance.label;
+                        key = key.replace(/\s/g,'');
+
+                        if(this.customIcons[key] && this.customIcons[key].childIcons){
+                            treeNodeTO.style += ' custom-icon';
+                            treeNodeTO.style += ' ' + this.customIcons[key].childIcons.closed;
+                        }
                     }
 
                     var treeNode = new YAHOO.widget.TextNode(treeNodeTO, root, false);
@@ -829,10 +864,38 @@ treeNode.getHtml = function() {
 							Self.initializeContentTree(instance.rootFolderEl, path, instance);
                             Self.save(instance, Self.ROOT_OPENED, null, "root-folder");
 						}
+
+                        //add custom icon class
+                        var key = instance.label;
+                        key = key.replace(/\s/g,'');
+
+                        if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
+                            var openClass = Self.customIcons[key].moduleIcons.open;
+                            var closedClass = Self.customIcons[key].moduleIcons.closed;
+                            var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+
+                            $el.removeClass(closedClass);
+                            $el.addClass(openClass);
+
+                        }
                     } else {
                         instance.rootFolderEl.style.display = 'none';
                         instance.state = WcmRootFolder.ROOT_CLOSED;
                         storage.eliminate( Self.getStoredPathKey(instance) );
+
+                        //add custom icon class
+                        var key = instance.label;
+                        key = key.replace(/\s/g,'');
+
+                        if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
+                            var openClass = Self.customIcons[key].moduleIcons.open;
+                            var closedClass = Self.customIcons[key].moduleIcons.closed;
+                            var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+
+                            $el.removeClass(openClass);
+                            $el.addClass(closedClass);
+
+                        }
                     }
                 } else {
 					// toggle
@@ -886,10 +949,10 @@ treeNode.getHtml = function() {
                         k = {},
                         pathTrace = {},
                         rooth = {},
-						updatePathTrace = function(j, key){ 
+						updatePathTrace = function(j, key){
                             var appendedPath = (paths[key] && paths[key][j]) ? paths[key][j][counter[key][j]++] : "";
                             appendedPath = (appendedPath !== "") ? ("/" + appendedPath) : "";
-                            return (pathTrace[key][j] = (pathTrace[key][j] + appendedPath)); 
+                            return (pathTrace[key][j] = (pathTrace[key][j] + appendedPath));
                         },
                         nextPathTrace = function(j, key){
                             var cont = j == 0 ? 0 : counter[key][j] + 1;
@@ -900,6 +963,20 @@ treeNode.getHtml = function() {
 					var doCall = function(n, j, key){
 						Self.onLoadNodeDataOnClick(n, function(){
 							n.loadComplete();
+
+                            if(n.expanded && n.data.style.match(/\bfolder\b/)){
+                                var iconsKey = n.instance.label;
+                                iconsKey = iconsKey.replace(/\s/g,'');
+
+                                if(Self.customIcons[iconsKey] && Self.customIcons[iconsKey].childIcons){
+                                    var openClass = Self.customIcons[iconsKey].childIcons.open;
+                                    var closedClass = Self.customIcons[iconsKey].childIcons.closed;
+
+                                    $('#' + n.labelElId).removeClass(closedClass);
+                                    $('#' + n.labelElId).addClass(openClass);
+                                }
+                            }
+
 							if (counter[key][j] < recursiveCalls[key][j]) {
 								updatePathTrace(j, key);
 								var node = tree.getNodesByProperty("path", pathTrace[key][j]);
@@ -998,6 +1075,21 @@ treeNode.getHtml = function() {
                                         var items = treeData.item.children;
                                         if (instance.showRootItem) {
                                             items = new Array(treeData.item);
+
+                                            //add custom icon class
+                                            var key = instance.label;
+                                            key = key.replace(/\s/g,'');
+
+                                            if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
+                                                var openClass = Self.customIcons[key].moduleIcons.open;
+                                                var closedClass = Self.customIcons[key].moduleIcons.closed;
+                                                var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+
+                                                $el.removeClass(closedClass);
+                                                $el.addClass(openClass);
+
+                                            }
+
                                         }
                                         instance.state = Self.ROOT_OPEN;
                                         Self.drawTree(items, tree, null, instance, pathFlag);
@@ -1207,6 +1299,18 @@ treeNode.getHtml = function() {
             if(el) {
                 Self.save(node.instance, plainpath, null, el.getAttribute('num') ? el.getAttribute('num') : "root-folder", "expand");
             }
+
+            var id = node.labelElId,
+                key = node.instance.label;
+            key = key.replace(/\s/g,'');
+
+            if(Self.customIcons[key] && Self.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
+                var openClass = Self.customIcons[key].childIcons.open;
+                var closedClass = Self.customIcons[key].childIcons.closed;
+
+                $('#' + id).removeClass(closedClass);
+                $('#' + id).addClass(openClass);
+            }
         }
     },
 
@@ -1228,6 +1332,18 @@ treeNode.getHtml = function() {
         }
         //Self.remove(node.instance, plainpath);
         Self.save(node.instance, plainpath, fileName, el.getAttribute('num') ? el.getAttribute('num') : "root-folder", "collapse");
+
+        var id = node.labelElId,
+            key = node.instance.label;
+        key = key.replace(/\s/g,'');
+
+        if(Self.customIcons[key] && Self.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
+            var openClass = Self.customIcons[key].childIcons.open;
+            var closedClass = Self.customIcons[key].childIcons.closed;
+
+            $('#' + id).removeClass(openClass);
+            $('#' + id).addClass(closedClass);
+        }
     },
 
     save: function(instance, path, fileName, num, mode) {

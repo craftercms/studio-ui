@@ -3167,8 +3167,13 @@ var nodeOpen = false;
             login: function(user, pass, callback) {
 
                 var serviceUri = this.loginServiceUrl;
-                serviceUri += "?username="+user;
-                serviceUri += "&password="+pass;
+                // serviceUri += "?username="+user;
+                // serviceUri += "&password="+pass;
+
+                var data = {
+                    username: user,
+                    password: pass
+                };
 
                 var serviceCallback = {
                     success: function(response) {
@@ -3182,7 +3187,7 @@ var nodeOpen = false;
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback);
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, JSON.stringify(data));
             },
 
             /**
