@@ -34,16 +34,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                  	 + "&path=" + path + "&environment=" + escape(environment);
                  var goLiveOpMessage = document.getElementById("bulk-golive-message");
                  var cb = {
-                     success:function() {
-                         goLiveOpMessage.innerHTML = "Bulk Publish successful";
-                     },
-                     failure: function() {
-                         goLiveOpMessage.innerHTML = "Bulk Publish failed";
-                     }
+                     success:function() {},
+                     failure: function(err) {}
                  }
 
                  YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
-                 goLiveOpMessage.innerHTML = "Executing bulk Publish ...";
+                 goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
              }
          };
 
