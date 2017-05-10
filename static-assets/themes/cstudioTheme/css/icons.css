@@ -308,3 +308,21 @@
     height: 18px;
     background-repeat: no-repeat;
 }
+
+.status-icon.folder.custom-icon, .acn-parent-folder.custom-icon {
+    background: none !important;
+    position: relative;
+}
+
+.status-icon.folder.custom-icon:before, .acn-parent-folder.custom-icon:before {
+    font: normal normal normal 15px/1 FontAwesome;
+    /* font-size: inherit; */
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #333333;
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 1px;
+}
