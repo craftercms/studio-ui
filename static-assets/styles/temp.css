@@ -3031,6 +3031,9 @@ div#acn-active-content {
   margin: 0;
   padding: 0; }
 
+#acn-dropdown-menu-wrapper.slideOutLeft {
+  display: none !important; }
+
 .yuimenu li {
   margin: 0 auto 5px; }
 
@@ -15263,5 +15266,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */
