@@ -517,6 +517,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     flash: "플래시",
     internalName: "내부 이름",
     basicContentTypeProp: "기본 콘텐츠 형식 등록",
+    publishStarted:"게시 프로세스가 시작되었습니다",
 
     /*Datasources */
     childContent: "자식 내용",

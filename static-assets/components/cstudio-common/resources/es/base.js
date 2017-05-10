@@ -543,6 +543,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     flash: "Flash",
     internalName: "Nombre Interno",
     basicContentTypeProp: "Propiedades Baásicas del Tipo de Contenido",
+    publishStarted:"Se ha iniciado el proceso de publicación.",
 
     /*Datasources */
     childContent: "Contenido Hijos",
