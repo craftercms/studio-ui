@@ -141,7 +141,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
         var serviceCallback = {
             success: function(jsonResponse) {
                 var response = eval("(" + jsonResponse + ")");
-                if(response.type == "success"){
+                if(response.username){
                     args.self.loginPopupCancel();
                     args.self.cb.success();
                 }else{
