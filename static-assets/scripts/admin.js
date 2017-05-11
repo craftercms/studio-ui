@@ -269,6 +269,8 @@
                 $scope.debounceDelay = 500;
 
                 $scope.showModal = function(template, size, verticalCentered){
+                    $scope.usersError = null;
+
                     var modalInstance = $modal.open({
                         templateUrl: template,
                         windowClass: verticalCentered ? 'centered-dialog' : '',
@@ -358,13 +360,12 @@
                 $scope.dialogMode = $translate.instant('common.CREATE');
             };
             users.createUser = function(user) {
-                $scope.hideModal();
-
                 adminService.createUser(user).success(function (data) {
+                    $scope.hideModal();
                     $scope.usersCollection.users.push(user);
                     $scope.notification('\''+ user.username + '\' created.');
                 }).error(function(error){
-                    console.log(error);
+                    $scope.usersError = error
                 });
 
             };
@@ -479,6 +480,7 @@
                 $scope.debounceDelay = 500;
 
                 $scope.showModal = function(template, size, verticalCentered){
+                    $scope.groupsError = null;
                     var modalInstance = $modal.open({
                         templateUrl: template,
                         windowClass: verticalCentered ? 'centered-dialog' : '',
@@ -564,15 +566,14 @@
                 $scope.dialogTitle = $translate.instant('admin.groups.CREATE_GROUP');
             }
             $scope.createGroup = function(group) {
-                $scope.hideModal();
                 group.site_id = groups.site;
 
                 adminService.createGroup(group).success(function (data) {
+                    $scope.hideModal();
                     $scope.groupsCollection.groups.push(group);
                     $scope.notification('\''+ group.group_name + '\' created.');
                 }).error(function(error){
-                    console.log(error);
-                    //TODO: properly display error.
+                    $scope.groupsError = error;
                 });
 
             };

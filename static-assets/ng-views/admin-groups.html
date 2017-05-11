@@ -167,6 +167,10 @@
                     </small>
                 </div>
             </div>
+
+            <div class="alert alert-danger" ng-if="groupsError">
+                {{groupsError.message}}
+            </div>
         </form>
     </div>
 
