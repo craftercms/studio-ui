@@ -1465,23 +1465,32 @@ var nodeOpen = false;
                     }
                 });
 
-                $(function() {
-                    var iceDialog = $modal.find('.studio-ice-dialog');
-                    if(iceDialog.resizable) {
-                        iceDialog.resizable({
-                            minHeight: 50,
-                            grid: [10000, 1],
-                            start: function (event, ui) {
-                                $('#engineWindow').css('pointer-events', 'none');
-                                $("#in-context-edit-editor-" + editorId).css('pointer-events', 'none');
-                            },
-                            stop: function (event, ui) {
-                                $('#engineWindow').css('pointer-events', 'auto');
-                                $("#in-context-edit-editor-" + editorId).css('pointer-events', 'auto');
-                            }
-                        });
-                    }
-                });
+                window.setTimeout(function() {
+                    $(function() {
+                        var iceDialog = $modal.find('.studio-ice-dialog');
+                        if(iceDialog.resizable) {
+                            iceDialog.each(function() {
+                                var $this = $(this);
+                                $this.resizable({
+                                    minHeight: 50,
+                                    grid: [10000, 1],
+                                    create: function( event, ui ) {
+                                        console.log("Create");
+                                    },
+                                    start: function (event, ui) {
+                                        $('#engineWindow').css('pointer-events', 'none');
+                                        $("#in-context-edit-editor-" + editorId).css('pointer-events', 'none');
+                                    },
+                                    stop: function (event, ui) {
+                                        $('#engineWindow').css('pointer-events', 'auto');
+                                        $("#in-context-edit-editor-" + editorId).css('pointer-events', 'auto');
+                                    },
+                                    handles: 'e, s, se'
+                                });
+                            });
+                        }
+                    });
+                }, 1000);
 
                 CSA.Env.Loader.use(controller, function() {
                     CStudioAuthoring.Service.getInContextEditView({
@@ -1536,20 +1545,25 @@ var nodeOpen = false;
 
                 animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
-                $(function() {
-                    $modal.find('.studio-ice-dialog').resizable({
-                        minHeight: 50,
-                        grid: [10000, 1],
-                        start: function(event, ui) {
-                            $('#engineWindow').css('pointer-events','none');
-                            $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
-                        },
-                        stop: function( event, ui ) {
-                            $('#engineWindow').css('pointer-events','auto');
-                            $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
-                        }
+                window.setTimeout(function() {
+                    $(function() {
+                        $modal.find('.studio-ice-dialog').each(function() {
+                            var $this = $(this);
+                            $this.resizable({
+                                minHeight: 50,
+                                grid: [10000, 1],
+                                start: function(event, ui) {
+                                    $('#engineWindow').css('pointer-events','none');
+                                    $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
+                                },
+                                stop: function( event, ui ) {
+                                    $('#engineWindow').css('pointer-events','auto');
+                                    $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                                }
+                            });
+                        });
                     });
-                });
+                }, 1000);
 
                 $modal.find('.bd').html(template).end().appendTo(parentEl);
                 $modal.find('.studio-ice-container').css('z-index', 100525);
@@ -1586,19 +1600,21 @@ var nodeOpen = false;
 
                 animator = new crafter.studio.Animator($modal.find('.studio-ice-container'));
 
-                $(function() {
-                    $modal.find('.studio-ice-dialog').resizable({
-                        minHeight: 50,
-                        grid: [10000, 1],
-                        start: function(event, ui) {
-                            $('#engineWindow').css('pointer-events','none');
-                            $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
-                        },
-                        stop: function( event, ui ) {
-                            $('#engineWindow').css('pointer-events','auto');
-                            $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
-                        }
-                    });
+                    window.setTimeout(function() {
+                        $(function() {
+                        $modal.find('.studio-ice-dialog').resizable({
+                            minHeight: 50,
+                            grid: [10000, 1],
+                            start: function(event, ui) {
+                                $('#engineWindow').css('pointer-events','none');
+                                $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
+                            },
+                            stop: function( event, ui ) {
+                                $('#engineWindow').css('pointer-events','auto');
+                                $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                            }
+                        });
+                    }, 1000);
 
                     $modal.on('click', '#colExpButton', function(){
                         var dialog = window.parent.$( ".studio-ice-container-"+editorId),
