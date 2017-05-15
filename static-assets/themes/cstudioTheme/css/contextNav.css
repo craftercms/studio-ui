@@ -126,6 +126,10 @@ body .mask{
   z-index: 100102!important;
 }
 
+.yui-dialog.inc-zindex {
+    z-index: 100104!important;
+}
+
 .yui-dialog .yui-overlay.yui-panel{
   border-radius: 6px;
 }
