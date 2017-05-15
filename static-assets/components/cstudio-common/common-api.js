@@ -1647,19 +1647,6 @@ var nodeOpen = false;
                 window.open(url, name);
 
                 animator.slideInDown();
-
-                $('body').on("diff-end", function () {
-                    $modal.remove();
-                });
-
-                diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
-                diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
-                diffUrl += "&mode=iframe";
-
-
-                window.open(diffUrl, 'diffDialog');
-
-                animator.slideInDown();
             },
 
             openCopyDialog:function(site, uri, callback, args) {
