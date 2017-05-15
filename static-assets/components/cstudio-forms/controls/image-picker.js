@@ -297,6 +297,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                                                 imageData,
                                                 self.width,
                                                 self.height,
+                                                self.width/self.height,
                                                 repoImage,
                                                 callbackCropper);
 
