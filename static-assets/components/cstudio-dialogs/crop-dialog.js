@@ -335,12 +335,13 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
                             CStudioAuthoring.Operations.showSimpleDialog(
                                 "error-dialog",
                                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                "notification",
+                                "Notification",
                                 "Image filename already exists",
                                 null, // use default button
                                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                "studioDialog"
+                                "studioDialog imgExists"
                             );
+                            YDom.getElementsByClassName("imgExists")[0].parentNode.classList.add("inc-zindex");
                         }else {
                             try {
                                 CStudioAuthoring.Service.cropImage(site, path, imageInformation.x, imageInformation.y, imageInformation.height, imageInformation.width, cropImageCallBack);
