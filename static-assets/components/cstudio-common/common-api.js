@@ -4077,7 +4077,7 @@ var nodeOpen = false;
                 else {
                     CStudioAuthoring.Service.lookupConfigurtion(
                         CStudioAuthoringContext.site,
-                        "/context-nav/site-dropdown.xml",
+                        "/context-nav/sidebar.xml",
                         {
                             success: function(config) {
                                 this.context.contextNavConfig = config;
