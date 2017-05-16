@@ -140,11 +140,12 @@
     <div class="modal-header">
         <h3 class="modal-title">{{dialogTitle}}</h3>
     </div>
+    <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
     <div class="modal-body clearfix">
-        <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
+        <div class="col-md-12">
             <div class="form-group">
                 <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
-                <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" required>
+                <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" autofocus focus-me="true" required>
             </div>
 
             <div class="error-container"
@@ -171,7 +172,7 @@
             <div class="alert alert-danger" ng-if="groupsError">
                 {{groupsError.message}}
             </div>
-        </form>
+        </div>
     </div>
 
     <div class="modal-footer">
@@ -179,6 +180,8 @@
                 ng-click="okModalFunction(group)" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>
         <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
     </div>
+
+    </form>
 </script>
 
 <script type="text/ng-template" id="creatingGroupConfirmation.html">
