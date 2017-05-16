@@ -110,72 +110,91 @@ CStudioAuthoring.Module.requireModule(
                                 CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), fn: function() {
 
                                     var saveFn = function(){
-                                        var xmlFormDef = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef),
-                                            xmlConfig = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeConfigToXml(config, formDef),
-                                            configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
-                                        var cb = {
-                                            success: function () {
-                                                var callBack = {
-                                                    success: function () {
-                                                        CStudioAdminConsole.isDirty = false;
-                                                        CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveContentType");
+										_self.loadConfig(contentType, {
+											success: function(currentConfig) {
+												var xmlFormDef = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef),
+													xmlConfig = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeConfigToXml(currentConfig, formDef),
+													configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
-                                                    },
-                                                    failure: function () {
-                                                        CStudioAuthoring.Operations.showSimpleDialog(
-                                                            "errorDialog-dialog",
-                                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                                            CMgs.format(langBundle, "notification"),
-                                                            CMgs.format(langBundle, "saveFailed"),
-                                                            null, // use default button
-                                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                                            "studioDialog"
-                                                        );
-                                                    },
-                                                    CMgs: CMgs,
-                                                    langBundle: langBundle
-                                                };
+												var doc = $.parseXML("<xml/>")
+												var json = {key1: 1, key2: 2}
+												var xml = doc.getElementsByTagName("xml")[0]
+												var key, elem
 
-                                                var confPath = configFilesPath + '/content-types' + formDef.contentType +
-                                                    '/config.xml';
+												for (key in json) {
+													if (json.hasOwnProperty(key)) {
+														elem = doc.createElement(key)
+														$(elem).text(json[key])
+														xml.appendChild(elem)
+													}
+												}
 
-                                                var url = "/api/1/services/api/1/site/write-configuration.json" +
-                                                    "?site=" + CStudioAuthoringContext.site + "&path=" + confPath;
 
-                                                YAHOO.util.Connect.resetFormState();
-                                                YAHOO.util.Connect.setDefaultPostHeader(false);
-                                                YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                                                YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), callBack, xmlConfig);
+												var cb = {
+													success: function () {
+														var callBack = {
+															success: function () {
+																CStudioAdminConsole.isDirty = false;
+																CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveContentType");
 
-                                            },
-                                            failure: function () {
-                                                CStudioAuthoring.Operations.showSimpleDialog(
-                                                    "errorDialog-dialog",
-                                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                                    CMgs.format(langBundle, "notification"),
-                                                    CMgs.format(langBundle, "saveFailed"),
-                                                    null, // use default button
-                                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                                    "studioDialog"
-                                                );
-                                            },
-                                            CMgs: CMgs,
-                                            langBundle: langBundle
-                                        };
+															},
+															failure: function () {
+																CStudioAuthoring.Operations.showSimpleDialog(
+																	"errorDialog-dialog",
+																	CStudioAuthoring.Operations.simpleDialogTypeINFO,
+																	CMgs.format(langBundle, "notification"),
+																	CMgs.format(langBundle, "saveFailed"),
+																	null, // use default button
+																	YAHOO.widget.SimpleDialog.ICON_BLOCK,
+																	"studioDialog"
+																);
+															},
+															CMgs: CMgs,
+															langBundle: langBundle
+														};
 
-                                        var defPath = configFilesPath + '/content-types' + formDef.contentType +
-                                            '/form-definition.xml';
+														var confPath = configFilesPath + '/content-types' + formDef.contentType +
+															'/config.xml';
 
-                                        var url = "/api/1/services/api/1/site/write-configuration.json" +
-                                            "?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
+														var url = "/api/1/services/api/1/site/write-configuration.json" +
+															"?site=" + CStudioAuthoringContext.site + "&path=" + confPath;
 
-                                        YAHOO.util.Connect.resetFormState();
-                                        YAHOO.util.Connect.setDefaultPostHeader(false);
-                                        YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xmlFormDef);
+														YAHOO.util.Connect.resetFormState();
+														YAHOO.util.Connect.setDefaultPostHeader(false);
+														YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
+														YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), callBack, xmlConfig);
 
-                                        document.getElementById("cstudio-admin-console-command-bar").children[1].value = CMgs.format(langBundle, "close");
+													},
+													failure: function () {
+														CStudioAuthoring.Operations.showSimpleDialog(
+															"errorDialog-dialog",
+															CStudioAuthoring.Operations.simpleDialogTypeINFO,
+															CMgs.format(langBundle, "notification"),
+															CMgs.format(langBundle, "saveFailed"),
+															null, // use default button
+															YAHOO.widget.SimpleDialog.ICON_BLOCK,
+															"studioDialog"
+														);
+													},
+													CMgs: CMgs,
+													langBundle: langBundle
+												};
+
+												var defPath = configFilesPath + '/content-types' + formDef.contentType +
+													'/form-definition.xml';
+
+												var url = "/api/1/services/api/1/site/write-configuration.json" +
+													"?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
+
+												YAHOO.util.Connect.resetFormState();
+												YAHOO.util.Connect.setDefaultPostHeader(false);
+												YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
+												YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xmlFormDef);
+
+												document.getElementById("cstudio-admin-console-command-bar").children[1].value = CMgs.format(langBundle, "close");
+											}
+										});
 
                                     }
 
@@ -2184,6 +2203,39 @@ CStudioAuthoring.Module.requireModule(
                     xml += "\t<noThumbnail>" + CStudioForms.Util.escapeXml(config.noThumbnail) + "</noThumbnail>\r\n" +
                            "\t<image-thumbnail>" + config["image-thumbnail"] + "</image-thumbnail>\r\n";
                 }
+
+				if(config.paths){
+					xml+= "\t<paths>\r\n";
+
+					if(config.paths.excludes){
+						xml+= "\t\t<excludes>\r\n";
+
+						if(config.paths.excludes.pattern instanceof Array){
+							for(var x = 0; x < config.paths.excludes.pattern.length; x++){
+								xml+= "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config.paths.excludes.pattern[x]) + "</pattern>\r\n";
+							}
+						}else{
+							xml+= "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config.paths.excludes.pattern) + "</pattern>\r\n";
+						}
+
+						xml+= "\t\t</excludes>\r\n";
+					}
+					if(config.paths.includes){
+						xml+= "\t\t<includes>\r\n";
+
+						if(config.paths.includes.pattern instanceof Array){
+							for(var x = 0; x < config.paths.includes.pattern.length; x++){
+								xml+= "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config.paths.includes.pattern[x]) + "</pattern>\r\n";
+							}
+						}else{
+							xml+= "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config.paths.includes.pattern) + "</pattern>\r\n";
+						}
+
+						xml+= "\t\t</includes>\r\n";
+					}
+
+					xml+= "\t</paths>\r\n";
+				}
 
                 xml += "</content-type>\r\n";
 
