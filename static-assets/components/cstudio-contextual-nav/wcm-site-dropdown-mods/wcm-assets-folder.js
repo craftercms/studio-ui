@@ -808,12 +808,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                                     //add custom icon class
                                     var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
-                                    var key = instance.label;
-                                    key = key.replace(/\s/g,'');
+                                    var keyId = instance.label;
+                                    keyId = keyId.replace(/\s/g,'');
 
-                                    if(WcmAssets.customIcons[key] && WcmAssets.customIcons[key].moduleIcons){
-                                        var openClass = WcmAssets.customIcons[key].moduleIcons.open;
-                                        var closedClass = WcmAssets.customIcons[key].moduleIcons.closed;
+                                    if(WcmAssets.customIcons[keyId] && WcmAssets.customIcons[keyId].moduleIcons){
+                                        var openClass = WcmAssets.customIcons[keyId].moduleIcons.open;
+                                        var closedClass = WcmAssets.customIcons[keyId].moduleIcons.closed;
                                         var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
 
                                         $el.removeClass(closedClass);

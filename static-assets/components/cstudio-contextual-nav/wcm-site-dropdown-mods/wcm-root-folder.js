@@ -1077,12 +1077,12 @@
                                             items = new Array(treeData.item);
 
                                             //add custom icon class
-                                            var key = instance.label;
-                                            key = key.replace(/\s/g,'');
+                                            var keyId = instance.label;
+                                            keyId = keyId.replace(/\s/g,'');
 
-                                            if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
-                                                var openClass = Self.customIcons[key].moduleIcons.open;
-                                                var closedClass = Self.customIcons[key].moduleIcons.closed;
+                                            if(Self.customIcons[keyId] && Self.customIcons[keyId].moduleIcons){
+                                                var openClass = Self.customIcons[keyId].moduleIcons.open;
+                                                var closedClass = Self.customIcons[keyId].moduleIcons.closed;
                                                 var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
 
                                                 $el.removeClass(closedClass);
