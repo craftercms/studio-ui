@@ -140,7 +140,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         imagePicker.inputEl.value = imageData.relativeUrl;
 
 
-        imagePicker.previewEl.src = imageData.previewUrl+ "?" +new Date().getTime();
+        imagePicker.previewEl.src = imageData.previewUrl.replace(/ /g, "%20")+ "?" +new Date().getTime();
         imagePicker.urlEl.innerHTML = imageData.relativeUrl;
         imagePicker.downloadEl.href = imageData.previewUrl;
 
@@ -686,7 +686,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         if (value == null || value == '') {
             this.noPreviewEl.style.display = "inline";
         } else {
-            this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value;
+            this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value.replace(/ /g, "%20");
             this.previewEl.style.display = "inline";
             this.noPreviewEl.style.display = "none";
             this.urlEl.innerHTML = value;
@@ -703,7 +703,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                 _self.adjustImage();
             };
             image.addEventListener('load', imageLoaded, false);
-            image.src = CStudioAuthoringContext.previewAppBaseUri + value + "?" + (new Date().getTime());
+            image.src = CStudioAuthoringContext.previewAppBaseUri + value.replace(/ /g, "%20") + "?" + (new Date().getTime());
         }
         this._onChange(null, this);
         this.edited = false;
