@@ -140,45 +140,48 @@
     <div class="modal-header">
         <h3 class="modal-title">{{dialogTitle}}</h3>
     </div>
-    <div class="modal-body clearfix">
-        <form name="createNameForm" novalidate class="col-md-12 ng-dirty ng-invalid ng-invalid-required">
-            <div class="form-group">
-                <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
-                <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" required>
-            </div>
-
-            <div class="error-container"
-                 ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">
-                <small class="error"
-                       ng-show="createNameForm.identifier.$error.required">
-                    {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="description" class="control-label">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
-                <input type="text" class="form-control" id="description" name="description" ng-model="group.description" ng-change="">
+    <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+        <div class="modal-body clearfix">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
+                    <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" autofocus focus-me="true" required>
+                </div>
 
                 <div class="error-container"
-                     ng-show="(createNameForm.description.$dirty && createNameForm.description.$invalid) || (createNameForm.description.$touched && createNameForm.description.$invalid)">
+                     ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">
                     <small class="error"
-                           ng-show="createNameForm.description.$error.required">
-                        {{ 'admin.groups.GROUP_DESCRIPTION_ERROR_MESSAGE' | translate }}
+                           ng-show="createNameForm.identifier.$error.required">
+                        {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
                     </small>
                 </div>
-            </div>
 
-            <div class="alert alert-danger" ng-if="groupsError">
-                {{groupsError.message}}
-            </div>
-        </form>
-    </div>
+                <div class="form-group">
+                    <label for="description" class="control-label">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
+                    <input type="text" class="form-control" id="description" name="description" ng-model="group.description" ng-change="">
 
-    <div class="modal-footer">
-        <button class="btn btn-primary text-capitalize"
-                ng-click="okModalFunction(group)" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>
-        <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
-    </div>
+                    <div class="error-container"
+                         ng-show="(createNameForm.description.$dirty && createNameForm.description.$invalid) || (createNameForm.description.$touched && createNameForm.description.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.description.$error.required">
+                            {{ 'admin.groups.GROUP_DESCRIPTION_ERROR_MESSAGE' | translate }}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger" ng-if="groupsError">
+                    {{groupsError.message}}
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-primary text-capitalize"
+                    ng-click="okModalFunction(group)" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>
+            <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+        </div>
+
+    </form>
 </script>
 
 <script type="text/ng-template" id="creatingGroupConfirmation.html">
