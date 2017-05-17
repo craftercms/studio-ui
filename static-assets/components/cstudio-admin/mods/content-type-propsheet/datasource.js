@@ -82,6 +82,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
 
             clickFn =  function() {
                 if (this.checked) {
+                    if($(this).parent().parent().find('input[type="checkbox"]:checked').length == 1){
+                        _self.removeAll();
+                    }
                     _self.addValue(this.id);
                     updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
                 } else {
