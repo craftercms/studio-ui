@@ -56,6 +56,13 @@
     "PROFILE_UPDATED": "Perfil Actualizado",
     "CHANGE_PASSWORD_ADVERTISEMENT": "Una vez que tu contraseña se haya actualizado correctamente, deberás volver a iniciar sesión."
   },
+  "about": {
+    "HEADER_LABEL": "Acerca",
+    "STUDIO_INFO": "Información de Crafter Studio",
+    "STUDIO_VERSION_NUMBER": "Número de versión de Studio",
+    "BUILD_NUMBER": "Número de compilación",
+    "BUILD_DATE_TIME": "Build Date/Time"
+  },
   "admin": {
     "groups": {
       "HEADER_LABEL": "Grupos",
