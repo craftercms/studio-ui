@@ -1,0 +1,15 @@
+<div class="about-us-view">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1>{{ 'about.HEADER_LABEL' | translate }}</h1>
+        </div>
+        <div class="col-sm-12">
+            <h2>{{aboutStudio.name}}</h2>
+            <div class="well studio-info">
+                <p><strong>{{ 'about.STUDIO_VERSION_NUMBER' | translate }}</strong>: {{versionNumber}}</p>
+                <p><strong>{{ 'about.BUILD_NUMBER' | translate }}</strong>: {{aboutStudio.build}}</p>
+                <p><strong>{{ 'about.BUILD_DATE_TIME' | translate }}</strong>: {{aboutStudio.build_date | date:'MM-dd-yyyy HH:mm:ss Z'}}</p>
+            </div>
+        </div>
+    </div>
+</div>
