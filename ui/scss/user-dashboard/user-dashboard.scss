@@ -43,11 +43,23 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 }
 
 .about-us-view{
-  h2{
-    margin-bottom: 20px;
-  }
   .studio-info {
-    padding-left: 39px;
+    overflow: hidden;
+    max-width: 530px;
+    margin: 50px auto 0;
+    padding: 30px 2%;
+
+    #studio-logo{
+      display: block;
+      float: left;
+      width: 22%;
+    }
+    #studio-data{
+      float: left;
+      padding-left: 4%;
+      width: 78%;
+    }
+
   }
 }
 
@@ -110,4 +122,14 @@ small {
   background-size: 100% 100%;
   margin-right: 5px;
   margin-bottom: -2px;
+}
+
+@media only screen and (max-width: 460px) {
+  .about-us-view{
+    .studio-info {
+      #studio-logo{
+        display: none;
+      }
+    }
+  }
 }
