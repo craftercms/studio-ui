@@ -36,9 +36,18 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 
 }
 
-.settings-view{
+.settings-view, .about-us-view{
   .row{
     padding: 0 25px;
+  }
+}
+
+.about-us-view{
+  h2{
+    margin-bottom: 20px;
+  }
+  .studio-info {
+    padding-left: 39px;
   }
 }
 

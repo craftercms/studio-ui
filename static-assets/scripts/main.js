@@ -102,6 +102,15 @@
                         }
                     }
                 })
+                .state('home.about-us', {
+                    url: 'about-us',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/about.html',
+                            controller: 'AppCtrl'
+                        }
+                    }
+                })
                 .state('home.users', {
                     url: 'users',
                     views: {
@@ -306,6 +315,10 @@
                 return user;
             };
 
+            this.getStudioInfo = function () {
+                return $http.get(api('version', false, true));
+            };
+
             this.forgotPassword = function (username) {
                 return $http.get(api('forgot-password'), {
                     params: { username : username }
@@ -338,11 +351,15 @@
                 return api('get-ui-resource-override', true) + '?resource=logo.jpg';
             };
 
-            function api(action, server) {
+            function api(action, server, monitor) {
                 var api = "user/";
 
                 if(server){
                     api = "server/";
+                }
+
+                if(monitor){
+                    api = "monitor/";
                 }
 
                 return Constants.SERVICE + api + action + '.json';
@@ -598,6 +615,14 @@
                     $scope.crafterLogo = authService.getLoginUrl();
                 }, function errorCallback(response) {
                     $scope.crafterLogo = "/studio/static-assets/images/crafter_studio_360.png";
+                }
+            );
+
+            authService.getStudioInfo().then(
+                function successCallback(response) {
+                    $scope.aboutStudio = response.data;
+                    $scope.versionNumber = response.data.packageVersion + "-" + response.data.build.substring(0,6);
+                }, function errorCallback(response) {
                 }
             );
 

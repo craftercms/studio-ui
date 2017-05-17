@@ -6217,8 +6217,13 @@ table td {
 .recover-view .alert {
   padding: 7px 15px; }
 
-.settings-view .row {
+.settings-view .row, .about-us-view .row {
   padding: 0 25px; }
+
+.about-us-view h2 {
+  margin-bottom: 20px; }
+.about-us-view .studio-info {
+  padding-left: 39px; }
 
 .panel .alert {
   margin: 0;
@@ -6259,3 +6264,5 @@ small .text-sm {
   background-size: 100% 100%;
   margin-right: 5px;
   margin-bottom: -2px; }
+
+/*# sourceMappingURL=main.css.map */

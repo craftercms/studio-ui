@@ -58,6 +58,13 @@
     "PROFILE_UPDATED": "Profile Updated",
     "CHANGE_PASSWORD_ADVERTISEMENT": "Once your password has been successfully updated, you'll be required to login again."
   },
+  "about": {
+    "HEADER_LABEL": "About",
+    "STUDIO_INFO": "Studio Information",
+    "STUDIO_VERSION_NUMBER": "Studio Version Number",
+    "BUILD_NUMBER": "Build Number",
+    "BUILD_DATE_TIME": "Build Date/Time"
+  },
   "admin": {
     "groups": {
       "HEADER_LABEL": "Groups",
