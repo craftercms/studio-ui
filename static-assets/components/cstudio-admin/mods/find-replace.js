@@ -3,6 +3,7 @@ CStudioAdminConsole.Tool.FindReplace = CStudioAdminConsole.Tool.FindReplace ||  
 	this.containerEl = el;
 	this.config = config;
 	this.types = [];
+	this.processedFiles = [];
 	return this;
 }
 
@@ -48,7 +49,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.FindReplace, CStudioAdminConsole.Tool, {
 		searchContext.contentTypes = [];
 		searchContext.keywords = term;
 
-		statusEl.innerHTML = "searching...";
+		statusEl.innerHTML = "Searching...";
 
 		var callback = {
 			success: function(data) {
@@ -60,20 +61,26 @@ YAHOO.extend(CStudioAdminConsole.Tool.FindReplace, CStudioAdminConsole.Tool, {
 				for(var i=0; i<=resultsCount; i++) {
 				     // read the content
 				     result = results[i];
+				     result.item.uri = result.item.localId;
 
-				     if(result.item.uri.indexOf(".xml") == -1 
-				     && result.item.uri.indexOf(".ftl") == -1) {
+				     if(!result 
+				     || !result.item 
+				     || !result.item.uri
+				     || (result.item.uri.indexOf(".xml") == -1 
+				        && result.item.uri.indexOf(".ftl") == -1)) {
 				     	// we're not interested in JS, CSS, images etc
 				        updates++;
-					 	statusEl.innerHTML = "skipping file";
+					 	statusEl.innerHTML = "Skipping file";
 				     }
 				     else {
 				     	 // process the find and replace
+				     	 //this.processedFiles[this.processedFiles.length] = result.item.uri;
+
 					     var getContentCb = {
 					     	success: function(response) {
 	 				            // perform the replace
 	 				            var item = this.item;
-	 				            var content = response.responseText; 
+	 				            var content = response; 
 	                            content = content.replace(new RegExp(this.term, 'gi'), this.replaceVal);
  
 					     		// write the content
@@ -81,8 +88,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.FindReplace, CStudioAdminConsole.Tool, {
 					     			success: function() {
 					     				// update the status
 						 				this.statusEl.innerHTML = 
-						 				   "replaced "+ this.term + " with " +
-						 				   this.replaceVal;
+						 				   "Replacing "+ this.term + " with " +
+						 				   this.replaceVal + " in file "  + this.item.uri;
 					     			},
 					     			failure: function() {
 					     			},
@@ -94,10 +101,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.FindReplace, CStudioAdminConsole.Tool, {
 
 					     		};
 
+					     		var pathOnly = item.path.replace("/"+item["file-name"],"");
 					     		CStudioAuthoring.Service.writeContent(
-					     			item.uri, 
-					     			item.name, 
-					     			item.uri, 
+					     			pathOnly, 
+					     			item["file-name"], 
+					     			pathOnly, 
 					     			content, 
 					     			item.contentType, 
 					     			CStudioAuthoringContext.site, 
