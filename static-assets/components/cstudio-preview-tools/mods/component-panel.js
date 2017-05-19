@@ -72,7 +72,8 @@
                                         amplify.publish('/operation/completed');
 
                                         self.componentsOn = !!(sessionStorage.getItem('components-on'));
-                                        if (self.componentsOn) {
+                                        var ptoOn = !!(sessionStorage.getItem('pto-on'));
+                                        if (self.componentsOn && ptoOn) {
                                             self.expand();
                                         }
 

@@ -84,14 +84,35 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 					containerEl.appendChild(imageEl);
 					el.appendChild(containerEl);
 
+                    var cstopic = crafter.studio.preview.cstopic;
+
 					containerEl.onclick = function() {
-					    var ptoOn = !!(sessionStorage.getItem('pto-on'));
+					    var ptoOn = !!(sessionStorage.getItem('pto-on')),
+                            componentsOn = !!(sessionStorage.getItem('components-on'));
 
 						if(!ptoOn) {
-							CStudioAuthoring.PreviewTools.turnToolsOn();
+                            if(componentsOn){
+                                CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/components-config.xml', {
+                                    failure: CStudioAuthoring.Utils.noop,
+                                    success: function (config) {
+                                        amplify.publish(cstopic('DND_COMPONENTS_PANEL_ON'), {
+                                            components: config
+                                        });
+                                    }
+                                });
+                            }else{
+                                CStudioAuthoring.PreviewTools.turnToolsOn();
+                            }
+
+
 						}
 						else {
-							CStudioAuthoring.PreviewTools.turnToolsOff();
+                            if(componentsOn){
+                                amplify.publish(cstopic('DND_COMPONENTS_PANEL_OFF'));
+                            }else {
+                                CStudioAuthoring.PreviewTools.turnToolsOff();
+                            }
+
 						}
 					}
 					

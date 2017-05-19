@@ -111,7 +111,10 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function disableDnD() {
 
-        sessionStorage.setItem('components-on', '');
+        var ptoOn = !!(sessionStorage.getItem('pto-on'));
+        if(ptoOn) {
+            sessionStorage.setItem('components-on', '');
+        }
 
         if (!this.active()) return;
         this.active(false);
@@ -136,8 +139,11 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     function done() {
         amplify.publish(Topics.ICE_TOOLS_OFF);
         this.stop();
-        publish.call(this, Topics.STOP_DRAG_AND_DROP);
-        var iceOn = !!(sessionStorage.getItem('ice-on'));
+        var iceOn = !!(sessionStorage.getItem('ice-on')),
+            ptoOn = !!(sessionStorage.getItem('pto-on'));
+        if(ptoOn) {
+            publish.call(this, Topics.STOP_DRAG_AND_DROP);
+        }
         if(iceOn){
             publish.call(this, Topics.ICE_CHANGE_PENCIL_ON);
         }
@@ -345,6 +351,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     }
 
     function componentsModelLoad(data) {
+        console.log("test");
         var aNotFound = [],
             me = this,
             noObjectid = 0;
