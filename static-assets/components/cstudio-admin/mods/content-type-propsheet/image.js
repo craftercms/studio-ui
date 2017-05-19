@@ -56,7 +56,11 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
             var uploadEl = document.createElement("div");
             YAHOO.util.Dom.addClass(uploadEl, "upload");
 
+            var deleteEl = document.createElement("div");
+            YAHOO.util.Dom.addClass(deleteEl, "delete");
+
             controlsContainerEl.appendChild(uploadEl);
+            controlsContainerEl.appendChild(deleteEl);
 
             this.containerEl.appendChild(controlsContainerEl);
 
@@ -159,6 +163,15 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
                     configFilesPath + '/content-types' + CStudioAdminConsole.contentTypeSelected,
                     "upload",
                     uploadCb);
+            }
+
+            deleteEl.onclick = function() {
+                if(_self.valueEl.value != ""){
+                    _self.valueEl.value = "";
+                    _self.value = "";
+                    _self.updateFn(null, _self.valueEl);
+                    CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+                }
             }
         }
     },
