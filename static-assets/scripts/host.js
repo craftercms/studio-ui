@@ -185,6 +185,7 @@
     });
 
     communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
+        CStudioAuthoring.PreviewTools.panel.element.style.visibility = "visible" ;
         $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function(){
 
             if(!previewWidth || previewWidth == 0 || previewWidth == "0px") {
@@ -192,6 +193,24 @@
             }
             $('.studio-preview').css('right', previewWidth);
             YDom.replaceClass('component-panel-elem', 'expanded', 'contracted');
+        });
+    });
+
+    amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function (config) {
+        sessionStorage.setItem('pto-on', "");
+        /*var PreviewToolsOffEvent = new YAHOO.util.CustomEvent("cstudio-preview-tools-off", CStudioAuthoring);
+        PreviewToolsOffEvent.fire();*/
+        var el = YDom.get("acn-preview-tools-container");
+        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_off_icon.png";
+        communicator.publish(Topics.DND_COMPONENTS_PANEL_OFF, {});
+    });
+
+    amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_ON'), function (config) {
+        sessionStorage.setItem('pto-on', "on");
+        var el = YDom.get("acn-preview-tools-container");
+        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_icon.png";
+        amplify.publish(cstopic('START_DRAG_AND_DROP'), {
+            components: config.components
         });
     });
 

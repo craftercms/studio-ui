@@ -50,6 +50,17 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
         });
     });
 
+    communicator.on(Topics.DND_COMPONENTS_PANEL_OFF, function (message) {
+        require(['dnd-controller'], function (DnDController) {
+
+            (typeof dndController === 'undefined') && (dndController = new DnDController({
+                communicator: communicator
+            }));
+
+            dndController.done();
+        });
+    });
+
     communicator.on(Topics.DND_CREATE_BROWSE_COMP, function (message) {
         require(['pointer-controller'], function (pointerController) {
 
