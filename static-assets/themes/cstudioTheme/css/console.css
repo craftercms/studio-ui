@@ -658,6 +658,17 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
     background-size: 90%;
 }
 
+.property-wrapper .options .delete {
+    background:url(../../../themes/cstudioTheme/images/fail.png) no-repeat left;
+    float: right;
+    height: 20px;
+    position: relative;
+    top: -15px;
+    width: 20px;
+    cursor: pointer;
+    background-size: 90%;
+}
+
 
 .control, .datasource {
     background: url("../../../themes/cstudioTheme/images/database.png") no-repeat scroll 0 0 transparent;

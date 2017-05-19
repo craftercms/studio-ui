@@ -130,7 +130,6 @@ CStudioAuthoring.Module.requireModule(
 													}
 												}
 
-
 												var cb = {
 													success: function () {
 														var callBack = {
@@ -2200,9 +2199,9 @@ CStudioAuthoring.Module.requireModule(
                     xml += "\t<noThumbnail>" + CStudioForms.Util.escapeXml("false") + "</noThumbnail>\r\n" +
                            "\t<image-thumbnail>" + formDef.imageThumbnail + "</image-thumbnail>\r\n";
                 }else{
-                    xml += "\t<noThumbnail>" + CStudioForms.Util.escapeXml(config.noThumbnail) + "</noThumbnail>\r\n" +
-                           "\t<image-thumbnail>" + config["image-thumbnail"] + "</image-thumbnail>\r\n";
-                }
+                    xml += "\t<noThumbnail>true</noThumbnail>\r\n" +
+                           "\t<image-thumbnail></image-thumbnail>\r\n";
+				}
 
 				if(config.paths){
 					xml+= "\t<paths>\r\n";
