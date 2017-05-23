@@ -689,7 +689,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabRoleMappingsDesc: "Define una lista de funciones disponibles en el sitio",
     confTabSiteConfiguration: "Configuración del Sitio",
     confTabSiteConfigurationDesc: "Define la configuración general del sitio",
-    confTabSiteConf: "Config del Sitio",
+    confTabSiteConf: "Herramientas de Configuración del sitio",
     confTabSiteConfDesc: "Define la lista de herramientas de administración disponibles",
     confTabWorkflowConf: "Configuración del Flujo de Trabajo",
     confTabWorkflowConfDesc: "Define los flujos de trabajo disponibles en el sistema",

@@ -729,7 +729,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabRoleMappingsDesc: "Defines a list of roles available in site",
     confTabSiteConfiguration: "Site Configuration",
     confTabSiteConfigurationDesc: "Defines the general site configuration",
-    confTabSiteConf: "Site Config",
+    confTabSiteConf: "Site Config Tools",
     confTabSiteConfDesc: "Defines the list of admin tools available",
     confTabWorkflowConf: "Workflow Configuration",
     confTabWorkflowConfDesc: "Defines workflows available in the system",

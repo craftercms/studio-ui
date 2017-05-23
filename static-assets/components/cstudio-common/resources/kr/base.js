@@ -662,7 +662,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabRoleMappingsDesc: "사이트에서 사용할 수있는 역할의 목록을 정의합니다",
     confTabSiteConfiguration: "사이트 구성",
     confTabSiteConfigurationDesc: "일반 사이트 구성을 정의",
-    confTabSiteConf: "사이트 구성",
+    confTabSiteConf: "사이트 구성 도구",
     confTabSiteConfDesc: "관리 툴의리스트가 정의 가능한",
     confTabWorkflowConf: "워크 플로우 구성",
     confTabWorkflowConfDesc: "시스템에서 사용할 수있는 워크 플로우를 정의",
