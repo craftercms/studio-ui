@@ -24,6 +24,11 @@ CStudioAuthoring.ContextualNav.AdminConsole = CStudioAuthoring.ContextualNav.Adm
 
             parentFolderLinkEl.id = "admin-console";
             parentFolderLinkEl.innerHTML = CMgs.format(siteDropdownLangBundle, "siteConfig");
+
+            if (config.params && config.params.icon){
+                parentFolderLinkEl.className += " acn-parent-folder custom-icon " + config.params.icon;
+            }
+
             parentFolderLinkEl.onclick = function() {
             document.location = CStudioAuthoringContext.authoringAppBaseUri +
                 "/admin-console?site=" + CStudioAuthoringContext.site;
