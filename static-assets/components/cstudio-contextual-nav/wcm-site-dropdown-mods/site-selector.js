@@ -24,6 +24,10 @@ CStudioAuthoring.ContextualNav.SiteSelector = CStudioAuthoring.ContextualNav.Sit
 			dashboardLinkEl.title = "Dashboard";
 			dashboardLinkEl.href = CStudioAuthoringContext.authoringAppBaseUri + "/site-dashboard";
 			dashboardLinkEl.id = "acn-sites-link";
+
+			if (config.params && config.params.icon){
+				dashboardLinkEl.className += " acn-parent-folder custom-icon " + config.params.icon;
+			}
 			
             YDom.addClass(dropdownInnerEl, 'studio-view');
 

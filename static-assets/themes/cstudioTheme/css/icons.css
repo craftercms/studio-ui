@@ -325,4 +325,6 @@
     position: absolute;
     left: 0;
     top: 1px;
+    text-align: center;
+    width: 16px;
 }
