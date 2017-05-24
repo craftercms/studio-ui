@@ -136,7 +136,7 @@ CStudioAuthoring.Module.requireModule(
 			
 				// add onchange behavior to display selected
 				itemSelectEl.onchange = function() {
-					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH,
+					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
 						selectedIndex = itemSelectEl.selectedIndex;
 
 					$('#historyEl').empty();
