@@ -10,7 +10,7 @@ CStudioAdminConsole = {
 
 		CStudioAuthoring.Service.lookupConfigurtion(
 			CStudioAuthoringContext.site, 
-			"/administration/tools.xml", 
+			"/administration/site-config-tools.xml",
 			{
 				success: function(config) {
 					var panelEl = YAHOO.util.Selector.query("#admin-console .categories-panel", null, true);
