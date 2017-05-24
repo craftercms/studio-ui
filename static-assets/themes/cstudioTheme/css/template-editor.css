@@ -87,6 +87,10 @@
   width: 150px;
 }
 
+#template-editor-button-container .edit-buttons-container.viewer{
+    width: 58px;
+}
+
 .cstudio-template-editor-button {
     cursor: pointer;
     text-align: center;

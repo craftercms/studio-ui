@@ -72,7 +72,9 @@ CStudioAuthoring.Module.requireModule(
 									}
 									else {
 										formHTML +=
+                                            "<div class='edit-buttons-container viewer'>" +
 											"<div  id='template-editor-cancel-button' style='right: 120px;' class='btn btn-default cstudio-template-editor-button'>Close</div>";
+                                            "<div/>";
 									}
 
 									formHTML +=
