@@ -36,7 +36,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
         var navBarSiteNameEl = YDom.get('navbar-site-name');
         navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
 
-        if (window.location.pathname.indexOf("search") > -1 || window.location.pathname.indexOf("browse") > -1 || window.location.pathname.indexOf("admin-console") > -1) {
+        if (window.location.pathname.indexOf("search") > -1 || window.location.pathname.indexOf("browse") > -1 || window.location.pathname.indexOf("site-config") > -1) {
             mainContainerEl.innerHTML = '';
         } else {
             mainContainerEl.innerHTML =
