@@ -298,8 +298,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	},
 
 	resizeCodeMirror : function (codeMirror) {
-
-		var cmHeight = Math.max((document.documentElement.clientHeight - this.codeModeYreduction), this.editor.codeMirror.getGutterElement().scrollHeight),
+		var cmHeight = 400,
 			cmWidth = this.containerEl.clientWidth - this.codeModeXreduction,
 			currentHeight = +tinymce.DOM.getStyle(this.editor.codeMirror.getScrollerElement(), "height").split("px")[0];
 
