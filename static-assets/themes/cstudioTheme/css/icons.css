@@ -309,12 +309,12 @@
     background-repeat: no-repeat;
 }
 
-.status-icon.folder.custom-icon, .acn-parent-folder.custom-icon {
+.status-icon.folder.custom-icon, .acn-parent-folder.custom-icon, .cs-custom-icon {
     background: none !important;
     position: relative;
 }
 
-.status-icon.folder.custom-icon:before, .acn-parent-folder.custom-icon:before {
+.status-icon.folder.custom-icon:before, .acn-parent-folder.custom-icon:before, .cs-custom-icon:before {
     font: normal normal normal 15px/1 FontAwesome;
     /* font-size: inherit; */
     text-rendering: auto;
