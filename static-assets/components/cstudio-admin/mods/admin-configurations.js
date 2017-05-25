@@ -260,7 +260,7 @@ CStudioAuthoring.Module.requireModule(
 
 				// add button actions
 				var saveButtonEl = document.getElementById("save-button"),
-					configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
+					configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN;
 
 				// save the configuration file back to repo 
 				saveButtonEl.onclick = function () { 
