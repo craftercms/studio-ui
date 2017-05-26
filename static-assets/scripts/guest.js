@@ -116,9 +116,9 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     };
 
     function initICETarget(elem) {
-
-        var $elem = $(elem),
-            position = $elem.offset(),
+        var $elem = $(elem);
+        $elem.removeData();
+        var position = $elem.offset(),
             iceRef = $elem.data('studioIce') + '-' + count++,
             path = $elem.data('studioIcePath'),
             params = {
