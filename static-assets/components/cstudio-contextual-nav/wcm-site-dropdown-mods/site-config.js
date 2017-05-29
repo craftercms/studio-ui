@@ -45,13 +45,13 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
                     var iconStyles = moduleConfig.icon.styles;
 
                     if (iconStyles){
-                        var styles = ''
+                        var styles = "";
                         for (var key in iconStyles) {
                             if (iconStyles.hasOwnProperty(key)) {
                                 styles += key + ":" + iconStyles[key] + ";";
                             }
                         }
-                        $('head').append('<style>#' + parentFolderLinkEl.id + ':before{' + styles + '}</style>');
+                        $('head').append("<style>#" + parentFolderLinkEl.id + ":before{" + styles + "}</style>");
                     }
                 }
             }else{

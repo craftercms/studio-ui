@@ -40,25 +40,23 @@ CStudioAuthoring.ContextualNav.Dashboard = CStudioAuthoring.ContextualNav.Dashbo
 				if (moduleConfig.icon){
 					if (moduleConfig.icon.class){
 						dashboardLinkEl.className += " acn-parent-folder custom-icon " + moduleConfig.icon.class;
-					}else{
-						dashboardLinkEl.className += " acn-parent-folder custom-icon fa-bars";
-					}	
+					}
 					
 					if(moduleConfig.icon.styles){
 						var iconStyles = moduleConfig.icon.styles;
 
 						if (iconStyles){
-							var styles = ''
+							var styles = "";
 							for (var key in iconStyles) {
 								if (iconStyles.hasOwnProperty(key)) {
 									styles += key + ":" + iconStyles[key] + ";";
 								}
 							}
-							$('head').append('<style>#' + parentFolderLinkEl.id + ':before{' + styles + '}</style>');
+							$('head').append("<style>#" + dashboardLinkEl.id + ":before{" + styles + "}</style>");
 						}
 					}
 				}else{
-					parentFolderLinkEl.className += " acn-parent-folder custom-icon fa-sliders";
+					dashboardLinkEl.className += " acn-parent-folder custom-icon fa-bars";
 				}
 
 				YDom.addClass(dropdownInnerEl, 'studio-view');

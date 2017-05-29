@@ -38,11 +38,11 @@
             labelsMenu: [],
             customIcons: {},
             defaultIcons: {
-                pages: 'fa-file-text-o',
-                components: 'fa-puzzle-piece',
-                defaultIcon: 'fa-folder',
-                childOpen: 'fa-folder-open-o',
-                childClosed: 'fa-folder-o'
+                pages: "fa-file-text-o",
+                components: "fa-puzzle-piece",
+                defaultIcon: "fa-folder",
+                childOpen: "fa-folder-open-o",
+                childClosed: "fa-folder-o"
             },
             /**
              * initialize module
@@ -78,30 +78,30 @@
                     };
 
                     //Setup child folders icon configuration
-                    if(config.params['child-icon-open'] && config.params['child-icon-open'].class){
-                        Self.customIcons[key].childIcons.open.icon = config.params['child-icon-open'].class;
+                    if(config.params["child-icon-open"] && config.params["child-icon-open"].class){
+                        Self.customIcons[key].childIcons.open.icon = config.params["child-icon-open"].class;
                     }else{  //default open folder icon
                         Self.customIcons[key].childIcons.open.icon = Self.defaultIcons.childOpen;
                     }
-                    if(config.params['child-icon-open'] && config.params['child-icon-open'].styles){
-                        Self.customIcons[key].childIcons.open.styles = config.params['child-icon-open'].styles;
+                    if(config.params["child-icon-open"] && config.params["child-icon-open"].styles){
+                        Self.customIcons[key].childIcons.open.styles = config.params["child-icon-open"].styles;
                     }
-                    if(config.params['child-icon-closed'] && config.params['child-icon-closed'].class){
-                        Self.customIcons[key].childIcons.closed.icon = config.params['child-icon-closed'].class;
+                    if(config.params["child-icon-closed"] && config.params["child-icon-closed"].class){
+                        Self.customIcons[key].childIcons.closed.icon = config.params["child-icon-closed"].class;
                     }else{  //default closed folder icon
                         Self.customIcons[key].childIcons.closed.icon = Self.defaultIcons.childClosed;
                     }
-                    if(config.params['child-icon-closed'] && config.params['child-icon-closed'].styles){
-                        Self.customIcons[key].childIcons.closed.styles = config.params['child-icon-closed'].styles;
+                    if(config.params["child-icon-closed"] && config.params["child-icon-closed"].styles){
+                        Self.customIcons[key].childIcons.closed.styles = config.params["child-icon-closed"].styles;
                     }
 
-                    /////////////////////////////////////////////////////////////////////////////////
+                    var module;
 
                     //setup root folder icon configuration
-                    if(config.params['module-icon-open'] && config.params['module-icon-open'].class){
-                        Self.customIcons[key].moduleIcons.open.icon = config.params['module-icon-open'].class;
+                    if(config.params["module-icon-open"] && config.params["module-icon-open"].class){
+                        Self.customIcons[key].moduleIcons.open.icon = config.params["module-icon-open"].class;
                     }else {
-                        var module = key.toLowerCase();
+                        module = key.toLowerCase();
 
                         if(Self.defaultIcons[module]){
                             Self.customIcons[key].moduleIcons.open.icon = Self.defaultIcons[module];
@@ -109,13 +109,13 @@
                             Self.customIcons[key].moduleIcons.open.icon = Self.defaultIcons.defaultIcon;
                         }
                     }
-                    if(config.params['module-icon-open'] && config.params['module-icon-open'].styles){
-                        Self.customIcons[key].moduleIcons.open.styles = config.params['module-icon-open'].styles;
+                    if(config.params["module-icon-open"] && config.params["module-icon-open"].styles){
+                        Self.customIcons[key].moduleIcons.open.styles = config.params["module-icon-open"].styles;
                     }
-                    if(config.params['module-icon-closed'] && config.params['module-icon-closed'].class){
-                        Self.customIcons[key].moduleIcons.closed.icon = config.params['module-icon-closed'].class;
+                    if(config.params["module-icon-closed"] && config.params["module-icon-closed"].class){
+                        Self.customIcons[key].moduleIcons.closed.icon = config.params["module-icon-closed"].class;
                     }else {
-                        var module = key.toLowerCase();
+                        module = key.toLowerCase();
 
                         if(Self.defaultIcons[module]){
                             Self.customIcons[key].moduleIcons.closed.icon = Self.defaultIcons[module];
@@ -123,8 +123,8 @@
                             Self.customIcons[key].moduleIcons.closed.icon = Self.defaultIcons.defaultIcon;
                         }
                     }
-                    if(config.params['module-icon-closed'] && config.params['module-icon-closed'].styles){
-                        Self.customIcons[key].moduleIcons.closed.styles = config.params['module-icon-closed'].styles;
+                    if(config.params["module-icon-closed"] && config.params["module-icon-closed"].styles){
+                        Self.customIcons[key].moduleIcons.closed.styles = config.params["module-icon-closed"].styles;
                     }
 
                     if(config.params.mods) {
@@ -273,14 +273,16 @@
                     }
                     YDom.addClass(parentFolderLinkEl, "closed");
 
+                    var styles;
+
                     //check for custom styles
                     if(moduleIcons.closed && moduleIcons.closed.styles){
                         var closedStylesProp = moduleIcons.closed.styles;
 
-                        var styles = ''
-                        for (var key in closedStylesProp) {
-                            if (closedStylesProp.hasOwnProperty(key)) {
-                                styles += key + ":" + closedStylesProp[key] + ";";
+                        styles = "";
+                        for (var closedKey in closedStylesProp) {
+                            if (closedStylesProp.hasOwnProperty(closedKey)) {
+                                styles += closedKey + ":" + closedStylesProp[closedKey] + ";";
                             }
                         }
                         $('head').append('<style>#' + parentFolderLinkEl.id + '.closed:before{' + styles + '}</style>');
@@ -289,10 +291,10 @@
                     if(moduleIcons.open && moduleIcons.open.styles){
                         var openStylesProp = moduleIcons.open.styles;
 
-                        var styles = ''
-                        for (var key in openStylesProp) {
-                            if (openStylesProp.hasOwnProperty(key)) {
-                                styles += key + ":" + openStylesProp[key] + ";";
+                        styles = "";
+                        for (var openKey in openStylesProp) {
+                            if (openStylesProp.hasOwnProperty(openKey)) {
+                                styles += openKey + ":" + openStylesProp[openKey] + ";";
                             }
                         }
                         $('head').append('<style>#' + parentFolderLinkEl.id + '.open:before{' + styles + '}</style>');
