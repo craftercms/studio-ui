@@ -368,3 +368,7 @@
 .cstudio-admin-console-item .syncfromrepository:before {
     content: "\f021";
 }
+
+a.acn-parent-folder {
+    background: none !important;
+}
