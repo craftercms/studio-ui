@@ -48,6 +48,8 @@
              * initialize module
              */
             initialize: function(config) {
+                var Self = this;
+
                 if (config.name == "wcm-root-folder") {
                     var instance = new CStudioAuthoring.ContextualNav.WcmRootFolderInstance(config);
                     instance.cannedSearchCache = [];

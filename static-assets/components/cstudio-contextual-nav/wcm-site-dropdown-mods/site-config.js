@@ -51,7 +51,7 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
                                 styles += key + ":" + iconStyles[key] + ";";
                             }
                         }
-                        $('head').append("<style>#" + parentFolderLinkEl.id + ":before{" + styles + "}</style>");
+                        $("head").append("<style>#" + parentFolderLinkEl.id + ":before{" + styles + "}</style>");
                     }
                 }
             }else{

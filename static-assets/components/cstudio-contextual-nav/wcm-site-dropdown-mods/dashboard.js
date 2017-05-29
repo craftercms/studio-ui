@@ -52,7 +52,7 @@ CStudioAuthoring.ContextualNav.Dashboard = CStudioAuthoring.ContextualNav.Dashbo
 									styles += key + ":" + iconStyles[key] + ";";
 								}
 							}
-							$('head').append("<style>#" + dashboardLinkEl.id + ":before{" + styles + "}</style>");
+							$("head").append("<style>#" + dashboardLinkEl.id + ":before{" + styles + "}</style>");
 						}
 					}
 				}else{

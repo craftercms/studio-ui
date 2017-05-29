@@ -69,7 +69,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 WcmAssets.customIcons[key].childIcons.open.icon = WcmAssets.defaultIcons.childOpen;
             }
             if(config.params["child-icon-open"] && config.params["child-icon-open"].styles){
-                WcmAssets.customIcons[key].childIcons.open.styles = config.params['child-icon-open'].styles;
+                WcmAssets.customIcons[key].childIcons.open.styles = config.params["child-icon-open"].styles;
             }
             if(config.params["child-icon-closed"] && config.params["child-icon-closed"].class){
                 WcmAssets.customIcons[key].childIcons.closed.icon = config.params["child-icon-closed"].class;
