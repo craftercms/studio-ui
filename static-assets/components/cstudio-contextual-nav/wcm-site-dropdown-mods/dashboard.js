@@ -57,6 +57,8 @@ CStudioAuthoring.ContextualNav.Dashboard = CStudioAuthoring.ContextualNav.Dashbo
 							$('head').append('<style>#' + parentFolderLinkEl.id + ':before{' + styles + '}</style>');
 						}
 					}
+				}else{
+					parentFolderLinkEl.className += " acn-parent-folder custom-icon fa-sliders";
 				}
 
 				YDom.addClass(dropdownInnerEl, 'studio-view');

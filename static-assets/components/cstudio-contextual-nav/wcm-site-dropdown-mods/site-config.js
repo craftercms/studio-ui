@@ -39,8 +39,6 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
             if(moduleConfig.icon){
                 if (moduleConfig.icon.class){
                     parentFolderLinkEl.className += " acn-parent-folder custom-icon " + moduleConfig.icon.class;
-                }else{
-                    parentFolderLinkEl.className += " acn-parent-folder custom-icon fa-sliders";
                 }
 
                 if(moduleConfig.icon.styles){
@@ -56,6 +54,8 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
                         $('head').append('<style>#' + parentFolderLinkEl.id + ':before{' + styles + '}</style>');
                     }
                 }
+            }else{
+                parentFolderLinkEl.className += " acn-parent-folder custom-icon fa-sliders";
             }
 
             parentFolderLinkEl.onclick = function() {
