@@ -404,14 +404,14 @@ CStudioAuthoring.Module.requireModule(
 				var controlsPanelEl = document.getElementById("widgets-container");
 
 				// add standard section control
-				var controlContainerEl = document.createElement("div");
-				controlsPanelEl.appendChild(controlContainerEl);
-				YDom.addClass(controlContainerEl, "control");
-				controlContainerEl.innerHTML = CMgs.format(langBundle, "formSection");
-				var dd = new DragAndDropDecorator(controlContainerEl);
-				YDom.addClass(controlContainerEl, "control-section");
+				var formContainerEl = document.createElement("div");
+				controlsPanelEl.appendChild(formContainerEl);
+				YDom.addClass(formContainerEl, "control");
+                formContainerEl.innerHTML = CMgs.format(langBundle, "formSection");
+				var dd = new DragAndDropDecorator(formContainerEl);
+				YDom.addClass(formContainerEl, "control-section");
                 var iconEltFormSection = this.createIcon(formSection, "fa-cube");
-                controlContainerEl.insertBefore(iconEltFormSection, controlContainerEl.firstChild);
+                formContainerEl.insertBefore(iconEltFormSection, formContainerEl.firstChild);
 
 				// add repeat control
 				var repeatContainerEl = document.createElement("div");
@@ -451,42 +451,48 @@ CStudioAuthoring.Module.requireModule(
 				var fakeComponentOwner = { registerField: function() {} };
 				CStudioAdminConsole.Tool.ContentTypes.types = [];
 
+                var rememberIdxF = function(callback) {
+                    return function(idx) {
+                        callback(idx);
+                    }
+                };
+
 				for(var j=0; j<controls.length; j++) {
 					try {
 						var controlContainerEl = document.createElement("div"),
                         controlName = controls[j].name ? controls[j].name : controls[j];
 						controlsPanelEl.appendChild(controlContainerEl);
 
-                       (function (j) {
-                        var cb = {
-							moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-								try {
-									var tool = new moduleClass("fake", {}, fakeComponentOwner, [], [], []);
-									CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
-									YDom.addClass(this.controlContainerEl, "control");
-									this.controlContainerEl.innerHTML = tool.getLabel();
+                        rememberIdxF(function(idx) {
+                            var cb = {
+                                moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                                    try {
+                                        var tool = new moduleClass("fake", {}, fakeComponentOwner, [], [], []);
+                                        CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
+                                        YDom.addClass(this.controlContainerEl, "control");
+                                        this.controlContainerEl.innerHTML = tool.getLabel();
 
-									var dd = new DragAndDropDecorator(this.controlContainerEl);
-									tool.id = tool.getFixedId();
-									this.controlContainerEl.prototypeField = tool;
-									YDom.addClass(this.controlContainerEl, "new-control-type");
-                                    var iconElt = self.createIcon(controls[j], "fa-cube");
-                                    this.controlContainerEl.insertBefore(iconElt, this.controlContainerEl.firstChild);
-								}
-								catch (e) {
-								}
-							},
+                                        var dd = new DragAndDropDecorator(this.controlContainerEl);
+                                        tool.id = tool.getFixedId();
+                                        this.controlContainerEl.prototypeField = tool;
+                                        YDom.addClass(this.controlContainerEl, "new-control-type");
+                                        var iconElt = self.createIcon(controls[idx], "fa-cube");
+                                        this.controlContainerEl.insertBefore(iconElt, this.controlContainerEl.firstChild);
+                                    }
+                                    catch (e) {
+                                    }
+                                },
 
-							context: this,
-							controlContainerEl: controlContainerEl
-						};
+                                context: this,
+                                controlContainerEl: controlContainerEl
+                            };
 
-                           CStudioAuthoring.Module.requireModule(
-                                   "cstudio-forms-controls-" + controlName,
-                                   '/static-assets/components/cstudio-forms/controls/' + controlName+ ".js",
-                               { config: controlName },
-                               cb);
-                       })(j);
+                               CStudioAuthoring.Module.requireModule(
+                                       "cstudio-forms-controls-" + controlName,
+                                       '/static-assets/components/cstudio-forms/controls/' + controlName+ ".js",
+                                   { config: controlName },
+                                   cb);
+                        })(j);
 					}
 					catch(err) {
 						//alert(err);
@@ -506,36 +512,36 @@ CStudioAuthoring.Module.requireModule(
                             dsourceName = datasources[l].name ? datasources[l].name : datasources[l];
 						dsourcePanelEl.appendChild(dsourceContainerEl);
 
-                        (function (l) {
-                        var cb = {
-							moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-								try {
-									var datasource = new moduleClass("", {}, [], []);
-									CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()] = datasource;
-									YDom.addClass(this.dsourceContainerEl, "datasource");
-									YDom.addClass(this.dsourceContainerEl, "new-datasource-type");
-									this.dsourceContainerEl.innerHTML = datasource.getLabel();
+                        rememberIdxF(function(idx) {
+                            var cb = {
+                                moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                                    try {
+                                        var datasource = new moduleClass("", {}, [], []);
+                                        CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()] = datasource;
+                                        YDom.addClass(this.dsourceContainerEl, "datasource");
+                                        YDom.addClass(this.dsourceContainerEl, "new-datasource-type");
+                                        this.dsourceContainerEl.innerHTML = datasource.getLabel();
 
 
-									var dd = new DragAndDropDecorator(this.dsourceContainerEl);
-									this.dsourceContainerEl.prototypeDatasource = datasource;
-                                    var iconElt = self.createIcon(datasources[l], "fa-database");
-                                    this.dsourceContainerEl.insertBefore(iconElt, this.dsourceContainerEl.firstChild);
-								}
-								catch (e) {
-								}
-							},
+                                        var dd = new DragAndDropDecorator(this.dsourceContainerEl);
+                                        this.dsourceContainerEl.prototypeDatasource = datasource;
+                                        var iconElt = self.createIcon(datasources[idx], "fa-database");
+                                        this.dsourceContainerEl.insertBefore(iconElt, this.dsourceContainerEl.firstChild);
+                                    }
+                                    catch (e) {
+                                    }
+                                },
 
-							context: this,
-							dsourceContainerEl: dsourceContainerEl
-						};
+                                context: this,
+                                dsourceContainerEl: dsourceContainerEl
+                            };
 
 
-						CStudioAuthoring.Module.requireModule(
-							"cstudio-forms-controls-" + dsourceName,
-							'/static-assets/components/cstudio-forms/data-sources/' + dsourceName + ".js",
-							{ config: dsourceName },
-							cb);
+                            CStudioAuthoring.Module.requireModule(
+                                "cstudio-forms-controls-" + dsourceName,
+                                '/static-assets/components/cstudio-forms/data-sources/' + dsourceName + ".js",
+                                { config: dsourceName },
+                                cb);
                         })(l);
 					}
 					catch(err) {
