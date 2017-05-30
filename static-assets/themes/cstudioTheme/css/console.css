@@ -671,9 +671,9 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
 
 
 .control, .datasource {
-    background: url("../../../themes/cstudioTheme/images/database.png") no-repeat scroll 0 0 transparent;
+    /*background: url("../../../themes/cstudioTheme/images/database.png") no-repeat scroll 0 0 transparent;*/
     font-size: 13px;
-    padding-left: 25px;
+    /*padding-left: 25px;*/
     text-align: left;
     height: 25px;
     cursor: pointer;
@@ -683,8 +683,14 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
 }	
 
 .control {
-    background-image: url("../../../themes/cstudioTheme/images/cube.png");
-}	
+    /*background-image: url("../../../themes/cstudioTheme/images/cube.png");*/
+}
+
+.control .fa, .datasource .fa{
+    padding-right: 6px;
+    font-size: 16px;
+    color: #7e9dbb;
+}
 
 .cstudio-form-repeat-control {
 	padding-left: 10px;
