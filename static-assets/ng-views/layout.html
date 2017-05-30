@@ -17,10 +17,25 @@
 
             <div ng-if="authenticated" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li ng-show="createSites" ui-sref-active="active"><a ui-sref="home.users">{{ 'admin.users.HEADER_LABEL' | translate }}</a></li>
-                    <li ui-sref-active="active"><a ui-sref="home.sites">{{ 'dashboard.sites.SITES_LABEL' | translate }}</a></li>
+                    <li ng-show="createSites" ui-sref-active="active">
+                        <a class="nav-link" ui-sref="home.users">
+                            <span class="nav-icon fa fa-users"></span>
+                            <span class="nav-label">{{ 'admin.users.HEADER_LABEL' | translate }}</span>
+                        </a>
+                    </li>
+                    <li ui-sref-active="active">
+                        <a class="nav-link" ui-sref="home.sites">
+                            <span class="nav-icon fa fa-sitemap"></span>
+                            <span class="nav-label">{{ 'dashboard.sites.SITES_LABEL' | translate }}</span>
+                        </a>
+                    </li>
                     <li class="dropdown" dropdown>
-                        <a class="dropdown-toggle" dropdown-toggle>{{ 'common.HELP' | translate }} <span class="caret"></span></a>
+                        <a class="nav-link dropdown-toggle" dropdown-toggle>
+                            <span class="nav-icon fa fa-life-ring"></span>
+                            <span class="nav-label">
+                                {{ 'common.HELP' | translate }} <span class="caret"></span>
+                            </span>
+                        </a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="{{helpUrl}}" target="_blank">{{ 'common.DOCUMENTATION' | translate }}</a></li>
                             <li><a ui-sref-active="active" ui-sref="home.about-us" >{{ 'common.ABOUT' | translate }}</a></li>
