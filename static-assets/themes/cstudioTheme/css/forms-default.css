@@ -842,14 +842,25 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 	width: 300px;
 }
 
+.cstudio-form-control-hover-btn{
+    background-color: #f5f5f5;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.cstudio-form-control-hover-btn:hover{
+    text-decoration: none;
+}
+
 .cstudio-form-control-asset-picker-zoom-button {
-    background: url("/studio/static-assets/themes/cstudioTheme/images/magnify.png") no-repeat scroll 0 0;
-    width: 21px;
+    /*background: url("/studio/static-assets/themes/cstudioTheme/images/magnify.png") no-repeat scroll 0 0;
+    width: 21px;*/
     cursor: pointer;
     border: none;
     position: absolute;
     top: 0;
-    right: 16px;
+    right: 26px;
 }
 
 .cstudio-form-control-asset-picker-zoom-button.video-zoom {
@@ -859,12 +870,25 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 .cstudio-form-control-asset-picker-download-button {
 	position: absolute;
 	top: 0;
-    right: 0;
+    right: 3px;
+}
+
+.zoom-button {
+    vertical-align: top;
+    margin-top: 6px;
+    position: absolute;
+}
+
+#zoomCancelButton{
+    position: absolute;
 }
 
 .cstudio-form-control-asset-picker-zoom-cancel-button {
-	margin-top: 2px; 
-	margin-left: -57px
+    right: 10px;
+}
+
+.cstudio-form-control-asset-picker-zoom-full-button {
+    right: 76px;
 }
 
 /* End Asset Picker Styles - image, video and flash */
