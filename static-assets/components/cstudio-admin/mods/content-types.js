@@ -336,6 +336,24 @@ CStudioAuthoring.Module.requireModule(
 
 			},
 
+            /**
+             * Icons
+             */
+            createIcon: function(conf, defaultIcon){
+                var iconElt = document.createElement("span");
+                YDom.addClass(iconElt, "fa");
+                YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
+                var styles = conf && conf.icon ? conf.icon.styles : null;
+                if(styles){
+                    for (var key in styles) {
+                        if (styles.hasOwnProperty(key)) {
+                            iconElt.style[key] = styles[key];
+                        }
+                    }
+                }
+                return iconElt;
+            },
+
 			/**
 			 * render tools on the right
 			 */
@@ -343,7 +361,10 @@ CStudioAuthoring.Module.requireModule(
 
 				var controls = config.controls.control;
 				var datasources = config.datasources.datasource;
+                var formSection = config.formSection;
+                var repeatSection = config.repeatSection;
 				var toolbarEl = document.getElementById("content-type-tools");
+                var self = this;
 
 				if(!controls.length) {
 					controls = [controls.control];
@@ -383,12 +404,14 @@ CStudioAuthoring.Module.requireModule(
 				var controlsPanelEl = document.getElementById("widgets-container");
 
 				// add standard section control
-				var controlContainerEl = document.createElement("div");
-				controlsPanelEl.appendChild(controlContainerEl);
-				YDom.addClass(controlContainerEl, "control");
-				controlContainerEl.innerHTML = CMgs.format(langBundle, "formSection");
-				var dd = new DragAndDropDecorator(controlContainerEl);
-				YDom.addClass(controlContainerEl, "control-section");
+				var formContainerEl = document.createElement("div");
+				controlsPanelEl.appendChild(formContainerEl);
+				YDom.addClass(formContainerEl, "control");
+                formContainerEl.innerHTML = CMgs.format(langBundle, "formSection");
+				var dd = new DragAndDropDecorator(formContainerEl);
+				YDom.addClass(formContainerEl, "control-section");
+                var iconEltFormSection = this.createIcon(formSection, "fa-cube");
+                formContainerEl.insertBefore(iconEltFormSection, formContainerEl.firstChild);
 
 				// add repeat control
 				var repeatContainerEl = document.createElement("div");
@@ -411,6 +434,8 @@ CStudioAuthoring.Module.requireModule(
 						return [ ];
 					}
 				};
+                var iconEltRepeatSection = this.createIcon(repeatSection, "fa-cube");
+                repeatContainerEl.insertBefore(iconEltRepeatSection, repeatContainerEl.firstChild);
 
 				var linkContainer = document.getElementById("basicContent");
 
@@ -426,40 +451,48 @@ CStudioAuthoring.Module.requireModule(
 				var fakeComponentOwner = { registerField: function() {} };
 				CStudioAdminConsole.Tool.ContentTypes.types = [];
 
+                var rememberIdxF = function(callback) {
+                    return function(idx) {
+                        callback(idx);
+                    }
+                };
+
 				for(var j=0; j<controls.length; j++) {
 					try {
-						var controlContainerEl = document.createElement("div");
+						var controlContainerEl = document.createElement("div"),
+                        controlName = controls[j].name ? controls[j].name : controls[j];
 						controlsPanelEl.appendChild(controlContainerEl);
 
-						var cb = {
-							moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-								try {
-									var tool = new moduleClass("fake", {}, fakeComponentOwner, [], [], []);
-									CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
-									YDom.addClass(this.controlContainerEl, "control");
-									this.controlContainerEl.innerHTML = tool.getLabel();
+                        rememberIdxF(function(idx) {
+                            var cb = {
+                                moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                                    try {
+                                        var tool = new moduleClass("fake", {}, fakeComponentOwner, [], [], []);
+                                        CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
+                                        YDom.addClass(this.controlContainerEl, "control");
+                                        this.controlContainerEl.innerHTML = tool.getLabel();
 
-									var dd = new DragAndDropDecorator(this.controlContainerEl);
-									tool.id = tool.getFixedId();
-									this.controlContainerEl.prototypeField = tool;
-									YDom.addClass(this.controlContainerEl, "new-control-type");
-								}
-								catch (e) {
-								}
-							},
+                                        var dd = new DragAndDropDecorator(this.controlContainerEl);
+                                        tool.id = tool.getFixedId();
+                                        this.controlContainerEl.prototypeField = tool;
+                                        YDom.addClass(this.controlContainerEl, "new-control-type");
+                                        var iconElt = self.createIcon(controls[idx], "fa-cube");
+                                        this.controlContainerEl.insertBefore(iconElt, this.controlContainerEl.firstChild);
+                                    }
+                                    catch (e) {
+                                    }
+                                },
 
-							context: this,
-							controlContainerEl: controlContainerEl
-						};
+                                context: this,
+                                controlContainerEl: controlContainerEl
+                            };
 
-
-
-
-						CStudioAuthoring.Module.requireModule(
-							"cstudio-forms-controls-" + controls[j],
-							'/static-assets/components/cstudio-forms/controls/' + controls[j] + ".js",
-							{ config: controls[j] },
-							cb);
+                               CStudioAuthoring.Module.requireModule(
+                                       "cstudio-forms-controls-" + controlName,
+                                       '/static-assets/components/cstudio-forms/controls/' + controlName+ ".js",
+                                   { config: controlName },
+                                   cb);
+                        })(j);
 					}
 					catch(err) {
 						//alert(err);
@@ -475,37 +508,41 @@ CStudioAuthoring.Module.requireModule(
 
 				for(var l=0; l<datasources.length; l++) {
 					try {
-						var dsourceContainerEl = document.createElement("div");
+						var dsourceContainerEl = document.createElement("div"),
+                            dsourceName = datasources[l].name ? datasources[l].name : datasources[l];
 						dsourcePanelEl.appendChild(dsourceContainerEl);
 
-						var cb = {
-							moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-								try {
-									var datasource = new moduleClass("", {}, [], []);
-									CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()] = datasource;
-									YDom.addClass(this.dsourceContainerEl, "datasource");
-									YDom.addClass(this.dsourceContainerEl, "new-datasource-type");
-									this.dsourceContainerEl.innerHTML = datasource.getLabel();
+                        rememberIdxF(function(idx) {
+                            var cb = {
+                                moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                                    try {
+                                        var datasource = new moduleClass("", {}, [], []);
+                                        CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()] = datasource;
+                                        YDom.addClass(this.dsourceContainerEl, "datasource");
+                                        YDom.addClass(this.dsourceContainerEl, "new-datasource-type");
+                                        this.dsourceContainerEl.innerHTML = datasource.getLabel();
 
 
-									var dd = new DragAndDropDecorator(this.dsourceContainerEl);
-									this.dsourceContainerEl.prototypeDatasource = datasource;
+                                        var dd = new DragAndDropDecorator(this.dsourceContainerEl);
+                                        this.dsourceContainerEl.prototypeDatasource = datasource;
+                                        var iconElt = self.createIcon(datasources[idx], "fa-database");
+                                        this.dsourceContainerEl.insertBefore(iconElt, this.dsourceContainerEl.firstChild);
+                                    }
+                                    catch (e) {
+                                    }
+                                },
 
-								}
-								catch (e) {
-								}
-							},
-
-							context: this,
-							dsourceContainerEl: dsourceContainerEl
-						};
+                                context: this,
+                                dsourceContainerEl: dsourceContainerEl
+                            };
 
 
-						CStudioAuthoring.Module.requireModule(
-							"cstudio-forms-controls-" + datasources[l],
-							'/static-assets/components/cstudio-forms/data-sources/' + datasources[l] + ".js",
-							{ config: datasources[l] },
-							cb);
+                            CStudioAuthoring.Module.requireModule(
+                                "cstudio-forms-controls-" + dsourceName,
+                                '/static-assets/components/cstudio-forms/data-sources/' + dsourceName + ".js",
+                                { config: dsourceName },
+                                cb);
+                        })(l);
 					}
 					catch(err) {
 						//alert(err);
