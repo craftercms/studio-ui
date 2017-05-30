@@ -96,11 +96,28 @@ CStudioAdminConsole.Toolbar.prototype = {
         label = labelLangBundle == label ?
             tool.config.label : labelLangBundle;
 
-		if(tool.config.icon){
-			toolContainerEl.innerHTML = '<span class="mr10 fa ' + tool.config.icon + '"></span>' + label;
+		var span = document.createElement('span');
+
+		if(tool.config.icon && tool.config.icon.class){		//custom icon
+			span.className = "mr10 fa " + tool.config.icon.class;
 		}else{
-			toolContainerEl.innerHTML = label;
+			span.className = "mr10 fa " + tool.config.label.toLowerCase().replace(/ /g, '');
 		}
+
+		if(tool.config.icon && tool.config.icon.styles) {		//custom styling
+			var styles = tool.config.icon.styles;
+
+			if (styles){
+				for (var key in styles) {
+					if (styles.hasOwnProperty(key)) {
+						span.style[key] = styles[key];
+					}
+				}
+			}
+		}
+
+		toolContainerEl.appendChild(span);
+		toolContainerEl.innerHTML += label;
 	   	YDom.addClass(toolContainerEl, "cstudio-admin-console-item");
 
 	   	var onRenderWorkAreaFn =  function(evt, params) {

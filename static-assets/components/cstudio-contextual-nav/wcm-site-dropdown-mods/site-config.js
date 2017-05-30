@@ -36,8 +36,26 @@ CStudioAuthoring.ContextualNav.SiteConfig = CStudioAuthoring.ContextualNav.SiteC
 
             parentFolderLinkEl.innerHTML = label;
 
-            if (moduleConfig.icon){
-                parentFolderLinkEl.className += " acn-parent-folder custom-icon " + moduleConfig.icon;
+            if(moduleConfig.icon){
+                if (moduleConfig.icon.class){
+                    parentFolderLinkEl.className += " acn-parent-folder custom-icon " + moduleConfig.icon.class;
+                }
+
+                if(moduleConfig.icon.styles){
+                    var iconStyles = moduleConfig.icon.styles;
+
+                    if (iconStyles){
+                        var styles = "";
+                        for (var key in iconStyles) {
+                            if (iconStyles.hasOwnProperty(key)) {
+                                styles += key + ":" + iconStyles[key] + ";";
+                            }
+                        }
+                        $("head").append("<style>#" + parentFolderLinkEl.id + ":before{" + styles + "}</style>");
+                    }
+                }
+            }else{
+                parentFolderLinkEl.className += " acn-parent-folder custom-icon fa-sliders";
             }
 
             parentFolderLinkEl.onclick = function() {

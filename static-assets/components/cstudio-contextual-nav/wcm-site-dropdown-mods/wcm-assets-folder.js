@@ -16,6 +16,15 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     treePaths: [],
     storage: CStudioAuthoring.Storage,
     customIcons: {},
+    defaultIcons: {
+        defaultIcon: "fa-folder",
+        childOpen: "fa-folder-open-o",
+        childClosed: "fa-folder-o",
+        scripts: "fa-code",
+        staticassets: "fa-file-image-o",
+        taxonomy: "fa-tags",
+        templates: "fa-file-code-o"
+    },
 
     /**
      * initialize module
@@ -42,21 +51,61 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
             var key = config.params.label;
             key = key.replace(/\s/g,'');
-            WcmAssets.customIcons[key] = {};
+            WcmAssets.customIcons[key] = {
+                childIcons: {
+                    open: {},
+                    closed: {}
+                },
+                moduleIcons: {
+                    open: {},
+                    closed: {}
+                }
+            };
 
-
-            if(config.params['child-icon-closed']) {
-                WcmAssets.customIcons[key].childIcons  = {
-                    open: config.params['child-icon-open'] ? config.params['child-icon-open'] : config.params['child-icon-closed'],
-                    closed: config.params['child-icon-closed']
-                };
+            //Setup child folders icon configuration
+            if(config.params["child-icon-open"] && config.params["child-icon-open"].class){
+                WcmAssets.customIcons[key].childIcons.open.icon = config.params["child-icon-open"].class;
+            }else{
+                WcmAssets.customIcons[key].childIcons.open.icon = WcmAssets.defaultIcons.childOpen;
+            }
+            if(config.params["child-icon-open"] && config.params["child-icon-open"].styles){
+                WcmAssets.customIcons[key].childIcons.open.styles = config.params["child-icon-open"].styles;
+            }
+            if(config.params["child-icon-closed"] && config.params["child-icon-closed"].class){
+                WcmAssets.customIcons[key].childIcons.closed.icon = config.params["child-icon-closed"].class;
+            }else{
+                WcmAssets.customIcons[key].childIcons.closed.icon = WcmAssets.defaultIcons.childClosed;
+            }
+            if(config.params["child-icon-closed"] && config.params["child-icon-closed"].styles){
+                WcmAssets.customIcons[key].childIcons.closed.styles = config.params["child-icon-closed"].styles;
             }
 
-            if(config.params['module-icon-closed']) {
-                WcmAssets.customIcons[key].moduleIcons  = {
-                    open: config.params['module-icon-open'] ? config.params['module-icon-open'] : config.params['module-icon-closed'],
-                    closed: config.params['module-icon-closed']
-                };
+            var module = key.toLowerCase();
+
+            //setup root folder icon configuration
+            if(config.params["module-icon-open"] && config.params["module-icon-open"].class){
+                WcmAssets.customIcons[key].moduleIcons.open.icon = config.params["module-icon-open"].class;
+            }else{
+                if(WcmAssets.defaultIcons[module]){
+                    WcmAssets.customIcons[key].moduleIcons.open.icon = WcmAssets.defaultIcons[module];
+                }else{
+                    WcmAssets.customIcons[key].moduleIcons.open.icon = WcmAssets.defaultIcons.defaultIcon;
+                }
+            }
+            if(config.params["module-icon-open"] && config.params["module-icon-open"].styles){
+                WcmAssets.customIcons[key].moduleIcons.open.styles = config.params["module-icon-open"].styles;
+            }
+            if(config.params["module-icon-closed"] && config.params["module-icon-closed"].class){
+                WcmAssets.customIcons[key].moduleIcons.closed.icon = config.params["module-icon-closed"].class;
+            }else{
+                if(WcmAssets.defaultIcons[module]){
+                    WcmAssets.customIcons[key].moduleIcons.closed.icon = WcmAssets.defaultIcons[module];
+                }else{
+                    WcmAssets.customIcons[key].moduleIcons.closed.icon = WcmAssets.defaultIcons.defaultIcon;
+                }
+            }
+            if(config.params["module-icon-closed"] && config.params["module-icon-closed"].styles){
+                WcmAssets.customIcons[key].moduleIcons.closed.styles = config.params["module-icon-closed"].styles;
             }
 
             this.addContentTreeRootFolder(instance);
@@ -99,8 +148,40 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         key = key.replace(/\s/g,'');
 
         if(WcmAssets.customIcons[key] && WcmAssets.customIcons[key].moduleIcons){
-            YDom.addClass(parentFolderLinkEl, "custom-icon");
-            YDom.addClass(parentFolderLinkEl, WcmAssets.customIcons[key].moduleIcons.closed);
+            var moduleIcons = WcmAssets.customIcons[key].moduleIcons;
+
+            //check for custom icon
+            if(moduleIcons.closed && moduleIcons.closed.icon){
+                YDom.addClass(parentFolderLinkEl, "custom-icon");
+                YDom.addClass(parentFolderLinkEl, moduleIcons.closed.icon);
+            }
+            YDom.addClass(parentFolderLinkEl, "closed");
+
+            var styles = "";
+
+            //check for custom styles
+            if(moduleIcons.closed && moduleIcons.closed.styles){
+                var closedStylesProp = moduleIcons.closed.styles;
+
+                for (var closedStylesKey in closedStylesProp) {
+                    if (closedStylesProp.hasOwnProperty(closedStylesKey)) {
+                        styles += closedStylesKey + ":" + closedStylesProp[closedStylesKey] + ";";
+                    }
+                }
+                $('head').append('<style>#' + parentFolderLinkEl.id + '.closed:before{' + styles + '}</style>');
+
+            }
+            if(moduleIcons.open && moduleIcons.open.styles){
+                var openStylesProp = moduleIcons.open.styles;
+                styles = "";
+
+                for (var openStylesKey in openStylesProp) {
+                    if (openStylesProp.hasOwnProperty(openStylesKey)) {
+                        styles += openStylesKey + ":" + openStylesProp[openStylesKey] + ";";
+                    }
+                }
+                $('head').append('<style>#' + parentFolderLinkEl.id + '.open:before{' + styles + '}</style>');
+            }
         }
 
         YDom.addClass(parentFolderLinkEl, "acn-parent-folder");
@@ -400,9 +481,46 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 key = key.replace(/\s/g,'');
 
                 if(WcmAssets.customIcons[key] && WcmAssets.customIcons[key].childIcons){
-                    treeNodeTO.style += ' custom-icon';
-                    treeNodeTO.style += ' ' + WcmAssets.customIcons[key].childIcons.closed;
+                    var childIcons = WcmAssets.customIcons[key].childIcons;
+
+                    //check for custom icon
+                    if(childIcons.closed && childIcons.closed.icon){
+                        treeNodeTO.style += ' custom-icon';
+                        treeNodeTO.style += ' ' + childIcons.closed.icon;
+                    }
+                    treeNodeTO.style += ' closed';
+                    treeNodeTO.style += ' ' + key;
+
+                    var styles = '';
+
+                    //check for custom styles
+                    if(childIcons.closed && childIcons.closed.styles){
+                        var closedStylesProp = childIcons.closed.styles;
+
+                        for (var closedStyleKey in closedStylesProp) {
+                            if (closedStylesProp.hasOwnProperty(closedStyleKey)) {
+                                styles += closedStyleKey + ":" + closedStylesProp[closedStyleKey] + " !important;";
+                            }
+                        }
+                        $('head').append('<style>.' + key + '.custom-icon.closed:before{' + styles + '}</style>');
+
+                    }
+                    if(childIcons.open && childIcons.open.styles){
+                        var openStylesProp = childIcons.open.styles;
+                        styles = '';
+
+                        for (var openStyleKey in openStylesProp) {
+                            if (openStylesProp.hasOwnProperty(openStyleKey)) {
+                                styles += openStyleKey + ":" + openStylesProp[openStyleKey] + " !important;";
+                            }
+                        }
+                        $('head').append('<style>.' + key + '.custom-icon.open:before{' + styles + '}</style>');
+                    }
                 }
+
+
+
+
             }
 
             var treeNode = new YAHOO.widget.TextNode(treeNodeTO, root, false);
@@ -446,6 +564,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     toggleFolderState: function(instance, forceState, path) {
         var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
 
+        var key = instance.label,
+            customIcons,
+            openClass,
+            closedClass,
+            $el;
         if(forceState != null && forceState != WcmAssetsFolder.ROOT_TOGGLE) {
             // force
             if(forceState == WcmAssetsFolder.ROOT_OPEN) {
@@ -455,16 +578,28 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 this.save(instance, WcmAssetsFolder.ROOT_OPENED, null, "root-folder");
 
                 //add custom icon class
-                var key = instance.label;
                 key = key.replace(/\s/g,'');
+
+                $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                $el.removeClass('closed');
+                $el.addClass('open');
+
                 if(WcmAssetsFolder.customIcons[key] && WcmAssetsFolder.customIcons[key].moduleIcons){
-                    var openClass = WcmAssetsFolder.customIcons[key].moduleIcons.open;
-                    var closedClass = WcmAssetsFolder.customIcons[key].moduleIcons.closed;
-                    var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                    customIcons = WcmAssetsFolder.customIcons[key].moduleIcons;
+                    openClass = customIcons.open && customIcons.open.icon
+                        ? customIcons.open.icon
+                        : '';
+                    closedClass = customIcons.closed && customIcons.closed.icon
+                        ? customIcons.closed.icon
+                        : '';
 
-                    $el.removeClass(closedClass);
-                    $el.addClass(openClass);
-
+                    if (closedClass) $el.removeClass(closedClass);
+                    if(openClass){
+                        $el.addClass(openClass);
+                        $el.addClass('custom-icon');
+                    }else{
+                        $el.removeClass('custom-icon');
+                    }
                 }
             }
             else {
@@ -473,16 +608,26 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 WcmAssetsFolder.storage.eliminate( Self.getStoredPathKey(instance) );
 
                 //add custom icon class
-                var key = instance.label;
+                key = instance.label;
                 key = key.replace(/\s/g,'');
+
                 if(WcmAssetsFolder.customIcons[key] && WcmAssetsFolder.customIcons[key].moduleIcons){
-                    var openClass = WcmAssetsFolder.customIcons[key].moduleIcons.open;
-                    var closedClass = WcmAssetsFolder.customIcons[key].moduleIcons.closed;
-                    var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                    customIcons = WcmAssetsFolder.customIcons[key].moduleIcons;
+                    openClass = customIcons.open && customIcons.open.icon
+                        ? customIcons.open.icon
+                        : '';
+                    closedClass = customIcons.closed && customIcons.closed.icon
+                        ? customIcons.closed.icon
+                        : '';
+                    $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
 
-                    $el.removeClass(openClass);
-                    $el.addClass(closedClass);
-
+                    if (openClass) $el.removeClass(openClass);
+                    if(closedClass){
+                        $el.addClass(closedClass);
+                        $el.addClass('custom-icon');
+                    }else{
+                        $el.removeClass('custom-icon');
+                    }
                 }
             }
         }
@@ -569,12 +714,26 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 key = node.instance.label;
             key = key.replace(/\s/g,'');
 
-            if(WcmAssets.customIcons[key] && WcmAssets.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
-                var openClass = WcmAssets.customIcons[key].childIcons.open;
-                var closedClass = WcmAssets.customIcons[key].childIcons.closed;
+            var $el = $('#' + id);
+            $el.removeClass('closed');
+            $el.addClass('open');
 
-                $('#' + id).removeClass(closedClass);
-                $('#' + id).addClass(openClass);
+            if(WcmAssets.customIcons[key] && WcmAssets.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
+                var customIcons = WcmAssets.customIcons[key].childIcons;
+                var openClass = customIcons.open && customIcons.open.icon
+                    ? customIcons.open.icon
+                    : '';
+                var closedClass = customIcons.closed && customIcons.closed.icon
+                    ? customIcons.closed.icon
+                    : '';
+
+                closedClass && $el.removeClass(closedClass);
+                if(openClass){
+                    $el.addClass(openClass);
+                    $el.addClass('custom-icon');
+                }else{
+                    $el.removeClass('custom-icon');
+                }
             }
         }
     },
@@ -603,12 +762,26 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             key = node.instance.label;
         key = key.replace(/\s/g,'');
 
-        if(WcmAssets.customIcons[key] && WcmAssets.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
-            var openClass = WcmAssets.customIcons[key].childIcons.open;
-            var closedClass = WcmAssets.customIcons[key].childIcons.closed;
+        var $el = $('#' + id);
+        $el.removeClass('open');
+        $el.addClass('closed');
 
-            $('#' + id).removeClass(openClass);
-            $('#' + id).addClass(closedClass);
+        if(WcmAssets.customIcons[key] && WcmAssets.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
+            var customIcons = WcmAssets.customIcons[key].childIcons;
+            var openClass = customIcons.open && customIcons.open.icon
+                ? customIcons.open.icon
+                : '';
+            var closedClass = customIcons.closed && customIcons.closed.icon
+                ? customIcons.closed.icon
+                : '';
+
+            openClass && $el.removeClass(openClass);
+            if(closedClass){
+                $el.addClass(closedClass);
+                $el.addClass('custom-icon');
+            }else{
+                $el.removeClass('custom-icon');
+            }
         }
     },
 
@@ -699,12 +872,26 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         var iconsKey = n.instance.label;
                         iconsKey = iconsKey.replace(/\s/g,'');
 
-                        if(WcmAssets.customIcons[iconsKey] && WcmAssets.customIcons[iconsKey].childIcons){
-                            var openClass = WcmAssets.customIcons[iconsKey].childIcons.open;
-                            var closedClass = WcmAssets.customIcons[iconsKey].childIcons.closed;
+                        var $el = $('#' + n.labelElId);
+                        $el.removeClass('closed');
+                        $el.addClass('open');
 
-                            $('#' + n.labelElId).removeClass(closedClass);
-                            $('#' + n.labelElId).addClass(openClass);
+                        if(WcmAssets.customIcons[iconsKey] && WcmAssets.customIcons[iconsKey].childIcons){
+                            var customIcons = WcmAssets.customIcons[iconsKey].childIcons;
+                            var openClass = customIcons.open && customIcons.open.icon
+                                ? customIcons.open.icon
+                                : '';
+                            var closedClass = customIcons.closed && customIcons.closed.icon
+                                ? customIcons.closed.icon
+                                : '';
+
+                            closedClass && $el.removeClass(closedClass);
+                            if(openClass){
+                                $el.addClass(openClass);
+                                $el.addClass('custom-icon');
+                            }else{
+                                $el.removeClass('custom-icon');
+                            }
                         }
                     }
 
@@ -811,14 +998,26 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                                     var keyId = instance.label;
                                     keyId = keyId.replace(/\s/g,'');
 
+                                    var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                                    $el.removeClass('closed');
+                                    $el.addClass('open');
+
                                     if(WcmAssets.customIcons[keyId] && WcmAssets.customIcons[keyId].moduleIcons){
-                                        var openClass = WcmAssets.customIcons[keyId].moduleIcons.open;
-                                        var closedClass = WcmAssets.customIcons[keyId].moduleIcons.closed;
-                                        var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                                        var customIcons = WcmAssets.customIcons[keyId].moduleIcons;
+                                        var openClass = customIcons.open && customIcons.open.icon
+                                            ? customIcons.open.icon
+                                            : '';
+                                        var closedClass = customIcons.closed && customIcons.closed.icon
+                                            ? customIcons.closed.icon
+                                            : '';
 
-                                        $el.removeClass(closedClass);
-                                        $el.addClass(openClass);
-
+                                        closedClass && $el.removeClass(closedClass);
+                                        if(openClass){
+                                            $el.addClass(openClass);
+                                            $el.addClass('custom-icon');
+                                        }else{
+                                            $el.removeClass('custom-icon');
+                                        }
                                     }
                                 }
                                 instance.state = Self.ROOT_OPEN;
@@ -1504,39 +1703,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                 var nodeId = (""+el.id).replace("table","label");
                 var node = Self.treeNodes[nodeId];
-
-                if( node.isContainer == false){
-
-                    // remove this preview
-                    // var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
-
-                    // if(reportContainerEl) {
-                    //     document.body.removeChild(reportContainerEl);
-                    // }
-
-                    // var reportContainerEl = document.createElement("div");
-                    // reportContainerEl.id = "cstudioPreviewAnalyticsOverlay";
-                    // YAHOO.util.Dom.addClass(reportContainerEl, "cstudio-analytics-overlay");
-
-                    // reportContainerEl.style.position = "fixed";
-                    // reportContainerEl.style.width = "800px";
-                    // reportContainerEl.style.top = "100px";
-
-                    // var x = (window.innerWidth / 2) - (reportContainerEl.offsetWidth / 2) - 400;
-                    // reportContainerEl.style.left = x+"px";
-
-
-                    // document.body.appendChild(reportContainerEl);
-                    // reportContainerEl.innerHTML =
-                    //     "<div style='line-height: 111px; text-align: center;'><img src='"+CStudioAuthoringContext.baseUri + "/static-assets/themes/cstudioTheme/images/wait.gif'/></div>";
-
-
-                    // var url = CStudioAuthoringContext.authoringAppBaseUri + "/page/site/" + CStudioAuthoringContext.site + "/cstudio-itempreview-overlay?nodeRef="+node.nodeRef;
-                    // reportContainerEl.innerHTML = "<iframe id='cstudioPreviewAnalyticsOverlayFrame' style='border: none; margin-left: 100px; width: 600px; height:400px; margin-top:25px; margin-bottom: 25px;' src='"+ url + "' />";
-                    // var iframe = document.getElementById("cstudioPreviewAnalyticsOverlayFrame");
-                    // var iframeBody = iframe.contentDocument.getElementsByTagName('body')[0]
-                    // iframeBody.style = "background: none transparent !important;";
-                }
             },
             moutFn = function(evt) {
                 if(Self.lastSelectedTextNode != null) return;
