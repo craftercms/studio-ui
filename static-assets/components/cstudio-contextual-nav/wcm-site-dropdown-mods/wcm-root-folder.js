@@ -37,10 +37,19 @@
             treePathOpenedEvt: new YAHOO.util.CustomEvent("wcmRootFolderTreePathLoaded", Self),
             labelsMenu: [],
             customIcons: {},
+            defaultIcons: {
+                pages: "fa-file-text-o",
+                components: "fa-puzzle-piece",
+                defaultIcon: "fa-folder",
+                childOpen: "fa-folder-open-o",
+                childClosed: "fa-folder-o"
+            },
             /**
              * initialize module
              */
             initialize: function(config) {
+                var Self = this;
+
                 if (config.name == "wcm-root-folder") {
                     var instance = new CStudioAuthoring.ContextualNav.WcmRootFolderInstance(config);
                     instance.cannedSearchCache = [];
@@ -59,20 +68,65 @@
 
                     var key = config.params.label;
                     key = key.replace(/\s/g,'');
-                    Self.customIcons[key] = {};
+                    Self.customIcons[key] = {
+                        childIcons: {
+                            open: {},
+                            closed: {}
+                        },
+                        moduleIcons: {
+                            open: {},
+                            closed: {}
+                        }
+                    };
 
-                    if(config.params['child-icon-closed']) {
-                        Self.customIcons[key].childIcons  = {
-                            open: config.params['child-icon-open'] ? config.params['child-icon-open'] : config.params['child-icon-closed'],
-                            closed: config.params['child-icon-closed']
-                        };
+                    //Setup child folders icon configuration
+                    if(config.params["child-icon-open"] && config.params["child-icon-open"].class){
+                        Self.customIcons[key].childIcons.open.icon = config.params["child-icon-open"].class;
+                    }else{  //default open folder icon
+                        Self.customIcons[key].childIcons.open.icon = Self.defaultIcons.childOpen;
+                    }
+                    if(config.params["child-icon-open"] && config.params["child-icon-open"].styles){
+                        Self.customIcons[key].childIcons.open.styles = config.params["child-icon-open"].styles;
+                    }
+                    if(config.params["child-icon-closed"] && config.params["child-icon-closed"].class){
+                        Self.customIcons[key].childIcons.closed.icon = config.params["child-icon-closed"].class;
+                    }else{  //default closed folder icon
+                        Self.customIcons[key].childIcons.closed.icon = Self.defaultIcons.childClosed;
+                    }
+                    if(config.params["child-icon-closed"] && config.params["child-icon-closed"].styles){
+                        Self.customIcons[key].childIcons.closed.styles = config.params["child-icon-closed"].styles;
                     }
 
-                    if(config.params['module-icon-closed']) {
-                        Self.customIcons[key].moduleIcons  = {
-                            open: config.params['module-icon-open'] ? config.params['module-icon-open'] : config.params['module-icon-closed'],
-                            closed: config.params['module-icon-closed']
-                        };
+                    var module;
+
+                    //setup root folder icon configuration
+                    if(config.params["module-icon-open"] && config.params["module-icon-open"].class){
+                        Self.customIcons[key].moduleIcons.open.icon = config.params["module-icon-open"].class;
+                    }else {
+                        module = key.toLowerCase();
+
+                        if(Self.defaultIcons[module]){
+                            Self.customIcons[key].moduleIcons.open.icon = Self.defaultIcons[module];
+                        }else{
+                            Self.customIcons[key].moduleIcons.open.icon = Self.defaultIcons.defaultIcon;
+                        }
+                    }
+                    if(config.params["module-icon-open"] && config.params["module-icon-open"].styles){
+                        Self.customIcons[key].moduleIcons.open.styles = config.params["module-icon-open"].styles;
+                    }
+                    if(config.params["module-icon-closed"] && config.params["module-icon-closed"].class){
+                        Self.customIcons[key].moduleIcons.closed.icon = config.params["module-icon-closed"].class;
+                    }else {
+                        module = key.toLowerCase();
+
+                        if(Self.defaultIcons[module]){
+                            Self.customIcons[key].moduleIcons.closed.icon = Self.defaultIcons[module];
+                        }else{
+                            Self.customIcons[key].moduleIcons.closed.icon = Self.defaultIcons.defaultIcon;
+                        }
+                    }
+                    if(config.params["module-icon-closed"] && config.params["module-icon-closed"].styles){
+                        Self.customIcons[key].moduleIcons.closed.styles = config.params["module-icon-closed"].styles;
                     }
 
                     if(config.params.mods) {
@@ -212,8 +266,41 @@
                 key = key.replace(/\s/g,'');
 
                 if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
-                    YDom.addClass(parentFolderLinkEl, "custom-icon");
-                    YDom.addClass(parentFolderLinkEl, Self.customIcons[key].moduleIcons.closed);
+                    var moduleIcons = Self.customIcons[key].moduleIcons;
+
+                    //check for custom icon
+                    if(moduleIcons.closed && moduleIcons.closed.icon){
+                        YDom.addClass(parentFolderLinkEl, "custom-icon");
+                        YDom.addClass(parentFolderLinkEl, moduleIcons.closed.icon);
+                    }
+                    YDom.addClass(parentFolderLinkEl, "closed");
+
+                    var styles;
+
+                    //check for custom styles
+                    if(moduleIcons.closed && moduleIcons.closed.styles){
+                        var closedStylesProp = moduleIcons.closed.styles;
+
+                        styles = "";
+                        for (var closedKey in closedStylesProp) {
+                            if (closedStylesProp.hasOwnProperty(closedKey)) {
+                                styles += closedKey + ":" + closedStylesProp[closedKey] + ";";
+                            }
+                        }
+                        $('head').append('<style>#' + parentFolderLinkEl.id + '.closed:before{' + styles + '}</style>');
+
+                    }
+                    if(moduleIcons.open && moduleIcons.open.styles){
+                        var openStylesProp = moduleIcons.open.styles;
+
+                        styles = "";
+                        for (var openKey in openStylesProp) {
+                            if (openStylesProp.hasOwnProperty(openKey)) {
+                                styles += openKey + ":" + openStylesProp[openKey] + ";";
+                            }
+                        }
+                        $('head').append('<style>#' + parentFolderLinkEl.id + '.open:before{' + styles + '}</style>');
+                    }
                 }
 
                 YDom.addClass(parentFolderLinkEl, "acn-parent-folder");
@@ -816,10 +903,43 @@
                         var key = instance.label;
                         key = key.replace(/\s/g,'');
 
-                        if(this.customIcons[key] && this.customIcons[key].childIcons){
-                            treeNodeTO.style += ' custom-icon';
-                            treeNodeTO.style += ' ' + this.customIcons[key].childIcons.closed;
+                        if(Self.customIcons[key] && Self.customIcons[key].childIcons){
+                            var childIcons = Self.customIcons[key].childIcons;
+
+                            //check for custom icon
+                            if(childIcons.closed && childIcons.closed.icon){
+                                treeNodeTO.style += ' custom-icon';
+                                treeNodeTO.style += ' ' + childIcons.closed.icon;
+                            }
+                            treeNodeTO.style += ' closed';
+                            treeNodeTO.style += ' ' + key;
+
+                            //check for custom styles
+                            if(childIcons.closed && childIcons.closed.styles){
+                                var closedStylesProp = childIcons.closed.styles;
+
+                                var styles = '';
+                                for (var styleKey in closedStylesProp) {
+                                    if (closedStylesProp.hasOwnProperty(styleKey)) {
+                                        styles += styleKey + ":" + closedStylesProp[styleKey] + " !important;";
+                                    }
+                                }
+                                $('head').append('<style>.' + key + '.custom-icon.closed:before{' + styles + '}</style>');
+
+                            }
+                            if(childIcons.open && childIcons.open.styles){
+                                var openStylesProp = childIcons.open.styles;
+
+                                var styles = '';
+                                for (var styleKey in openStylesProp) {
+                                    if (openStylesProp.hasOwnProperty(styleKey)) {
+                                        styles += styleKey + ":" + openStylesProp[styleKey] + " !important;";
+                                    }
+                                }
+                                $('head').append('<style>.' + key + '.custom-icon.open:before{' + styles + '}</style>');
+                            }
                         }
+
                     }
 
                     var treeNode = new YAHOO.widget.TextNode(treeNodeTO, root, false);
@@ -869,14 +989,26 @@
                         var key = instance.label;
                         key = key.replace(/\s/g,'');
 
+                        var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                        $el.removeClass('closed');
+                        $el.addClass('open');
+
                         if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
-                            var openClass = Self.customIcons[key].moduleIcons.open;
-                            var closedClass = Self.customIcons[key].moduleIcons.closed;
-                            var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                            var customIcons = Self.customIcons[key].moduleIcons;
+                            var openClass = customIcons.open && customIcons.open.icon
+                                            ? customIcons.open.icon
+                                            : '';
+                            var closedClass = customIcons.closed && customIcons.closed.icon
+                                            ? customIcons.closed.icon
+                                            : '';
 
-                            $el.removeClass(closedClass);
-                            $el.addClass(openClass);
-
+                            closedClass && $el.removeClass(closedClass);
+                            if(openClass){
+                                $el.addClass(openClass);
+                                $el.addClass('custom-icon');
+                            }else{
+                                $el.removeClass('custom-icon');
+                            }
                         }
                     } else {
                         instance.rootFolderEl.style.display = 'none';
@@ -887,14 +1019,27 @@
                         var key = instance.label;
                         key = key.replace(/\s/g,'');
 
+                        var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                        $el.removeClass('open');
+                        $el.addClass('closed');
+
                         if(Self.customIcons[key] && Self.customIcons[key].moduleIcons){
-                            var openClass = Self.customIcons[key].moduleIcons.open;
-                            var closedClass = Self.customIcons[key].moduleIcons.closed;
+                            var customIcons = Self.customIcons[key].moduleIcons;
+                            var openClass = customIcons.open && customIcons.open.icon
+                                ? customIcons.open.icon
+                                : '';
+                            var closedClass = customIcons.closed && customIcons.closed.icon
+                                ? customIcons.closed.icon
+                                : '';
                             var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
 
-                            $el.removeClass(openClass);
-                            $el.addClass(closedClass);
-
+                            openClass && $el.removeClass(openClass);
+                            if(closedClass){
+                                $el.addClass(closedClass);
+                                $el.addClass('custom-icon');
+                            }else{
+                                $el.removeClass('custom-icon');
+                            }
                         }
                     }
                 } else {
@@ -968,13 +1113,28 @@
                                 var iconsKey = n.instance.label;
                                 iconsKey = iconsKey.replace(/\s/g,'');
 
-                                if(Self.customIcons[iconsKey] && Self.customIcons[iconsKey].childIcons){
-                                    var openClass = Self.customIcons[iconsKey].childIcons.open;
-                                    var closedClass = Self.customIcons[iconsKey].childIcons.closed;
+                                var $el = $('#' + n.labelElId);
+                                $el.removeClass('closed');
+                                $el.addClass('open');
 
-                                    $('#' + n.labelElId).removeClass(closedClass);
-                                    $('#' + n.labelElId).addClass(openClass);
+                                if(Self.customIcons[iconsKey] && Self.customIcons[iconsKey].childIcons){
+                                    var customIcons = Self.customIcons[iconsKey].childIcons;
+                                    var openClass = customIcons.open && customIcons.open.icon
+                                        ? customIcons.open.icon
+                                        : '';
+                                    var closedClass = customIcons.closed && customIcons.closed.icon
+                                        ? customIcons.closed.icon
+                                        : '';
+
+                                    closedClass && $el.removeClass(closedClass);
+                                    if(openClass){
+                                        $el.addClass(openClass);
+                                        $el.addClass('custom-icon');
+                                    }else{
+                                        $el.removeClass('custom-icon');
+                                    }
                                 }
+
                             }
 
 							if (counter[key][j] < recursiveCalls[key][j]) {
@@ -1079,15 +1239,27 @@
                                             //add custom icon class
                                             var keyId = instance.label;
                                             keyId = keyId.replace(/\s/g,'');
+                                            
+                                            var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                                            $el.removeClass('closed');
+                                            $el.addClass('open');
 
                                             if(Self.customIcons[keyId] && Self.customIcons[keyId].moduleIcons){
-                                                var openClass = Self.customIcons[keyId].moduleIcons.open;
-                                                var closedClass = Self.customIcons[keyId].moduleIcons.closed;
-                                                var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
+                                                var customIcons = Self.customIcons[keyId].moduleIcons;
+                                                var openClass = customIcons.open && customIcons.open.icon
+                                                    ? customIcons.open.icon
+                                                    : '';
+                                                var closedClass = customIcons.closed && customIcons.closed.icon
+                                                    ? customIcons.closed.icon
+                                                    : '';
 
-                                                $el.removeClass(closedClass);
-                                                $el.addClass(openClass);
-
+                                                closedClass && $el.removeClass(closedClass);
+                                                if(openClass){
+                                                    $el.addClass(openClass);
+                                                    $el.addClass('custom-icon');
+                                                }else{
+                                                    $el.removeClass('custom-icon');
+                                                }
                                             }
 
                                         }
@@ -1304,13 +1476,28 @@
                 key = node.instance.label;
             key = key.replace(/\s/g,'');
 
-            if(Self.customIcons[key] && Self.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
-                var openClass = Self.customIcons[key].childIcons.open;
-                var closedClass = Self.customIcons[key].childIcons.closed;
+            var $el = $('#' + id);
+            $el.removeClass('closed');
+            $el.addClass('open');
 
-                $('#' + id).removeClass(closedClass);
-                $('#' + id).addClass(openClass);
+            if(Self.customIcons[key] && Self.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
+                var customIcons = Self.customIcons[key].childIcons;
+                var openClass = customIcons.open && customIcons.open.icon
+                    ? customIcons.open.icon
+                    : '';
+                var closedClass = customIcons.closed && customIcons.closed.icon
+                    ? customIcons.closed.icon
+                    : '';
+
+                closedClass && $el.removeClass(closedClass);
+                if(openClass){
+                    $el.addClass(openClass);
+                    $el.addClass('custom-icon');
+                }else{
+                    $el.removeClass('custom-icon');
+                }
             }
+
         }
     },
 
@@ -1337,13 +1524,30 @@
             key = node.instance.label;
         key = key.replace(/\s/g,'');
 
-        if(Self.customIcons[key] && Self.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
-            var openClass = Self.customIcons[key].childIcons.open;
-            var closedClass = Self.customIcons[key].childIcons.closed;
+        var $el = $('#' + id);
+        $el.removeClass('open');
+        $el.addClass('closed');
 
-            $('#' + id).removeClass(openClass);
-            $('#' + id).addClass(closedClass);
+        if(Self.customIcons[key] && Self.customIcons[key].childIcons && node.data.style.match(/\bfolder\b/)){
+            var customIcons = Self.customIcons[key].childIcons;
+            var openClass = customIcons.open && customIcons.open.icon
+                ? customIcons.open.icon
+                : '';
+            var closedClass = customIcons.closed && customIcons.closed.icon
+                ? customIcons.closed.icon
+                : '';
+
+            openClass && $el.removeClass(openClass);
+            if(closedClass){
+                $el.addClass(closedClass);
+                $el.addClass('custom-icon');
+            }else{
+                $el.removeClass('custom-icon');
+            }
         }
+
+
+
     },
 
     save: function(instance, path, fileName, num, mode) {
