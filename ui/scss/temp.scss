@@ -475,6 +475,15 @@ div#acn-active-content {
   padding: 2px 0 0 18px;
 }
 
+a.acn-parent-folder{
+  font-size: 14px;
+  line-height: 15px;
+
+}
+a.acn-parent-folder:before {
+  font-size: 14px;
+}
+
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-parent-folder {
   background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat left;
   background-position: 0 -101px;
