@@ -28,10 +28,23 @@
                 <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a class="ng-binding users-link" href="/studio/#/users">Users</a></li>
-                    <li><a href="/studio/#/sites">Sites</a></li>
+                    <li>
+                        <a class="nav-link ng-binding users-link" href="/studio/#/users">
+                            <span class="nav-icon fa fa-users"></span>
+                            <span class="nav-label">Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="/studio/#/sites">
+                            <span class="nav-icon fa fa-sitemap"></span>
+                            <span class="nav-label">Sites</span>
+                        </a>
+                    </li>
                     <li class="dropdown" dropdown>
-                        <a id="help-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">Help <span class="caret"></span></a>
+                        <a id="help-dropdown" class="nav-link dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
+                            <span class="nav-icon fa fa-life-ring"></span>
+                            <span class="nav-label">Help<span class="caret"></span></span>
+                        </a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="http://docs.craftercms.org/en/3.0/" target="_blank">Documentation</a></li>
                             <li><a href="/studio/#/about-us">About</a></li>

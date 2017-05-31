@@ -15,6 +15,7 @@
 
     <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!''}">
     <link rel="stylesheet" href="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.css">
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css?version=${UIBuildId!''}" />
 
     <script src="/studio/static-assets/js/modernizr.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!''}"></script>
