@@ -497,8 +497,9 @@
                     $scope.adminModal.close();
                 };
 
-                $scope.notification = function(notificationText, showOnTop){
-                    var verticalAlign = showOnTop ? false : true;
+                $scope.notification = function(notificationText, showOnTop, time){
+                    var verticalAlign = showOnTop ? false : true,
+                        timer = time ? time : 1500;
                     $scope.notificationText = notificationText;
                     $scope.notificationType = 'alert';
 
@@ -506,8 +507,7 @@
 
                     $timeout(function () {
                         modal.close();
-                    }, 1500, false);
-
+                    }, timer, false);
                 };
             };
             this.init();
@@ -600,8 +600,9 @@
                 adminService.editGroup(group).success(function (data) {
                     $scope.notification('\''+ group.group_name + '\' edited.');
                 }).error(function(error){
-                    console.log(error);
-                    //TODO: properly display error.
+                    if("Unauthorized" === error.message) {;
+                        $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000);
+                    }
                 });
             };
             $scope.removeGroup = function(group) {
@@ -620,8 +621,9 @@
                         $scope.notification('\''+ group.group_name + '\' group deleted.');
 
                     }).error(function (error) {
-                        console.log(error);
-                        //TODO: properly display error;
+                        if("Unauthorized" === error.message) {
+                            $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000);
+                        }
                     });
                 };
 
