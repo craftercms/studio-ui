@@ -65,6 +65,15 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     },
 
     /**
+     * Aspect Ratios
+     */
+    calculateAspectRatioFit: function(srcWidth, srcHeight, maxWidth, maxHeight) {
+        var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+
+        return { width: srcWidth*ratio, height: srcHeight*ratio };
+    },
+
+    /**
      * create dialog
      */
     createDialog: function() {
@@ -80,14 +89,15 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         newdiv.setAttribute("id",divIdName);
         newdiv.className= "yui-pe-content";
 
-
-
-        var width = (this.originalWidth)?this.originalWidth:500;
-        var height = (this.originalHeight)?this.originalHeight:500;
+        var imgObj = this.calculateAspectRatioFit(this.originalWidth, this.originalHeight, window.innerWidth - 10, window.innerHeight - 20),
+            imgWidth = imgObj.width,
+            imgHeight = imgObj.height,
+            width = (imgWidth)?imgWidth:500,
+            height = (imgHeight)?imgHeight:500;
         newdiv.innerHTML = '<img width=\"' + width + 'px\" height=\"' + height + 'px\" src=\"' +
             CStudioAuthoringContext.previewAppBaseUri + this.inputEl.value + '\"></img>' +
-            '<input type="button" class="cstudio-button cstudio-form-control-asset-picker-zoom-cancel-button" id="zoomCancelButton" value="Close"/>';
-
+            '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-cancel-button" id="zoomCancelButton" value="Close"/>'+
+            '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-full-button" id="zoomFullButton" value="Full"/>';
 
         // Instantiate the Dialog
         upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
@@ -96,14 +106,24 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                 modal:true,
                 close:true,
                 constraintoviewport : true,
-                underlay:"none"
-            });
+                underlay:"none",
+                keylisteners: new YAHOO.util.KeyListener(document, { ctrl:false, keys:27 },
+                                                                   { fn: this.uploadPopupCancel, correctScope:true } )
+    });
 
         // Render the Dialog
         upload_dialog.render();
         YAHOO.util.Event.addListener("zoomCancelButton", "click", this.uploadPopupCancel, this, true);
+        YAHOO.util.Event.addListener("zoomFullButton", "click", function() {this.fullImageTab(CStudioAuthoringContext.previewAppBaseUri + this.inputEl.value);}, this, true);
         this.upload_dialog = upload_dialog;
         upload_dialog.show();
+    },
+
+    /**
+     * event fired when the full is pressed
+     */
+    fullImageTab: function(url) {
+        window.open(url);
     },
 
     /**
@@ -430,10 +450,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         previewEl.style.display = "none";
         imageEl.appendChild(previewEl);
 
-        var zoomEl = document.createElement("input");
+        var zoomEl = document.createElement("a");
         this.zoomEl = zoomEl;
         zoomEl.type = "button";
-        YAHOO.util.Dom.addClass(zoomEl, 'cstudio-form-control-asset-picker-zoom-button');
+        YAHOO.util.Dom.addClass(zoomEl, 'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-zoom-button fa fa-search-plus');
         zoomEl.style.display = "none";
         imageEl.appendChild(zoomEl);
 
@@ -441,10 +461,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         this.downloadEl = downloadEl;
         downloadEl.href = inputEl.value;
         downloadEl.target = "_new";
-        var downloadImageEl = document.createElement("img");
-        downloadImageEl.src = "/studio/static-assets/themes/cstudioTheme/images/download.png";
-        downloadEl.appendChild(downloadImageEl);
-        YAHOO.util.Dom.addClass(downloadEl, 'cstudio-form-control-asset-picker-download-button');
+        YAHOO.util.Dom.addClass(downloadEl, 'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-download-button fa fa-download');
         downloadEl.style.display = "none";
         imageEl.appendChild(downloadEl);
 
