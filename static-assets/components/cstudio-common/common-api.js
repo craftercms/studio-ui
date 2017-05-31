@@ -566,20 +566,24 @@ var nodeOpen = false;
                 var dropdown = YDom.get(opt+"-dropdown");
 
                 dropdown.onclick = function () {
-                    var className = ' ' + this.parentElement.className + ' ';
+                    var className = " " + this.parentElement.className + " ";
 
-                    if ( ~className.indexOf(' open ') ) {
-                        this.parentElement.className = className.replace(' open ', ' ');
+                    if ( ~className.indexOf(" open ") ) {
+                        this.parentElement.className = className.replace(" open ", " ");
                     } else {
-                        this.parentElement.className += ' open';
+                        this.parentElement.className += " open ";
                     }
 
-                    document.body.addEventListener('click', dropdownCloser, false);
+                    document.body.addEventListener("click", dropdownCloser, false);
 
                     function dropdownCloser(e){
-                        if(e.target.id != opt+'-dropdown'){
-                            document.body.removeEventListener('click', dropdownCloser, false);
-                            dropdown.parentElement.className = className.replace(' open ', ' ');
+                        var dropdownEl = (e.target.id == opt+"-dropdown"
+                                         || e.target.parentElement.id == opt+"-dropdown"
+                                         || e.target.parentElement.parentElement.id == opt+"-dropdown");
+
+                        if(!dropdownEl){
+                            document.body.removeEventListener("click", dropdownCloser, false);
+                            dropdown.parentElement.className = className.replace(" open ", " ");
                         }
                     }
                 };
