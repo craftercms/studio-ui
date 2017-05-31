@@ -29,7 +29,7 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a class="nav-link ng-binding users-link" href="/studio/#/users">
+                        <a class="nav-link ng-binding users-link hidden" href="/studio/#/users">
                             <span class="nav-icon fa fa-users"></span>
                             <span class="nav-label">Users</span>
                         </a>

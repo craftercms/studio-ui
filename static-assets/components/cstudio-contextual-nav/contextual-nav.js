@@ -59,9 +59,22 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				var $ = jQuery || function(fn) { fn() };
 				$(function () {
 					document.body.appendChild(bar);
-					if(CStudioAuthoringContext.role != "admin"){
-						$('#studioBar .navbar-right .users-link').hide();
-					}
+
+					CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, "/",
+						{
+							success: function(data){
+								var globalAdmin = false;
+								for(var i=0; i<data.permissions.length;i++){
+									if(data.permissions[i] === "create-site"){
+										globalAdmin = true;
+									}
+								}
+								if(globalAdmin){
+									$("#studioBar .navbar-right .users-link").removeClass("hidden");
+								}
+							}
+						});
+
 					me.context.buildModules(config, bar);
 				});
 
