@@ -340,8 +340,10 @@ CStudioAuthoring.Module.requireModule(
              * Icons
              */
             createIcon: function(conf, defaultIcon){
+                var iconContainer = document.createElement("div");
                 var iconElt = document.createElement("span");
-                YDom.addClass(iconElt, "fa");
+                YDom.addClass(iconContainer, "icon-container");
+                YDom.addClass(iconElt, "mr9 fa");
                 YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
                 var styles = conf && conf.icon ? conf.icon.styles : null;
                 if(styles){
@@ -351,7 +353,8 @@ CStudioAuthoring.Module.requireModule(
                         }
                     }
                 }
-                return iconElt;
+                iconContainer.appendChild(iconElt);
+                return iconContainer;
             },
 
 			/**

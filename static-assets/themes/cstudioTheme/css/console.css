@@ -687,9 +687,13 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
 }
 
 .control .fa, .datasource .fa{
-    padding-right: 6px;
     font-size: 16px;
     color: #7e9dbb;
+}
+
+.icon-container {
+    display: inline-block;
+    min-width: 24px;
 }
 
 .cstudio-form-repeat-control {
