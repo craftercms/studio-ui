@@ -60,17 +60,17 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				$(function () {
 					document.body.appendChild(bar);
 
-					CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, '/', 
+					CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, "/",
 						{
 							success: function(data){
 								var globalAdmin = false;
 								for(var i=0; i<data.permissions.length;i++){
-									if(data.permissions[i]=='create-site'){
+									if(data.permissions[i] === "create-site"){
 										globalAdmin = true;
 									}
 								}
 								if(globalAdmin){
-									$('#studioBar .navbar-right .users-link').removeClass('hidden');
+									$("#studioBar .navbar-right .users-link").removeClass("hidden");
 								}
 							}
 						});
