@@ -372,3 +372,26 @@
 a.acn-parent-folder {
     background: none !important;
 }
+
+.icon-container > span{
+    font-size: 16px;
+    color: #7e9dbb;
+}
+
+.icon-container {
+    display: inline-block;
+    min-width: 24px;
+}
+
+.studio-fa-stack {
+    position: relative;
+}
+
+.studio-fa-stack .fa {
+    position: absolute;
+    bottom: -2px;
+}
+.icon-container .studio-fa-stack span.studio-fa-stack-1x {
+    font-size: 12px;
+    left: 2px;
+}

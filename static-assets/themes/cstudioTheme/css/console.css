@@ -686,16 +686,6 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
     /*background-image: url("../../../themes/cstudioTheme/images/cube.png");*/
 }
 
-.control .fa, .datasource .fa{
-    font-size: 16px;
-    color: #7e9dbb;
-}
-
-.icon-container {
-    display: inline-block;
-    min-width: 24px;
-}
-
 .cstudio-form-repeat-control {
 	padding-left: 10px;
 }
