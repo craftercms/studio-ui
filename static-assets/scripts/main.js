@@ -944,21 +944,27 @@
                             $scope.createModalInstance.close();
                         }, 0, false);
                     })
-                    .error(function (data) {
-                        $scope.createModalInstance.close();
-                        $scope.error = data.message;
-                        $scope.modalInstance = $modal.open({
-                            templateUrl: 'createSiteError.html',
-                            backdrop: 'static',
-                            keyboard: false,
-                            size: 'md',
-                            controller: 'ErrorCreateSiteCtrl',
-                            resolve: {
-                                errorToShow: function () {
-                                return $scope.error;
-                            }
+                    .error(function (data, error) {
+
+                        if(error == 401){
+                            $state.go("login");
+                            $scope.createModalInstance.close();
+                        }else{
+                            $scope.createModalInstance.close();
+                            $scope.error = data.message;
+                            $scope.modalInstance = $modal.open({
+                                templateUrl: "createSiteError.html",
+                                backdrop: "static",
+                                keyboard: false,
+                                size: "md",
+                                controller: "ErrorCreateSiteCtrl",
+                                resolve: {
+                                    errorToShow: function () {
+                                        return $scope.error;
+                                    }
+                                }
+                            });
                         }
-                        });
                     });
             }
         }
