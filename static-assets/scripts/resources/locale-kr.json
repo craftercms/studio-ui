@@ -87,7 +87,8 @@
       "BACK_TO_GROUPS": "Back to groups",
       "ADD_NEW_MEMBERS": "Add new members",
       "ADD_MEMBERS": "Add members",
-      "MEMBERS": "Members"
+      "MEMBERS": "Members",
+      "UNAUTHORIZED": "Unauthorized. You don't have sufficient privileges to perform this action."
     },
     "users": {
       "HEADER_LABEL": "사용자",

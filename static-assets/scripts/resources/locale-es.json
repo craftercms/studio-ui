@@ -87,7 +87,8 @@
       "BACK_TO_GROUPS": "Volver a grupos",
       "ADD_NEW_MEMBERS": "Agregar nuevos miembros",
       "ADD_MEMBERS": "Agregar miembros",
-      "MEMBERS": "Miembros"
+      "MEMBERS": "Miembros",
+      "UNAUTHORIZED": "No autorizado. Usted no tiene suficientes privilegios para realizar esta acción."
     },
     "users": {
       "HEADER_LABEL": "Usuarios",
