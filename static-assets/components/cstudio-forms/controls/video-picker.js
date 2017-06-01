@@ -72,11 +72,12 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
         var divIdName = "cstudio-wcm-popup-div";
         newdiv.setAttribute("id",divIdName);
-        newdiv.className= "yui-pe-content";
+        newdiv.className= "yui-pe-content video-dialog";
 
         newdiv.innerHTML = '<embed src=\"' +
             CStudioAuthoringContext.previewAppBaseUri + this.inputEl.value + '\" width=\"500px\" height=\"500px\"></embed>' +
-            '<input type="button" class="cstudio-button cstudio-form-control-asset-picker-zoom-cancel-button" id="zoomCancelButton" value="Close"/>';
+            '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-cancel-button" id="zoomCancelButton" value="Close"/>'+
+            '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-full-button" id="zoomFullButton" value="Full"/>';
 
         // Instantiate the Dialog
         upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
@@ -85,14 +86,24 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
                 modal:true,
                 close:true,
                 constraintoviewport : true,
-                underlay:"none"
+                underlay:"none",
+                keylisteners: new YAHOO.util.KeyListener(document, { ctrl:false, keys:27 },
+                    { fn: this.uploadPopupCancel, correctScope:true } )
             });
 
         // Render the Dialog
         upload_dialog.render();
         YAHOO.util.Event.addListener("zoomCancelButton", "click", this.uploadPopupCancel, this, true);
+        YAHOO.util.Event.addListener("zoomFullButton", "click", function() {this.fullImageTab(CStudioAuthoringContext.previewAppBaseUri + this.inputEl.value);}, this, true);
         this.upload_dialog = upload_dialog;
         upload_dialog.show();
+    },
+
+    /**
+     * event fired when the full is pressed
+     */
+    fullImageTab: function(url) {
+        window.open(url);
     },
 
     /**
@@ -317,11 +328,10 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
         videoEl.appendChild(previewEl);
 
-        var zoomEl = document.createElement("input");
+        var zoomEl = document.createElement("a");
         this.zoomEl = zoomEl;
-        zoomEl.type = "button";
 
-        YAHOO.util.Dom.addClass(zoomEl, 'cstudio-form-control-asset-picker-zoom-button video-zoom');
+        YAHOO.util.Dom.addClass(zoomEl, 'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-zoom-button fa fa-search-plus');
 
         if (this.inputEl.value == null || this.inputEl.value == "") {
             zoomEl.style.display = "none";
@@ -335,11 +345,8 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         this.downloadEl = downloadEl;
         downloadEl.href = inputEl.value;
         downloadEl.target = "_new";
-        var downloadVideoEl = document.createElement("img");
-        downloadVideoEl.src = "/studio/static-assets/themes/cstudioTheme/images/download.png";
-        downloadEl.appendChild(downloadVideoEl);
 
-        YAHOO.util.Dom.addClass(downloadEl, 'cstudio-form-control-asset-picker-download-button video-zoom');
+        YAHOO.util.Dom.addClass(downloadEl, 'cstudio-form-control-hover-btn cstudio-form-control-asset-picker-download-button fa fa-download');
 
         if (this.inputEl.value == null || this.inputEl.value == "") {
             downloadEl.style.display = "none";

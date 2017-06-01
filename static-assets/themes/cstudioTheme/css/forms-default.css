@@ -891,6 +891,12 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     right: 76px;
 }
 
+#cstudio-wcm-popup-div.video-dialog{
+    width: 500px;
+    height: 500px;
+    background-color: #000;
+}
+
 /* End Asset Picker Styles - image, video and flash */
 
 .cstudio-rteSkin span.mce_insertLayout {
