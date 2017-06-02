@@ -6975,7 +6975,46 @@ var nodeOpen = false;
                 };
 
                 CStudioAuthoring.Service.getUserInfo(callback);
+            },
+
+            /**
+             * Icons
+             */
+            createIcon: function(conf, defaultIcon){
+                var iconContainer = document.createElement("div"),
+                    iconElt = document.createElement("span"),
+                    styles = conf && conf.icon ? conf.icon.styles : null;
+                YDom.addClass(iconContainer, "icon-container");
+                if(!conf || !conf.icon || (conf && conf.icon && !conf.icon.stackedclass)){
+                    YDom.addClass(iconElt, "mr9 fa");
+                    YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
+                }else{
+                    var icon1 = document.createElement("span"),
+                        icon2 = document.createElement("span"),
+                        icon1Size;
+                    YDom.addClass(iconElt, "mr9 studio-fa-stack");
+                    YDom.addClass(icon1, "fa studio-fa-stack-2x");
+                    YDom.addClass(icon1, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
+                    YDom.addClass(icon2, "fa studio-fa-stack-1x");
+                    YDom.addClass(icon2, conf.icon.stackedclass ? conf.icon.stackedclass : defaultIcon);
+                    icon1Size = styles && styles["font-size"] ? styles["font-size"] : null;
+                    if(icon1Size){
+                        icon2.style["font-size"] = (icon1Size.replace("px","") - 4) + "px";
+                    }
+                    iconElt.appendChild(icon1);
+                    iconElt.appendChild(icon2);
+                }
+                if(styles){
+                    for (var key in styles) {
+                        if (styles.hasOwnProperty(key)) {
+                            iconElt.style[key] = styles[key];
+                        }
+                    }
+                }
+                iconContainer.appendChild(iconElt);
+                return iconContainer;
             }
+
         },
         "Utils.Doc": {
             /**

@@ -336,44 +336,6 @@ CStudioAuthoring.Module.requireModule(
 
 			},
 
-            /**
-             * Icons
-             */
-            createIcon: function(conf, defaultIcon){
-                var iconContainer = document.createElement("div"),
-                    iconElt = document.createElement("span"),
-                    styles = conf && conf.icon ? conf.icon.styles : null;
-                YDom.addClass(iconContainer, "icon-container");
-                if(!conf || !conf.icon || (conf && conf.icon && !conf.icon.stackedclass)){
-                    YDom.addClass(iconElt, "mr9 fa");
-                    YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
-                }else{
-                    var icon1 = document.createElement("span"),
-                        icon2 = document.createElement("span"),
-                        icon1Size;
-                    YDom.addClass(iconElt, "mr9 studio-fa-stack");
-                    YDom.addClass(icon1, "fa studio-fa-stack-2x");
-                    YDom.addClass(icon1, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
-                    YDom.addClass(icon2, "fa studio-fa-stack-1x");
-                    YDom.addClass(icon2, conf.icon.stackedclass ? conf.icon.stackedclass : defaultIcon);
-                    icon1Size = styles && styles["font-size"] ? styles["font-size"] : null;
-                    if(icon1Size){
-                        icon2.style["font-size"] = (icon1Size.replace("px","") - 4) + "px";
-                    }
-                    iconElt.appendChild(icon1);
-                    iconElt.appendChild(icon2);
-                }
-                if(styles){
-                    for (var key in styles) {
-                        if (styles.hasOwnProperty(key)) {
-                            iconElt.style[key] = styles[key];
-                        }
-                    }
-                }
-                iconContainer.appendChild(iconElt);
-                return iconContainer;
-            },
-
 			/**
 			 * render tools on the right
 			 */
@@ -430,7 +392,7 @@ CStudioAuthoring.Module.requireModule(
                 formContainerEl.innerHTML = CMgs.format(langBundle, "formSection");
 				var dd = new DragAndDropDecorator(formContainerEl);
 				YDom.addClass(formContainerEl, "control-section");
-                var iconEltFormSection = this.createIcon(formSection, "fa-cube");
+                var iconEltFormSection = CStudioAuthoring.Utils.createIcon(formSection, "fa-cube");
                 formContainerEl.insertBefore(iconEltFormSection, formContainerEl.firstChild);
 
 				// add repeat control
@@ -454,7 +416,7 @@ CStudioAuthoring.Module.requireModule(
 						return [ ];
 					}
 				};
-                var iconEltRepeatSection = this.createIcon(repeatSection, "fa-cube");
+                var iconEltRepeatSection = CStudioAuthoring.Utils.createIcon(repeatSection, "fa-cube");
                 repeatContainerEl.insertBefore(iconEltRepeatSection, repeatContainerEl.firstChild);
 
 				var linkContainer = document.getElementById("basicContent");
@@ -496,7 +458,7 @@ CStudioAuthoring.Module.requireModule(
                                         tool.id = tool.getFixedId();
                                         this.controlContainerEl.prototypeField = tool;
                                         YDom.addClass(this.controlContainerEl, "new-control-type");
-                                        var iconElt = self.createIcon(controls[idx], "fa-cube");
+                                        var iconElt = CStudioAuthoring.Utils.createIcon(controls[idx], "fa-cube");
                                         this.controlContainerEl.insertBefore(iconElt, this.controlContainerEl.firstChild);
                                     }
                                     catch (e) {
@@ -545,7 +507,7 @@ CStudioAuthoring.Module.requireModule(
 
                                         var dd = new DragAndDropDecorator(this.dsourceContainerEl);
                                         this.dsourceContainerEl.prototypeDatasource = datasource;
-                                        var iconElt = self.createIcon(datasources[idx], "fa-database");
+                                        var iconElt = CStudioAuthoring.Utils.createIcon(datasources[idx], "fa-database");
                                         this.dsourceContainerEl.insertBefore(iconElt, this.dsourceContainerEl.firstChild);
                                     }
                                     catch (e) {
