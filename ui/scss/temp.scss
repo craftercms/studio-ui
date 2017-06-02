@@ -345,11 +345,9 @@ div#acn-active-content {
     position: absolute;
 
     #acn-sites-link {
-      background: url(/studio/static-assets/themes/cstudioTheme/images/icons/dashboard-icon.png) no-repeat;
       display: inline-block;
-      padding-left: 20px;
-      background-size: 22px 22px;
-      background-position: -3px -3px;
+      font-size: 14px;
+      line-height: 15px;
     }
   }
   .treenode-label {
@@ -465,8 +463,8 @@ div#acn-active-content {
 }
 
 .acn-admin-console {
-  background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_sm_gears.png') no-repeat left;
-  padding: 6px 0 0 21px;
+  font-size: 14px;
+  line-height: 15px;
 }
 
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-previewsync, .acn-dropdown-wrapper .acn-dropdown-menu .acn-syncrepo {
@@ -487,7 +485,7 @@ a.acn-parent-folder:before {
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-parent-folder {
   background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat left;
   background-position: 0 -101px;
-  padding: 2px 0 0 18px;
+  padding: 2px 0 0 0;
 }
 
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-parent-folder.loading {
