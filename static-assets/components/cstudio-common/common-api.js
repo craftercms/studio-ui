@@ -6980,7 +6980,7 @@ var nodeOpen = false;
             /**
              * Icons
              */
-            createIcon: function(conf, defaultIcon){
+            createIcon: function(conf, defaultIcon, containerClass){
                 var iconContainer = document.createElement("div"),
                     iconElt = document.createElement("span"),
                     styles = conf && conf.icon ? conf.icon.styles : null;
@@ -7004,6 +7004,11 @@ var nodeOpen = false;
                     iconElt.appendChild(icon1);
                     iconElt.appendChild(icon2);
                 }
+
+                if(containerClass){
+                    YDom.addClass(iconContainer, " " + containerClass);
+                }
+
                 if(styles){
                     for (var key in styles) {
                         if (styles.hasOwnProperty(key)) {
