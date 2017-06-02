@@ -309,24 +309,25 @@
     background-repeat: no-repeat;
 }
 
-.status-icon.folder.custom-icon, .acn-parent-folder.custom-icon, .cs-custom-icon {
+.status-icon.folder, .acn-parent-folder {
     background: none !important;
-    position: relative;
+    padding-left: 0 !important;
 }
 
-.status-icon.folder.custom-icon:before, .acn-parent-folder.custom-icon:before, .cs-custom-icon:before {
-    font: normal normal normal 15px/1 FontAwesome;
-    /* font-size: inherit; */
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: #81a1c1;
+.status-icon.folder .icon-container.on-open, .acn-parent-folder .icon-container.on-open{
+    display: none;
+} 
+
+.status-icon.folder.closed .icon-container.on-open, .acn-parent-folder.closed .icon-container.on-open{
+    display: none;
+}
+
+.status-icon.folder.open .icon-container.on-open, .acn-parent-folder.open .icon-container.on-open{
     display: inline-block;
-    position: absolute;
-    left: 0;
-    top: 1px;
-    text-align: center;
-    width: 16px;
+}
+
+.status-icon.folder.open .icon-container.on-closed, .acn-parent-folder.open .icon-container.on-closed{
+    display: none;
 }
 
 .cstudio-admin-console-item .contenttypes:before{

@@ -31,34 +31,15 @@ CStudioAuthoring.ContextualNav.Dashboard = CStudioAuthoring.ContextualNav.Dashbo
 				var confLabel = moduleConfig.label.toLowerCase().replace(/\s/g,'');
 				var label = CMgs.format(siteDropdownLangBundle, confLabel) == confLabel ? moduleConfig.label : CMgs.format(siteDropdownLangBundle, confLabel);
 
+				var icon = CStudioAuthoring.Utils.createIcon(moduleConfig, "fa-bars");
+				dashboardLinkEl.appendChild(icon);
+
 				var linkText = document.createTextNode(label);
 				dashboardLinkEl.appendChild(linkText);
 				dashboardLinkEl.title = "Dashboard";
 				dashboardLinkEl.href = CStudioAuthoringContext.authoringAppBaseUri + moduleConfig.path;
 				dashboardLinkEl.id = "acn-sites-link";
-
-				if (moduleConfig.icon){
-					if (moduleConfig.icon.class){
-						dashboardLinkEl.className += " acn-parent-folder custom-icon " + moduleConfig.icon.class;
-					}
-					
-					if(moduleConfig.icon.styles){
-						var iconStyles = moduleConfig.icon.styles;
-
-						if (iconStyles){
-							var styles = "";
-							for (var key in iconStyles) {
-								if (iconStyles.hasOwnProperty(key)) {
-									styles += key + ":" + iconStyles[key] + ";";
-								}
-							}
-							$("head").append("<style>#" + dashboardLinkEl.id + ":before{" + styles + "}</style>");
-						}
-					}
-				}else{
-					dashboardLinkEl.className += " acn-parent-folder custom-icon fa-bars";
-				}
-
+				
 				YDom.addClass(dropdownInnerEl, 'studio-view');
 
 				dropdownInnerEl.appendChild(dashboardLinkEl);
