@@ -62,6 +62,7 @@
                     </li>
                 </ul>
 
+                <div id="acn-separator" class="navbar-right"><i class="fa fa-ellipsis-v ellipsis-icon"></i></div>
                 <div class="navbar-form navbar-right" role="search">
                     <div class="form-group">
                         <span value="" id="acn-searchtext"></span>
