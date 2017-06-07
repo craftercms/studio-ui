@@ -929,7 +929,7 @@ var nodeOpen = false;
             /**
              * open a search page
              */
-            openSearch: function(searchType, searchContext, select, mode, newWindow, callback, searchId) {
+            openSearch: function(searchType, searchContext, select, mode, newWindow, callback, searchId, firstTime) {
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -1028,6 +1028,9 @@ var nodeOpen = false;
                             searchUrl += "&presearch=false";
                 }
 
+                if(firstTime){
+                    searchUrl += "&firstTime=true";
+                }
 
                 var childSearch = null;
 
@@ -4907,115 +4910,120 @@ var nodeOpen = false;
              */
             search: function(site, searchContext, callback) {
 
-                var serviceUrl = this.searchServiceUrl;
+                if (!searchContext.firstTime) {
 
-                serviceUrl += "?site=" + site;
+                    var serviceUrl = this.searchServiceUrl;
 
-                searchContext.searchType = (searchContext.searchType) ? searchContext.searchType : "";
-                searchContext.sortBy = (!searchContext.sortBy || searchContext.sortBy == "relevance") ? "" : searchContext.sortBy;
-                searchContext.page = (searchContext.currentPage) ? searchContext.currentPage : 1;
-                searchContext.sortAscending = (searchContext.sortAscending) ? searchContext.sortAscending : true;
-                searchContext.pageSize = (searchContext.itemsPerPage) ? searchContext.itemsPerPage : 20;
-                searchContext.includeAspects = (searchContext.includeAspects) ? searchContext.includeAspects : new Array();
+                    serviceUrl += "?site=" + site;
 
-                var searchCb = {
-                    success : function(response) {
+                    searchContext.searchType = (searchContext.searchType) ? searchContext.searchType : "";
+                    searchContext.sortBy = (!searchContext.sortBy || searchContext.sortBy == "relevance") ? "" : searchContext.sortBy;
+                    searchContext.page = (searchContext.currentPage) ? searchContext.currentPage : 1;
+                    searchContext.sortAscending = (searchContext.sortAscending) ? searchContext.sortAscending : true;
+                    searchContext.pageSize = (searchContext.itemsPerPage) ? searchContext.itemsPerPage : 20;
+                    searchContext.includeAspects = (searchContext.includeAspects) ? searchContext.includeAspects : new Array();
 
-                        var results = eval("(" + response.responseText + ")");
+                    var searchCb = {
+                        success: function (response) {
 
-                        callback.success(results);
-                    },
-                    failure: function(response) {
-                        callback.failure(response);
-                    }
-                };
+                            var results = eval("(" + response.responseText + ")");
 
-                var searchConfig = '{';
+                            callback.success(results);
+                        },
+                        failure: function (response) {
+                            callback.failure(response);
+                        }
+                    };
 
-                searchConfig += '"contentTypes": [ ';
-                for (var j = 0; j < searchContext.contentTypes.length; j++) {
-                    if (searchContext.contentTypes[j] != "") {
-                        searchConfig += "'" + searchContext.contentTypes[j] + "'";
-                        if (j < searchContext.contentTypes.length - 1) {
-                            searchConfig += ",";
+                    var searchConfig = '{';
+
+                    searchConfig += '"contentTypes": [ ';
+                    for (var j = 0; j < searchContext.contentTypes.length; j++) {
+                        if (searchContext.contentTypes[j] != "") {
+                            searchConfig += "'" + searchContext.contentTypes[j] + "'";
+                            if (j < searchContext.contentTypes.length - 1) {
+                                searchConfig += ",";
+                            }
                         }
                     }
-                }
-                searchConfig += ']';
+                    searchConfig += ']';
 
-                searchConfig += ',"includeAspects": [ ';
-                for (var k = 0; k < searchContext.includeAspects.length; k++) {
-                    if (searchContext.includeAspects[k] != "") {
-                        searchConfig += "'" + searchContext.includeAspects[k] + "'";
-                        if (k < searchContext.includeAspects.length - 1) {
-                            searchConfig += ",";
+                    searchConfig += ',"includeAspects": [ ';
+                    for (var k = 0; k < searchContext.includeAspects.length; k++) {
+                        if (searchContext.includeAspects[k] != "") {
+                            searchConfig += "'" + searchContext.includeAspects[k] + "'";
+                            if (k < searchContext.includeAspects.length - 1) {
+                                searchConfig += ",";
+                            }
                         }
                     }
-                }
-                searchConfig += ']';
+                    searchConfig += ']';
 
-                searchConfig += ',"excludeAspects": [ ';
-                for (var l = 0; l < searchContext.excludeAspects.length; l++) {
-                    if (searchContext.excludeAspects[l] != "") {
-                        searchConfig += "'" + searchContext.excludeAspects[l] + "'";
-                        if (l < searchContext.excludeAspects.length - 1) {
-                            searchConfig += ",";
+                    searchConfig += ',"excludeAspects": [ ';
+                    for (var l = 0; l < searchContext.excludeAspects.length; l++) {
+                        if (searchContext.excludeAspects[l] != "") {
+                            searchConfig += "'" + searchContext.excludeAspects[l] + "'";
+                            if (l < searchContext.excludeAspects.length - 1) {
+                                searchConfig += ",";
+                            }
                         }
                     }
-                }
-                searchConfig += ']';
+                    searchConfig += ']';
 
-                // prepare keyword for JSON.
-                var dkeywords = "";
-                if (!CStudioAuthoring.Utils.isEmpty(searchContext.keywords)) {
-                    dkeywords = decodeURIComponent(searchContext.keywords);
-                    dkeywords = CStudioAuthoring.Utils.escapeJSONSensitiveCharacter(dkeywords);
-                }
+                    // prepare keyword for JSON.
+                    var dkeywords = "";
+                    if (!CStudioAuthoring.Utils.isEmpty(searchContext.keywords)) {
+                        dkeywords = decodeURIComponent(searchContext.keywords);
+                        dkeywords = CStudioAuthoring.Utils.escapeJSONSensitiveCharacter(dkeywords);
+                    }
 
-                searchConfig +=
-                    ',"keyword": "' + dkeywords + '",   ' +
-                    '"page": "' + searchContext.page + '",' +
-                    '"pageSize": "' + searchContext.pageSize + '",' +
-                    '"sortBy": "' + searchContext.sortBy + '",' +
-                    '"sortAscending": "' + searchContext.sortAscending + '",' +
+                    searchConfig +=
+                        ',"keyword": "' + dkeywords + '",   ' +
+                        '"page": "' + searchContext.page + '",' +
+                        '"pageSize": "' + searchContext.pageSize + '",' +
+                        '"sortBy": "' + searchContext.sortBy + '",' +
+                        '"sortAscending": "' + searchContext.sortAscending + '",' +
 
-                    '"filters": [';
-                if (searchContext.filters != null) {
-                    var lastElementIdx = searchContext.filters.length - 1;
+                        '"filters": [';
+                    if (searchContext.filters != null) {
+                        var lastElementIdx = searchContext.filters.length - 1;
 
-                    var seperatorFlag = false;
-                    for (var i = 0; i < searchContext.filters.length; i++) {
-                        name = searchContext.filters[i].qname;
-                        value = searchContext.filters[i].value;
-                        var startDate = searchContext.filters[i].startDate;
-                        var endDate = searchContext.filters[i].endDate;
-                        var useWildCard = searchContext.filters[i].useWildCard;
-                        if (!useWildCard || (useWildCard == null) || !(useWildCard == "true" || useWildCard == "false") )
-                            useWildCard = "true";
+                        var seperatorFlag = false;
+                        for (var i = 0; i < searchContext.filters.length; i++) {
+                            name = searchContext.filters[i].qname;
+                            value = searchContext.filters[i].value;
+                            var startDate = searchContext.filters[i].startDate;
+                            var endDate = searchContext.filters[i].endDate;
+                            var useWildCard = searchContext.filters[i].useWildCard;
+                            if (!useWildCard || (useWildCard == null) || !(useWildCard == "true" || useWildCard == "false"))
+                                useWildCard = "true";
 
-                        seperatorFlag = false;
-                        if (value != null && value != "" && value != 'all') {
-                            searchConfig += '{"qname" : "' + name + '" , "value" : "' + value + '", "useWildCard" : "' + useWildCard + '"}';
-                            seperatorFlag = true;
-                        } else if ( (startDate != null && startDate != "") || (endDate != null && endDate != "") ) {
-                            // date filter with Range
-                            startDate = (startDate != null && startDate != "") ? startDate : "";
-                            endDate = (endDate != null && endDate != "") ? endDate : "";
-                            searchConfig += '{"qname" : "' + name + '" , "value" : "' + value + '", "startDate" : "' + startDate + '", "endDate" : "' + endDate + '"}';
-                            seperatorFlag = true;
-                        }
+                            seperatorFlag = false;
+                            if (value != null && value != "" && value != 'all') {
+                                searchConfig += '{"qname" : "' + name + '" , "value" : "' + value + '", "useWildCard" : "' + useWildCard + '"}';
+                                seperatorFlag = true;
+                            } else if ((startDate != null && startDate != "") || (endDate != null && endDate != "")) {
+                                // date filter with Range
+                                startDate = (startDate != null && startDate != "") ? startDate : "";
+                                endDate = (endDate != null && endDate != "") ? endDate : "";
+                                searchConfig += '{"qname" : "' + name + '" , "value" : "' + value + '", "startDate" : "' + startDate + '", "endDate" : "' + endDate + '"}';
+                                seperatorFlag = true;
+                            }
 
-                        if (seperatorFlag && i < lastElementIdx) {
-                            searchConfig += ',';
+                            if (seperatorFlag && i < lastElementIdx) {
+                                searchConfig += ',';
+                            }
                         }
                     }
+                    searchConfig += '], "columns":[] }';
+
+                    YConnect.setDefaultPostHeader(false);
+                    YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                    YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, searchConfig);
+
+                }else{
+                    callback.success();
                 }
-                searchConfig += '], "columns":[] }';
-
-                YConnect.setDefaultPostHeader(false);
-                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, searchConfig);
-
             }
         },
 

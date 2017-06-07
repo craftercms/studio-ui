@@ -84,7 +84,6 @@
               <span class="cstudio-wcm-search-result-header"><script>CMgs.display(langBundle, "searchResults")</script></span>
               <span id="cstudio-wcm-search-message-span"></span>
               <span id="cstudio-wcm-search-result-header-count"></span>
-              <a id="cstudio-wcm-search-description-toggle-link" href="javascript:void(0)" onClick="CStudioSearch.toggleResultDetail(CStudioSearch.DETAIL_TOGGLE);"></a>
 
               <div class="filters">
                 <div class="cstudio-wcm-search-result-header-pagination">

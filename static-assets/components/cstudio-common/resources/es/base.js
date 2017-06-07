@@ -427,9 +427,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "es", {
-    defaultTitle: "Busqueda WCM",
+    defaultTitle: "Busqueda",
     searchButtonLabel: "Busqueda",
-    keywordsLabel: "Palabras Claves (opcional)",
+    keywordsLabel: "Palabras Claves",
     searchResults: "Resultados de la búsqueda",
     showing: "(Mostrando {0}-{1} de {2})",
     hideDescriptions: "Ocultar Descripciones",

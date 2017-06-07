@@ -444,9 +444,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "en", {
-    defaultTitle: "WCM Search",
+    defaultTitle: "Search",
     searchButtonLabel: "Search",
-    keywordsLabel: "Keywords (optional)",
+    keywordsLabel: "Keywords",
     searchResults: "Search Results",
     showing: "(Showing {0}-{1} of {2})",
     hideDescriptions: "Hide Descriptions",

@@ -59,6 +59,7 @@ CStudioSearch.determineSearchContextFromUrl = function() {
 	var page = CStudioAuthoring.Utils.getQueryVariable(queryString, "page");
 	var sortBy = CStudioAuthoring.Utils.getQueryVariable(queryString, "sortBy");
 	var presearch = CStudioAuthoring.Utils.getQueryVariable(queryString, "presearch");
+    var firstTime = CStudioAuthoring.Utils.getQueryVariable(queryString, "firstTime");
 
 	/* configure search context */
 	searchContext.contextName = (paramContext) ? paramContext : "default";
@@ -67,6 +68,7 @@ CStudioSearch.determineSearchContextFromUrl = function() {
 	searchContext.currentPage = (page) ? page : 1;
 	searchContext.sortBy = (sortBy) ? sortBy : '';
 	searchContext.presearch = (presearch == 'true' || presearch == 'false') ? presearch : 'false';
+    searchContext.firstTime = firstTime ? firstTime : false;
 		
 	if(!CStudioAuthoring.Utils.isEmpty(itemsPerPage)) {
 		searchContext.itemsPerPage = itemsPerPage;
@@ -159,7 +161,11 @@ CStudioSearch.init = function() {
 	});
 
 	setTimeout(function() {
-		$('#cstudio-wcm-search-keyword-textbox').focus();
+        var keywordTextbox = $('#cstudio-wcm-search-keyword-textbox');
+        keywordTextbox.focus();
+        if(keywordTextbox[0].value!==""){
+            keywordTextbox[0].value+="";
+        }
 	}, 500)
 
 }
@@ -580,7 +586,7 @@ CStudioSearch.fireSearchRequest = function(searchContext) {
 				var resultTableEl = document.getElementById('cstudio-wcm-search-result');
 				resultTableEl.innerHTML = "";
 				
-				if(resultTableEl) {
+				if(resultTableEl && results) {
 					
 					var resultCount = results.resultCount;
 					var pageTotal = results.pageTotal;
