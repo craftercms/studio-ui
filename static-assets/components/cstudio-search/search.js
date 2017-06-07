@@ -163,7 +163,7 @@ CStudioSearch.init = function() {
 	setTimeout(function() {
         var keywordTextbox = $('#cstudio-wcm-search-keyword-textbox');
         keywordTextbox.focus();
-        if(keywordTextbox[0].value!=""){
+        if(keywordTextbox[0].value!==""){
             keywordTextbox[0].value+="";
         }
 	}, 500)
