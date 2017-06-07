@@ -403,9 +403,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "kr", {
-    defaultTitle: "수색 WCM",
+    defaultTitle: "수색",
     searchButtonLabel: "수색",
-    keywordsLabel: "키워드 (선택)",
+    keywordsLabel: "키워드",
     searchResults: "검색 결과",
     showing: "(보기 {0}-{1} 의 {2})",
     hideDescriptions: "숨기기 설명",
