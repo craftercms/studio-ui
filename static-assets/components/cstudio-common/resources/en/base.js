@@ -102,7 +102,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     wcmContentApprove: "Approve & Publish",
     wcmContentDuplicate: "Duplicate",
     wcmContentHistory: "History",
-    wcmContentPageDisabled: "This page is Disabled.",
+    wcmContentPageDisabled: "This content is disabled.",
     wcmContentSavedAsDraft: "Content was saved as DRAFT. Some required fields may not be populated. This can cause errors when previewed or deployed.",
 
     InProgress: "Edited",
