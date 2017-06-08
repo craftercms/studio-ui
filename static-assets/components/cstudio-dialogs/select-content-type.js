@@ -31,11 +31,22 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 
 		this.path = path;
 		this.onSaveCallback = onSaveCallback;
-		this.asPopup = asPopup;			
+		this.asPopup = asPopup;
+        this.formSize = null;
 
 		this.updateAvailableTemplates(this.dialog, contentTypes);
 		this.setDefaultTemplate(contentTypes);
 		this.dialog.show();
+
+        if(window.frameElement){
+            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+            this.formSize = parent.getFormSize(id);
+            if(this.formSize < 522){
+                parent.setFormSize(522, id);
+                $($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease', true);
+            }
+        }
+
 	},
 	
 	/**
@@ -50,6 +61,8 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 	 */
 	createDialog: function(path, selectTemplateCb) {
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
+
+        var self = this;
 		
 		var newdiv = YDom.get("cstudio-wcm-popup-div");
 		if (newdiv == undefined) {
@@ -162,7 +175,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
         //YAHOO.util.Event.addListener("closeWCMPopup", "click", this.closeDialog);
 		YAHOO.util.Event.addListener("closeWCMPopup", "click",
                 function() {
-                    CStudioAuthoring.Dialogs.DialogSelectContentType.closeDialog();
+                    self.contentPopupCancel();
 
                 }
          );
@@ -300,8 +313,19 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 	 * event fired when the cancel is pressed
 	 */
 	contentPopupCancel: function(event) {
-		CStudioAuthoring.Dialogs.DialogSelectContentType.hideDialog();
-	}
+        CStudioAuthoring.Dialogs.DialogSelectContentType.hideDialog();
+        if (window.frameElement) {
+            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+            if ($($(".studio-ice-container-" + id, parent.document)[0]).height() > this.formSize &&
+                $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease')) {
+
+                $($(".studio-ice-container-" + id, parent.document)[0]).height(this.formSize);
+
+            }
+        }
+    }
+
+
 
 
 };
