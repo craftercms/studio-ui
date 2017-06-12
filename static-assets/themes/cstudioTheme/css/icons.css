@@ -396,3 +396,51 @@ a.acn-parent-folder {
     font-size: 12px;
     left: 2px;
 }
+
+.cs-item-icon.icon-container .studio-fa-stack-2x {
+    /*left: 7px !important;*/
+    /*bottom: -7px;*/
+    color: #5f5f5f !important;
+}
+
+.cs-item-icon.icon-container .studio-fa-stack-1x {
+    left: -3px !important;
+    bottom: 5px;
+    /*color: #ecc22a !important;*/
+}
+
+.cs-item-icon .live {
+    /*color: #73c438;*/
+    /*color: #1fb507;*/
+    color: transparent;
+}
+
+.cs-item-icon .processing, #guide-processing {
+    color: #4879db;
+}
+
+.cs-item-icon .locked, #guide-locked {
+    color: #dd7e2c;
+}
+
+.cs-item-icon .never-published, #guide-neverpublished {
+    color: #41ecfc;
+}
+
+.cs-item-icon .deleted, #guide-deleted {
+    color: #ce2d2d;
+}
+
+.cs-item-icon .el-scheduled, #guide-scheduled {
+    /*color: #487c22;*/
+    color: #1fb507;
+}
+
+.cs-item-icon .in-workflow, #guide-inworkflow {
+    color: #245875;
+}
+
+.cs-item-icon .edited, #guide-edited {
+    /*color: #ede925;*/
+    color: #f6cc2f;
+}

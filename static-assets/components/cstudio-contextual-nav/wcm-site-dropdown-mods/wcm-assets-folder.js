@@ -459,6 +459,9 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                 nodeSpan.appendChild(childClosed);
                 nodeSpan.appendChild(childOpen);
+            }else{
+                var icon = CStudioAuthoring.Utils.getContentItemIcon(treeNodeTO);
+                nodeSpan.appendChild(icon);
             }
 
             nodeSpan.innerHTML += treeNodeTO.label;
@@ -942,6 +945,18 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         retTransferObj.sandboxLockStore = treeItem.sandboxLockStore;
         retTransferObj.scheduledDate = treeItem.scheduledDate;
         retTransferObj.previewable = treeItem.previewable;
+        retTransferObj.mimeType = treeItem.mimeType;
+        retTransferObj.contentType = treeItem.contentType;
+        retTransferObj.isFloating = treeItem.isFloating;
+
+        retTransferObj.statusObj = {
+            deleted: treeItem.deleted,
+            scheduled: treeItem.scheduled,
+            disabled: treeItem.disabled,
+            inFlight: treeItem.inFlight,
+            inProgress: treeItem.inProgress,
+            live: treeItem.live,
+        };
 
         treeItem.component = true;
 

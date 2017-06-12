@@ -195,8 +195,44 @@ var nodeOpen = false;
             CONFIG_FILES_PATH: '/config/studio',
             CONFIG_FILES_PATH_ADMIN: '/config',
             IMAGE_VALID_EXTENSIONS: ["jpg", "jpeg", "gif", "png", "tiff", "tif", "bmp", "svg", "JPG", "JPEG", "GIF", "PNG", "TIFF", "TIF", "BMP", "SVG"],
-            MAX_INT_VALUE: 2147483647
-            // CONFIG_FILES_PATH: "/cstudio/config/sites/"
+            MAX_INT_VALUE: 2147483647,
+            MIMETYPES :  {
+                "navPage": { class: "fa-file" },
+                "floatingPage": { class: "fa-file-o" },
+                "component": { class: "fa-puzzle-piece" },
+                "unknown": { class: "fa-file-text" },
+                "video": { class: "fa-file-video-o" },
+                "image": { class: "fa-file-image-o" },
+                "pdf": { class: "fa-file-pdf-o" },
+                "powerpoint": { class: "fa-file-powerpoint-o" },
+                "word": { class: "fa-file-word-o" },
+                "excel": { class: "fa-file-excel-o" },
+                "zip": { class: "fa-file-archive-o" },
+                "js": { class: "fa-file-code-o" },
+                "groovy": { class: "fa-file-code-o" },
+                "css": { class: "fa-css3" },
+                "ftl": { class: "fa-file-code-o" }
+            },
+            WORKFLOWICONS: {
+                live: "fa-flag",
+                processing: "fa-spinner fa-spin",
+                locked: "fa-lock",
+                neverpublished: "fa-plus",
+                deleted: "fa-ban",
+                scheduled: "fa-clock-o",
+                inworkflow: "fa-flag-o",
+                edited: "fa-pencil"
+            }
+            // WORKFLOWICONS: {
+            //     live: "fa-flag-checkered",
+            //     processing: "fa-spinner fa-spin",
+            //     locked: "fa-lock",
+            //     neverpublished: "fa-plus",
+            //     deleted: "fa-ban",
+            //     scheduled: "fa-clock-o",
+            //     inworkflow: "fa-flag-o",
+            //     edited: "fa-pencil-square-o"
+            // }
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -713,7 +749,8 @@ var nodeOpen = false;
 
                             var retry = window.setInterval(function(){
                                 //checkIconState
-                                var inProgress = document.querySelector('#activeContentActions .status-icon.in-progress');
+                                var inProgress = (document.querySelector("#activeContentActions .status-icon.in-progress") ||
+                                                  document.querySelector("#activeContentActions .cs-item-icon .processing"));
                                 if(inProgress && !inProgress.classList.contains('scheduled') ){
                                     document.dispatchEvent(eventNS);
                                 }else{
@@ -6535,6 +6572,114 @@ var nodeOpen = false;
                 return status;
             },
 
+            getContentItemWorkflowStatus: function(contentTO){
+                var statusObj = contentTO.statusObj,
+                    workflowIcons = CSA.Constants.WORKFLOWICONS,
+                    statusClass = "";
+
+                if(!statusObj){
+                    statusObj = {
+                        deleted: contentTO.deleted,
+                        scheduled: contentTO.scheduled,
+                        disabled: contentTO.disabled,
+                        inFlight: contentTO.inFlight,
+                        inProgress: contentTO.inProgress,
+                        live: contentTO.live,
+                        lockOwner: contentTO.lockOwner
+                    };
+                }
+
+                if(statusObj.lockOwner && ("" !== statusObj.lockOwner)){     //locked
+                    statusClass = workflowIcons.locked + " locked";
+                }else if(statusObj.needtosetthis && ("" != statusObj.publishedNO)){      //TODO: get correct status and priority of icons - never published
+                    statusClass = workflowIcons.neverpublished + " never-published";
+                }else if(statusObj.live) {          //live
+                    statusClass = workflowIcons.live + " live";
+                }else if(statusObj.inFlight) {      //processing
+                    statusClass = workflowIcons.processing + " fa-spin processing";
+                }else if(statusObj.deleted) {       //deleted
+                    statusClass = workflowIcons.deleted + " deleted";
+                }else if(statusObj.scheduled) {     //scheduled
+                    statusClass = workflowIcons.scheduled + " el-scheduled";
+                }else if(statusObj.inProgress) {    //TODO: clarify - in workflow or edited
+                    statusClass = workflowIcons.edited + " edited";
+                }
+
+                return statusClass;
+            },
+
+            getContentItemIcon: function(treeNodeTO){
+                //TODO: call service to get mimetypes overrides
+                var defaultIcons = CSA.Constants.MIMETYPES,
+                    customIcons = CSA.mimeTypes,
+                    mainIconClass,
+                    customStyle,
+                    iconConfig = {
+                        icon: {}
+                    };
+
+                if("asset" === treeNodeTO.contentType){     //assets
+                    var mimetype = treeNodeTO.mimeType;
+
+                    if(mimetype.match(/\bvideo\b/)){
+                        mainIconClass = defaultIcons.video.class;
+                    }else if(mimetype.match(/\bimage\b/)) {
+                        mainIconClass = defaultIcons.image.class;
+                    }else if(mimetype.match(/\bpdf\b/)) {
+                        mainIconClass = defaultIcons.pdf.class;
+                    }else if(mimetype.match(/\bpresentationml\b/)) {
+                        mainIconClass = defaultIcons.powerpoint.class;
+                    }else if(mimetype.match(/\bwordprocessingml\b/)) {
+                        mainIconClass = defaultIcons.word.class;
+                    }else if(mimetype.match(/\bspreadsheetml\b/)) {
+                        mainIconClass = defaultIcons.excel.class;
+                    }else if(mimetype.match(/\bzip\b/)) {
+                        mainIconClass = defaultIcons.zip.class;
+                    }else if(mimetype.match(/\bjavascript\b/)) {
+                        mainIconClass = defaultIcons.js.class;
+                    }else if(mimetype.match(/\bgroovy\b/)) {
+                        mainIconClass = defaultIcons.groovy.class;
+                    }else if(mimetype.match(/\bcss\b/)) {
+                        mainIconClass = defaultIcons.css.class;
+                    }else if(mimetype.match(/\bfreemarker\b/)) {
+                        mainIconClass = defaultIcons.ftl.class;
+                    }else{
+                        mainIconClass = defaultIcons.unknown.class;
+                    }
+
+                    if(customIcons[mimetype]){
+                        if(customIcons[mimetype].class){
+                            mainIconClass = customIcons[mimetype].class;
+                        }
+                        if(customIcons[mimetype].styles){
+                            customStyle = customIcons[mimetype].styles;
+                        }
+
+                    }
+
+                }else{
+                    if(treeNodeTO.isComponent){     //isLevelDescriptor - also component
+                        mainIconClass = defaultIcons.component.class;
+                    }else if(treeNodeTO.isPage){
+                        if((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating){
+                            mainIconClass = defaultIcons.floatingPage.class;
+                        }else{
+                            mainIconClass = defaultIcons.navPage.class;
+                        }
+                    }
+                }
+
+                iconConfig.icon.class = mainIconClass;
+
+                if(customStyle){
+                    iconConfig.icon.styles = customStyle;
+                }
+
+                iconConfig.icon.stackedclass = this.getContentItemWorkflowStatus(treeNodeTO);
+
+                return CStudioAuthoring.Utils.createIcon(iconConfig, "", "cs-item-icon");
+            },
+
             /**
              * given a node, return the proper classes for the item's state
              */
@@ -8239,6 +8384,33 @@ CStudioAuthoring.FilesDiff = {
         if(!(!(window.ActiveXObject) && "ActiveXObject" in window)){
             win.CStudioAuthoring.Utils.Cookies.createCookie("crafterSite", win.CStudioAuthoringContext.site);
         }
+
+        CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, "/mime-type.xml", { success: function(data){
+            var mimeTypes = {},     //object to be stored
+                confMimeType,       //current mimeType json object from service
+                mimeType,
+                key;
+
+            if(data && data["mime-type"]){
+                for( var i = 0; i < data["mime-type"].length; i++){
+                    confMimeType = data["mime-type"][i];
+                    mimeType = {};
+
+                    if(confMimeType.icon){
+                        if(confMimeType.icon.class){
+                            mimeType.class = confMimeType.icon.class;
+                        }
+                        if(confMimeType.icon.styles){
+                            mimeType.styles = confMimeType.icon.styles;
+                        }
+                    }
+
+                    mimeTypes[confMimeType.type] = mimeType;
+                }
+            }
+
+            CStudioAuthoring.mimeTypes = mimeTypes;
+        }});
     }, w);
 
 }) (window);

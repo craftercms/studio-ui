@@ -181,7 +181,8 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
                 '</td>',
                 '<td style="padding-left:0px">'+
                     '<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
-                        '<span class="iconRow ', itemIconStatus, '"></span>',
+                        // '<span class="iconRow ', itemIconStatus, '"></span>',
+                        CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
                 '<a class="anchorRow', (item.disabled == true ? ' dashboard-item disabled' : '') ,'" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+browserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true) ? "previewLink" : "non-previewable-link", '">',
                             displayName, (item.isNew == true) ? ' <span style="font-size:16px;">*</span>' : '',
                         '</a>',

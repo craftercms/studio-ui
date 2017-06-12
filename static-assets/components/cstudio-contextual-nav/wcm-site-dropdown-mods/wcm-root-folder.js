@@ -42,7 +42,10 @@
                 components: "fa-puzzle-piece",
                 defaultIcon: "fa-folder",
                 childOpen: "fa-folder-open-o",
-                childClosed: "fa-folder-o"
+                childClosed: "fa-folder-o",
+                navPage: "fa-file",
+                floatingPage: "fa-file-o",
+                component: "fa-puzzle-piece"
             },
             /**
              * initialize module
@@ -872,6 +875,10 @@
 
                     if (!treeNodeTO.style.match(/\bfolder\b/)) {
                         treeNodeTO.linkToPreview = true;
+                        
+                        var icon = CStudioAuthoring.Utils.getContentItemIcon(treeNodeTO);
+                        nodeSpan.appendChild(icon);
+
                     }else{
                         var key = instance.label;
                         key = key.replace(/\s/g,'');
@@ -914,6 +921,7 @@
 
                 return treeNode;
             },
+            
             /**
              * method fired when user clicks on the root level folder
              */
@@ -1583,7 +1591,7 @@
                                             currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name),
                                             curElt = YDom.get(curNode.labelElId);
                                         currentInternalName = treeData.item.isNew ? currentInternalName + " *" : currentInternalName;
-                                        curElt ? curElt.innerHTML = currentInternalName : null;
+                                        // curElt ? curElt.innerHTML = currentInternalName : null;
                                         curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                         if (treeData.item.isPreviewable) {
@@ -1595,6 +1603,7 @@
                                             style = style + " component";
                                         }
                                         style = style + " treenode-label";
+                                        treeData.item.style = style;
                                         if(curElt){
                                             curElt.className = style;
                                             if(curNode.data.title && curElt.title != curNode.data.title) {
@@ -1620,14 +1629,22 @@
                                                 }, 300);
                                             } else {
                                                 cont++;
-                                                if ((curNode.labelStyle.indexOf("folder") != -1 && cont < 25) || (curNode.labelStyle.indexOf("folder") == -1 && cont < 2)) {
+
+                                                var indexOfFolder = -1;
+                                                if (curNode.labelStyle){
+                                                    indexOfFolder = curNode.labelStyle.indexOf("folder");
+                                                }else{
+                                                    indexOfFolder = curNode.html.className.indexOf("folder");
+                                                }
+
+                                                if ((indexOfFolder != -1 && cont < 25) || (indexOfFolder == -1 && cont < 2)) {
                                                     setTimeout(function () {
                                                         lookupSiteContent(curNode, currentUri, cont);
                                                         if (typeof WcmDashboardWidgetCommon != 'undefined' && (eventNS.typeAction =="edit" && !eventNS.draft)) {
                                                             CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
                                                                 CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
                                                         }
-                                                        if((curNode.labelStyle.indexOf("folder") == -1) && (typeAction != "edit")) {
+                                                        if((indexOfFolder == -1) && (typeAction != "edit")) {
                                                             document.dispatchEvent(eventCM);
                                                             Self.refreshAllDashboards();
                                                         }
@@ -1635,6 +1652,11 @@
                                                 }
                                             }
                                         }
+
+                                        var icon = CStudioAuthoring.Utils.getContentItemIcon(treeData.item);
+                                        curElt.innerHTML = "";
+                                        curElt.appendChild(icon);
+                                        curElt ? curElt.innerHTML += currentInternalName : null;
                                     }
                                 },
                                 failure: function () {
@@ -1777,6 +1799,8 @@
                 retTransferObj.formPagePath = treeItem.formPagePath;
                 retTransferObj.isContainer = treeItem.container || treeItem.isContainer;
                 retTransferObj.isComponent = treeItem.component;
+                retTransferObj.isPage = treeItem.isPage;
+                retTransferObj.isFloating = treeItem.floating;
                 retTransferObj.isLevelDescriptor = treeItem.levelDescriptor;
                 retTransferObj.inFlight = treeItem.inFlight;
                 retTransferObj.editedDate = "";
@@ -1785,8 +1809,20 @@
                 retTransferObj.lockOwner = treeItem.lockOwner;
                 retTransferObj.inProgress = treeItem.inProgress;
                 retTransferObj.previewable = treeItem.previewable;
+                retTransferObj.mimeType = treeItem.mimeType;
+                retTransferObj.contentType = treeItem.contentType;
+                retTransferObj.isFloating = treeItem.isFloating;
                 var itemNameLabel = "Page";
-
+                
+                retTransferObj.statusObj = {
+                    deleted: treeItem.deleted,
+                    scheduled: treeItem.scheduled,
+                    disabled: treeItem.disabled,
+                    inFlight: treeItem.inFlight,
+                    inProgress: treeItem.inProgress,
+                    live: treeItem.live,
+                    lockOwner: treeItem.lockOwner
+                };
 
                 retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem);
                 retTransferObj.style = CStudioAuthoring.Utils.getIconFWClasses(treeItem); //, treeItem.container
