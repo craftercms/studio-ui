@@ -31,13 +31,15 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
                                 CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(
                                     function () {
                                         var el = YDom.get("acn-ice-tools-container");
-                                        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                                        YDom.removeClass(el.children[0], "icon-yellow");
+                                        YDom.addClass(el.children[0], "icon-default");
                                     });
 
                                 CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(
                                     function () {
                                         var el = YDom.get("acn-ice-tools-container");
-                                        el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                                        YDom.removeClass(el.children[0], "icon-default");
+                                        YDom.addClass(el.children[0], "icon-yellow");
                                     });
 
 //						}
@@ -56,13 +58,15 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
                                             CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(
                                                 function () {
                                                     var el = YDom.get("acn-ice-tools-container");
-                                                    el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                                                    YDom.removeClass(el.children[0], "icon-yellow");
+                                                    YDom.addClass(el.children[0], "icon-default");
                                                 });
 
                                             CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(
                                                 function () {
                                                     var el = YDom.get("acn-ice-tools-container");
-                                                    el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                                                    YDom.removeClass(el.children[0], "icon-default");
+                                                    YDom.addClass(el.children[0], "icon-yellow");
                                                 });
 
                                             CStudioAuthoring.Module.requireModule(
@@ -99,22 +103,30 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 				},
 				
 				render: function() {
-				    var el, containerEl, imageEl, iceOn;
+				    var el, containerEl, pencilIcon, iceOn;
 
 					
 					el = YDom.get("acn-ice-tools");
 					containerEl = document.createElement("div");
 					containerEl.id = "acn-ice-tools-container";
 
-					imageEl = document.createElement("img");
-					imageEl.id = "acn-ice-tools-image";
+					pencilIcon = document.createElement("i");
+                    pencilIcon.id = "acn-ice-tools-image";
 
 					iceOn = !!(sessionStorage.getItem('ice-on'));   // cast string value to a boolean
 
-                    imageEl.src = (iceOn) ? CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png" :
-                                        CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                    YDom.addClass(pencilIcon, "fa fa-pencil f18");
 
-					containerEl.appendChild(imageEl);
+                    if(iceOn){
+                        YDom.addClass(pencilIcon, "icon-yellow");
+                    } else{
+                        YDom.addClass(pencilIcon, "icon-default");
+                    }
+
+
+
+
+					containerEl.appendChild(pencilIcon);
 					el.appendChild(containerEl);
 
 					containerEl.onclick = function() {

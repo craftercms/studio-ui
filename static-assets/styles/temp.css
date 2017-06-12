@@ -4948,6 +4948,15 @@ span.acn-canned-search {
   #preview-tools-panel-container #component-panel-elem.expanded .acn-accordion-panel {
     display: none; }
 
+.f18 {
+  font-size: 18px; }
+
+.icon-yellow {
+  color: #f6cc2f; }
+
+.icon-default {
+  color: #7e9dbb; }
+
 #maskDialog {
   position: fixed;
   width: 100%;

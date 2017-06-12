@@ -25,14 +25,14 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         containerEl.appendChild(container);
         container.className = 'studio-view';
 
-        var buttonEl, imageEl, labelEl, iceOn;
+        var buttonEl, pencilIcon, labelEl, iceOn;
 
         var callback = function(isRev){
             if(!isRev){
 
                 wrapper = document.createElement('div');
                 buttonEl = document.createElement("button");
-                imageEl = document.createElement("img");
+                pencilIcon = document.createElement("i");
                 labelEl = document.createElement("span");
                 YDom.addClass(wrapper, 'form-group');
                 YDom.addClass(buttonEl, 'btn btn-default btn-block');
@@ -40,15 +40,17 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
                 iceOn = !!(sessionStorage.getItem('ice-on'));   // cast string value to a boolean
 
-                if (iceOn) {
-                    imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                YDom.addClass(pencilIcon, "fa fa-pencil f18");
+
+                if(iceOn){
+                    YDom.addClass(pencilIcon, "icon-yellow");
                     labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOff");
-                } else {
-                    imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                } else{
+                    YDom.addClass(pencilIcon, "icon-default");
                     labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOn");
                 }
 
-                buttonEl.appendChild(imageEl);
+                buttonEl.appendChild(pencilIcon);
                 buttonEl.appendChild(labelEl);
                 wrapper.appendChild(buttonEl);
                 container.appendChild(wrapper);
@@ -271,8 +273,10 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             var cstopic = crafter.studio.preview.cstopic;
 
             CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
-                imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
-                contextNavImg.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                YDom.removeClass(pencilIcon, "icon-yellow");
+                YDom.addClass(pencilIcon, "icon-default");
+                YDom.removeClass(contextNavImg, "icon-yellow")
+                YDom.addClass(contextNavImg, "icon-default");
                 labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOn");
 
                 amplify.publish(cstopic('ICE_TOOLS_OFF'));
@@ -280,8 +284,10 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             });
 
             CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
-                imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
-                contextNavImg.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                YDom.removeClass(pencilIcon, "icon-default");
+                YDom.addClass(pencilIcon, "icon-yellow");
+                YDom.removeClass(contextNavImg, "icon-default");
+                YDom.addClass(contextNavImg, "icon-yellow");
                 YDom.replaceClass(containerEl.parentNode, 'contracted', 'expanded');
                 labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOff");
 
