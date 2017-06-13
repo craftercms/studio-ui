@@ -62,12 +62,13 @@
                     </li>
                 </ul>
 
-                <div id="acn-persona" class="navbar-right"></div>
+                <div id="acn-separator" class="navbar-right"><i class="fa fa-ellipsis-v ellipsis-icon"></i></div>
                 <div class="navbar-form navbar-right" role="search">
                     <div class="form-group">
                         <span value="" id="acn-searchtext"></span>
                     </div>
                 </div>
+                <div id="acn-persona" class="navbar-right"></div>
                 <div id="acn-preview-tools" class="navbar-right"></div>
                 <div id="acn-ice-tools" class="navbar-right"></div>
 
@@ -98,8 +99,8 @@
             <div id="acn-right">
                 <div id="_acn-ice-tools" style="float: left"></div>
                 <div id="_acn-preview-tools" style="float: left"></div>
-                <div id="_acn-persona" style="float: left"></div>
                 <div id="_acn-search"></div>
+                <div id="_acn-persona" style="float: left"></div>
                 <div id="acn-logout">
                     <a id="acn-logout-link" href="#">Log Out</a>
                 </div>

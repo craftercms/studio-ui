@@ -102,7 +102,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     wcmContentApprove: "Approve & Publish",
     wcmContentDuplicate: "Duplicate",
     wcmContentHistory: "History",
-    wcmContentPageDisabled: "This page is Disabled.",
+    wcmContentPageDisabled: "This content is disabled.",
     wcmContentSavedAsDraft: "Content was saved as DRAFT. Some required fields may not be populated. This can cause errors when previewed or deployed.",
 
     InProgress: "Edited",
@@ -444,9 +444,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "en", {
-    defaultTitle: "WCM Search",
+    defaultTitle: "Search",
     searchButtonLabel: "Search",
-    keywordsLabel: "Keywords (optional)",
+    keywordsLabel: "Keywords",
     searchResults: "Search Results",
     showing: "(Showing {0}-{1} of {2})",
     hideDescriptions: "Hide Descriptions",

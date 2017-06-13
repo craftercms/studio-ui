@@ -234,7 +234,12 @@ div#acn-active-content {
 }
 
 #acn-persona-container {
-  padding: 12px 5px;
+  padding: 12px 5px 12px 15px;
+}
+
+#acn-separator .ellipsis-icon{
+  padding: 15px 8px 0 4px;
+  font-size: 21px;
 }
 
 #acn-persona-image {

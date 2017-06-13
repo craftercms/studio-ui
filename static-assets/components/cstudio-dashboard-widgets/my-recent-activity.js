@@ -197,7 +197,8 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 
         var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"),
             currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked") ?
-                JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null;
+                JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null,
+            currentBrowserUri = browserUri !== "" ? browserUri : "/";
        	
         var itemRow = [
 			'<td style="padding-right:0px">',
@@ -212,7 +213,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
                 '<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                 // '<span class="iconRow ', itemIconStatus, '"></span>',
 				CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-			'<a class="anchorRow' , (item.disabled == true ? ' dashboard-item disabled' : '') , '" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+browserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true ? 'previewLink' : 'non-previewable-link'), '">',
+			'<a class="anchorRow' , (item.disabled == true ? ' dashboard-item disabled' : '') , '" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true ? 'previewLink' : 'non-previewable-link'), '">',
                     itemNameForDisplay,  (item.isNew == true) ? ' <span style="font-size:16px;">*</span>' : '',
                     '</a>',
                 '</div>',

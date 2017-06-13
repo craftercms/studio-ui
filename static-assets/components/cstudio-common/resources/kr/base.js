@@ -95,7 +95,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     wcmContentApprove: "승인 및 게시",
     wcmContentDuplicate: "중복",
     wcmContentHistory: "역사",
-    wcmContentPageDisabled: "페이지를 사용할 수 없습니다 :. 배포하면, 라이브 방문자가 (404) 오류 페이지를 찾을 수 없습니다가 표시됩니다",
+    wcmContentPageDisabled: "이 콘텐츠는 사용할 수 없습니다",
 
     InProgress: "편집",
     Deleted: "삭제",
@@ -403,9 +403,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "kr", {
-    defaultTitle: "수색 WCM",
+    defaultTitle: "수색",
     searchButtonLabel: "수색",
-    keywordsLabel: "키워드 (선택)",
+    keywordsLabel: "키워드",
     searchResults: "검색 결과",
     showing: "(보기 {0}-{1} 의 {2})",
     hideDescriptions: "숨기기 설명",

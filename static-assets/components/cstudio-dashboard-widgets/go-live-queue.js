@@ -193,7 +193,8 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
 
                 var currentDashboard = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"),
                     currentCheckItem = CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked") ?
-                        JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null;
+                        JSON.parse(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-checked"))[0] : null,
+                    currentBrowserUri = browserUri !== "" ? browserUri : "/";
 
                 html = html.concat([
                     '<td colspan=2>',
@@ -206,7 +207,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                     // '<span class="', itemIconStatus, (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                     CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-                    '<a ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+browserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true) ? "previewLink" : "non-previewable-link",
+                    '<a ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true) ? "previewLink" : "non-previewable-link",
                     (item.disabled == true ? ' dashboard-item disabled' : '') , '">',
                     displayName, (item.isNew == true) ? ' <span style="font-size:16px;">*</span>' : '',
                     '</a>',
