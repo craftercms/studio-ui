@@ -53,7 +53,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Controller, CStu
             YAHOO.util.Dom.addClass(controlsContainerEl, "options");
 
             var editEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(editEl, "edit");
+            YAHOO.util.Dom.addClass(editEl, "edit fa fa-pencil f18");
 
             controlsContainerEl.appendChild(editEl);
 

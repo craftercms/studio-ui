@@ -47,10 +47,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template, CStudi
 			YAHOO.util.Dom.addClass(controlsContainerEl, "options");
 
 			var editEl = document.createElement("div");
-			YAHOO.util.Dom.addClass(editEl, "edit");
+			YAHOO.util.Dom.addClass(editEl, "edit fa fa-pencil f18");
 			
 			var pickEl = document.createElement("div");
-			YAHOO.util.Dom.addClass(pickEl, "pick");
+			YAHOO.util.Dom.addClass(pickEl, "pick fa fa-search f18");
 			
 			controlsContainerEl.appendChild(editEl);
 			controlsContainerEl.appendChild(pickEl);			

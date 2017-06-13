@@ -2922,12 +2922,12 @@ div#acn-active-content {
   padding: 12px 5px 12px 15px; }
 
 #acn-separator .ellipsis-icon {
-  padding: 15px 8px 0 4px;
+  padding: 14px 8px 0 4px;
   font-size: 21px; }
 
 #acn-persona-image {
-  width: 26px;
-  height: 26px;
+  width: 23px;
+  height: 23px;
   border-radius: 4px;
   cursor: pointer; }
 
@@ -4947,15 +4947,6 @@ span.acn-canned-search {
     border-color: #dddddd; }
   #preview-tools-panel-container #component-panel-elem.expanded .acn-accordion-panel {
     display: none; }
-
-.f18 {
-  font-size: 18px; }
-
-.icon-yellow {
-  color: #f6cc2f; }
-
-.icon-default {
-  color: #7e9dbb; }
 
 #maskDialog {
   position: fixed;
@@ -15262,7 +15253,7 @@ body.masked {
   .navbar .navbar-brand > img {
     width: 75px; }
 .navbar .navbar-form[role="search"] {
-  margin-top: 16px;
+  margin-top: 14px;
   margin-bottom: 16px; }
   .navbar .navbar-form[role="search"] #acn-searchtext {
     display: inline-block;
