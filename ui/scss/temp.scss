@@ -482,12 +482,6 @@ a.acn-parent-folder:before {
   font-size: 14px;
 }
 
-.acn-dropdown-wrapper .acn-dropdown-menu .acn-parent-folder {
-  background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat left;
-  background-position: 0 -101px;
-  padding: 2px 0 0 0;
-}
-
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-parent-folder.loading {
   background: transparent url('/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif') no-repeat scroll 0 center;
   font-style: italic;
@@ -2391,71 +2385,10 @@ table.yui-calendar {
 }
 
 .component {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -498px;
+  background: none;
   display: inline-block;
-  padding-left: 20px;
+  padding-left: 0;
   float: left;
-}
-
-.madeLiveComponent {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -498px;
-  display: inline-block;
-}
-
-.componentSubmitted {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -541px;
-  display: inline-block;
-}
-
-.componentScheduled {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -561px;
-  display: inline-block;
-}
-
-.componentSubmittedScheduled {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -581px;
-  display: inline-block;
-}
-
-.componentInProgress {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -521px;
-  display: inline-block;
-}
-
-.componentDeleted {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -721px;
-  display: inline-block;
-}
-
-.componentDeletedSubmitted {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -721px;
-  display: inline-block;
-}
-
-.componentDeletedScheduled {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -800px;
-  display: inline-block;
-}
-
-.componentDeletedSubmittedScheduled {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -800px;
-  display: inline-block;
-}
-
-.componentApprovedScheduled {
-  background: url(/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif) no-repeat;
-  background-position: 0px -561px;
-  display: inline-block;
 }
 
 .navPage {
@@ -2531,7 +2464,7 @@ span.acn-canned-search {
 }
 
 .copy-content-container ul div div {
-  margin-left: 17px;
+  margin-left: 0;
 }
 
 .copy-content-container #copyCheckBoxItems{

@@ -1800,6 +1800,7 @@
                 retTransferObj.isContainer = treeItem.container || treeItem.isContainer;
                 retTransferObj.isComponent = treeItem.component;
                 retTransferObj.isPage = treeItem.isPage;
+                retTransferObj.isNew = treeItem.isNew;
                 retTransferObj.isFloating = treeItem.floating;
                 retTransferObj.isLevelDescriptor = treeItem.levelDescriptor;
                 retTransferObj.inFlight = treeItem.inFlight;
@@ -1821,7 +1822,8 @@
                     inFlight: treeItem.inFlight,
                     inProgress: treeItem.inProgress,
                     live: treeItem.live,
-                    lockOwner: treeItem.lockOwner
+                    lockOwner: treeItem.lockOwner,
+                    submitted: treeItem.submitted
                 };
 
                 retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem);
@@ -1857,12 +1859,8 @@
                     retTransferObj.internalName = "Section Defaults";
                 }
 
-                if (treeItem.isNew) {
-                    retTransferObj.label = retTransferObj.internalName + " *";
-                } else {
-                    retTransferObj.label = retTransferObj.internalName;
-                }
-
+                retTransferObj.label = retTransferObj.internalName;
+                
                 if (treeItem.previewable == false) {
                     retTransferObj.style += " no-preview";
                 }else{
@@ -1889,6 +1887,9 @@
                     retTransferObj.editedDate = formattedEditDate;
                     ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.eventDate, "tooltipformat");
                 }
+                
+                var icon = treeItem.folder ? CStudioAuthoring.Utils.createIcon("", Self.defaultIcons.childClosed )
+                                           : CStudioAuthoring.Utils.getContentItemIcon(treeItem);
 
                 if (treeItem.scheduled == true) {
 
@@ -1907,7 +1908,8 @@
                             retTransferObj.modifier,
                             retTransferObj.lockOwner,
                             itemNameLabel,
-                            ttFormattedSchedDate);
+                            ttFormattedSchedDate,
+                            icon);
                 } else {
                     retTransferObj.title = this.buildToolTipRegular(
                             retTransferObj.label,
@@ -1917,7 +1919,9 @@
                             ttFormattedEditDate,
                             retTransferObj.modifier,
                             retTransferObj.lockOwner,
-                            itemNameLabel);
+                            itemNameLabel,
+                            "",
+                            icon);
                 }
                 return retTransferObj;
             },
@@ -1925,21 +1929,21 @@
              * build the HTML for the scheduled tool tip.
              *
              */
-            buildToolTipRegular: function(label, contentType, style, status, editedDate, modifier, lockOwner, itemNameLabel) {
+            buildToolTipRegular: function(label, contentType, style, status, editedDate, modifier, lockOwner, itemNameLabel, nan, icon) {
                 if (!itemNameLabel) {
                     itemNameLabel = "Page";
                 }
 
                 label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
-                return CStudioAuthoring.Utils.buildToolTip(itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, "")
+                return CStudioAuthoring.Utils.buildToolTip(itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, "", icon)
             },
 
             /**
              * build the HTML for the scheduled tool tip.
              *
              */
-            buildToolTipScheduled: function(label, contentType, style, status, editedDate, modifier, lockOwner, itemNameLabel, schedDate) {
+            buildToolTipScheduled: function(label, contentType, style, status, editedDate, modifier, lockOwner, itemNameLabel, schedDate, icon) {
                 var toolTip = "";
                 if (!itemNameLabel) {
                     itemNameLabel = "Page";
@@ -1948,7 +1952,7 @@
                 label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
 
                 try {
-                    toolTip = CStudioAuthoring.Utils.buildToolTip(itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate);
+                    toolTip = CStudioAuthoring.Utils.buildToolTip(itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon);
                 }
                 catch(err) {
                     //console.log(err);

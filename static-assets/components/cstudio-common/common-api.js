@@ -220,19 +220,9 @@ var nodeOpen = false;
                 neverpublished: "fa-plus",
                 deleted: "fa-ban",
                 scheduled: "fa-clock-o",
-                inworkflow: "fa-flag-o",
+                inworkflow: "fa-flag",
                 edited: "fa-pencil"
             }
-            // WORKFLOWICONS: {
-            //     live: "fa-flag-checkered",
-            //     processing: "fa-spinner fa-spin",
-            //     locked: "fa-lock",
-            //     neverpublished: "fa-plus",
-            //     deleted: "fa-ban",
-            //     scheduled: "fa-clock-o",
-            //     inworkflow: "fa-flag-o",
-            //     edited: "fa-pencil-square-o"
-            // }
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -6585,13 +6575,18 @@ var nodeOpen = false;
                         inFlight: contentTO.inFlight,
                         inProgress: contentTO.inProgress,
                         live: contentTO.live,
-                        lockOwner: contentTO.lockOwner
+                        lockOwner: contentTO.lockOwner,
+                        submitted: contentTO.submitted
                     };
                 }
 
                 if(statusObj.lockOwner && ("" !== statusObj.lockOwner)){     //locked
                     statusClass = workflowIcons.locked + " locked";
-                }else if(statusObj.needtosetthis && ("" != statusObj.publishedNO)){      //TODO: get correct status and priority of icons - never published
+                }else if(statusObj.submitted) {                   //in workflow - progress
+                    statusClass = workflowIcons.inworkflow + " in-workflow";
+                }else if(statusObj.scheduled) {     //scheduled
+                    statusClass = workflowIcons.scheduled + " el-scheduled";
+                }else if(contentTO.isNew){          //never published
                     statusClass = workflowIcons.neverpublished + " never-published";
                 }else if(statusObj.live) {          //live
                     statusClass = workflowIcons.live + " live";
@@ -6599,9 +6594,7 @@ var nodeOpen = false;
                     statusClass = workflowIcons.processing + " fa-spin processing";
                 }else if(statusObj.deleted) {       //deleted
                     statusClass = workflowIcons.deleted + " deleted";
-                }else if(statusObj.scheduled) {     //scheduled
-                    statusClass = workflowIcons.scheduled + " el-scheduled";
-                }else if(statusObj.inProgress) {    //TODO: clarify - in workflow or edited
+                }else if(statusObj.inProgress) {    //edited
                     statusClass = workflowIcons.edited + " edited";
                 }
 
@@ -6852,7 +6845,7 @@ var nodeOpen = false;
                 return scheduledDate;
             },
 
-            buildToolTip: function (itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate) {
+            buildToolTip: function (itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon) {
                 label = label.replace(new RegExp(" ", 'g'), "&nbsp;");
                
                 if(contentType.indexOf("/page/") != -1)
@@ -6860,6 +6853,9 @@ var nodeOpen = false;
 
                 if(contentType.indexOf("/component/") != -1)
                 contentType = contentType.replace("/component/", "") + "&nbsp;(Component)";
+
+                var iconHTML = icon ? icon.outerHTML
+                                    : "<span class='{2}'>";
 
                 var toolTipMarkup = [
                  "<table class='width300 acn-tooltip'>",
@@ -6870,7 +6866,7 @@ var nodeOpen = false;
                         "<td class='acn-width200' style='text-transform: capitalize;'>{8}</td></tr>",
                     
                     "<tr><td class='acn-width83'><strong>Status:</strong></td>",
-                    "<td class='acn-width200'><span class='{2}'></span>",
+                    "<td class='acn-width200'>", iconHTML, "</span>",
                     "<span style='padding-left:2px;'>{3}</span></td></tr>",
                     "<tr>"].join("");
 
