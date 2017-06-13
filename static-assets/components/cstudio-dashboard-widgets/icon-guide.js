@@ -18,6 +18,22 @@ CStudioAuthoringWidgets.IconGuideDashboard = CStudioAuthoringWidgets.IconGuideDa
 	
 	WcmDashboardWidgetCommon.init(this);
 
+	this.setStatusIcons = function() {
+		var statusIcons = CStudioAuthoring.Constants.WORKFLOWICONS,
+            el,
+            elClass;
+
+        for (var key in statusIcons) {
+            if (statusIcons.hasOwnProperty(key)) {
+                elClass = statusIcons[key];
+                el = document.getElementById("guide-" + key);
+                YDom.addClass(el, elClass);
+            }
+        }
+    };
+
+    YAHOO.util.Event.onDOMReady(this.setStatusIcons);
+
 	/**
 	 * get table data
 	 */
