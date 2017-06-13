@@ -214,7 +214,6 @@ var nodeOpen = false;
                 "ftl": { class: "fa-file-code-o" }
             },
             WORKFLOWICONS: {
-                live: "fa-flag",
                 processing: "fa-spinner fa-spin",
                 locked: "fa-lock",
                 neverpublished: "fa-plus",

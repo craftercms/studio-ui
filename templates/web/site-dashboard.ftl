@@ -143,35 +143,34 @@
                 <div class="row">
                     <div class="${classes}">
                     <#-- Navigation Page -->
-                        <div class="iconPaper"></div>
                         <div class="iconName">
+                            <span class="fa fa-file mr5" style="color: #cecece; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideNavigationPage")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Floating Page -->
-                        <div class="iconPlainPaper"></div>
                         <div class="iconName">
+                            <span class="fa fa-file-o mr5" style="color: #cecece; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFloatingPage")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Component -->
-                        <div class="iconPuzzle"></div>
                         <div class="iconName">
+                            <span class="fa fa-puzzle-piece mr5" style="color: #cecece; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideComponent")</script>
                         </div>
                     </div>
-                    <div class="${classes}">
-                    <#-- Document -->
-                        <div class="iconDoc"></div>
-                        <div class="iconName">
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideDocument")</script>
-                        </div>
-                    </div>
+                    <#--<div class="${classes}">-->
+                    <#--&lt;#&ndash; Document &ndash;&gt;-->
+                        <#--<div class="iconDoc"></div>-->
+                        <#--<div class="iconName">-->
+                            <#--<script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideDocument")</script>-->
+                        <#--</div>-->
+                    <#--</div>-->
                     <div class="${classes}">
                     <#-- Never Published -->
-                        <#--<div class="iconSpace">*</div>-->
                         <div class="iconName">
                             <span id="guide-neverpublished" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateNew")</script>
@@ -185,48 +184,42 @@
                     </div>
                     <div class="${classes}">
                     <#-- Edited -->
-                        <#--<div class="iconPen"></div>-->
-                        <div class="iconNameR">
+                        <div class="iconName">
                             <span id="guide-edited" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInProgress")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- In Workflow-->
-                        <#--<div class="iconFlag"></div>-->
-                        <div class="iconNameR">
+                        <div class="iconName">
                             <span id="guide-inworkflow" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInWorkflow")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Scheduled -->
-                        <#--<div class="iconSchedule"></div>-->
-                        <div class="iconNameR">
+                        <div class="iconName">
                             <span id="guide-scheduled" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateScheduled")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Deleted -->
-                        <#--<div class="iconDelete"></div>-->
-                        <div class="iconNameR">
+                        <div class="iconName">
                             <span id="guide-deleted" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDeleted")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Processing -->
-                        <#--<div class="iconInFlight"></div>-->
-                        <div class="iconNameR">
+                        <div class="iconName">
                             <span id="guide-processing" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateSystemProcessing")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Locked -->
-                        <#--<div class="iconLocked"></div>-->
-                        <div class="iconNameR">
+                        <div class="iconName">
                             <span id="guide-locked" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateLocked")</script>
                         </div>
