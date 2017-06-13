@@ -142,73 +142,85 @@
             <#assign classes="col-xs-6 col-sm-3 col-md-2 mb10" />
                 <div class="row">
                     <div class="${classes}">
-                        <div class="iconPaper"></div>
+                    <#-- Navigation Page -->
                         <div class="iconName">
+                            <span class="fa fa-file mr5" style="color: #cecece; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideNavigationPage")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconPlainPaper"></div>
+                    <#-- Floating Page -->
                         <div class="iconName">
+                            <span class="fa fa-file-o mr5" style="color: #cecece; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFloatingPage")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconPuzzle"></div>
+                    <#-- Component -->
                         <div class="iconName">
+                            <span class="fa fa-puzzle-piece mr5" style="color: #cecece; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideComponent")</script>
                         </div>
                     </div>
+                    <#--<div class="${classes}">-->
+                    <#--&lt;#&ndash; Document &ndash;&gt;-->
+                        <#--<div class="iconDoc"></div>-->
+                        <#--<div class="iconName">-->
+                            <#--<script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideDocument")</script>-->
+                        <#--</div>-->
+                    <#--</div>-->
                     <div class="${classes}">
-                        <div class="iconDoc"></div>
+                    <#-- Never Published -->
                         <div class="iconName">
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideDocument")</script>
-                        </div>
-                    </div>
-                    <div class="${classes}">
-                        <div class="iconSpace">*</div>
-                        <div class="iconName">
+                            <span id="guide-neverpublished" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateNew")</script>
                         </div>
                     </div>
                     <div class="${classes}">
+                    <#-- Disabled -->
                         <div class="iconText" style="margin: 0 0 0 20px; padding: 2px 0 1px;">
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDisabled")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconPen"></div>
-                        <div class="iconNameR">
+                    <#-- Edited -->
+                        <div class="iconName">
+                            <span id="guide-edited" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInProgress")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconFlag"></div>
-                        <div class="iconNameR">
+                    <#-- In Workflow-->
+                        <div class="iconName">
+                            <span id="guide-inworkflow" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInWorkflow")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconSchedule"></div>
-                        <div class="iconNameR">
+                    <#-- Scheduled -->
+                        <div class="iconName">
+                            <span id="guide-scheduled" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateScheduled")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconDelete"></div>
-                        <div class="iconNameR">
+                    <#-- Deleted -->
+                        <div class="iconName">
+                            <span id="guide-deleted" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDeleted")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconInFlight"></div>
-                        <div class="iconNameR">
+                    <#-- Processing -->
+                        <div class="iconName">
+                            <span id="guide-processing" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateSystemProcessing")</script>
                         </div>
                     </div>
                     <div class="${classes}">
-                        <div class="iconLocked"></div>
-                        <div class="iconNameR">
+                    <#-- Locked -->
+                        <div class="iconName">
+                            <span id="guide-locked" class="fa mr5"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateLocked")</script>
                         </div>
                     </div>

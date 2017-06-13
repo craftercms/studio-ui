@@ -33,10 +33,13 @@ CStudioAuthoring.Dialogs.DialogCopy = CStudioAuthoring.Dialogs.DialogCopy || (fu
             children = item.children,
             childrenLen = children.length,
             child,
+            icon = item.folder ? CStudioAuthoring.Utils.createIcon("", "fa-folder-o", "ml0").outerHTML
+                               : CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
             html = "<ul>" +
                 '<input type="checkbox" id="' + item.uri + '" checked="true"/>' +
                 '<div class="' + itemIconClass + '" >' +
-                '<div>' + item.internalName + '</div> ' +
+                '<div>' + icon +
+                item.internalName + '</div> ' +
                 '</div>';
 
         Array.isArray(aURIs) && aURIs.push('<div style="margin:0 0 5px 0">' + item.browserUri + "</div>");

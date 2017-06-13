@@ -459,6 +459,9 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                 nodeSpan.appendChild(childClosed);
                 nodeSpan.appendChild(childOpen);
+            }else{
+                var icon = CStudioAuthoring.Utils.getContentItemIcon(treeNodeTO);
+                nodeSpan.appendChild(icon);
             }
 
             nodeSpan.innerHTML += treeNodeTO.label;
@@ -934,6 +937,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         retTransferObj.formPagePath = treeItem.formPagePath;
         retTransferObj.isContainer = treeItem.container;
         retTransferObj.isComponent = true;
+        retTransferObj.isNew = treeItem.isNew;
         retTransferObj.isLevelDescriptor = treeItem.levelDescriptor;
         retTransferObj.editedDate = "";
         retTransferObj.modifier = "";
@@ -942,6 +946,19 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         retTransferObj.sandboxLockStore = treeItem.sandboxLockStore;
         retTransferObj.scheduledDate = treeItem.scheduledDate;
         retTransferObj.previewable = treeItem.previewable;
+        retTransferObj.mimeType = treeItem.mimeType;
+        retTransferObj.contentType = treeItem.contentType;
+        retTransferObj.isFloating = treeItem.isFloating;
+
+        retTransferObj.statusObj = {
+            deleted: treeItem.deleted,
+            scheduled: treeItem.scheduled,
+            disabled: treeItem.disabled,
+            inFlight: treeItem.inFlight,
+            inProgress: treeItem.inProgress,
+            live: treeItem.live,
+            submitted: treeItem.submitted
+        };
 
         treeItem.component = true;
 
@@ -956,12 +973,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             retTransferObj.internalName = "Section Defaults";
         }
 
-        if(treeItem.isNew) {
-            retTransferObj.label = retTransferObj.internalName + " *";
-        }
-        else {
-            retTransferObj.label = retTransferObj.internalName;
-        }
+        retTransferObj.label = retTransferObj.internalName;
 
         if(treeItem.container == true) {
             retTransferObj.fileName = treeItem.name;

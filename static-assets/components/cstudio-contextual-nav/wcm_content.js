@@ -424,7 +424,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             auxIcon = "",
                             isInFlight = false,
                             isOneItemLocked = false,
-                            itemLocked;
+                            itemLocked,
+                            spanIcon;
 
                         if(selectedContent.length == 0) {
                             this.renderSelectNone();
@@ -478,7 +479,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             } else {
                                 isBulk = false;
                                 state = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true);
-                                icon = CStudioAuthoring.Utils.getIconFWClasses(selectedContent[0]);
+                                icon = CStudioAuthoring.Utils.getContentItemIcon(selectedContent[0]);
+                                // icon = CStudioAuthoring.Utils.getIconFWClasses(selectedContent[0]);
                                 isInFlight = selectedContent[0].inFlight;
                                 isOneItemLocked = CStudioAuthoring.Utils.isItemLocked(selectedContent[0]);
 
@@ -561,6 +563,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             statSplit = state.split("|"),
                             hasOperations;
 
+                        navLabelEl.innerHTML = "";
+
                         for(var i=0; i<this.options.length; i++) {
                             var option = this.options[i];
                             if (isInFlight != undefined && isInFlight != null) {
@@ -576,13 +580,19 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         }
 
                         hasOperations = YDom.getElementsByClassName("acn-link", null, this.containerEl).length;
-                        YDom.addClass(navLabelEl, [icon, 'context-nav-title-element', 'navbar-text'].join(" "));
+
+                        if("string" === typeof icon){
+                            YDom.addClass(navLabelEl, [icon, 'context-nav-title-element', 'navbar-text'].join(" "));
+                        }else{
+                            YDom.addClass(navLabelEl, ['context-nav-title-element', 'navbar-text'].join(" "));
+                            navLabelEl.appendChild(icon);
+                        }
 
                         if(!isBulk || statSplit.length <= 1) {
                             var newIndicator = (state.indexOf("*") != -1) ? "*" : "";
-                            navLabelEl.innerHTML = CMgs.format(contextNavLangBundle, state) + newIndicator;
+                            navLabelEl.innerHTML += CMgs.format(contextNavLangBundle, state) + newIndicator;
                         } else if (statSplit.length >= 2) {
-                            navLabelEl.innerHTML = CMgs.format(contextNavLangBundle, "mixedStates");
+                            navLabelEl.innerHTML += CMgs.format(contextNavLangBundle, "mixedStates");
                             }
 
                         if (!isInFlight && hasOperations) {

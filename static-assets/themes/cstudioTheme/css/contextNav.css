@@ -379,7 +379,7 @@ body .mask{
 
 
 /* -- Upload Overlay -- */
-#cstudio-wcm-popup-div div, #cstudio-wcm-popup-div span,
+.yui-pe-content div, .yui-pe-content span,
 #cstudio-wcm-popup-div label, #cstudio-wcm-popup-div h1, #cstudio-wcm-popup-div h2, #cstudio-wcm-popup-div h3,
 #cstudio-wcm-popup-div b {
     cursor: auto; color: #000000; direction: ltr; font: normal normal normal 12px/normal; font-size-adjust: none;
