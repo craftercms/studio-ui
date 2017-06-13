@@ -128,17 +128,17 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             wrapper = document.createElement('div');
             YDom.addClass(wrapper, "edit-code template");
             var templateButtonEl = document.createElement("button");
-            var templateImageEl = document.createElement("img");
+            var templateIconEl = document.createElement("i");
             var templateLabelEl = document.createElement("span");
 
-            templateImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
+            YDom.addClass(templateIconEl, 'fa fa-code f14');
             templateLabelEl.innerHTML = CMgs.format(previewLangBundle, "editTemplate");
 
             // YDom.addClass(wrapper, 'form-group');
             YDom.addClass(templateButtonEl, 'btn btn-default btn-block');
             YDom.addClass(templateLabelEl, 'acn-ptools-ice-label');
 
-            templateButtonEl.appendChild(templateImageEl);
+            templateButtonEl.appendChild(templateIconEl);
             templateButtonEl.appendChild(templateLabelEl);
             wrapper.style.marginleft = "4px";
             wrapper.appendChild(templateButtonEl);
@@ -148,17 +148,18 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             wrapper = document.createElement('div');
             YDom.addClass(wrapper, "edit-code");
             var controllerButtonEl = document.createElement("button");
-            var controllerImageEl = document.createElement("img");
+            var controllerIconEl = document.createElement("i");
             var controllerLabelEl = document.createElement("span");
 
-            controllerImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
+            //controllerImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
+            YDom.addClass(controllerIconEl, 'fa fa-code f14');
             controllerLabelEl.innerHTML = CMgs.format(previewLangBundle, "editController");
 
             // YDom.addClass(wrapper, 'form-group');
             YDom.addClass(controllerButtonEl, 'btn btn-default btn-block');
             YDom.addClass(controllerLabelEl, 'acn-ptools-ice-label');
 
-            controllerButtonEl.appendChild(controllerImageEl);
+            controllerButtonEl.appendChild(controllerIconEl);
             controllerButtonEl.appendChild(controllerLabelEl);
             wrapper.appendChild(controllerButtonEl);
 
