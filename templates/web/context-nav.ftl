@@ -65,7 +65,7 @@
                 <div id="acn-separator" class="navbar-right"><i class="fa fa-ellipsis-v ellipsis-icon"></i></div>
                 <div class="navbar-form navbar-right" role="search">
                     <div class="form-group">
-                        <span value="" id="acn-searchtext"></span>
+                        <span value="" id="acn-searchtext" class="fa fa-search f18 icon-default" ></span>
                     </div>
                 </div>
                 <div id="acn-persona" class="navbar-right"></div>
