@@ -98,8 +98,17 @@ small {
     }
 }
 
-.site-list a{
-  color: #4F81A0;
+.site-list{
+  a {
+    color: #4F81A0;
+  }
+  .remove a .fa {
+    font-size: 14px;
+  }
+}
+
+i.fa{
+  font-size: 16px;
 }
 
 .glyphicon-info-sign:before {

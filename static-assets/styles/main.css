@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /* Bootstrap Config */
-/*! normalize.css v3.0.2 | MIT License | git.io/normalize */
+/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
@@ -90,7 +90,6 @@ figure {
   margin: 1em 40px; }
 
 hr {
-  -moz-box-sizing: content-box;
   box-sizing: content-box;
   height: 0; }
 
@@ -150,8 +149,6 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="search"] {
   -webkit-appearance: textfield;
-  -moz-box-sizing: content-box;
-  -webkit-box-sizing: content-box;
   box-sizing: content-box; }
 
 input[type="search"]::-webkit-search-cancel-button,
@@ -5945,6 +5942,8 @@ a[ng-click] {
 
 .createSitesBtn {
   width: 194px; }
+  .createSitesBtn .fa {
+    font-size: 14px; }
 
 .nav-panel {
   left: 0;
@@ -6256,6 +6255,11 @@ small .text-sm {
 
 .site-list a {
   color: #4F81A0; }
+.site-list .remove a .fa {
+  font-size: 14px; }
+
+i.fa {
+  font-size: 16px; }
 
 .glyphicon-info-sign:before {
   content: "\e086"; }
@@ -6332,3 +6336,5 @@ small .text-sm {
   100% {
     display: inline-block;
     opacity: 1; } }
+
+/*# sourceMappingURL=main.css.map */
