@@ -201,7 +201,6 @@
         /*var PreviewToolsOffEvent = new YAHOO.util.CustomEvent("cstudio-preview-tools-off", CStudioAuthoring);
         PreviewToolsOffEvent.fire();*/
         var el = YDom.get("acn-preview-tools-container");
-        //el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_off_icon.png";
         YDom.removeClass(el.children[0], "icon-light-blue");
         YDom.addClass(el.children[0], "icon-default");
         communicator.publish(Topics.DND_COMPONENTS_PANEL_OFF, {});
@@ -210,7 +209,6 @@
     amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_ON'), function (config) {
         sessionStorage.setItem('pto-on', "on");
         var el = YDom.get("acn-preview-tools-container");
-        //el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_icon.png";
         YDom.removeClass(el.children[0], "icon-default");
         YDom.addClass(el.children[0], "icon-light-blue");
         amplify.publish(cstopic('START_DRAG_AND_DROP'), {
