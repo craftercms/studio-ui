@@ -746,7 +746,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      */
                     renderDuplicate: {
                         render: function(option, isBulk, isAdmin, state, isRelevant, isWrite) {
-                            if(isWrite) {
+                            var content = CStudioAuthoring.SelectedContent.getSelectedContent()[0],
+                                uri = content.uri;
+
+                            if(isWrite && (uri !== "/site/website/index.xml")) {
                                 var duplicateContentCallback = {
                                     success : function() {
                                         if(YDom.get("duplicate-loading")){
@@ -759,7 +762,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         }
                                     }
                                 };
-                                var content = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
                                 option.onclick = function() {
                                     //YDom.get("duplicate-loading").style.display = "block";
                                     CStudioAuthoring.Operations.showSimpleDialog(
