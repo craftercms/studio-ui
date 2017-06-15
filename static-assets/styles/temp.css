@@ -2906,7 +2906,7 @@ div#acn-active-content {
   width: auto; }
 
 #acn-ice-tools-container {
-  padding: 13px 5px 19px;
+  padding: 15px 5px 0;
   cursor: pointer;
   margin-right: 7px; }
 
@@ -2916,10 +2916,10 @@ div#acn-active-content {
 
 #acn-preview-tools-container {
   cursor: pointer;
-  padding: 13px 5px 19px; }
+  padding: 15px 5px 0; }
 
 #acn-persona-container {
-  padding: 12px 5px 12px 15px; }
+  padding: 14px 3px 0 12px; }
 
 #acn-separator .ellipsis-icon {
   padding: 14px 8px 0 4px;
@@ -2927,10 +2927,10 @@ div#acn-active-content {
   color: #333333; }
 
 #acn-persona-image {
-  width: 23px;
-  height: 23px;
-  border-radius: 4px;
-  cursor: pointer; }
+  cursor: pointer;
+  font-size: 18px;
+  position: relative;
+  top: 1.5px; }
 
 #acn-preview-tools-image {
   padding-top: 2px;
@@ -15198,11 +15198,9 @@ body.masked {
   .navbar .navbar-brand > img {
     width: 75px; }
 .navbar .navbar-form[role="search"] {
-  margin-top: 14px;
-  margin-bottom: 16px; }
+  margin-top: 15px; }
   .navbar .navbar-form[role="search"] #acn-searchtext {
     display: inline-block;
-    width: 18px;
     height: 18px;
     /*background: url(/studio/static-assets/themes/cstudioTheme/images/icons/search-icon.png) no-repeat;
     background-size: 100% 100%;*/
@@ -15211,13 +15209,17 @@ body.masked {
   padding-left: 5px;
   padding-right: 5px; }
 
+.nav-container.nav-link .nav-icon {
+  margin-right: 4px; }
+
 .nav-link .nav-icon {
   font-size: 16px;
   margin-right: 2px;
   color: #7e9dbb; }
 
 .nav-link .nav-label {
-  display: none; }
+  display: none;
+  color: #777; }
 
 .nav-link:hover .nav-label {
   display: inline-block;

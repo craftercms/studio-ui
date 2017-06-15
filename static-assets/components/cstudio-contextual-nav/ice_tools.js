@@ -103,19 +103,20 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 				},
 				
 				render: function() {
-				    var el, containerEl, pencilIcon, iceOn;
+				    var el, containerEl, pencilIcon, iconLabel, iceOn;
 
 					
 					el = YDom.get("acn-ice-tools");
 					containerEl = document.createElement("div");
 					containerEl.id = "acn-ice-tools-container";
+                    YDom.addClass(containerEl, "nav-link nav-container");
 
-					pencilIcon = document.createElement("i");
+					pencilIcon = document.createElement("span");
                     pencilIcon.id = "acn-ice-tools-image";
 
 					iceOn = !!(sessionStorage.getItem('ice-on'));   // cast string value to a boolean
 
-                    YDom.addClass(pencilIcon, "fa fa-pencil f18");
+                    YDom.addClass(pencilIcon, "nav-icon fa fa-pencil f18");
 
                     if(iceOn){
                         YDom.addClass(pencilIcon, "icon-yellow");
@@ -123,10 +124,12 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
                         YDom.addClass(pencilIcon, "icon-default");
                     }
 
-
-
+                    iconLabel = document.createElement("span");
+                    YDom.addClass(iconLabel, "nav-label");
+                    iconLabel.innerHTML = "In-Context Edit";
 
 					containerEl.appendChild(pencilIcon);
+                    containerEl.appendChild(iconLabel);
 					el.appendChild(containerEl);
 
 					containerEl.onclick = function() {
