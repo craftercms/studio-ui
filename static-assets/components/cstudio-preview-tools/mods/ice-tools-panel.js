@@ -32,7 +32,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
                 wrapper = document.createElement('div');
                 buttonEl = document.createElement("button");
-                pencilIcon = document.createElement("i");
+                pencilIcon = document.createElement("span");
                 labelEl = document.createElement("span");
                 YDom.addClass(wrapper, 'form-group');
                 YDom.addClass(buttonEl, 'btn btn-default btn-block');
