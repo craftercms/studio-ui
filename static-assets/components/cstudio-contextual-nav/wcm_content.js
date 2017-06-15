@@ -749,7 +749,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             var content = CStudioAuthoring.SelectedContent.getSelectedContent()[0],
                                 uri = content.uri;
 
-                            if(isWrite && (uri !== "/site/website/index.xml")) {
+                            if(isWrite && ("/site/website/index.xml" != uri)) {
                                 var duplicateContentCallback = {
                                     success : function() {
                                         if(YDom.get("duplicate-loading")){
