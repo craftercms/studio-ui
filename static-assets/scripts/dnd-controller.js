@@ -12,7 +12,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         '<sdiv class="studio-component-search"><input type="search" placeholder="search components..." /></sdiv>',
         '<sdiv class="studio-components-container"></sdiv>',
         '</sdiv>'].join('');
-    var COMPONENT_TPL = '<sli><sa class="studio-component-drag-target" data-studio-component data-studio-component-path="%@" data-studio-component-type="%@"><span class="status-icon component"></span>%@</sa></sli>';
+    var COMPONENT_TPL = '<sli><sa class="studio-component-drag-target" data-studio-component data-studio-component-path="%@" data-studio-component-type="%@"><span class="status-icon fa fa-puzzle-piece"></span>%@</sa></sli>';
     //var BROWSE_TPL = '<button class="btn btn-primary add-component" data-path="%@">Browse %@</button>';
     var BROWSE_TPL = '<sdiv class="studio-category"><sh2 class="studio-category-name add-existing-component pointer" id="%@" data-path="%@">Browse %@</sh2><sul></sul></sdiv>';
     var DRAGGABLE_SELECTION = '.studio-components-container .studio-component-drag-target';
@@ -240,7 +240,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         componentsModelLoad.call(me, initialComponentModel);
 
         $( ".ui-sortable-handle" ).each(function( index ) {
-            var delControl = createDeleteControl('removeComp');
+            var delControl = createDeleteControl('removeComp fa fa-times-circle');
             delControl.onclick = function() {
                 var compPath = $(this).parent().parents('[data-studio-component-path]').attr('data-studio-component-path');
                 var objectId = $(this).parent().parents('[data-studio-components-target]').attr('data-studio-components-objectid');
@@ -458,11 +458,10 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function createDeleteControl(className) {
         var deleteEl = document.createElement("a"),
-            btnEl = document.createElement("img");
+            btnEl = document.createElement("i");
 
         $( deleteEl).addClass(className);
 
-        btnEl.src = "/studio/static-assets/themes/cstudioTheme/images/icons/delete.png";
         btnEl.style.width = "16px";
         btnEl.style.height = "16px";
 

@@ -23,6 +23,7 @@ body.#{$class-prefix}-dnd-enabled {
         position: absolute;
         top: -5px;
         right: 0px;
+        color: #000!important;
       }
       
     }
@@ -103,7 +104,6 @@ body.#{$class-prefix}-dnd-enabled {
   &, * {
     font-style: normal;
     font-weight: normal;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     padding: 0;
     margin: 0;
     color: #000 !important;
@@ -184,6 +184,7 @@ body.#{$class-prefix}-dnd-enabled {
             display: inline-block;
             padding: 5px 10px;
             width: 87%;
+
           }
           > .deleteComponent{
             cursor: pointer;
@@ -196,6 +197,8 @@ body.#{$class-prefix}-dnd-enabled {
             top: 6px;
           }
         }
+
+
       }
 
       &.#{$class-prefix}-collapse {
@@ -207,7 +210,6 @@ body.#{$class-prefix}-dnd-enabled {
           display: none;
         }
       }
-
 
     }
 
@@ -232,6 +234,14 @@ body.#{$class-prefix}-dnd-enabled {
     cursor: move!important;
   }
 
+}
+
+.fa{
+  color: #7e9dbb!important;
+}
+
+.status-icon{
+  margin-right: 3px;
 }
 
 .ui-sortable{

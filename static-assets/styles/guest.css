@@ -2971,7 +2971,8 @@ body.studio-dnd-enabled [data-studio-components-target] {
     body.studio-dnd-enabled [data-studio-components-target] .ui-sortable-handle .removeComp {
       position: absolute;
       top: -5px;
-      right: 0px; }
+      right: 0px;
+      color: #000 !important; }
   body.studio-dnd-enabled [data-studio-components-target] .ui-sortable-helper * {
     cursor: move !important; }
   body.studio-dnd-enabled [data-studio-components-target] * {
@@ -3015,7 +3016,6 @@ body.studio-dnd-enabled.studio-pointer-enabled .studio-pointer-over {
   .studio-components-panel, .studio-components-panel * {
     font-style: normal;
     font-weight: normal;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     padding: 0;
     margin: 0;
     color: #000 !important; }
@@ -3105,6 +3105,12 @@ body.studio-dnd-enabled.studio-pointer-enabled .studio-pointer-over {
     height: 17px; }
   .studio-components-panel .ui-draggable-dragging {
     cursor: move !important; }
+
+.fa {
+  color: #7e9dbb !important; }
+
+.status-icon {
+  margin-right: 3px; }
 
 .ui-sortable {
   min-height: 40px;
