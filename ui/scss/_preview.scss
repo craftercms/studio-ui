@@ -8,6 +8,7 @@
   top: 50px;
   overflow: auto;
   background: #f8f8f8;
+  height: calc( 100vh - 50px );
 
   .site-dropdown-open & {
     left: 265px;
@@ -16,7 +17,7 @@
   &, iframe {
     left: 0;
     right: 0;
-    bottom: 0;
+    //bottom: 0;
     position: absolute;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
