@@ -36,7 +36,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
             .addClass('studio-view')
             .append([
                 '<div class="form-group">',
-                '<label class="display-block">'+CMgs.format(previewLangBundle, "dimensionsPx")+'</label> ',
+                '<label class="display-block">'+CMgs.format(previewLangBundle, "viewPortSize")+'</label> ',
                 '<input class="form-control channel-width" data-axis="x" placeholder="auto">',
                 ' &times; ',
                 '<input class="form-control channel-height" data-axis="y" placeholder="auto"> ',
@@ -67,28 +67,40 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
 
         });
 
-        var timeout;
+        var timeout,
+            currentValue;
+
         $container.find('input').keyup(function (e) {
-            clearTimeout(timeout);
-            timeout = setTimeout(function () {
 
-                var $el = $(e.currentTarget),
-                    value = $el.val(),
-                    number = parseInt(value);
+            var $el = $(e.currentTarget),
+                value = $el.val(),
+                number = parseInt(value);
 
-                if (value === '' || value === 'auto') {
-                    $el.val('');
-                    $el.data('rollback', '');
-                    me.update();
-                } else if (isNaN(number)) {
-                    $el.val($el.data('rollback') || '');
-                } else {
-                    $el.val(number);
-                    $el.data('rollback', number);
-                    me.update();
-                }
+            currentValue = $el.hasClass('channel-height') ? $('#engineWindow').height() : $('#engineWindow').width();
 
-            }, 200);
+            if(currentValue != value){
+                clearTimeout(timeout);
+                timeout = setTimeout(function () {
+                    if (value === '' || value === 'auto') {
+                        $el.val('');
+                        $el.data('rollback', '');
+                        me.update();
+                    } else if (isNaN(value)) {
+                        if(number != $el.val()){
+                            $el.val(number);
+                            $el.data('rollback', number);
+                        }
+                    } else {
+                        $el.val(number);
+                        $el.data('rollback', number);
+                        me.update();
+                    }
+
+                }, 500);
+            }
+
+
+
         });
 
         $container.find('a.flip').click(function () {
@@ -116,7 +128,8 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
             width = $inputs.filter('[data-axis="x"]').val() || 'auto',
             height = $inputs.filter('[data-axis="y"]').val() || 'auto',
             studioPreviewHeight,
-            orientation;
+            orientation,
+            devicePreview = false;
 
         $body.removeClass('studio-device-preview-portrait studio-device-preview-landscape');
 		
@@ -156,6 +169,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
 
             orientation = (width < height) ? 'portrait' : 'landscape';
             $body.addClass('studio-device-preview-' + orientation);
+            devicePreview = true;
 
             //used box-sixing set to content-box, so border is not a part of width and height
             if ((orientation === 'portrait' && CStudioAuthoringContext.channel === "ipad")
@@ -175,13 +189,19 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
             (height === 'auto' || height === '')
                 ? '' : parseInt(height));
 
-        if ($( window ).height() - $( ".navbar.navbar-default.navbar-fixed-top" ).height()  <= studioPreviewHeight) {
-            $studioPreview.height(
-                (height === 'auto' || height === '')
-                    ? '' : parseInt(studioPreviewHeight));
-        } else {
-            $studioPreview.height('auto');
+        var topPosition = 0;
+
+        if(devicePreview){
+            var containerHeight = $engine.parent().height(),
+                engineHeight = parseInt(height) + 100;      //w/border
+
+            if(containerHeight > engineHeight){
+                topPosition = (containerHeight - engineHeight) / 2;
+                topPosition = parseInt(topPosition);
+            }
         }
+
+        $engine.css("top", topPosition);
 
     },
 

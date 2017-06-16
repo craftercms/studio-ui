@@ -15158,13 +15158,13 @@ body.masked {
 .studio-preview {
   top: 50px;
   overflow: auto;
-  background: #f8f8f8; }
+  background: #f8f8f8;
+  height: calc( 100vh - 50px ); }
   .site-dropdown-open .studio-preview {
     left: 265px; }
   .studio-preview, .studio-preview iframe {
     left: 0;
     right: 0;
-    bottom: 0;
     position: absolute;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -15273,5 +15273,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */

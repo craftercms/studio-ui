@@ -152,6 +152,7 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     editController: "편집 컨트롤러",
     jumpToRegion: "지역로 이동",
     dimensionsPx: "크기 (PX)",
+    viewPortSize: "뷰포트 크기 (PX)",
     presets: "사전",
     custom: "관습",
     addComponent: "구성 요소 추가",
