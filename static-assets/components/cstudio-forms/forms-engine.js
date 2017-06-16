@@ -205,14 +205,16 @@ var CStudioForms = CStudioForms || function() {
 
                 if(validationEl) {
                     YAHOO.util.Dom.removeClass(validationEl, 'cstudio-form-control-valid');
+                    YAHOO.util.Dom.removeClass(validationEl, 'fa-check');
                     YAHOO.util.Dom.removeClass(validationEl, 'cstudio-form-control-invalid');
+                    YAHOO.util.Dom.removeClass(validationEl, 'fa-times');
 
                     if(onOff == true) {
                         if(valid == true) {
-                            YAHOO.util.Dom.addClass(validationEl, 'cstudio-form-control-valid');
+                            YAHOO.util.Dom.addClass(validationEl, 'cstudio-form-control-valid fa-check');
                         }
                         else {
-                            YAHOO.util.Dom.addClass(validationEl, 'cstudio-form-control-invalid');
+                            YAHOO.util.Dom.addClass(validationEl, 'cstudio-form-control-invalid fa-times');
                         }
                     }
                 }
@@ -498,17 +500,20 @@ var CStudioForms = CStudioForms || function() {
 
                 if(indicatorEl) {
                     YAHOO.util.Dom.removeClass(indicatorEl, 'cstudio-form-section-valid');
+                    YAHOO.util.Dom.removeClass(indicatorEl, 'fa-check');
                     YAHOO.util.Dom.removeClass(indicatorEl, 'cstudio-form-section-invalid');
+                    YAHOO.util.Dom.removeClass(indicatorEl, 'fa-times');
 
                     if(state.requirements > 0 && state.invalid != 0) {
                         validationEl.innerHTML = CMgs.format(formsLangBundle, "sectionValidation", state.invalid, state.requirements);
 
                         YAHOO.util.Dom.addClass(indicatorEl, 'cstudio-form-section-invalid');
-
+                        YAHOO.util.Dom.addClass(indicatorEl, 'fa-times');
                     }
                     else {
                         validationEl.innerHTML = "";
                         YAHOO.util.Dom.addClass(indicatorEl, 'cstudio-form-section-valid');
+                        YAHOO.util.Dom.addClass(indicatorEl, 'fa-check');
                     }
                 }
             }
@@ -2001,7 +2006,7 @@ var CStudioForms = CStudioForms || function() {
                     html +=
                         "<div id='"+ section.id + "-heading' class='panel-heading'>" +
                         '<div class="cstudio-form-section-widget"></div>' +
-                        '<div class="cstudio-form-section-indicator"></div>' +
+                        '<div class="cstudio-form-section-indicator fa f18"></div>' +
                         '<h2 class="panel-title">' + section.title + '</h2>' +
                         '<span class="cstudio-form-section-validation"></span>'
                         + "</div>";

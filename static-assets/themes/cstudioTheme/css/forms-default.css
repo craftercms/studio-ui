@@ -227,18 +227,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 }
 
 .cstudio-form-section-indicator {
-    background: url("../images/cstudio-accordion-section-alert-inactive.png") no-repeat scroll 0 50% transparent;
     display: block;
     float: right;
     height: 30px;
     width: 20px;
   position: relative;
-  top: -7px;
+  top: -2px;
  }
- 
-.cstudio-form-section-invalid {
-	background: url("../images/cstudio-accordion-section-alert-active.png") no-repeat scroll 0 50% transparent;
-}
  
 .cstudio-form-section-title {
 	font-family: Arial,Verdana,sans-serif;
@@ -505,14 +500,15 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   float: left;
   width: 4%;
   height: 30px;
+  font-size: 18px;
 }
 
-.cstudio-form-control-invalid {
-	background: url("../images/cstudio-accordion-section-alert-active.png") no-repeat scroll 0 10% transparent;
+.fa.fa-times{
+    color: #ee3b2c;
 }
 
-.cstudio-form-control-valid {
-	background: url("../images/cstudio-accordion-section-alert-inactive.png") no-repeat scroll 0 10% transparent;
+.fa.fa-check {
+    color: #0c9052;
 }
 
 .cstudio-form-repeat-title {
