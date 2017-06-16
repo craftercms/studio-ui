@@ -96,7 +96,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
                         me.update();
                     }
 
-                }, 1000);
+                }, 500);
             }
 
 
