@@ -36,7 +36,7 @@ CStudioAuthoring.MediumPanel = CStudioAuthoring.MediumPanel || {
             .addClass('studio-view')
             .append([
                 '<div class="form-group">',
-                '<label class="display-block">'+CMgs.format(previewLangBundle, "dimensionsPx")+'</label> ',
+                '<label class="display-block">'+CMgs.format(previewLangBundle, "viewPortSize")+'</label> ',
                 '<input class="form-control channel-width" data-axis="x" placeholder="auto">',
                 ' &times; ',
                 '<input class="form-control channel-height" data-axis="y" placeholder="auto"> ',

@@ -162,6 +162,7 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     editController: "Edit Controller",
     jumpToRegion: "Jump to Region",
     dimensionsPx: "Dimensions (px)",
+    viewPortSize: "Viewport Size (px)",
     presets: "Presets",
     custom: "Custom",
     addComponent: "Add Component",
