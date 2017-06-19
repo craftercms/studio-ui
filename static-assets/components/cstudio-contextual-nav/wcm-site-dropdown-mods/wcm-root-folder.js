@@ -45,7 +45,8 @@
                 childClosed: "fa-folder-o",
                 navPage: "fa-file",
                 floatingPage: "fa-file-o",
-                component: "fa-puzzle-piece"
+                component: "fa-puzzle-piece",
+                taxonomy: "fa-tags"
             },
             /**
              * initialize module
