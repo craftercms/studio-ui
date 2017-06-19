@@ -63,7 +63,7 @@
                 </ul>
 
                 <div id="acn-separator" class="navbar-right">
-                    <i class="fa fa-ellipsis-v ellipsis-icon"></i>
+                    <p class="ellipsis-icon">&#124;</p>
                 </div>
                 <div class="navbar-form navbar-right" role="search">
                     <div class="nav-link form-group">
