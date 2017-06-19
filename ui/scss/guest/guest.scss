@@ -36,11 +36,11 @@
 }
 
 .#{$ice-class-prefix}-indicator {
+  padding: 3px 0 0 3px;
   position: absolute;
   border-radius: 0 0 5px 0;
   width: $ice-indicator-size;
   height: $ice-indicator-size;
-  background-image: url('/studio/static-assets/themes/cstudioTheme/images/edit.png');
   background-repeat: no-repeat;
   background-position: 3px 3px;
 }
@@ -100,6 +100,18 @@ body {
     padding-right: 265px !important;
   }
 
+}
+
+.f18{
+  font-size: 18px;
+}
+
+.fa.icon-yellow{
+  color: #f6cc2f!important;
+}
+
+.icon-default{
+  color: #7e9dbb;
 }
 
 @import "components-panel";

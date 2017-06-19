@@ -34,13 +34,15 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 											CStudioAuthoring.PreviewTools.PreviewToolsOffEvent.subscribe(
 									       			function() {
 									       				var el = YDom.get("acn-preview-tools-container");
-									       				el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_off_icon.png";
+                                                        YDom.removeClass(el.children[0], "icon-light-blue");
+                                                        YDom.addClass(el.children[0], "icon-default");
 									       			});
 
 											CStudioAuthoring.PreviewTools.PreviewToolsOnEvent.subscribe(
 									       			function() {
 									       				var el = YDom.get("acn-preview-tools-container");
-									       				el.children[0].src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_icon.png";
+                                                        YDom.removeClass(el.children[0], "icon-default");
+                                                        YDom.addClass(el.children[0], "icon-light-blue");
 
 									       			});
 
@@ -67,21 +69,31 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 				},
 				
 				render: function() {
-					var el, containerEl, imageEl, ptoOn;
+					var el, containerEl, iconEl, iconLabel, ptoOn;
 
 					el = YDom.get("acn-preview-tools");
 					containerEl = document.createElement("div");
 					containerEl.id = "acn-preview-tools-container";
+                    YDom.addClass(containerEl, "nav-link nav-container");
 					
-					imageEl = document.createElement("img");
-					imageEl.id = "acn-preview-tools-image";
+					iconEl = document.createElement("span");
+                    iconEl.id = "acn-preview-tools-image";
 
+                    YDom.addClass(iconEl, "nav-icon fa fa-wrench f18");
                     ptoOn = !!(sessionStorage.getItem('pto-on'));   // cast string value to a boolean
 
-                    imageEl.src = (ptoOn) ? CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_icon.png" :
-                                        CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/tools_off_icon.png";
+                    if(ptoOn){
+                        YDom.addClass(iconEl, "icon-light-blue");
+                    } else{
+                        YDom.addClass(iconEl, "icon-default");
+                    }
 
-					containerEl.appendChild(imageEl);
+                    iconLabel = document.createElement("span");
+                    YDom.addClass(iconLabel, "nav-label");
+                    iconLabel.innerHTML = "Preview Tools";
+
+					containerEl.appendChild(iconEl);
+                    containerEl.appendChild(iconLabel);
 					el.appendChild(containerEl);
 
                     var cstopic = crafter.studio.preview.cstopic;

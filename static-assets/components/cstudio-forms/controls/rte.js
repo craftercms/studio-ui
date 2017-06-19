@@ -385,7 +385,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 
 		var validEl = document.createElement("span");
 			YDom.addClass(validEl, 'validation-hint');
-			YDom.addClass(validEl, 'cstudio-form-control-validation');
+			YDom.addClass(validEl, 'cstudio-form-control-validation fa fa-checks');
 			controlWidgetContainerEl.appendChild(validEl);
 
 		/* tiny MCE initializes by class selector - so for now we will init each RTE uniquely

@@ -129,6 +129,10 @@
     min-width: 24px;
 }
 
+.fa {
+    color: #7e9dbb;
+}
+
 .studio-fa-stack {
     position: relative;
 }
@@ -140,6 +144,26 @@
 .icon-container .studio-fa-stack span.studio-fa-stack-1x {
     font-size: 12px;
     left: 2px;
+}
+
+.f18{
+    font-size: 18px;
+}
+
+.f14{
+    font-size: 14px;
+}
+
+.icon-yellow{
+    color: #f6cc2f;
+}
+
+.icon-default{
+    color: #7e9dbb;
+}
+
+.icon-light-blue{
+    color: #06c9ec;
 }
 
 .cs-item-icon.icon-container .studio-fa-stack-2x {
@@ -177,4 +201,3 @@
 .cs-item-icon .edited, #guide-edited {
     color: #d0a70d ;
 }
-

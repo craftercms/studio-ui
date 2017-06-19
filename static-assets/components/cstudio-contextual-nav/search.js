@@ -43,7 +43,6 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
 				blurSearchText: function(e) {
 					var e = YDom.get("acn-searchtext");
 					var searchVal = e.value;
-					YDom.setStyle(e, "color", "#999999");
 					CStudioAuthoring.ContextualNav.WcmSearch.setDefaultSearchText();
 				},
 				/**

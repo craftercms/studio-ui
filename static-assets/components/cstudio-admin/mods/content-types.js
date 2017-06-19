@@ -771,10 +771,8 @@ CStudioAuthoring.Module.requireModule(
 							var deleteEl = YDom.getElementsByClassName("deleteControl", null, listeningEl)[0];
 
 							if(!deleteEl) {
-								deleteEl = document.createElement("img");
-								deleteEl.src = CStudioAuthoringContext.authoringAppBaseUri
-									+ "/static-assets/themes/cstudioTheme/images/icons/delete.png";
-								YDom.addClass(deleteEl, "deleteControl");
+								deleteEl = document.createElement("i");
+								YDom.addClass(deleteEl, "deleteControl fa fa-times-circle");
 								listeningEl.appendChild(deleteEl);
 
 								var deleteFieldFn = function(evt) {
@@ -857,10 +855,8 @@ CStudioAuthoring.Module.requireModule(
 							var deleteEl = YDom.getElementsByClassName("delete-control-section", null, listeningEl)[0];
 
 							if(!deleteEl) {
-								deleteEl = document.createElement("img");
-								deleteEl.src = CStudioAuthoringContext.authoringAppBaseUri
-									+ "/static-assets/themes/cstudioTheme/images/icons/delete.png";
-								YDom.addClass(deleteEl, "deleteControl");
+								deleteEl = document.createElement("i");
+								YDom.addClass(deleteEl, "deleteControl fa fa-times-circle");
 								YDom.addClass(deleteEl, "delete-control-section");
 								listeningEl.insertBefore(deleteEl, listeningEl.children[0]);
 
@@ -960,10 +956,8 @@ CStudioAuthoring.Module.requireModule(
 						var deleteEl = YDom.getElementsByClassName("delete-control-repeat", null, listeningEl)[0];
 
 						if(!deleteEl) {
-							deleteEl = document.createElement("img");
-							deleteEl.src = CStudioAuthoringContext.authoringAppBaseUri
-								+ "/static-assets/themes/cstudioTheme/images/icons/delete.png";
-							YDom.addClass(deleteEl, "deleteControl");
+							deleteEl = document.createElement("i");
+							YDom.addClass(deleteEl, "deleteControl fa fa-times-circle");
 							YDom.addClass(deleteEl, "delete-control-repeat");
 							listeningEl.insertBefore(deleteEl, listeningEl.children[0]);
 
@@ -1048,10 +1042,8 @@ CStudioAuthoring.Module.requireModule(
 						var deleteEl = YDom.getElementsByClassName("deleteControl", null, listeningEl)[0];
 
 						if(!deleteEl) {
-							deleteEl = document.createElement("img");
-							deleteEl.src = CStudioAuthoringContext.authoringAppBaseUri
-								+ "/static-assets/themes/cstudioTheme/images/icons/delete.png";
-							YDom.addClass(deleteEl, "deleteControl");
+							deleteEl = document.createElement("i");
+							YDom.addClass(deleteEl, "deleteControl fa fa-times-circle");
 							listeningEl.appendChild(deleteEl);
 
 							var deleteFieldFn = function(evt) {

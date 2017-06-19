@@ -218,7 +218,7 @@ div#acn-active-content {
 }
 
 #acn-ice-tools-container {
-  padding: 13px 5px 19px;
+  padding: 15px 5px 0;
   cursor: pointer;
   margin-right: 7px;
 }
@@ -230,23 +230,24 @@ div#acn-active-content {
 
 #acn-preview-tools-container {
   cursor: pointer;
-  padding: 13px 5px 19px;
+  padding: 15px 5px 0;
 }
 
 #acn-persona-container {
-  padding: 12px 5px 12px 15px;
+  padding: 14px 3px 0 12px;
 }
 
 #acn-separator .ellipsis-icon{
-  padding: 15px 8px 0 4px;
+  padding: 14px 8px 0 4px;
   font-size: 21px;
+  color: #333333;
 }
 
 #acn-persona-image {
-  width: 26px;
-  height: 26px;
-  border-radius: 4px;
   cursor: pointer;
+  font-size: 18px;
+  position: relative;
+  top: 1.5px;
 }
 
 #acn-preview-tools-image {

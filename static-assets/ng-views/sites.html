@@ -8,7 +8,7 @@
         <div ng-show="createSites" class="m10 createSitesBtn pull-left">
             <button class="btn btn-default btn-pill btn-block" ng-click="createSitesDialog()" ng-class="{ active: $state.includes('create') }">
                 <!-- ui-sref="home.sites.create" -->
-                <i class="glyphicon glyphicon-plus"></i> <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
+                <i class="fa fa-plus-circle"></i> <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
             </button>
         </div>
         <div class="pull-right m10">
@@ -31,7 +31,7 @@
                         <td class="name">{{site.name}}</td>
                         <td class="preview"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
                         <td class="dashboard"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
-                        <td class="remove"><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="glyphicon glyphicon-trash"></i></a></td>
+                        <td class="remove"><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="fa fa-trash-o"></i></a></td>
                     </tr>
 
                 </tbody>

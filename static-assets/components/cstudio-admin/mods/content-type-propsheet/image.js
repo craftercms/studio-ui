@@ -54,10 +54,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Image, CStudioAd
             YAHOO.util.Dom.addClass(controlsContainerEl, "options");
 
             var uploadEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(uploadEl, "upload");
+            YAHOO.util.Dom.addClass(uploadEl, "upload fa fa-upload f18");
 
             var deleteEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(deleteEl, "delete");
+            YAHOO.util.Dom.addClass(deleteEl, "delete fa fa-trash-o f18");
 
             controlsContainerEl.appendChild(uploadEl);
             controlsContainerEl.appendChild(deleteEl);

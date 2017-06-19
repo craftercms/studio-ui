@@ -31,7 +31,7 @@ CStudioAuthoring.ContextualNav.Dashboard = CStudioAuthoring.ContextualNav.Dashbo
 				var confLabel = moduleConfig.label.toLowerCase().replace(/\s/g,'');
 				var label = CMgs.format(siteDropdownLangBundle, confLabel) == confLabel ? moduleConfig.label : CMgs.format(siteDropdownLangBundle, confLabel);
 
-				var icon = CStudioAuthoring.Utils.createIcon(moduleConfig, "fa-bars");
+				var icon = CStudioAuthoring.Utils.createIcon(moduleConfig, "fa-tasks");
 				dashboardLinkEl.appendChild(icon);
 
 				var linkText = document.createTextNode(label);

@@ -70,7 +70,7 @@ YAHOO.extend(CStudioForms.Controls.Checkbox, CStudioForms.CStudioFormField, {
 
 		var validEl = document.createElement("span");
 			YAHOO.util.Dom.addClass(validEl, 'validation-hint');
-			YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation');
+			YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
 			controlWidgetContainerEl.appendChild(validEl);
 
 		var inputEl = document.createElement("input");

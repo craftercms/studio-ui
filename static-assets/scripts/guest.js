@@ -142,7 +142,7 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
         });
 
         if(!flag && compElement.is(':visible')){
-            var aux = $(crafter.String('<i class="studio-ice-indicator" data-studio-ice-trigger="%@"></i>').fmt(message.iceRef)).css({
+            var aux = $(crafter.String('<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>').fmt(message.iceRef)).css({
                 top: message.position.top,
                 left: message.position.left
             });

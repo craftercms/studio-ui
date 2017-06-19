@@ -25,14 +25,14 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
         containerEl.appendChild(container);
         container.className = 'studio-view';
 
-        var buttonEl, imageEl, labelEl, iceOn;
+        var buttonEl, pencilIcon, labelEl, iceOn;
 
         var callback = function(isRev){
             if(!isRev){
 
                 wrapper = document.createElement('div');
                 buttonEl = document.createElement("button");
-                imageEl = document.createElement("img");
+                pencilIcon = document.createElement("span");
                 labelEl = document.createElement("span");
                 YDom.addClass(wrapper, 'form-group');
                 YDom.addClass(buttonEl, 'btn btn-default btn-block');
@@ -40,15 +40,17 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
 
                 iceOn = !!(sessionStorage.getItem('ice-on'));   // cast string value to a boolean
 
-                if (iceOn) {
-                    imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                YDom.addClass(pencilIcon, "fa fa-pencil f18");
+
+                if(iceOn){
+                    YDom.addClass(pencilIcon, "icon-yellow");
                     labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOff");
-                } else {
-                    imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                } else{
+                    YDom.addClass(pencilIcon, "icon-default");
                     labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOn");
                 }
 
-                buttonEl.appendChild(imageEl);
+                buttonEl.appendChild(pencilIcon);
                 buttonEl.appendChild(labelEl);
                 wrapper.appendChild(buttonEl);
                 container.appendChild(wrapper);
@@ -126,17 +128,17 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             wrapper = document.createElement('div');
             YDom.addClass(wrapper, "edit-code template");
             var templateButtonEl = document.createElement("button");
-            var templateImageEl = document.createElement("img");
+            var templateIconEl = document.createElement("i");
             var templateLabelEl = document.createElement("span");
 
-            templateImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
+            YDom.addClass(templateIconEl, 'fa fa-code f14');
             templateLabelEl.innerHTML = CMgs.format(previewLangBundle, "editTemplate");
 
             // YDom.addClass(wrapper, 'form-group');
             YDom.addClass(templateButtonEl, 'btn btn-default btn-block');
             YDom.addClass(templateLabelEl, 'acn-ptools-ice-label');
 
-            templateButtonEl.appendChild(templateImageEl);
+            templateButtonEl.appendChild(templateIconEl);
             templateButtonEl.appendChild(templateLabelEl);
             wrapper.style.marginleft = "4px";
             wrapper.appendChild(templateButtonEl);
@@ -146,17 +148,18 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             wrapper = document.createElement('div');
             YDom.addClass(wrapper, "edit-code");
             var controllerButtonEl = document.createElement("button");
-            var controllerImageEl = document.createElement("img");
+            var controllerIconEl = document.createElement("i");
             var controllerLabelEl = document.createElement("span");
 
-            controllerImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
+            //controllerImageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/icons/code-edit.gif";
+            YDom.addClass(controllerIconEl, 'fa fa-code f14');
             controllerLabelEl.innerHTML = CMgs.format(previewLangBundle, "editController");
 
             // YDom.addClass(wrapper, 'form-group');
             YDom.addClass(controllerButtonEl, 'btn btn-default btn-block');
             YDom.addClass(controllerLabelEl, 'acn-ptools-ice-label');
 
-            controllerButtonEl.appendChild(controllerImageEl);
+            controllerButtonEl.appendChild(controllerIconEl);
             controllerButtonEl.appendChild(controllerLabelEl);
             wrapper.appendChild(controllerButtonEl);
 
@@ -271,8 +274,10 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             var cstopic = crafter.studio.preview.cstopic;
 
             CStudioAuthoring.IceTools.IceToolsOffEvent.subscribe(function() {
-                imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
-                contextNavImg.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png";
+                YDom.removeClass(pencilIcon, "icon-yellow");
+                YDom.addClass(pencilIcon, "icon-default");
+                YDom.removeClass(contextNavImg, "icon-yellow")
+                YDom.addClass(contextNavImg, "icon-default");
                 labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOn");
 
                 amplify.publish(cstopic('ICE_TOOLS_OFF'));
@@ -280,8 +285,10 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
             });
 
             CStudioAuthoring.IceTools.IceToolsOnEvent.subscribe(function() {
-                imageEl.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
-                contextNavImg.src = CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png";
+                YDom.removeClass(pencilIcon, "icon-default");
+                YDom.addClass(pencilIcon, "icon-yellow");
+                YDom.removeClass(contextNavImg, "icon-default");
+                YDom.addClass(contextNavImg, "icon-yellow");
                 YDom.replaceClass(containerEl.parentNode, 'contracted', 'expanded');
                 labelEl.innerHTML = CMgs.format(previewLangBundle, "inContextEditOff");
 

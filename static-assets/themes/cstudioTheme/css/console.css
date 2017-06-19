@@ -617,38 +617,45 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
     cursor: pointer;
 }
 
+.fa.deleteControl{
+    font-size: 25px;
+    color: #e84646;
+}
+
 .property-wrapper .date-options li { position: relative; margin: 0 10px 4px 5px; }
 .property-wrapper .date-options li input { position: absolute; top: 0; left: 2px; }
 .property-wrapper .date-options li label { display: inline-block; margin-left: 20px; }
  
 .property-wrapper .options {
     position: absolute;
-    right: 0;
+    right: 2px;
     top: 18px;
 }
 
 .property-wrapper .options .edit {
-	background:url('../../../themes/cstudioTheme/images/edit.png') no-repeat left;
+	/*background:url('../../../themes/cstudioTheme/images/edit.png') no-repeat left;*/
     float: right;
-    height: 20px;
+    height: 18px;
     position: relative;
     top: -15px;
     width: 20px;
     cursor: pointer;
+    background-color: white;
 }
 
 .property-wrapper .options .pick {
-	background:url('../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif') repeat scroll 0 -618px white;
+	/*background:url('../../../themes/cstudioTheme/images/icons/icon_strip_vertical.gif') repeat scroll 0 -618px white;*/
     float: right;
     height: 20px;
     position: relative;
     top: -16px;
     width: 20px;
     cursor: pointer;
+    background-color: white;
 }
 
 .property-wrapper .options .upload {
-    background:url(../../../themes/cstudioTheme/images/icons/upload_icon.png) no-repeat left;
+    /*background:url(../../../themes/cstudioTheme/images/icons/upload_icon.png) no-repeat left;*/
     float: right;
     height: 20px;
     position: relative;
@@ -656,10 +663,11 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
     width: 20px;
     cursor: pointer;
     background-size: 90%;
+    background-color: #fff;
 }
 
 .property-wrapper .options .delete {
-    background:url(../../../themes/cstudioTheme/images/fail.png) no-repeat left;
+    /*background:url(../../../themes/cstudioTheme/images/fail.png) no-repeat left;*/
     float: right;
     height: 20px;
     position: relative;
@@ -667,6 +675,7 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
     width: 20px;
     cursor: pointer;
     background-size: 90%;
+    background-color: #fff;
 }
 
 
