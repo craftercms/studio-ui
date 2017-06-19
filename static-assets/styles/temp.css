@@ -2922,9 +2922,12 @@ div#acn-active-content {
   padding: 14px 3px 0 12px; }
 
 #acn-separator .ellipsis-icon {
-  padding: 14px 8px 0 4px;
+  padding: 7px 8px 0 4px;
   font-size: 21px;
-  color: #333333; }
+  color: #333333;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 21px; }
 
 #acn-persona-image {
   cursor: pointer;
