@@ -132,7 +132,7 @@
 
                                     if(contentType != "asset"){
                                         var viewActionEl = document.createElement("a");
-                                        viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action glyphicon glyphicon-eye-open"></span>';
+                                        viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action fa fa-eye"></span>';
                                         viewActionEl.version = version.versionNumber;
                                         viewActionEl.path = selection.uri;
                                         col5El.appendChild(viewActionEl);
@@ -143,7 +143,7 @@
                                         });
 
                                         var compareActionEl = document.createElement("a");
-                                        compareActionEl.innerHTML = '<span id="actionCompare' + version.versionNumber + '" class="action glyphicon glyphicon-duplicate"></span>';
+                                        compareActionEl.innerHTML = '<span id="actionCompare' + version.versionNumber + '" class="action fa fa-files-o"></span>';
                                         compareActionEl.version = version.versionNumber;
                                         compareActionEl.path = selection.uri;
                                         col5El.appendChild(compareActionEl);
@@ -155,7 +155,7 @@
                                     }
 
                                     revertActionEl = document.createElement("a");
-                                    revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action glyphicon glyphicon-share-alt revert"></span>';
+                                    revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action fa fa-reply"></span>';
                                     revertActionEl.item = selection;
                                     revertActionEl.version = version.versionNumber;
                                     new YAHOO.widget.Tooltip("tooltipRevert"+ revertActionEl.version, {
