@@ -354,6 +354,13 @@ div#acn-active-content {
       display: inline-block;
       font-size: 14px;
       line-height: 15px;
+      color: #333333;
+      cursor: pointer;
+
+      &:hover{
+        color: #333333;
+        text-decoration: none;
+      }
     }
   }
   .treenode-label {
@@ -471,6 +478,13 @@ div#acn-active-content {
 .acn-admin-console {
   font-size: 14px;
   line-height: 15px;
+  color: #333333;
+  cursor: pointer;
+}
+
+.acn-admin-console:hover {
+  color: #333333;
+  text-decoration: none;
 }
 
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-previewsync, .acn-dropdown-wrapper .acn-dropdown-menu .acn-syncrepo {
@@ -482,7 +496,12 @@ div#acn-active-content {
 a.acn-parent-folder{
   font-size: 14px;
   line-height: 15px;
-
+  color: #333333;
+  cursor: pointer;
+}
+a.acn-parent-folder:hover{
+  color: #333333;
+  text-decoration: none;
 }
 a.acn-parent-folder:before {
   font-size: 14px;

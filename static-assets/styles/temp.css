@@ -3017,7 +3017,12 @@ div#acn-active-content {
   .acn-dropdown-wrapper .acn-dropdown-menu #acn-sites-link {
     display: inline-block;
     font-size: 14px;
-    line-height: 15px; }
+    line-height: 15px;
+    color: #333333;
+    cursor: pointer; }
+    .acn-dropdown-wrapper .acn-dropdown-menu #acn-sites-link:hover {
+      color: #333333;
+      text-decoration: none; }
 .acn-dropdown-wrapper .treenode-label {
   margin: 0 0 5px 0; }
 .acn-dropdown-wrapper .acn-dropdown-toggler {
@@ -3108,7 +3113,13 @@ div#acn-active-content {
 
 .acn-admin-console {
   font-size: 14px;
-  line-height: 15px; }
+  line-height: 15px;
+  color: #333333;
+  cursor: pointer; }
+
+.acn-admin-console:hover {
+  color: #333333;
+  text-decoration: none; }
 
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-previewsync, .acn-dropdown-wrapper .acn-dropdown-menu .acn-syncrepo {
   background: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif") no-repeat left;
@@ -3117,7 +3128,13 @@ div#acn-active-content {
 
 a.acn-parent-folder {
   font-size: 14px;
-  line-height: 15px; }
+  line-height: 15px;
+  color: #333333;
+  cursor: pointer; }
+
+a.acn-parent-folder:hover {
+  color: #333333;
+  text-decoration: none; }
 
 a.acn-parent-folder:before {
   font-size: 14px; }
@@ -15273,3 +15290,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */
