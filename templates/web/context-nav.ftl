@@ -66,8 +66,8 @@
                     <p class="ellipsis-icon">&#124;</p>
                 </div>
                 <div class="navbar-form navbar-right" role="search">
-                    <div class="nav-link form-group">
-                        <span value="" id="acn-searchtext" class="nav-icon fa fa-search f18" ></span>
+                    <div id="acn-searchtext" class="nav-link form-group">
+                        <span value=""  class="nav-icon fa fa-search f18" ></span>
                         <span class="nav-label">Search</span>
                     </div>
                 </div>

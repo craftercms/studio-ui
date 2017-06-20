@@ -235,6 +235,7 @@ div#acn-active-content {
 
 #acn-persona-container {
   padding: 14px 3px 0 12px;
+  cursor: pointer;
 }
 
 #acn-separator .ellipsis-icon{
@@ -247,7 +248,6 @@ div#acn-active-content {
 }
 
 #acn-persona-image {
-  cursor: pointer;
   font-size: 18px;
   position: relative;
   top: 1.5px;
