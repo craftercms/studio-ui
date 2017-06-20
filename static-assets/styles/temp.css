@@ -2919,7 +2919,8 @@ div#acn-active-content {
   padding: 15px 5px 0; }
 
 #acn-persona-container {
-  padding: 14px 3px 0 12px; }
+  padding: 14px 3px 0 12px;
+  cursor: pointer; }
 
 #acn-separator .ellipsis-icon {
   padding: 7px 8px 0 4px;
@@ -2930,7 +2931,6 @@ div#acn-active-content {
   font-size: 21px; }
 
 #acn-persona-image {
-  cursor: pointer;
   font-size: 18px;
   position: relative;
   top: 1.5px; }
