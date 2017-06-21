@@ -406,12 +406,12 @@ CStudioSearch.renderPagination = function(resultCount, pageCount, searchContext,
 	// clear current controls
 	paginationControlsEl.innerHTML = "";
 	
-	if(pageCount == 0) {
+	if(resultCount == 0) {
 		var emptyMsg = document.createElement("div");
 		emptyMsg.innerHTML = CStudioSearch.emptyResultMessage(searchContext, searchFailed, failCause)+ "";
 		YDom.get('cstudio-wcm-search-result').appendChild(emptyMsg);
 		//paginationControlsEl.appendChild(emptyMsg);
-		YDom.get("cstudio-wcm-search-result-header-count").innerHTML = "(0 results)";
+		YDom.get("cstudio-wcm-search-result-header-count").innerHTML = CMgs.format(langBundle, "zeroResults");
 		YDom.get('cstudio-wcm-search-description-toggle-link').style.display = "none";
 		return;
 	} else {

@@ -447,7 +447,8 @@ CStudioAuthoring.Messages.registerBundle("search", "es", {
     resultsUnknownType: "Tipo Desconocido",
     resultsTemplate: "Plantilla",
     errSearchFailed: "Busqueda Fallida. Trate de ajustar sus filtros. Causa: Si el problema persiste contacte al administrador y consultele el siguiente error: {0}",
-    errNoResults: "Su búsqueda no produjo resultados."
+    errNoResults: "No se han encontrado resultados.",
+    zeroResults: "(0 resultados)"
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "es", {
