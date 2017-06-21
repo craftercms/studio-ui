@@ -464,7 +464,8 @@ CStudioAuthoring.Messages.registerBundle("search", "en", {
     resultsUnknownType: "Unknown Type",
     resultsTemplate: "Template",
     errSearchFailed: "Search Failed. Try adjusting your filters. Cause: If issue persists contact administrator with error: {0}",
-    errNoResults: "Your search returned no results."
+    errNoResults: "No results found.",
+    zeroResults: "(0 results)"
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "en", {

@@ -423,7 +423,8 @@ CStudioAuthoring.Messages.registerBundle("search", "kr", {
     resultsUnknownType: "알 수없는 유형",
     resultsTemplate: "주형",
     errSearchFailed: "검색하지 못했습니다. 필터를 조정 해보십시오. 원인 : 문제가 오류와 함께 연락처 관리자 지속되면: {0}",
-    errNoResults: "귀하의 검색 결과가 없습니다."
+    errNoResults: "검색 결과가 없습니다.",
+    zeroResults: "(0 결과)"
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "kr", {
