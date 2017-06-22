@@ -256,6 +256,9 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     });
 
     loadCss('/studio/static-assets/styles/guest.css');
+    if (!$("link[href*='font-awesome']").length)
+        loadCss('/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css');
+
 
     if (!!(sessionStorage.getItem('ice-on')) && sessionStorage.getItem('components-on') != 'true') {
         initICERegions();
