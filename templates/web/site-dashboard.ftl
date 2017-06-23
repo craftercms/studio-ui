@@ -144,21 +144,21 @@
                     <div class="${classes}">
                     <#-- Navigation Page -->
                         <div class="iconName">
-                            <span class="fa fa-file mr5" style="color: #cecece; font-size: 14px;"></span>
+                            <span class="fa fa-file mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideNavigationPage")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Floating Page -->
                         <div class="iconName">
-                            <span class="fa fa-file-o mr5" style="color: #cecece; font-size: 14px;"></span>
+                            <span class="fa fa-file-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFloatingPage")</script>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Component -->
                         <div class="iconName">
-                            <span class="fa fa-puzzle-piece mr5" style="color: #cecece; font-size: 14px;"></span>
+                            <span class="fa fa-puzzle-piece mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideComponent")</script>
                         </div>
                     </div>
