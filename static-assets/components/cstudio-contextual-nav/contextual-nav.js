@@ -207,6 +207,7 @@ CStudioAuthoring.ContextualNav.RightModulesMap = {
 	'preview_tools': '#acn-preview-tools',
 	'persona': '#acn-persona',
 	'search': '[role="search"]',
+    'status': '#acn-status',
 	'logout': '#acn-logout-link'
 };
 

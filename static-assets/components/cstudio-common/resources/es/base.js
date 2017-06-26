@@ -119,7 +119,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     networkError: "Error de red. Ciertas funcionalidades pueden no estar disponibles.",
 
     notification: "Notificación",
-    noEventError: "No se ha asociado ningún controlador de eventos."
+    noEventError: "No se ha asociado ningún controlador de eventos.",
+
+    publishStatus: "Estado de Publicación"
 
 });
 
