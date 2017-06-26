@@ -75,7 +75,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                             YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                             "studioDialog"
                                         );
-                                    }
+                                    };
                                     setTimeout(function() { statusLoop(); }, delay);
                                 }
                             });
