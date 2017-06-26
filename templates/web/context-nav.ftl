@@ -65,6 +65,12 @@
                 <div id="acn-separator" class="navbar-right">
                     <p class="ellipsis-icon">&#124;</p>
                 </div>
+                <div class="navbar-right">
+                    <div id="acn-status" class="nav-link form-group">
+                        <span value=""  class="nav-icon fa fa-cloud-upload f18" ></span>
+                        <span class="nav-label">Publishing Status</span>
+                    </div>
+                </div>
                 <div class="navbar-form navbar-right" role="search">
                     <div id="acn-searchtext" class="nav-link form-group">
                         <span value=""  class="nav-icon fa fa-search f18" ></span>
@@ -102,6 +108,7 @@
             <div id="acn-right">
                 <div id="_acn-ice-tools" style="float: left"></div>
                 <div id="_acn-preview-tools" style="float: left"></div>
+                <div id="_acn-status"></div>
                 <div id="_acn-search"></div>
                 <div id="_acn-persona" style="float: left"></div>
                 <div id="acn-logout">

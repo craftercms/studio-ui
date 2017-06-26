@@ -2700,6 +2700,8 @@ var nodeOpen = false;
             getPagesServiceUrl: "/api/1/services/api/1/content/get-pages.json",
             lookupFoldersServiceUri: "/api/1/services/api/1/content/get-pages.json", // NEED A SERVICE
 
+            getPublishStatusServiceUrl: "/api/1/services/api/1/publish/status.json",
+
 
             // WRITE OPS
             getRevertContentServiceUrl: "/api/1/services/api/1/content/revert-content.json",
@@ -4390,6 +4392,27 @@ var nodeOpen = false;
                     success: function(response) {
                         var result = eval("(" + response.responseText + ")");
                         callback.success(result.site);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            /**
+             * lookup publish status
+             */
+            getPublishStatus: function(site, callback) {
+
+                var serviceUri = this.getPublishStatusServiceUrl + "?site_id=" + site;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var result = eval("(" + response.responseText + ")");
+                        callback.success(result);
                     },
 
                     failure: function(response) {
