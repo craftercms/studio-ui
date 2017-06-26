@@ -112,7 +112,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     networkError: "네트워크 오류. 일부 기능은 사용할 수 없습니다.",
 
     notification: "공고",
-    noEventError: "연관된 이벤트 핸들러가 없습니다."
+    noEventError: "연관된 이벤트 핸들러가 없습니다.",
+
+    publishStatus: "게시 상태"
 
 });
 

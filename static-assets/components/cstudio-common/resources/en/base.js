@@ -122,7 +122,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     networkError: "Network Error. Some functionality may be unavailable.",
 
     notification: "Notification",
-    noEventError: "No event handler associated."
+    noEventError: "No event handler associated.",
+
+    publishStatus: "Publish Status"
 
 });
 
