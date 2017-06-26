@@ -70,7 +70,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                             "error-dialog",
                                             CStudioAuthoring.Operations.simpleDialogTypeINFO,
                                             CMgs.format(contextNavLangBundle, "publishStatus"),
-                                            response.responseText,
+                                            JSON.parse(response.responseText).message,
                                             null, // use default button
                                             YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                             "studioDialog"
