@@ -46,7 +46,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                         default:
                                             iconColor = "#7e9dbb";
                                     }
-                                    YDom.setStyle(el.children[0], 'color', iconColor);
+                                    YDom.setStyle(el.children[0], "color", iconColor);
                                     el.onclick = function() {
                                         CStudioAuthoring.Operations.showSimpleDialog(
                                             "error-dialog",
@@ -57,14 +57,14 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                             YAHOO.widget.SimpleDialog.ICON_INFO,
                                             "studioDialog"
                                         );
-                                    }
+                                    };
 
                                     setTimeout(function() { statusLoop(); }, delay);
 
                                 },
                                 failure: function (response) {
                                     el = YDom.get("acn-status");
-                                    YDom.setStyle(el.children[0], 'color', "#777");
+                                    YDom.setStyle(el.children[0], "color", "#777");
                                     el.onclick = function() {
                                         CStudioAuthoring.Operations.showSimpleDialog(
                                             "error-dialog",
@@ -78,7 +78,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                     }
                                     setTimeout(function() { statusLoop(); }, delay);
                                 }
-                            })
+                            });
 
                         }
 
