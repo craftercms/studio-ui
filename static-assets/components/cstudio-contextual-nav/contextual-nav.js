@@ -205,7 +205,7 @@ CStudioAuthoring.ContextualNav.LeftModulesMap = {
 CStudioAuthoring.ContextualNav.RightModulesMap = {
 	'ice_tools': '#acn-ice-tools',
 	'preview_tools': '#acn-preview-tools',
-	'persona': '#acn-persona',
+	'targeting': '#acn-persona',
 	'search': '[role="search"]',
 	'logout': '#acn-logout-link'
 };
