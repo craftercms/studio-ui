@@ -69,7 +69,9 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
     dashletMyRecentActivityColLastEditedBy: "Last Edited By",
     dashletMyRecentActivityColMyLastEdit: "My Last Edit",
 
-    dashletIconGuideTitle: "Workflow Icon Guide",
+    dashletIconGuideTitle: "Icon Guide",
+    dashletWorkflowStatesTitle: "Workflow States",
+    dashletItemTypesTitle: "Item Types",
     dashletIconGuideNavigationPage: "Navigation Page",
     dashletIconGuideFloatingPage: "Floating Page",
     dashletIconGuideComponent: "Component",
@@ -81,9 +83,20 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
     dashletIconGuideStateInWorkflow: "In Workflow",
     dashletIconGuideStateScheduled: "Scheduled",
     dashletIconGuideStateSystemProcessing: "Processing",
-    dashletIconGuideStateLocked: "Locked for edit"
-
-
+    dashletIconGuideStateLocked: "Locked for edit",
+    dashletIconGuideTemplateScript: "Template/Script",
+    dashletIconGuideTaxonomy: "Taxonomy",
+    dashletIconGuideImage: "Image",
+    dashletIconGuideVideo: "Video",
+    dashletIconGuideCss: "CSS",
+    dashletIconGuideFont: "Font",
+    dashletIconGuidePdf: "PDF",
+    dashletIconGuidePowerPoint: "Power Point",
+    dashletIconGuideWord: "Word",
+    dashletIconGuideExcel: "Excel",
+    dashletIconGuideZip: "Zip",
+    dashletIconGuideGroovy: "Groovy",
+    dashletIconGuideOtherFiles: "Other Files"
 
 });
 
