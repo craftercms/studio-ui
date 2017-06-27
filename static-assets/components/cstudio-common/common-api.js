@@ -4602,6 +4602,9 @@ var nodeOpen = false;
              */
             lookupAllowedContentTypesForPath: function(site, path, callback) {
 
+                var CMgs = CStudioAuthoring.Messages;
+                var formsLangBundle = CStudioAuthoring.Messages.getBundle("forms", CStudioAuthoringContext.lang);
+
 
                 if (!path.match(".xml$")) path = path + "/";
 
@@ -4616,6 +4619,15 @@ var nodeOpen = false;
                             callback.success(contentTypes);
                         }
                         catch(err) {
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                                "error-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(formsLangBundle, "notification"),
+                                CMgs.format(formsLangBundle, "contentTypesEmpty"),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                            );
                             callback.failure(err);
                         }
                     },

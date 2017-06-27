@@ -440,7 +440,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     translationSubmitted: "Traducción presentada.",
     numberPerPage: "Introduzca un número en el elemento de muestra por página.",
     revertError: "Error al revertir.",
-    legacyError: "El servidor de formulario heredado ya no es compatible."
+    legacyError: "El servidor de formulario heredado ya no es compatible.",
+    contentTypesEmpty: "No hay tipos de contenido disponibles que se pueden crear en la ruta de configuración."
 
 });
 

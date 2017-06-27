@@ -456,7 +456,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     translationSubmitted: "Translation submitted.",
     numberPerPage: "Enter a number in show item per page.",
     revertError: "Revert failed.",
-    legacyError: "legacy form server is no longer supported"
+    legacyError: "legacy form server is no longer supported",
+    contentTypesEmpty: "There are no content types available that can be created at the configured path."
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "en", {
