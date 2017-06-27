@@ -64,7 +64,9 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletMyRecentActivityColLastEditedBy: "마지막 편집으로",
     dashletMyRecentActivityColMyLastEdit: "내 마지막 편집",
 
-    dashletIconGuideTitle: "워크 플로 아이콘 가이드",
+    dashletIconGuideTitle: "아이콘 가이드",
+    dashletWorkflowStatesTitle: "Workflow States",
+    dashletItemTypesTitle: "Item Types",
     dashletIconGuideNavigationPage: "탐색 페이지",
     dashletIconGuideFloatingPage: "부동 페이지",
     dashletIconGuideComponent: "구성 요소",
@@ -76,7 +78,20 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletIconGuideStateInWorkflow: "워크 플로에서",
     dashletIconGuideStateScheduled: "예약",
     dashletIconGuideStateSystemProcessing: "처리",
-    dashletIconGuideStateLocked: "편집에 대해 잠김"
+    dashletIconGuideStateLocked: "편집에 대해 잠김",
+    dashletIconGuideTemplateScript: "Template/Script",
+    dashletIconGuideTaxonomy: "Taxonomy",
+    dashletIconGuideImage: "Image",
+    dashletIconGuideVideo: "Video",
+    dashletIconGuideCss: "CSS",
+    dashletIconGuideFont: "Font",
+    dashletIconGuidePdf: "PDF",
+    dashletIconGuidePowerPoint: "Power Point",
+    dashletIconGuideWord: "Word",
+    dashletIconGuideExcel: "Excel",
+    dashletIconGuideZip: "Zip",
+    dashletIconGuideGroovy: "Groovy",
+    dashletIconGuideOtherFiles: "Other Files"
 
 });
 
