@@ -250,8 +250,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
 						if(this.model.hasOwnProperty(property)){
 							value = this.model[property];
-							key = property == "name" ? "username" : property;
-							// key = property;
+							key = property;
 
 							if(value){
 								if(first){
@@ -304,7 +303,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 								}
 
 								for(var x = 0; x < properties.length; x++){
-									if(properties[x].name == property || (properties[x].name == "name" && property == "username")){
+									if(properties[x].name == property){
 										properties[x].default_value = currentProfile[property];
 									}
 								}
