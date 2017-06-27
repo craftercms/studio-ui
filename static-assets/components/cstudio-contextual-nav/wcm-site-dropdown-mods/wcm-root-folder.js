@@ -2056,29 +2056,32 @@
                                             }
                                         ]);
                                     }else {
-                                        p_aArgs.addItems([
-                                            {
-                                                text: CMgs.format(siteDropdownLangBundle, "wcmContentSubmit"),
-                                                onclick: { fn: function(){
-                                                    var callback = {
-                                                        success: function(contentTO) {
-                                                            var selectedContent = [];
-                                                            selectedContent.push(contentTO.item);
+                                        if((oCurrentTextNode.data.status.toLowerCase().indexOf("submitted") === -1) &&
+                                            (oCurrentTextNode.data.status.toLowerCase().indexOf("scheduled") === -1)){
+                                            p_aArgs.addItems([
+                                                {
+                                                    text: CMgs.format(siteDropdownLangBundle, "wcmContentSubmit"),
+                                                    onclick: { fn: function(){
+                                                        var callback = {
+                                                            success: function(contentTO) {
+                                                                var selectedContent = [];
+                                                                selectedContent.push(contentTO.item);
 
-                                                            CStudioAuthoring.Operations.submitContent(
-                                                                CStudioAuthoringContext.site,
-                                                                selectedContent
-                                                            );
-                                                        },
-                                                        failure: function() {
+                                                                CStudioAuthoring.Operations.submitContent(
+                                                                    CStudioAuthoringContext.site,
+                                                                    selectedContent
+                                                                );
+                                                            },
+                                                            failure: function() {
 
+                                                            }
                                                         }
-                                                    }
 
-                                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
-                                                } }
-                                            }
-                                        ]);
+                                                        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                                    } }
+                                                }
+                                            ]);
+                                        }
                                     }
                                 }
                             };
