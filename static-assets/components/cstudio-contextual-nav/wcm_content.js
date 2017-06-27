@@ -803,7 +803,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 var isRelevant = false;
                                 if (( state.indexOf("In Progress") >= 0
                                     || state.indexOf("Deleted") >= 0
-                                    || state.indexOf("Submitted") != -1
                                     || state.indexOf("Submitted for Delete") >=0
                                     || state.indexOf("Scheduled for Delete") >=0 ) && !isOneItemLocked) {
                                     isRelevant = true;
