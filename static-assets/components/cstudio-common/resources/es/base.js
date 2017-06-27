@@ -99,7 +99,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     wcmContentApprove: "Aprobar y Publicar",
     wcmContentDuplicate: "Duplicar",
     wcmContentHistory: "Historial",
-    wcmContentPageDisabled: "This page is Disabled.",
+    wcmContentPageDisabled: "Este contenido está deshabilitado",
 
     InProgress: "Editado",
     Deleted: "Eliminado",
