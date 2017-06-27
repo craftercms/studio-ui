@@ -69,7 +69,9 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
     dashletMyRecentActivityColLastEditedBy: "Ultima Edición por",
     dashletMyRecentActivityColMyLastEdit: "Mi Ultima Edición",
 
-    dashletIconGuideTitle: "Icono de guía de flujo de trabajo ",
+    dashletIconGuideTitle: "Guía de Íconos",
+    dashletWorkflowStatesTitle: "Estados de Flujo de Trabajo",
+    dashletItemTypesTitle: "Tipos de Elementos",
     dashletIconGuideNavigationPage: "Pagina de Navegación",
     dashletIconGuideFloatingPage: "Página flotante",
     dashletIconGuideComponent: "Componente",
@@ -81,7 +83,20 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
     dashletIconGuideStateInWorkflow: "En Flujo de Trabajo",
     dashletIconGuideStateScheduled: "Programado",
     dashletIconGuideStateSystemProcessing: "Procesando",
-    dashletIconGuideStateLocked: "Bloqueado para editar"
+    dashletIconGuideStateLocked: "Bloqueado para editar",
+    dashletIconGuideTemplateScript: "Template/Script",
+    dashletIconGuideTaxonomy: "Taxonomy",
+    dashletIconGuideImage: "Imagen",
+    dashletIconGuideVideo: "Video",
+    dashletIconGuideCss: "CSS",
+    dashletIconGuideFont: "Font",
+    dashletIconGuidePdf: "PDF",
+    dashletIconGuidePowerPoint: "Power Point",
+    dashletIconGuideWord: "Word",
+    dashletIconGuideExcel: "Excel",
+    dashletIconGuideZip: "Zip",
+    dashletIconGuideGroovy: "Groovy",
+    dashletIconGuideOtherFiles: "Otros Archivos"
 
 });
 
