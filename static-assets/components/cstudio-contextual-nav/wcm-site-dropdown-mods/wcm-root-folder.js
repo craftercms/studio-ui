@@ -1583,7 +1583,7 @@
                     }
 
                     function lookupSiteContent(curNode, currentUri, paramCont) {
-                        if (curNode && curNode.label) {
+                        if (curNode) {
                             CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, curNode.data.uri, 1, "default", {
                                 success: function (treeData) {
                                     if (currentUri == treeData.item.uri) {
