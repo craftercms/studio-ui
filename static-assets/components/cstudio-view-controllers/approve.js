@@ -219,6 +219,8 @@
         } else {
             this.$('[name="schedulingMode"]')[0].checked = false;
             this.$('[name="schedulingMode"]')[1].checked = true;
+
+            this.$('.date-picker-control').show();
         }
 
 
