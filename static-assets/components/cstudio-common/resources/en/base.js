@@ -752,6 +752,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabWorkflowConf: "Workflow Configuration",
     confTabWorkflowConfDesc: "Defines workflows available in the system",
     confCacheCleared : "Configuration cache cleared.",
+    confTabTargetingConfiguration: "Targeting Configuration",
+    confTabEnvironmentConfiguration: "Environment Configuration",
+    confTabCMISConfiguration: "CMIS Configuration",
 
     /* Image */
     constraintsError: "The uploaded file does not meet the specified width & height constraints",

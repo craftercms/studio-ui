@@ -714,6 +714,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabWorkflowConf: "Configuración del Flujo de Trabajo",
     confTabWorkflowConfDesc: "Define los flujos de trabajo disponibles en el sistema",
     confCacheCleared : "Se ha eliminado el caché de configuración.",
+    confTabTargetingConfiguration: "Configuración de orientación",
+    confTabEnvironmentConfiguration: "Configuración del entorno",
+    confTabCMISConfiguration: "Configuración de CMIS",
 
     /* Errors */
     error: "Error",

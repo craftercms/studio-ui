@@ -688,6 +688,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabWorkflowConf: "워크 플로우 구성",
     confTabWorkflowConfDesc: "시스템에서 사용할 수있는 워크 플로우를 정의",
     confCacheCleared : "구성 캐시가 지워졌습니다.",
+    confTabTargetingConfiguration: "타겟팅 구성",
+    confTabEnvironmentConfiguration: "환경 구성",
+    confTabCMISConfiguration: "CMIS 구성",
 
     /* Errors */
     error: "오류",
