@@ -166,7 +166,31 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	showRightModules: function(modules, barEl) {
 		var modulesMap = CStudioAuthoring.ContextualNav.RightModulesMap;
 		this.showModules(modulesMap, modules, barEl);
+        this.showLabelsRightModules();
 	},
+
+    /**
+     * Shown right context nav labels
+     */
+    showLabelsRightModules: function() {
+        $( "#studioBar" ).delegate( ".nav-link", "mouseenter mouseleave", function(event) {
+            if( event.type === "mouseover"  || event.type === "mouseenter" ){
+                var elt = $( this).find(".nav-label");
+                setTimeout(function () {
+                    if ($("#"+elt.parent().get(0).id+':hover').length != 0) {
+                        elt.addClass('nav-label-hover');
+                        elt.removeClass('nav-label');
+                    }
+                }, 1000, false);
+            }
+            else{
+                var elt = $(this).find(".nav-label-hover");
+                elt.addClass( "nav-label" );
+                elt.removeClass( "nav-label-hover" );
+            }
+        });
+
+    },
 
 	/**
      * Generic show modules stuff

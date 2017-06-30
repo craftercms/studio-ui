@@ -515,6 +515,22 @@
                 $state.go('login');
             }
 
+            function mouseOverTopMenu(evt) {
+                var elt = $(evt.target).find('.nav-label');
+                $timeout(function () {
+                    if ($("#"+elt.parent().get(0).id+':hover').length != 0) {
+                        elt.addClass('nav-label-hover');
+                        elt.removeClass('nav-label');
+                    }
+                }, 1000, false);
+            }
+
+            function mouseLeaveTopMenu(evt) {
+                var elt = $(evt.target).find('.nav-label-hover');
+                elt.addClass('nav-label');
+                elt.removeClass('nav-label-hover');
+            }
+
             function changePassword() {
                 $scope.data.username = $scope.user.username;
 
@@ -604,6 +620,8 @@
 
             $scope.logout = logout;
             $scope.changePassword = changePassword;
+            $scope.mouseOverTopMenu = mouseOverTopMenu;
+            $scope.mouseLeaveTopMenu = mouseLeaveTopMenu;
 
             $scope.$on(Constants.AUTH_SUCCESS, function ($event, user) {
                 $scope.user = user;

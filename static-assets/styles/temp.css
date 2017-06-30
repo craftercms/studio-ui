@@ -15244,7 +15244,7 @@ body.masked {
   display: none;
   color: #777; }
 
-.nav-link:hover .nav-label {
+.nav-label-hover {
   display: inline-block;
   -webkit-animation: fadeInFromNone 1s ease-out;
   -moz-animation: fadeInFromNone 1s ease-out;

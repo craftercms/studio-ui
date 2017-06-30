@@ -18,19 +18,19 @@
             <div ng-if="authenticated" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li ng-show="createSites" ui-sref-active="active">
-                        <a class="nav-link" ui-sref="home.users">
+                        <a id="homeUsers" class="nav-link" ui-sref="home.users" ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
                             <span class="nav-icon fa fa-users"></span>
                             <span class="nav-label">{{ 'admin.users.HEADER_LABEL' | translate }}</span>
                         </a>
                     </li>
                     <li ui-sref-active="active">
-                        <a class="nav-link" ui-sref="home.sites">
+                        <a id="homeSites" class="nav-link" ui-sref="home.sites" ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
                             <span class="nav-icon fa fa-sitemap"></span>
                             <span class="nav-label">{{ 'dashboard.sites.SITES_LABEL' | translate }}</span>
                         </a>
                     </li>
                     <li class="dropdown" dropdown>
-                        <a class="nav-link dropdown-toggle" dropdown-toggle>
+                        <a id="homeHelp" class="nav-link dropdown-toggle" dropdown-toggle ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
                             <span class="nav-icon fa fa-life-ring"></span>
                             <span class="nav-label">
                                 {{ 'common.HELP' | translate }} <span class="caret"></span>
