@@ -29,13 +29,13 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a class="nav-link ng-binding users-link hidden" href="/studio/#/users">
+                        <a id="usersRightNav" class="nav-link ng-binding users-link hidden" href="/studio/#/users">
                             <span class="nav-icon fa fa-users"></span>
                             <span class="nav-label">Users</span>
                         </a>
                     </li>
                     <li>
-                        <a class="nav-link" href="/studio/#/sites">
+                        <a id="sitesRightNav" class="nav-link" href="/studio/#/sites">
                             <span class="nav-icon fa fa-sitemap"></span>
                             <span class="nav-label">Sites</span>
                         </a>
