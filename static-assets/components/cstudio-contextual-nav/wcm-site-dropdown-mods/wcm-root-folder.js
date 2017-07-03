@@ -2895,7 +2895,7 @@
 
                             if(cutItem && isPreview){
                                 var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-                                
+
                                 if(current.uri == cutItem.data.uri){
                                     var browserUri = result.status[0].split("/site/website").pop();
                                     browserUri = browserUri.split("/index.xml")[0];
