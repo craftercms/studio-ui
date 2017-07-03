@@ -2879,6 +2879,7 @@
                         try {
                             var errorMsgExist=false;
                             var errorMsg='';
+                            var cutItem = Self.cutItem;
                             if(!result.success){
                                 if(typeof result.message!= 'undefined' && typeof result.message.paths != 'undefined') {
                                     errorMsg = result.message.paths[0];
@@ -2889,6 +2890,22 @@
                             }
 
                             Self.refreshNodes(this.tree,!errorMsgExist, false, null, null, true);
+
+                            var isPreview = CStudioAuthoringContext.isPreview;
+
+                            if(cutItem && isPreview){
+                                var current = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
+                                
+                                if(current.uri == cutItem.data.uri){
+                                    var browserUri = result.status[0].split("/site/website").pop();
+                                    browserUri = browserUri.split("/index.xml")[0];
+
+                                    cutItem.data.browserUri = browserUri;
+                                    cutItem.data.uri = result.status[0];
+
+                                    CStudioAuthoring.Operations.refreshPreview(cutItem.data);
+                                }
+                            }
 
                             Self.refreshDashboard("MyRecentActivity");
 
