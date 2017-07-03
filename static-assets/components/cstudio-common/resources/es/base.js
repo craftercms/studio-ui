@@ -715,8 +715,11 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabWorkflowConfDesc: "Define los flujos de trabajo disponibles en el sistema",
     confCacheCleared : "Se ha eliminado el caché de configuración.",
     confTabTargetingConfiguration: "Configuración de orientación",
+    confTabTargetingConfigurationDesc: "Este archivo configura el sistema de orientación de Crafter Studio para ayudar a proporcionar a Crafter Engine propiedades de usuario falsas que ayudan a conducir el sistema de orientación",
     confTabEnvironmentConfiguration: "Configuración del entorno",
+    confTabEnvironmentConfigurationDesc: "Este archivo configura los entornos que Crafter Studio puede publicar",
     confTabCMISConfiguration: "Configuración de CMIS",
+    confTabCMISConfigurationDesc: "Estos archivos configuran 0 o más repositorios capaces de CMIS como fuentes de datos que los autores de contenido pueden elegir",
 
     /* Errors */
     error: "Error",
