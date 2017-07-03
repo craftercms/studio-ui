@@ -135,6 +135,7 @@
 
 .studio-fa-stack {
     position: relative;
+    display: inline-block;
 }
 
 .studio-fa-stack .fa {
