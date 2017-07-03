@@ -70,8 +70,8 @@
                                 html.scrollHeight,
                                 html.offsetHeight);
 
-                            if (max > $(window).height()) {
-                                max = $(window).height() - 100;
+                            if (max > $(window.top).height()) {
+                                max = $(window.top).height() - 100;
                             }
 
                             if (max > 350) {
