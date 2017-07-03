@@ -688,6 +688,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabWorkflowConf: "워크 플로우 구성",
     confTabWorkflowConfDesc: "시스템에서 사용할 수있는 워크 플로우를 정의",
     confCacheCleared : "구성 캐시가 지워졌습니다.",
+    confTabTargetingConfiguration: "타겟팅 구성",
+    confTabTargetingConfigurationDesc: "이 파일은 Crafter Studio의 타겟팅 시스템을 구성하여 Crafter Engine에 타겟팅 시스템을 구동하는 데 도움이되는 가짜 사용자 속성을 제공합니다",
+    confTabEnvironmentConfiguration: "환경 구성",
+    confTabEnvironmentConfigurationDesc: "이 파일은 Crafter Studio가 게시 할 수있는 환경을 구성합니다",
+    confTabCMISConfiguration: "CMIS 구성",
+    confTabCMISConfigurationDesc: "이 파일은 컨텐트 작성자가 선택할 수있는 0 이상의 CMIS 가능 리포지토리를 데이터 소스로 구성합니다",
 
     /* Errors */
     error: "오류",

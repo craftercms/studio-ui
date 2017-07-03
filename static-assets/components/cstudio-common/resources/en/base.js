@@ -752,6 +752,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabWorkflowConf: "Workflow Configuration",
     confTabWorkflowConfDesc: "Defines workflows available in the system",
     confCacheCleared : "Configuration cache cleared.",
+    confTabTargetingConfiguration: "Targeting Configuration",
+    confTabTargetingConfigurationDesc: "This file configures the targeting system of Crafter Studio to help provide Crafter Engine with fake user properties that help drive the targeting system",
+    confTabEnvironmentConfiguration: "Environment Configuration",
+    confTabEnvironmentConfigurationDesc: "This file configures the environments Crafter Studio can publish to",
+    confTabCMISConfiguration: "CMIS Configuration",
+    confTabCMISConfigurationDesc: "This files configures 0 or more CMIS-capable repositories as data-sources for content authors to pick from",
 
     /* Image */
     constraintsError: "The uploaded file does not meet the specified width & height constraints",
