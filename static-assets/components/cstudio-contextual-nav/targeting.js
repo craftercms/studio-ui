@@ -203,8 +203,15 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 										var description = document.createElement("span");
 										YAHOO.util.Dom.addClass(description, "description");
 										description.innerHTML = currentProp.description;
+
 										description.style.cssText = "color: #999999; display: block; margin-left: 100px; text-align: justify; margin-top: 5px;";
 										controlContainer.appendChild(description);
+
+										var hint = document.createElement("span");
+										YAHOO.util.Dom.addClass(hint, "hint");
+										hint.innerHTML = currentProp.hint;
+										hint.style.cssText = "color: #999999; margin-left: 100px; text-align: justify; margin-top: 5px;";
+										controlContainer.appendChild(hint);
 
 									}
 								}

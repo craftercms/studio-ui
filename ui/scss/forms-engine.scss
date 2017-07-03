@@ -54,6 +54,14 @@ header {
   }
 }
 
+#targeting-container .hint {
+  display: none;
+}
+
+#targeting-container .control-container:hover .hint{
+  display: block;
+}
+
 // Reset and dependencies
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/normalize";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/print";
