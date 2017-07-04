@@ -614,8 +614,14 @@ var nodeOpen = false;
                 };
             },
 
-            translateContent: function(langBundle){
-                var elements = document.querySelectorAll('[data-translation]');
+            translateContent: function(langBundle, specificSelector){
+                var elements;
+                if(specificSelector){
+                    elements = document.querySelectorAll(specificSelector+" [data-translation");
+                }else{
+                    elements = document.querySelectorAll("[data-translation]");
+                }
+
                 for(var i=0; i<elements.length; i++){
                     elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute('data-translation'));
                 }
@@ -636,7 +642,7 @@ var nodeOpen = false;
                     controller: controller,
                     callback: function (dialogue) {
                         var _self = this;
-                        CSA.Operations.translateContent(formsLangBundle);
+                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         if (YDom.get("cancelBtn")) {
                             YDom.get("cancelBtn").value = CMgs.format(formsLangBundle, "cancel");
                         }
@@ -681,7 +687,7 @@ var nodeOpen = false;
                     controller: "viewcontroller-history",
                     callback: function(dialogue) {
 
-                        CSA.Operations.translateContent(formsLangBundle);
+                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
 
                         YDom.get("historyCloseBtn").value = CMgs.format(formsLangBundle, "close");
 
@@ -720,7 +726,7 @@ var nodeOpen = false;
                     fn: CSA.Service.getApproveView,
                     controller: 'viewcontroller-approve',
                     callback: function(dialogue) {
-                        CSA.Operations.translateContent(formsLangBundle);
+                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.loadItems(items);
                         this.loadPublishingChannels();
 
@@ -763,7 +769,7 @@ var nodeOpen = false;
                     fn: CSA.Service.getDependenciesView,
                     controller: 'viewcontroller-dependencies',
                     callback: function(dialogue) {
-                        CSA.Operations.translateContent(formsLangBundle);
+                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.loadItems(items, dependenciesSelection);
 
                     }
@@ -777,7 +783,7 @@ var nodeOpen = false;
                     fn: CSA.Service.getRequestPublishView,
                     controller: 'viewcontroller-requestpublish',
                     callback: function(dialog) {
-                        CSA.Operations.translateContent(formsLangBundle);
+                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.renderItems(contentItems);
                     }
                 }, true, '800px');

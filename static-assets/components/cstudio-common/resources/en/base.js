@@ -432,6 +432,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     previewInitiated: "Preview server synch-all initiated.",
     synchronizationRepo: "Synchronization from Repository initiated.",
 
+    /*Preview*/
+    previewToolsTitle: "Preview Tools",
+    inContextEditing: "In-Context Editing",
+    pageComponents: "Page Components",
+    publishingChannel: "Publishing Channel",
+
     /*Error*/
     legacyFormNoSupported: "legacy form server no longer supported.",
     loadContentsError: "Unable to load contents. Please close the dialogue window and try again.",

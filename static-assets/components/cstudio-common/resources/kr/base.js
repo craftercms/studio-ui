@@ -392,6 +392,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     previewInitiated: "미리보기 서버 동기화 - 모두 시작됨.",
     synchronizationRepo: "저장소에서 동기화가 시작되었습니다.",
 
+    /*Preview*/
+    previewToolsTitle: "미리보기 도구",
+    inContextEditing: "상황에 맞는 편집",
+    pageComponents: "페이지 구성 요소",
+    publishingChannel: "출판 채널",
+
     /*Error*/
     legacyFormNoSupported: "더 이상 지원되지 않는 레거시 양식 서버.",
     loadContentsError: "내용을로드 할 수 없습니다. 대화창을 닫고 다시 시도하십시오.",
