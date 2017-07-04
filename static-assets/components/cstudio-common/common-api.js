@@ -211,7 +211,8 @@ var nodeOpen = false;
                 "js": { class: "fa-file-code-o" },
                 "groovy": { class: "fa-file-code-o" },
                 "css": { class: "fa-css3" },
-                "ftl": { class: "fa-file-code-o" }
+                "ftl": { class: "fa-file-code-o" },
+                "font": { class: "fa-font"}
             },
             WORKFLOWICONS: {
                 processing: "fa-spinner fa-spin",
@@ -6649,6 +6650,14 @@ var nodeOpen = false;
                 return statusClass;
             },
 
+            isFont: function(treeNodeTO){
+                var fontTypes = ["application/x-font-ttf", "application/x-font-truetype", "application/x-font-opentype",
+                    "application/x-font-woff", "application/x-font-woff2", "application/vnd.ms-fontobject", "application/font-sfnt",
+                    "application/x-font-otf"];
+
+                return fontTypes.indexOf(treeNodeTO.mimeType) > -1;
+            },
+
             getContentItemIcon: function(treeNodeTO){
                 //TODO: call service to get mimetypes overrides
                 var defaultIcons = CSA.Constants.MIMETYPES,
@@ -6659,11 +6668,13 @@ var nodeOpen = false;
                         icon: {}
                     };
 
-                if("asset" === treeNodeTO.contentType){     //assets
+                if(treeNodeTO.isAsset) {     //assets
                     var mimetype = treeNodeTO.mimeType;
 
-                    if(mimetype.match(/\bvideo\b/)){
+                    if (mimetype.match(/\bvideo\b/)) {
                         mainIconClass = defaultIcons.video.class;
+                    }else if(this.isFont(treeNodeTO)){
+                        mainIconClass = defaultIcons.font.class;
                     }else if(mimetype.match(/\bimage\b/)) {
                         mainIconClass = defaultIcons.image.class;
                     }else if(mimetype.match(/\bpdf\b/)) {

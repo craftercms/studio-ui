@@ -937,6 +937,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         retTransferObj.formPagePath = treeItem.formPagePath;
         retTransferObj.isContainer = treeItem.container;
         retTransferObj.isComponent = true;
+        retTransferObj.isAsset = treeItem.isAsset;
         retTransferObj.isNew = treeItem.isNew;
         retTransferObj.isLevelDescriptor = treeItem.levelDescriptor;
         retTransferObj.editedDate = "";
