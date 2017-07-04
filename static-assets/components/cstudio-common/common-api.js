@@ -6625,6 +6625,8 @@ var nodeOpen = false;
 
                 if(statusObj.lockOwner && ("" !== statusObj.lockOwner)){     //locked
                     statusClass = workflowIcons.locked + " locked";
+                }else if(statusObj.inFlight) {      //processing
+                    statusClass = workflowIcons.processing + " fa-spin processing";
                 }else if(statusObj.submitted) {                   //in workflow - progress
                     statusClass = workflowIcons.inworkflow + " in-workflow";
                 }else if(statusObj.scheduled) {     //scheduled
@@ -6633,8 +6635,6 @@ var nodeOpen = false;
                     statusClass = workflowIcons.neverpublished + " never-published";
                 }else if(statusObj.live) {          //live
                     statusClass = workflowIcons.live + " live";
-                }else if(statusObj.inFlight) {      //processing
-                    statusClass = workflowIcons.processing + " fa-spin processing";
                 }else if(statusObj.deleted) {       //deleted
                     statusClass = workflowIcons.deleted + " deleted";
                 }else if(statusObj.inProgress) {    //edited
@@ -6653,7 +6653,6 @@ var nodeOpen = false;
             },
 
             getContentItemIcon: function(treeNodeTO){
-                //TODO: call service to get mimetypes overrides
                 var defaultIcons = CSA.Constants.MIMETYPES,
                     customIcons = CSA.mimeTypes,
                     mainIconClass,
