@@ -416,6 +416,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     previewInitiated: "Sincronización del servidor de previsualización iniciado.",
     synchronizationRepo: "Se inició la sincronización desde el repositorio.",
 
+    /*Preview*/
+    previewToolsTitle: "Herramientas de Vista Previa",
+    inContextEditing: "Edición En-Contexto",
+    pageComponents: "Componentes de Página",
+    publishingChannel: "Canal para Publicar",
+
     /*Error*/
     legacyFormNoSupported: "Servidor de formulario heredado ya no es soportado.",
     loadContentsError: "No se puede cargar contenido. Por favor, cierre la ventana de diálogo e inténtelo de nuevo.",
