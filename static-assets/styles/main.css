@@ -6004,6 +6004,9 @@ a[ng-click] {
     width: 35%;
     margin: auto; } }
 
+@media (min-width: 768px) {
+  .removeSiteOpen .modal-sm {
+    width: 350px; } }
 .creatingSpinner {
   display: block;
   margin: 0 auto; }

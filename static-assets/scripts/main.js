@@ -722,6 +722,7 @@
                     backdrop: 'static',
                     keyboard: false,
                     size: 'sm',
+                    windowClass: "removeSiteOpen",
                     resolve: {
                         siteToRemove: function () {
                             return site;
