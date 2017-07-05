@@ -388,7 +388,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     requestApproveDialogTitle: "Request Publish",
     requestApproveDialogSubTitle: "When would you like the checked item(s) to go live?",
-    requestApproveDialogEmailMe: "Email me when items go live.",
+    requestApproveDialogEmailMe: "Email me when items are approved for publish.",
 
     newContTypeDialogTitle: "Create Content Type",
     newContTypeDialogDisplayLabel: "Display Label",

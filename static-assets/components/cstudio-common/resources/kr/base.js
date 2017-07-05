@@ -360,7 +360,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 
     requestApproveDialogTitle: "게시를 요청할",
     requestApproveDialogSubTitle: "당신이 원하는 때 체크 항목 (들)을 게재하는 방법?",
-    requestApproveDialogEmailMe: "항목 살아 갈 때 이메일을 보내주세요.",
+    requestApproveDialogEmailMe: "항목이 게시가 승인되면 이메일을 보내십시오.",
 
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
     newContTypeDialogDisplayLabel: "표시 라벨",
