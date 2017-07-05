@@ -14882,6 +14882,8 @@ margin-left: -3px; */
 }*/ }
     table.scroll-body tr .small {
       width: 10%; }
+    table.scroll-body tr .deleteSmall {
+      width: 8%; }
     table.scroll-body tr .medium {
       width: 30%; }
     table.scroll-body tr .deleteMedium {
@@ -14889,7 +14891,7 @@ margin-left: -3px; */
     table.scroll-body tr .large {
       width: 60%; }
     table.scroll-body tr .deleteLarge {
-      width: 56%; }
+      width: 46%; }
   table.scroll-body thead {
     width: 100%;
     display: table;
