@@ -200,6 +200,7 @@ var nodeOpen = false;
                 "navPage": { class: "fa-file" },
                 "floatingPage": { class: "fa-file-o" },
                 "component": { class: "fa-puzzle-piece" },
+                "taxonomy" : {class: "fa-tag"},
                 "unknown": { class: "fa-file-text" },
                 "video": { class: "fa-file-video-o" },
                 "image": { class: "fa-file-image-o" },
@@ -6717,6 +6718,8 @@ var nodeOpen = false;
                         }else{
                             mainIconClass = defaultIcons.navPage.class;
                         }
+                    }else if("taxonomy" === treeNodeTO.contentType){
+                        mainIconClass = defaultIcons.taxonomy.class;
                     }
                 }
 
