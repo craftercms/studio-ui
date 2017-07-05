@@ -202,6 +202,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "es", {
     password : "Contraseña de Email",
     signIn: "Registrarse",
     signBackIn: "Vuelve a iniciar sesión",
+    signInContinueWorking: "Inicia sesión para continuar trabajando",
+    sessionExpireInactivity: "Su sesión ha caducado debido a la inactividad",
     doneSignOut:"He terminado. Desloguearme"
 
 });

@@ -474,7 +474,16 @@ body .mask{
 }
 #cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader{
     font-size: 1.5em;
-    padding: 8px 15px 18px!important;
+    padding: 0px 15px 3px!important;
+}
+#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader #crafterLogo{
+    width: 140px;
+    margin: 0 auto;
+    display: block;
+}
+#login_form .subtitleErr{
+    text-align: center;
+    color: red;
 }
 #cstudio-wcm-popup-div .contentTypePopupBtn {
     margin: 15px 0 0 0;
@@ -492,6 +501,15 @@ body .mask{
 /* Up load dialog */
 #upload-popup-inner .formDesc{
   margin-bottom: 10px;
+}
+
+/* login dialog */
+#login-popup-inner .contentTypePopupHeader, #login-popup-inner .contentTypeOuter{
+    border-bottom:none;
+}
+
+#login-popup-inner .contentTypeOuter{
+    padding-bottom: 11px;
 }
 
 /* -- END Upload Overlay -- */

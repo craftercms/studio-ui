@@ -67,12 +67,14 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
         var divIdName = "cstudio-wcm-popup-div";
         newdiv.setAttribute("id",divIdName);
         newdiv.className= "yui-pe-content";
-        newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
+        newdiv.innerHTML = '<div class="contentTypePopupInner" id="login-popup-inner">' +
             '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
             '<div class="contentTypePopupHeader loginHeader">' +
-            CMgs.format(previewLangBundle, 'login') +
+            '<img src="" alt="Crafter Studio" id="crafterLogo">' +
             '</div> ' +
-            '<div><form id="login_form">' +
+            '<div>' +
+            '<form id="login_form">' +
+                '<p class="subtitleErr">'+ CMgs.format(previewLangBundle, 'sessionExpireInactivity') +'</p>'+
                 '<div class="contentTypeOuter">'+
                     '<div class="form-group">' +
                         '<label for="username">'+CMgs.format(previewLangBundle, 'emailUsername')+'</label>' +
@@ -87,20 +89,20 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                     '</div>'+
                 '</div>' +
                 '<div class="contentTypePopupBtn"> ' +
-                    '<input type="submit" class="btn btn-primary cstudio-xform-button" id="loginButton" value="'+CMgs.format(previewLangBundle, 'signBackIn')+'" />' +
+                    '<input type="submit" class="btn btn-primary cstudio-xform-button" id="loginButton" value="'+CMgs.format(previewLangBundle, 'signInContinueWorking')+'" />' +
                     '<input type="button" class="btn btn-default cstudio-xform-button" id="loginCancelButton" value="'+CMgs.format(previewLangBundle, 'doneSignOut')+'"  />' +
                 '</div>' +
             '</form></div>' +
             '</div> ' +
             '</div>';
 
-        document.getElementById("upload-popup-inner").style.width = "350px";
-        document.getElementById("upload-popup-inner").style.height = "180px";
+        document.getElementById("login-popup-inner").style.width = "350px";
+        document.getElementById("login-popup-inner").style.height = "180px";
 
         // Instantiate the Dialog
         login_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
             {   width : "360px",
-                height : "311px",
+                height : "380px",
                 effect:{
                     effect: YAHOO.widget.ContainerEffect.FADE,
                     duration: 0.25
@@ -120,6 +122,20 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
         var eventParams = {
             self: this
         };
+
+
+        CStudioAuthoring.Service.lookupSiteLogo(CStudioAuthoringContext.site, {
+            success: function (response) {
+                if(response){
+                    YDom.get('crafterLogo').src = '/studio/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg';
+                }else{
+                    YDom.get('crafterLogo').src = '/studio/static-assets/images/crafter_studio_360.png';
+                }
+            },
+            failure: function() {
+                YDom.get('crafterLogo').src = '/studio/static-assets/images/crafter_studio_360.png';
+            }
+        });
 
        YAHOO.util.Event.addListener("loginButton", "click", this.loginPopupSubmit, eventParams);
        YAHOO.util.Event.addListener("loginCancelButton", "click", authRedirect);
@@ -156,6 +172,13 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                 }
             },
             failure: function(response) {
+                var loginError = document.getElementById("loginError");
+                var cstudioWcmPopup = document.getElementById("cstudio-wcm-popup-div");
+                loginError.innerHTML =  JSON.parse(response.responseText).message;
+                if(loginError.classList.contains("hidden")){
+                    loginError.classList.remove("hidden");
+                    $(cstudioWcmPopup).height($(loginError).height() + $(cstudioWcmPopup).height() + 11);
+                }
             }
         };
 

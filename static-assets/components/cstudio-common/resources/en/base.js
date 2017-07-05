@@ -203,6 +203,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     password : "Password",
     signIn: "Sign in",
     signBackIn: "Sign back in",
+    signInContinueWorking: "Sign in to continue working",
+    sessionExpireInactivity: "Your session has expired due to inactivity",
     doneSignOut:"I'm done, signout"
 
 });
