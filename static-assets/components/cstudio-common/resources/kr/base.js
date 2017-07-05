@@ -195,6 +195,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     password : "이메일 비밀번호",
     signIn: "로그인",
     signBackIn: "다시 로그인",
+    signInContinueWorking: "계속 작업하려면 로그인하십시오",
+    sessionExpireInactivity: "비활성으로 인해 세션이 만료되었습니다",
     doneSignOut:"끝났어. 로그 아웃하다."
 
 });
