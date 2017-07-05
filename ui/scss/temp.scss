@@ -816,6 +816,30 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   background-color: transparent;
   background-image: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif');
   background-repeat: no-repeat;
+  color: #7e9dbb;
+}
+
+.ygtvrow {
+  .ygtvlp, .ygtvtm, .ygtvtp, .ygtvlph, .ygtvlphh, .ygtvtph, .ygtvtphh, .ygtvtmh, .ygtvtmhh, .ygtvlm, .ygtvlmh, .ygtvlmhh{
+    background-image: none;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    position: relative;
+  }
+
+  .ygtvlp:before, .ygtvtp:before, .ygtvlph:before, .ygtvlphh:before, .ygtvtph:before, .ygtvtphh:before {
+    content: "\f196";
+    position: absolute;
+    top: 2px;
+    width: 10px;
+  }
+
+  .ygtvtm:before, .ygtvtmh:before, .ygtvtmhh:before, .ygtvlm:before, .ygtvlmh:before, .ygtvlmhh:before{
+    content: "\f147";
+    position: absolute;
+    top: 2px;
+    width: 10px;
+  }
 }
 
 .ygtvlp, .ygtvtp, .ygtvlph, .ygtvlphh, .ygtvtph, .ygtvtphh {
