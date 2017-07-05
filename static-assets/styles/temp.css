@@ -3398,7 +3398,24 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   cursor: pointer;
   background-color: transparent;
   background-image: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif");
-  background-repeat: no-repeat; }
+  background-repeat: no-repeat;
+  color: #7e9dbb; }
+
+.ygtvrow .ygtvlp, .ygtvrow .ygtvtm, .ygtvrow .ygtvtp, .ygtvrow .ygtvlph, .ygtvrow .ygtvlphh, .ygtvrow .ygtvtph, .ygtvrow .ygtvtphh, .ygtvrow .ygtvtmh, .ygtvrow .ygtvtmhh, .ygtvrow .ygtvlm, .ygtvrow .ygtvlmh, .ygtvrow .ygtvlmhh {
+  background-image: none;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  position: relative; }
+.ygtvrow .ygtvlp:before, .ygtvrow .ygtvtp:before, .ygtvrow .ygtvlph:before, .ygtvrow .ygtvlphh:before, .ygtvrow .ygtvtph:before, .ygtvrow .ygtvtphh:before {
+  content: "\f196";
+  position: absolute;
+  top: 2px;
+  width: 10px; }
+.ygtvrow .ygtvtm:before, .ygtvrow .ygtvtmh:before, .ygtvrow .ygtvtmhh:before, .ygtvrow .ygtvlm:before, .ygtvrow .ygtvlmh:before, .ygtvrow .ygtvlmhh:before {
+  content: "\f147";
+  position: absolute;
+  top: 2px;
+  width: 10px; }
 
 .ygtvlp, .ygtvtp, .ygtvlph, .ygtvlphh, .ygtvtph, .ygtvtphh {
   background-position: 0 0px; }
@@ -15299,5 +15316,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */

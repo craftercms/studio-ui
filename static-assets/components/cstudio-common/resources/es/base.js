@@ -386,7 +386,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 
     requestApproveDialogTitle: "Solicitud de Publicación",
     requestApproveDialogSubTitle: "Cuando desea que los artiículos vayan en vivo?",
-    requestApproveDialogEmailMe: "Enviarme un correo cuando los artículos esten en vivo.",
+    requestApproveDialogEmailMe: "Enviarme un correo cuando los artículos sean aprobados para publicarse.",
 
     newContTypeDialogTitle: "Crear Tipo de Contenido",
     newContTypeDialogDisplayLabel: "Etiqueta a Mostrar",
