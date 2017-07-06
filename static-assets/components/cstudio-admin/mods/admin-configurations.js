@@ -23,7 +23,6 @@ CStudioAuthoring.Module.requireModule(
 		 * Overarching class that drives the content type tools
  		*/
 		YAHOO.extend(CStudioAdminConsole.Tool.AdminConfig, CStudioAdminConsole.Tool, {
-			width: 1000,
 			height: 600,
 			
 			renderWorkarea: function() {
@@ -310,16 +309,17 @@ CStudioAuthoring.Module.requireModule(
 				var viewSampleButtonEl = document.getElementById("view-sample-button");
 				var hideSampleButtonEl = document.getElementById("hide-sample-button");
 				var sampleAreaEl = document.getElementById("sample-window");
+                var contentArea = document.getElementById("content-area");
 				
 				viewSampleButtonEl.onclick = function () {
-					CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(editor);
+					CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditorParent(contentArea);
 					hideSampleButtonEl.style.display = 'inline';
 					viewSampleButtonEl.style.display = 'none';
 					sampleAreaEl.style.display = 'inline';
 				};
 				
 				hideSampleButtonEl.onclick = function () {
-					CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditor(editor);
+					CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 					hideSampleButtonEl.style.display = 'none';
 					viewSampleButtonEl.style.display = 'inline';
 					sampleAreaEl.style.display = 'none';
@@ -334,6 +334,14 @@ CStudioAuthoring.Module.requireModule(
 			shrinkEditor: function(editor) {
 				editor.setSize(this.width/2, this.height);
 			},
+
+            expandEditorParent: function(editor) {
+                editor.classList.remove("sample");
+            },
+
+            shrinkEditorParent: function(editor) {
+                editor.classList.add("sample");
+            },
 
             clearCache: function() {
                 var serviceUri = "/api/1/services/api/1/site/clear-configuration-cache.json?site="+CStudioAuthoringContext.site;
