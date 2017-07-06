@@ -31,9 +31,7 @@ CStudioAuthoring.Module.requireModule(
 				workareaEl.innerHTML =
 					"<div id='config-area'>" +
 					"</div>";
-				var actions = [
-					{ name: CMgs.format(formsLangBundle, "clearCache"), context: this, method: this.clearCache }
-				];
+				var actions = [];
 				CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 				this.renderJobsList();
 
@@ -258,7 +256,8 @@ CStudioAuthoring.Module.requireModule(
 					"<button type='submit' id='hide-sample-button' class='btn btn-primary'>"+CMgs.format(formsLangBundle, "hideSample")+"</button>";
 
 				// add button actions
-				var saveButtonEl = document.getElementById("save-button"),
+				var me = this,
+					saveButtonEl = document.getElementById("save-button"),
 					configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN;
 
 				// save the configuration file back to repo 
@@ -267,6 +266,7 @@ CStudioAuthoring.Module.requireModule(
 					var saveCb = {
                         success: function() {
                             CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
+							me.clearCache();
                         },
 						failure: function() {
                             CStudioAuthoring.Operations.showSimpleDialog(
@@ -347,17 +347,7 @@ CStudioAuthoring.Module.requireModule(
                 var serviceUri = "/api/1/services/api/1/site/clear-configuration-cache.json?site="+CStudioAuthoringContext.site;
 
                 var clearCacheCb = {
-                    success: function() {
-                        CStudioAuthoring.Operations.showSimpleDialog(
-                            "cache-dialog",
-                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                            CMgs.format(langBundle, "notification"),
-                            CMgs.format(langBundle, "confCacheCleared"),
-                            null, // use default button
-                            YAHOO.widget.SimpleDialog.ICON_INFO,
-                            "success studioDialog"
-                        );
-                    },
+                    success: function() {},
 
                     failure: function() {
                         CStudioAuthoring.Operations.showSimpleDialog(
