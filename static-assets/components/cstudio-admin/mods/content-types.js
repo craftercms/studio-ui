@@ -136,7 +136,7 @@ CStudioAuthoring.Module.requireModule(
 															success: function () {
 																CStudioAdminConsole.isDirty = false;
 																CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveContentType");
-
+																_self.clearCache();
 															},
 															failure: function () {
 																CStudioAuthoring.Operations.showSimpleDialog(
@@ -270,6 +270,8 @@ CStudioAuthoring.Module.requireModule(
                                         }
                                     } }]);
                                 amplify.publish("/content-type/loaded");
+
+								_self.clearCache();
                             },
 
                             failure: function() {
@@ -283,6 +285,16 @@ CStudioAuthoring.Module.requireModule(
 
 					context: this
 				});
+			},
+
+			clearCache: function() {
+				var serviceUri = "/api/1/services/api/1/site/clear-configuration-cache.json?site="+CStudioAuthoringContext.site;
+
+				var clearCacheCb = {
+					success: function() {}
+				};
+
+				YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), clearCacheCb);
 			},
 
 			/**
@@ -2412,7 +2424,6 @@ CStudioAuthoring.Module.requireModule(
 				}
 				return xml;
 			}
-
 		}
 
 		CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types",CStudioAdminConsole.Tool.ContentTypes);
