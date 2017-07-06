@@ -339,17 +339,7 @@ CStudioAuthoring.Module.requireModule(
                 var serviceUri = "/api/1/services/api/1/site/clear-configuration-cache.json?site="+CStudioAuthoringContext.site;
 
                 var clearCacheCb = {
-                    success: function() {
-                        // CStudioAuthoring.Operations.showSimpleDialog(
-                        //     "cache-dialog",
-                        //     CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                        //     CMgs.format(langBundle, "notification"),
-                        //     CMgs.format(langBundle, "confCacheCleared"),
-                        //     null, // use default button
-                        //     YAHOO.widget.SimpleDialog.ICON_INFO,
-                        //     "success studioDialog"
-                        // );
-                    },
+                    success: function() {},
 
                     failure: function() {
                         CStudioAuthoring.Operations.showSimpleDialog(
