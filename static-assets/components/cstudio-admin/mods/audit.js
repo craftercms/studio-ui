@@ -15,7 +15,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.Audit, CStudioAdminConsole.Tool, {
             auditUrl = '/studio/#/audit?iframe=true&site=' + CStudioAuthoringContext.siteId;
 
         workareaEl.innerHTML =
-            '<div class="iframe-container" style="position: relative; left: 200px; top: 50px; width: calc(100% - 200px); height: calc(100vh - 50px);">' +
+            '<div class="iframe-container" style="position: relative; top: 50px; height: calc(100vh - 50px);">' +
                 '<iframe src="'+ auditUrl +'" style="width: 100%; height: 100%;"></iframe>' +
             '</div>';
     }

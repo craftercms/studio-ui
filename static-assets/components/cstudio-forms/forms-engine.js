@@ -1378,12 +1378,12 @@ var CStudioForms = CStudioForms || function() {
                             CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                             var componentsOn = !!(sessionStorage.getItem('components-on'));
                             if(componentsOn){
-                                CStudioAuthoring.Operations.refreshPreview();
+                                CStudioAuthoring.Operations.refreshPreviewParent();
                             }
                         } else {
                             window.close();
                             if(componentsOn){
-                                CStudioAuthoring.Operations.refreshPreview();
+                                CStudioAuthoring.Operations.refreshPreviewParent();
                             }
                         }
                     }

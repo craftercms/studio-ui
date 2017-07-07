@@ -1,13 +1,13 @@
 .configuration-window {
     position: relative;
     top: 15px;
-    left:250px;
+    padding-left:5%;
     right:auto;
-    width:1000px;
+    width:100%;
 }
 
 #config-list {
-	margin: 10px;
+	margin: 10px 0 10px 0;
 }
 
 #edit-area {
@@ -15,8 +15,8 @@
 
 #menu-area {
 	display: inline-block;
-	margin: 10px;
-	width: 100%
+	margin: 10px 0 10px 0;
+    width: 95%;
 }
 
 #config-area {
@@ -41,8 +41,14 @@
 }
 
 #edit-window {
-	margin: 5px;
+	margin: 5px 0 5px 0;
 	float: left;
+    width: 95%;
+}
+
+.sample #edit-window{
+    margin: 5px 5% 5px 0;
+    width: 45%;
 }
 
 #edit-window textarea {
@@ -54,10 +60,10 @@
 }
 
 #sample-window {
-	float:right;
-	height: 100%;
-	width: 45%;
-	margin: 5px;
+    float: left;
+    height: 100%;
+    width: 45%;
+    margin: 5px 0 5px 0;
 }
 
 #sample-text {
