@@ -1189,6 +1189,13 @@ var CStudioForms = CStudioForms || function() {
                                         YDom.addClass(noticeEl, "acnDraftContent");
                                         noticeEl.innerHTML = CMgs.format(formsLangBundle, "wcmContentSavedAsDraft");
                                     }
+
+                                    if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
+                                        for(var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++){
+                                            window.parent.CStudioAuthoring.editDisabled[x].style.pointerEvents = "";
+                                        }
+                                        window.parent.CStudioAuthoring.editDisabled = [];
+                                    }
                                 },
                                 failure: function (err) {
                                     CStudioAuthoring.Operations.showSimpleDialog(
