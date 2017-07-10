@@ -721,8 +721,7 @@
                     controller: 'RemoveSiteCtrl',
                     backdrop: 'static',
                     keyboard: false,
-                    size: 'sm',
-                    windowClass: "removeSiteOpen",
+                    windowClass: "studioMedium",
                     resolve: {
                         siteToRemove: function () {
                             return site;
