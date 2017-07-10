@@ -242,7 +242,7 @@
             '</div>' +
             '</div>' +
             '<div class="contentTypePopupBtn"> ' +
-            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="Cancel" />' +
+            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="OK" />' +
             '</div>' +
             '</div>';
 
