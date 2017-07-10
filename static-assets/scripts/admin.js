@@ -733,7 +733,7 @@
                 $scope.confirmationAction = removeUserFromGroup;
                 $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.group_name + "?";
 
-                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm');
+                $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
             };
 
             $scope.addUserToGroup = function (user) {

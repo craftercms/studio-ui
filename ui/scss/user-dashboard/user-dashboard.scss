@@ -17,6 +17,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 .modal-backdrop {
     height: 100%;
     background-color: #444;
+    position: fixed;
 }
 
 .login-view,
