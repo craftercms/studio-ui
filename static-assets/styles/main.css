@@ -6225,7 +6225,8 @@ table td {
 
 .modal-backdrop {
   height: 100%;
-  background-color: #444; }
+  background-color: #444;
+  position: fixed; }
 
 .login-view .pad,
 .recover-view .pad {
