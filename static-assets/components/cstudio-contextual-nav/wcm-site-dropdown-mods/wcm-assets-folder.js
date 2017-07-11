@@ -1237,7 +1237,14 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         menuWidth: this.menuWidth
                     };
 
-                    CSA.Clipboard.getClipboardContent(checkClipboardCb);
+                    /* Removing Paste option until copy/cut are implemented */
+                    //CSA.Clipboard.getClipboardContent(checkClipboardCb);
+                    /* Remove these when add paste option */
+                    this.p_aArgs.addItems(this.aMenuItems);
+                    this.menuId.style.display = "block";
+                    this.menuId.style.width = this.menuWidth;
+                    this.p_aArgs.render();
+                    this.p_aArgs.show();
 
                 },
                 failure: function() { }
