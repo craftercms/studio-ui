@@ -224,6 +224,53 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					actionButtonsContainer.style.cssText = "position: absolute; bottom: 15px; right: 15px;";
 					YAHOO.util.Dom.addClass(actionButtonsContainer, "action-buttons");
 
+					var clearBtn = document.createElement("a");
+					YAHOO.util.Dom.addClass(clearBtn, "btn btn-primary mr10");
+					clearBtn.innerHTML = "Clear";
+					actionButtonsContainer.appendChild(clearBtn);
+					clearBtn.onclick = function() {
+						CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/targeting/targeting-config.xml', {
+							success: function (config) {
+								var properties = config.property,
+									currentProp,
+									controlEl;
+
+								for (var j = 0; j < properties.length; j++) {
+									currentProp = properties[j];
+									controlEl = document.getElementById(currentProp.name);
+
+									switch (currentProp.type) {
+										case "dropdown":
+
+											for(var x = 0; x < controlEl.options.length; x++){
+												if(controlEl.options[x].value == currentProp.default_value){
+													controlEl.options[x].selected = 'selected';
+												}
+											}
+
+											break;
+										case "checkboxes":
+											var $checkboxes = $(controlEl).find("input[type='checkbox']:not('.select-all')");
+											$checkboxes.attr("checked", false);
+
+											var defVals = currentProp.default_value.split(','),
+												checked;
+
+											for(var y= 0; y < defVals.length; y++){
+												var val = controlEl.id + "-" + defVals[y];
+												$("#" + val).prop( "checked", true );
+											}
+
+											break;
+										case "input":
+											controlEl.value = currentProp.default_value;
+											break;
+									}
+								}
+							}
+						});
+					};
+
 					var applyBtn = document.createElement("a");
 					YAHOO.util.Dom.addClass(applyBtn, "btn btn-primary mr10");
 					applyBtn.innerHTML = "Apply";
