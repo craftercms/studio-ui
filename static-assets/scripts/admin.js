@@ -268,12 +268,12 @@
             this.init = function() {
                 $scope.debounceDelay = 500;
 
-                $scope.showModal = function(template, size, verticalCentered){
+                $scope.showModal = function(template, size, verticalCentered, styleClass){
                     $scope.usersError = null;
 
                     var modalInstance = $modal.open({
                         templateUrl: template,
-                        windowClass: verticalCentered ? 'centered-dialog' : '',
+                        windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
                         keyboard: false,
                         controller: 'UsersCtrl',
@@ -298,12 +298,12 @@
                         input.tabIndex = index + 1;
                     });
                 };
-                $scope.notification = function(notificationText, showOnTop){
+                $scope.notification = function(notificationText, showOnTop, styleClass){
                     var verticalAlign = showOnTop ? false : true;
                     $scope.notificationText = notificationText;
-                    $scope.notificationType = 'alert';
+                    $scope.notificationType = 'exclamation-triangle';
 
-                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign);
+                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
                     $timeout(function () {
                         modal.close();
@@ -363,7 +363,7 @@
                 adminService.createUser(user).success(function (data) {
                     $scope.hideModal();
                     $scope.usersCollection.users.push(user);
-                    $scope.notification('\''+ user.username + '\' created.');
+                    $scope.notification('\''+ user.username + '\' created.','','studioMedium');
                 }).error(function(error){
                     $scope.usersError = error
                 });
@@ -402,7 +402,7 @@
                         $scope.displayedCollection = $scope.usersCollection.users;
                     }
 
-                    $scope.notification('\''+ user.username + '\' edited.');
+                    $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
                 }).error(function(error){
                     console.log(error);
                     //TODO: properly display the error.
@@ -451,7 +451,7 @@
                             $scope.usersCollection.users.splice(index, 1);
                         }
 
-                        $scope.notification('\''+ user.username + '\' deleted.');
+                        $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
                     }).error(function (data) {
                         $scope.error = data.message;
                         $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
@@ -461,7 +461,7 @@
                 $scope.confirmationAction = deleteUser;
                 $scope.confirmationText = "Do you want to delete " + user.username + "?";
 
-                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true);
+                $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
             };
         }
     ]);
@@ -479,11 +479,11 @@
             this.init = function() {
                 $scope.debounceDelay = 500;
 
-                $scope.showModal = function(template, size, verticalCentered){
+                $scope.showModal = function(template, size, verticalCentered, styleClass){
                     $scope.groupsError = null;
                     var modalInstance = $modal.open({
                         templateUrl: template,
-                        windowClass: verticalCentered ? 'centered-dialog' : '',
+                        windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
                         keyboard: false,
                         controller: 'GroupsCtrl',
@@ -497,13 +497,13 @@
                     $scope.adminModal.close();
                 };
 
-                $scope.notification = function(notificationText, showOnTop, time){
+                $scope.notification = function(notificationText, showOnTop, time, styleClass){
                     var verticalAlign = showOnTop ? false : true,
                         timer = time ? time : 1500;
                     $scope.notificationText = notificationText;
-                    $scope.notificationType = 'alert';
+                    $scope.notificationType = 'exclamation-triangle';
 
-                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign);
+                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
                     $timeout(function () {
                         modal.close();
@@ -571,7 +571,7 @@
                 adminService.createGroup(group).success(function (data) {
                     $scope.hideModal();
                     $scope.groupsCollection.groups.push(group);
-                    $scope.notification('\''+ group.group_name + '\' created.');
+                    $scope.notification('\''+ group.group_name + '\' created.', '', null,"studioMedium");
                 }).error(function(error){
                     $scope.groupsError = error;
                 });
@@ -598,10 +598,10 @@
                 group.site_id = groups.site;
 
                 adminService.editGroup(group).success(function (data) {
-                    $scope.notification('\''+ group.group_name + '\' edited.');
+                    $scope.notification('\''+ group.group_name + '\' edited.', '', null, "studioMedium");
                 }).error(function(error){
                     if("Unauthorized" === error.message) {;
-                        $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000);
+                        $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
                     }
                 });
             };
@@ -618,11 +618,11 @@
                         $scope.usersFromGroupCollection = [];
                         $scope.noGroupSelected = true;
 
-                        $scope.notification('\''+ group.group_name + '\' group deleted.');
+                        $scope.notification('\''+ group.group_name + '\' group deleted.', '', null,"studioMedium");
 
                     }).error(function (error) {
                         if("Unauthorized" === error.message) {
-                            $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000);
+                            $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
                         }
                     });
                 };
@@ -630,7 +630,7 @@
                 $scope.confirmationAction = deleteGroup;
                 $scope.confirmationText = "Do you want to delete " + group.group_name + "?";
 
-                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true);
+                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
             };
 
 
@@ -672,7 +672,7 @@
                 });
 
                 $q.all(calls).then(function() {
-                    $scope.notification('Users successfully added.');
+                    $scope.notification('Users successfully added.', false, null, "studioMedium");
                 });
 
                 groups.usersToAdd = [];
@@ -733,7 +733,7 @@
                 $scope.confirmationAction = removeUserFromGroup;
                 $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.group_name + "?";
 
-                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm');
+                $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
             };
 
             $scope.addUserToGroup = function (user) {

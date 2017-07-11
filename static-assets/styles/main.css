@@ -5940,6 +5940,24 @@ a[ng-click] {
     margin: 0;
     float: left; }
 
+.modal-body {
+  word-wrap: break-word; }
+
+.modal-body .notificationBody {
+  font-size: 15px;
+  overflow: hidden; }
+  .modal-body .notificationBody .icon {
+    color: #f6cc2f;
+    float: left;
+    width: 6%;
+    display: block;
+    position: relative;
+    top: 3px; }
+  .modal-body .notificationBody .text {
+    display: block;
+    float: left;
+    width: 92%; }
+
 .createSitesBtn {
   width: 194px; }
   .createSitesBtn .fa {
@@ -6005,8 +6023,8 @@ a[ng-click] {
     margin: auto; } }
 
 @media (min-width: 768px) {
-  .removeSiteOpen .modal-sm {
-    width: 350px; } }
+  .studioMedium .modal-dialog {
+    width: 400px; } }
 .creatingSpinner {
   display: block;
   margin: 0 auto; }
@@ -6207,7 +6225,8 @@ table td {
 
 .modal-backdrop {
   height: 100%;
-  background-color: #444; }
+  background-color: #444;
+  position: fixed; }
 
 .login-view .pad,
 .recover-view .pad {

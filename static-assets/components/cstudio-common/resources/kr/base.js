@@ -78,20 +78,20 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletIconGuideStateInWorkflow: "워크 플로에서",
     dashletIconGuideStateScheduled: "예약",
     dashletIconGuideStateSystemProcessing: "처리",
-    dashletIconGuideStateLocked: "편집에 대해 잠김",
-    dashletIconGuideTemplateScript: "Template/Script",
-    dashletIconGuideTaxonomy: "Taxonomy",
-    dashletIconGuideImage: "Image",
-    dashletIconGuideVideo: "Video",
+    dashletIconGuideStateLocked: "편집을 위해 잠긴",
+    dashletIconGuideTemplateScript: "템플릿 또는 스크립트",
+    dashletIconGuideTaxonomy: "택 소노 미",
+    dashletIconGuideImage: "영상",
+    dashletIconGuideVideo: "비디오",
     dashletIconGuideCss: "CSS",
     dashletIconGuideFont: "Font",
     dashletIconGuidePdf: "PDF",
-    dashletIconGuidePowerPoint: "Power Point",
-    dashletIconGuideWord: "Word",
-    dashletIconGuideExcel: "Excel",
+    dashletIconGuidePowerPoint: "MS PowerPoint",
+    dashletIconGuideWord: "MS Word",
+    dashletIconGuideExcel: "MS Excel",
     dashletIconGuideZip: "Zip",
     dashletIconGuideGroovy: "Groovy",
-    dashletIconGuideOtherFiles: "Other Files"
+    dashletIconGuideOtherFiles: "다른 파일들"
 
 });
 
