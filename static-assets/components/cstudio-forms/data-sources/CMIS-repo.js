@@ -12,7 +12,7 @@ CStudioForms.Datasources.CMISRepo= CStudioForms.Datasources.CMISRepo ||
         }
 
         return this;
-    }
+    };
 
 YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasource, {
 
@@ -24,7 +24,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
                 for(var i=0; i<selectedTOs.length; i++) {
                     var item = selectedTOs[i];
                     var fileName = item.name;
-                    var fileExtension = fileName.split('.').pop();
+                    var fileExtension = fileName.split(".").pop();
                     control.insertItem(item.uri, item.uri, fileExtension);
                     control._renderItems();
                 }
