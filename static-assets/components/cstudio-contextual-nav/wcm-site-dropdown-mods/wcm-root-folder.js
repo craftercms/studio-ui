@@ -2808,12 +2808,13 @@
 							previousCutEl[i].style.color = '';
 						}
 					}
+                    
+                    document.getElementById(oCurrentTextNode.labelElId).style.cssText += "color: " + Self.CUT_STYLE +  " !important";
 
-					YDom.setStyle(oCurrentTextNode.labelElId, "color", Self.CUT_STYLE);
 					if(oCurrentTextNode.hasChildren()){
 						var getTextNodes = YDom.getElementsByClassName("status-icon", null, parentTreeNode);
 						for(var i=0; i<getTextNodes.length; i++){
-							getTextNodes[i].style.color = Self.CUT_STYLE;
+							getTextNodes[i].style.cssText += "color: " + Self.CUT_STYLE +  " !important";
 						}
 					}
 
