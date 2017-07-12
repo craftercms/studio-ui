@@ -1,18 +1,18 @@
 CStudioForms.Datasources.CMISRepo= CStudioForms.Datasources.CMISRepo ||
-function(id, form, properties, constraints)  {
-   	this.id = id;
-   	this.form = form;
-   	this.properties = properties;
-   	this.constraints = constraints;
-   	
-   	for(var i=0; i<properties.length; i++) {
-   		if(properties[i].name == "repoPath") {
- 			this.repoPath = properties[i].value;
-   		}
-   	} 
-	
-	return this;
-}
+    function(id, form, properties, constraints)  {
+        this.id = id;
+        this.form = form;
+        this.properties = properties;
+        this.constraints = constraints;
+
+        for(var i=0; i<properties.length; i++) {
+            if(properties[i].name === "repoPath") {
+                this.repoPath = properties[i].value;
+            }
+        }
+
+        return this;
+    }
 
 YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasource, {
 
@@ -34,33 +34,33 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
         });
 
     },
-	
-	edit: function(key) {
-		alert("Edit");
-	},
-	
+
+    edit: function(key) {
+        alert("Edit");
+    },
+
     getLabel: function() {
         return "CMIS Repo";
     },
 
-   	getInterface: function() {
-   		return "item";
-   	},
+    getInterface: function() {
+        return "item";
+    },
 
-	getName: function() {
-		return "CMIS-repo";
-	},
-	
-	getSupportedProperties: function() {
-		return [
-			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" }
-		];
-	},
+    getName: function() {
+        return "CMIS-repo";
+    },
 
-	getSupportedConstraints: function() {
-		return [
-		];
-	}
+    getSupportedProperties: function() {
+        return [
+            { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" }
+        ];
+    },
+
+    getSupportedConstraints: function() {
+        return [
+        ];
+    }
 
 });
 
