@@ -78,7 +78,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                 '<div class="contentTypeOuter">'+
                     '<div class="form-group">' +
                         '<label for="username">'+CMgs.format(previewLangBundle, 'emailUsername')+'</label>' +
-                        '<input type="text" name="username" id="username" placeholder="john@domain.com" value="'+CStudioAuthoringContext.user+'" disabled/>' +
+                        '<input type="text" name="username" id="username" placeholder="john@example.com" value="'+CStudioAuthoringContext.user+'" disabled/>' +
                     '</div>' +
                     '<div class="form-group">' +
                         '<label for="password">'+CMgs.format(previewLangBundle, 'password')+'</label>' +
