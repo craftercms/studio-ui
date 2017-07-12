@@ -113,7 +113,7 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
             } else {
                 me.done();
                 publish.call(me, Topics.START_DIALOG, {
-                    message: 'The component is already in drop zone, therefore it cannot be added again.',
+                    message: 'The component cannot be added, it is already in the drop-zone.',
                     height: '212px'
                 });
                 //return;
