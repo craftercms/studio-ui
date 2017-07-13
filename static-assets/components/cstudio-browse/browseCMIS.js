@@ -1,5 +1,5 @@
 (function (window, $, Handlebars) {
-    'use strict';
+    "use strict";
 
     var activePromise;
 
