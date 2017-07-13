@@ -9,6 +9,9 @@ CStudioForms.Datasources.CMISRepo= CStudioForms.Datasources.CMISRepo ||
             if(properties[i].name === "repoPath") {
                 this.repoPath = properties[i].value;
             }
+            if(properties[i].name === "repoId") {
+                this.repoId = properties[i].value;
+            }
         }
 
         return this;
@@ -18,7 +21,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
     add: function(control) {
         var _self = this;
-        CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(_self.repoPath), "-1", "select", true, {
+        CStudioAuthoring.Operations.openCMISBrowse(_self.repoId, _self.repoPath, "select", true, {
             success: function(searchId, selectedTOs) {
 
                 for(var i=0; i<selectedTOs.length; i++) {
@@ -53,7 +56,8 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
     getSupportedProperties: function() {
         return [
-            { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" }
+            { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
+            { label: CMgs.format(langBundle, "repositoryId"), name: "repoID", type: "string" }
         ];
     },
 
