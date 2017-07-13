@@ -1187,6 +1187,38 @@ var nodeOpen = false;
                 }
             },
 
+            /**
+             * open a browse page for CMIS repo
+             */
+            openCMISBrowse: function(repoId, path, mode, newWindow, callback) {
+
+                var openInSameWindow = (newWindow) ? false : true;
+
+                var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
+                    "/browseCMIS?site=" +
+                    CStudioAuthoringContext.site;
+
+                if (repoId) {
+                    browseUrl += "&repoId=" + repoId;
+
+                } if (path) {
+                    browseUrl += "&path=" + path;
+                }
+
+                if (!CStudioAuthoring.Utils.isEmpty(mode)) {
+                    browseUrl += "&mode=" + mode;
+                }
+
+                var childBrowse = new Object();
+                childBrowse.openInSameWindow = openInSameWindow;
+                childBrowse.browseUrl = browseUrl;
+                childBrowse.browseId = CStudioAuthoring.Utils.generateUUID();
+                childBrowse.saveCallback = callback;
+
+                CStudioAuthoring.ChildSearchManager.openBrowse(childBrowse);
+
+            },
+
             refreshPreviewParent: function() {
                 var previewFrameEl = window.parent.document.getElementById("engineWindow");
                 if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
@@ -7640,7 +7672,12 @@ var nodeOpen = false;
                     CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
 
                 }
+            },
+
+            openBrowse: function(childBrowseConfig) {
+                    CStudioAuthoring.Operations._openIframe(childBrowseConfig.browseUrl, childBrowseConfig.browseId);
             }
+
         },
         /**
          * Child form Manager
