@@ -2710,6 +2710,9 @@ var nodeOpen = false;
 
             getPublishStatusServiceUrl: "/api/1/services/api/1/publish/status.json",
 
+            //CMIS
+            getCMISContentBySearchUri: "/api/1/services/api/1/cmis/search.json",
+            getCMISContentByBrowseUri: "/api/1/services/api/1/cmis/list.json",
 
             // WRITE OPS
             getRevertContentServiceUrl: "/api/1/services/api/1/content/revert-content.json",
@@ -5128,7 +5131,49 @@ var nodeOpen = false;
             YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, dependencyXml);
         },
 
-        /**
+        getCMISContentBySearch: function(site, repoId, path) {
+
+            var serviceUri = this.getCMISContentBySearchUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&path=" + path;
+            serviceUri = serviceUri + "&nocache="+new Date();
+
+            var serviceCallback = {
+                success: function(response) {
+                    var contentResults = eval("(" + response.responseText + ")");
+
+                    callback.success(contentResults, callback.argument);
+                },
+
+                failure: function(response) {
+                    callback.failure(response, callback.argument);
+                }
+            };
+
+
+            YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+        },
+
+        getCMISContentByBrowser: function(site, repoId, path) {
+
+            var serviceUri = this.getCMISContentByBrowseUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&path=" + path;
+            serviceUri = serviceUri + "&nocache="+new Date();
+
+            var serviceCallback = {
+                success: function(response) {
+                    var contentResults = eval("(" + response.responseText + ")");
+
+                    callback.success(contentResults, callback.argument);
+                },
+
+                failure: function(response) {
+                    callback.failure(response, callback.argument);
+                }
+            };
+
+
+            YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+        },
+
+    /**
          * Authoring Utility methods
          */
         Utils: {
@@ -7592,13 +7637,7 @@ var nodeOpen = false;
                 else {
 
                     var newWindow;
-
-                    if (YAHOO.env.ua.ie > 0) {
-                        CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
-                    }else {
-                        CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId);
-
-                    }
+                    CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
 
                 }
             }
