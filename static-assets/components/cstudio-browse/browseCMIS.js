@@ -21,14 +21,14 @@
             site = CStudioAuthoring.Utils.getQueryParameterByName("site");
         var serviceCallback = {
             success: function(response) {
-                console.log(response); //TODO
+                //console.log(response); //TODO
             },
 
             failure: function(response) {
-                console.log(response); //TODO
+                //console.log(response); //TODO
             }
         };
-        if(type == "browse"){
+        if(type === "browse"){
             CStudioAuthoring.Service.getCMISContentByBrowser(site, repoId, path, serviceCallback);
         }else{
             CStudioAuthoring.Service.getCMISContentBySearch(site, repoId, path, serviceCallback);
