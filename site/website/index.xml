@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+	<content-type>/page/entry</content-type>	
+	<placeInNav>true</placeInNav>
+	<display-template>/templates/web/entry.ftl</display-template>
+	<descriptor-mapper>hierarchical-mapper</descriptor-mapper>
+	<placeInNav>false</placeInNav>
+	<file-name>index.xml</file-name>
+	<servicesBody>&lt;div class="row service-blocks"&gt;
+&lt;div class="columns medium-12 text-center"&gt;
+&lt;h2 class="section-heading"&gt;Features&lt;br /&gt;&lt;/h2&gt;
+&lt;/div&gt;
+&lt;div class="columns medium-12 text-center"&gt;
+&lt;p class="lead"&gt;&lt;strong&gt;SaaS Enterprise Web CMS for Crafting Digital Experiences in the Cloud&lt;/strong&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="columns medium-4"&gt;
+&lt;div class="service-block"&gt;&lt;em class="foundicon-enclosed-edit" title="Cloud Illustration"&gt;&amp;nbsp;&lt;/em&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;User Friendly Content Authoring Tools&lt;br /&gt;&lt;/strong&gt;
+&lt;p&gt;Crafter CMS provides business users with powerful yet easy to use content authoring tools, drag and drop design, and in-context review capabilities that anyone can use.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="columns medium-4"&gt;
+&lt;div class="service-block"&gt;&lt;em class="foundicon-enclosed-settings" title="Download Illustration"&gt;&amp;nbsp;&lt;/em&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;Easy Integration&lt;br /&gt;&lt;/strong&gt;
+&lt;p&gt;Crafter CMS&amp;#39;s modern architecture, technology and connectors provide you with the perfect platform for integration with best of breed marketing automation solutions and your enterprise systems.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="columns medium-4"&gt;
+&lt;div class="service-block"&gt;&lt;em class="foundicon-enclosed-website" title="Bulb/Idea Illustration"&gt;&amp;nbsp;&lt;/em&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;Multi-channel Experiences&lt;br /&gt;&lt;/strong&gt;
+&lt;p&gt;It takes more than a responsive design to succeed in today&amp;#39;s multi-channel environment.&amp;nbsp; Crafter CMS provides both "responsive" and "adaptive" design capabilities, and true multi-channel publishing.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="row service-blocks"&gt;
+&lt;div class="columns medium-4"&gt;
+&lt;div class="service-block"&gt;&lt;em class="foundicon-enclosed-graph" title="Cloud Illustration"&gt;&amp;nbsp;&lt;/em&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;High Performance &lt;/strong&gt;&lt;/div&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;Content Delivery&lt;br /&gt;&lt;/strong&gt;
+&lt;p&gt;Crafter CMS is the highest performing, most scalable platform on the planet. So you&amp;#39;re able to deliver blazing fast, highly personalized experiences to your target audience.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="columns medium-4"&gt;
+&lt;div class="service-block"&gt;&lt;em class="foundicon-enclosed-location" title="Download Illustration"&gt;&amp;nbsp;&lt;/em&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;Personalization and&lt;/strong&gt;&lt;/div&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;Content Targeting&lt;br /&gt;&lt;/strong&gt;
+&lt;p&gt;Engage your target audience with dynamic experiences that are immediately relevant to them with Crafter CMS&amp;#39;s advanced targeting and personalization capabilities.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="columns medium-4"&gt;
+&lt;div class="service-block"&gt;&lt;em class="foundicon-enclosed-tools" title="Bulb/Idea Illustration"&gt;&amp;nbsp;&lt;/em&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;Most Modern&lt;/strong&gt;&lt;/div&gt;
+&lt;div class="bd"&gt;&lt;strong&gt;Development Tools&lt;br /&gt;&lt;/strong&gt;
+&lt;p&gt;Develop new experiences and services rapidly. By leveraging technologies like Spring, Freemarker and Groovy, Crafter is the world&amp;#39;s most modern development platform in the cloud.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;</servicesBody>
+	<createdDate>2/23/2014 5:16:59</createdDate>
+	<lastModifiedDate>5/27/2014 14:52:5</lastModifiedDate>
+</page>
