@@ -57,7 +57,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
     getSupportedProperties: function() {
         return [
             { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
-            { label: CMgs.format(langBundle, "repositoryId"), name: "repoID", type: "string" }
+            { label: CMgs.format(langBundle, "repositoryId"), name: "repoId", type: "string" }
         ];
     },
 

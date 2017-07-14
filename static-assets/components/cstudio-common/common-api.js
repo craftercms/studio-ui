@@ -5128,6 +5128,46 @@ var nodeOpen = false;
                 }else{
                     callback.success();
                 }
+            },
+
+            getCMISContentBySearch: function(site, repoId, path, callback) {
+
+                var serviceUri = this.getCMISContentBySearchUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&search_term=*&path=" + path;
+                serviceUri = serviceUri + "&nocache="+new Date();
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var contentResults = eval("(" + response.responseText + ")");
+                        callback.success(contentResults);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+
+                YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            getCMISContentByBrowser: function(site, repoId, path, callback) {
+
+                var serviceUri = this.getCMISContentByBrowseUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&path=" + path;
+                serviceUri = serviceUri + "&nocache="+new Date();
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var contentResults = eval("(" + response.responseText + ")");
+                        callback.success(contentResults);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+
+                YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             }
         },
 
@@ -5163,47 +5203,6 @@ var nodeOpen = false;
             YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, dependencyXml);
         },
 
-        getCMISContentBySearch: function(site, repoId, path) {
-
-            var serviceUri = this.getCMISContentBySearchUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&path=" + path;
-            serviceUri = serviceUri + "&nocache="+new Date();
-
-            var serviceCallback = {
-                success: function(response) {
-                    var contentResults = eval("(" + response.responseText + ")");
-
-                    callback.success(contentResults, callback.argument);
-                },
-
-                failure: function(response) {
-                    callback.failure(response, callback.argument);
-                }
-            };
-
-
-            YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
-        },
-
-        getCMISContentByBrowser: function(site, repoId, path) {
-
-            var serviceUri = this.getCMISContentByBrowseUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&path=" + path;
-            serviceUri = serviceUri + "&nocache="+new Date();
-
-            var serviceCallback = {
-                success: function(response) {
-                    var contentResults = eval("(" + response.responseText + ")");
-
-                    callback.success(contentResults, callback.argument);
-                },
-
-                failure: function(response) {
-                    callback.failure(response, callback.argument);
-                }
-            };
-
-
-            YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
-        },
 
     /**
          * Authoring Utility methods
