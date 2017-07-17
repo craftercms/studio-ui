@@ -5130,9 +5130,9 @@ var nodeOpen = false;
                 }
             },
 
-            getCMISContentBySearch: function(site, repoId, path, callback) {
+            getCMISContentBySearch: function(site, repoId, path, searchTerm, callback) {
 
-                var serviceUri = this.getCMISContentBySearchUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&search_term=*&path=" + path;
+                var serviceUri = this.getCMISContentBySearchUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&search_term=" + searchTerm + "&path=" + path;
                 serviceUri = serviceUri + "&nocache="+new Date();
 
                 var serviceCallback = {

@@ -3,46 +3,48 @@
 
     var activePromise;
 
-    if (typeof CStudioBrowse == "undefined" || !CStudioBrowse) {
+    if (typeof window.CStudioBrowse == "undefined" || !window.CStudioBrowse) {
         var CStudioBrowse= {};
+        window.CStudioBrowse = CStudioBrowse;
     }
 
     CStudioBrowse.init = function() {
         var searchContext = this.determineSearchContextFromUrl();
-        CStudioBrowse.searchContext = searchContext;
-        CStudioBrowse.renderSiteFolders(searchContext.site, searchContext.path);
+        this.searchContext = searchContext;
+        this.renderSiteFolders(searchContext.site, searchContext.path);
 
         var CMgs = CStudioAuthoring.Messages,
             browseLangBundle = CMgs.getBundle("browse", CStudioAuthoringContext.lang);
     };
 
     CStudioBrowse.bindEvents = function() {
-        var $tree = $('#data'),
+        var me = this,
+            $tree = $('#data'),
             $resultsContainer = $('#cstudio-wcm-search-result .results'),
             $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
-            searchContext = CStudioBrowse.searchContext;
+            searchContext = this.searchContext;
 
         //tree related events
 
         $tree.on('ready.jstree', function(event, data){
             var tree = data.instance;
             var obj = tree.get_selected(true)[0];
-            CStudioBrowse.currentSelection = "";
+            me.currentSelection = "";
 
             if (obj) {
                 tree.trigger('select_node', { 'node' : obj, 'selected' : tree._data.core.selected, 'event' : event });
             }
 
-            CStudioBrowse.renderContextMenu();
+            me.renderContextMenu();
 
         });
 
         $tree.on('select_node.jstree', function(event, data){
             var path = data.node.a_attr["data-path"];
 
-            if(CStudioBrowse.currentSelection != data.node.id){
-                CStudioBrowse.renderSiteContent(searchContext.site, path);
-                CStudioBrowse.currentSelection = data.node.id;
+            if(me.currentSelection != data.node.id){
+                me.renderSiteContent(searchContext.site, path);
+                me.currentSelection = data.node.id;
             }
 
         });
@@ -50,7 +52,7 @@
         $('.cstudio-browse-container').on('click', '.path span', function(){
             var path = $(this).attr('data-path');
 
-            CStudioBrowse.renderSiteContent(CStudioBrowse.searchContext.site, path);
+            me.renderSiteContent(me.searchContext.site, path);
         });
 
         $tree.on('open_node.jstree', function(event, node){
@@ -63,7 +65,7 @@
         $resultsContainer.on('change', 'input[name=result-select]', function(){
             var contentTO = $(this.parentElement.parentElement).data("item");
 
-            CStudioBrowse.validateSelections();
+            me.validateSelections();
 
             if ($(this).prop("type") === "radio") { // just select one if its radio button
                 CStudioAuthoring.SelectedContent.clear();
@@ -87,7 +89,7 @@
         });
 
         $('#cstudio-command-controls').on('click', '#formSaveButton', function(){
-            CStudioBrowse.saveContent();
+            me.saveContent();
         })
 
         $('#cstudio-command-controls').on('click', '#formCancelButton', function(){
@@ -106,19 +108,14 @@
         $resultsContainer.on('click', '.add-close-btn', function() {
             var input = $(this).closest('.cstudio-search-result').find('.cstudio-search-select-container input');
             input.prop('checked', true).trigger('change');
-            CStudioBrowse.saveContent();
+            me.saveContent();
         });
 
         $resultsContainer.on('click', '.magnify-icon', function(){
             var path = $(this).attr('data-source');
-            CStudioBrowse.magnify(path);
+            me.magnify(path);
         });
-    }
-
-    $(function() {
-        CStudioBrowse.init();
-        CStudioBrowse.bindEvents();
-    });
+    };
 
     //Utilities
 
@@ -175,7 +172,7 @@
         }
 
         return searchContext;
-    }
+    };
 
     CStudioBrowse.parseObjForTree = function(obj){
         var parsed = JSON.parse(JSON.stringify(obj), function(key, value) {
@@ -216,7 +213,7 @@
         parsed[0].state = { selected : true };
 
         return parsed;
-    }
+    };
 
     CStudioBrowse.renderItem = function(item, $resultsContainer) {
         if (!$resultsContainer) {
@@ -226,8 +223,8 @@
         var source = $("#hb-search-result").html();
         var template = Handlebars.compile(source);
 
-        item.selectMode = CStudioBrowse.searchContext.selectMode;
-        item.status = CStudioBrowse.getItemState(item);
+        item.selectMode = this.searchContext ? this.searchContext.selectMode : "one";
+        item.status = this.getItemState(item);
         item.labelUrl = CMgs.format(browseLangBundle, 'labelUrl');
         item.labelType = CMgs.format(browseLangBundle, 'labelType');
         item.labelAddClose = CMgs.format(browseLangBundle, 'labelAddClose');
@@ -248,17 +245,17 @@
             var addedElem = $(html).appendTo($resultsContainer);
             addedElem.data("item", item);
         }
-    }
+    };
 
     CStudioBrowse.renderNoItems = function() {
         var $resultsContainer = $('#cstudio-wcm-search-result .results'),
             msj = "There are no files at this path.";
 
         $resultsContainer.append('<p style="text-align: center; font-weight: bold;">' + msj + '</p>');
-    }
+    };
 
     CStudioBrowse.renderItemsActions = function(){
-        var searchContext = CStudioBrowse.searchContext,
+        var searchContext = this.searchContext,
             $actionsContainer = $('#cstudio-wcm-search-result .cstudio-results-actions');
         $actionsContainer.empty();
 
@@ -275,20 +272,20 @@
             html = template(config);
             $actionsContainer.html(html);
         }
-    }
+    };
 
     CStudioBrowse.refreshCurrentResults = function() {
-        var searchContext = CStudioBrowse.searchContext;
+        var searchContext = this.searchContext;
 
-        CStudioBrowse.renderSiteContent(searchContext.site, CStudioBrowse.currentResultsPath);
-    }
+        this.renderSiteContent(searchContext.site, this.currentResultsPath);
+    };
 
     CStudioBrowse.getItemState = function(item) {
         return CStudioAuthoring.Utils.getIconFWClasses(item);
-    }
+    };
 
     CStudioBrowse.validateSelections = function(){
-        var searchContext = CStudioBrowse.searchContext,
+        var searchContext = this.searchContext,
             selectLimit = searchContext.selectLimit,
             $resultsContainer = $('#cstudio-wcm-search-result .results'),
             selectedItems = $resultsContainer.find('input[name=result-select]:checked'),
@@ -308,10 +305,10 @@
                 unSelectedItems.removeAttr("disabled");
             }
         }
-    }
+    };
 
     CStudioBrowse.saveContent = function() {
-        var searchId = CStudioBrowse.searchContext.searchId;
+        var searchId = this.searchContext.searchId;
         var crossServerAccess = false;
 
         try {
@@ -391,7 +388,7 @@
             window.close();
             $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
         }
-    }
+    };
 
     CStudioBrowse.magnify = function(source) {
         var $container = $('.cstudio-browse-image-popup-overlay'),
@@ -412,11 +409,12 @@
             $container.hide();
         });
 
-    }
+    };
 
     CStudioBrowse.renderContextMenu = function() {
-        var searchContext = CStudioBrowse.searchContext,
-            permissions = CStudioBrowse._getUserPermissions(searchContext.site, searchContext.path);
+        var me = this,
+            searchContext = this.searchContext,
+            permissions = this._getUserPermissions(searchContext.site, searchContext.path);
 
         permissions.then(function(response){
             var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
@@ -425,9 +423,9 @@
                 $.contextMenu({
                     selector: '.jstree-anchor',
                     callback: function(key, options) {
-                        var upload = CStudioBrowse.uploadContent(searchContext.site, options.$trigger.attr('data-path'));
+                        var upload = me.uploadContent(searchContext.site, options.$trigger.attr('data-path'));
                         upload.then(function(){
-                            CStudioBrowse.refreshCurrentResults();
+                            me.refreshCurrentResults();
                         })
                     },
                     items: {
@@ -436,11 +434,14 @@
                 });
             }
         })
-    }
+    };
 
     //Services
 
     CStudioBrowse.renderSiteFolders = function(site, path){
+
+        var me = this;
+
         //Removes jstree cached state from localStorage
         localStorage.removeItem('jstree');
         //Tree - default closed
@@ -451,10 +452,10 @@
                 'data' : function (node, cb) {
                     var notRoot = (typeof node.a_attr !== 'undefined' && typeof node.a_attr['data-path'] !== 'undefined');
                     var currentPath = notRoot ? node.a_attr['data-path'] : path; // use node path or root path
-                    var foldersPromise = CStudioBrowse._lookupSiteFolders(site, currentPath);
+                    var foldersPromise = me._lookupSiteFolders(site, currentPath);
                     foldersPromise.then(function (treeData) {
                         var items = new Array(treeData.item);
-                        items = CStudioBrowse.parseObjForTree(items);
+                        items = me.parseObjForTree(items);
                         if (notRoot) { // do this when it is not root level
                             items = items[0].children;
                         }
@@ -471,7 +472,7 @@
                 "state", "types"
             ]
         });
-    }
+    };
 
     CStudioBrowse._lookupSiteFolders = function(site, path){
         var d = new $.Deferred();
@@ -490,9 +491,10 @@
     }
 
     CStudioBrowse.renderSiteContent = function(site, path){
-        var $resultsContainer = $('#cstudio-wcm-search-result .results'),
+        var me = this,
+            $resultsContainer = $('#cstudio-wcm-search-result .results'),
             $resultsActions = $('#cstudio-wcm-search-result .cstudio-results-actions'),
-            contentPromise = CStudioBrowse._lookupSiteContent(site, path);
+            contentPromise = this._lookupSiteContent(site, path);
 
         activePromise = contentPromise;
 
@@ -522,42 +524,44 @@
 
                     $.each(results, function(index, value){
                         if(!value.folder){
-                            CStudioBrowse.renderItem(value, $resultsWrapper);
+                            me.renderItem(value, $resultsWrapper);
                             filesPresent = true;
                         }
                     });
 
                     if(filesPresent){
-                        CStudioBrowse.renderItemsActions();
+                        me.renderItemsActions();
                     }else{
-                        CStudioBrowse.renderNoItems();
+                        me.renderNoItems();
                     }
                 }
 
-                CStudioBrowse.currentResultsPath = path;
+                me.currentResultsPath = path;
             }
         });
-    }
+    };
 
     CStudioBrowse._lookupSiteContent = function(site, path){
-        if(CStudioBrowse.siteContentDef){
-            CStudioBrowse.siteContentDef.resolveWith([]);
+        var me = this;
+
+        if(this.siteContentDef){
+            CStudioBrothiswse.siteContentDef.resolveWith([]);
         }
 
-        CStudioBrowse.siteContentDef = new $.Deferred();
+        this.siteContentDef = new $.Deferred();
 
         CStudioAuthoring.Service.lookupSiteContent(site, path, 1, "default", {
             success: function(results) {
-                CStudioBrowse.siteContentDef.resolve(results);
+                me.siteContentDef.resolve(results);
             },
             failure: function() {
 
             }
         });
 
-        return CStudioBrowse.siteContentDef.promise();
+        return this.siteContentDef.promise();
 
-    }
+    };
 
     CStudioBrowse._getUserPermissions = function(site, path){
         var d = new $.Deferred();
@@ -572,7 +576,7 @@
         });
 
         return d.promise();
-    }
+    };
 
     CStudioBrowse.uploadContent = function(site, path) {
         var d = new $.Deferred();
