@@ -2072,6 +2072,8 @@ var nodeOpen = false;
                                 success: function () {
                                     if(CStudioAuthoringContext.isPreview) {
                                         CStudioAuthoring.Operations.refreshPreview();
+                                    }else{
+                                        CStudioAuthoring.SelectedContent.init();
                                     }
                                     eventNS.typeAction = "";
                                     eventNS.oldPath = null;
