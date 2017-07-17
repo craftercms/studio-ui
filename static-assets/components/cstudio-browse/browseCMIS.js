@@ -25,7 +25,7 @@
 
             e.preventDefault();
         });
-    }
+    },
 
     CStudioBrowseCMIS.getContent = function(type) {
         var path = CStudioAuthoring.Utils.getQueryParameterByName("path"),
