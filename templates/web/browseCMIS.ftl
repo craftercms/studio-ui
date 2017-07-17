@@ -40,28 +40,64 @@
   </head>
 
   <body class="yui-skin-cstudioTheme skin-browse browse-cmis">
-    <div class="cstudio-browse-container">
 
-      <p class="current-folder">
-        <span class="path"></span>
-      </p>
+  <div class="tabs">
 
-      <div id="cstudio-wcm-search-filter-controls">
-          <div id="data" class="demo"></div>
-      </div>
+      <ul class="tab-links">
+          <li class="active"><a href="#tab1">Browse</a></li>
+          <li><a href="#tab2">Search</a></li>
+      </ul>
 
-      <div id="cstudio-wcm-search-result">
+      <div class="tab-content">
+          <div id="tab1" class="tab active cstudio-browse-container">
 
-          <div class="cstudio-results-actions"></div>
-          
-          <div class="results"></div>
+              <p class="current-folder">
+                  <span class="path"></span>
+              </p>
 
-          <div id="cstudio-wcm-search-render-finish">
-          
+              <div id="cstudio-wcm-search-filter-controls">
+                  <div id="data" class="demo"></div>
+              </div>
+
+              <div id="cstudio-wcm-browse-result">
+
+                  <div class="cstudio-results-actions"></div>
+
+                  <div class="results"></div>
+
+                  <div id="cstudio-wcm-browse-render-finish">
+
+                  </div>
+              </div>
+
           </div>
+
+          <div id="tab2" class="tab cstudio-browse-container">
+
+              <div id="cstudio-wcm-search-filter-controls">
+                  <form id="searchForm" action="">
+                      <label id="searchLabel" for="searchInfo"><i class="fa fa-search"></i></label>
+                      <input id="searchInfo" type="text"/>
+                      <input type="button" value="Search" class="cstudio-search-btn btn-primary"/>
+                  </form>
+              </div>
+
+              <div id="cstudio-wcm-search-result">
+
+                  <div class="cstudio-results-actions"></div>
+
+                  <div class="results"></div>
+
+                  <div id="cstudio-wcm-search-render-finish">
+
+                  </div>
+              </div>
+
+          </div>
+
       </div>
 
-    </div>    
+  </div>
 
       <style>
       #cstudio-wcm-search-result .results > * {
@@ -160,6 +196,13 @@
             return options.fn(this);
         }
       });
+    </script>
+
+    <script type="text/javascript">
+        $(function() {
+            CStudioBrowseCMIS.init();
+        });
+
     </script>
   
    </body>

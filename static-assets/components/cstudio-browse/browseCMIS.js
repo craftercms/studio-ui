@@ -7,13 +7,25 @@
         {}, window.CStudioBrowse);
 
     CStudioBrowseCMIS.init = function() {
-        // var searchContext = this.determineSearchContextFromUrl();
-        // CStudioBrowseCMIS.searchContext = searchContext;
-        // CStudioBrowseCMIS.renderSiteFolders(searchContext.site, searchContext.path);
-
+        CStudioBrowseCMIS.bindEvents();
+        CStudioBrowseCMIS.getContent();
         var CMgs = CStudioAuthoring.Messages,
             browseLangBundle = CMgs.getBundle("browse", CStudioAuthoringContext.lang);
     };
+
+    CStudioBrowseCMIS.bindEvents = function() {
+        $(".tabs .tab-links a").on("click", function (e) {
+            var currentAttrValue = jQuery(this).attr("href");
+
+            // Show/Hide Tabs
+            $(".tabs " + currentAttrValue).show().siblings().hide();
+
+            // Change/remove current tab to active
+            $(this).parent("li").addClass("active").siblings().removeClass("active");
+
+            e.preventDefault();
+        });
+    },
 
     CStudioBrowseCMIS.getContent = function(type) {
         var path = CStudioAuthoring.Utils.getQueryParameterByName("path"),
