@@ -111,7 +111,7 @@ body {
 			}
 
 		}
-		#cstudio-wcm-search-result {
+		#cstudio-wcm-search-result, #cstudio-wcm-browse-result {
 			width: calc(100% - 400px)!important;
 			border-radius: 5px; 
 			padding-left: 20px;
@@ -210,6 +210,27 @@ body {
 				}
 			}
 		}
+
+      #searchForm{
+
+          #searchLabel i {
+            font-size: 22px;
+            padding-left: 1px;
+            position: relative;
+            top: 3px;
+          }
+          #searchInfo{
+            padding: 6px 12px;
+            font-size: 12px;
+            line-height: 1.42857;
+            color: #555555;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+          }
+
+      }
+
 	}
 
 	.cstudio-browse-image-popup-overlay{
@@ -273,6 +294,66 @@ body {
 	    padding: 15px 0;
 	    border-top: 1px solid #e7e7e7;
 	}
+
+  /*----- Tabs -----*/
+  .tabs {
+    width:100%;
+    display:inline-block;
+  }
+
+  /*----- Tab Links -----*/
+  /* Clearfix */
+  .tab-links:after {
+    display:block;
+    clear:both;
+    content:'';
+  }
+
+  .tab-links li {
+    margin:0px 5px;
+    float:left;
+    list-style:none;
+  }
+
+  .tab-links a {
+    padding:9px 15px;
+    display:inline-block;
+    border-radius:3px 3px 0px 0px;
+    background:#8eafc5;
+    font-size:16px;
+    font-weight:600;
+    text-decoration: none;
+    color:#4c4c4c;
+    transition:all linear 0.15s;
+  }
+
+  .tab-links a:hover {
+    background:#9bc0d8;
+    text-decoration:none;
+  }
+
+  li.active a, li.active a:hover {
+    background:#fff;
+    color:#4c4c4c;
+  }
+
+  /*----- Content of Tabs -----*/
+  .tab-content {
+    padding:15px;
+    border-radius:3px;
+    box-shadow:-1px 1px 1px rgba(0,0,0,0.15);
+    background:#fff;
+  }
+
+  .tab {
+    display:none;
+  }
+
+  .tab.active {
+    display:block;
+  }
+
+
 
 	/* Scrollbar styling - webkit */
 
