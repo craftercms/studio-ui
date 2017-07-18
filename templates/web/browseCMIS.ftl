@@ -1,4 +1,3 @@
-<#assign mode = RequestParameters["mode"] />
 <#-- <#assign view = RequestParameters["view"] /> -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -75,7 +74,7 @@
           <div id="tab2" class="tab cstudio-browse-container">
 
               <div id="cstudio-wcm-search-filter-controls">
-                  <form id="searchForm" action="">
+                  <form id="searchForm">
                       <label id="searchLabel" for="searchInfo"><i class="fa fa-search"></i></label>
                       <input id="searchInfo" type="text"/>
                       <input type="button" value="Search" class="cstudio-search-btn btn-primary"/>
@@ -110,9 +109,6 @@
 
     <div id="cstudio-command-controls">
       <div id="submission-controls" class="cstudio-form-controls-button-container">
-        <#if mode == "select">
-        <input id="formSaveButton" type="button" class="cstudio-search-btn cstudio-button btn btn-primary" disabled value="Add Selection">
-        </#if>
         <input id="formCancelButton" type="button" class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel">
 
         
@@ -130,21 +126,8 @@
 
      <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="cstudio-search-result clearfix">
-            <div id="result-select-{{browserUri}}" class="cstudio-search-select-container">
-              <#-- none, many, one -->
-
-              {{#equal selectMode "many"}}
-                <input type="checkbox" name="result-select">
-              {{/equal}}
-
-              {{#equal selectMode "one"}}
-                <input type="radio" name="result-select">
-              {{/equal}}
-
-            </div>
             <div class="cstudio-result-body row" style="overflow: hidden;">
-              <div class="cstudio-search-result-description">
-                <span class="browse-icon {{status}}" id="result-status-static-assets-images-brand-bg-png"></span>
+              <div class="cstudio-search-result-description-cmis">
                 <span class="cstudio-search-component cstudio-search-component-title-nopreview {{#if disabled}}disabled{{/if}}">
                 {{#if internalName}}
                   {{internalName}}
@@ -156,25 +139,25 @@
                 {{#if showUrl}}
                 <span class="cstudio-search-component cstudio-search-component-url">
                   <span class="component-title bold">{{labelUrl}}:</span>
-                  <a href="{{browserUri}}" target="_blank">{{browserUri}}</a>
+                  <span>{{browserUri}}</span>
                 </span>
                 {{/if}}
 
 
                 <span class="cstudio-search-component cstudio-search-component-type">
                   <span class="component-title bold">{{labelType}}:</span>
-                  {{type}}
+                  {{mimeType}}
                 </span>
-                <span class="cstudio-search-component cstudio-search-component-button">
-                  <a class="btn btn-default cstudio-search-btn add-close-btn results-btn" href="#" role="button">{{labelAddClose}}</a>
-                </span>
+                <div>
+                    <span class="cstudio-search-component cstudio-search-component-button">
+                        <a class="btn btn-default cstudio-search-btn add-close-btn results-btn" href="#" role="button">{{labelAddLink}}</a>
+                    </span>
+                    <span class="cstudio-search-component cstudio-search-component-button">
+                      <a class="btn btn-default cstudio-search-btn add-close-btn results-btn" href="#" role="button">{{labelClone}}</a>
+                    </span>
+                </div>
+
               </div>
-              {{#equal type "image"}}
-                  <div class="cstudio-search-description-preview">
-                    <img src="{{browserUri}}" alt="{{name}}" class="cstudio-search-banner-image"">
-                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}">
-                  </div>
-              {{/equal}}
             </div>
           </div>
     </script>

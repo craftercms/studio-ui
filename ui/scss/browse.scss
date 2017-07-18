@@ -140,12 +140,8 @@ body {
 				  	.cstudio-result-body {
 				   	 	margin-left: 15px;
 
-				   	 	.cstudio-search-result-description, .cstudio-search-description-preview {
+				   	 	.cstudio-search-result-description, .cstudio-search-description-preview, .cstudio-search-result-description-cmis{
 				   	 		width: 100%;
-				   	 		@media (min-width: 992px){
-							    width: 50%;
-							    float: left;
-				   	 		}
 
 				   	 		.browse-icon {		
 			   	 			    margin-right: 20px;
@@ -165,12 +161,20 @@ body {
 
 				   	 		.cstudio-search-component {
 				   	 			&.cstudio-search-component-button {
+                                    display: inline-block;
 							  		a{
 							  			margin-top: 20px;
 							  		}
 							  	}
 				   	 		}
 				   	 	}
+
+                        .cstudio-search-result-description, .cstudio-search-description-preview {
+                          @media (min-width: 992px) {
+                            width: 50%;
+                            float: left;
+                          }
+                        }
 
 				   	 	.cstudio-search-description-preview {
 							height: 210px;

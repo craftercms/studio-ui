@@ -458,6 +458,8 @@ CStudioAuthoring.Messages.registerBundle("browse", "kr", {
     labelUrl: "URL",
     labelType: "유형",
     labelAddClose: "추가 및 닫기",
+    labelAddLink: "링크 추가",
+    labelClone: "클론",
     selectAll: "모두 선택",
     clearAll: "선택 지우기",
     uploadLabel: "업로드",
