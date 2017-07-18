@@ -104,7 +104,7 @@
         });
 
         $("#searchForm input").keypress(function (e) {
-            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+            if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
                 $("#cstudio-wcm-search-filter-controls input[value='Search']").click();
                 return false;
             } else {
@@ -153,8 +153,8 @@
         //     me.saveContent();
         // });
 
-        var pathLabel = CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\//g, ' / ');
-        $('.current-folder .path').html(pathLabel);
+        var pathLabel = CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\//g, " / ");
+        $(".current-folder .path").html(pathLabel);
 
         $(".tabs .tab-links a").on("click", function (e) {
             var currentAttrValue = jQuery(this).attr("href");
