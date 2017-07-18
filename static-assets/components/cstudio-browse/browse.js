@@ -232,7 +232,7 @@
         item.labelType = CMgs.format(browseLangBundle, 'labelType');
         item.labelAddClose = CMgs.format(browseLangBundle, 'labelAddClose');
 
-        if(item.mimeType.match(/\bimage\b/)){
+        if(item.browserUri.match(/.(jpg|jpeg|png|gif)$/i)){
             var showUrl = true;
             item.type = "image";
             item.showUrl = showUrl;
