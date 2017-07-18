@@ -163,15 +163,21 @@
     </script>
     
     <script type="text/javascript">
-      Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
-        if (arguments.length < 3)
-            throw new Error("Handlebars Helper equal needs 2 parameters");
-        if( lvalue!=rvalue ) {
-            return options.inverse(this);
-        } else {
-            return options.fn(this);
-        }
-      });
+        Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
+            if (arguments.length < 3)
+                throw new Error("Handlebars Helper equal needs 2 parameters");
+            if( lvalue!=rvalue ) {
+                return options.inverse(this);
+            } else {
+                return options.fn(this);
+            }
+        });
+
+        $(function() {
+            CStudioBrowse.init();
+            CStudioBrowse.bindEvents();
+        });
+
     </script>
   
    </body>
