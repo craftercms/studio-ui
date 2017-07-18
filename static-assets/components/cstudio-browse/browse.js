@@ -232,27 +232,22 @@
         item.labelType = CMgs.format(browseLangBundle, 'labelType');
         item.labelAddClose = CMgs.format(browseLangBundle, 'labelAddClose');
 
-        //TODO: temporary - remove and find a way of getting result type - right now only detecting if image
-        $("<img>", {
-            src: item.browserUri,
-            error: function() {
-                var type = item.isAsset ? "asset" : item.isComponent ? "component" : "page",
-                    showUrl = type == "asset" || type == "page" ? true : false;
-                item.type = type;
-                item.showUrl = showUrl;
-                var html = template(item);
-                var addedElem = $(html).appendTo($resultsContainer);
-                addedElem.data("item", item);
-            },
-            load: function() {
-                var showUrl = true;
-                item.type = "image";
-                item.showUrl = showUrl;
-                var html = template(item);
-                var addedElem = $(html).appendTo($resultsContainer);
-                addedElem.data("item", item);
-            }
-        });
+        if(item.mimeType.match(/\bimage\b/)){
+            var showUrl = true;
+            item.type = "image";
+            item.showUrl = showUrl;
+            var html = template(item);
+            var addedElem = $(html).appendTo($resultsContainer);
+            addedElem.data("item", item);
+        }else{
+            var type = item.isAsset ? "asset" : item.isComponent ? "component" : "page",
+                showUrl = type == "asset" || type == "page" ? true : false;
+            item.type = type;
+            item.showUrl = showUrl;
+            var html = template(item);
+            var addedElem = $(html).appendTo($resultsContainer);
+            addedElem.data("item", item);
+        }
     }
 
     CStudioBrowse.renderNoItems = function() {
@@ -514,48 +509,55 @@
             $resultsContainer.empty();
             $resultsActions.empty();
 
-            var filesPresent = false;
-            results = results.item.children;
+            if(results) {
+                var filesPresent = false;
+                results = results.item.children;
 
-            var pathLabel = path.replace(/\//g, ' / ');
-            $('.current-folder .path').html(pathLabel);
+                var pathLabel = path.replace(/\//g, ' / ');
+                $('.current-folder .path').html(pathLabel);
 
-            if(results.length > 0){
-                var $resultsWrapper = $('<div class="results-wrapper"/>');
-                $resultsContainer.prepend($resultsWrapper);
+                if (results.length > 0) {
+                    var $resultsWrapper = $('<div class="results-wrapper"/>');
+                    $resultsContainer.prepend($resultsWrapper);
 
-                $.each(results, function(index, value){
-                    if(!value.folder){
-                        CStudioBrowse.renderItem(value, $resultsWrapper);
-                        filesPresent = true;
+                    $.each(results, function (index, value) {
+                        if (!value.folder) {
+                            CStudioBrowse.renderItem(value, $resultsWrapper);
+                            filesPresent = true;
+                        }
+                    });
+
+                    if (filesPresent) {
+                        CStudioBrowse.renderItemsActions();
+                    } else {
+                        CStudioBrowse.renderNoItems();
                     }
-                });
-
-                if(filesPresent){
-                    CStudioBrowse.renderItemsActions();
-                }else{
-                    CStudioBrowse.renderNoItems();
                 }
-            }
 
-            CStudioBrowse.currentResultsPath = path;
+                CStudioBrowse.currentResultsPath = path;
+            }
 
         });
     }
 
     CStudioBrowse._lookupSiteContent = function(site, path){
-        var d = new $.Deferred();
+        if(CStudioBrowse.siteContentDef){
+            CStudioBrowse.siteContentDef.resolveWith([]);
+        }
+
+        CStudioBrowse.siteContentDef = new $.Deferred();
 
         CStudioAuthoring.Service.lookupSiteContent(site, path, 1, "default", {
             success: function(results) {
-                d.resolve(results);
+                CStudioBrowse.siteContentDef.resolve(results);
             },
             failure: function() {
 
             }
         });
 
-        return d.promise();
+        return CStudioBrowse.siteContentDef.promise();
+
     }
 
     CStudioBrowse._getUserPermissions = function(site, path){
