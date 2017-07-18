@@ -481,6 +481,8 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
     labelUrl: "URL",
     labelType: "Tipo",
     labelAddClose: "Agregar & Cerrar",
+    labelAddLink: "Agregar Enlace",
+    labelClone: "Clonar",
     selectAll: "Seleccionar Todo",
     clearAll: "Limpiar Selección",
     uploadLabel: "Subir",

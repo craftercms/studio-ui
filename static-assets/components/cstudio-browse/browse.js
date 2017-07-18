@@ -228,6 +228,8 @@
         item.labelUrl = CMgs.format(browseLangBundle, 'labelUrl');
         item.labelType = CMgs.format(browseLangBundle, 'labelType');
         item.labelAddClose = CMgs.format(browseLangBundle, 'labelAddClose');
+        item.labelAddLink = CMgs.format(browseLangBundle, "labelAddLink");
+        item.labelClone = CMgs.format(browseLangBundle, "labelClone");
 
         if(item.mimeType.match(/\bimage\b/)){
             var showUrl = true;

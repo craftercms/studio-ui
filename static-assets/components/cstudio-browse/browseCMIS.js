@@ -103,6 +103,15 @@
             me.renderSiteContent("", "search", searchTerm);
         });
 
+        $("#searchForm input").keypress(function (e) {
+            if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+                $("#cstudio-wcm-search-filter-controls input[value='Search']").click();
+                return false;
+            } else {
+                return true;
+            }
+        });
+
         //results related events
 
         // $resultsContainer.on('change', 'input[name=result-select]', function(){
@@ -143,6 +152,9 @@
         //     input.prop('checked', true).trigger('change');
         //     me.saveContent();
         // });
+
+        var pathLabel = CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\//g, " / ");
+        $(".current-folder .path").html(pathLabel);
 
         $(".tabs .tab-links a").on("click", function (e) {
             var currentAttrValue = jQuery(this).attr("href");
@@ -185,8 +197,10 @@
     };
 
     CStudioBrowseCMIS.parseObjToFolders = function(items){
+        var path = CStudioAuthoring.Utils.getQueryParameterByName("path");
         var parsed = {          //the root folder from which the browse was called. TODO: get path
-                text: "/",
+                text: path.includes("/") ?
+                      path.split("/")[path.split("/").length - 1] : path ,
                 state: {
                     opened : true,
                     selected: true
@@ -220,7 +234,8 @@
             status: "",
             internalName: item.item_name,
             type: item.mime_type,
-            mimeType: ""        //TODO: leaving it empty to render as simple item (no images since we don't have access to the actual image)
+            browserUri: item.item_path,
+            mimeType: item.mime_type        //TODO: leaving it empty to render as simple item (no images since we don't have access to the actual image)
         };
 
         return parsed;
