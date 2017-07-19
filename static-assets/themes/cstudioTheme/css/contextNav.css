@@ -622,6 +622,7 @@ body.yui-skin-cstudioTheme .mask{
   background-color: white;
   border-bottom: solid 1px #ccc;
   padding: 30px;
+  word-wrap: break-word;
 }
 
 .yui-overlay.yui-panel .bd > div{

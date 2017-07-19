@@ -20,7 +20,6 @@
                 me.renderSiteFolders(me.rootItems);
             },
             failure: function() {
-
             }
         });
 
@@ -387,14 +386,32 @@
             repoId = CStudioAuthoring.Utils.getQueryParameterByName("repoId"),
             site = CStudioAuthoring.Utils.getQueryParameterByName("site");
 
+        var callbackContent = {
+            success: function(response) {
+                cb.success(response);
+            },
+            failure: function(response){
+                var error = JSON.parse(response.responseText)
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "error-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(browseLangBundle, "notification"),
+                    error.message,
+                    null,
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
+            }
+        }
+
         if(type === "browse"){
-            CStudioAuthoring.Service.getCMISContentByBrowser(site, repoId, path, cb);
+            CStudioAuthoring.Service.getCMISContentByBrowser(site, repoId, path, callbackContent);
         }else{
             if(!searchTerm || "" === searchTerm){       //TODO: ask if this is correct
                 searchTerm = "*";
             }
 
-            CStudioAuthoring.Service.getCMISContentBySearch(site, repoId, path, searchTerm, cb);
+            CStudioAuthoring.Service.getCMISContentBySearch(site, repoId, path, searchTerm, callbackContent);
         }
 
 
