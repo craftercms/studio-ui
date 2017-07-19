@@ -2658,7 +2658,11 @@
                                     currentContentTO = contentTO.item;
                                 }
 
-                                CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                                if(currentContentTO.isPage){
+                                    CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                                }else{
+                                    CStudioAuthoring.Operations.refreshPreview();
+                                }
                             }catch(err) {
                                 if(!draft) {
                                     this.callingWindow.location.reload(true);
