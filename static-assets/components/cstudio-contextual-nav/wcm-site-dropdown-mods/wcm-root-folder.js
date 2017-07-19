@@ -1813,7 +1813,6 @@
                 retTransferObj.previewable = treeItem.previewable;
                 retTransferObj.mimeType = treeItem.mimeType;
                 retTransferObj.contentType = treeItem.contentType;
-                retTransferObj.isFloating = treeItem.isFloating;
                 var itemNameLabel = "Page";
                 
                 retTransferObj.statusObj = {
