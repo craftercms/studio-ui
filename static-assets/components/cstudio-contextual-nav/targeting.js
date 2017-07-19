@@ -26,6 +26,24 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 						this.render();
 					}
 					this.model = {};
+
+					this.bindEvents();
+				},
+
+				bindEvents: function() {
+					var me = this;
+
+					$(document).on("keyup", function(e) {
+						if (e.keyCode === 13) {	// enter
+							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
+							me.updateTargeting(reportContainerEl);
+						}
+
+						if (e.keyCode === 27) {	// esc
+							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
+							me.closeDialog(reportContainerEl);
+						}
+					});
 				},
 				
 				render: function() {

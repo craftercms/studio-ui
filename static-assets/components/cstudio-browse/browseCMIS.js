@@ -1,7 +1,7 @@
 (function (window, $, Handlebars) {
     "use strict";
 
-    var activePromise;
+    var storage = CStudioAuthoring.Storage;
 
     var CStudioBrowseCMIS = $.extend(
         {}, window.CStudioBrowse);
@@ -24,7 +24,6 @@
             }
         });
 
-
         var CMgs = CStudioAuthoring.Messages,
             browseLangBundle = CMgs.getBundle("browse", CStudioAuthoringContext.lang);
     };
@@ -40,7 +39,31 @@
             var obj = tree.get_selected(true)[0];
             me.currentSelection = "";
 
-            if (obj) {
+            var openNodes = function(nodes, index){
+                if(0 == index){
+                    var $tree = $('#data');
+
+                    var selectedId = $tree.jstree('get_selected')[0];
+                    $("#" + selectedId + "_anchor").removeClass("jstree-clicked jstree-hovered");
+
+                    $tree.jstree("select_node", "#" + nodes[index]);
+                }else{
+                    $("#" + nodes[index] + " > .jstree-ocl").click();
+                    $("#data").one('open_node.jstree', function(event, node){
+                        openNodes(nodes, index - 1);
+                    });
+                }
+            };
+
+            //get cookie - last browsed item
+            if( storage.read( "cmis-browse-path" ) ){
+                var nodes = storage.read( "cmis-browse-path" );
+                nodes = nodes.split(",");
+
+                if(nodes.length > 0){
+                    openNodes(nodes, nodes.length - 1);
+                }
+            }else if (obj) {
                 tree.trigger('select_node', { 'node' : obj, 'selected' : tree._data.core.selected, 'event' : event });
             }
         });
@@ -51,6 +74,29 @@
             if(me.currentSelection != data.node.id){
                 me.renderSiteContent(path);
                 me.currentSelection = data.node.id;
+
+                //create cookie with current selected node
+                var nodes = [data.node.id],
+                    currentNode = data.node,
+                    finished = false,
+                    parentNode,
+                    parent;
+
+                if("cmis-root" !== currentNode.id){
+                    while(!finished){
+                        parent = currentNode.parent,
+                            parentNode = $('#data').jstree(true).get_node(parent);
+
+                        if("cmis-root" === parent){
+                            finished = true;
+                        }else{
+                            currentNode = parentNode;
+                            nodes.push(parent);
+                        }
+                    }
+                }
+
+                storage.write("cmis-browse-path", nodes.join(), 360);
             }
 
         });
@@ -79,6 +125,7 @@
                                 if( "folder" === value.mime_type ){
                                     $tree.jstree('create_node', $node,
                                         {
+                                            "id": value.item_id,
                                             "text":value.item_name,
                                             "a_attr": {
                                                 "data-path": value.item_path
@@ -133,10 +180,6 @@
         //     }
         // });
 
-        // $('#cstudio-command-controls').on('click', '#formSaveButton', function(){
-        //     me.saveContent();
-        // })
-        //
         $('#cstudio-command-controls').on('click', '#formCancelButton', function(){
             window.close();
             $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove();
@@ -149,12 +192,6 @@
         //         $(window.frameElement.parentElement).closest('.studio-ice-dialog').height(60);
         //     }
         // })
-        //
-        // $resultsContainer.on('click', '.add-close-btn', function() {
-        //     var input = $(this).closest('.cstudio-search-result').find('.cstudio-search-select-container input');
-        //     input.prop('checked', true).trigger('change');
-        //     me.saveContent();
-        // });
 
 
         $('.cstudio-wcm-result .results').delegate( ".add-link-btn", "click", function() {
@@ -212,12 +249,13 @@
 
     CStudioBrowseCMIS.parseObjToFolders = function(items){
         var path = CStudioAuthoring.Utils.getQueryParameterByName("path");
-        var parsed = {          //the root folder from which the browse was called. TODO: get path
+        var parsed = {
+                id: "cmis-root",
                 text: path.includes("/") ?
                       path.split("/")[path.split("/").length - 1] : path ,
                 state: {
                     opened : true,
-                    selected: true
+                    selected: storage.read( "cmis-browse-path" ) ? false : true
                 },
                 a_attr: {
                     "data-path": "cmis-root"
@@ -229,6 +267,7 @@
         $.each(items.items, function(index, value){
             if( "folder" === value.mime_type ){
                 object = {
+                    id: value.item_id,
                     text: value.item_name,
                     a_attr: {
                         "data-path": value.item_path
@@ -250,7 +289,7 @@
             internalName: item.item_name,
             type: item.mime_type,
             browserUri: item.item_path,
-            mimeType: item.mime_type        //TODO: leaving it empty to render as simple item (no images since we don't have access to the actual image)
+            mimeType: item.mime_type
         };
 
         return parsed;

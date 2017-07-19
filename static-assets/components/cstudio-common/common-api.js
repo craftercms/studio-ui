@@ -6826,7 +6826,7 @@ var nodeOpen = false;
                     if(treeNodeTO.isComponent){     //isLevelDescriptor - also component
                         mainIconClass = defaultIcons.component.class;
                     }else if(treeNodeTO.isPage){
-                        if((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating){
+                        if((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating || treeNodeTO.floating){
                             mainIconClass = defaultIcons.floatingPage.class;
                         }else{
                             mainIconClass = defaultIcons.navPage.class;
