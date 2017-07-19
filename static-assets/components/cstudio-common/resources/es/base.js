@@ -489,7 +489,9 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
     notification: "Notificación",
     lookUpChildError : "No puede buscar la devolución de llamada del formulario secundario para la búsqueda: ",
     lookUpParentError : "No puede buscar el contexto del padre para la búsqueda: ",
-    loading: "Cargando"
+    loading: "Cargando",
+    noBrowseResults: "No hay archivos en esta ruta.",
+    noSearchResults: "No hay resultados."
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {

@@ -466,7 +466,9 @@ CStudioAuthoring.Messages.registerBundle("browse", "kr", {
     notification: "공고",
     lookUpChildError : "검색을 위해 하위 양식 콜백을 조회 할 수 없음 : ",
     lookUpParentError : "검색을 위해 상위 컨텍스트를 조회 할 수 없음 : ",
-    loading: "로딩"
+    loading: "로딩",
+    noBrowseResults: "There are no files at this path.",
+    noSearchResults: "There are no results."
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
