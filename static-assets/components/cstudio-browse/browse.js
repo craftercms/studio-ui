@@ -310,7 +310,7 @@
     };
 
     CStudioBrowse.saveContent = function() {
-        var searchId = this.searchContext.searchId;
+        var searchId = this.searchContext ? this.searchContext.searchId : "" ;
         var crossServerAccess = false;
 
         try {

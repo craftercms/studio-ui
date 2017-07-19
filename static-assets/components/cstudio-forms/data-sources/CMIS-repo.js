@@ -24,13 +24,32 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
         CStudioAuthoring.Operations.openCMISBrowse(_self.repoId, _self.repoPath, "select", true, {
             success: function(searchId, selectedTOs) {
 
-                for(var i=0; i<selectedTOs.length; i++) {
-                    var item = selectedTOs[i];
-                    var fileName = item.name;
-                    var fileExtension = fileName.split(".").pop();
-                    control.insertItem(item.uri, item.uri, fileExtension);
-                    control._renderItems();
+                var cb = function(repositories){
+                    console.log("here");
+
+                    var repo = null;
+                    if(!repositories.length){
+                        repo = repositories;
+                    }else {
+                        for (var i = 0; i < repositories.length; i++) {
+                            if (_self.repoId === repositories[i].id) {
+                                repo = repositories[i];
+                            }
+                        }
+                    }
+
+                    for(var i=0; i<selectedTOs.length; i++) {
+                        var item = selectedTOs[i];
+                        var uri = repo["download-url-regex"].replace("{item_id}",item.itemId);
+                        var fileName = item.internalName;
+                        var fileExtension = fileName.split(".").pop();
+                        control.insertItem(uri, uri, fileExtension);
+                        control._renderItems();
+                    }
                 }
+
+                _self.getConfig(cb);
+
             },
             failure: function() {
             }
@@ -38,8 +57,15 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
     },
 
-    edit: function(key) {
-        alert("Edit");
+    getConfig: function(callback){
+        CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/data-sources/cmis-config.xml",
+            {
+                success: function(config) {
+                    callback(config.repositories.repository);
+                }
+            });
     },
 
     getLabel: function() {

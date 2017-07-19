@@ -11,6 +11,9 @@
 
         CStudioBrowseCMIS.bindEvents();
 
+        var searchContext = this.determineSearchContextFromUrl();
+        this.searchContext = searchContext;
+
         CStudioBrowseCMIS.getContent("browse", {
             success: function(response) {
                 me.rootItems = response;
@@ -27,7 +30,7 @@
 
     CStudioBrowseCMIS.bindEvents = function() {
         var me = this,
-            $tree = $('#data');
+            $tree = $("#data");
 
         //tree related events
 
@@ -190,6 +193,17 @@
         //     }
         // })
 
+
+        $('.cstudio-wcm-result .results').delegate( ".add-link-btn", "click", function() {
+            var contentTO = $(this.parentElement).closest(".cstudio-search-result").data("item");
+            CStudioAuthoring.SelectedContent.selectContent(contentTO);
+            me.saveContent();
+        });
+
+        $('.cstudio-wcm-result .results').delegate( ".clone-btn", "click", function() {
+            //console.log("clone"); //TODO
+        });
+
         var pathLabel = CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\//g, " / ");
         $(".current-folder .path").html(pathLabel);
 
@@ -269,6 +283,7 @@
 
     CStudioBrowseCMIS.parseItemObj = function(item) {
         var parsed = {
+            itemId: item.item_id,
             selectMode: "",
             status: "",
             internalName: item.item_name,

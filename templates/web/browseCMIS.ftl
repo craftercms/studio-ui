@@ -58,7 +58,7 @@
                   <div id="data" class="demo"></div>
               </div>
 
-              <div id="cstudio-wcm-browse-result">
+              <div id="cstudio-wcm-browse-result" class="cstudio-wcm-result">
 
                   <div class="cstudio-results-actions"></div>
 
@@ -81,7 +81,7 @@
                   </form>
               </div>
 
-              <div id="cstudio-wcm-search-result">
+              <div id="cstudio-wcm-search-result" class="cstudio-wcm-result">
 
                   <div class="cstudio-results-actions"></div>
 
@@ -150,10 +150,10 @@
                 </span>
                 <div>
                     <span class="cstudio-search-component cstudio-search-component-button">
-                        <a class="btn btn-default cstudio-search-btn add-close-btn results-btn" href="#" role="button">{{labelAddLink}}</a>
+                        <a class="btn btn-default cstudio-search-btn add-link-btn results-btn" href="#" role="button">{{labelAddLink}}</a>
                     </span>
                     <span class="cstudio-search-component cstudio-search-component-button">
-                      <a class="btn btn-default cstudio-search-btn add-close-btn results-btn" href="#" role="button">{{labelClone}}</a>
+                      <a class="btn btn-default cstudio-search-btn clone-btn results-btn" href="#" role="button">{{labelClone}}</a>
                     </span>
                 </div>
 

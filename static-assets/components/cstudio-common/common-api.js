@@ -1192,6 +1192,10 @@ var nodeOpen = false;
              */
             openCMISBrowse: function(repoId, path, mode, newWindow, callback) {
 
+                var searchId = null;
+
+                var searchContext = CStudioAuthoring.Service.createSearchContext();
+
                 var openInSameWindow = (newWindow) ? false : true;
 
                 var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
@@ -1209,13 +1213,44 @@ var nodeOpen = false;
                     browseUrl += "&mode=" + mode;
                 }
 
-                var childBrowse = new Object();
-                childBrowse.openInSameWindow = openInSameWindow;
-                childBrowse.browseUrl = browseUrl;
-                childBrowse.browseId = CStudioAuthoring.Utils.generateUUID();
-                childBrowse.saveCallback = callback;
+                var childSearch = null;
 
-                CStudioAuthoring.ChildSearchManager.openBrowse(childBrowse);
+                if (!searchId || searchId == null || searchId == "undefined"
+                    || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
+                    childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
+                    childSearch.openInSameWindow = openInSameWindow;
+                    searchId = CStudioAuthoring.Utils.generateUUID();
+
+                    childSearch.searchId = searchId;
+                    childSearch.searchUrl = browseUrl + "&searchId=" + searchId;
+                    childSearch.saveCallback = callback;
+
+                    CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
+
+                }
+                else {
+                    if (window.opener) {
+
+                        if (window.opener.CStudioAuthoring) {
+
+                            var openerChildSearchMgr = window.opener.CStudioAuthoring.ChildSearchManager;
+
+                            if (openerChildSearchMgr) {
+
+                                childSearch = openerChildSearchMgr.searches[searchId];
+                                childSearch.searchUrl = browseUrl;
+
+                                openerChildSearchMgr.openChildSearch(childSearch);
+                            }
+                        }
+                    }
+                    else {
+                        childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
+                        childSearch.searchUrl = browseUrl;
+
+                        CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
+                    }
+                }
 
             },
 
@@ -7673,10 +7708,6 @@ var nodeOpen = false;
                     CStudioAuthoring.Operations._openIframe(childSearchConfig.searchUrl, childSearchConfig.searchId); //TODO: test name on iframe
 
                 }
-            },
-
-            openBrowse: function(childBrowseConfig) {
-                    CStudioAuthoring.Operations._openIframe(childBrowseConfig.browseUrl, childBrowseConfig.browseId);
             }
 
         },
