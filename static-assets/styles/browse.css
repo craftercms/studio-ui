@@ -1,5 +1,5 @@
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', sans-serif;
   background-color: #F0F0F0;
   margin: 0;
   padding-top: 20px;
@@ -257,5 +257,3 @@ body {
     background: rgba(128, 128, 128, 0.7); }
   body ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(128, 128, 128, 0.4); }
-
-/*# sourceMappingURL=browse.css.map */

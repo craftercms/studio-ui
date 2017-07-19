@@ -353,8 +353,10 @@
                         });
 
                         if(!filesPresent){
-                            me.renderNoItems();
+                            me.renderNoItems(type);
                         }
+                    }else{
+                        me.renderNoItems(type);
                     }
                 },
                 failure: function() {
@@ -363,6 +365,21 @@
             },path, searchTerm);
 
         }
+    };
+
+    CStudioBrowseCMIS.renderNoItems = function(type) {
+        var $resultsContainer,
+            msj;
+
+        if("search" === type){
+            $resultsContainer = $('#cstudio-wcm-search-result .results');
+            msj = CMgs.format(browseLangBundle, 'noSearchResults');
+        }else{
+            $resultsContainer = $('#cstudio-wcm-browse-result .results');
+            msj = CMgs.format(browseLangBundle, 'noBrowseResults');
+        }
+
+        $resultsContainer.append('<p style="text-align: center; font-weight: bold; display: block;">' + msj + '</p>');
     };
 
     CStudioBrowseCMIS.getContent = function(type, cb, cPath, searchTerm) {
