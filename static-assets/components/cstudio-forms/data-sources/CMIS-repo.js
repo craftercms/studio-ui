@@ -57,10 +57,6 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
     },
 
-    edit: function(key) {
-        alert("Edit");
-    },
-
     getConfig: function(callback){
         CStudioAuthoring.Service.getConfiguration(
             CStudioAuthoringContext.site,
