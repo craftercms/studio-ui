@@ -6045,3 +6045,8 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important; } }
+body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, .yui-panel.yui-overlay {
+  font-family: 'Open Sans', sans-serif; }
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-weight: 600; }
