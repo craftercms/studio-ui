@@ -56,26 +56,19 @@
         <div class="page-header <#if mode != 'iframe'>with-navbar</#if>">
             <div class="container">
                 <h1>
-                    <#-- <#if version?is_string>
-                        <span class="content-name">${name} </span><small id="current-version">v.${version} - v.</small><small> (current)</small>
-                    <#else>
-                        <span class="content-name">${name} </span><small>v.${version[1]} - v.${version[0]}</small>
-                    </#if> -->
                     <span class="content-name">${dir} </span>
                     
                     <div>
-                        <#if version?is_string>
-                            <small id="current-version">v.${version} - v.</small><small> (current)</small>
-                        <#else>
-                            <#if version[0] == version[1]>
-                                <small>v.${version[0]}</small>
+                        <#if versionTO??>
+                            <#if version == versionTO>
+                                <small>v.${version}</small>
                             <#else>
-                                <small>v.${version[1]} - v.${version[0]}</small>
+                                <small>v.${version} - v.${versionTO}</small>
                             </#if>
+                        <#else>
+                            <small id="current-version">v.${version} - v.</small><small> (current)</small>
                         </#if>
                     </div>
-
-                    
                 </h1>
             </div>
         </div>
