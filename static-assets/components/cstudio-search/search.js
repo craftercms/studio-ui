@@ -1206,14 +1206,21 @@ CStudioSearch.loadFilters = function(filters, callback) {
 		context: this
 	};
 
-	for(var j=0; j<filters.length; j++) {
-	CStudioAuthoring.Module.requireModule(
-		"search-filter-"+filters[j].name,
-		'/static-assets/components/cstudio-search/filters/' + filters[j].name + ".js",
-		{ config: filters[j] },
-		cb);
+    var callModule = function(filter) {
+        CStudioAuthoring.Module.requireModule(
+                "search-filter-"+filter.name,
+                '/static-assets/components/cstudio-search/filters/' + filter.name + ".js",
+            { config: filter },
+            cb);
+    }
 
-	}
+    if(filters.length){
+        for(var j=0; j<filters.length; j++) {
+            callModule(filters[j]);
+        }
+    }else{
+        callModule(filters);
+    }
 };
 
 
@@ -1240,14 +1247,22 @@ CStudioSearch.loadResultTemplates = function(templates, callback) {
 		context: this
 	};
 
-	for(var j=0; j<templates.length; j++) {
-	CStudioAuthoring.Module.requireModule(
-		"search-result-"+templates[j].name,
-		'/static-assets/components/cstudio-search/results/' + templates[j].name + ".js",
-		{ config: templates[j] },
-		cb);
+    var callModule = function(template) {
+        CStudioAuthoring.Module.requireModule(
+                "search-result-" + template.name,
+                '/static-assets/components/cstudio-search/results/' + templates.name + ".js",
+            { config: templates },
+            cb);
+    }
 
-	}
+    if(templates.length){
+        for(var j=0; j<templates.length; j++) {
+            callModule(templates[j]);
+        }
+    }else{
+        callModule(templates);
+    }
+
 };
 
 
