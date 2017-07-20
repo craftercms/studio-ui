@@ -2979,13 +2979,15 @@ div#acn-active-content {
 
 #navbar-site-name {
   color: #333;
-  font-weight: bold;
+  font-weight: 500;
   line-height: 20px;
-  margin-bottom: -4px; }
+  margin-bottom: -4px;
+  padding: 13px 25px 16.5px 8px;
+  font-size: 16px; }
 
 .acn-dropdown-wrapper .acn-drop-arrow {
   display: block;
-  padding: 18px 10px 15px; }
+  padding: 16px 10px 15px; }
 
 .site-dropdown-open .acn-dropdown-toggler {
   font-weight: bold;
@@ -15316,3 +15318,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */
