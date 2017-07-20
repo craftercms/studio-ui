@@ -26,14 +26,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 						this.render();
 					}
 					this.model = {};
-
-					this.bindEvents();
 				},
 
 				bindEvents: function() {
 					var me = this;
 
-					$(document).on("keyup", function(e) {
+					$(document).one("keyup", function(e) {
 						if (e.keyCode === 13) {	// enter
 							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
 							me.updateTargeting(reportContainerEl);
@@ -296,6 +294,8 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					applyBtn.onclick = function() {
 						me.updateTargeting(reportContainerEl);
 					};
+
+					this.bindEvents();
 
 					var cancelBtn = document.createElement("a");
 					YAHOO.util.Dom.addClass(cancelBtn, "btn btn-default");

@@ -1681,7 +1681,7 @@ var nodeOpen = false;
                 });
 
                 diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
-                diffUrl = versionTO ? diffUrl + '&version=' + versionTO : diffUrl;
+                diffUrl = versionTO ? diffUrl + '&versionTO=' + versionTO : diffUrl;
                 diffUrl += "&mode=iframe";
                 diffUrl += escaped ? '&escaped=true' : '';
 
