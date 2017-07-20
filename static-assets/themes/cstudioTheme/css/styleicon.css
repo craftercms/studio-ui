@@ -66,8 +66,7 @@
 .iconName{
 	margin: 2px 0 0 0;
 	float: left;
-	height: 18px;
-	width: 110px;
+    min-width: 124px;
 }
 
 /*.iconNameR{
