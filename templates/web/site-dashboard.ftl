@@ -139,7 +139,7 @@
                 </h2>
             </div>
             <div class="panel-body">
-            <#assign classes="col-xs-6 col-sm-3 col-md-2 mb10" />
+            <#assign classes="col-xs-6 col-sm-4 col-md-3 mb10" />
                 <div class="row workflow-states">
                     <div class="col-md-12 title">
                         <p style="color: #7e9dbb; margin-bottom: 15px;"></p>
@@ -149,55 +149,55 @@
                     <#-- Never Published -->
                         <div class="iconName">
                             <span id="guide-neverpublished" class="fa mr5"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateNew")</script>
+                            <span class="iconMess"><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateNew")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Edited -->
                         <div class="iconName">
                             <span id="guide-edited" class="fa mr5"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInProgress")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInProgress")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- In Workflow-->
                         <div class="iconName">
                             <span id="guide-inworkflow" class="fa mr5"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInWorkflow")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInWorkflow")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Scheduled -->
                         <div class="iconName">
                             <span id="guide-scheduled" class="fa mr5"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateScheduled")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateScheduled")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Processing -->
                         <div class="iconName">
                             <span id="guide-processing" class="fa mr5"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateSystemProcessing")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateSystemProcessing")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Disabled -->
                         <div class="iconText" style="margin: 0 0 0 20px; padding: 2px 0 1px;">
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDisabled")</script>
+                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDisabled")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Deleted -->
                         <div class="iconName">
                             <span id="guide-deleted" class="fa mr5"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDeleted")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDeleted")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Locked -->
                         <div class="iconName">
                             <span id="guide-locked" class="fa mr5"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateLocked")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateLocked")</script></span>
                         </div>
                     </div>
                 </div>
@@ -211,112 +211,112 @@
                     <#-- Navigation Page -->
                         <div class="iconName">
                             <span class="fa fa-file mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideNavigationPage")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideNavigationPage")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Floating Page -->
                         <div class="iconName">
                             <span class="fa fa-file-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFloatingPage")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFloatingPage")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Component -->
                         <div class="iconName">
                             <span class="fa fa-puzzle-piece mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideComponent")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideComponent")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Template or Script -->
                         <div class="iconName">
-                            <span class="fa fa-file-code-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideTemplateScript")</script>
+                             <span class="fa fa-file-code-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideTemplateScript")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Taxonomy -->
                         <div class="iconName">
                             <span class="fa fa-puzzle-piece mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideTaxonomy")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideTaxonomy")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Image -->
                         <div class="iconName">
                             <span class="fa fa-file-image-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideImage")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideImage")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Video -->
                         <div class="iconName">
                             <span class="fa fa-file-video-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideVideo")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideVideo")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- CSS -->
                         <div class="iconName">
                             <span class="fa fa-css3 mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideCss")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideCss")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Font -->
                         <div class="iconName">
                             <span class="fa fa-font mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFont")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFont")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Pdf -->
                         <div class="iconName">
                             <span class="fa fa-file-pdf-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuidePdf")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuidePdf")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- PowerPoint -->
                         <div class="iconName">
                             <span class="fa fa-file-powerpoint-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuidePowerPoint")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuidePowerPoint")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Word -->
                         <div class="iconName">
                             <span class="fa fa-file-word-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideWord")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideWord")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Excel -->
                         <div class="iconName">
                             <span class="fa fa-file-excel-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideExcel")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideExcel")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Zip -->
                         <div class="iconName">
                             <span class="fa fa-file-archive-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideZip")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideZip")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- groovy -->
                         <div class="iconName">
                             <span class="fa fa-file-code-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideGroovy")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideGroovy")</script></span>
                         </div>
                     </div>
                     <div class="${classes}">
                     <#-- Other -->
                         <div class="iconName">
                             <span class="fa fa-file-text mr5" style="color: #8fc6fd; font-size: 14px;"></span>
-                            <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideOtherFiles")</script>
+                            <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideOtherFiles")</script></span>
                         </div>
                     </div>
                 </div>
