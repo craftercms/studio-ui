@@ -1521,6 +1521,17 @@ var CStudioForms = CStudioForms || function() {
                 var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
                 YDom.addClass(overlayContainer, "overlay");
 
+                $(document).on("keyup", function(e) {
+                    if (e.keyCode === 27) {	// esc
+                        if(e.currentTarget.activeElement){
+                            //blur and focus again element - to update model and detect if there was a change on form
+                            $(e.currentTarget.activeElement).blur();
+                            $(e.currentTarget.activeElement).focus();
+                        }
+                        cancelFn();
+                    }
+                });
+
             },
 
             /**
