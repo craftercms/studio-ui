@@ -186,6 +186,14 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
             }
 
 
+		$(document).on("keyup", function(e) {
+			if (e.keyCode === 27) {	// esc
+				self.contentPopupCancel();
+				$(document).off("keyup");
+			}
+		});
+
+
 		return content_type_dialog;
 	},
 
