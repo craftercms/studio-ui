@@ -31,15 +31,17 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 				bindEvents: function() {
 					var me = this;
 
-					$(document).one("keyup", function(e) {
+					$(document).on("keyup", function(e) {
 						if (e.keyCode === 13) {	// enter
 							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
 							me.updateTargeting(reportContainerEl);
+							$(document).off("keyup");
 						}
 
 						if (e.keyCode === 27) {	// esc
 							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
 							me.closeDialog(reportContainerEl);
+							$(document).off("keyup");
 						}
 					});
 				},
