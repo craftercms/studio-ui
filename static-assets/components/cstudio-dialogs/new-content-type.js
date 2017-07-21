@@ -41,7 +41,9 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 	createDialog: function() {
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
-		var newdiv = YDom.get("cstudio-wcm-popup-div");
+		var newdiv = YDom.get("cstudio-wcm-popup-div"),
+			me = this;
+
 		if (newdiv == undefined) {
 			newdiv = document.createElement("div");
 			document.body.appendChild(newdiv);
@@ -154,6 +156,15 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 		YEvent.addListener("createButton", "click", this.createClick, eventParams);
 
 		YEvent.addListener("createCancelButton", "click", this.popupCancelClick);
+
+		YEvent.addListener("createCancelButton", "click", this.popupCancelClick);
+
+		$(document).on("keyup", function(e) {
+			if (e.keyCode === 27) {	// esc
+				me.popupCancelClick();
+				$(document).off("keyup");
+			}
+		});
 
 		return dialog;
 	},

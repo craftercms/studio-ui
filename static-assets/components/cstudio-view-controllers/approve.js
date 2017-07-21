@@ -270,6 +270,7 @@
 
         var html = [],
             me = this,
+            submit = submit;
             $container = $(this.getComponent('tbody'));
 
         each(items, function (index, item) {
@@ -315,6 +316,21 @@
                 $(this).attr('class', 'ttClose parent-div-widget');
             }
         })
+
+        $(document).on("keyup", function(e) {
+            if (e.keyCode === 27) {	// esc
+                me.end();
+                $(document).off("keyup");
+            }
+            if (e.keyCode == 10 || e.keyCode == 13) {	// enter
+                var $approveBtn = $("#approveSubmit")
+
+                if(!$approveBtn.attr("disabled")) {
+                    $approveBtn.click();
+                    $(document).off("keyup");
+                }
+            }
+        });
 
     }
 
