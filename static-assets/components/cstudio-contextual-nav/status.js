@@ -26,7 +26,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 				},
 				
 				render: function() {
-					var el, iconColor;
+					var el, iconColor, iconClass;
 
                     function statusLoop() {
                             var CMgs = CStudioAuthoring.Messages;
@@ -39,12 +39,15 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                     switch(response.status.toLowerCase()) {
                                         case "busy":
                                             iconColor = "#FF8C00";
+                                            iconClass = "icon-orange";
                                             break;
                                         case "stopped":
                                             iconColor = "#FF0000";
+                                            iconClass = "icon-red";
                                             break;
                                         default:
                                             iconColor = "#7e9dbb";
+                                            iconClass = "icon-default";
                                     }
                                     YDom.setStyle(el.children[0], "color", iconColor);
                                     el.onclick = function() {
@@ -54,7 +57,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                             CMgs.format(contextNavLangBundle, "publishStatus"),
                                             response.message,
                                             null, // use default button
-                                            YAHOO.widget.SimpleDialog.ICON_INFO,
+                                            "fa fa-cloud-upload f18 " + iconClass,
                                             "studioDialog"
                                         );
                                     };

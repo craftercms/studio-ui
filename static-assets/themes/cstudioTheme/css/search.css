@@ -150,7 +150,7 @@ input[type="text"].cstudio-wcm-search-result-header-pagination-textbox {
 
 #cstudio-wcm-search-result{
 	background-color:#FFFFFF;
-	min-height: 550px;
+	min-height: 200px;
 	padding: 40px 30px;
 }
 
