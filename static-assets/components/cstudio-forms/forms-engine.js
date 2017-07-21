@@ -1613,6 +1613,7 @@ var CStudioForms = CStudioForms || function() {
                             }
                         }
                     }
+
                 }
 
             },
@@ -1894,11 +1895,15 @@ var CStudioForms = CStudioForms || function() {
 
                             formField.fieldDef = this.fieldDef;
                             try{
-                                if(formField.id == formField.form.sections[0].fields[0].id && !formField.form.sections[0].fields[0].inputEl.disabled){
-                                    formField.inputEl.focus();
+                                if(lastTwo){
+                                    for(var k=0; k < formField.form.sections[0].fields.length; k++)
+                                     if(!formField.form.sections[0].fields[k].inputEl.disabled){
+                                         formField.form.sections[0].fields[k].inputEl.focus();
+                                         return
+                                     }
                                 }
                             }catch (err){
-                                console.log(err);
+                                //console.log(err);
                             }
                             form.sectionsMap[section.title].notifyValidation();
 
