@@ -32,7 +32,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var me = this;
 
 					$(document).on("keyup", function(e) {
-						if (e.keyCode === 13) {	// enter
+						if (e.keyCode == 10 || e.keyCode == 13) {	// enter
 							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
 							me.updateTargeting(reportContainerEl);
 							$(document).off("keyup");
