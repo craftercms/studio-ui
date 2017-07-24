@@ -57,6 +57,18 @@
                 });
             }
             loadFn();
+
+            $(document).on("keyup", function(e) {
+                if (e.keyCode == 10 || e.keyCode == 13) {	// enter
+                    $("#deleteBtn").click();
+                    $(document).off("keyup");
+                }
+
+                if (e.keyCode === 27) {	// esc
+                    _this.end();
+                    $(document).off("keyup");
+                }
+            });
         },
         checkSelectedItems: function(selection) {
             eachfn(selection, function(i, item){

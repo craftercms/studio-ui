@@ -174,6 +174,13 @@
                 $(this).attr('class', 'ttClose parent-div-widget');
             }
         })
+
+        $(document).on("keyup", function(e) {
+            if (e.keyCode === 27) {	// esc
+                me.closeButtonClicked();
+                $(document).off("keyup");
+            }
+        });
     }
 
     function initDatePicker() {

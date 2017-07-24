@@ -227,6 +227,13 @@
                     });
             };
             loadFn();
+
+            $(document).on("keyup", function(e) {
+                if (e.keyCode === 27) {	// esc
+                    _this.end();
+                    $(document).off("keyup");
+                }
+            });
         },
 
         preFormatDate: function(dateTime) {

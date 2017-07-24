@@ -586,6 +586,13 @@ var nodeOpen = false;
 
                     dialog.show();
 
+                    $(".studioDialog").on("keyup", function(e) {
+                        if (e.keyCode === 27) {	// esc
+                            dialog.hide();
+                            $(document).off("keyup");
+                        }
+                    });
+
             },
 
             createNavBarDropDown: function(opt){
@@ -1676,10 +1683,11 @@ var nodeOpen = false;
 
                 $modal.find('.bd').html(template).end().appendTo(parentEl);
                 $modal.find('.studio-ice-container').css('z-index', 100525);
+
                 $('body').on("diff-end", function () {
                     $modal.remove();
                 });
-
+                
                 diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
                 diffUrl = versionTO ? diffUrl + '&versionTO=' + versionTO : diffUrl;
                 diffUrl += "&mode=iframe";
