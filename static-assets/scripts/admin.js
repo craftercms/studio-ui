@@ -275,7 +275,7 @@
                         templateUrl: template,
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
-                        keyboard: false,
+                        keyboard: true,
                         controller: 'UsersCtrl',
                         scope: $scope,
                         size: size ? size : ''
@@ -485,7 +485,7 @@
                         templateUrl: template,
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
-                        keyboard: false,
+                        keyboard: true,
                         controller: 'GroupsCtrl',
                         scope: $scope,
                         size: size ? size : ''
