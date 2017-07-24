@@ -252,7 +252,6 @@ CStudioAuthoring.Dialogs.DialogCopy = CStudioAuthoring.Dialogs.DialogCopy || (fu
         $("#cstudio-wcm-popup-div").on("keyup", function(e) {
             if (e.keyCode == 10 || e.keyCode == 13) {	// enter
                 $("#copyButton").click();
-                $("#cstudio-wcm-popup-div").off("keyup");
             }
 
             if (e.keyCode === 27) {	// esc
@@ -293,6 +292,7 @@ CStudioAuthoring.Dialogs.DialogCopy = CStudioAuthoring.Dialogs.DialogCopy || (fu
         var element = YDom.get("cstudio-wcm-popup-div");
 
         dialog.hide();
+        $("#cstudio-wcm-popup-div").off("keyup");
         element.parentNode.removeChild(element);
     }
 

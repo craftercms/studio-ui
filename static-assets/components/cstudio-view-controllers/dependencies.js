@@ -30,6 +30,7 @@
 
     function closeButtonClicked() {
         this.end();
+        $(document).off("keyup");
     }
 
     function itemsEventsDelegation() {

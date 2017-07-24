@@ -293,6 +293,7 @@
         },
         closeButtonActionClicked: function () {
             this.end();
+            $(document).off("keyup");
         },
         compareButtonActionClicked: function () {
             var tbody = this.getComponent('table.item-listing tbody'),

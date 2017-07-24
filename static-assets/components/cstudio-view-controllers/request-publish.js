@@ -27,6 +27,7 @@
 
 
     function closeButtonClicked() {
+        $(document).off("keyup");
         this.end();
     }
 

@@ -61,7 +61,6 @@
             $(document).on("keyup", function(e) {
                 if (e.keyCode == 10 || e.keyCode == 13) {	// enter
                     $("#deleteBtn").click();
-                    $(document).off("keyup");
                 }
 
                 if (e.keyCode === 27) {	// esc
@@ -227,6 +226,7 @@
 
         cancelActionClicked: function(btn, evt) {
             this.end();
+            $(document).off("keyup");
         }
     });
 

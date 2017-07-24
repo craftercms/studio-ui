@@ -305,6 +305,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					actionButtonsContainer.appendChild(cancelBtn);
 					cancelBtn.onclick = function() {
 						me.closeDialog(reportContainerEl);
+						$(document).off("keyup");
 					};
 
 					reportContainerEl.appendChild(actionButtonsContainer);
