@@ -59,7 +59,7 @@
             loadFn();
 
             $(document).on("keyup", function(e) {
-                if (e.keyCode == 10 || e.keyCode == 13) {	// enter
+                if (e.keyCode === 10 || e.keyCode === 13) {	// enter
                     $("#deleteBtn").click();
                 }
 
