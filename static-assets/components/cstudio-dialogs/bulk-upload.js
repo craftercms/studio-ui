@@ -42,6 +42,7 @@
             }, false);
             elem.querySelector('a.close').addEventListener('click', function (e) {
                 me.close();
+                Self.refreshNodes(oCurrentTextNode,false, false, null, null, true);
             }, false);
 
             this.id = id;
