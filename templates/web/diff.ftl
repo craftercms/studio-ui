@@ -103,6 +103,13 @@
             $('#cancelBtn').on('click', function() {
                 parent.$('body').trigger('diff-end');
             })
+
+            $(document).on("keyup", function(e) {
+                if (e.keyCode === 27) {	// esc
+                    parent.$('body').trigger('diff-end');
+                    $(document).off("keyup");
+                }
+            });
         })
     </script>
 

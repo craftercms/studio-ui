@@ -30,6 +30,7 @@
 
     function closeButtonClicked() {
         this.end();
+        $(document).off("keyup");
     }
 
     function itemsEventsDelegation() {
@@ -67,6 +68,13 @@
 
         select.val(dependenciesSelection);
         CStudioAuthoring.Service.loadItems(callback, data);
+
+        $(document).on("keyup", function(e) {
+            if (e.keyCode === 27) {	// esc
+                me.end();
+                $(document).off("keyup");
+            }
+        });
     }
 
     function traverse (items, referenceDate) {
