@@ -31,6 +31,7 @@
                 if (e.which === 27) {
                     me.close();
                     window.removeEventListener('keydown', escKeyListener, false);
+                    Self.refreshNodes(oCurrentTextNode,false, false, null, null, true);
                 }
             };
 
