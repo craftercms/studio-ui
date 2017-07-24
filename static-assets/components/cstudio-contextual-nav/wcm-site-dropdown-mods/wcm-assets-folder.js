@@ -1462,9 +1462,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             }
 
             dropbox.on(Dropbox.UPLOAD_SUCCESS_EVENT, function (data) {
-                if (treeNode.expanded){
-                    Self.refreshNodes(treeNode,false, false, null, null, true);
-                }
             });
 
         });
