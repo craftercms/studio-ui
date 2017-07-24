@@ -779,7 +779,7 @@
                 $scope.adminModal = $modal.open({
                     templateUrl: '/studio/static-assets/ng-views/create-site.html',
                     backdrop: 'static',
-                    keyboard: false,
+                    keyboard: true,
                     controller: 'SiteCtrl',
                     scope: $scope
                 });
