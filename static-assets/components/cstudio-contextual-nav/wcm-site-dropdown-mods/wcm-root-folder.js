@@ -2598,9 +2598,12 @@
                         eventYS.oldPath = null;
                         eventYS.parent = oCurrentTextNode.data.path == "/site/website" ? null : false;
                         document.dispatchEvent(eventYS);
-                            if(CStudioAuthoringContext.isPreview) {
-                                CStudioAuthoring.Operations.refreshPreview(contentTO.item);
-                            }
+
+                        if(contentTO.item.isPage){
+                            CStudioAuthoring.Operations.refreshPreview(contentTO.item);
+                        }else{
+                            CStudioAuthoring.Operations.refreshPreview();
+                        }
                     },
                     failure: function() { },
                     callingWindow: window
