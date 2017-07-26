@@ -12,6 +12,9 @@ CStudioForms.Datasources.CMISRepo= CStudioForms.Datasources.CMISRepo ||
             if(properties[i].name === "repoId") {
                 this.repoId = properties[i].value;
             }
+            if(properties[i].name === "studioPath") {
+                this.studioPath = properties[i].value;
+            }
         }
 
         return this;
@@ -21,7 +24,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
     add: function(control) {
         var _self = this;
-        CStudioAuthoring.Operations.openCMISBrowse(_self.repoId, _self.repoPath, "select", true, {
+        CStudioAuthoring.Operations.openCMISBrowse(_self.repoId, _self.repoPath, _self.studioPath, "select", true, {
             success: function(searchId, selectedTOs) {
 
                 var cb = function(repositories){
@@ -40,9 +43,15 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
 
                     for(var i=0; i<selectedTOs.length; i++) {
                         var item = selectedTOs[i];
-                        var uri = repo["download-url-regex"].replace("{item_id}",item.itemId);
+                        var uri;
                         var fileName = item.internalName;
                         var fileExtension = fileName.split(".").pop();
+                        if(!selectedTOs[i].clone){
+                            uri = repo["download-url-regex"].replace("{item_id}",item.itemId);
+                        }else{
+                            uri = _self.studioPath+fileName;
+                        }
+
                         control.insertItem(uri, uri, fileExtension);
                         control._renderItems();
                     }
@@ -83,7 +92,8 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
     getSupportedProperties: function() {
         return [
             { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
-            { label: CMgs.format(langBundle, "repositoryId"), name: "repoId", type: "string" }
+            { label: CMgs.format(langBundle, "repositoryId"), name: "repoId", type: "string" },
+            { label: CMgs.format(langBundle, "studioPath"), name: "studioPath", type: "string" }
         ];
     },
 
