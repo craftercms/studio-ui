@@ -1197,7 +1197,7 @@ var nodeOpen = false;
             /**
              * open a browse page for CMIS repo
              */
-            openCMISBrowse: function(repoId, path, mode, newWindow, callback) {
+            openCMISBrowse: function(repoId, path, studioPath, mode, newWindow, callback) {
 
                 var searchId = null;
 
@@ -1214,6 +1214,10 @@ var nodeOpen = false;
 
                 } if (path) {
                     browseUrl += "&path=" + path;
+                }
+
+                if (studioPath) {
+                    browseUrl += "&studioPath=" + studioPath;
                 }
 
                 if (!CStudioAuthoring.Utils.isEmpty(mode)) {
@@ -2790,6 +2794,7 @@ var nodeOpen = false;
             //CMIS
             getCMISContentBySearchUri: "/api/1/services/api/1/cmis/search.json",
             getCMISContentByBrowseUri: "/api/1/services/api/1/cmis/list.json",
+            getCMISCloneUri: "/api/1/services/api/1/cmis/clone.json",
 
             // WRITE OPS
             getRevertContentServiceUrl: "/api/1/services/api/1/content/revert-content.json",
@@ -5213,7 +5218,28 @@ var nodeOpen = false;
 
 
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            contentCloneCMIS: function(paramJson, callback){
+                var serviceUri = this.getCMISCloneUri;
+                var cloneJson = CStudioAuthoring.Utils.createContentItemsJson(paramJson);
+                var serviceCallback = {
+                    success: function(oResponse) {
+                        var respJson = oResponse.responseText;
+                        try {
+                            var clone = eval("(" + respJson + ")");
+                            callback.success && callback.success(clone);
+                        } catch(err) {
+                            callback.failure && callback.failure(err);
+                        }
+                    },
+                    failure: callback.failure
+                };
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, JSON.stringify(paramJson));
             }
+
         },
 
         /**

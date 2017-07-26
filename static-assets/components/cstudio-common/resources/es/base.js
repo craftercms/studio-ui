@@ -311,7 +311,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     copy: "Copiar",
     copyDescription: "Por favor seleccione las subpaginas que le gustaria copar.<br/> Al pegar, se conservarán las sub-páginas seleccionadas y su jerarquía posicional.",
     page: "Página",
-    loadingContents: "Loading contents ...",
+    loadingContents: "Cargando Contenidos...",
     cut: "Cut",
     cutDescription: "Por favor seleccione las subpaginas que le gustaria cortar.<br/> Al pegar, se conservarán las sub-páginas seleccionadas y su jerarquía posicional.",
 
@@ -633,6 +633,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     dataType: "Tipo de Dato",
     listName: "Nombre de la Lista",
     repositoryPath: "Ubicación del Repositorio",
+    studioPath: "Ruta de Studio",
     string: "Cadena de Caracteres",
     integer: "Numérico",
     float: "Decimal",

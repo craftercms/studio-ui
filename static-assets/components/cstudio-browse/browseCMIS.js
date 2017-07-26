@@ -200,7 +200,32 @@
         });
 
         $('.cstudio-wcm-result .results').delegate( ".clone-btn", "click", function() {
-            //console.log("clone"); //TODO
+            var contentTO = $(this.parentElement).closest(".cstudio-search-result").data("item"),
+                studioPath = CStudioAuthoring.Utils.getQueryParameterByName("studioPath"),
+                repoId = CStudioAuthoring.Utils.getQueryParameterByName("repoId"),
+                site = CStudioAuthoring.Utils.getQueryParameterByName("site"),
+                path = contentTO.browserUri,
+                paramsJson = {"site_id" : site, "cmis_repo_id" : repoId, "cmis_path" : path, "studio_path" : studioPath};
+            var callbackContent = {
+                success: function(response) {
+                    contentTO.clone = true;
+                    CStudioAuthoring.SelectedContent.selectContent(contentTO);
+                    me.saveContent();
+                },
+                failure: function(response){
+                    var error = JSON.parse(response.responseText)
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "error-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(browseLangBundle, "notification"),
+                        error.message,
+                        null,
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        "studioDialog"
+                    );
+                }
+            }
+            CStudioAuthoring.Service.contentCloneCMIS(paramsJson, callbackContent);
         });
 
         var pathLabel = CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\//g, " / ");

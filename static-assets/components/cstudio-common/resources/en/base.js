@@ -315,7 +315,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     copy: "Copy",
     copyDescription: "Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained.",
     page: "Page",
-    loadingContents: "Cargando Contenidos ...",
+    loadingContents: "Loading items...",
     cut: "Cut",
     cutDescription: "Please select any of the sub-pages you would like to batch cut.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained.",
 
@@ -657,6 +657,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     dataType: "Data Type",
     listName: "List Name",
     repositoryPath: "Repository Path",
+    studioPath: "Studio Path",
     repositoryId: "Repository Id",
     browsePath: "Browse Path",
     string: "String",
