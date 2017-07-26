@@ -239,7 +239,7 @@
                 YDom.addClass(panelEl, "acn-accordion-panel");
 
                 toggleEl.href = "#";
-                toggleEl.innerHTML = '<span data-translation="'+moduleConfig.config.title+'">'+moduleConfig.config.title+'</span>';
+                toggleEl.innerHTML = '<span data-translation="'+moduleConfig.config.title+'">'+ CMgs.format(previewLangBundle, moduleConfig.config.title) +'</span>';
                 moduleEl.id = moduleConfig.config.moduleName + '-elem';
                 headerEl.appendChild(toggleEl);
 
