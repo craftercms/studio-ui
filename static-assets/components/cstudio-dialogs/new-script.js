@@ -57,7 +57,7 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
                            '<div class="contentTypeOuter">'+
                                '<div>'+
                                  '<div class="newTempText">Provide a filename for the script</div>'+
-                                 '<input type="text" id="templateName" size="50"><br/>' +
+                                 '<input type="text" id="templateName" size="50" autofocus><br/>' +
                                '</div>' +
                            '</div> ' +
 						   '<div class="contentTypePopupBtn"> ' +
@@ -93,7 +93,8 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 			self: this,
 			path: path,
 			nameEl: document.getElementById('templateName')
-		};
+		},
+			me = this;
 		
 
 
@@ -103,6 +104,13 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 
 		YAHOO.util.Event.addListener("createCancelButton", "click", this.popupCancelClick);
 
+		YAHOO.util.Event.on(newdiv, 'keyup', function (e) {
+			if (e.which === 27) {	// esc
+				me.popupCancelClick();
+			} else if(e.which === 13 || e.which === 10){
+				me.createClick(e, eventParams);
+			}
+		}, newdiv);
 		
 		return dialog;
 	},

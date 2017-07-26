@@ -103,8 +103,12 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
 		YAHOO.util.Event.addListener("createCancelButton", "click", this.createPopupCancel);
 
 		YAHOO.util.Event.on(inputEl, 'keyup', function (e) {
-            if (e.which !== 13) {
-                me.processKey(e, inputEl);
+			if (e.which !== 13) {
+				if (e.which === 27) {	// esc
+					me.createPopupCancel();
+				}else{
+					me.processKey(e, inputEl);
+				}
             } else {
                 me.createPopupSubmit(e, eventParams);
             }
