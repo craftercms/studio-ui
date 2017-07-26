@@ -57,7 +57,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
                            '<div class="contentTypeOuter">'+
                                '<div>'+
                                  '<div class="newTempText">Provide a filename for the template</div>'+
-                                 '<input type="text" id="templateName" size="50"><br/>' +
+                                 '<input type="text" id="templateName" size="50" autofocus><br/>' +
                                '</div>' +
                            '</div> ' +
 						   '<div class="contentTypePopupBtn"> ' +
@@ -93,13 +93,22 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 			self: this,
 			nameEl: document.getElementById('templateName'),
             path: path
-		};
+		},
+			me = this;
 		
 		YAHOO.util.Event.addListener("templateName", "keypress", this.limitInput, eventParams);
 
 		YAHOO.util.Event.addListener("createButton", "click", this.createClick, eventParams);
 
 		YAHOO.util.Event.addListener("createCancelButton", "click", this.popupCancelClick);
+
+		YAHOO.util.Event.on(newdiv, 'keyup', function (e) {
+			if (e.which === 27) {	// esc
+				me.popupCancelClick();
+			} else if(e.which === 13 || e.which === 10){
+				me.createClick(e, eventParams);
+			}
+		}, newdiv);
 
 		
 		return dialog;
