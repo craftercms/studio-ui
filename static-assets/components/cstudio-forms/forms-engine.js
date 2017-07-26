@@ -1907,11 +1907,14 @@ var CStudioForms = CStudioForms || function() {
                             formField.fieldDef = this.fieldDef;
                             try{
                                 if(lastTwo){
-                                    for(var k=0; k < formField.form.sections[0].fields.length; k++)
-                                     if(!formField.form.sections[0].fields[k].inputEl.disabled){
-                                         formField.form.sections[0].fields[k].inputEl.focus();
-                                         return
-                                     }
+                                    setTimeout(function(lastTwo){
+                                        for(var k=0; k < formField.form.sections[0].fields.length; k++){
+                                            if(!formField.form.sections[0].fields[k].inputEl.disabled){
+                                                formField.form.sections[0].fields[k].inputEl.focus();
+                                                return
+                                            }
+                                        }
+                                    }, 1200);
                                 }
                             }catch (err){
                                 //console.log(err);
