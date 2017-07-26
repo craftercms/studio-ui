@@ -389,78 +389,65 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                 return Array.prototype.slice.call(list || [], 0);
             };
 
-            var getAllEntries = function(directoryReader, callback, cfg) {
-                var entries = [];
-
-                var readEntries = function () {
-                    directoryReader.readEntries(function (results) {
-                        if (!results.length) {
-                            entries.sort();
-                            callback(entries, cfg);
-                        } else {
-                            entries = entries.concat(toArray(results));
-                            readEntries();
-                        }
-                    });
-                };
-
-                readEntries();
-            };
-
-            var readDirectory = function(entries, cfg) {
-                for (var i = 0; i < entries.length; i++) {
-                    if (entries[i].isDirectory) {
-
-                        var cfgSubFolder = JSON.parse(JSON.stringify(cfg));
-                        cfgSubFolder.path = cfg.path + "/" + entries[i].name;
-
-                        var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/content/create-folder.json?site=" + cfg.site + "&path=" + cfg.path + "&name=" + entries[i].name);
-
-                        if(!document.getElementById("folder" + cfg.path + '/' + entries[i].name)){
-                            display.insertAdjacentHTML('beforeEnd',
-                                '<div class="folder-container" data-path="'+ cfg.path + "/"+ entries[i].name +'" id="folder' + cfg.path + '/' + entries[i].name + '"></div>');
-                        }
-
-                        var serviceCallback = {
-                            success: function(oResponse) {
-                                getAllEntries(
-                                    directoryReader,
-                                    readDirectory,
-                                    cfgSubFolder
-                                );
-                            },
-
-                            failure: function (response) {
-                                console.log(response.responseText);
-                            }
-                        };
-
-                        var directoryReader = entries[i].createReader();
-                        YConnect.asyncRequest('POST', serviceUri, serviceCallback);
-
-                    } else {
-                        entries[i].file(function(file){
-                            uploadFile(file, cfg);
-                        });
-                    }
-                }
-            };
-
             cfg.site = getParameter("site", cfg.target);
             cfg.path = getParameter("path", cfg.target);
 
-            for (var x = 0; x < length; x++) {
-                var entries = [];
+            function traverseFileTree(item, cfg) {
+                var path = cfg.path || "";
+                if (item.isFile) {
+                    item.file(function(file){
+                        uploadFile(file, cfg);
+                    });
+                } else if (item.isDirectory) {
 
+                    var cfgSubFolder = JSON.parse(JSON.stringify(cfg));
+                    cfgSubFolder.path = cfg.path + "/" + item.name;
+
+                    var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/content/create-folder.json?site=" + cfg.site + "&path=" + cfg.path + "&name=" + item.name);
+
+                    if(!document.getElementById("folder" + cfg.path + '/' + item.name)){
+                        display.insertAdjacentHTML('beforeEnd',
+                            '<div class="folder-container" data-path="'+ cfg.path + "/"+ item.name +'" id="folder' + cfg.path + '/' + item.name + '"></div>');
+                    }
+
+                    var serviceCallback = {
+                        success: function(oResponse) {
+                            // Get folder contents
+                            var dirReader = item.createReader();
+                            dirReader.readEntries(function(entries) {
+                                for (var i=0; i<entries.length; i++) {
+                                    traverseFileTree(entries[i], cfgSubFolder);
+                                }
+                            });
+                        },
+
+                        failure: function (response) {
+                            console.log(response.responseText);
+                        }
+                    };
+
+                    YConnect.asyncRequest('POST', serviceUri, serviceCallback);
+                }
+            }
+
+            var event = e;
+
+            var items = event.dataTransfer.items;
+            for (var i=0; i<items.length; i++) {
                 try{    //chrome feature to upload folders
-                    entries[0] = e.dataTransfer.items[x].webkitGetAsEntry();
-                    readDirectory(entries, cfg);
+                    // webkitGetAsEntry for chrome
+                    var item = items[i].webkitGetAsEntry();
+                    if (item) {
+                        traverseFileTree(item, cfg);
+                    }
                 }catch(e){      //other browsers
                     var file = files[x];
                     uploadFile(file, cfg);
                 }
-
             }
+
+
+            /////////////////////////////////////
 
             return false;
         },
