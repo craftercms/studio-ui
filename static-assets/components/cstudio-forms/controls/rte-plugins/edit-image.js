@@ -57,7 +57,8 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 				marginRight: imageElement.style.marginRight.replace("px",""),
 				marginBottom: imageElement.style.marginBottom.replace("px",""),
 				marginLeft: imageElement.style.marginLeft.replace("px",""),
-				description: imageElement.alt
+				description: imageElement.alt,
+				align: imageElement.align
 			};
 
 			var updateMarginInputFields = function updateMarginInputFields (imageElement) {
@@ -303,6 +304,7 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 				imageElement.style.marginBottom = imageProperties.marginBottom;
 				imageElement.style.marginLeft = imageProperties.marginLeft;
 				imageElement.alt = imageProperties.description;
+				imageElement.align = imageProperties.align;
 
 				me.hide();
 			});
