@@ -6865,7 +6865,7 @@ var nodeOpen = false;
                         }else{
                             mainIconClass = defaultIcons.navPage.class;
                         }
-                    }else if("taxonomy" === treeNodeTO.contentType){
+                    }else if(treeNodeTO.contentType.toLowerCase().indexOf("taxonomy") !== -1){
                         mainIconClass = defaultIcons.taxonomy.class;
                     }
                 }
