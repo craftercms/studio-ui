@@ -1979,6 +1979,7 @@
                     var formPath = oCurrentTextNode.data.formPagePath,
                         isContainer = oCurrentTextNode.data.isContainer,
                         isComponent = oCurrentTextNode.data.isComponent,
+                        isTaxonomy = (oCurrentTextNode.data.contentType).toLowerCase().indexOf("taxonomy") !== -1 ? true : false,
                         isLevelDescriptor = oCurrentTextNode.data.isLevelDescriptor,
                         isLocked = (oCurrentTextNode.data.lockOwner != "" && oCurrentTextNode.data.lockOwner != CStudioAuthoringContext.user),
                         isInProgress = oCurrentTextNode.data.inProgress,
@@ -2205,7 +2206,7 @@
 								menuId.removeChild(d);
 		                   	}
 		                   	else {
-			                    if (isComponent == true || isLevelDescriptor == true) {
+			                    if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
 			                        if (formPath == "" || formPath == undefined) {
 			                        	p_aArgs.addItems([ menuItems.viewOption ]);
                                         p_aArgs.addItems([ menuItems.separator ]);
