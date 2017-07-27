@@ -185,9 +185,11 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     increaseFormDialogForCrop: function(){
         var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        var formSize = parent.getFormSize(id);
+        var getFormSizeVal = getFormSize ? getFormSize : parent.getFormSize;
+        var setFormSizeVal = setFormSize ? setFormSize : parent.setFormSize;
+        var formSize = getFormSizeVal(id);
         if(formSize < 557){
-            parent.setFormSize(557, id);
+            setFormSizeVal(557, id);
         }
     },
 
