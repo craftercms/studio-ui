@@ -17,11 +17,27 @@ catch(err) {
 }
 
 var getFormSize = function(id){
-    return document.getElementsByClassName("studio-ice-container-"+id)[0].offsetHeight;
+    var formSize;
+
+    if(document.getElementsByClassName("studio-ice-container-"+id).length > 0){
+        formSize = document.getElementsByClassName("studio-ice-container-"+id)[0].offsetHeight;
+    }else{
+        formSize = parent.document.getElementsByClassName("studio-ice-container-"+id)[0].offsetHeight;
+    }
+
+    return formSize;
+
 }
 
 var setFormSize = function(height,id){
-    var form = document.getElementsByClassName("studio-ice-container-"+id)[0];
+    var form;
+
+    if(document.getElementsByClassName("studio-ice-container-"+id).length){
+        form = document.getElementsByClassName("studio-ice-container-"+id)[0];
+    }else{
+        form = parent.document.getElementsByClassName("studio-ice-container-"+id)[0];
+    }
+
     form.style.height = height+'px';
 }
 
