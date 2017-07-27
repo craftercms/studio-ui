@@ -647,8 +647,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     if(CStudioAuthoringContext.isPreview){
                                         try{
                                             var currentContentTO,
-                                                URLBrowseUri = pageParameter.replace("html","xml"),
-                                                contentTOBrowseUri = contentTO.item.uri.replace('/site/website', '').replace("/index.xml", "");
+                                                URLBrowseUri = pageParameter,
+                                                contentTOBrowseUri = contentTO.item.browserUri;
 
                                             if (URLBrowseUri == contentTOBrowseUri){
                                                 currentContentTO = null;
