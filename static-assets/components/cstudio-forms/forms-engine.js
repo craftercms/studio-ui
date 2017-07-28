@@ -1929,7 +1929,7 @@ var CStudioForms = CStudioForms || function() {
                                                 return
                                             }
                                         }
-                                    }, 1500);
+                                    }, 1900);
                                 }
                             }catch (err){
                                 //console.log(err);
