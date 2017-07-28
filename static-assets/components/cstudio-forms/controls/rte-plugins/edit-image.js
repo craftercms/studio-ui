@@ -49,6 +49,18 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 			var rteControl =  editor.contextControl,
 				imagePropertiesEl = document.getElementById("rte-image-properties");
 
+			var imageProperties = {
+				// height, width, flow, margin-top, margin-right ,margin-bottom, margin-left ,description
+				height: imageElement.height,
+				width: imageElement.width,
+				marginTop: imageElement.style.marginTop.replace("px",""),
+				marginRight: imageElement.style.marginRight.replace("px",""),
+				marginBottom: imageElement.style.marginBottom.replace("px",""),
+				marginLeft: imageElement.style.marginLeft.replace("px",""),
+				description: imageElement.alt,
+				align: imageElement.align
+			};
+
 			var updateMarginInputFields = function updateMarginInputFields (imageElement) {
 				var imageMarginTopEl = document.getElementById("rteImageTopMargin");
 				var imageMarginRightEl = document.getElementById("rteImageRightMargin");
@@ -72,6 +84,8 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 				YAHOO.util.Dom.removeClass(imagePropertiesEl, 'hidden');
 				imagePropertiesEl.innerHTML = "";
 			}
+
+
 
 		
 			var imageNameEl = document.createElement("div");
@@ -256,7 +270,46 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 			YAHOO.util.Dom.addClass(AltTextEl, 'rte-image-prop-altlink-alttext form-control');
 			YAHOO.util.Event.on(AltTextEl, 'keyup', function() {
 				imageElement.alt = AltTextEl.value;
-			}); 		
+			});
+
+			var imageActionButtons = document.createElement("div");
+			imageActionButtons.id = "image-edit-action-buttons";
+			imageActionButtons.style.cssText = "position: absolute; bottom: 0; width: 100%; text-align: center; margin-bottom: 10px;";
+
+			var me = this;
+
+			var saveBtn = document.createElement("input");
+			saveBtn.className = "btn btn-primary";
+			saveBtn.setAttribute("type", "button");
+			saveBtn.value = "Save";
+			saveBtn.style.cssText = "margin-right: 10px;";
+			imageActionButtons.appendChild(saveBtn);
+
+			YAHOO.util.Event.on(saveBtn, 'click', function() {
+				me.hide();
+			});
+
+			var cancelBtn = document.createElement("input");
+			cancelBtn.className = "btn btn-default";
+			cancelBtn.setAttribute("type", "button");
+			cancelBtn.value = "Cancel";
+			imageActionButtons.appendChild(cancelBtn);
+
+			YAHOO.util.Event.on(cancelBtn, 'click', function() {
+
+				imageElement.height = imageProperties.height;
+				imageElement.width = imageProperties.width;
+				imageElement.style.marginTop = imageProperties.marginTop;
+				imageElement.style.marginRight = imageProperties.marginRight;
+				imageElement.style.marginBottom = imageProperties.marginBottom;
+				imageElement.style.marginLeft = imageProperties.marginLeft;
+				imageElement.alt = imageProperties.description;
+				imageElement.align = imageProperties.align;
+
+				me.hide();
+			});
+
+			imagePropertiesEl.appendChild(imageActionButtons);
 
 		},
 
