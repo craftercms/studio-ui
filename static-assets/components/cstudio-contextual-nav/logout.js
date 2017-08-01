@@ -18,8 +18,8 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = CStudioAuthoring.ContextualNav.Wcm
 
             var serviceCallback = {
                 success: function() {
+                    CStudioAuthoring.Storage.eliminate('userSession');
                     window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
-
                 },
 
                 failure: function() {
