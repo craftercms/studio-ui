@@ -580,6 +580,18 @@ var nodeOpen = false;
                     dialog.setHeader(header);
                     dialog.render(document.body);
 
+                    var bdIcon = dialog.element.getElementsByClassName("fa")[0],
+                        bdHeight,
+                        element = dialog.element.getElementsByClassName("bd")[0],
+                        computedStyle = getComputedStyle(element);
+
+                    bdHeight = element.clientHeight;  // height with padding
+                    bdHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+
+                    if(bdHeight > bdIcon.offsetHeight){
+                        bdIcon.style.marginBottom = (bdHeight - 16) + "px";
+                    }
+
                     if(className){
                         dialog.element.firstElementChild.className +=(' '+className);
                     }
