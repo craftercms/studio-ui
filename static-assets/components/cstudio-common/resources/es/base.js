@@ -632,6 +632,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     rows: "Filas",
     dataType: "Tipo de Dato",
     listName: "Nombre de la Lista",
+    repositoryId: "Identificación del Repositorio",
     repositoryPath: "Ubicación del Repositorio",
     studioPath: "Ruta de Studio",
     string: "Cadena de Caracteres",

@@ -606,6 +606,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     rows: "행",
     dataType: "데이터 형식",
     listName: "목록 이름",
+    repositoryId: "식별 저장소",
     repositoryPath: "저장소 경로",
     studioPath: "스튜디오 경로",
     browsePath: "찾기 경로",
