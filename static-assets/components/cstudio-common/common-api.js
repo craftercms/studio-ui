@@ -1209,7 +1209,7 @@ var nodeOpen = false;
             /**
              * open a browse page for CMIS repo
              */
-            openCMISBrowse: function(repoId, path, studioPath, mode, newWindow, callback) {
+            openCMISBrowse: function(repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
 
                 var searchId = null;
 
@@ -1230,6 +1230,10 @@ var nodeOpen = false;
 
                 if (studioPath) {
                     browseUrl += "&studioPath=" + studioPath;
+                }
+
+                if (allowedOperations) {
+                    browseUrl += "&allowedOperations=" + allowedOperations;
                 }
 
                 if (!CStudioAuthoring.Utils.isEmpty(mode)) {
