@@ -38,7 +38,6 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
             success: function(searchId, selectedTOs) {
 
                 var cb = function(repositories){
-                    console.log("here");
 
                     var repo = null;
                     if(!repositories.length){
