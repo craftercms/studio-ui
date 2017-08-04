@@ -59,6 +59,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
                             uri = repo["download-url-regex"].replace("{item_id}",item.itemId);
                         }else{
                             uri = _self.studioPath+fileName;
+                            uri = uri.startsWith("/") ? uri : "/" + uri;
                         }
 
                         control.insertItem(uri, uri, fileExtension);
