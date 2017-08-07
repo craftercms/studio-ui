@@ -590,6 +590,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     fileBrowse: "Navegador de Archivos",
     hubspotForms: "Formularios Hubspot",
     imageFromRepository: "Imagen del repositorio",
+    imageFromCMISRepository: "Imagen del repositorio CMIS",
     salesforceCampaigns: "Campañas de Salesforce",
     treeContent: "Contenido del Árbol",
 
