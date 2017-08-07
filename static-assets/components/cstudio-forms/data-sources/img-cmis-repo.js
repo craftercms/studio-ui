@@ -123,9 +123,9 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
 
 	},
 
-   	getInterface: function() {
-   		return "image";
-   	},
+    getInterface: function() {
+        return "image";
+    },
 
 	getName: function() {
 		return "img-cmis-repo";
