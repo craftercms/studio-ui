@@ -5,22 +5,24 @@ CStudioSearch.ResultRenderer.Default = {
 		if (!CStudioAuthoring.Utils.isEmpty(contentTO.item.contentType)) {
 			var ctype = contentTO.item.contentType;
 		}
+
+		var contentType = CStudioSearch.getContentTypeName(contentTO.item.contentType);
 		
-		var onPreviewCode = "CStudioAuthoring.Service.lookupContentItem('" + 
+		var onPreviewCode = "Page" === contentType ? "CStudioAuthoring.Service.lookupContentItem('" +
 		                    CStudioAuthoringContext.site + 
 		                    "', '" +  
 		                    contentTO.item.uri +"', " +
 		                    "{ success:function(to) { CStudioAuthoring.Operations.openPreview(to.item, '" + 
 		                    window.id +
-		                    "', false, false); }, failure: function() {} }, false); return false;";
+		                    "', false, false); }, failure: function() {} }, false); return false;" : "";
 
 		var result = 
 			"<a href='#' " +
 				"onclick=\"" + onPreviewCode + "\" " +
-				"class='" + ((contentTO.item && contentTO.item.component)?"cstudio-search-no-preview":"cstudio-search-download-link") +
+				"class='" + ((contentTO.item && "Component" === contentType) ? "cstudio-search-no-preview":"cstudio-search-download-link") +
 			       	"'>"+contentTO.item.internalName+(contentTO.item.newFile?"*":"")+"</a>" +
 				"<span class='cstudio-search-download-link-additional'>  " + 
-					CStudioSearch.getContentTypeName(contentTO.item.contentType) + 
+					contentType +
 				"</span>" +
 				"<br />"+
 				"<div class='cstudio-search-result-detail'>";

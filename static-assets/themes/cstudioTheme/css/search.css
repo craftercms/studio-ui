@@ -192,9 +192,10 @@ a.cstudio-search-live-link{
 a.cstudio-search-no-preview,
 a.cstudio-search-no-preview:hover,
 a.cstudio-search-no-preview:visited {
-	font-size:1.38em;
-	color:#808080 !important;
-	cursor:auto !important;
+	font-size: 1.38em;
+    color: #808080 !important;
+    cursor: default !important;
+    text-decoration: none;
 }
 
 .cstudio-search-download-additional,.cstudio-search-download-link-additional{
