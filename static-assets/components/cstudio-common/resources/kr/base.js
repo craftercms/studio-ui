@@ -565,6 +565,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     fileBrowse: "찾아보기를 파일",
     hubspotForms: "허브 스팟 양식",
     imageFromRepository: "저장소에서 이미지",
+    imageFromCMISRepository: "CMIS 저장소의 이미지",
     salesforceCampaigns: "세일즈 포스 캠페인",
     treeContent: "트리 내용",
 
