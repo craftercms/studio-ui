@@ -155,6 +155,10 @@
     font-size: 14px;
 }
 
+.f20{
+    font-size: 20px;
+}
+
 .icon-yellow{
     color: #f6cc2f;
 }
@@ -173,6 +177,25 @@
 
 .icon-light-blue{
     color: #06c9ec;
+}
+
+.fa-inverse{
+    color:#fff;
+}
+
+.icon-container .studio-fa-stack .fa-video-square{
+    bottom: -5px;
+    font-size: 20px;
+}
+
+.icon-container .studio-fa-stack .studio-fa-stack-1x.fa-image-plug{
+    bottom: -1px;
+    left: 0px;
+}
+
+.icon-container .studio-fa-stack .studio-fa-stack-1x.fa-video-plug{
+    bottom: -2px;
+    left: 1px;
 }
 
 .cs-item-icon.icon-container .studio-fa-stack-2x {
