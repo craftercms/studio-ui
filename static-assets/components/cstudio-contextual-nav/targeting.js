@@ -360,6 +360,10 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var me = this,
 						properties = properties;
 
+					if(!properties.forEach){	//if only 1 item - returns item, not in array		
+						properties = [properties];
+					}
+
 					//properties from xml
 					properties.forEach(function(item){
 						me.model[item.name] = item.default_value ? item.default_value : "";
