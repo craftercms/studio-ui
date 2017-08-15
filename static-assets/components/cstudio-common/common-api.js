@@ -1290,7 +1290,11 @@ var nodeOpen = false;
                 var previewFrameEl = document.getElementById("engineWindow");
                 if(previewFrameEl){
                     if(!context || context.isComponent){
-                        previewFrameEl.src += '';
+                        try{
+                            previewFrameEl.contentWindow.location.reload();
+                        }catch(err){
+                            previewFrameEl.src += '';
+                        }
                     }else{
                         if (context && context.browserUri) {
                             amplify.publish(crafter.studio.preview.Topics.GUEST_CHECKIN, CStudioAuthoring.Operations.getPreviewUrl(context, false));
