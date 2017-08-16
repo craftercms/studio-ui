@@ -238,7 +238,7 @@
                     <div class="${classes}">
                     <#-- Taxonomy -->
                         <div class="iconName">
-                            <span class="fa fa-puzzle-piece mr5" style="color: #8fc6fd; font-size: 14px;"></span>
+                            <span class="fa fa-tags mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideTaxonomy")</script></span>
                         </div>
                     </div>

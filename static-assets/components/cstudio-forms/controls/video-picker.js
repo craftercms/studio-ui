@@ -42,7 +42,12 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         }
 
         obj.owner.notifyValidation();
-        obj.form.updateModel(obj.id, obj.getValue());
+
+        if(obj.videoData){
+            obj.form.updateModel(obj.id, obj.videoData);
+        }else{
+            obj.form.updateModel(obj.id, obj.getValue());
+        }
     },
 
     _onChangeVal: function(evt, obj) {
@@ -211,6 +216,10 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
                     success: function(videoData) {
                         this.videoPicker.inputEl.value = videoData.relativeUrl;
 
+                        if(videoData.external){
+                            this.videoPicker.videoData = videoData;
+                        }
+
                         var valid = false;
                         var message = '';
 
@@ -226,7 +235,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
                         } else {
                             this.videoPicker.previewEl.src = videoData.previewUrl;
                             this.videoPicker.previewEl.setAttribute("controls", "true");
-                            this.videoPicker.urlEl.innerHTML = videoData.relativeUrl;
+                            this.videoPicker.urlEl.innerHTML = videoData.relativeUrl.replace("?crafterCMIS=true","");
                             this.videoPicker.downloadEl.href = videoData.previewUrl;
 
                             this.videoPicker.addEl.value = "Replace";
@@ -452,14 +461,21 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         this.value = value;
         this.inputEl.value = value;
 
+        var external = value.indexOf("?crafterCMIS=true") !== -1;
+
         if (value == null || value == '') {
             this.noPreviewEl.style.display = "inline";
         } else {
-            this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value;
+            if(external){
+                this.previewEl.src = value;
+            }else{
+                this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value;
+            }
+
             this.previewEl.style.display = "block";
             this.previewEl.setAttribute("controls", "true");
             this.noPreviewEl.style.display = "none";
-            this.urlEl.innerHTML = value;
+            this.urlEl.innerHTML = external ? value.replace("?crafterCMIS=true","") : value;
 
             this.zoomEl.style.display = "inline-block";
             this.downloadEl.style.display = "inline-block";

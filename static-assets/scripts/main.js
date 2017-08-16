@@ -22,14 +22,20 @@
             $rootScope.imagesDirectory = Constants.PATH_IMG;
 
             $rootScope.$on('$stateChangeStart', function (event, toState) {
+                authService.validateSession().then(
+                    function successCallback(response) {
+                    }, function errorCallback() {
+                        authService.removeUser();
 
-                if (toState.name.indexOf('login') === -1 && !authService.isAuthenticated()) {
+                        if (toState.name.indexOf('login') === -1 && !authService.isAuthenticated()) {
 
-                    if (toState.name.indexOf('reset') === -1) {
-                        event.preventDefault();
-                        $state.go('login');
+                            if (toState.name.indexOf('reset') === -1) {
+                                event.preventDefault();
+                                $state.go('login');
+                            }
+                        }
                     }
-                }
+                );
 
                 if(toState.name.indexOf('users') !== -1 ){
                     // console.log('on users page');
@@ -250,8 +256,8 @@
     });
 
     app.service('authService', [
-        '$rootScope', '$http', '$document', 'Constants',
-        function ($rootScope, $http, $document, Constants) {
+        '$rootScope', '$http', '$document', 'Constants', '$cookies',
+        function ($rootScope, $http, $document, Constants, $cookies) {
 
             var user = null;
             var script = $document[0].getElementById('user');
@@ -259,6 +265,12 @@
             if (script) {
                 script = angular.element(script);
                 user = JSON.parse(script.html());
+            }
+
+            if(!user){
+                if($cookies['userSession']){
+                    user = JSON.parse($cookies[['userSession']]);
+                }
             }
 
             this.isAuthenticated = function () {
@@ -301,6 +313,7 @@
                     if(data.status == 200){
                         user = data.data;
                         $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
+                        $cookies['userSession'] = JSON.stringify(user);
                     }
                     return data.data;
                 });
@@ -309,10 +322,16 @@
             this.logout = function () {
                 $http.post(security('logout'), null);
                 user = null;
+
+                $cookies['userSession'] = null;
             };
 
             this.getUser = function () {
                 return user;
+            };
+
+            this.removeUser = function() {
+                $cookies['userSession'] = null;
             };
 
             this.getStudioInfo = function () {
@@ -339,6 +358,10 @@
 
             this.validateToken = function (data){
                 return $http.post(api('validate-token'), data);
+            };
+
+            this.validateSession = function() {
+                return $http.get(security('validate-session'));
             };
 
             this.getLoginLogo = function() {

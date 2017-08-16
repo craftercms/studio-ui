@@ -129,6 +129,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     search: "Search",
 
     logout: "Log Out",
+    close: "Close",
 
     variableLabel: "Template code examples",
 
@@ -615,6 +616,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     fileBrowse: "File Browse",
     hubspotForms: "Hubspot Forms",
     imageFromRepository: "Image from repository",
+    imageFromCMISRepository: "Image from CMIS repository",
     salesforceCampaigns: "Salesforce Campaigns",
     treeContent: "Tree content",
 
@@ -658,8 +660,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     listName: "List Name",
     repositoryPath: "Repository Path",
     studioPath: "Studio Path",
-    repositoryId: "Repository Id",
+    repositoryId: "Repository ID",
     browsePath: "Browse Path",
+    allowedOperations: "Allowed Operations",
+    clone: "Clone",
+    link: "Link",
+    cloneAndLink: "Clone and Link",
     string: "String",
     integer: "Integer",
     float: "Float",

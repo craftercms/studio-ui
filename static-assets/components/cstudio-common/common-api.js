@@ -580,6 +580,18 @@ var nodeOpen = false;
                     dialog.setHeader(header);
                     dialog.render(document.body);
 
+                    var bdIcon = dialog.element.getElementsByClassName("fa")[0],
+                        bdHeight,
+                        element = dialog.element.getElementsByClassName("bd")[0],
+                        computedStyle = getComputedStyle(element);
+
+                    bdHeight = element.clientHeight;  // height with padding
+                    bdHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+
+                    if(bdHeight > bdIcon.offsetHeight){
+                        bdIcon.style.marginBottom = (bdHeight - 16) + "px";
+                    }
+
                     if(className){
                         dialog.element.firstElementChild.className +=(' '+className);
                     }
@@ -1197,7 +1209,7 @@ var nodeOpen = false;
             /**
              * open a browse page for CMIS repo
              */
-            openCMISBrowse: function(repoId, path, studioPath, mode, newWindow, callback) {
+            openCMISBrowse: function(repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
 
                 var searchId = null;
 
@@ -1218,6 +1230,10 @@ var nodeOpen = false;
 
                 if (studioPath) {
                     browseUrl += "&studioPath=" + studioPath;
+                }
+
+                if (allowedOperations) {
+                    browseUrl += "&allowedOperations=" + allowedOperations;
                 }
 
                 if (!CStudioAuthoring.Utils.isEmpty(mode)) {
@@ -1274,7 +1290,11 @@ var nodeOpen = false;
                 var previewFrameEl = document.getElementById("engineWindow");
                 if(previewFrameEl){
                     if(!context || context.isComponent){
-                        previewFrameEl.src += '';
+                        try{
+                            previewFrameEl.contentWindow.location.reload();
+                        }catch(err){
+                            previewFrameEl.src += '';
+                        }
                     }else{
                         if (context && context.browserUri) {
                             amplify.publish(crafter.studio.preview.Topics.GUEST_CHECKIN, CStudioAuthoring.Operations.getPreviewUrl(context, false));

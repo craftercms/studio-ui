@@ -26,7 +26,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 				},
 				
 				render: function() {
-					var el, iconColor, iconClass;
+					var el, iconColor, iconClass, dialogEl;
 
                     function statusLoop() {
                             var CMgs = CStudioAuthoring.Messages;
@@ -36,28 +36,33 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                             CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
                                 success: function (response) {
                                     el = YDom.get("acn-status");
+                                    dialogEl = YDom.getElementsByClassName("dialog-elt")[0];
                                     switch(response.status.toLowerCase()) {
                                         case "busy":
                                             iconColor = "#FF8C00";
                                             iconClass = "icon-orange";
+                                            if(dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add("fa-spin");
                                             break;
                                         case "stopped":
                                             iconColor = "#FF0000";
                                             iconClass = "icon-red";
+                                            if(dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove("fa-spin");
                                             break;
                                         default:
                                             iconColor = "#7e9dbb";
                                             iconClass = "icon-default";
+                                            if(dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add("fa-spin");
                                     }
                                     YDom.setStyle(el.children[0], "color", iconColor);
+                                    YDom.setStyle(dialogEl, "color", iconColor);
                                     el.onclick = function() {
                                         CStudioAuthoring.Operations.showSimpleDialog(
                                             "error-dialog",
                                             CStudioAuthoring.Operations.simpleDialogTypeINFO,
                                             CMgs.format(contextNavLangBundle, "publishStatus"),
                                             response.message,
-                                            null, // use default button
-                                            "fa fa-cloud-upload f18 " + iconClass,
+                                            [{ text: CMgs.format(contextNavLangBundle, "close"),  handler:function(){this.hide();}, isDefault:false }], // use default button
+                                            "dialog-elt fa fa-circle-o-notch fa-spin f18 " + iconClass,
                                             "studioDialog"
                                         );
                                     };

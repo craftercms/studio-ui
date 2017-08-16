@@ -161,7 +161,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
 
         imagePicker.previewEl.src = imageData.previewUrl.replace(/ /g, "%20")+ "?" +new Date().getTime();
-        imagePicker.urlEl.innerHTML = imageData.relativeUrl;
+        imagePicker.urlEl.innerHTML = imageData.relativeUrl.replace("?crafterCMIS=true","");
         imagePicker.downloadEl.href = imageData.previewUrl;
 
         imagePicker.addEl.value = "Replace";
@@ -702,13 +702,19 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         this.value = value;
         this.inputEl.value = value;
 
+        var external = value.indexOf("?crafterCMIS=true") !== -1;
+
         if (value == null || value == '') {
             this.noPreviewEl.style.display = "inline";
         } else {
-            this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value.replace(/ /g, "%20");
+            if(external){
+                this.previewEl.src = value.replace(/ /g, "%20");
+            }else{
+                this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value.replace(/ /g, "%20");
+            }
             this.previewEl.style.display = "inline";
             this.noPreviewEl.style.display = "none";
-            this.urlEl.innerHTML = value;
+            this.urlEl.innerHTML = external ? value.replace("?crafterCMIS=true","") : value;
             this.downloadEl.href = CStudioAuthoringContext.previewAppBaseUri + value;
 
             this.addEl.value = "Replace";

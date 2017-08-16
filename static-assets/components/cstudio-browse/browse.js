@@ -547,7 +547,7 @@
         var me = this;
 
         if(this.siteContentDef){
-            CStudioBrothiswse.siteContentDef.resolveWith([]);
+            CStudioBrowse.siteContentDef.resolveWith([]);
         }
 
         this.siteContentDef = new $.Deferred();

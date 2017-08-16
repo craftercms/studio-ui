@@ -1,4 +1,4 @@
-<#-- <#assign view = RequestParameters["view"] /> -->
+<#assign allowedOperations = RequestParameters["allowedOperations"] />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -149,12 +149,16 @@
                   {{mimeType}}
                 </span>
                 <div>
-                    <span class="cstudio-search-component cstudio-search-component-button">
-                        <a class="btn btn-default cstudio-search-btn add-link-btn results-btn" href="#" role="button">{{labelAddLink}}</a>
-                    </span>
-                    <span class="cstudio-search-component cstudio-search-component-button">
-                      <a class="btn btn-default cstudio-search-btn clone-btn results-btn" href="#" role="button">{{labelClone}}</a>
-                    </span>
+                    <#if allowedOperations == "value_both" || allowedOperations == "value_link">
+                        <span class="cstudio-search-component cstudio-search-component-button">
+                            <a class="btn btn-default cstudio-search-btn add-link-btn results-btn" href="#" role="button">{{labelAddLink}}</a>
+                        </span>
+                    </#if>
+                    <#if allowedOperations == "value_both" || allowedOperations == "value_clone">
+                        <span class="cstudio-search-component cstudio-search-component-button">
+                          <a class="btn btn-default cstudio-search-btn clone-btn results-btn" href="#" role="button">{{labelClone}}</a>
+                        </span>
+                    </#if>
                 </div>
 
               </div>
