@@ -114,7 +114,13 @@
 
             if(!$(this).parent().attr("aria-expanded")){
                 var $node = $('#data').jstree(true).get_node(this.parentElement.id),
-                    path = $node.a_attr["data-path"];
+                    path = "cmis-root" === $node.a_attr["data-path"] ? "": $node.a_attr["data-path"],
+                    $resultsContainer = $('#cstudio-wcm-browse-result .results'),
+                    $resultsActions = $('#cstudio-wcm-browse-result .cstudio-results-actions');
+
+
+                $resultsContainer.empty();
+                $resultsActions.empty();
 
                 CStudioBrowseCMIS.getContent("browse", {
                     success: function(response) {
@@ -135,6 +141,8 @@
                             });
 
                             $("#" + $node.id + " > i").click();
+                        }else{
+                            me.renderNoItems();
                         }
 
                     },
@@ -353,6 +361,8 @@
                 if(!filesPresent){
                     me.renderNoItems();
                 }
+            }else{
+                me.renderNoItems();
             }
 
         }else{
