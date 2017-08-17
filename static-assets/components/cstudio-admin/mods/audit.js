@@ -12,12 +12,15 @@ CStudioAdminConsole.Tool.Audit = CStudioAdminConsole.Tool.Audit ||  function(con
 YAHOO.extend(CStudioAdminConsole.Tool.Audit, CStudioAdminConsole.Tool, {
     renderWorkarea: function() {
         var workareaEl = document.getElementById("cstudio-admin-console-workarea"),
-            auditUrl = '/studio/#/audit?iframe=true&site=' + CStudioAuthoringContext.siteId;
+            auditUrl = '/studio/#/audit?iframe=true&site=' + CStudioAuthoringContext.siteId,
+            actions = [];
 
         workareaEl.innerHTML =
             '<div class="iframe-container" style="position: relative; top: 50px; height: calc(100vh - 50px);">' +
                 '<iframe src="'+ auditUrl +'" style="width: 100%; height: 100%;"></iframe>' +
             '</div>';
+
+        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
     }
 
 });
