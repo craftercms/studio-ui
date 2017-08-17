@@ -7,8 +7,10 @@ CStudioAdminConsole.Tool.SyncFromRepository = CStudioAdminConsole.Tool.SyncFromR
  */
 YAHOO.extend(CStudioAdminConsole.Tool.SyncFromRepository, CStudioAdminConsole.Tool, {
     renderWorkarea: function() {
-        var workareaEl = document.getElementById("cstudio-admin-console-workarea");
+        var workareaEl = document.getElementById("cstudio-admin-console-workarea"),
+            actions = [];
         workareaEl.innerHTML = '';
+        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
         CStudioAuthoring.Service.syncFromRepo(CStudioAuthoringContext.site, {
             success: function(result) {
                 CStudioAuthoring.Operations.showSimpleDialog(
