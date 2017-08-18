@@ -2018,97 +2018,96 @@ var nodeOpen = false;
              * Duplicate operation
              */
             duplicateContent: function(site, path, opCallBack) {
-                var contentTO = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-
-                if(!contentTO) {
-                    // no item selected
-                    return;
-                }
-
-                var parentPath  = contentTO.uri;
-                
-		if(contentTO.uri.indexOf("index.xml") != -1) {
-                    parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
-                    parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
-                    parentPath += "/index.xml";
-                }
-
-                var refreshFn = function(to, newTo) {
-                    if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
-                        CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
-                    }
-
-                    CStudioAuthoring.Operations.refreshPreview(newTo);
-                    
-                    eventYS.data = to;
-                    eventYS.typeAction = "";
-                    eventYS.oldPath = null;
-                    eventYS.parent = false;
-                    document.dispatchEvent(eventYS);
-                };
-
-                CStudioAuthoring.Service.lookupContentItem(
-                    site, 
-                    parentPath, 
-                    {
-                        success: function(parentItemTo) {
-                            var copyCb = {
-                                success: function() {
-
-                                    var pasteCb = {
-                                        success: function(pasteResponse) {
-
-                                            var editCb = {
-                                                success: function(newItem) {
-                                                    refreshFn(parentItemTo.item, newItem.item);
-                                                    opCallBack.success();
-                                                },
-                                                failure: function(errorResponse) {
-                                                    opCallBack.failure(errorResponse);
-                                                },
-
-                                                cancelled: function() {
-                                                    refreshFn(parentItemTo.item, null);
-                                                },
-                                            };
-                 
-                                            CStudioAuthoring.Operations.editContent(
-                                                contentTO.contentType,
-                                                CStudioAuthoringContext.site,
-                                                pasteResponse.status[0], 
-                                                "", 
-                                                pasteResponse.status[0], 
-                                                false,
-                                                editCb,
-                                                new Array());
-                                        },
-                                        failure: function(errorResponse) {
-                                            opCallBack.failure(errorResponse);
-                                        },
-                                    };
-
-                                    CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
-                                },
-
-                                failure: function(errorResponse) {
-                                    opCallBack.failure(errorResponse);
+                if(path){
+                    CStudioAuthoring.Service.lookupContentItem(site, path, {
+                        success: function(content){
+                            var contentTO = content.item;
+                            var parentPath  = contentTO.uri;
+                            if(contentTO.uri.indexOf("index.xml") != -1) {
+                                parentPath = contentTO.uri.substring(0, contentTO.uri.lastIndexOf("/"));
+                                parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
+                                parentPath += "/index.xml";
+                            }
+                            
+                            var refreshFn = function(to, newTo) {
+                                if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
+                                    CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
                                 }
+            
+                                CStudioAuthoring.Operations.refreshPreview(newTo);
+                                
+                                eventYS.data = to;
+                                eventYS.typeAction = "";
+                                eventYS.oldPath = null;
+                                eventYS.parent = false;
+                                document.dispatchEvent(eventYS);
                             };
-
-                            //This method doesn't seem to do the rght thing
-                            //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
-                            var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site; 
-                            var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
-                            YAHOO.util.Connect.setDefaultPostHeader(false);
-                            YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                            YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
-                        },
-                        failure: function() {
+            
+                            CStudioAuthoring.Service.lookupContentItem(
+                                site, 
+                                parentPath, 
+                                {
+                                    success: function(parentItemTo) {
+                                        var copyCb = {
+                                            success: function() {
+            
+                                                var pasteCb = {
+                                                    success: function(pasteResponse) {
+            
+                                                        var editCb = {
+                                                            success: function(newItem) {
+                                                                refreshFn(parentItemTo.item, newItem.item);
+                                                                opCallBack.success();
+                                                            },
+                                                            failure: function(errorResponse) {
+                                                                opCallBack.failure(errorResponse);
+                                                            },
+            
+                                                            cancelled: function() {
+                                                                refreshFn(parentItemTo.item, null);
+                                                            },
+                                                        };
+                             
+                                                        CStudioAuthoring.Operations.editContent(
+                                                            contentTO.contentType,
+                                                            CStudioAuthoringContext.site,
+                                                            pasteResponse.status[0], 
+                                                            "", 
+                                                            pasteResponse.status[0], 
+                                                            false,
+                                                            editCb,
+                                                            new Array());
+                                                    },
+                                                    failure: function(errorResponse) {
+                                                        opCallBack.failure(errorResponse);
+                                                    },
+                                                };
+            
+                                                CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
+                                            },
+            
+                                            failure: function(errorResponse) {
+                                                opCallBack.failure(errorResponse);
+                                            }
+                                        };
+            
+                                        //This method doesn't seem to do the rght thing
+                                        //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
+                                        var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site; 
+                                        var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
+                                        YAHOO.util.Connect.setDefaultPostHeader(false);
+                                        YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+                                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
+                                    },
+                                    failure: function() {
+                                    }
+                                },
+                                false,
+                                false);
                         }
-                    },
-                    false,
-                    false);
-            },		
+                    })
+                }
+            },	
             /**
              * create new template
              */

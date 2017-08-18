@@ -1824,6 +1824,68 @@ treeNode.getHtml = function() {
                             var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
                             var isDeleteAllowed = CStudioAuthoring.Service.isDeleteAllowed(results.permissions) && !isOpen;
 
+                            var publishAllowed = function (){
+                                //add publish/request
+                                var isRelevant = !(oCurrentTextNode.data.lockOwner != "") && !(oCurrentTextNode.data.status.toLowerCase().indexOf("live") !== -1);
+
+                                if(isRelevant) {
+
+                                    if( CStudioAuthoring.Service.isPublishAllowed(results.permissions)){
+                                        p_aArgs.addItems([
+                                            {
+                                                text: CMgs.format(siteDropdownLangBundle, "wcmContentApprove"),
+                                                onclick: { fn: function(){
+                                                    var callback = {
+                                                        success: function(contentTO) {
+                                                            var selectedContent = [];
+                                                            selectedContent.push(contentTO.item);
+
+                                                            CStudioAuthoring.Operations.approveCommon(
+                                                                CStudioAuthoringContext.site,
+                                                                selectedContent,
+                                                                false
+                                                            );
+                                                        },
+                                                        failure: function() {
+
+                                                        }
+                                                    }
+
+                                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                                } }
+                                            }
+                                        ]);
+                                    }else {
+                                        if((oCurrentTextNode.data.status.toLowerCase().indexOf("submitted") === -1) &&
+                                            (oCurrentTextNode.data.status.toLowerCase().indexOf("scheduled") === -1)){
+                                            p_aArgs.addItems([
+                                                {
+                                                    text: CMgs.format(siteDropdownLangBundle, "wcmContentSubmit"),
+                                                    onclick: { fn: function(){
+                                                        var callback = {
+                                                            success: function(contentTO) {
+                                                                var selectedContent = [];
+                                                                selectedContent.push(contentTO.item);
+
+                                                                CStudioAuthoring.Operations.submitContent(
+                                                                    CStudioAuthoringContext.site,
+                                                                    selectedContent
+                                                                );
+                                                            },
+                                                            failure: function() {
+
+                                                            }
+                                                        }
+
+                                                        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                                    } }
+                                                }
+                                            ]);
+                                        }
+                                    }
+                                }
+                            };
+
 		                    if(isLocked == true && isWrite == true) {
 		                    	p_aArgs.addItems([ menuItems.viewOption ]);
 
@@ -1919,6 +1981,11 @@ treeNode.getHtml = function() {
                                 }
                                 p_aArgs.addItems([ menuItems.separator ]);
                                 p_aArgs.addItems([ menuItems.copyOption ]);
+
+                                if(oCurrentTextNode.data.contentType != "folder") {
+                                    p_aArgs.addItems([ menuItems.separator ]);
+                                    publishAllowed();
+                                }
 
 		                   		p_aArgs.render();
 								menuId.removeChild(d);
@@ -2109,11 +2176,19 @@ treeNode.getHtml = function() {
                                                         this.args.addItems([ menuItems.pasteOption ]);
                                                     }
                                                 }
-
                                             }
                                             Self.copiedItem = Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"));
-			                            }
+                                        }
 
+                                        if(isWrite && ("/site/website/index.xml" != oCurrentTextNode.data.uri) && ("folder" != oCurrentTextNode.data.contentType)){
+                                            p_aArgs.addItems([ menuItems.duplicateOption ]);
+                                        }
+
+                                        if(oCurrentTextNode.data.contentType != "folder") {
+                                            p_aArgs.addItems([ menuItems.separator ]);
+                                            publishAllowed();
+                                        }
+                                    
 			                            if(isUserAllowed) {
 			                            	this.args.addItems([ menuItems.separator ]);
 			                            	this.args.addItems([ menuItems.revertOption ]);
@@ -2181,33 +2256,33 @@ treeNode.getHtml = function() {
                             var isRelevant = !(oCurrentTextNode.data.lockOwner != "") && !(oCurrentTextNode.data.status.toLowerCase().indexOf("live") !== -1);
 
                             if(isRelevant && oCurrentTextNode.data.contentType != "folder") {
-                                p_aArgs.addItems([ menuItems.separator ]);
+                                // p_aArgs.addItems([ menuItems.separator ]);
 
                                 if( CStudioAuthoring.Service.isPublishAllowed(results.permissions)){
-                                    p_aArgs.addItems([
-                                        {
-                                            text: CMgs.format(siteDropdownLangBundle, "wcmContentApprove"),
-                                            onclick: { fn: function(){
-                                                var callback = {
-                                                    success: function(contentTO) {
-                                                        var selectedContent = [];
-                                                        selectedContent.push(contentTO.item);
+                                    // p_aArgs.addItems([
+                                    //     {
+                                    //         text: CMgs.format(siteDropdownLangBundle, "wcmContentApprove"),
+                                    //         onclick: { fn: function(){
+                                    //             var callback = {
+                                    //                 success: function(contentTO) {
+                                    //                     var selectedContent = [];
+                                    //                     selectedContent.push(contentTO.item);
 
-                                                        CStudioAuthoring.Operations.approveCommon(
-                                                            CStudioAuthoringContext.site,
-                                                            selectedContent,
-                                                            false
-                                                        );
-                                                    },
-                                                    failure: function() {
+                                    //                     CStudioAuthoring.Operations.approveCommon(
+                                    //                         CStudioAuthoringContext.site,
+                                    //                         selectedContent,
+                                    //                         false
+                                    //                     );
+                                    //                 },
+                                    //                 failure: function() {
 
-                                                    }
-                                                }
+                                    //                 }
+                                    //             }
 
-                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
-                                            } }
-                                        }
-                                    ]);
+                                    //             CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                    //         } }
+                                    //     }
+                                    // ]);
                                 }else {
                                     p_aArgs.addItems([
                                         {
@@ -2304,7 +2379,9 @@ treeNode.getHtml = function() {
 
 					copyOption: { text: CMgs.format(siteDropdownLangBundle, "copy"), onclick: { fn: Self.copyTree, obj:tree } },
 
-					pasteOption: { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: Self.pasteContent} },
+                    pasteOption: { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: Self.pasteContent} },
+                    
+                    duplicateOption: { text: CMgs.format(siteDropdownLangBundle, "duplicate"), onclick: { fn: Self.duplicateContent} },
 
 					revertOption: { text: CMgs.format(siteDropdownLangBundle, "history"), onclick: { fn: Self.revertContent, obj:tree } },
 
@@ -2716,6 +2793,37 @@ treeNode.getHtml = function() {
 				CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
             },
 
+            duplicateContent: function(sType, args, tree) {
+                var duplicateContentCallback = {
+                    success : function() {
+                        if(YDom.get("duplicate-loading")){
+                            YDom.get("duplicate-loading").style.display = "none";
+                        }
+                    },
+                    failure: function() {
+                        if(YDom.get("duplicate-loading")) {
+                            YDom.get("duplicate-loading").style.display = "none";
+                        }
+                    }
+                };
+
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "duplicate-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Duplicate",
+                    "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
+                    [{ text:"Duplicate", handler: function() {
+                        this.hide();
+                        CStudioAuthoring.Operations.duplicateContent(
+                            CStudioAuthoringContext.site,
+                            oCurrentTextNode.data.uri,
+                            duplicateContentCallback);
+                    }, isDefault:false },
+                    { text:CMgs.format(formsLangBundle, "cancel"),  handler:function(){this.hide();}, isDefault:true }],
+                    YAHOO.widget.SimpleDialog.ICON_WARN,
+                    "studioDialog"
+                );
+            },
 
             copyTree:function(sType, args, tree) {
 
