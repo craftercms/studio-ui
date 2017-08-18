@@ -196,6 +196,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     cut: "절단",
     copy: "복사",
     paste: "풀",
+    duplicate: "복제",
     history: "역사",
     unlock: "잠금 해제",
     noActionsAvailable: "가능한 조치가 없습니다",
