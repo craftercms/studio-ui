@@ -11,6 +11,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 		"<div id='content-type-tools'>" +
 		"" +
 		"</div>";
+
+        var actions = [];
+        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 	}
 });
 

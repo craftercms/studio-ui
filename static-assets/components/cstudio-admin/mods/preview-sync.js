@@ -7,8 +7,10 @@ CStudioAdminConsole.Tool.PreviewSync = CStudioAdminConsole.Tool.PreviewSync ||  
  */
 YAHOO.extend(CStudioAdminConsole.Tool.PreviewSync, CStudioAdminConsole.Tool, {
     renderWorkarea: function() {
-        var workareaEl = document.getElementById("cstudio-admin-console-workarea");
+        var workareaEl = document.getElementById("cstudio-admin-console-workarea"),
+            actions = [];
         workareaEl.innerHTML = '';
+        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
         CStudioAuthoring.Service.previewServerSyncAll(CStudioAuthoringContext.site, {
             success: function() {
                 CStudioAuthoring.Operations.showSimpleDialog(

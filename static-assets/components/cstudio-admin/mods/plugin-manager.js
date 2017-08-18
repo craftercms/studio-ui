@@ -7,8 +7,11 @@ CStudioAdminConsole.Tool.PluginManager = CStudioAdminConsole.Tool.PluginManager 
 
 YAHOO.extend(CStudioAdminConsole.Tool.PluginManager, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
-		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
+		var workareaEl = document.getElementById("cstudio-admin-console-workarea"),
+            actions = [];
 		workareaEl.innerHTML = "<h1>Plugins</h1>";
+
+        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 	}
 });
 
