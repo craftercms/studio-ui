@@ -236,6 +236,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     cut: "Cortar",
     copy: "Copiar",
     paste: "Pegar",
+    duplicate: "Duplicar",
     history: "Historial",
     unlock: "Desbloquear",
     noActionsAvailable: "No Hay Acciones Disponibles",
