@@ -2140,7 +2140,7 @@ sh6 {
 
 /* Structural & Behavioural Styles */
 .studio-view, .studio-components-panel {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 12px;
   line-height: 1.42857;
   color: #333333;
@@ -2321,7 +2321,7 @@ sh6 {
   .studio-view h1, .studio-components-panel h1, .studio-view h2, .studio-components-panel h2, .studio-view h3, .studio-components-panel h3, .studio-view h4, .studio-components-panel h4, .studio-view h5, .studio-components-panel h5, .studio-view h6, .studio-components-panel h6,
   .studio-view .h1,
   .studio-components-panel .h1, .studio-view .h2, .studio-components-panel .h2, .studio-view .h3, .studio-components-panel .h3, .studio-view .h4, .studio-components-panel .h4, .studio-view .h5, .studio-components-panel .h5, .studio-view .h6, .studio-components-panel .h6 {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-weight: 500;
     line-height: 1.1;
     color: inherit; }
@@ -2635,7 +2635,7 @@ sh6 {
     font-size: 10px;
     -webkit-tap-highlight-color: transparent; }
   .studio-view body, .studio-components-panel body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 12px;
     line-height: 1.42857;
     color: #333333;
@@ -2935,7 +2935,6 @@ sh6 {
   box-shadow: rgba(10, 10, 10, 0.49) 0px 2px 4px;
   color: #444444;
   background-color: #D2DAE3;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 12px;
   padding: 14px;
   font-weight: bold; }
