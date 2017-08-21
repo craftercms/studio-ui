@@ -63,7 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
                         if(!selectedTOs[i].clone){
                             uri = repo["download-url-regex"].replace("{item_id}",item.itemId) + "?crafterCMIS=true";
                         }else{
-                            uri = _self.studioPath+fileName;
+                            uri = _self.studioPath.endsWith("/") ? _self.studioPath+fileName : _self.studioPath+ "/" +fileName;
                         }
 
                         var imageData = {
