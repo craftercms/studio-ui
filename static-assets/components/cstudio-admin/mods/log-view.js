@@ -96,7 +96,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 			
 			var since = CStudioAdminConsole.Tool.LogView.currMillis;
 			CStudioAdminConsole.Tool.LogView.currMillis = new Date().getTime();
-			var serviceUri = "/api/1/monitoring/log.json?since="+since+"&siteId="+CStudioAuthoringContext.site;
+			var serviceUri = "/api/1/monitoring/log.json?since="+since+"&site="+CStudioAuthoringContext.site;
 			YConnect.asyncRequest("GET", serviceUri, cb);
 		}
 		else {
