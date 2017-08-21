@@ -3469,7 +3469,7 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   width: 290px;
   height: auto !important;
   border-radius: 6px;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  font-family: 'Open Sans', sans-serif; }
 
 .acn-tooltip {
   margin: 5px auto;
@@ -4871,8 +4871,7 @@ span.acn-canned-search {
 /* --- Preview Tools Overlay --- */
 #preview-tools-panel-container {
   border: none;
-  border-radius: 4px;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  border-radius: 4px; }
   #preview-tools-panel-container #ice-tools-panel-elem .studio-view {
     overflow: hidden; }
   #preview-tools-panel-container .channel-width,
@@ -4911,7 +4910,7 @@ span.acn-canned-search {
     #preview-tools-panel-container .edit-code.template {
       margin-right: 4px; }
     #preview-tools-panel-container .edit-code button {
-      padding: 6px 0px !important;
+      padding: 7px 0px !important;
       width: 119px; }
     #preview-tools-panel-container .edit-code .acn-ptools-ice-label {
       margin-left: 0px; }
@@ -5088,7 +5087,7 @@ span.acn-canned-search {
 .full-screen-overlay .message .pad {
   padding: 25px;
   padding-bottom: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 500;
   color: #555555; }
 
@@ -6030,7 +6029,7 @@ html {
   -webkit-tap-highlight-color: transparent; }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 12px;
   line-height: 1.42857;
   color: #333333;
@@ -6111,7 +6110,7 @@ hr {
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 500;
   line-height: 1.1;
   color: inherit; }
@@ -13941,7 +13940,7 @@ address {
   z-index: 1070;
   display: block;
   visibility: visible;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 11px;
   font-weight: normal;
   line-height: 1.4;
@@ -14064,7 +14063,7 @@ address {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 12px;
   font-weight: normal;
   line-height: 1.42857;
