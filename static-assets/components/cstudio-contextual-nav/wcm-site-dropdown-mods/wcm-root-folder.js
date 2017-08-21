@@ -2137,8 +2137,8 @@
 			                        item: oCurrentTextNode.data
 			                    };
 
-			                    CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
-
+                                CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
+                    
 			                    p_aArgs.render();
 								menuId.removeChild(d);
 		                    }
@@ -2216,6 +2216,7 @@
 			                        		}
 			                        	}
                                         p_aArgs.addItems([ menuItems.copyOption ]);
+                                        
 
 			                        } else {
 			                        	if (isUserAllowed) {
@@ -2298,7 +2299,7 @@
 
 						                        	p_aArgs.addItems([ menuItems.separator ]);
 						                        	p_aArgs.addItems([ menuItems.cutOption ]);
-						                        	p_aArgs.addItems([ menuItems.copyOption ]);
+                                                    p_aArgs.addItems([ menuItems.copyOption ]);
 						                        } else {
 						                        	p_aArgs.addItems([ menuItems.viewOption ]);
                                                     if (isCreateContentAllowed) {
@@ -2394,7 +2395,11 @@
 
                                             }
                                             Self.copiedItem = Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"));
-			                            }
+                                        }
+                                        
+                                        if(isWrite && ("/site/website/index.xml" != oCurrentTextNode.data.uri) && ("folder" != oCurrentTextNode.data.contentType)){
+                                            p_aArgs.addItems([ menuItems.duplicateOption ]);
+                                        }
 
                                         if((oCurrentTextNode.data.lockOwner != ""
                                             && ((CStudioAuthoringContext.role === "admin") || (CStudioAuthoringContext.role === "site_admin")))
@@ -2507,7 +2512,9 @@
 
 					copyOption: { text: CMgs.format(siteDropdownLangBundle, "copy"), onclick: { fn: Self.copyTree, obj:tree } },
 
-					pasteOption: { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: Self.pasteContent} },
+                    pasteOption: { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: Self.pasteContent} },
+                    
+                    duplicateOption: { text: CMgs.format(siteDropdownLangBundle, "duplicate"), onclick: { fn: Self.duplicateContent} },
 
 					revertOption: { text: CMgs.format(siteDropdownLangBundle, "history"), onclick: { fn: Self.revertContent, obj:tree } },
 
@@ -2948,8 +2955,38 @@
 
 				CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
             },
+            duplicateContent: function(sType, args, tree) {
 
+                var duplicateContentCallback = {
+                    success : function() {
+                        if(YDom.get("duplicate-loading")){
+                            YDom.get("duplicate-loading").style.display = "none";
+                        }
+                    },
+                    failure: function() {
+                        if(YDom.get("duplicate-loading")) {
+                            YDom.get("duplicate-loading").style.display = "none";
+                        }
+                    }
+                };
 
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "duplicate-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    "Duplicate",
+                    "A new copy of this item and all of it's item specific content will be created. Are you sure you wish to proceed?",
+                    [{ text:"Duplicate", handler: function() {
+                        this.hide();
+                        CStudioAuthoring.Operations.duplicateContent(
+                            CStudioAuthoringContext.site,
+                            oCurrentTextNode.data.uri,
+                            duplicateContentCallback);
+                    }, isDefault:false },
+                    { text:CMgs.format(formsLangBundle, "cancel"),  handler:function(){this.hide();}, isDefault:true }],
+                    YAHOO.widget.SimpleDialog.ICON_WARN,
+                    "studioDialog"
+                );
+            },
             copyTree:function(sType, args, tree) {
 
                 var assignTemplateCb = {
