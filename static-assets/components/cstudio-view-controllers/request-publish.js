@@ -28,6 +28,7 @@
 
     function closeButtonClicked() {
         $(document).off("keyup");
+        $('.date-picker').datetimepicker('hide');
         this.end();
     }
 
@@ -178,7 +179,7 @@
 
         $(document).on("keyup", function(e) {
             if (e.keyCode === 27) {	// esc
-                me.closeButtonClicked();
+                me.closeButtonActionClicked();
                 $(document).off("keyup");
             }
         });
