@@ -88,9 +88,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			var _self = this._self;
 			var selectedItems = filterByEl.selectedIndex;
 			
-			filterByEl.options[0]=new Option("Pages", "pages", true, false);
-			filterByEl.options[1]=new Option("Components", "components", true, false);
-			filterByEl.options[2]=new Option("Documents", "documents", true, false);
+			filterByEl.options[0]=new Option("Pages", "page", true, false);
+			filterByEl.options[1]=new Option("Components", "component", true, false);
+			filterByEl.options[2]=new Option("Documents", "document", true, false);
 			filterByEl.options[3]=new Option("All", "all", true, false);
 			filterByEl.options[selectedItems].selected =true;
 			var newState = filterByEl.value;
@@ -213,7 +213,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
                 '<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                 // '<span class="iconRow ', itemIconStatus, '"></span>',
 				CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-			'<a class="anchorRow' , (item.disabled == true ? ' dashboard-item disabled' : '') , '" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true ? 'previewLink' : 'non-previewable-link'), '">',
+			'<a class="anchorRow' , (item.disabled == true ? ' dashboard-item disabled' : '') , (item.previewable == true ? ' previewLink' : ' non-previewable-link') , '" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', '">',
                     itemNameForDisplay,  (item.isNew == true) ? ' <span style="font-size:16px;">*</span>' : '',
                     '</a>',
                 '</div>',

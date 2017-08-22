@@ -81,9 +81,9 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
 
             var _self = this._self;
             var selectedItems = filterByEl.selectedIndex;
-            filterByEl.options[0]=new Option(CMgs.format(langBundle, "dashletFilterPages"), "pages", true, false);
-            filterByEl.options[1]=new Option(CMgs.format(langBundle, "dashletFilterComponents"), "components", true, false);
-            filterByEl.options[2]=new Option(CMgs.format(langBundle, "dashletFilterDocuments"), "documents", true, false);
+            filterByEl.options[0]=new Option(CMgs.format(langBundle, "dashletFilterPages"), "page", true, false);
+            filterByEl.options[1]=new Option(CMgs.format(langBundle, "dashletFilterComponents"), "component", true, false);
+            filterByEl.options[2]=new Option(CMgs.format(langBundle, "dashletFilterDocuments"), "document", true, false);
             filterByEl.options[3]=new Option(CMgs.format(langBundle, "dashletFilterAll"), "all", true, false);
             filterByEl.options[selectedItems].selected =true;
             var newState = filterByEl.value;
@@ -184,7 +184,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
                     '<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                         // '<span class="iconRow ', itemIconStatus, '"></span>',
                         CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-                '<a class="anchorRow', (item.disabled == true ? ' dashboard-item disabled' : '') ,'" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true) ? "previewLink" : "non-previewable-link", '">',
+                '<a class="anchorRow', (item.disabled == true ? ' dashboard-item disabled' : '') , (item.previewable == true ? ' previewLink' : ' non-previewable-link') , '" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', '">',
                             displayName, (item.isNew == true) ? ' <span style="font-size:16px;">*</span>' : '',
                         '</a>',
                     '</div>',
