@@ -238,6 +238,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     cut: "Cut",
     copy: "Copy",
     paste: "Paste",
+    duplicate: "Duplicate",
     history: "History",
     unlock: "Unlock",
     noActionsAvailable: "No Actions Available",
