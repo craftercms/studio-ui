@@ -85,9 +85,11 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
             $(divMouse).css('left',e.pageX + 4 );
             $(divMouse).css('top',e.pageY );
         });
-        $body.keyup(function(e) {
+        $(window.parent.document).keyup(function(e) {
+            var _self = this;
             if (e.keyCode == 27){ // esc
                 me.done();
+                _self.css( 'cursor', 'pointer' );
             }
         });
 
