@@ -76,9 +76,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
 			
 			var _self = this._self;
 			var selectedItems = filterByEl.selectedIndex;
-			filterByEl.options[0]=new Option(CMgs.format(langBundle, "dashletApprovedSchedFilterPages"), "pages", true, false);
-			filterByEl.options[1]=new Option(CMgs.format(langBundle, "dashletApprovedSchedFilterComponents"), "components", true, false);
-			filterByEl.options[2]=new Option(CMgs.format(langBundle, "dashletApprovedSchedFilterDocuments"), "documents", true, false);
+			filterByEl.options[0]=new Option(CMgs.format(langBundle, "dashletApprovedSchedFilterPages"), "page", true, false);
+			filterByEl.options[1]=new Option(CMgs.format(langBundle, "dashletApprovedSchedFilterComponents"), "component", true, false);
+			filterByEl.options[2]=new Option(CMgs.format(langBundle, "dashletApprovedSchedFilterDocuments"), "document", true, false);
 			filterByEl.options[3]=new Option(CMgs.format(langBundle, "dashletApprovedSchedFilterAll"), "all", true, false);
 			filterByEl.options[selectedItems].selected =true;
 			var newState = filterByEl.value;

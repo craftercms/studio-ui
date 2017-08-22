@@ -320,6 +320,7 @@
 
         $(document).on("keyup", function(e) {
             if (e.keyCode === 27) {	// esc
+                $('.date-picker').datetimepicker('hide');
                 me.end();
                 $(document).off("keyup");
             }
