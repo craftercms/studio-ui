@@ -209,7 +209,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
                     '<a ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true) ? "previewLink" : "non-previewable-link",
                     (item.disabled == true ? ' dashboard-item disabled' : '') , '">',
-                    displayName, (item.isNew == true) ? ' <span style="font-size:16px;">*</span>' : '',
+                    displayName,
                     '</a>',
                     '</span>',
                     '</div>', depth ?
