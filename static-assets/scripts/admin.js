@@ -726,6 +726,7 @@
                 var removeUserFromGroup = function() {
                     adminService.deleteUserFromGroup(user).success(function () {
                         $scope.getUsersFromGroup(group);
+                        $scope.notification(user.username + ' successfully removed from ' + group.group_name, false, null, "studioMedium");
                     }).error(function () {
                     });
                 };

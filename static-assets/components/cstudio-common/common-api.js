@@ -3958,7 +3958,7 @@ var nodeOpen = false;
                 }
                 if (filterBy == undefined && filterBy == null) {
 
-                    filterBy = "pages";
+                    filterBy = "page";
                 }
                 serviceUrl += "&filterType=" + filterBy;
                 serviceUrl += "&excludeLive=" + ((hideLive != undefined && hideLive != null) ? hideLive : false);
@@ -4009,7 +4009,7 @@ var nodeOpen = false;
                 }
                 if (filterBy == undefined && filterBy == null) {
 
-                    filterBy = "pages";
+                    filterBy = "page";
                 }
                 serviceUrl += "&filterType=" + filterBy;
                 var serviceCallback = {
@@ -4045,7 +4045,7 @@ var nodeOpen = false;
                 }
                 if (filterBy == undefined && filterBy == null) {
 
-                    filterBy = "pages";
+                    filterBy = "page";
                 }
                 serviceUrl += "&filterType=" + filterBy;
                 var serviceCallback = {
