@@ -1300,8 +1300,8 @@ var nodeOpen = false;
                             amplify.publish(crafter.studio.preview.Topics.GUEST_CHECKIN, CStudioAuthoring.Operations.getPreviewUrl(context, false));
                             return;
                         }
-                        previewFrameEl.contentWindow.location.reload();
-                        context.callingWindow.location.reload(true);
+
+                        context.callingWindow.location.reload(true);   
                     }
                 }
             },

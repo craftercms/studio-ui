@@ -27,8 +27,7 @@
                     }, function errorCallback() {
                         authService.removeUser();
 
-                        if (toState.name.indexOf('login') === -1 && !authService.isAuthenticated()) {
-
+                        if (toState.name.indexOf('login') === -1) {
                             if (toState.name.indexOf('reset') === -1) {
                                 event.preventDefault();
                                 $state.go('login');

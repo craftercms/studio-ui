@@ -1591,7 +1591,6 @@
                                             cont = paramCont ? paramCont : 0,
                                             currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name),
                                             curElt = YDom.get(curNode.labelElId);
-                                        currentInternalName = treeData.item.isNew ? currentInternalName + " *" : currentInternalName;
                                         // curElt ? curElt.innerHTML = currentInternalName : null;
                                         curNode.data = Self.createTreeNodeTransferObject(treeData.item);
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);

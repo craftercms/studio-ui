@@ -661,6 +661,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         }catch(err) {
                                             if(!draft) {
                                                 this.callingWindow.location.reload(true);
+                                            }else{
+                                                var previewFrameEl = document.getElementById("engineWindow");
+                                                if (previewFrameEl){
+                                                    previewFrameEl.contentWindow.location.reload();
+                                                }
                                             }
                                         }
                                     }
