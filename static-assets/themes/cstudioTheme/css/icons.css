@@ -183,6 +183,17 @@
     color:#fff;
 }
 
+.fa-spin{
+    -webkit-filter: blur(0);
+}
+
+.yui-simple-dialog .bd .yui-icon.fa-spin-fix{
+    font-size: 15.5px;
+    line-height: 17px;
+    width: 15.5px;
+    height: 16px;
+}
+
 .icon-container .studio-fa-stack .fa-video-square{
     bottom: -5px;
     font-size: 20px;

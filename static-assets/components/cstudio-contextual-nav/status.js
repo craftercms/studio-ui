@@ -62,7 +62,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                             CMgs.format(contextNavLangBundle, "publishStatus"),
                                             response.message,
                                             [{ text: CMgs.format(contextNavLangBundle, "close"),  handler:function(){this.hide();}, isDefault:false }], // use default button
-                                            "dialog-elt fa fa-circle-o-notch fa-spin f18 " + iconClass,
+                                            "dialog-elt fa fa-circle-o-notch fa-spin fa-spin-fix " + iconClass,
                                             "studioDialog"
                                         );
                                     };
