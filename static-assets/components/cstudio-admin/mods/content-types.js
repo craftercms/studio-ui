@@ -226,9 +226,8 @@ CStudioAuthoring.Module.requireModule(
                                                 var dialogEl = document.getElementById("errTemplates");
                                                 if(dialogEl) {
                                                     dialogEl.parentNode.removeChild(dialogEl);
-                                                    dialogEl = null;
                                                 }
-                                                dialog = new YAHOO.widget.SimpleDialog("errTemplates",
+                                                var dialog = new YAHOO.widget.SimpleDialog("errTemplates",
                                                     { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
                                                         text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_WARN,
                                                         constraintoviewport: true,
