@@ -224,19 +224,20 @@ CStudioAuthoring.Module.requireModule(
                                         } else {
                                             if (!istemplate.flagTemplateError) {
                                                 var dialogEl = document.getElementById("errTemplates");
-                                                if(!dialogEl){
-                                                    var dialog = new YAHOO.widget.SimpleDialog("errTemplates",
-                                                        { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
-                                                            text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-                                                            constraintoviewport: true,
-                                                            buttons: [ { text:CMgs.format(formsLangBundle, "continueEditing"),  handler:function(){this.hide();}, isDefault:false },
-                                                                { text:CMgs.format(formsLangBundle, "save"),  handler:function(){this.hide(); saveFn();}, isDefault:false }]
-                                                        });
-                                                    dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
-                                                    dialog.render(document.body);
-                                                    dialogEl = document.getElementById("errTemplates");
-                                                    dialogEl.dialog = dialog;
+                                                if(dialogEl) {
+                                                    dialogEl.parentNode.removeChild(dialogEl);
                                                 }
+                                                var dialog = new YAHOO.widget.SimpleDialog("errTemplates",
+                                                    { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                                        text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+                                                        constraintoviewport: true,
+                                                        buttons: [ { text:CMgs.format(formsLangBundle, "continueEditing"),  handler:function(){this.hide();}, isDefault:false },
+                                                            { text:CMgs.format(formsLangBundle, "save"),  handler:function(){this.hide(); saveFn();}, isDefault:false }]
+                                                    });
+                                                dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                                                dialog.render(document.body);
+                                                dialogEl = document.getElementById("errTemplates");
+                                                dialogEl.dialog = dialog;
                                                 dialogEl.className +=(' studioDialog');
                                                 dialogEl.dialog.show();
                                             } else {
