@@ -15,6 +15,15 @@ CStudioForms.Datasources.VideoCMISRepo= CStudioForms.Datasources.VideoCMISRepo |
             if(properties[i].name === "studioPath") {
                 this.studioPath = properties[i].value;
             }
+            if(properties[i].name === "allowedOperations") {
+                var propValues = JSON.parse(properties[i].value);
+
+                for(var x = 0; x < propValues.length; x++) {
+                    if(propValues[x].selected){
+                        this.allowedOperations = propValues[x].value;
+                    }
+                }
+            }
         }
 
 
@@ -26,7 +35,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
     insertVideoAction: function(callback) {
         var _self = this;
 
-        CStudioAuthoring.Operations.openCMISBrowse(_self.repoId, _self.repoPath, _self.studioPath, "select", true, {
+        CStudioAuthoring.Operations.openCMISBrowse(_self.repoId, _self.repoPath, _self.studioPath, _self.allowedOperations, "select", true, {
             success: function(searchId, selectedTOs) {
 
                 var cb = function(repositories){
@@ -108,7 +117,25 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
         return [
             { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
             { label: CMgs.format(langBundle, "repositoryId"), name: "repoId", type: "string" },
-            { label: CMgs.format(langBundle, "studioPath"), name: "studioPath", type: "string" }
+            { label: CMgs.format(langBundle, "studioPath"), name: "studioPath", type: "string" },
+            {
+                label: CMgs.format(langBundle, "allowedOperations"),
+                name: "allowedOperations",
+                type: "dropdown",
+                defaultValue: [{
+                    value: "value_both",
+                    label: CMgs.format(langBundle, "cloneAndLink"),
+                    selected: true
+                }, {
+                    value: "value_clone",
+                    label: CMgs.format(langBundle, "clone"),
+                    selected: false
+                }, {
+                    value: "value_link",
+                    label: CMgs.format(langBundle, "link"),
+                    selected: false
+                }]
+            }
         ];
     },
 
