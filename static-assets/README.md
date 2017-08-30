@@ -1,2 +1,2 @@
-# studio2-ui
-Crafter Studio 2.x UI
+# studio-ui
+Crafter Studio UI
