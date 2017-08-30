@@ -87,7 +87,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
     },
 
     getLabel: function() {
-        return "CMIS Repo";
+        return CMgs.format(langBundle, "CMISRepository");
     },
 
     getInterface: function() {

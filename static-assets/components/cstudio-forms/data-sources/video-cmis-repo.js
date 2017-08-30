@@ -101,8 +101,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
     },
 
     getLabel: function() {
-        // return CMgs.format(langBundle, "videoBrowse");
-        return "Video from CMIS Repo"
+        return CMgs.format(langBundle, "videoCMISRepository")
     },
 
     getInterface: function() {
