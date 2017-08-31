@@ -435,7 +435,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         var path = this.getCurrentPath();
         var hasXmlFile = (path.indexOf(".xml") >= 0);
 
-        if(this.contentAsFolder == true) {
+        if((this.contentAsFolder == true) || ("/component/level-descriptor" === this.form.id) ) {
             path = path.replace("/index.xml", "");
         }
 
