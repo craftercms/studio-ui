@@ -1874,7 +1874,32 @@ var nodeOpen = false;
                         } else {
                             var selectTemplateDialogCb = {
                                 moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
-                                    dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, true);
+
+                                    //filter only related content Types
+                                    var contentTypes = [];
+                                        compareContentType,
+                                        contentType = 0 == currentContentType.indexOf("/") ? currentContentType.replace("/", "") : currentContentType;
+                                    contentType = contentType.substring(0, contentType.indexOf("/"));
+
+                                    for(var x = 0; x < moduleConfig.contentTypes.length; x++){
+                                        var compareContentType = moduleConfig.contentTypes[x].name;
+                                        
+                                        if("/component/level-descriptor" === currentContentType === compareContentType){
+                                            contentTypes.push(currentContentType);
+                                        }else{
+                                            compareContentType = 0 == compareContentType.indexOf("/") ? compareContentType.replace("/", "") : compareContentType;
+                                            compareContentType = compareContentType.substring(0, compareContentType.indexOf("/"));
+
+                                            if(contentType === compareContentType){
+                                                contentTypes.push(moduleConfig.contentTypes[x]);
+                                            }
+                                        }
+                                    }
+
+                                    console.log(contentTypes);
+
+                                    // dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, true);
+                                    dialogClass.showDialog(contentTypes, path, false, moduleConfig.selectTemplateCb, true);
                                 }
                             }
 
