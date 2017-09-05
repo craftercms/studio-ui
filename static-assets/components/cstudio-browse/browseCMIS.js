@@ -118,12 +118,14 @@
                     $resultsContainer = $('#cstudio-wcm-browse-result .results'),
                     $resultsActions = $('#cstudio-wcm-browse-result .cstudio-results-actions');
 
-
-                $resultsContainer.empty();
-                $resultsActions.empty();
-
+                if(me.currentSelection != $node.id){
+                    $resultsContainer.empty();
+                    $resultsActions.empty();
+                }
+            
                 CStudioBrowseCMIS.getContent("browse", {
                     success: function(response) {
+                        var subFolders = false;
 
                         if(response.total > 0){
                             $.each(response.items, function(index, value){
@@ -137,13 +139,21 @@
                                             }
                                         },
                                         "last", false, false);
+
+                                    subFolders = true;
                                 }
                             });
 
-                            $("#" + $node.id + " > i").click();
+                            if(subFolders) {
+                                $("#" + $node.id + " > i").click();
+                            }
                         }else{
+                            $resultsContainer.empty();
+                            $resultsActions.empty();
                             me.renderNoItems();
                         }
+
+                        $("#" + $node.id + "_anchor").click();
 
                     },
                     failure: function() {
