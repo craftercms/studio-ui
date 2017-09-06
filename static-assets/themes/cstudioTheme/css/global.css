@@ -3359,3 +3359,45 @@ input.drop-arrow-button {
   margin-right: 5px;
   margin-bottom: -2px;
 }
+
+
+.ccms-iewarning {
+  display: none;
+  z-index: 1000;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background-color: DARKORANGE;
+  border: 1px solid ORANGE;
+  color: white;
+  font-weight: bold;
+  padding: 1px;
+  /* position: absolute; */
+  text-align: center;
+  left: 0px;
+}
+
+body.iewarning .ccms-iewarning {
+  display: block;
+}
+
+body.iewarning #studioBar > .navbar, body.iewarning #admin-console .categories-panel {
+  top: 21px;
+}
+
+body.iewarning #preview-tools-panel-container_c, body.iewarning #acn-dropdown-menu-wrapper{
+  top: 71px;
+}
+
+body.iewarning #content-type-canvas {
+  margin-top: 72px;
+}
+
+body.iewarning #content-type-tools{
+  padding-top: 58px;
+}
+
+body.iewarning .studio-preview {
+  top: 71px;
+  height: calc( 100vh - 71px );
+}

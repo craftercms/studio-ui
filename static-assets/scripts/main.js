@@ -666,6 +666,23 @@
                 }
             );
 
+            var isChromium = window.chrome,
+                vendorName = window.navigator.vendor,
+                isOpera = window.navigator.userAgent.indexOf("OPR") > -1,
+                isIEedge = window.navigator.userAgent.indexOf("Edge") > -1;
+
+            if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+                isChromium = true;
+            } else { 
+                isChromium = false;
+                var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            }
+
+            if(!(isChromium || isFirefox)){
+                $("body").addClass("iewarning")
+                $scope.ieWarning = true;
+            }
+
         }
     ]);
 

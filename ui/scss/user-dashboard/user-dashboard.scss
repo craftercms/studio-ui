@@ -370,3 +370,30 @@ i.fa{
     opacity: 1;
   }
 }
+
+
+.ccms-iewarning {
+  display: none;
+  z-index: 1000;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background-color: DARKORANGE;
+  border: 1px solid ORANGE;
+  color: white;
+  font-weight: bold !important;
+  padding: 1px;
+  /* position: absolute; */
+  text-align: center !important;
+  left: 0px;
+}
+
+body.iewarning {
+  header {
+    margin-top: 21px;
+  }
+
+  .ccms-iewarning {
+    display: block;
+  }
+}
