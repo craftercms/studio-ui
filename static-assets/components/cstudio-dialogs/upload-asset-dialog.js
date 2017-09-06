@@ -154,8 +154,11 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	uploadPopupSubmit: function(event, args) {
 		var path = args.self.path;
 		var filename = document.getElementById("uploadFileNameId").value.replace('C:\\fakepath\\',"");
+        if(filename.split("\\").length > 1){
+            filename = filename.split("\\")[filename.split("\\").length-1];
+        }
 		var basePath = path;
-			path=basePath+filename;
+			path=basePath+"/"+filename;
 
 		var serviceCallback = {
 			path: path,
