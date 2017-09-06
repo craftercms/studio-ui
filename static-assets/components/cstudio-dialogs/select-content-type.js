@@ -38,6 +38,10 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 		this.setDefaultTemplate(contentTypes);
 		this.dialog.show();
 
+		if(0 === contentTypes.length){
+			$("#submitWCMPopup").attr("disabled","disabled");
+		}
+		
         if(window.frameElement){
             var id = window.frameElement.getAttribute("id").split("-editor-")[1];
             this.formSize = parent.getFormSize(id);

@@ -742,6 +742,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabEnvironmentConfigurationDesc: "Este archivo configura los entornos que Crafter Studio puede publicar",
     confTabCMISConfiguration: "Configuración de CMIS",
     confTabCMISConfigurationDesc: "Estos archivos configuran 0 o más repositorios capaces de CMIS como fuentes de datos que los autores de contenido pueden elegir",
+		confTabEngineSiteConfiguration: "Configuración de Sitio de Engine",
+    confTabEngineSiteConfigurationDesc: "Configuración del Sitio usada por Crafter Engine",
+    confTabEngineSiteAppContextConfiguration: "Configuración de Contexto de Aplicación de Sitio de Engine",
+    confTabEngineSiteAppContextConfigurationDesc: "Configuración del Contexto de Aplicación para el Sitio de Engine",
 
     /* Errors */
     error: "Error",
