@@ -666,29 +666,19 @@
                 }
             );
 
-            var localhost = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-            console.log(localhost);
+            var isChromium = window.chrome,
+                vendorName = window.navigator.vendor,
+                isOpera = window.navigator.userAgent.indexOf("OPR") > -1,
+                isIEedge = window.navigator.userAgent.indexOf("Edge") > -1;
 
-            function detectIE() {
-                var ua = window.navigator.userAgent;
-                var trident = ua.indexOf('Trident/');
-                if (trident > 0) {
-                    // IE 11 => return version number
-                    var rv = ua.indexOf('rv:');
-                    return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-                }
-    
-                var edge = ua.indexOf('Edge/');
-                if (edge > 0) {
-                    // Edge (IE 12+) => return version number
-                    return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-                }
-    
-                // other browser
-                return false;
+            if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+                isChromium = true;
+            } else { 
+                isChromium = false;
+                var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
             }
 
-            if(localhost && detectIE()){
+            if(!(isChromium || isFirefox)){
                 $("body").addClass("iewarning")
                 $scope.ieWarning = true;
             }

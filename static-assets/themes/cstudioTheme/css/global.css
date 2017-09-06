@@ -3370,10 +3370,10 @@ input.drop-arrow-button {
   background-color: DARKORANGE;
   border: 1px solid ORANGE;
   color: white;
-  font-weight: bold !important;
+  font-weight: bold;
   padding: 1px;
   /* position: absolute; */
-  text-align: center !important;
+  text-align: center;
   left: 0px;
 }
 
@@ -3381,15 +3381,11 @@ body.iewarning .ccms-iewarning {
   display: block;
 }
 
-body.iewarning #acn-dropdown-menu-wrapper{
-  top: 71px;
-}
-
 body.iewarning #studioBar > .navbar, body.iewarning #admin-console .categories-panel {
   top: 21px;
 }
 
-body.iewarning #preview-tools-panel-container_c, body.iewarning #acn-dropdown-menu-wrapper,{
+body.iewarning #preview-tools-panel-container_c, body.iewarning #acn-dropdown-menu-wrapper{
   top: 71px;
 }
 
