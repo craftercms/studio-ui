@@ -39,32 +39,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                 document.body.appendChild(modalBody);
             }
 
-            var continueFn = function continueFn (e) {
-                e.preventDefault();
-                dialog.destroy();   
-
-                var envSelectEl = document.getElementById("go-pub-channel");
-                var environment = envSelectEl[envSelectEl.selectedIndex].value;
-                var path = document.getElementById("bulk-golive-path").value;
-                if (path) {
-                    var serviceUri = "/api/1/services/api/1/deployment/bulk-golive.json?site=" + CStudioAuthoringContext.site
-                         + "&path=" + path + "&environment=" + escape(environment);
-                    var goLiveOpMessage = document.getElementById("bulk-golive-message");
-                    var cb = {
-                        success:function() {},
-                        failure: function(err) {}
-                    }
-   
-                    YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
-                    goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
-                }
-            } 
-
-            var cancelFn = function cancelFn (e) {
-                e.preventDefault();
-                dialog.destroy();
-            }
-
             modalBody.innerHTML = "<div class='contentTypePopupInner changeContent-type-dialog' style='width:460px;height:140px;'>" +
                 "<div class='contentTypePopupContent'>" +
                     "<form name='contentFromWCM'>" +
@@ -93,6 +67,32 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                 underlay:"none",
                 zIndex: 100000
             });
+
+            var continueFn = function continueFn (e) {
+                e.preventDefault();
+                dialog.destroy();   
+
+                var envSelectEl = document.getElementById("go-pub-channel");
+                var environment = envSelectEl[envSelectEl.selectedIndex].value;
+                var path = document.getElementById("bulk-golive-path").value;
+                if (path) {
+                    var serviceUri = "/api/1/services/api/1/deployment/bulk-golive.json?site=" + CStudioAuthoringContext.site
+                         + "&path=" + path + "&environment=" + escape(environment);
+                    var goLiveOpMessage = document.getElementById("bulk-golive-message");
+                    var cb = {
+                        success:function() {},
+                        failure: function(err) {}
+                    }
+   
+                    YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
+                    goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
+                }
+            } 
+
+            var cancelFn = function cancelFn (e) {
+                e.preventDefault();
+                dialog.destroy();
+            }
 
             dialog.render();
 
