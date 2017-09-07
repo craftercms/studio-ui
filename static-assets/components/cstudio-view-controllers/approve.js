@@ -10,7 +10,8 @@
         Dom = YAHOO.util.Dom,
         Event = YAHOO.util.Event,
         agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(CStudioAuthoring.TemplateHolder.Approve),
-        each = CStudioAuthoring.Utils.each;
+        each = CStudioAuthoring.Utils.each,
+        genDependency;
         $ = jQuery;
 
     Base.extend('Approve', {
@@ -37,9 +38,15 @@
 
         closeButtonActionClicked: closeButtonClicked,
 
-        initDatePicker: initDatePicker
+        initDatePicker: initDatePicker,
+
+        getGenDependency: getGenDependency
 
     });
+
+    function getGenDependency() {
+        return genDependency;
+    }
 
     function closeButtonClicked() {
         $(document).off("keyup");
@@ -137,6 +144,7 @@
                 var respJson = oResponse.responseText;
                 try {
                     var dependencies = eval("(" + respJson + ")");
+                    genDependency = dependencies.dependencies;
                     var submissionCommentElem = me.getComponent('.submission-comment');
                     submissionCommentElem.value = dependencies.submissionComment + ' ' + submissionCommentElem.value;
                     //var scheduledDate = this.getTimeInJsonObject(dependencies.items, browserUri);

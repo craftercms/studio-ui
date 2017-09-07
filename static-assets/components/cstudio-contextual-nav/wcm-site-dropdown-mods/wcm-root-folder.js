@@ -627,17 +627,17 @@
                                 if(e.data && e.data.length) {
                                     for (var i = 0; i < e.data.length; i++){
                                         var changeStructure = (e.data[i] && e.data[i].children && e.data[i].children.length > 0 || e.changeStructure) ? true : false;
-                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath);
+                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
                                      }
                                 }else{
                                     var changeStructure = (e.data && e.data.children && e.data.children.length > 0 || e.changeStructure) ? true : false;
-                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath);
+                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
                                 }
                             } catch (er) {
                                 var contentSelected = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
                                 if (contentSelected) {
                                     var changeStructure = (contentSelected && contentSelected.children && contentSelected.children.length > 0 || e.changeStructure) ? true : false;
-                                    Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath);
+                                    Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath, e.dependencies);
                                 }
                             }
 
@@ -1494,7 +1494,7 @@
     /**
 	* methos that fires when new items added to tree.
 	*/
-	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, typeAction, oldPath) {
+	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, typeAction, oldPath, dependencies) {
         var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
 		var tree = tree ? tree : Self.myTree,
             isMytree = false,
@@ -1579,6 +1579,21 @@
                                 lookupSiteContent(nodeToChange[i], currentUri);
                                 nodeOpen = true;
                             })(nodeToChange,i);
+                        }
+                    }
+
+                    if(dependencies){
+                        var treeToUpdateDependencies;
+                        for(var i=0; i<dependencies.length;i++) {
+                            treeToUpdateDependencies = tree.getNodesByProperty("uri", dependencies[i]);
+                            if(treeToUpdateDependencies) {
+                                for (var j = 0; j < treeToUpdateDependencies.length; j++) {
+                                    (function (treeToUpdateDependencies, j) {
+                                        lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
+                                        nodeOpen = true;
+                                    })(treeToUpdateDependencies, j);
+                                }
+                            }
                         }
                     }
 

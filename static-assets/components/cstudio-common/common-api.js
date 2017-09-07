@@ -747,6 +747,7 @@ var nodeOpen = false;
                     fn: CSA.Service.getApproveView,
                     controller: 'viewcontroller-approve',
                     callback: function(dialogue) {
+                        var self = this;
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.loadItems(items);
                         this.loadPublishingChannels();
@@ -760,6 +761,7 @@ var nodeOpen = false;
                             eventNS.data = items;
                             eventNS.typeAction = "";
                             eventNS.oldPath = null;
+                            eventNS.dependencies = self.getGenDependency();
 
                             document.dispatchEvent(eventNS);
 
@@ -773,6 +775,8 @@ var nodeOpen = false;
                                     window.clearInterval(retry);
                                 }
                             }, 5000);
+
+                            eventNS.dependencies = null;
 
                         });
 
