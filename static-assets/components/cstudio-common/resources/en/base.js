@@ -341,6 +341,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     changeTemplateDialogTitle:"Warning: Change Content Type",
     changeTemplateDialogSubTitle:"Crafter Studio",
     changeTemplateDialogBody:"The following operation may result in data loss. Would you like to proceed?",
+    
+    bulkPublishDialogTitle:"Warning: Bulk Publish",
+    bulkPublishDialogBody:"Bulk publish will force publish all items that match the pattern requested including their dependencies.</br> Please make sure that all modified items (including potentially someone's work in progress) are ready to </br> be published before continuing.",
 
     historyDialogTitle: "Version History",
     historyDialogSubTitle: "History shown for:",

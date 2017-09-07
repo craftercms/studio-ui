@@ -198,8 +198,6 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
 
                 html = html.concat([
                     '<td colspan=2>',
-                    '<div class="dashlet-cell-wrp">', depth ?
-                        '<div class="dashlet-ident">' : '',
                     '<div class="dashlet-ident">',
                     '<input type="checkbox" class="dashlet-item-check" id="', uri, '"',
                     ((this.widgetId == currentDashboard && (currentCheckItem && CStudioAuthoring.SelectedContent.getSelectedContent().length>0

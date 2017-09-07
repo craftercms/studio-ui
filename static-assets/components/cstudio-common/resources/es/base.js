@@ -337,6 +337,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     changeTemplateDialogSubTitle:"Crafter Studio",
     changeTemplateDialogBody:"La siguiente operación puede provocar la pérdida de datos. ¿Quieres continuar?",
 
+    bulkPublishDialogTitle:"Advertencia: Publicación en cantidades",
+    bulkPublishDialogBody: "Publicar en cantidades forzará una publicación de todos los elementos que coincidan con el patrón solicitado incluyendo sus dependencias.</br> Por favor asegúrese de que todos los elementos modificados (incluyendo aquello en progreso de alguien más) estén </br> listos para publicarse antes de continuar.",
+
     historyDialogTitle: "Historial de las Versiones",
     historyDialogSubTitle: "Historial mostrado para:",
     historyDialogTableRowVersion: "Fecha y Hora de la Versión",
