@@ -881,7 +881,7 @@ html {
   -webkit-tap-highlight-color: transparent; }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 12px;
   line-height: 1.42857;
   color: #333333;
@@ -962,7 +962,7 @@ hr {
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 500;
   line-height: 1.1;
   color: inherit; }
@@ -4783,7 +4783,7 @@ button.close {
   z-index: 1070;
   display: block;
   visibility: visible;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 11px;
   font-weight: normal;
   line-height: 1.4;
@@ -4878,7 +4878,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 12px;
   font-weight: normal;
   line-height: 1.42857;
@@ -6454,3 +6454,22 @@ i.fa {
   100% {
     display: inline-block;
     opacity: 1; } }
+.ccms-iewarning {
+  display: none;
+  z-index: 1000;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background-color: DARKORANGE;
+  border: 1px solid ORANGE;
+  color: white;
+  font-weight: bold !important;
+  padding: 1px;
+  /* position: absolute; */
+  text-align: center !important;
+  left: 0px; }
+
+body.iewarning header {
+  margin-top: 21px; }
+body.iewarning .ccms-iewarning {
+  display: block; }
