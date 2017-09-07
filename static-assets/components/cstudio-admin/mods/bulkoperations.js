@@ -65,20 +65,20 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                 dialog.destroy();
             }
 
-            modalBody.innerHTML = '<div class="contentTypePopupInner changeContent-type-dialog" style="width:460px;height:140px;">' +
-                '<div class="contentTypePopupContent">' +
-                    '<form name="contentFromWCM">' +
-                    '<div class="contentTypePopupHeader">' + CMgs.format(formsLangBundle, "bulkPublishDialogTitle")+ '</div> ' +
-                    '<div class="contentTypeOuter">'+
-                        '<div>' + CMgs.format(formsLangBundle, "bulkPublishDialogBody")+ '</div>' +                    
-                    '</div>' +
-                    '<div class="contentTypePopupBtn">' +
-                        '<input type="submit" class="btn btn-primary ok" id="acceptCTChange" value="' +CMgs.format(formsLangBundle, 'yes')+ '" />' +
-                        '<input type="submit" class="btn btn-default cancel" id="cancelCTChange" value="' +CMgs.format(formsLangBundle, 'no')+ '" />' +
-                    '</div>' +
-                    '</form> ' +
-                '</div>' +
-            '</div>';
+            modalBody.innerHTML = "<div class='contentTypePopupInner changeContent-type-dialog' style='width:460px;height:140px;'>" +
+                "<div class='contentTypePopupContent'>" +
+                    "<form name='contentFromWCM'>" +
+                    "<div class='contentTypePopupHeader'>" + CMgs.format(formsLangBundle, "bulkPublishDialogTitle")+ "</div> " +
+                    "<div class='contentTypeOuter'>"+
+                        "<div>" + CMgs.format(formsLangBundle, "bulkPublishDialogBody")+ "</div>" +                    
+                    "</div>" +
+                    "<div class='contentTypePopupBtn'>" +
+                        "<input type='submit' class='btn btn-primary ok' id='acceptCTChange' value='" +CMgs.format(formsLangBundle, 'yes')+ "' />" +
+                        "<input type='submit'class='btn btn-default cancel' id='cancelCTChange' value='" +CMgs.format(formsLangBundle, 'no')+ "' />" +
+                    "</div>" +
+                    "</form> " +
+                "</div>" +
+            "</div>";
 
             var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
             { fixedcenter : true,
