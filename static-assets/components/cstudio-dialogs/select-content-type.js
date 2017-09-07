@@ -58,6 +58,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 	 */
 	hideDialog: function() {
 		this.dialog.hide();
+		this.dialog.destroy();
 	},
 	
 	/**
