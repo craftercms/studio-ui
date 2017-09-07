@@ -313,6 +313,9 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     changeTemplateDialogSubTitle:"크래프터 스튜디오",
     changeTemplateDialogBody:"아래의 조작은 데이터 손실이 발생할 수 있습니다. 당신은 계속 진행 하시겠습니까?",
 
+    bulkPublishDialogTitle:"경고 : 대량 게시",
+    bulkPublishDialogBody:"대량 게시는 요청한 패턴과 일치하는 모든 항목을 종속성을 포함하여 강제로 게시합니다. 잠재적으로 누군가 진행중인 작업을 포함하여 모든 수정 된 항목이 </br> 계속되기 전에 게시 될 준비가되었는지 확인하십시오.",
+                        
     historyDialogTitle: "버전 기록",
     historyDialogSubTitle: "역사에 대해 표시 :",
     historyDialogTableRowVersion: "버전 날짜 및 시간",
