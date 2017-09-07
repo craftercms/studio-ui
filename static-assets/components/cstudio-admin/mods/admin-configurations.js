@@ -134,7 +134,8 @@ CStudioAuthoring.Module.requireModule(
 				// add onchange behavior to display selected
 				itemSelectEl.onchange = function() {
 					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
-						selectedIndex = itemSelectEl.selectedIndex;
+						selectedIndex = itemSelectEl.selectedIndex,
+                        contentArea = document.getElementById("content-area");
 
 					$('#historyEl').empty();
 
@@ -151,7 +152,7 @@ CStudioAuthoring.Module.requireModule(
 							success: function(response) {
 								editor.setValue(response.responseText);
                                 editor.clearHistory();
-								CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditor(editor);
+                                CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 
 								//add history
 
