@@ -34,7 +34,9 @@
                     name="blueprint"
                     class="form-control"
                     ng-model="site.blueprint"
-                    ng-options="opt as opt.label for opt in blueprints">
+                    ng-options="opt as opt.label for opt in blueprints"
+                    ng-keypress="trySubmit($event)"
+                    ng-click="toggleOpen()">
             </select>
         </div>
 
