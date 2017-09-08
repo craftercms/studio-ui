@@ -26,21 +26,80 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
 
     renderGoLive: function() {
          CStudioAdminConsole.Tool.BulkOperations.golive = function() {
-         	 var envSelectEl = document.getElementById("go-pub-channel");
-             var environment = envSelectEl[envSelectEl.selectedIndex].value;
-             var path = document.getElementById("bulk-golive-path").value;
-             if (path) {
-                 var serviceUri = "/api/1/services/api/1/deployment/bulk-golive.json?site=" + CStudioAuthoringContext.site
-                 	 + "&path=" + path + "&environment=" + escape(environment);
-                 var goLiveOpMessage = document.getElementById("bulk-golive-message");
-                 var cb = {
-                     success:function() {},
-                     failure: function(err) {}
-                 }
 
-                 YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
-                 goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
-             }
+            var CSA = CStudioAuthoring,
+                CSAC = CStudioAuthoringContext,
+
+                fmt = CSA.StringUtils.format;
+
+            var modalBody = YDom.get("cstudio-wcm-popup-div");
+            if (modalBody === null) {
+                modalBody = document.createElement("div");
+                modalBody.setAttribute("id", "cstudio-wcm-popup-div");
+                document.body.appendChild(modalBody);
+            }
+
+            modalBody.innerHTML = "<div class='contentTypePopupInner changeContent-type-dialog' style='width:460px;height:140px;'>" +
+                "<div class='contentTypePopupContent'>" +
+                    "<form name='contentFromWCM'>" +
+                    "<div class='contentTypePopupHeader'>" + CMgs.format(formsLangBundle, "bulkPublishDialogTitle")+ "</div> " +
+                    "<div class='contentTypeOuter'>"+
+                        "<div>" + CMgs.format(formsLangBundle, "bulkPublishDialogBody")+ "</div>" +                    
+                    "</div>" +
+                    "<div class='contentTypePopupBtn'>" +
+                        "<input type='submit' class='btn btn-primary ok' id='acceptCTChange' value='" +CMgs.format(formsLangBundle, 'yes')+ "' />" +
+                        "<input type='submit'class='btn btn-default cancel' id='cancelCTChange' value='" +CMgs.format(formsLangBundle, 'no')+ "' />" +
+                    "</div>" +
+                    "</form> " +
+                "</div>" +
+            "</div>";
+
+            var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
+            { fixedcenter : true,
+                effect:{
+                effect: YAHOO.widget.ContainerEffect.FADE,
+                duration: 0.25
+                },
+                visible : false,
+                modal:true,
+                close:false,
+                constraintoviewport : true,
+                underlay:"none",
+                zIndex: 100000
+            });
+
+            var continueFn = function continueFn (e) {
+                e.preventDefault();
+                dialog.destroy();   
+
+                var envSelectEl = document.getElementById("go-pub-channel");
+                var environment = envSelectEl[envSelectEl.selectedIndex].value;
+                var path = document.getElementById("bulk-golive-path").value;
+                if (path) {
+                    var serviceUri = "/api/1/services/api/1/deployment/bulk-golive.json?site=" + CStudioAuthoringContext.site
+                         + "&path=" + path + "&environment=" + escape(environment);
+                    var goLiveOpMessage = document.getElementById("bulk-golive-message");
+                    var cb = {
+                        success:function() {},
+                        failure: function(err) {}
+                    }
+   
+                    YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
+                    goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
+                }
+            } 
+
+            var cancelFn = function cancelFn (e) {
+                e.preventDefault();
+                dialog.destroy();
+            }
+
+            dialog.render();
+
+            YAHOO.util.Event.addListener("acceptCTChange", "click", continueFn);
+            YAHOO.util.Event.addListener("cancelCTChange", "click", cancelFn);
+
+            dialog.show();
          };
 
         var mainEl = document.getElementById("bulk-ops");
