@@ -687,9 +687,9 @@
     ]);
 
     app.controller('SitesCtrl', [
-        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies',
+        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies', '$timeout',
 
-        function ($scope, $state, $location, sitesService, authService, $modal, $cookies) {
+        function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout) {
 
             $scope.sites = null;
 
@@ -822,6 +822,34 @@
                     controller: 'SiteCtrl',
                     scope: $scope
                 });
+
+                $scope.bpSelectorOpen = false;
+
+                $scope.toggleOpen = function() {
+                    $scope.bpSelectorOpen = !$scope.bpSelectorOpen;
+                }; 
+
+                $scope.trySubmit = function(e){
+                    // Internet Explorer 6-11
+                    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+                
+                    // Edge 20+
+                    var isEdge = !isIE && !!window.StyleMedia;
+    
+                    if(isIE || isEdge) {
+                        
+                        if(e.keyCode == 13){
+                            if($scope.bpSelectorOpen){
+                                $scope.bpSelectorOpen = false;
+                            }else{
+                                $timeout(function(){
+                                    $("form[name='createNameForm'] button[type='submit']").click();
+                                });
+                            }
+                        }
+
+                    }
+                };
             }
 
             if($scope.siteValidation){
