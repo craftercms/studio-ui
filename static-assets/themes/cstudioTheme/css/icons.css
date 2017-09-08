@@ -185,13 +185,16 @@
 
 .fa-spin{
     -webkit-filter: blur(0);
+    filter: blur(0);
 }
 
 .yui-simple-dialog .bd .yui-icon.fa-spin-fix{
     font-size: 16.5px;
-    line-height: 18px;
+    line-height: 17.5px;
     width: 16.5px;
     height: 17px;
+    letter-spacing: normal;
+    text-indent: -0.05px;
 }
 
 .icon-container .studio-fa-stack .fa-video-square{
