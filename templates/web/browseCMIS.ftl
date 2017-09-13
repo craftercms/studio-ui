@@ -121,13 +121,16 @@
               <input type="button" class="close btn btn-default" value="x">
           </div>
           <img src="">
+          <video id="videoOverlay" controls="true" >
+            <source src="" type="">
+          </video>
       </div>
     </div>
 
      <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="cstudio-search-result clearfix">
             <div class="cstudio-result-body row" style="overflow: hidden;">
-              <div class="cstudio-search-result-description-cmis">
+              <div class="{{#if media}} cstudio-search-result-description result-cmis {{else}} cstudio-search-result-description-cmis {{/if}}">
                 <span class="cstudio-search-component cstudio-search-component-title-nopreview {{#if disabled}}disabled{{/if}}">
                 {{#if internalName}}
                   {{internalName}}
@@ -148,6 +151,7 @@
                   <span class="component-title bold">{{labelType}}:</span>
                   {{mimeType}}
                 </span>
+
                 <div>
                     <#if allowedOperations == "value_both" || allowedOperations == "value_link">
                         <span class="cstudio-search-component cstudio-search-component-button">
@@ -160,8 +164,33 @@
                         </span>
                     </#if>
                 </div>
-
               </div>
+              {{#equal type "image"}}
+                <div class="cstudio-search-description-preview">
+                    {{#if repoPath}}
+                    <img src="{{repoPath}}" alt="{{name}}" class="cstudio-search-banner-image"">
+                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{repoPath}}" data-type="{{mimeType}}">
+                    {{else}}
+                    <img src="{{browserUri}}" alt="{{name}}" class="cstudio-search-banner-image"">
+                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}" data-type="{{mimeType}}" >
+                    {{/if}}
+                </div>
+              {{/equal}}
+              {{#equal type "video"}}
+                <div class="cstudio-search-description-preview">
+                    {{#if repoPath}}
+                    <video class="cstudio-search-banner-image" controls="true">
+                        <source src="{{repoPath}}" type="{{mimeType}}">
+                    </video>
+                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{repoPath}}" data-type="{{mimeType}}">
+                    {{else}}
+                    <video class="cstudio-search-banner-image" controls="true">
+                        <source src="{{browserUri}}" type="{{mimeType}}">
+                    </video>
+                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}" data-type="{{mimeType}}">
+                    {{/if}}
+                </div>
+              {{/equal}}
             </div>
           </div>
     </script>

@@ -113,7 +113,8 @@
 
         $resultsContainer.on('click', '.magnify-icon', function(){
             var path = $(this).attr('data-source');
-            me.magnify(path);
+            var type = $(this).attr('data-type');
+            me.magnify(path, type);
         });
     };
 
@@ -215,7 +216,7 @@
         return parsed;
     };
 
-    CStudioBrowse.renderItem = function(item, $resultsContainer) {
+    CStudioBrowse.renderItem = function(item, $resultsContainer, repoPath) {
         if (!$resultsContainer) {
             $resultsContainer = $('#cstudio-wcm-search-result .results');
         }
@@ -232,20 +233,37 @@
         item.labelClone = CMgs.format(browseLangBundle, "labelClone");
 
         if(item.mimeType.match(/\bimage\b/)){
+            if(repoPath){
+                item.repoPath = repoPath.replace("{item_id}",item.itemId);
+            }
             var showUrl = true;
             item.type = "image";
             item.showUrl = showUrl;
+            item.media = true;
             var html = template(item);
             var addedElem = $(html).appendTo($resultsContainer);
             addedElem.data("item", item);
         }else{
-            var type = item.isAsset ? "asset" : item.isComponent ? "component" : "page",
-                showUrl = type == "asset" || type == "page" ? true : false;
-            item.type = type;
-            item.showUrl = showUrl;
-            var html = template(item);
-            var addedElem = $(html).appendTo($resultsContainer);
-            addedElem.data("item", item);
+            if(item.mimeType.match(/\bvideo\b/)){
+                if(repoPath){
+                    item.repoPath = repoPath.replace("{item_id}",item.itemId);
+                }
+                var showUrl = true;
+                item.type = "video";
+                item.showUrl = showUrl;
+                item.media = true;
+                var html = template(item);
+                var addedElem = $(html).appendTo($resultsContainer);
+                addedElem.data("item", item);
+            }else {
+                var type = item.isAsset ? "asset" : item.isComponent ? "component" : "page",
+                    showUrl = type == "asset" || type == "page" ? true : false;
+                item.type = type;
+                item.showUrl = showUrl;
+                var html = template(item);
+                var addedElem = $(html).appendTo($resultsContainer);
+                addedElem.data("item", item);
+            }
         }
     };
 
@@ -392,11 +410,23 @@
         }
     };
 
-    CStudioBrowse.magnify = function(source) {
+    CStudioBrowse.magnify = function(source, type) {
         var $container = $('.cstudio-browse-image-popup-overlay'),
-            $img = $container.find('img');
+            $img = $container.find('img'),
+            $video = $container.find('video');
+            $img.hide(); $video.hide();
+            $container.removeClass('cstudio-browse-video-popup-overlay');
 
-        $img.attr('src', source);
+        if(type.match(/\bvideo\b/)) {
+            $container.addClass('cstudio-browse-video-popup-overlay');
+            $video.show();
+            $video.find('source').attr('src', source);
+            $video.find('source').attr('type', type);
+            $video.load();
+        }else{
+            $img.show();
+            $img.attr('src', source);
+        }
 
         $container.show();
 
@@ -526,7 +556,7 @@
 
                     $.each(results, function(index, value){
                         if(!value.folder){
-                            me.renderItem(value, $resultsWrapper);
+                            me.renderItem(value, $resultsWrapper, null);
                             filesPresent = true;
                         }
                     });

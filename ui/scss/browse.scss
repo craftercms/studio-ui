@@ -143,6 +143,11 @@ body {
 				   	 	.cstudio-search-result-description, .cstudio-search-description-preview, .cstudio-search-result-description-cmis{
 				   	 		width: 100%;
 
+                            &.result-cmis{
+                              padding-right: 4%;
+                              word-break: break-word;
+                            }
+
 				   	 		.browse-icon {		
 			   	 			    margin-right: 20px;
 				   	 		}	
@@ -173,6 +178,7 @@ body {
                           @media (min-width: 992px) {
                             width: 50%;
                             float: left;
+
                           }
                         }
 
@@ -274,11 +280,15 @@ body {
 				}
 			}
 
-			img {
+			img, video {
 				border-radius: 6px;
 	    		max-width: 700px;
 	    		background-color: #fff;
 			}
+
+            video {
+              max-width: 600px;
+            }
 		}
 
 		&:before{
