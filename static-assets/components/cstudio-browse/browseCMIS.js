@@ -1,7 +1,8 @@
 (function (window, $, Handlebars) {
     "use strict";
 
-    var storage = CStudioAuthoring.Storage;
+    var storage = CStudioAuthoring.Storage,
+        repoPath;
 
     var CStudioBrowseCMIS = $.extend(
         {}, window.CStudioBrowse);
@@ -25,6 +26,26 @@
 
         var CMgs = CStudioAuthoring.Messages,
             browseLangBundle = CMgs.getBundle("browse", CStudioAuthoringContext.lang);
+
+        var cb = function(repositories){
+
+            var repo = null,
+                repoId = CStudioAuthoring.Utils.getQueryParameterByName("repoId");
+            if(!repositories.length){
+                repo = repositories;
+            }else {
+                for (var i = 0; i < repositories.length; i++) {
+                    if (repoId === repositories[i].id) {
+                        repo = repositories[i];
+                    }
+                }
+            }
+
+            repoPath = repo["download-url-regex"];
+
+        }
+
+        CStudioBrowseCMIS.getConfig(cb);
     };
 
     CStudioBrowseCMIS.bindEvents = function() {
@@ -246,6 +267,12 @@
             CStudioAuthoring.Service.contentCloneCMIS(paramsJson, callbackContent);
         });
 
+        $('.cstudio-wcm-result .results').delegate( ".magnify-icon", "click", function() {
+            var path = $(this).attr('data-source');
+            var type = $(this).attr('data-type');
+            me.magnify(path, type);
+        });
+
         var pathLabel = CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\//g, " / ");
         $(".current-folder .path").html(pathLabel);
 
@@ -363,7 +390,7 @@
 
                 $.each(items, function(index, value){
                     if("folder" != value.mime_type){
-                        me.renderItem(me.parseItemObj(value), $resultsWrapper);
+                        me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
                         filesPresent = true;
                     }
                 });
@@ -391,7 +418,7 @@
 
                         $.each(items, function(index, value){
                             if("folder" != value.mime_type){
-                                me.renderItem(me.parseItemObj(value), $resultsWrapper);
+                                me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
                                 filesPresent = true;
                             }
                         });
@@ -461,6 +488,17 @@
 
 
     };
+
+    CStudioBrowseCMIS.getConfig= function(callback){
+        CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/data-sources/cmis-config.xml",
+            {
+                success: function(config) {
+                    callback(config.repositories.repository);
+                }
+            });
+    },
 
 
     window.CStudioBrowseCMIS = CStudioBrowseCMIS;
