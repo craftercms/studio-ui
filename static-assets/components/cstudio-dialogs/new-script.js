@@ -118,7 +118,7 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 	limitInput: function(event, params) {
 		var value = params.nameEl.value;
 		value = value.replace(" ", "-");
-		value = value.replace(/[^a-zA-Z0-9-\.]/g, '')
+		value = value.replace(/[^_a-zA-Z0-9-\.]/g, '')
 		params.nameEl.value = value;
 	},
 

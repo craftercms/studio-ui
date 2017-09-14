@@ -157,7 +157,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
 	 * don't allow characters which are invalid for file names and check length
 	 */
 	processKey: function(evt, el) {
-        var invalid = new RegExp("[!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\.\\/\\{\\}|\":<>\\?~_ ]", 'g');
+        var invalid = new RegExp("[!@#$%^&*\\(\\)\\+=\\[\\]\\\\\\\'`;,\\.\\/\\{\\}|\":<>\\?~ ]", 'g');
 	    var cursorPosition = el.selectionStart;
 	    //change url to lower case
 	    if (el.value != "" && el.value != el.value.toLowerCase()) {
