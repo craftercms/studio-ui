@@ -6361,7 +6361,8 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   margin-bottom: 5px;
   border-bottom: 1px solid #f2f2f2; }
   .user-display .name {
-    font-size: 1.5em; }
+    font-size: 1.3em;
+    font-weight: bold; }
   .user-display #language {
     width: 42%;
     display: inline-block;
@@ -6473,3 +6474,5 @@ body.iewarning header {
   margin-top: 21px; }
 body.iewarning .ccms-iewarning {
   display: block; }
+
+/*# sourceMappingURL=main.css.map */
