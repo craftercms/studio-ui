@@ -5275,6 +5275,12 @@ span.acn-canned-search {
   transition: width 0.6s ease;
   background: repeating-linear-gradient(45deg, #5d84a9, #5d84a9 10px, #7e9dbb 10px, #7e9dbb 20px); }
 
+#studioBar .navbar-right-wrapper {
+  float: right; }
+  @media (max-width: 1320px) {
+    #studioBar .navbar-right-wrapper {
+      width: 100%; } }
+
 .no-margin {
   margin: 0; }
 
@@ -15317,5 +15323,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */
