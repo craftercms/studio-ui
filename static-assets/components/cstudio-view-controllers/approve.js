@@ -434,9 +434,17 @@
     function getScheduledDateTimeForJson(dateTimeValue) {
         var schedDate = new Date(dateTimeValue);
         var schedDateMonth = schedDate.getMonth() + 1;
-        var scheduledDate = schedDate.getFullYear() + '-' + schedDateMonth + '-'
-            + schedDate.getDate() + 'T' + schedDate.getHours() + ':'
-            + schedDate.getMinutes() + ':' + schedDate.getSeconds();
+        var scheduledDate = schedDate.getFullYear() + '-';
+        if (schedDateMonth < 10) scheduledDate = scheduledDate + '0';
+        scheduledDate = scheduledDate + schedDateMonth + '-';
+        if (schedDate.getDate() < 10) scheduledDate = scheduledDate + '0';
+        scheduledDate = scheduledDate + schedDate.getDate() + 'T';
+        if (schedDate.getHours() < 10) scheduledDate = scheduledDate + '0';
+        scheduledDate = scheduledDate + schedDate.getHours() + ':';
+        if (schedDate.getMinutes() < 10) scheduledDate = scheduledDate + '0';
+        scheduledDate = scheduledDate + schedDate.getMinutes() + ':';
+        if (schedDate.getSeconds() < 10) scheduledDate = scheduledDate + '0';
+        scheduledDate = scheduledDate + schedDate.getSeconds();
 
         return scheduledDate;
     }
