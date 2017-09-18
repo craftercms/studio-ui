@@ -356,7 +356,9 @@
             };
 
             this.validateToken = function (data){
-                return $http.post(api('validate-token'), data);
+                return $http.get(api('validate-token'), {
+                    params: { token: data.token }
+                });
             };
 
             this.validateSession = function() {
