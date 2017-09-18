@@ -358,6 +358,7 @@
 
                 $scope.adminModal = $scope.showModal('modalView.html');
                 $scope.dialogMode = $translate.instant('common.CREATE');
+                $scope.dialogEdit = false;
             };
             users.createUser = function(user) {
                 adminService.createUser(user).success(function (data) {
@@ -376,6 +377,7 @@
 
                 $scope.adminModal = $scope.showModal('modalView.html');
                 $scope.dialogMode = $translate.instant('common.EDIT');
+                $scope.dialogEdit = true;
 
                 adminService.getUser(user.username).success(function (data) {
                     $scope.user = data;
@@ -420,6 +422,7 @@
             users.viewUser = function(user){
                 $scope.user = {};
                 $scope.dialogMode = false;
+                $scope.dialogEdit = false;
 
                 $scope.adminModal = $scope.showModal('modalView.html');
 

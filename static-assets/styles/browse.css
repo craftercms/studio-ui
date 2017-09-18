@@ -107,6 +107,9 @@ body {
             margin-left: 15px; }
             body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis {
               width: 100%; }
+              body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description.result-cmis, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview.result-cmis, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis.result-cmis, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description.result-cmis, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview.result-cmis, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis.result-cmis {
+                padding-right: 4%;
+                word-break: break-word; }
               body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description .browse-icon, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview .browse-icon, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis .browse-icon, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description .browse-icon, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview .browse-icon, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis .browse-icon {
                 margin-right: 20px; }
               body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description .cstudio-search-component-title-nopreview, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview .cstudio-search-component-title-nopreview, body .cstudio-browse-container #cstudio-wcm-search-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis .cstudio-search-component-title-nopreview, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description .cstudio-search-component-title-nopreview, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-description-preview .cstudio-search-component-title-nopreview, body .cstudio-browse-container #cstudio-wcm-browse-result .results .cstudio-search-result .cstudio-result-body .cstudio-search-result-description-cmis .cstudio-search-component-title-nopreview {
@@ -192,10 +195,12 @@ body {
           opacity: 1;
           margin-right: -5px;
           border-radius: 0; }
-      body .cstudio-browse-image-popup-overlay #cstudio-browse-image-pop-up img {
+      body .cstudio-browse-image-popup-overlay #cstudio-browse-image-pop-up img, body .cstudio-browse-image-popup-overlay #cstudio-browse-image-pop-up video {
         border-radius: 6px;
         max-width: 700px;
         background-color: #fff; }
+      body .cstudio-browse-image-popup-overlay #cstudio-browse-image-pop-up video {
+        max-width: 600px; }
     body .cstudio-browse-image-popup-overlay:before {
       content: "";
       display: inline-block;
@@ -257,3 +262,5 @@ body {
     background: rgba(128, 128, 128, 0.7); }
   body ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(128, 128, 128, 0.4); }
+
+/*# sourceMappingURL=browse.css.map */

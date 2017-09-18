@@ -314,6 +314,11 @@ sup {
   text-align: right;
   width: auto; }
 
+#nav-user-name{
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 #globalSearch {
   float: left;
   margin: 5px 10px 0 0;
