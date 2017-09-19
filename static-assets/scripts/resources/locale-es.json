@@ -54,6 +54,7 @@
     "PROFILE": "Perfil",
     "UPDATE_PROFILE": "Actualizar Perfil",
     "PROFILE_UPDATED": "Perfil Actualizado",
+    "PASSWORD_UPDATED": "Contraseña actualizada correctamente",
     "CHANGE_PASSWORD_ADVERTISEMENT": "Una vez que tu contraseña se haya actualizado correctamente, deberás volver a iniciar sesión."
   },
   "about": {

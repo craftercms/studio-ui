@@ -56,6 +56,7 @@
     "PROFILE": "Profile",
     "UPDATE_PROFILE": "Update Profile",
     "PROFILE_UPDATED": "Profile Updated",
+    "PASSWORD_UPDATED": "Password successfully changed",
     "CHANGE_PASSWORD_ADVERTISEMENT": "Once your password has been successfully updated, you'll be required to login again."
   },
   "about": {
