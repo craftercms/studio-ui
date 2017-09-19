@@ -5281,6 +5281,14 @@ span.acn-canned-search {
     .studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper {
       width: 506px; } }
 
+.site-dashboard .panel .ttTbody td .anchorRow {
+  display: inline-block;
+  max-width: calc(100% - 25px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-bottom: -3px; }
+
 .no-margin {
   margin: 0; }
 
