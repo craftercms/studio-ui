@@ -5275,11 +5275,11 @@ span.acn-canned-search {
   transition: width 0.6s ease;
   background: repeating-linear-gradient(45deg, #5d84a9, #5d84a9 10px, #7e9dbb 10px, #7e9dbb 20px); }
 
-#studioBar .navbar-right-wrapper {
+.studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper {
   float: right; }
   @media (max-width: 1320px) {
-    #studioBar .navbar-right-wrapper {
-      width: 100%; } }
+    .studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper {
+      width: 506px; } }
 
 .no-margin {
   margin: 0; }

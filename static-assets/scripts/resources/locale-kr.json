@@ -54,6 +54,7 @@
     "PROFILE": "윤곽",
     "UPDATE_PROFILE": "프로필 업데이트",
     "PROFILE_UPDATED": "프로필이 업데이트되었습니다.",
+    "PASSWORD_UPDATED": "비밀번호가 변경되었습니다",
     "CHANGE_PASSWORD_ADVERTISEMENT": "비밀번호가 성공적으로 업데이트되면 다시 로그인해야합니다"
   },
   "about": {
