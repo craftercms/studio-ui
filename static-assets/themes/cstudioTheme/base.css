@@ -371,6 +371,21 @@ span.navigation-separator-alt {
    cursor: pointer;
 }
 
+.cstudio-form-controls-container{
+    background: #f8f8f8;
+    border-top: 1px solid #e7e7e7;
+    height: 50px;
+    bottom: 0;
+    position: fixed;
+    width: 100%;
+    z-index: 45;
+    padding: 10px 0 0;
+    transition: background-color .5s ease-in-out;
+    -moz-transition: background-color .5s ease-in-out;
+    -webkit-transition: background-color .5s ease-in-out;
+    -o-transition: background-color .5s ease-in-out;
+}
+
 /* DataTable overrides */
 .yui-skin-cstudioTheme .yui-dt tr.yui-dt-first td {
    border-top: medium none;
