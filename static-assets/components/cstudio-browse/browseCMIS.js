@@ -273,7 +273,9 @@
             me.magnify(path, type);
         });
 
-        var pathLabel = CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\//g, " / ");
+        var pathURL = CStudioAuthoring.Utils.getQueryParameterByName("path");
+        pathURL = pathURL.slice(-1)=="/" ? pathURL.substring(0, pathURL.length - 1) : pathURL;
+        var pathLabel = pathURL.replace(/\//g, " / ");
         $(".current-folder .path").html(pathLabel);
 
         $(".tabs .tab-links a").on("click", function (e) {
@@ -318,6 +320,7 @@
 
     CStudioBrowseCMIS.parseObjToFolders = function(items){
         var path = CStudioAuthoring.Utils.getQueryParameterByName("path");
+        path = path.slice(-1)=="/" ? path.substring(0, path.length - 1) : path;
         var parsed = {
                 id: "cmis-root",
                 text: path.includes("/") ?
@@ -454,7 +457,8 @@
     };
 
     CStudioBrowseCMIS.getContent = function(type, cb, cPath, searchTerm) {
-        var path = cPath ? cPath : CStudioAuthoring.Utils.getQueryParameterByName("path"),
+        var pathURL = CStudioAuthoring.Utils.getQueryParameterByName("path"),
+            path = cPath ? cPath : pathURL.slice(-1)=="/" ? pathURL.substring(0, pathURL.length - 1) : pathURL,
             repoId = CStudioAuthoring.Utils.getQueryParameterByName("repoId"),
             site = CStudioAuthoring.Utils.getQueryParameterByName("site");
 

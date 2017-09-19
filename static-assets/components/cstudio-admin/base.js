@@ -166,6 +166,7 @@ CStudioAdminConsole.CommandBar =  {
 		if(!this.commandBarEl) {
 			this.commandBarEl = document.createElement("div");
 			this.commandBarEl.id = "cstudio-admin-console-command-bar";
+            YDom.addClass(this.commandBarEl, "cstudio-form-controls-container");
 			YDom.addClass(this.commandBarEl, "hidden");
 						
 			document.body.appendChild(this.commandBarEl);
@@ -198,7 +199,12 @@ CStudioAdminConsole.CommandBar =  {
 	
 	addAction: function(action) {
 		var buttonEl = document.createElement("input");
-		YDom.addClass(buttonEl, "cstudio-button");
+		YDom.addClass(buttonEl, "btn");
+        if(action.label == "Save"){
+            YDom.addClass(buttonEl, "btn-primary");
+        }else{
+            YDom.addClass(buttonEl, "btn-default");
+        }
 		buttonEl.type = "button";
 		buttonEl.value = action.label;
 		this.commandBarEl.appendChild(buttonEl);
