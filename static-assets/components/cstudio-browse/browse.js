@@ -129,7 +129,8 @@
         var paramContext = CStudioAuthoring.Utils.getQueryVariable(queryString, "context");
         var paramSelection = CStudioAuthoring.Utils.getQueryVariable(queryString, "selection");
         var searchId = CStudioAuthoring.Utils.getQueryVariable(queryString, "searchId");
-        var path = CStudioAuthoring.Utils.getQueryVariable(queryString, "PATH");
+        var pathURL = CStudioAuthoring.Utils.getQueryVariable(queryString, "PATH");
+        var path = pathURL.slice(-1)=="/" ? pathURL.substring(0, pathURL.length - 1) : pathURL;
         var site = CStudioAuthoring.Utils.getQueryVariable(queryString, "site");
 
         //TODO: check what are all of those for
