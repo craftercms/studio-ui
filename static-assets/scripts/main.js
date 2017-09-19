@@ -571,7 +571,7 @@
                                 $scope.message = data.message;
 
                                 $rootScope.modalInstance = $modal.open({
-                                    templateUrl: 'settingLanguajeConfirmation.html',
+                                    templateUrl: 'passwordUpdated.html',
                                     windowClass: 'centered-dialog',
                                     controller: 'AppCtrl',
                                     backdrop: 'static',

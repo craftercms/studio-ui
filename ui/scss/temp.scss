@@ -3117,11 +3117,11 @@ span.acn-canned-search {
   background: repeating-linear-gradient( 45deg, #5d84a9, #5d84a9 10px, #7e9dbb 10px, #7e9dbb 20px );
 }
 
-#studioBar .navbar-right-wrapper{
+.studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper{
   float: right;
 
   @media (max-width: 1320px){
-    width: 100%;
+    width: 506px;
   }
 }
 
