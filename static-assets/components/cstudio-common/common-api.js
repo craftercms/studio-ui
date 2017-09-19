@@ -1623,12 +1623,12 @@ var nodeOpen = false;
                                         console.log("Create");
                                     },
                                     start: function (event, ui) {
-                                        $('#engineWindow').css('pointer-events', 'none');
-                                        $("#in-context-edit-editor-" + editorId).css('pointer-events', 'none');
+                                        $('#engineWindow', window.top.document).css('pointer-events', 'none');
+                                        $("#in-context-edit-editor-" + editorId, window.top.document).css('pointer-events', 'none');
                                     },
                                     stop: function (event, ui) {
-                                        $('#engineWindow').css('pointer-events', 'auto');
-                                        $("#in-context-edit-editor-" + editorId).css('pointer-events', 'auto');
+                                        $('#engineWindow', window.top.document).css('pointer-events', 'auto');
+                                        $("#in-context-edit-editor-" + editorId, window.top.document).css('pointer-events', 'auto');
                                     },
                                     handles: 'e, s, se'
                                 });
@@ -1752,12 +1752,12 @@ var nodeOpen = false;
                             minHeight: 50,
                             grid: [10000, 1],
                             start: function(event, ui) {
-                                $('#engineWindow').css('pointer-events','none');
-                                $("#in-context-edit-editor-"+editorId).css('pointer-events','none').height('');
+                                $('#engineWindow', window.top.document).css('pointer-events','none');
+                                $("#in-context-edit-editor-"+editorId, window.top.document).css('pointer-events','none').height('');
                             },
                             stop: function( event, ui ) {
-                                $('#engineWindow').css('pointer-events','auto');
-                                $("#in-context-edit-editor-"+editorId).css('pointer-events','auto');
+                                $('#engineWindow', window.top.document).css('pointer-events','auto');
+                                $("#in-context-edit-editor-"+editorId, window.top.document).css('pointer-events','auto');
                             }
                         });
                     }, 1000);
@@ -8503,7 +8503,7 @@ CStudioAuthoring.FilesDiff = {
         var height = YAHOO.util.Dom.getViewportHeight() - 90;
 
         containerEl.style.height = height+'px';
-        el.style.height = height+'px';
+        //el.style.height = height+'px';
         window.scrollBy(0,1);
     }
 };
