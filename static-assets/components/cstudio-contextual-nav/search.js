@@ -60,7 +60,6 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
 					searchContext.keywords = encodeURIComponent("");
 					searchContext.includeAspects = new Array();
 					searchContext.includeAspects.push("cstudio-core%3ApageMetadata%7Ccstudio-core%3AdocumentMetadata");
-					// searchContext.includeAspects.push("cstudio-core%3AdocumentMetadata");
 					CStudioAuthoring.Operations.openSearch("default", searchContext, -1, "act", false, null, null, true);
 				}
 			}
