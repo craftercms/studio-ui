@@ -355,10 +355,7 @@
 </script>
 
 <#include "/templates/web/common/page-fragments/footer.ftl" />
-<script>//<![CDATA[
-//Alfresco.util.YUILoaderHelper.loadComponents();
-//]]></script>
-<div id="alfresco-yuiloader"></div>
+<div id="crafter-yuiloader"></div>
 
 </body>
 </html>
