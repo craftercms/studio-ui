@@ -2985,13 +2985,6 @@ var nodeOpen = false;
                 return CStudioAuthoringContext.previewAppBaseUri + service;
             },
 
-            /**
-             * Add webapp context and make proxy to the service
-             */
-            createProxyServiceUri: function(service) {
-                return CStudioAuthoringContext.baseUri + this.ALFRESCO_PROXY + service;
-            },
-
             Analytics: {
                 /**
                  * get analytics report
@@ -8676,8 +8669,7 @@ CStudioAuthoring.FilesDiff = {
                 }
 
                 function authLoop(configObj) {
-                    var alfrescoTicket,
-                        serviceUri,
+                    var serviceUri,
                         serviceCallback,
                         delay = 60000;  // poll once every minute
 

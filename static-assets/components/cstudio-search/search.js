@@ -110,12 +110,6 @@ CStudioSearch.determineSearchContextFromUrl = function() {
 	return searchContext;
 },
 
-/**
- * This method will put the filter and result values gotten from the filter template into 
- * a 2 hidden input divs , which will be used by the search webscript to pass on to the
- * alfresco service for search purpose, as alfresco services need these info.  
- * It will also initialise the sort dropdown getting data from the filter pagelet
- */
 CStudioSearch.init = function() {
 
 	CStudioSearch.loadFiltersAndResultTemplates({

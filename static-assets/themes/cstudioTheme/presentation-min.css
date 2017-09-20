@@ -37,8 +37,7 @@ strong{font-weight:bold;}
 em{font-style:italic;}
 .rich-content a.wiki-missing-page{color:#C20!important;}
 select,input[type="text"],textarea{border:1px solid #C5D6E2;font-weight:normal;}
-.yui-toolbar-container .yui-toolbar-alfresco-imagelib span.yui-toolbar-icon,span.mce_alfresco-imagelibrary{background-position:0 0!important;background-image:url(images/alfresco-imagelib.png)!important;}
-.mce_alfresco-imagelibrary img{background-position:0 2px!important;}
+.mce_crafter-imagelibrary img{background-position:0 2px!important;}
 .yui-skin-cstudioTheme .yui-button{background-image:url(images/sprite.png);}
 .yui-skin-cstudioTheme .flat-button .yui-button{background:none;border-color:transparent;}
 .yui-skin-cstudioTheme .flat-button .yui-button .first-child{border-color:transparent;}
