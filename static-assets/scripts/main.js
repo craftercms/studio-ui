@@ -587,7 +587,7 @@
 
                             }
                         }, function(error){
-                            $scope.error = error.data.status;
+                            $scope.error = error.data.message;
                         });
                 }else{
                     $scope.error = "Passwords don't match.";
