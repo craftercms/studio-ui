@@ -381,7 +381,7 @@ body,tbody {
 
 #cstudio-admin-console-command-bar .btn{
     margin: 0 5px;
-    width: 60px;
+    min-width: 60px;
 }
 
 .property-wrapper {
@@ -717,6 +717,11 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
 
 .hidden {
 	display: none;
+}
+
+.configuration-window #content-area{
+    padding-bottom: 41px;
+    overflow: hidden;
 }
 
 .seethrough {

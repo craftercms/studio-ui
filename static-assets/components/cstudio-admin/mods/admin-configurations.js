@@ -54,10 +54,7 @@ CStudioAuthoring.Module.requireModule(
 						"<div id='edit-area'>" + 
 							"<div id='menu-area'>" + 
 								"<div id='config-description'>" + 
-								"</div>" + 
-								"<div id='config-buttons'>" +
-									//"<button type='submit' id='save-button' class='edit-button'>Save</button>" + 
-								"</div>" + 
+								"</div>" +
 							"</div>" + 
 							"<div id='content-area'>" +
 								"<div id='edit-window'>" + 
@@ -80,8 +77,7 @@ CStudioAuthoring.Module.requireModule(
 
 				var itemSelectEl = document.getElementById("config-list");
 				// add action buttons
-				var buttonAreaEl = document.getElementById("config-buttons");
-				this.addButtons(buttonAreaEl, itemSelectEl, editorEl.codeMirrorEditor);
+				this.addButtons(itemSelectEl, editorEl.codeMirrorEditor);
 				// set configuration dropdown
 				var editAreaEl = document.getElementById("edit-area");
 				this.loadConfigFiles(itemSelectEl, editAreaEl, editorEl.codeMirrorEditor, sampleEditorEl.codeMirrorEditor);
@@ -211,8 +207,11 @@ CStudioAuthoring.Module.requireModule(
 							viewSampleButtonEl.style.display = 'none';
 						}
 
+                        CStudioAdminConsole.CommandBar.show();
+
 					} else {
 						editAreaEl.style.display = 'none';
+                        CStudioAdminConsole.CommandBar.hide();
 					}
 				}; // end of change
 			},
@@ -250,26 +249,43 @@ CStudioAuthoring.Module.requireModule(
 			/*
 			* add save, view sample and hide sample buttons
 			*/
-			addButtons: function (containerEl, itemSelectEl, editor) {
-				containerEl.innerHTML = 
-					"<button type='submit' id='save-button' class='btn btn-primary' style='margin-right:5px;'>"+CMgs.format(formsLangBundle, "save")+"</button>" +
-					"<button type='submit' id='view-sample-button' class='btn btn-primary'>"+CMgs.format(formsLangBundle, "viewSample")+"</button>" +
-					"<button type='submit' id='hide-sample-button' class='btn btn-primary'>"+CMgs.format(formsLangBundle, "hideSample")+"</button>";
+			addButtons: function (itemSelectEl, editor) {
 
-				// add button actions
-				var me = this,
-					saveButtonEl = document.getElementById("save-button"),
-					configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN;
+                CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), class:"btn-primary", fn: function(){
+                    saveFn();
+                } },
+                {label:CMgs.format(formsLangBundle, "viewSample"), class:"btn-primary", id:"view-sample-button", fn: function(){
+                    CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditorParent(contentArea);
+                    hideSampleButtonEl.style.display = 'inline';
+                    viewSampleButtonEl.style.display = 'none';
+                    sampleAreaEl.style.display = 'inline';
+                } },
+                {label:CMgs.format(formsLangBundle, "hideSample"), class:"btn-primary", id:"hide-sample-button", fn: function(){
+                    CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
+                    hideSampleButtonEl.style.display = 'none';
+                    viewSampleButtonEl.style.display = 'inline';
+                    sampleAreaEl.style.display = 'none';
+                } },
+                ]);
 
-				// save the configuration file back to repo 
-				saveButtonEl.onclick = function () { 
-					var selectedIndex = itemSelectEl.selectedIndex;
-					var saveCb = {
+                CStudioAdminConsole.CommandBar.hide();
+
+                var viewSampleButtonEl = document.getElementById("view-sample-button");
+                var hideSampleButtonEl = document.getElementById("hide-sample-button");
+                var sampleAreaEl = document.getElementById("sample-window");
+                var contentArea = document.getElementById("content-area");
+                var me = this,
+                    configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN;
+                hideSampleButtonEl.style.display = 'none';
+
+                var saveFn = function(){
+                    var selectedIndex = itemSelectEl.selectedIndex;
+                    var saveCb = {
                         success: function() {
                             CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
-							me.clearCache();
+                            me.clearCache();
                         },
-						failure: function() {
+                        failure: function() {
                             CStudioAuthoring.Operations.showSimpleDialog(
                                 "errorDialog-dialog",
                                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -280,20 +296,20 @@ CStudioAuthoring.Module.requireModule(
                                 "studioDialog"
                             );
                         }
-					};
-					var xml = editor.getValue();
-					var savePath = itemSelectEl[selectedIndex].value;
-					if (savePath != 'undefined' && savePath != '') {
+                    };
+                    var xml = editor.getValue();
+                    var savePath = itemSelectEl[selectedIndex].value;
+                    if (savePath != 'undefined' && savePath != '') {
 
-						var defPath =  configFilesPath + itemSelectEl[selectedIndex].value;
+                        var defPath =  configFilesPath + itemSelectEl[selectedIndex].value;
 
-						var url = "/api/1/services/api/1/site/write-configuration.json" +
-                        "?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
+                        var url = "/api/1/services/api/1/site/write-configuration.json" +
+                            "?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
 
-						YAHOO.util.Connect.setDefaultPostHeader(false);
-						YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-						YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, xml);
-					} else {
+                        YAHOO.util.Connect.setDefaultPostHeader(false);
+                        YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
+                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, xml);
+                    } else {
                         CStudioAuthoring.Operations.showSimpleDialog(
                             "errorDialog-dialog",
                             CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -303,29 +319,9 @@ CStudioAuthoring.Module.requireModule(
                             YAHOO.widget.SimpleDialog.ICON_BLOCK,
                             "studioDialog"
                         );
-					}
+                    }
+                }
 
-				}; // end of save
-				
-				var viewSampleButtonEl = document.getElementById("view-sample-button");
-				var hideSampleButtonEl = document.getElementById("hide-sample-button");
-				var sampleAreaEl = document.getElementById("sample-window");
-                var contentArea = document.getElementById("content-area");
-				
-				viewSampleButtonEl.onclick = function () {
-					CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditorParent(contentArea);
-					hideSampleButtonEl.style.display = 'inline';
-					viewSampleButtonEl.style.display = 'none';
-					sampleAreaEl.style.display = 'inline';
-				};
-				
-				hideSampleButtonEl.onclick = function () {
-					CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
-					hideSampleButtonEl.style.display = 'none';
-					viewSampleButtonEl.style.display = 'inline';
-					sampleAreaEl.style.display = 'none';
-				};
-				hideSampleButtonEl.style.display = 'none';
 			},
 			
 			expandEditor: function(editor) {
