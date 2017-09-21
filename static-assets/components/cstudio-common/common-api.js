@@ -6858,7 +6858,8 @@ var nodeOpen = false;
                         icon: {}
                     };
 
-                if(treeNodeTO.isAsset) {     //assets
+                if(treeNodeTO.isAsset || "unknown" === treeNodeTO.contentType) {     //assets - when outside from static assets folder isAsset
+                                                                                     //         is false, so on unknown it's considered an asset
                     var mimetype = treeNodeTO.mimeType;
 
                     if (mimetype.match(/\bvideo\b/)) {
