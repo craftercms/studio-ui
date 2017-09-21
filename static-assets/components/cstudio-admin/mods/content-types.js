@@ -107,7 +107,7 @@ CStudioAuthoring.Module.requireModule(
 
                             success: function (config) {
                                 // render save bar
-                                CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), fn: function() {
+                                CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), class:"btn-primary", fn: function() {
 
                                     var saveFn = function(){
 
@@ -247,7 +247,7 @@ CStudioAuthoring.Module.requireModule(
                                     }
                                 }
                                 },
-                                    {label:CMgs.format(langBundle, "cancel"), fn: function() {
+                                    {label:CMgs.format(langBundle, "cancel"), class:"btn-default", fn: function() {
                                         if(CStudioAdminConsole.isDirty){
                                             CStudioAuthoring.Operations.showSimpleDialog(
                                                 "error-dialog",

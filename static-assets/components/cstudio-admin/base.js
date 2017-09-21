@@ -200,13 +200,12 @@ CStudioAdminConsole.CommandBar =  {
 	addAction: function(action) {
 		var buttonEl = document.createElement("input");
 		YDom.addClass(buttonEl, "btn");
-        if(action.label == "Save"){
-            YDom.addClass(buttonEl, "btn-primary");
-        }else{
-            YDom.addClass(buttonEl, "btn-default");
-        }
+        YDom.addClass(buttonEl, action.class ? action.class : "btn-primary");
 		buttonEl.type = "button";
 		buttonEl.value = action.label;
+        if(action.id){
+            buttonEl.id = action.id;
+        }
 		this.commandBarEl.appendChild(buttonEl);
 		buttonEl.onclick = action.fn;
 	}
