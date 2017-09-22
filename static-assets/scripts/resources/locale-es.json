@@ -62,6 +62,7 @@
     "NEW_PASSWORD_LABEL": "Nueva Contraseña",
     "CONFIRM_PASSWORD_LABEL": "Confimar Contraseña",
     "SUBMIT": "Enviar"
+    "NOTIFICATION": "Notificación"
   },
   "about": {
     "HEADER_LABEL": "Acerca",

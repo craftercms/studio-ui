@@ -62,6 +62,7 @@
     "NEW_PASSWORD_LABEL": "새 비밀번호",
     "CONFIRM_PASSWORD_LABEL": "비밀번호 확인",
     "SUBMIT": "제출"
+    "NOTIFICATION": "공고"
   },
   "about": {
     "HEADER_LABEL": "약",

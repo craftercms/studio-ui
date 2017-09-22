@@ -64,6 +64,7 @@
     "NEW_PASSWORD_LABEL": "New Password",
     "CONFIRM_PASSWORD_LABEL": "Confirm Password",
     "SUBMIT": "Submit"
+    "NOTIFICATION": "Notification"
   },
   "about": {
     "HEADER_LABEL": "About",

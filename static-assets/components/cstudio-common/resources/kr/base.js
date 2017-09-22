@@ -741,7 +741,14 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     jobsError : "작업을로드하지 못했습니다.",
     cancelDeploymentError: "배포를 취소하지 못했습니다.",
     saveDateError: "날짜 / 시간 필드를 저장할 수 없습니다. 시스템 관리자에게 문의하십시오.",
-    contentTypeModifiedWarn: "콘텐츠 유형이 수정되었습니다. 변경 사항을 취소 하시겠습니까"
+    contentTypeModifiedWarn: "콘텐츠 유형이 수정되었습니다. 변경 사항을 취소 하시겠습니까",
+
+    add: "더하다",
+    replace: "바꾸다",
+    delete: "지우다",
+    edit: "편집하다",
+    createNew: "새로 만들기",
+    browseExisting: "기존 항목 찾아보기"
 });
 
 CStudioAuthoring.Messages.registerBundle("targeting", "en", {
