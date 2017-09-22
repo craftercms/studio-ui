@@ -963,7 +963,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
         treeItem.component = true;
 
-        retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem);
+        retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem).string;
         retTransferObj.style = CStudioAuthoring.Utils.getContentItemClassName(treeItem);//, treeItem.container
 
         if(retTransferObj.internalName == "") {
