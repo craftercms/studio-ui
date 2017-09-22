@@ -60,7 +60,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                             "error-dialog",
                                             CStudioAuthoring.Operations.simpleDialogTypeINFO,
                                             CMgs.format(contextNavLangBundle, "publishStatus"),
-                                            response.message,
+                                            CMgs.format(contextNavLangBundle, response.status.toLowerCase()),
                                             [{ text: CMgs.format(contextNavLangBundle, "close"),  handler:function(){this.hide();}, isDefault:false }], // use default button
                                             "dialog-elt fa fa-circle-o-notch fa-spin fa-spin-fix " + iconClass,
                                             "studioDialog"

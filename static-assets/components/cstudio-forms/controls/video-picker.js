@@ -208,6 +208,9 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     },
 
     _addVideo: function(datasourceEl) {
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+
         var datasource = datasourceEl,
             self = this;
         if(datasource) {
@@ -238,7 +241,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
                             this.videoPicker.urlEl.innerHTML = videoData.relativeUrl.replace("?crafterCMIS=true","");
                             this.videoPicker.downloadEl.href = videoData.previewUrl;
 
-                            this.videoPicker.addEl.value = "Replace";
+                            this.videoPicker.addEl.value = CMgs.format(langBundle, "replace");
 
                             this.videoPicker.noPreviewEl.style.display = "none";
                             this.videoPicker.previewEl.style.display = "inline";
@@ -265,13 +268,16 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     },
 
     deleteVideo: function() {
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+
         if(this.inputEl.value != "") {
             this.inputEl.value = '';
             this.urlEl.innerHTML = '';
             this.previewEl.src = '';
             this.previewEl.style.display = "none";
             this.noPreviewEl.style.display = "inline";
-            this.addEl.value = "Add";
+            this.addEl.value = CMgs.format(langBundle, "add");
 
             this.downloadEl.style.display = "none";
             this.zoomEl.style.display = "none";
@@ -288,6 +294,9 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
         var divPrefix = config.id + "-";
         var datasource = null;
+
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
         var titleEl = document.createElement("span");
 
@@ -370,9 +379,9 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         addEl.type = "button";
         addEl.style.position = "relative";
         if (this.inputEl.value == null || this.inputEl.value == "") {
-            addEl.value = "Add";
+            addEl.value = CMgs.format(langBundle, "add");
         } else {
-            addEl.value = "Replace";
+            addEl.value = CMgs.format(langBundle, "replace");
         }
 
         YAHOO.util.Dom.addClass(addEl, 'cstudio-button');
@@ -381,7 +390,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         var delEl = document.createElement("input");
         this.delEl = delEl;
         delEl.type = "button";
-        delEl.value = "Delete";
+        delEl.value = CMgs.format(langBundle, "delete");;
         delEl.style.position = "relative";
         delEl.disabled = true;
         YAHOO.util.Dom.addClass(delEl, 'cstudio-button');
@@ -458,6 +467,9 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     },
 
     setValue: function(value) {
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+
         this.value = value;
         this.inputEl.value = value;
 
@@ -479,7 +491,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
             this.zoomEl.style.display = "inline-block";
             this.downloadEl.style.display = "inline-block";
-            this.addEl.value = "Replace";
+            this.addEl.value = CMgs.format(langBundle, "replace");
             this.delEl.disabled = false;
             YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
         }

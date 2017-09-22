@@ -106,10 +106,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
 
         mainEl.innerHTML =
                 "<div id='bulk-golive' class='bulk-op-area'>" +
-                    "<p><h2>Bulk Publish</h2></p><p>" +
+                    "<p><h2>" + CMgs.format(formsLangBundle, "bulkPublish") + "</h2></p><p>" +
                     "<div class='bulk-table'>" +
                         "<div class='bulk-table-row'>" +
-                            "<div class='bulk-table-cell'>Path to Publish:" +
+                            "<div class='bulk-table-cell'>" + CMgs.format(formsLangBundle, "bulkPublishPathToPublish") + ":" +
                             "</div>" +
                             "<div class='bulk-table-cell'><input type='text' size=70 id='bulk-golive-path'/>" +
                             "</div>" +
@@ -121,14 +121,14 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                             "</div>" +
                         "</div>" +
                         "<div class='bulk-table-row'>" +
-                            "<div class='bulk-table-cell'>Publishing Environment:" +
+                            "<div class='bulk-table-cell'>" + CMgs.format(formsLangBundle, "bulkPublishPublishingEnv") + ":" +
                             "</div>" +
                             "<div class='bulk-table-cell'><select id='go-pub-channel'></select>" +
                             "</div>" +
                         "</div>" +
                     "</div>" +
                     "</br>" +
-                    "<input type='button' class='action-button' value='Publish' onclick='CStudioAdminConsole.Tool.BulkOperations.golive()' /></p>" +
+                    "<input type='button' class='action-button' value='" + CMgs.format(formsLangBundle, "bulkPublishPublish") + "' onclick='CStudioAdminConsole.Tool.BulkOperations.golive()' /></p>" +
                     "<p id='bulk-golive-message'></p>" +
                 "</div>";
 

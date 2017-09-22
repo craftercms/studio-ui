@@ -12,7 +12,7 @@
             </button>
         </div>
         <div class="pull-right m10">
-            <label>Sites per page: </label>
+            <label>{{ 'dashboard.sites.SITES_PER_PAGE' | translate }}: </label>
             <input class="audit-number-logs" type="number" name="input" ng-model="sitesPag.sitesPerPage"
                    min="0" max="500" ng-model-options="{debounce: defaultDelay}">
         </div>

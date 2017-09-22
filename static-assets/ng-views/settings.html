@@ -30,26 +30,26 @@
                 </div>
             </div>
 
-            <h2>Change Password</h2>
+            <h2>{{ 'settings.CHANGE_PASSWORD_LABEL' | translate }}</h2>
             <form class="form well">
                 <p>{{ 'settings.CHANGE_PASSWORD_ADVERTISEMENT' | translate }}</p>
                 <div class="form-group">
-                    <label for="current">Current Password</label>
+                    <label for="current">{{ 'settings.CURRENT_PASSWORD_LABEL' | translate }}</label>
                     <input class="form-control" type="password" id="current" ng-model="data.current"/>
                 </div>
                 <div class="form-group">
-                    <label for="password">New Password</label>
+                    <label for="password">{{ 'settings.NEW_PASSWORD_LABEL' | translate }}</label>
                     <input class="form-control" type="password" id="password" ng-model="data.new"/>
                 </div>
                 <div class="form-group">
-                    <label for="confirm">Confirm Password</label>
+                    <label for="confirm">{{ 'settings.CONFIRM_PASSWORD_LABEL' | translate }}</label>
                     <input class="form-control" type="password" id="confirm" ng-model="data.confirmation"/>
                 </div>
                 <div class="form-group">
                     <div ng-show="error" class="alert alert-danger">{{error}}</div>
                     <div ng-show="message" class="alert alert-success">{{message}}</div>
                     <button class="btn btn-primary" ng-click="changePassword()">
-                        Submit
+                        {{ 'settings.SUBMIT' | translate }}
                     </button>
                 </div>
             </form>

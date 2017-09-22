@@ -35,6 +35,7 @@
       "REMOVE_SITE_CONFIRMATION_MSG": "Quiere eliminar ",
       "TOGGLE_NAV": "Toggle navigation",
       "ACCOUNT": "Cuenta",
+      "SITES_PER_PAGE": "Sitios por página",
 
       "create": {
         "HEADER_LABEL": "Crear Sitio",
@@ -55,14 +56,19 @@
     "UPDATE_PROFILE": "Actualizar Perfil",
     "PROFILE_UPDATED": "Perfil Actualizado",
     "PASSWORD_UPDATED": "Contraseña actualizada correctamente",
-    "CHANGE_PASSWORD_ADVERTISEMENT": "Una vez que tu contraseña se haya actualizado correctamente, deberás volver a iniciar sesión."
+    "CHANGE_PASSWORD_ADVERTISEMENT": "Una vez que tu contraseña se haya actualizado correctamente, deberás volver a iniciar sesión.",
+    "CHANGE_PASSWORD_LABEL": "Cambiar Contraseña",
+    "CURRENT_PASSWORD_LABEL": "Contraseña Actual",
+    "NEW_PASSWORD_LABEL": "Nueva Contraseña",
+    "CONFIRM_PASSWORD_LABEL": "Confimar Contraseña",
+    "SUBMIT": "Enviar"
   },
   "about": {
     "HEADER_LABEL": "Acerca",
     "STUDIO_INFO": "Información de Crafter Studio",
     "STUDIO_VERSION_NUMBER": "Número de versión de Studio",
     "BUILD_NUMBER": "Número de compilación",
-    "BUILD_DATE_TIME": "Build Date/Time"
+    "BUILD_DATE_TIME": "Fecha/Hora de Revisión"
   },
   "admin": {
     "groups": {
@@ -89,7 +95,8 @@
       "ADD_NEW_MEMBERS": "Agregar nuevos miembros",
       "ADD_MEMBERS": "Agregar miembros",
       "MEMBERS": "Miembros",
-      "UNAUTHORIZED": "No autorizado. Usted no tiene suficientes privilegios para realizar esta acción."
+      "UNAUTHORIZED": "No autorizado. Usted no tiene suficientes privilegios para realizar esta acción.",
+      "GROUP_NAME": "Nombre de Grupo"
     },
     "users": {
       "HEADER_LABEL": "Usuarios",
@@ -125,7 +132,8 @@
       "TYPE": "Tipo",
       "CREATED": "Creado",
       "MODIFIED": "Modificado",
-      "SITE": "Sitio"
+      "SITE": "Sitio",
+      "LOGS_PER_PAGE": "Registros por página"
     }
   },
   "common": {
@@ -134,7 +142,9 @@
     "CLOSE_LABEL": "Cerrar",
     "ADD_LABEL": "Agregar",
     "CREATE": "create",
+    "create_LABEL": "Crear",
     "EDIT": "edit",
+    "edit_LABEL": "Editar",
     "SAVE": "Guardar",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "es requerido.",

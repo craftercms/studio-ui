@@ -50,6 +50,9 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var me = this,
 						el, containerEl, iconEl, iconLabel, ptoOn;
 
+					var CMgs = CStudioAuthoring.Messages;
+					var previewLangBundle = CMgs.getBundle("targeting", CStudioAuthoringContext.lang);
+
 					el = YDom.get("acn-persona");
 					containerEl = document.createElement("div");
 					containerEl.id = "acn-persona-container";
@@ -61,7 +64,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
                     iconLabel = document.createElement("span");
                     YDom.addClass(iconLabel, "nav-label");
-                    iconLabel.innerHTML = "Targeting";
+                    iconLabel.innerHTML = CMgs.format(previewLangBundle, "targeting");
 
 					containerEl.appendChild(iconEl);
                     containerEl.appendChild(iconLabel);
@@ -74,6 +77,9 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 				},
 
 				getTargeting: function() {
+					var CMgs = CStudioAuthoring.Messages;
+					var previewLangBundle = CMgs.getBundle("targeting", CStudioAuthoringContext.lang);
+
 					var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay"),
 						me = this,
 						model = this.model;
@@ -101,7 +107,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					document.body.appendChild(reportContainerEl);
 
 					var markup =
-						"<div class='col-md-12'><h3 class='modal-title bold'>Targeting</h3></div>" +
+						"<div class='col-md-12'><h3 class='modal-title bold'>" + CMgs.format(previewLangBundle, "targeting") + "</h3></div>" +
 						"<div class='col-md-2 tac'><span class='fa fa-bullseye' style='font-size: 110px; color: #000; margin-top: 15px;'></span></div>";
 
 					reportContainerEl.innerHTML = markup;
@@ -110,7 +116,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					targetingContainerEl.id = "targeting-container";
 					YAHOO.util.Dom.addClass(targetingContainerEl, "col-md-10 targeting-container");
 					targetingContainerEl.style.cssText = "overflow-y: scroll; max-height: 349px;";
-					targetingContainerEl.innerHTML = "<h3 class='bold'>User Properties</h2>";
+					targetingContainerEl.innerHTML = "<h3 class='bold'>" + CMgs.format(previewLangBundle, "userProps") + "</h2>";
 
 					reportContainerEl.appendChild(targetingContainerEl);
 
@@ -244,7 +250,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
 					var clearBtn = document.createElement("a");
 					YAHOO.util.Dom.addClass(clearBtn, "btn btn-primary mr10");
-					clearBtn.innerHTML = "Clear";
+					clearBtn.innerHTML = CMgs.format(previewLangBundle, "clear");
 					actionButtonsContainer.appendChild(clearBtn);
 					clearBtn.onclick = function() {
 						CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/targeting/targeting-config.xml', {
@@ -291,7 +297,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
 					var applyBtn = document.createElement("a");
 					YAHOO.util.Dom.addClass(applyBtn, "btn btn-primary mr10");
-					applyBtn.innerHTML = "Apply";
+					applyBtn.innerHTML = CMgs.format(previewLangBundle, "apply");
 					actionButtonsContainer.appendChild(applyBtn);
 					applyBtn.onclick = function() {
 						me.updateTargeting(reportContainerEl);
@@ -301,7 +307,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
 					var cancelBtn = document.createElement("a");
 					YAHOO.util.Dom.addClass(cancelBtn, "btn btn-default");
-					cancelBtn.innerHTML = "Cancel";
+					cancelBtn.innerHTML = CMgs.format(previewLangBundle, "cancel");
 					actionButtonsContainer.appendChild(cancelBtn);
 					cancelBtn.onclick = function() {
 						me.closeDialog(reportContainerEl);

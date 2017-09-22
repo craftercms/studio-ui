@@ -111,6 +111,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         this.maxSize = 0;
         this.minSize = 0;
 
+        var CMgs = CStudioAuthoring.Messages;
+        var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+
         for(var i=0;i<config.constraints.length;i++){
             var constraint = config.constraints[i];
 
@@ -180,7 +183,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         //Add button
         var addButtonEl = document.createElement("input")
         addButtonEl.type = 'button';
-        addButtonEl.value = 'Add';
+        addButtonEl.value = CMgs.format(langBundle, "add");;
         addButtonEl.disabled = true;
         YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-button');
         YAHOO.util.Dom.addClass(addButtonEl, 'cstudio-drop-arrow-button');
@@ -191,7 +194,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         //Edit button
         var editButtonEl = document.createElement("input")
         editButtonEl.type = 'button';
-        editButtonEl.value = 'Edit';
+        editButtonEl.value = CMgs.format(langBundle, "edit");;
         editButtonEl.disabled = true;
         YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button');
         YAHOO.util.Dom.addClass(editButtonEl, 'cstudio-button-disabled');

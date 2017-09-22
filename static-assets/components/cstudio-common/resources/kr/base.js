@@ -129,7 +129,10 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     notification: "공고",
     noEventError: "연관된 이벤트 핸들러가 없습니다.",
 
-    publishStatus: "게시 상태"
+    publishStatus: "게시 상태",
+    idle: "게으른",
+    busy: "바쁜",
+    stopped: "중지됨"
 
 });
 
@@ -315,6 +318,10 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 
     bulkPublishDialogTitle:"경고 : 대량 게시",
     bulkPublishDialogBody:"대량 게시는 요청한 패턴과 일치하는 모든 항목을 종속성을 포함하여 강제로 게시합니다. 잠재적으로 누군가 진행중인 작업을 포함하여 모든 수정 된 항목이 </br> 계속되기 전에 게시 될 준비가되었는지 확인하십시오.",
+    bulkPublish: "대량 게시",
+    bulkPublishPathToPublish: "게시 경로",
+    bulkPublishPublishingEnv: "출판 환경",
+    bulkPublishPublish: "게시",
                         
     historyDialogTitle: "버전 기록",
     historyDialogSubTitle: "역사에 대해 표시 :",
@@ -331,6 +338,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     historyDialogViewFileMessage:"이 버전보기",
     historyDialogCompareFileMessage:"현재에 비해",
     historyDialogRevertFileMessage:"이 버전으로 되돌리기",
+    historyDialogCompare: "비교",
 
     deleteDialogTitle:"삭제",
     deleteDialogSubTitle:"다음 선택 항목이 삭제됩니다 :",
@@ -403,6 +411,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     inContextEditing: "상황에 맞는 편집",
     pageComponents: "페이지 구성 요소",
     publishingChannel: "출판 채널",
+    inContextEdit: "인 - 컨텍스트 편집",
 
     /*Error*/
     legacyFormNoSupported: "더 이상 지원되지 않는 레거시 양식 서버.",
@@ -733,4 +742,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     cancelDeploymentError: "배포를 취소하지 못했습니다.",
     saveDateError: "날짜 / 시간 필드를 저장할 수 없습니다. 시스템 관리자에게 문의하십시오.",
     contentTypeModifiedWarn: "콘텐츠 유형이 수정되었습니다. 변경 사항을 취소 하시겠습니까"
+});
+
+CStudioAuthoring.Messages.registerBundle("targeting", "en", {
+    targeting: "타겟팅",
+    clear: "명확한",
+    apply: "대다",
+    cancel: "취소",
+    userProps: "사용자 속성"
 });

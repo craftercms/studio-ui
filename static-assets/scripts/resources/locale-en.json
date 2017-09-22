@@ -36,6 +36,7 @@
       "TOGGLE_NAV": "Toggle navigation",
       "ACCOUNT": "Account",
       "SITE_ERROR" : "is an invalid site.",
+      "SITES_PER_PAGE": "Sites per page",
 
       "create": {
         "HEADER_LABEL": "Create Site",
@@ -57,7 +58,12 @@
     "UPDATE_PROFILE": "Update Profile",
     "PROFILE_UPDATED": "Profile Updated",
     "PASSWORD_UPDATED": "Password successfully changed",
-    "CHANGE_PASSWORD_ADVERTISEMENT": "Once your password has been successfully updated, you'll be required to login again."
+    "CHANGE_PASSWORD_ADVERTISEMENT": "Once your password has been successfully updated, you'll be required to login again.",
+    "CHANGE_PASSWORD_LABEL": "Change Password",
+    "CURRENT_PASSWORD_LABEL": "Current Password",
+    "NEW_PASSWORD_LABEL": "New Password",
+    "CONFIRM_PASSWORD_LABEL": "Confirm Password",
+    "SUBMIT": "Submit"
   },
   "about": {
     "HEADER_LABEL": "About",
@@ -91,7 +97,8 @@
       "ADD_NEW_MEMBERS": "Add new members",
       "ADD_MEMBERS": "Add members",
       "MEMBERS": "Members",
-      "UNAUTHORIZED": "Unauthorized. You don't have sufficient privileges to perform this action."
+      "UNAUTHORIZED": "Unauthorized. You don't have sufficient privileges to perform this action.",
+      "GROUP_NAME": "Group Name"
     },
     "users": {
       "HEADER_LABEL": "Users",
@@ -127,7 +134,8 @@
       "TYPE": "Type",
       "CREATED": "Created",
       "MODIFIED": "Modified",
-      "SITE": "Site"
+      "SITE": "Site",
+      "LOGS_PER_PAGE": "Logs per page"
     }
   },
   "common": {
@@ -136,7 +144,9 @@
     "CLOSE_LABEL": "Close",
     "ADD_LABEL": "Add",
     "CREATE": "create",
+    "create_LABEL": "Create",
     "EDIT": "edit",
+    "edit_LABEL": "Edit",
     "SAVE": "Save",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "is required.",

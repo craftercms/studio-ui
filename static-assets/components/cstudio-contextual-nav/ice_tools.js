@@ -105,7 +105,9 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 				render: function() {
 				    var el, containerEl, pencilIcon, iconLabel, iceOn;
 
-					
+                    var CMgs = CStudioAuthoring.Messages;
+					var previewLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+
 					el = YDom.get("acn-ice-tools");
 					containerEl = document.createElement("div");
 					containerEl.id = "acn-ice-tools-container";
@@ -126,7 +128,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 
                     iconLabel = document.createElement("span");
                     YDom.addClass(iconLabel, "nav-label");
-                    iconLabel.innerHTML = "In-Context Edit";
+                    iconLabel.innerHTML = CMgs.format(previewLangBundle, "inContextEdit");
 
 					containerEl.appendChild(pencilIcon);
                     containerEl.appendChild(iconLabel);
