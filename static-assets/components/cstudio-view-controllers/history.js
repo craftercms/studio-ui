@@ -61,7 +61,7 @@
                                     $('#historyCompareBtn').remove();
                                     compareButton.type = "button";
                                     Dom.addClass(compareButton, "compare-button btn btn-default");
-                                    compareButton.value="Compare";
+                                    compareButton.value=CMgs.format(formsLangBundle, "historyDialogCompare"); 
                                     compareButton.setAttribute("disabled", "");
                                     compareButton.setAttribute("id", "historyCompareBtn");
                                     actionWrapper.appendChild(compareButton);

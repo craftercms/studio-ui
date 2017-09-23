@@ -138,7 +138,10 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     notification: "Notification",
     noEventError: "No event handler associated.",
 
-    publishStatus: "Publish Status"
+    publishStatus: "Publish Status",
+    idle: "Idle",
+    busy: "Busy",
+    stopped: "Stopped"
 
 });
 
@@ -206,7 +209,17 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     signBackIn: "Sign back in",
     signInContinueWorking: "Sign in to continue working",
     sessionExpireInactivity: "Your session has expired due to inactivity",
-    doneSignOut:"I'm done, signout"
+    doneSignOut:"I'm done, signout",
+
+    search: "Search",
+    publishingStatus: "Publishing Status",
+    users: "Users",
+    sites: "Sites",
+    help: "Help",
+    documentation: "Documentation",
+    about: "About",
+    settings: "Settings",
+    signOut: "Sign Out"
 
 });
 
@@ -344,6 +357,10 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     
     bulkPublishDialogTitle:"Warning: Bulk Publish",
     bulkPublishDialogBody:"Bulk publish will force publish all items that match the pattern requested including their dependencies.</br> Please make sure that all modified items (including potentially someone's work in progress) are ready to </br> be published before continuing.",
+    bulkPublish: "Bulk Publish",
+    bulkPublishPathToPublish: "Path to Publish",
+    bulkPublishPublishingEnv: "Publishing Environment",
+    bulkPublishPublish: "Publish",
 
     historyDialogTitle: "Version History",
     historyDialogSubTitle: "History shown for:",
@@ -360,6 +377,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     historyDialogViewFileMessage:"View this version",
     historyDialogCompareFileMessage:"Compare to current",
     historyDialogRevertFileMessage:"Revert to this version",
+    historyDialogCompare: "Compare",
 
     deleteDialogTitle: "Delete",
     deleteDialogSubTitle: "The following checked items will be deleted:",
@@ -444,6 +462,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     inContextEditing: "In-Context Editing",
     pageComponents: "Page Components",
     publishingChannel: "Publishing Channel",
+    inContextEdit: "In-Context Edit",
 
     /*Error*/
     legacyFormNoSupported: "legacy form server no longer supported.",
@@ -808,6 +827,20 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     jobsError : "Failed to load jobs.",
     cancelDeploymentError: "Failed to cancel deployment.",
     saveDateError: "Unable to save Date/Time field. Please contact your system administrator.",
-    contentTypeModifiedWarn: "Content Type has been modified, are you sure you want to abandon your changes?"
+    contentTypeModifiedWarn: "Content Type has been modified, are you sure you want to abandon your changes?",
 
+    add: "Add",
+    replace: "Replace",
+    delete: "Delete",
+    edit: "Edit",
+    createNew: "Create New",
+    browseExisting: "Browse for Existing"
+});
+
+CStudioAuthoring.Messages.registerBundle("targeting", "en", {
+    targeting: "Targeting",
+    clear: "Clear",
+    apply: "Apply",
+    cancel: "Cancel",
+    userProps: "User Properties"
 });

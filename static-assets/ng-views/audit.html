@@ -7,7 +7,7 @@
 
     <div class="btn-group" dropdown is-open="usersDropdown.isopen" style="margin-right: 20px;">
         <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle >
-            {{audit.userSelected || 'All Users' }}  <span class="caret"></span>
+            {{audit.userSelected || 'admin.audit.ALL_USERS' | translate }}  <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
             <li>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="pull-right">
-        <label>Logs per page: </label>
+        <label>{{ 'admin.audit.LOGS_PER_PAGE' | translate }}: </label>
         <input class="audit-number-logs" type="number" name="input" ng-model="audit.logsPerPage"
                min="0" max="500" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
     </div>

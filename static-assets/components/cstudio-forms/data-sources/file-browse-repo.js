@@ -17,6 +17,9 @@ function(id, form, properties, constraints)  {
 YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDatasource, {
 
 	add: function(control) {
+		var CMgs = CStudioAuthoring.Messages;
+		var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+
 		var _self = this;
 		
 		var addContainerEl = null;
@@ -51,7 +54,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 
 		var createEl = document.createElement("div");
 		YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-		createEl.innerHTML = "Create New - " + newElTitle;
+		createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
 		control.addContainerEl.create.appendChild(createEl);
 
 		YAHOO.util.Event.on(createEl, 'click', function() {
@@ -72,7 +75,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		}, createEl);
 
 		 var browseEl = document.createElement("div");
-		 browseEl.innerHTML = "Browse for Existing - " + newElTitle;
+		 browseEl.innerHTML = CMgs.format(langBundle, "browseExisting") + " - " + newElTitle;
 		 YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
 		 control.addContainerEl.browse.appendChild(browseEl);
 

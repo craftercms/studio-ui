@@ -71,6 +71,9 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 				render: function() {
 					var el, containerEl, iconEl, iconLabel, ptoOn;
 
+					var CMgs = CStudioAuthoring.Messages;
+					var previewLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+
 					el = YDom.get("acn-preview-tools");
 					containerEl = document.createElement("div");
 					containerEl.id = "acn-preview-tools-container";
@@ -90,7 +93,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 
                     iconLabel = document.createElement("span");
                     YDom.addClass(iconLabel, "nav-label");
-                    iconLabel.innerHTML = "Preview Tools";
+                    iconLabel.innerHTML = CMgs.format(previewLangBundle, "previewToolsTitle");;
 
 					containerEl.appendChild(iconEl);
                     containerEl.appendChild(iconLabel);

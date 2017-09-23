@@ -65,7 +65,7 @@
 
 <script type="text/ng-template" id="modalView.html">
     <div class="modal-header">
-        <h3 ng-if="dialogMode" class="modal-title text-capitalize">{{dialogMode}} {{ 'admin.users.USER_LABEL' | translate }}</h3>
+        <h3 ng-if="dialogMode" class="modal-title">{{ 'common.' + dialogMode + '_LABEL' | translate }} {{ 'admin.users.USER_LABEL' | translate }}</h3>
         <h3 ng-if="!dialogMode" class="modal-title text-capitalize">{{user.name}}</h3>
     </div>
     <form name="createNameForm" id="user-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">

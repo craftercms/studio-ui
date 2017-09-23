@@ -76,8 +76,8 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
     dashletIconGuideFloatingPage: "Página flotante",
     dashletIconGuideComponent: "Componente",
     dashletIconGuideDocument: "Documento",
-    dashletIconGuideStateNew: "Nunca Piblicado",
-    dashletIconGuideStateDisabled: "Disabled",
+    dashletIconGuideStateNew: "Nunca Publicado",
+    dashletIconGuideStateDisabled: "Deshabilitado",
     dashletIconGuideStateDeleted: "Eliminado",
     dashletIconGuideStateInProgress: "Editado",
     dashletIconGuideStateInWorkflow: "En Flujo de Trabajo",
@@ -128,6 +128,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     search: "Busqueda",
 
     logout: "Cerrar Sesión",
+    close: "Cerrar",
 
     variableLabel: "Ejemplos de Código de Plantilla",
 
@@ -136,7 +137,10 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     notification: "Notificación",
     noEventError: "No se ha asociado ningún controlador de eventos.",
 
-    publishStatus: "Estado de Publicación"
+    publishStatus: "Estado de Publicación",
+    idle: "Desocupado",
+    busy: "Ocupado",
+    stopped: "Detenido"
 
 });
 
@@ -204,7 +208,17 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "es", {
     signBackIn: "Vuelve a iniciar sesión",
     signInContinueWorking: "Inicia sesión para continuar trabajando",
     sessionExpireInactivity: "Su sesión ha caducado debido a la inactividad",
-    doneSignOut:"He terminado. Desloguearme"
+    doneSignOut:"He terminado. Desloguearme",
+
+    search: "Búsqueda",
+    publishingStatus: "Estatus de Publicación",
+    users: "Usuarios",
+    sites: "Sitios",
+    help: "Ayuda",
+    documentation: "Documentación",
+    about: "Acerca De",
+    settings: "Preferencias",
+    signOut: "Desloguearse"
 
 });
 
@@ -285,6 +299,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     location: "Ubicación",
     sectionValidation: "{0} de {1} campos requeridos son invalidos",
     saveAndClose: "Guardar y Cerrar",
+    saveAndCloseDraft: "Guardar como Borrador",
     saveAndPreview: "Guardar y Mostrar",
     save: "Guardar",
     cancel: "Cancelar",
@@ -339,6 +354,10 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 
     bulkPublishDialogTitle:"Advertencia: Publicación en cantidades",
     bulkPublishDialogBody: "Publicar en cantidades forzará una publicación de todos los elementos que coincidan con el patrón solicitado incluyendo sus dependencias.</br> Por favor asegúrese de que todos los elementos modificados (incluyendo aquello en progreso de alguien más) estén </br> listos para publicarse antes de continuar.",
+    bulkPublish: "Publicar en cantidades",
+    bulkPublishPathToPublish: "Ruta para Publicar",
+    bulkPublishPublishingEnv: "Ambiente a Publicar",
+    bulkPublishPublish: "Publicar",
 
     historyDialogTitle: "Historial de las Versiones",
     historyDialogSubTitle: "Historial mostrado para:",
@@ -355,6 +374,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     historyDialogViewFileMessage:"Ver esta versión",
     historyDialogCompareFileMessage:"Comparar con el actual",
     historyDialogRevertFileMessage:"Revertir a esta versión",
+    historyDialogCompare: "Comparar",
 
     deleteDialogTitle:"Eliminar",
     deleteDialogSubTitle:"Los siguientes elementos seleccionados serán eliminados:",
@@ -377,7 +397,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     dependsOn: "Depende de",
     dependsOnMe: "Dependen de mi",
     selectDeps: "Mostrar contenido que:",
-    dependenciesDialogItem: "Item",
+    dependenciesDialogItem: "Ítem",
     approveDialogPage: "Página",
     approveDialogOriginalSchedule: "Horario original",
     approveDialogSubmissionComment: "Comentario de envio",
@@ -427,6 +447,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     inContextEditing: "Edición En-Contexto",
     pageComponents: "Componentes de Página",
     publishingChannel: "Canal para Publicar",
+    inContextEdit: "Edición en Contexto",
 
     /*Error*/
     legacyFormNoSupported: "Servidor de formulario heredado ya no es soportado.",
@@ -762,5 +783,20 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     jobsError : "Error al cargar trabajos.",
     cancelDeploymentError: "Error al cancelar la implementación.",
     saveDateError: "No se puede guardar el campo Fecha / Hora. Por favor, póngase en contacto con el administrador del sistema.",
-    contentTypeModifiedWarn: "Se ha modificado el tipo de contenido, ¿está seguro de que desea abandonar los cambios?"
+    contentTypeModifiedWarn: "Se ha modificado el tipo de contenido, ¿está seguro de que desea abandonar los cambios?",
+
+    add: "Agregar",
+    replace: "Reemplazar",
+    delete: "Borrar",
+    edit: "Editar",
+    createNew: "Crear Nuevo",
+    browseExisting: "Buscar Existentes"
+});
+
+CStudioAuthoring.Messages.registerBundle("targeting", "en", {
+    targeting: "Público Meta",
+    clear: "Limpiar",
+    apply: "Aplicar",
+    cancel: "Cancelar",
+    userProps: "Propiedades de Usuario"
 });
