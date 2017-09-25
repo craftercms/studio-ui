@@ -61,7 +61,7 @@
     "CURRENT_PASSWORD_LABEL": "Contraseña Actual",
     "NEW_PASSWORD_LABEL": "Nueva Contraseña",
     "CONFIRM_PASSWORD_LABEL": "Confimar Contraseña",
-    "SUBMIT": "Enviar"
+    "SUBMIT": "Enviar",
     "NOTIFICATION": "Notificación"
   },
   "about": {
