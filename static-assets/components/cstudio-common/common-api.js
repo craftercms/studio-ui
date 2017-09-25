@@ -7183,7 +7183,7 @@ var nodeOpen = false;
             },
 
             getTooltipContent: function(item) {
-                var status = this.getContentItemStatus(item);
+                var status = this.getContentItemStatus(item).string;
                 var style = this.getIconFWClasses(item);
                 var internalName = item.internalName;
                 var contentType = item.contentType;
