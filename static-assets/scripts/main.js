@@ -6,7 +6,6 @@
         'ui.router',
         'ui.bootstrap',
         'smart-table',
-        'ngFileUpload',
         'pascalprecht.translate',
         'angularUtils.directives.dirPagination',
         'ngTagsInput'

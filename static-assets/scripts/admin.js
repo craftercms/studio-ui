@@ -152,9 +152,9 @@
     
     app.controller('AuditCtrl', [
         '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
-        'Upload', '$stateParams', '$translate', '$location',
+        '$stateParams', '$translate', '$location',
         function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
-                  Upload, $stateParams, $translate, $location) {
+                  $stateParams, $translate, $location) {
 
             $scope.audit = {};
             var audit = $scope.audit;
@@ -258,9 +258,9 @@
 
     app.controller('UsersCtrl', [
         '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
-        'Upload', '$stateParams', '$translate', '$location',
+        '$stateParams', '$translate', '$location',
         function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
-                  Upload, $stateParams, $translate, $location) {
+                  $stateParams, $translate, $location) {
 
             $scope.users = {};
             var users = $scope.users;
@@ -471,9 +471,9 @@
 
     app.controller('GroupsCtrl', [
         '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
-        'Upload', '$stateParams', '$translate', '$location', '$q',
+        '$stateParams', '$translate', '$location', '$q',
         function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
-                  Upload, $stateParams, $translate, $location, $q) {
+                  $stateParams, $translate, $location, $q) {
 
             $scope.groups = {};
             var groups = $scope.groups;
