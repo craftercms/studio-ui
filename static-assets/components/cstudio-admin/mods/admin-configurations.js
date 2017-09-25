@@ -55,11 +55,13 @@ CStudioAuthoring.Module.requireModule(
 							"<div id='menu-area'>" + 
 								"<div id='config-description'>" + 
 								"</div>" +
+                                "<div id='config-buttons'>" +
+                                "</div>" +
 							"</div>" + 
 							"<div id='content-area'>" +
 								"<div id='edit-window'>" + 
 									"<textarea id='text-editor'></textarea>" +
-								"</div>" + 
+								"</div>" +
 								"<div id='sample-window'>" +
 									"<textarea id='sample-text'></textarea>" + 
 								"</div>" + 
@@ -77,7 +79,8 @@ CStudioAuthoring.Module.requireModule(
 
 				var itemSelectEl = document.getElementById("config-list");
 				// add action buttons
-				this.addButtons(itemSelectEl, editorEl.codeMirrorEditor);
+                var buttonAreaEl = document.getElementById("config-buttons");
+				this.addButtons(buttonAreaEl, itemSelectEl, editorEl.codeMirrorEditor);
 				// set configuration dropdown
 				var editAreaEl = document.getElementById("edit-area");
 				this.loadConfigFiles(itemSelectEl, editAreaEl, editorEl.codeMirrorEditor, sampleEditorEl.codeMirrorEditor);
@@ -249,23 +252,15 @@ CStudioAuthoring.Module.requireModule(
 			/*
 			* add save, view sample and hide sample buttons
 			*/
-			addButtons: function (itemSelectEl, editor) {
+			addButtons: function (containerEl, itemSelectEl, editor) {
+
+                containerEl.innerHTML =
+                    "<button type='submit' id='view-sample-button' class='btn btn-primary'>"+CMgs.format(formsLangBundle, "viewSample")+"</button>" +
+                    "<button type='submit' id='hide-sample-button' class='btn btn-primary'>"+CMgs.format(formsLangBundle, "hideSample")+"</button>";
 
                 CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), class:"btn-primary", fn: function(){
                     saveFn();
-                } },
-                {label:CMgs.format(formsLangBundle, "viewSample"), class:"btn-primary", id:"view-sample-button", fn: function(){
-                    CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditorParent(contentArea);
-                    hideSampleButtonEl.style.display = 'inline';
-                    viewSampleButtonEl.style.display = 'none';
-                    sampleAreaEl.style.display = 'inline';
-                } },
-                {label:CMgs.format(formsLangBundle, "hideSample"), class:"btn-primary", id:"hide-sample-button", fn: function(){
-                    CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
-                    hideSampleButtonEl.style.display = 'none';
-                    viewSampleButtonEl.style.display = 'inline';
-                    sampleAreaEl.style.display = 'none';
-                } },
+                } }
                 ]);
 
                 CStudioAdminConsole.CommandBar.hide();
@@ -321,6 +316,20 @@ CStudioAuthoring.Module.requireModule(
                         );
                     }
                 }
+
+                viewSampleButtonEl.onclick = function () {
+                    CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditorParent(contentArea);
+                    hideSampleButtonEl.style.display = 'inline';
+                    viewSampleButtonEl.style.display = 'none';
+                    sampleAreaEl.style.display = 'inline';
+                };
+
+                hideSampleButtonEl.onclick = function () {
+                    CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
+                    hideSampleButtonEl.style.display = 'none';
+                    viewSampleButtonEl.style.display = 'inline';
+                    sampleAreaEl.style.display = 'none';
+                };
 
 			},
 			
