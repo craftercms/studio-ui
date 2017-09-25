@@ -260,7 +260,11 @@ CStudioAuthoring.Module.requireModule(
 
                 CStudioAdminConsole.CommandBar.render([{label:CMgs.format(langBundle, "save"), class:"btn-primary", fn: function(){
                     saveFn();
-                } }
+                } },
+                    {label:CMgs.format(langBundle, "cancel"), class:"btn-default", fn: function() {
+                        me.renderWorkarea();
+                        CStudioAdminConsole.CommandBar.hide();
+                    } }
                 ]);
 
                 CStudioAdminConsole.CommandBar.hide();
