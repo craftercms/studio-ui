@@ -63,7 +63,7 @@
     "CURRENT_PASSWORD_LABEL": "Current Password",
     "NEW_PASSWORD_LABEL": "New Password",
     "CONFIRM_PASSWORD_LABEL": "Confirm Password",
-    "SUBMIT": "Submit"
+    "SUBMIT": "Submit",
     "NOTIFICATION": "Notification"
   },
   "about": {
