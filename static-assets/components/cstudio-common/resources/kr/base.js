@@ -751,7 +751,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     browseExisting: "기존 항목 찾아보기"
 });
 
-CStudioAuthoring.Messages.registerBundle("targeting", "en", {
+CStudioAuthoring.Messages.registerBundle("targeting", "kr", {
     targeting: "타겟팅",
     clear: "명확한",
     apply: "대다",
