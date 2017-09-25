@@ -102,7 +102,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     wcmContentEdit: "편집",
     wcmContentView: "보기",
     wcmContentSubmit: "요청 게시",
-    wcmContentDependencies: "View Dependencies",
+    wcmContentDependencies: "종속성",
     wcmContentDelete: "삭제",
     wcmContentSubmitDelete: "요청 삭제",
     wcmContentReject: "거부",

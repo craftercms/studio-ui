@@ -1172,7 +1172,7 @@ CStudioAuthoringContext.site,
                 var itemNameLabel = "Page";
                 
 
-                retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem);
+                retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem).string;
                 retTransferObj.style = CStudioAuthoring.Utils.getIconFWClasses(treeItem); //, treeItem.container
 
                 //spilt status and made it as comma seperated items.

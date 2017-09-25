@@ -6732,71 +6732,91 @@ var nodeOpen = false;
              */
             getContentItemStatus: function(contentTO, navbarStatus) {
 
-                var status = "";
+                var status = new Object();
+                status.string = "";
+                status.key = "";
 
                 if (contentTO.deleted == true) {
-                    return status + CMgs.format(siteDropdownLangBundle, "statusDeleted");
+                    status.string + CMgs.format(siteDropdownLangBundle, "statusDeleted");
+                    status.key = "statusDeleted";
+                    return status;
                 } else if (contentTO.submittedForDeletion == true) {
                     if(contentTO.scheduled ==  true){
-                        status = status + CMgs.format(siteDropdownLangBundle, "statusScheduledForDelete");
+                        status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusScheduledForDelete");
+                        status.key = status.key + "statusScheduledForDelete";
                     } else {
-                        status = status + CMgs.format(siteDropdownLangBundle, "statusSubmittedForDelete");
+                        status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusSubmittedForDelete");
+                        status.key = status.key + "statusSubmittedForDelete";
                     }
 
                     //Disabled string not required in status to show on nav bar
                     if (!navbarStatus && contentTO.disabled == true) {
-                        status = status + " " + CMgs.format(siteDropdownLangBundle, "statusAndDisabled");
+                        status.string = status.string + " " + CMgs.format(siteDropdownLangBundle, "statusAndDisabled");
+                        status.key = status.key + " " + "statusAndDisabled";
                     }
                     return status;
                 } else if (contentTO.inFlight == true) {
-                    status = status + CMgs.format(siteDropdownLangBundle, "statusProcessing");
+                    status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusProcessing");
+                    status.key = status.key + "statusProcessing";
                     //Disabled string not required in status to show on nav bar
                     if (!navbarStatus && contentTO.disabled == true) {
-                        status = status + " " + CMgs.format(siteDropdownLangBundle, "statusAndDisabled");
+                        status.string = status.string + " " + CMgs.format(siteDropdownLangBundle, "statusAndDisabled");
+                        status.key = status.key + " " + "statusAndDisabled";
                     }
                     return status;
                 } else if (contentTO.inProgress == true) {
-                    status = status + CMgs.format(siteDropdownLangBundle, "statusInProgress");
+                    status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusInProgress");
+                    status.key = status.key + "statusInProgress";
                 } else if (contentTO.live == true) {
-                    status = status + CMgs.format(siteDropdownLangBundle, "statusLive");
+                    status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusLive");
+                    status.key = status.key + "statusLive";
                 }
 
                 if (contentTO.submitted == true) {
                     if (contentTO.inProgress == true) {
-                        status = "";
+                        status.string = "";
+                        status.key = "";
                     }
                     else {
-                        if (status.length > 0) {
-                            status = status + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+                        if (status.string.length > 0) {
+                            status.string = status.string + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+                            status.key = status.key + " ";
                         }
                     }
 
-                    status = status + CMgs.format(siteDropdownLangBundle, "statusSubmitted");
+                    status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusSubmitted");
+                    status.key = status.key + "statusSubmitted";
                 }
 
                 if (contentTO.scheduled == true) {
                     if (contentTO.inProgress == true) {
-                        status = "";
+                        status.string = "";
+                        status.key = "";
                     }
 
-                    if (status.length > 0) {
-                        status = status + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+                    if (status.string.length > 0) {
+                        status.string = status.string + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+                        status.key = status.key + " ";
                     }
 
-                    status = status + CMgs.format(siteDropdownLangBundle, "statusScheduled");
+                    status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusScheduled");
+                    status.key = status.key + "statusScheduled";
                 }
 
                 //Disabled string not required in status to show on nav bar
                 if (!navbarStatus && contentTO.disabled == true) {
-                    if (status.length > 0) {
-                        status = status + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+                    if (status.string.length > 0) {
+                        status.string = status.string + " " +CMgs.format(siteDropdownLangBundle, "statusAnd") + " ";
+                        status.key = status.key + " ";
                     }
 
-                    status = status + CMgs.format(siteDropdownLangBundle, "statusDisabled");
+                    status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusDisabled");
+                    status.key = status.key + "statusDisabled";
                 }
 
-                if (status == "") {
-                    status = CMgs.format(siteDropdownLangBundle, "statusLive");
+                if (status.string == "") {
+                    status.string = CMgs.format(siteDropdownLangBundle, "statusLive");
+                    status.key = "statusLive";
                 }
 
                 return status;

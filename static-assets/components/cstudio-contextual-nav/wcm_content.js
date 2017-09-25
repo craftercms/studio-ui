@@ -420,6 +420,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             isBulk = true,
                             isRelevant = true,
                             state = "",
+                            stateKey = "",
                             prevState = "",
                             auxIcon = "",
                             isInFlight = false,
@@ -439,7 +440,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     newFileFlag = true;
 
                                 for(i=0; i< l; i++) {
-                                    auxState = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[i], true);
+                                    auxState = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[i], true).string;
                                     auxIcon = CStudioAuthoring.Utils.getIconFWClasses(selectedContent[i]);
                                     itemLocked = CStudioAuthoring.Utils.isItemLocked(selectedContent[i]);
 
@@ -478,7 +479,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 }
                             } else {
                                 isBulk = false;
-                                state = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true);
+                                state = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true).string;
+                                stateKey = CStudioAuthoring.Utils.getContentItemStatus(selectedContent[0], true).key;
                                 icon = CStudioAuthoring.Utils.getContentItemIcon(selectedContent[0]);
                                 // icon = CStudioAuthoring.Utils.getIconFWClasses(selectedContent[0]);
                                 isInFlight = selectedContent[0].inFlight;
@@ -501,7 +503,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 }
                             }
 
-                            this.renderSelect(icon, state, isBulk, isAdmin, isRelevant, isInFlight, isWrite, perms, isOneItemLocked);
+                            this.renderSelect(icon, state, isBulk, isAdmin, isRelevant, isInFlight, isWrite, perms, isOneItemLocked, stateKey);
                         }
                         //add class to remove border from last item - would be more efficient using YUI Selector module, but it's currently not loaded
                         var itemContainer = document.getElementById('acn-active-content');
@@ -555,7 +557,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                     /**
                      * render many items
                      */
-                    renderSelect: function(icon, state, isBulk, isAdmin, isRelevant, isInFlight, isWrite, perms, isOneItemLocked) {
+                    renderSelect: function(icon, state, isBulk, isAdmin, isRelevant, isInFlight, isWrite, perms, isOneItemLocked, stateKey) {
 
                         this.containerEl.innerHTML = "";
                         var navLabelElContainer = document.createElement("li"),
@@ -575,7 +577,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             } else{
                                 // The last parameter (isOneItemLocked) was added for renderDelete which needs to know if one of the
                                 // content items is currently locked or not
-                                option.renderer.render(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked);
+                                option.renderer.render(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey);
                             }
                         }
 
@@ -623,7 +625,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      * handle edit
                      */
                     renderEdit: {
-                        render: function(option, isBulk, isAdmin, state,  isRelevant, isWrite, perms, isOneItemLocked) {
+                        render: function(option, isBulk, isAdmin, state,  isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
                             var content = CStudioAuthoring.SelectedContent.getSelectedContent();
 
 //                            for (var i = 0, l = content.length; i < l; ++i) {
@@ -798,7 +800,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      * render submit option
                      */
                     renderSimpleSubmit: {
-                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked) {
+                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
 
                             if(CStudioAuthoring.Service.isPublishAllowed(perms)) {
                                 return;
@@ -806,10 +808,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                             if(isWrite) {
                                 var isRelevant = false;
-                                if (( state.indexOf("In Progress") >= 0
-                                    || state.indexOf("Deleted") >= 0
-                                    || state.indexOf("Submitted for Delete") >=0
-                                    || state.indexOf("Scheduled for Delete") >=0 ) && !isOneItemLocked) {
+                                if (( stateKey.indexOf("statusInProgress") >= 0
+                                    || stateKey.indexOf("statusDeleted") >= 0
+                                    || stateKey.indexOf("statusSubmittedForDelete") >=0
+                                    || stateKey.indexOf("statusScheduledForDelete") >=0 ) && !isOneItemLocked) {
                                     isRelevant = true;
                                 }
 
@@ -817,7 +819,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 var content = CStudioAuthoring.SelectedContent.getSelectedContent();
                                 if (isRelevant && content && content.length >= 1) {
                                     for (var conIdx=0; conIdx<content.length; conIdx++) {
-                                        var auxState = CStudioAuthoring.Utils.getContentItemStatus(content[conIdx]);
+                                        var auxState = CStudioAuthoring.Utils.getContentItemStatus(content[conIdx]).string;
                                         if (auxState == "Live") {
                                             isRelevant = false;
                                             break;
@@ -863,7 +865,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                     },
 
                     renderDelete: {
-                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked) {
+                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
                             if(isWrite && CStudioAuthoring.Service.isDeleteAllowed(perms)) {
                                 var isRelevant = true;
                                 var isAdminFlag = isAdmin;
@@ -897,7 +899,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                     renderApproveCommon: {
                         render: function(option, isBulk, isAdmin,
-                                         state, isRelevant, isWrite, perms, isOneItemLocked) {
+                                         state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
 
                             if (CStudioAuthoring.Service.isPublishAllowed(perms)) {
 
@@ -935,7 +937,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      * render approve / golive option
                      */
                     renderApprove: {
-                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked) {
+                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
                             if(CStudioAuthoring.Service.isPublishAllowed(perms)) {
                                 var lowerstate = state.toLowerCase(),
                                     isRelevant = true;
@@ -955,7 +957,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      * render approve-schedule option
                      */
                     renderApproveSchedule: {
-                        render: function(option, isBulk, isAdmin, state,  isRelevant, isWrite, perms, isOneItemLocked) {
+                        render: function(option, isBulk, isAdmin, state,  isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
                             if(CStudioAuthoring.Service.isPublishAllowed(perms)) {
                                 var lowerstate = state.toLowerCase(),
                                     isRelevant = true;
@@ -1018,7 +1020,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      * render Dependencies option
                      */
                     renderViewDependencies: {
-                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked) {
+                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
                             isRelevant = true;
 
                             option.onclick = function() {
