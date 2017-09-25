@@ -793,7 +793,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     browseExisting: "Buscar Existentes"
 });
 
-CStudioAuthoring.Messages.registerBundle("targeting", "en", {
+CStudioAuthoring.Messages.registerBundle("targeting", "es", {
     targeting: "Público Meta",
     clear: "Limpiar",
     apply: "Aplicar",
