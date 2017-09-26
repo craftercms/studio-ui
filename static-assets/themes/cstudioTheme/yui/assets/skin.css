@@ -278,6 +278,10 @@ div#preview-tools-panel-container{
     cursor: pointer;
 }
 
+.studio-view .date-picker-control .zone-picker.form-control{
+    margin-bottom: 12px;
+}
+
 .studio-view .date-picker-control .validation{
     margin-bottom: 0px;
 }
