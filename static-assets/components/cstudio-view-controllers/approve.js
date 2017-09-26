@@ -414,7 +414,7 @@
             {
                 success: function(config) {
                     var timeZoneText = me.$('.zone-text');
-                    timeZoneText.html("<a class='zone-link'>"+config["default-timezone"] + "</a>");
+                    timeZoneText.html("<a class='zone-link' title='Time zone can be changed through the Site Config -> Configuration -> Site Configuration'>"+config["default-timezone"] + "</a>");
                     $( '<select class="zone-picker form-control"></select>' ).insertAfter( timeZoneText );
                     var zonePicker = $('.zone-picker');
                     zonePicker.timezones();
