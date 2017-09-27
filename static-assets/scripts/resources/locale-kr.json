@@ -116,7 +116,8 @@
       "SAVE": "구하다",
       "ADD_TO_GROUP_TEXT": "그룹 / 사이트에 사용자를 추가하려면 사이트 내의 사이트 구성 도구를 사용하십시오",
       "DELETE_ERROR": "사용자를 삭제할 수 없습니다. 시스템 관리자에게 문의하십시오.",
-      "ERROR": "오류:"
+      "ERROR": "오류:",
+      "USERS_PER_PAGE": "페이지 당 사용자 수"
     },
     "audit": {
       "AUDIT": "심사",
@@ -161,6 +162,8 @@
     "SIGN_OUT": "로그 아웃",
     "NOTIFICATION": "Notification",
     "CANCEL" : "Cancel",
-    "INTERROGATION_SIGN": "?"
+    "INTERROGATION_SIGN": "?",
+    "VALID_EMAIL": "유효한 이메일을 입력하십시오",
+    "MATCH_ENTRY": "이전 항목과 일치해야합니다."
   }
 }

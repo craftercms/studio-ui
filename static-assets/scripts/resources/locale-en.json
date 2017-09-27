@@ -118,7 +118,8 @@
       "SAVE": "Save",
       "ADD_TO_GROUP_TEXT": "To add a user to a group/site, please use the SiteConfig tools within the site.",
       "DELETE_ERROR": "Unable to delete user. Please contact your system administrator.",
-      "ERROR": "Error:"
+      "ERROR": "Error:",
+      "USERS_PER_PAGE": "Users per page"
     },
     "audit": {
       "AUDIT": "Audit",
@@ -163,6 +164,8 @@
     "SIGN_OUT": "Sign out",
     "NOTIFICATION": "Notification",
     "CANCEL" : "Cancel",
-    "INTERROGATION_SIGN": "?"
+    "INTERROGATION_SIGN": "?",
+    "VALID_EMAIL": "Enter a valid email",
+    "MATCH_ENTRY": "Must match the previous entry"
   }
 }

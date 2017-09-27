@@ -40,6 +40,9 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 	 * create dialog
 	 */
 	createDialog: function(path) {
+		var CMgs = CStudioAuthoring.Messages;
+		var previewLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
+
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
 		var newdiv = YDom.get("cstudio-wcm-popup-div");
@@ -53,16 +56,16 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 		newdiv.className= "yui-pe-content";
         newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
                            '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-                           '<div class="contentTypePopupHeader">Create Template</div> ' +
+                           '<div class="contentTypePopupHeader">' + CMgs.format(siteDropdownLangBundle, "createTemplate") + '</div> ' +
                            '<div class="contentTypeOuter">'+
                                '<div>'+
-                                 '<div class="newTempText">Provide a filename for the template</div>'+
+                                 '<div class="newTempText">' + CMgs.format(siteDropdownLangBundle, "templateFilename") + '</div>'+
                                  '<input type="text" id="templateName" size="50" autofocus><br/>' +
                                '</div>' +
                            '</div> ' +
 						   '<div class="contentTypePopupBtn"> ' +
-						       '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="Create" />' +
-                               '<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="Cancel"/>' +
+						       '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' + CMgs.format(siteDropdownLangBundle, "create") + '" />' +
+                               '<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="' + CMgs.format(siteDropdownLangBundle, "cancel") + '"/>' +
                            '</div>' +
 
                            '</div> ' +
