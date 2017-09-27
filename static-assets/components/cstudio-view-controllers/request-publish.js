@@ -61,11 +61,12 @@
 
         }
 
-
+        var loadSpinner = document.getElementById('loadSpinner');
 
         //this.showProcessingOverlay(true);
         this.disableActions();
         this.fire("submitStart");
+        loadSpinner.classList.remove("hidden");
         //var data = this.getData(),
         var _this = this;
         CStudioAuthoring.Service.request({
@@ -79,6 +80,7 @@
                     var oResp = JSON.parse(oResponse.responseText);
                     _this.fire("submitComplete", oResp);
                     _this.fire("submitEnd", oResp);
+                    loadSpinner.classList.add("hidden");
                     eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
                     eventNS.typeAction = "edit";
                     document.dispatchEvent(eventNS);
@@ -98,6 +100,7 @@
 
     function renderItems(items) {
         var me = this,
+            loadSpinner = document.getElementById('loadSpinner'),
             $container = this.$('.item-listing tbody'),
             tpl = [
                 '<tr>',
@@ -121,6 +124,7 @@
                 '</tr>'
             ].join();
 
+        loadSpinner.classList.add("hidden");
         $.each(items, function (index, item) {
             var itemDependenciesClass = "toggle-deps-" + index,
                 $parentRow;

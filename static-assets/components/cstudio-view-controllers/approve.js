@@ -112,8 +112,10 @@
             data.scheduledDate += timezone;
         }
 
+        var loadSpinner = document.getElementById('loadSpinner');
         //this.showProcessingOverlay(true);
         this.disableActions();
+        loadSpinner.classList.remove("hidden");
         this.fire("submitStart");
         //var data = this.getData(),
         var _this = this,
@@ -124,6 +126,7 @@
                 var oResp = JSON.parse(oResponse.responseText);
                 _this.fire("submitComplete", oResp);
                 _this.fire("submitEnd", oResp);
+                loadSpinner.classList.add("hidden");
             },
             failure: function(oResponse) {
                 var oResp = JSON.parse(oResponse.responseText);
@@ -142,12 +145,14 @@
         callback = {
             success: function(oResponse) {
                 var respJson = oResponse.responseText;
+                var loadSpinner = document.getElementById('loadSpinner');
                 try {
                     var dependencies = eval("(" + respJson + ")");
                     genDependency = dependencies.dependencies;
                     var submissionCommentElem = me.getComponent('.submission-comment');
                     submissionCommentElem.value = dependencies.submissionComment + ' ' + submissionCommentElem.value;
                     //var scheduledDate = this.getTimeInJsonObject(dependencies.items, browserUri);
+                    loadSpinner.classList.add("hidden");
                     me.renderItems(dependencies.items);
                     //enable submit button after loading items
                     $("#approveSubmit").prop('disabled', false);
