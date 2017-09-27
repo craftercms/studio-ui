@@ -462,21 +462,45 @@
             repoId = CStudioAuthoring.Utils.getQueryParameterByName("repoId"),
             site = CStudioAuthoring.Utils.getQueryParameterByName("site");
 
+
         var callbackContent = {
             success: function(response) {
                 cb.success(response);
             },
             failure: function(response){
+                var message = (CMgs.format(browseLangBundle, "" + response.status + ""));
                 var error = JSON.parse(response.responseText)
+                
+                message += "</br></br><div id='errorCode' style='display: none; padding-left: 26px; width: calc(100% - 26px);'>" + error.message + "</div>";
+
+                message += "<div style='margin-left: 26px;'><a href='#' data-open='false' class='show-more-toggle'>Show More > </span></div>";
+
                 CStudioAuthoring.Operations.showSimpleDialog(
                     "error-dialog",
                     CStudioAuthoring.Operations.simpleDialogTypeINFO,
                     CMgs.format(browseLangBundle, "notification"),
-                    error.message,
+                    message,
                     null,
                     YAHOO.widget.SimpleDialog.ICON_BLOCK,
                     "studioDialog"
                 );
+
+                $("#error-dialog").on("click", ".show-more-toggle", function(){
+                    var code = $("#errorCode"),
+                        toggle = $(".show-more-toggle");
+
+                    if(!("true" === toggle.attr("data-open"))){
+                        toggle.attr("data-open", true);
+                        toggle.text("Show Less <");
+
+                        code.show();
+                    }else{
+                        toggle.attr("data-open", false);
+                        toggle.text("Show More >");
+
+                        code.hide();
+                    }
+                });
             }
         }
 
