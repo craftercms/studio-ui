@@ -65,7 +65,7 @@
     "NOTIFICATION": "Notificación"
   },
   "about": {
-    "HEADER_LABEL": "Acerca",
+    "HEADER_LABEL": "Acerca de Nosotros",
     "STUDIO_INFO": "Información de Crafter Studio",
     "STUDIO_VERSION_NUMBER": "Número de versión de Studio",
     "BUILD_NUMBER": "Número de compilación",
@@ -116,7 +116,8 @@
       "SAVE": "Guardar",
       "ADD_TO_GROUP_TEXT": "Para agregar un usuario a un grupo / sitio, utilice las herramientas Configuracion dentro del sitio.",
       "DELETE_ERROR": "No se puede eliminar el usuario. Por favor, póngase en contacto con el administrador del sistema.",
-      "ERROR": "Error:"
+      "ERROR": "Error:",
+      "USERS_PER_PAGE": "Usuarios por página"
     },
     "audit": {
       "AUDIT": "Auditoría",
@@ -161,6 +162,8 @@
     "SIGN_OUT": "Desloguearse",
     "NOTIFICATION": "Notificación",
     "CANCEL" : "Cancelar",
-    "INTERROGATION_SIGN": "?"
+    "INTERROGATION_SIGN": "?",
+    "VALID_EMAIL": "Ingrese un correo válido",
+    "MATCH_ENTRY": "Debe coincidir con la entrada anterior"
   }
 }

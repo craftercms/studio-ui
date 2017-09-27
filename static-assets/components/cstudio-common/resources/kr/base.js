@@ -238,7 +238,9 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     noActionsAvailable: "가능한 조치가 없습니다",
     createFolder: "폴더를 만들",
     createTemplate: "템플릿 만들기",
+    templateFilename: "템플리트의 파일 이름 제공",
     createController: "컨트롤러 만들기",
+    controllerFilename: "스크립트의 파일 이름을 입력하십시오.",
     bulkUploadAssets: "대량 업로드 자산",
     lastEdited: "마지막 편집",
     editedBy: "에 의해 편집 됨",
@@ -270,7 +272,10 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
 
     lookUpItemError: "항목을 찾을 수 없습니다. 시스템 관리자에게 문의하십시오.",
     pathSameError: "출발지와 도착지 경로가 동일 함.",
-    pageExistError: "페이지가 이미 대상에 있습니다."
+    pageExistError: "페이지가 이미 대상에 있습니다.",
+
+    create: "몹시 떠들어 대다",
+    cancel: "취소"
 
 });
 

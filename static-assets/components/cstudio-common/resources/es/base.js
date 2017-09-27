@@ -256,7 +256,9 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     noActionsAvailable: "No Hay Acciones Disponibles",
     createFolder: "Crear Carpeta",
     createTemplate: "Crear Plantilla",
+    templateFilename: "Ingrese un nombre de archivo para la plantilla",
     createController: "Crear Controlador",
+    controllerFilename: "Ingrese un nombre de archivo para el controlador",
     bulkUploadAssets: "Subir Activos Granel",
     lastEdited: "Última Edición",
     editedBy: "Editado Por",
@@ -287,7 +289,10 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     lookUpItemError: "No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.",
     pathSameError: "Las rutas de origen y destino son las mismas.",
     pageExistError: "Página ya existe en el destino.",
-    wcmContentDependencies: "Dependencias"
+    wcmContentDependencies: "Dependencias",
+
+    create: "Crear",
+    cancel: "Cancelar"
 
 });
 

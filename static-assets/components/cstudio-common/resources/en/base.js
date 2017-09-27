@@ -257,7 +257,9 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     noActionsAvailable: "No Actions Available",
     createFolder: "Create Folder",
     createTemplate: "Create Template",
+    templateFilename: "Provide a filename for the template",
     createController: "Create Controller",
+    controllerFilename: "Provide a filename for the script",
     bulkUploadAssets: "Bulk Upload Assets",
     lastEdited: "Last Edited",
     editedBy: "Edited by",
@@ -289,7 +291,10 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     pathSameError: "Source and destination path are same.",
     pageExistError: "Page already exist at the destination.",
     wcmContentDependencies: "Dependencies",
-    wcmContentApprove: "Approve & Publish"
+    wcmContentApprove: "Approve & Publish",
+
+    create: "Create",
+    cancel: "Cancel"
 
 });
 
