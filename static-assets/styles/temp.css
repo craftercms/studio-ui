@@ -14824,6 +14824,12 @@ address {
   .studio-dialog .row.unpad > [class|="col"],
   .site-dashboard .row.unpad > [class|="col"] {
     padding: 0; }
+.studio-view #loadSpinner,
+.studio-dialog #loadSpinner,
+.site-dashboard #loadSpinner {
+  position: absolute;
+  top: 48%;
+  left: 48%; }
 
 .studio-view table.item-listing thead {
   color: #fff;
@@ -15331,3 +15337,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */
