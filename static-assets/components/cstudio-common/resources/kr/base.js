@@ -482,6 +482,7 @@ CStudioAuthoring.Messages.registerBundle("browse", "kr", {
     loading: "로딩",
     noBrowseResults: "There are no files at this path.",
     noSearchResults: "There are no results.",
+    showMore: "자세히보기"
     400: "잘못된 CMIS 매개 변수 잘못된 CMIS 데이터 소스 구성 (호스트 이름, 포트 번호 등)은 사이트 관리자에게 문의하십시오.",
     401: "CMIS 무단 : CMIS 데이터 소스 구성에서 사용자 이름이나 비밀번호가 잘못되었습니다. 사이트 관리자에게 문의하십시오.",
     404: "CMIS 경로를 찾을 수 없습니다.",

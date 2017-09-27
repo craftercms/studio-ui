@@ -532,6 +532,7 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
     serverError: "Server Error",
     noBrowseResults: "There are no files at this path.",
     noSearchResults: "There are no results.",
+    showMore: "Show More",
     400: "Invalid CMIS parameter(s). Invalid CMIS data source configuration (hostname, port number, etc.), please contact your site administrator.",
     401: "CMIS Unauthorized: Invalid username or password in CMIS data source configuration, please contact your site administrator.",
     404: "CMIS Path Not Found.",

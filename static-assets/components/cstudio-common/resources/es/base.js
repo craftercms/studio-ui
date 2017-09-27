@@ -517,6 +517,7 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
     loading: "Cargando",
     noBrowseResults: "No hay archivos en esta ruta.",
     noSearchResults: "No hay resultados.",
+    showMore: "Mostrar Más",
     400: "Parámetro(s) CMIS Inválidos. Configuración de la fuente de datos de CMIS inválida (nombre de host, número de puerto, etc.), por favor contacte al administrador del sitio.",
     401: "CMIS no autorizado: Nombre de usuario o contraseña inválidos en la configuración de la fuente de datos, por favor contacte al administrador del sitio.",
     404: "Ruta del CMIS no encontrada.",
