@@ -10,7 +10,7 @@
                     <a class="btn btn-default" ng-click="users.createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
 
                     <div class="pull-right mr15">
-                        <label>Users per page: </label>
+                        <label>{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
                         <input class="audit-number-logs" type="number" name="input" ng-model="users.itemsPerPage"
                                min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
                     </div>
@@ -129,7 +129,7 @@
                         </small>
                         <small class="error" ng-if="dialogMode"
                                ng-show="createNameForm.email.$invalid">
-                            Enter a valid email.
+                               {{ 'common.VALID_EMAIL' | translate }}.
                         </small>
                     </div>
                 </div>
@@ -221,7 +221,7 @@
                          ng-show="createNameForm.passwordVerification.$error.compareTo">
                         <small class="error"
                                ng-show="createNameForm.passwordVerification.$error.compareTo">
-                            Must match the previous entry.
+                               {{ 'common.MATCH_ENTRY' | translate }}.
                         </small>
                     </div>
                 </div>

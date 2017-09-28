@@ -256,7 +256,9 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     noActionsAvailable: "No Hay Acciones Disponibles",
     createFolder: "Crear Carpeta",
     createTemplate: "Crear Plantilla",
+    templateFilename: "Ingrese un nombre de archivo para la plantilla",
     createController: "Crear Controlador",
+    controllerFilename: "Ingrese un nombre de archivo para el controlador",
     bulkUploadAssets: "Subir Activos Granel",
     lastEdited: "Última Edición",
     editedBy: "Editado Por",
@@ -287,7 +289,10 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     lookUpItemError: "No se puede buscar el elemento. Por favor, póngase en contacto con el administrador del sistema.",
     pathSameError: "Las rutas de origen y destino son las mismas.",
     pageExistError: "Página ya existe en el destino.",
-    wcmContentDependencies: "Dependencias"
+    wcmContentDependencies: "Dependencias",
+
+    create: "Crear",
+    cancel: "Cancelar"
 
 });
 
@@ -516,7 +521,14 @@ CStudioAuthoring.Messages.registerBundle("browse", "es", {
     lookUpParentError : "No puede buscar el contexto del padre para la búsqueda: ",
     loading: "Cargando",
     noBrowseResults: "No hay archivos en esta ruta.",
-    noSearchResults: "No hay resultados."
+    noSearchResults: "No hay resultados.",
+    showMore: "Mostrar Más",
+    400: "Parámetro(s) CMIS Inválidos. Configuración de la fuente de datos de CMIS inválida (nombre de host, número de puerto, etc.), por favor contacte al administrador del sitio.",
+    401: "CMIS no autorizado: Nombre de usuario o contraseña inválidos en la configuración de la fuente de datos, por favor contacte al administrador del sitio.",
+    404: "Ruta del CMIS no encontrada.",
+    408: "Tiempo de espera de CMIS agotado.",
+    500: "Error interno del server.",
+    503: "CMIS no disponible."
 });
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {

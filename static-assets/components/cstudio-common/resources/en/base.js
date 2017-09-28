@@ -257,7 +257,9 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     noActionsAvailable: "No Actions Available",
     createFolder: "Create Folder",
     createTemplate: "Create Template",
+    templateFilename: "Provide a filename for the template",
     createController: "Create Controller",
+    controllerFilename: "Provide a filename for the script",
     bulkUploadAssets: "Bulk Upload Assets",
     lastEdited: "Last Edited",
     editedBy: "Edited by",
@@ -289,7 +291,10 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     pathSameError: "Source and destination path are same.",
     pageExistError: "Page already exist at the destination.",
     wcmContentDependencies: "Dependencies",
-    wcmContentApprove: "Approve & Publish"
+    wcmContentApprove: "Approve & Publish",
+
+    create: "Create",
+    cancel: "Cancel"
 
 });
 
@@ -531,9 +536,15 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
     loading: "Loading",
     serverError: "Server Error",
     noBrowseResults: "There are no files at this path.",
-    noSearchResults: "There are no results."
-
-});
+    noSearchResults: "There are no results.",
+    showMore: "Show More",
+    400: "Invalid CMIS parameter(s). Invalid CMIS data source configuration (hostname, port number, etc.), please contact your site administrator.",
+    401: "CMIS Unauthorized: Invalid username or password in CMIS data source configuration, please contact your site administrator.",
+    404: "CMIS Path Not Found.",
+    408: "CMIS Timeout.",
+    500: "Internal server error.",
+    503: "CMIS Unavailable."
+}); 
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     contenttypes: "Content Types",

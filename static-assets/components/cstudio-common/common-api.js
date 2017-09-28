@@ -3302,6 +3302,9 @@ var nodeOpen = false;
                         var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
                         callback.success(YAHOO.lang.JSON.parse(res));
                         try{
+                            var CMgs = CStudioAuthoring.Messages,
+                                previewLangBundle = previewLangBundle ? previewLangBundle : CMgs.getBundle("previewTools", CStudioAuthoringContext.lang);
+
                             CStudioAuthoring.Operations.translateContent(previewLangBundle);
                         }catch(err){
 
