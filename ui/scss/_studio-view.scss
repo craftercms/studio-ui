@@ -73,7 +73,12 @@
       }
     }
     [id*="-body"] table {
+      table-layout: fixed;
       margin: 0;
+
+      .urlCol, .itemNameCol{
+        word-break: break-all;
+      }
     }
     .dashlet-item-check {
       margin-right: 5px;
@@ -444,7 +449,7 @@ table.scroll-body {
   position: relative;
   bottom: 3px;
   padding-right: 2px;
-  width: 23px;
+  width: 50px;
 }
 
 .studio-view input.schedulingMode{

@@ -19,6 +19,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
     this.defaultSortBy='eventDate';
     this.defaultSearchNumber=20;
     this.tooltipLabels=null;
+    WcmDashboardWidgetCommon.retrieveTimezoneData();
     WcmDashboardWidgetCommon.init(this);
 
     /**
@@ -180,7 +181,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
                 ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                     '</div>',
                 '</td>',
-                '<td style="padding-left:0px">'+
+                '<td style="padding-left:0px" class="itemNameCol">'+
                     '<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                         // '<span class="iconRow ', itemIconStatus, '"></span>',
                         CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
@@ -193,7 +194,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
                 "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
                 "<td title='fullUri' class='width0'>", uri, "</td>",
                 "<td title='",endpoint,"'>", displayEndpoint, "</td>",
-                "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromString(item.eventDate), "</td>",
+                "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, configTimeZone), "</td>",
                 "<td class='alignRight ttThColLast'>", item.user, "</td>"
             ]);
         }

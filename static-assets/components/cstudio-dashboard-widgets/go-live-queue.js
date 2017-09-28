@@ -19,6 +19,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
         this.defaultSortBy = 'eventDate';
         this.skipComponentSort = true;
         this.tooltipLabels=null;
+        WcmDashboardWidgetCommon.retrieveTimezoneData();
         WcmDashboardWidgetCommon.init(this);
 
         /**
@@ -205,7 +206,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                     // '<span class="', itemIconStatus, (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                     CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-                    '<a ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="', (item.previewable == true) ? "previewLink" : "non-previewable-link",
+                    '<a ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="itemNameCol "', (item.previewable == true) ? "previewLink" : "non-previewable-link",
                     (item.disabled == true ? ' dashboard-item disabled' : '') , '">',
                     displayName,
                     '</a>',
@@ -218,9 +219,9 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     '<td id="' + editLinkId + '"></td>',
                     "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
                     "<td title='fullUri' class='width0'>", uri, "</td>",
-                    '<td class="">', item.scheduled ? fmt(item.scheduledDate, 'tooltipformat') : '', '</td>',
+                    '<td class="">', item.scheduled ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, 'tooltipformat', configTimeZone) : '', '</td>',
                     "<td class='alignRight'>", WcmDashboardWidgetCommon.getDisplayName(item), "</td>",
-                    "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromString(item.eventDate), "</td>"
+                    "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, configTimeZone), "</td>"
                 ]);
 
             }
