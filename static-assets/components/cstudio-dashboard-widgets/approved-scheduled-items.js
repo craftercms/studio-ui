@@ -18,6 +18,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
 	this.hideEmptyRow = false;
 	this.defaultSortBy='eventDate';
 	this.tooltipLabels=null;
+    WcmDashboardWidgetCommon.retrieveTimezoneData();
 	WcmDashboardWidgetCommon.init(this);
 	
 	/**
@@ -156,9 +157,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
             // to resolve page display issue
             displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-            var lastEditTime = CStudioAuthoring.Utils.formatDateFromString(item.eventDate);
+            var lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, configTimeZone);
             if (item.lastEditDateAsString != undefined && item.lastEditDateAsString != "") {
-                lastEditTime = CStudioAuthoring.Utils.formatDateFromString(item.lastEditDateAsString);
+                lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.lastEditDateAsString, configTimeZone);
             }
             
   
@@ -178,7 +179,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
                 '"', (item.inFlight ? ' disabled' : ''), ' />',
                     '</div>',
                 '</td>',
-                '<td style="padding-left:0px">'+
+                '<td style="padding-left:0px" class="itemNameCol">'+
                     '<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                         // '<span class="iconRow ', itemIconStatus, '"></span>',
 						CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,

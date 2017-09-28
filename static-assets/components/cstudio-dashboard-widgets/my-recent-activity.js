@@ -19,6 +19,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 	this.defaultSortBy='eventDate';
 	this.defaultSearchNumber=10;
 	this.tooltipLabels=null;
+    WcmDashboardWidgetCommon.retrieveTimezoneData();
 	WcmDashboardWidgetCommon.init(this);
 
 	/**
@@ -209,7 +210,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
             ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                 '</div>',
 			'</td>',
-            '<td style="padding-left:0px">' +
+            '<td style="padding-left:0px" class="itemNameCol">' +
                 '<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                 // '<span class="iconRow ', itemIconStatus, '"></span>',
 				CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
@@ -221,9 +222,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			'<td id="' + editLinkId + '"></td>',
 			'<td class="urlCol" title="', browserUri, '">', displayBrowserUri, '</td>',
 			'<td title="fullUri" class="width0">', fullUri, '</td>',
-            '<td class="">', item.published ? fmt(item.publishedDate, 'tooltipformat') : '', '</td>',
+            '<td class="">', item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, configTimeZone) : '', '</td>',
 			'<td class="alignRight">', WcmDashboardWidgetCommon.getDisplayName(item), '</td>',
-			'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromString(item.eventDate), '</td>'
+			'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, configTimeZone), '</td>'
         ];
 
         if(currentCheckItem && this.widgetId == currentDashboard){

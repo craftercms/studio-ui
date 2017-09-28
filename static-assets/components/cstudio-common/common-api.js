@@ -5882,6 +5882,14 @@ var nodeOpen = false;
                 }
             },
 
+            /**
+             * format a date from UTC to config Date
+             */
+            formatDateFromUTC: function(dateTime, newTimeZone) {
+                var utcDate   = moment.tz(dateTime, "Etc/UTC");
+                return utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+            },
+
             formatDateFromStringNullToEmpty: function(dateTime, timeFormat) {
                 if ( (dateTime == "null") || (dateTime == null) || (dateTime == undefined) || (dateTime == "") )
                     return "";
