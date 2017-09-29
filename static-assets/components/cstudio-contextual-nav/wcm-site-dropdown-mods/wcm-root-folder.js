@@ -1982,7 +1982,9 @@ treeNode.getHtml = function() {
                                 p_aArgs.addItems([ menuItems.separator ]);
                                 p_aArgs.addItems([ menuItems.copyOption ]);
 
-                                if(oCurrentTextNode.data.contentType != "folder") {
+                                if(oCurrentTextNode.data.contentType != "folder" && !(oCurrentTextNode.data.status.toLowerCase().indexOf("live") !== -1)
+                                    && !(oCurrentTextNode.data.status.toLowerCase().indexOf("submitted") !== -1)
+                                    && !(oCurrentTextNode.data.status.toLowerCase().indexOf("scheduled") !== -1)) {
                                     p_aArgs.addItems([ menuItems.separator ]);
                                     publishAllowed();
                                 }
@@ -2184,7 +2186,9 @@ treeNode.getHtml = function() {
                                             p_aArgs.addItems([ menuItems.duplicateOption ]);
                                         }
 
-                                        if(oCurrentTextNode.data.contentType != "folder") {
+                                        if(oCurrentTextNode.data.contentType != "folder" && !(oCurrentTextNode.data.status.toLowerCase().indexOf("live") !== -1)
+                                            && !(oCurrentTextNode.data.status.toLowerCase().indexOf("submitted") !== -1)
+                                            && !(oCurrentTextNode.data.status.toLowerCase().indexOf("scheduled") !== -1)) {
                                             p_aArgs.addItems([ menuItems.separator ]);
                                             publishAllowed();
                                         }
