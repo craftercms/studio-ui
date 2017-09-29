@@ -7091,7 +7091,10 @@ address {
     .site-dashboard .panel .panel-heading .widget-controls li {
       vertical-align: top; }
   .site-dashboard .panel [id*="-body"] table {
+    table-layout: fixed;
     margin: 0; }
+    .site-dashboard .panel [id*="-body"] table .urlCol, .site-dashboard .panel [id*="-body"] table .itemNameCol {
+      word-break: break-all; }
   .site-dashboard .panel .dashlet-item-check {
     margin-right: 5px; }
   .site-dashboard .itemNameContainer span.iconRow {
@@ -15030,7 +15033,7 @@ margin-left: -3px; */
   position: relative;
   bottom: 3px;
   padding-right: 2px;
-  width: 23px; }
+  width: 50px; }
 
 .studio-view input.schedulingMode {
   margin: 0 0 0 -20px; }

@@ -1,6 +1,7 @@
 var YDom = YAHOO.util.Dom;
 var YEvent = YAHOO.util.Event;
 var subChildren = null;
+var configTimeZone = null;
 
 if (typeof WcmDashboardWidgetCommon == "undefined" || !WcmDashboardWidgetCommon) {
     var WcmDashboardWidgetCommon = {};
@@ -1577,3 +1578,19 @@ WcmDashboardWidgetCommon.clearItem = function (matchedElement, dashBoardData) {
         WcmDashboardWidgetCommon.selectItem(matchedElement, false);
     }
 };
+
+WcmDashboardWidgetCommon.retrieveTimezoneData = function() {
+
+    if(!configTimeZone) {
+        CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/site-config.xml",
+            {
+                success: function (config) {
+                    configTimeZone = config["default-timezone"];
+                }
+            });
+    }
+};
+
+

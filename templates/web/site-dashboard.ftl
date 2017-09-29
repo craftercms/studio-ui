@@ -21,6 +21,9 @@
     <script src="${path}icon-guide.js?version=${UIBuildId!''}"></script>
     <script src="${path}approved-scheduled-items.js?version=${UIBuildId!''}"></script>
 
+    <#assign path="/studio/static-assets/libs/" />
+    <script src="${path}momentjs/moment.min.js?version=${UIBuildId!''}"></script>
+    <script src="${path}momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!''}"></script>
 
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
     <#include "/templates/web/common/page-fragments/context-nav.ftl" />
