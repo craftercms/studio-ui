@@ -33,7 +33,7 @@ YAHOO.extend(CStudioForms.Controls.PageNavOrder, CStudioForms.CStudioFormField, 
 		obj.value = obj.dropdownEl.value;//value from the dropdown
 		
 		obj.owner.notifyValidation();
-		obj.form.updateModel(obj.id, obj.getValue());
+		obj.form.updateModel(obj.id, obj.getValue(), true);
 		obj.form.updateModel(obj.placeInNav, obj.getValue());
 
 		if (obj.getValue() === "true") {

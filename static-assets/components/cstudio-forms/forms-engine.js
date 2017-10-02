@@ -635,6 +635,8 @@ var CStudioForms = CStudioForms || function() {
                 else {
                     this.model[id] = value;
                 }
+
+                CStudioForms.updatedModel = this.model;
             },
 
             onBeforeSave: function(paramObj) {
@@ -888,6 +890,8 @@ var CStudioForms = CStudioForms || function() {
                 }
 
                 var form = new CStudioForm(formId, formDef, contentMap, style, customController);
+
+                CStudioForms.initialModel = JSON.parse(JSON.stringify(form.model));
 
                 form.readOnly = readonly;
                 form.path = path;
@@ -1163,6 +1167,9 @@ var CStudioForms = CStudioForms || function() {
                                         var value = form.model["internal-name"];
                                         var name = entityId;
                                         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+
+                                        contentTO.initialModel = CStudioForms.initialModel;
+                                        contentTO.updatedModel = CStudioForms.updatedModel;
 
                                         iceWindowCallback.success(contentTO, editorId, name, value, draft);
                                         if(draft) {
