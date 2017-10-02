@@ -1316,11 +1316,7 @@ tinymce.util.Quirks = function(editor) {
 			// Workaround for bug, http://bugs.webkit.org/show_bug.cgi?id=12250
 			// WebKit can't even do simple things like selecting an image
 			// Needs tobe the setBaseAndExtend or it will fail to select floated images
-			if (/^(IMG|HR)$/.test(e.nodeName)) {
-				selection.getSel().setBaseAndExtent(e, 0, e, 1);
-			}
-
-			if (e.nodeName == 'A' && dom.hasClass(e, 'mceItemAnchor')) {
+			if ((e.nodeName == 'A' && dom.hasClass(e, 'mceItemAnchor')) || (/^(IMG|HR)$/.test(e.nodeName))) {
 				selection.select(e);
 			}
 
