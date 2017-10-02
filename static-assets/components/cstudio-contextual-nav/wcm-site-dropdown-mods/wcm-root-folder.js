@@ -2539,10 +2539,36 @@ treeNode.getHtml = function() {
                                 }
                             }
                         }
-                        eventNS.data = contentTO.item;
-                        eventNS.typeAction = "edit";
-                        eventNS.draft = draft;
-                        document.dispatchEvent(eventNS);
+                        
+                        //if placeInNav has changed
+
+                        if(contentTO.updatedModel && contentTO.initialModel &&
+                            contentTO.updatedModel.orderDefault_f != contentTO.initialModel.orderDefault_f){
+    
+                                if(CStudioAuthoring.ContextualNav.WcmRootFolder) {
+                                    var tree = CStudioAuthoring.ContextualNav.WcmRootFolder.myTree
+        
+                                    var tmpNode = tree.getNodesByProperty("uri", contentTO.item.uri);
+                                    var parentNode = tmpNode[0].parent.data;
+        
+                                    eventYS.data = contentTO.item;
+                                    eventYS.typeAction = "edit";
+                                    eventYS.draft = draft;
+                                    document.dispatchEvent(eventYS);
+                                }else{
+                                    eventNS.data = contentTO.item;
+                                    eventNS.typeAction = "edit";
+                                    eventNS.draft = draft;
+                                    document.dispatchEvent(eventNS);
+                                }
+                            
+                            }else{
+                                eventNS.data = contentTO.item;
+                                eventNS.typeAction = "edit";
+                                eventNS.draft = draft;
+                                document.dispatchEvent(eventNS);
+                        }
+
                         if(!CStudioAuthoringContext.isPreview) {
                             if(draft) {
                                 CStudioAuthoring.Utils.Cookies.createCookie("dashboard-checked", JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent()));
