@@ -17,7 +17,7 @@
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!''}"></script>
 
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/rte.css?version=${UIBuildId!''}" />
-    <script type="text/javascript" src="/studio/static-assets/modules/editors/tiny_mce/tiny_mce.js?version=${UIBuildId!''}"></script>
+    <script type="text/javascript" src="/studio/static-assets/modules/editors/tiny_mce/tiny_mce_src.js?version=${UIBuildId!''}"></script>
 
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/amplify-core.js?version=${UIBuildId!''}"></script>
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-forms/forms-engine.js?version=${UIBuildId!''}"></script>
