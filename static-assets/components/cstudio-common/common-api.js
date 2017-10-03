@@ -419,7 +419,11 @@ var nodeOpen = false;
                     waiting.push({ callback: callback, moduleConfig: moduleConfig });
                     this.waitingForModule[moduleName] = waiting;
 
-                    CSA.Utils.addJavascript(script);
+                    CSA.Utils.addJavascript(script, null, {
+                        error: function(e){
+                            callback.failed(e);
+                        }
+                    });
                 } else {
                     callback.moduleLoaded(moduleName, moduleClass, moduleConfig);
                 }
@@ -458,6 +462,8 @@ var nodeOpen = false;
                     if( window.console && window.console.log) {
                         window.console.log(msg);
                     }
+
+                    waiter.callback.failed(msg);
                 }
             }
         },
@@ -5123,7 +5129,7 @@ var nodeOpen = false;
             /**
              * dynamically add a javascript file
              */
-            addJavascript: function(script, cache) {
+            addJavascript: function(script, cache, callback) {
                 if (!this.arrayContains(script, this.addedJs)) {
 
                     this.addedJs.push(script);
@@ -5142,7 +5148,21 @@ var nodeOpen = false;
                     newScript.type = 'text/javascript';
                     newScript.src = script;
                     if (script.indexOf('undefined.js') === -1) {
-                        headID.appendChild(newScript);
+
+                        //Checking if file exists, otherwise return error on callback
+                        $.ajax({
+                            url:script,
+                            type:'HEAD',
+                            complete : function (XMLHttpRequest, textStatus) {
+                                fileLength = XMLHttpRequest.getResponseHeader('content-length');
+
+                                if(fileLength > 0){
+                                    headID.appendChild(newScript);
+                                }else{
+                                    callback.error();
+                                }   
+                            }
+                        });
                     }
                 }
             },

@@ -1581,6 +1581,12 @@ var CStudioForms = CStudioForms || function() {
                                     callback.success(returnedData);
                                 }
                             },
+                            failed: function(){
+                                --moduleLoadsRemaining;
+                                if (moduleLoadsRemaining <= 0) {
+                                    callback.success(returnedData);
+                                }
+                            },
     
                             context: this,
                             form: form
