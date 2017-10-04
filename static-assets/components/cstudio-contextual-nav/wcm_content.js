@@ -588,17 +588,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         }else{
                             YDom.addClass(navLabelEl, ['context-nav-title-element', 'navbar-text'].join(" "));
                             navLabelEl.appendChild(icon);
-                        }
-
-                        if(!isBulk || statSplit.length <= 1) {
-                            var newIndicator = (state.indexOf("*") != -1) ? "*" : "";
-                            navLabelEl.innerHTML += CMgs.format(contextNavLangBundle, state) + newIndicator;
-                        } else if (statSplit.length >= 2) {
-                            navLabelEl.innerHTML += CMgs.format(contextNavLangBundle, "mixedStates");
-                            }
-
-                        if (!isInFlight && hasOperations) {
-                            navLabelEl.innerHTML += " :";
+                            navLabelEl.innerHTML += "<span style='line-height: 15px;color: #777;font-weight: bold;font-size: 21px;'>|</span>";
                         }
 
                         navLabelElContainer.appendChild(navLabelEl);
