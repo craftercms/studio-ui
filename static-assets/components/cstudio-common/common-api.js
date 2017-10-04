@@ -6911,6 +6911,7 @@ var nodeOpen = false;
                 if(treeNodeTO.isAsset || "unknown" === treeNodeTO.contentType) {     //assets - when outside from static assets folder isAsset
                                                                                      //         is false, so on unknown it's considered an asset
                     var mimetype = treeNodeTO.mimeType;
+                    mimetype = mimetype ? mimetype : treeNodeTO.name;
 
                     if (mimetype.match(/\bvideo\b/)) {
                         mainIconClass = defaultIcons.video.class;
