@@ -1551,7 +1551,14 @@ var CStudioForms = CStudioForms || function() {
                 var formDef = form.definition;
                 form.datasourceMap = {};
 
-                var moduleLoadsRemaining = formDef.datasources.length;
+                var difModules = [];
+                for(var i=0; i < formDef.datasources.length; i++) {
+                    if(difModules.indexOf(formDef.datasources[i].type)) {
+                        difModules.push(formDef.datasources[i].type);
+                    }
+                }
+
+                var moduleLoadsRemaining = difModules.length;
                 var returnedData = [];
 
                 if(formDef.datasources.length == 0){ 
