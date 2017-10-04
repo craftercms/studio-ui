@@ -1094,7 +1094,7 @@ var CStudioForms = CStudioForms || function() {
                                         { width: "375px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
                                             text: CMgs.format(formsLangBundle, "errMissingRequirements"), icon: YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                             constraintoviewport: true,
-                                            buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){me.hide();}, isDefault:false } ]
+                                            buttons: [ { text:CMgs.format(formsLangBundle, "ok"),  handler:function(){this.hide();}, isDefault:false } ]
                                         });
                                     dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                                     dialog.render(document.body);
@@ -1227,7 +1227,7 @@ var CStudioForms = CStudioForms || function() {
                                                 CMgs.format(formsLangBundle, "notification"),
                                                 err,
                                                 [{ text: "OK",  handler:function(){
-                                                    me.hide();
+                                                    this.hide();
                         
                                                     form.onAfterSave();
                         
@@ -1344,7 +1344,7 @@ var CStudioForms = CStudioForms || function() {
                                             text: message, icon: YAHOO.widget.SimpleDialog.ICON_WARN,
                                             constraintoviewport: true,
                                             buttons: [ { text:CMgs.format(formsLangBundle, "yes"), handler: function(){
-                                                me.hide();
+                                                this.hide();
                                                 var entityId = buildEntityIdFn(null);
                                                 showWarnMsg = false;
                         
@@ -1383,7 +1383,7 @@ var CStudioForms = CStudioForms || function() {
                                                     }
                                                 }
                                             }, isDefault:false },
-                                                { text:CMgs.format(formsLangBundle, "no"),  handler:function(){me.hide();}, isDefault:true } ]
+                                                { text:CMgs.format(formsLangBundle, "no"),  handler:function(){this.hide();}, isDefault:true } ]
                                         });
                                     dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                                     dialog.render(document.body);
