@@ -273,7 +273,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     statusSubmittedForDelete: "Presentado para Eliminar",
     statusAndDisabled: "y Deshabilitado",
     statusProcessing: "Procesando",
-    statusInProgress: "En Progreso",
+    statusInProgress: "Editado",
     statusLive: "En Vivo",
     statusAnd: "y",
     statusSubmitted: "Enviado",
