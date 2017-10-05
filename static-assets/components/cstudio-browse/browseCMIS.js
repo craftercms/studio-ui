@@ -473,7 +473,8 @@
                 
                 message += "</br></br><div id='errorCode' style='display: none; padding-left: 26px; width: calc(100% - 26px);'>" + error.message + "</div>";
 
-                message += "<div style='margin-left: 26px;'><a href='#' data-open='false' class='show-more-toggle'>Show More > </span></div>";
+                message += "<div style='margin-left: 26px;'><a style='color: #4F81A0;' href='#' data-open='false' class='show-more-toggle'>Show More" + 
+                "<i class='fa fa-chevron-right' aria-hidden='true' style='font-size: 10px;margin-left: 5px;'></i></span></div>";
 
                 CStudioAuthoring.Operations.showSimpleDialog(
                     "error-dialog",
@@ -491,12 +492,12 @@
 
                     if(!("true" === toggle.attr("data-open"))){
                         toggle.attr("data-open", true);
-                        toggle.text("Show Less <");
+                        toggle.html("Show Less <i class='fa fa-chevron-left' aria-hidden='true' style='font-size: 10px;margin-left: 5px;'></i></span></div>");
 
                         code.show();
                     }else{
                         toggle.attr("data-open", false);
-                        toggle.text("Show More >");
+                        toggle.html("Show More <i class='fa fa-chevron-right' aria-hidden='true' style='font-size: 10px;margin-left: 5px;'></i></span></div>");
 
                         code.hide();
                     }
