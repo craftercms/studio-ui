@@ -125,8 +125,8 @@ YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
       }
     };
 
-    YAHOO.util.Connect.setForm('upload_form', true);
-    YAHOO.util.Connect.asyncRequest('POST', serviceUri, callback);
+    YAHOO.util.Connect.setForm("upload_form", true);
+    YAHOO.util.Connect.asyncRequest("POST", serviceUri, callback);
     document.getElementById("cstudioSaveAndClose").disabled="disabled";
     document.getElementById("cstudioSaveAndCloseDraft").disabled="disabled";
     document.getElementById("cstudioSaveAndPreview").disabled="disabled";
@@ -136,16 +136,16 @@ YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
   
   render: function(config, containerEl, lastTwo) {    
     var titleEl = document.createElement("span");
-		YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
+		YAHOO.util.Dom.addClass(titleEl, "cstudio-form-field-title");
 		titleEl.innerHTML = config.title;
     containerEl.appendChild(titleEl);
     
     var controlWidgetContainerEl = document.createElement("div");
-		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
+		YAHOO.util.Dom.addClass(controlWidgetContainerEl, "cstudio-form-control-input-container");
     
     var validEl = document.createElement("span");
-		YAHOO.util.Dom.addClass(validEl, 'validation-hint');
-		YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
+		YAHOO.util.Dom.addClass(validEl, "validation-hint");
+		YAHOO.util.Dom.addClass(validEl, "cstudio-form-control-validation fa fa-check");
 		controlWidgetContainerEl.appendChild(validEl);
 
     this.fileEl = document.createElement("span");
@@ -158,9 +158,9 @@ YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
 		this.inputEl = inputEl;
     inputEl.type = "file";
     inputEl.name = "file";
-		YAHOO.util.Dom.addClass(inputEl, 'datum');
-		YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
-    YAHOO.util.Event.on(inputEl, 'change',  this._onChange, this);
+		YAHOO.util.Dom.addClass(inputEl, "datum");
+		YAHOO.util.Dom.addClass(inputEl, "cstudio-form-control-input");
+    YAHOO.util.Event.on(inputEl, "change",  this._onChange, this);
     
 		formEl.appendChild(inputEl);
     
