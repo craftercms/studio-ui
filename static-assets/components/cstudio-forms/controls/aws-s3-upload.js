@@ -14,11 +14,11 @@ function(id, form, owner, properties, constraints, readonly)  {
   this.readonly = readonly;
   
   if(properties) {
-    var required = constraints.find(function(property){ return property.name === "required" });
+    var required = constraints.find(function(property){ return property.name === "required"; });
     if(required) {
-      this.required = required.value == "true";
+      this.required = required.value === "true";
     }
-    var profile_path = properties.find(function(property){ return property.name === "profile_path" });
+    var profile_path = properties.find(function(property){ return property.name === "profile_path"; });
     if(profile_path) {
       this.profile_path = profile_path.value;
     }
@@ -151,7 +151,7 @@ YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
     this.fileEl = document.createElement("span");
     controlWidgetContainerEl.appendChild(this.fileEl);
     
-    var formEl = document.createElement("form")
+    var formEl = document.createElement("form");
     formEl.id = "upload_form";
     
     var inputEl = document.createElement("input");
