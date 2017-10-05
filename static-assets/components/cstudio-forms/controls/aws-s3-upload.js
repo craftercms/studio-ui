@@ -14,18 +14,18 @@ function(id, form, owner, properties, constraints, readonly)  {
   this.readonly = readonly;
   
   if(properties) {
-    var required = constraints.find(function(property){ return property.name == "required" })
+    var required = constraints.find(function(property){ return property.name === "required" });
     if(required) {
       this.required = required.value == "true";
     }
-    var profile_path = properties.find(function(property){ return property.name == "profile_path" })
+    var profile_path = properties.find(function(property){ return property.name === "profile_path" });
     if(profile_path) {
       this.profile_path = profile_path.value;
     }
   }
   
   return this;
-}
+};
 
 YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
   
@@ -49,7 +49,7 @@ YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
       this.setError("required", "Field is Required");
     }
     this.renderValidation(true, validationResult);
-    this.owner.notifyValidation()
+    this.owner.notifyValidation();
   },
   
   getValue: function() {
