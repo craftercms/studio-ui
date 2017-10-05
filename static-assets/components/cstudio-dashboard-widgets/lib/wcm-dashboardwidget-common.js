@@ -1085,7 +1085,7 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
 
             var tableContentStart = '<table id="' + tableName + '-table" class="table">';
             var theadContent = '<thead id="' + tableName + '-thead"><tr class="avoid">' + instance.renderItemsHeading() + '</tr></thead>';
-            var tbodyContent = '<tbody id="' + tableName + '-tbody">' + newtable + '</tbody>';
+            var tbodyContent = '<tbody id="' + tableName + '-tbody" class="ttTbody">' + newtable + '</tbody>';
             var tableContentEnd = '</table>';
 
             //Check for already checked items,
@@ -1311,7 +1311,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
 
             var tableContentStart = '<table id="' + tableName + '-table" class="table" border="0">';
             var theadContent = '<thead class="ttThead" id="' + tableName + '-thead"><tr class="avoid">' + instance.renderItemsHeading() + '</tr></thead>';
-            var tbodyContent = '<tbody class="ttTbody" id="' + tableName + '-tbody">' + newtable + '</tbody>';
+            var tbodyContent = '<tbody class="ttTbody" id="' + tableName + '-tbody" class="ttTbody">' + newtable + '</tbody>';
             var tableContentEnd = '</table>';
 
             //Check for already checked items,

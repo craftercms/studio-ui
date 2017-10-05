@@ -206,7 +206,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     ((item.deleted || item.inFlight) ? ' disabled' : ''), '  />',
                     // '<span class="', itemIconStatus, (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
                     CStudioAuthoring.Utils.getContentItemIcon(item).outerHTML,
-                    '<a ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="itemNameCol "', (item.previewable == true) ? "previewLink" : "non-previewable-link",
+                    '<a class="anchorRow" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', ' class="itemNameCol "', (item.previewable == true) ? "previewLink" : "non-previewable-link",
                     (item.disabled == true ? ' dashboard-item disabled' : '') , '">',
                     displayName,
                     '</a>',

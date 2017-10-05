@@ -5283,7 +5283,7 @@ span.acn-canned-search {
 
 .site-dashboard .panel .ttTbody td .anchorRow {
   display: inline-block;
-  max-width: calc(100% - 25px);
+  max-width: calc(100% - 45px);
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -15340,5 +15340,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */
