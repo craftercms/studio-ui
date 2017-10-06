@@ -450,7 +450,9 @@ var nodeOpen = false;
 
                     CSA.Utils.addJavascript(script, null, {
                         error: function(e){
-                            callback.failed(e);
+                            if(callback && callback.failed){
+                                callback.failed(e);
+                            }
                         }
                     });
                 } else {
@@ -492,7 +494,12 @@ var nodeOpen = false;
                         window.console.log(msg);
                     }
 
-                    waiter.callback.failed(msg);
+                    if(waiter.callback.failed){
+                        waiter.callback.failed(msg);
+                    }else{
+                        // waiter.callback.moduleLoaded();
+                    }
+
                 }
             }
         },
@@ -5634,7 +5641,9 @@ var nodeOpen = false;
                                 if(fileLength && fileLength > 0){
                                     headID.appendChild(newScript);
                                 }else{
-                                    callback.error();
+                                    if(callback && callback.error){
+                                        callback.error();
+                                    }
                                 }   
                             }
                         });
