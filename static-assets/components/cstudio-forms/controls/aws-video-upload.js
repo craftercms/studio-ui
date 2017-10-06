@@ -1,4 +1,4 @@
-CStudioForms.Controls.AWSUpload = CStudioForms.Controls.AWSUpload ||  
+CStudioForms.Controls.AWSFileUpload = CStudioForms.Controls.AWSFileUpload ||  
 function(id, form, owner, properties, constraints, readonly)  {
   this.owner = owner;
   this.owner.registerField(this);
@@ -27,14 +27,14 @@ function(id, form, owner, properties, constraints, readonly)  {
   return this;
 };
 
-YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
+YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField, {
   
   getLabel: function() {
     return "AWS S3 Upload";
   },
   
   getName: function() {
-    return "aws-s3-upload";
+    return "aws-video-upload";
   },
   
   setValue: function(value) {
@@ -42,7 +42,7 @@ YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
     if(value && value[0] && value[0].base_key) {
       this.value = value;
       this.form.updateModel(this.id, this.value);
-      this.fileEl.innerHTML = value[0].base_key;
+      this.fileEl.innerHTML = "s3://" + value[0].output_bucket + "/" + value[0].base_key + "*";
       this.clearError("required");
     } else if(this.required) {
       validationResult = false;
@@ -185,4 +185,4 @@ YAHOO.extend(CStudioForms.Controls.AWSUpload, CStudioForms.CStudioFormField, {
   
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-aws-s3-upload", CStudioForms.Controls.AWSUpload);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-aws-video-upload", CStudioForms.Controls.AWSFileUpload);
