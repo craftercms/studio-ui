@@ -1063,7 +1063,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                      */
                     createNavItem: function(item, isBulk, isAdmin, isRelevant, disableItem) {
                         var parentEl = this.containerEl;
+                        var content = CStudioAuthoring.SelectedContent.getSelectedContent();
                         var showItem = (!item.isInFlight && ((isAdmin && item.allowAdmin) || (!isAdmin && item.allowAuthor)));
+
+                        showItem = content[0] && (content[0].mimeType.match(/\bimage\b/)) && ("Edit" === item.renderId) ? false : showItem;
+
                         if(showItem) {
                             /* Do not attach items if links are not relevant */
                             if(!isRelevant || (isBulk && !item.allowBulk))
