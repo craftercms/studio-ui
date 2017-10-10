@@ -448,13 +448,7 @@ var nodeOpen = false;
                     waiting.push({ callback: callback, moduleConfig: moduleConfig });
                     this.waitingForModule[moduleName] = waiting;
 
-                    CSA.Utils.addJavascript(script, null, {
-                        error: function(e){
-                            if(callback && callback.failed){
-                                callback.failed(e);
-                            }
-                        }
-                    });
+                    CSA.Utils.addJavascript(script);
                 } else {
                     callback.moduleLoaded(moduleName, moduleClass, moduleConfig);
                 }
@@ -493,13 +487,6 @@ var nodeOpen = false;
                     if( window.console && window.console.log) {
                         window.console.log(msg);
                     }
-
-                    if(waiter.callback.failed){
-                        waiter.callback.failed(msg);
-                    }else{
-                        // waiter.callback.moduleLoaded();
-                    }
-
                 }
             }
         },
@@ -5631,22 +5618,7 @@ var nodeOpen = false;
                     newScript.type = 'text/javascript';
                     newScript.src = script;
                     if (script.indexOf('undefined.js') === -1) {
-                        //Checking if file exists, otherwise return error on callback
-                        $.ajax({
-                            url:script,
-                            type:'HEAD',
-                            complete : function (XMLHttpRequest, textStatus) {
-                                var fileLength = XMLHttpRequest.getResponseHeader('content-length');
-
-                                if(fileLength && fileLength > 0){
-                                    headID.appendChild(newScript);
-                                }else{
-                                    if(callback && callback.error){
-                                        callback.error();
-                                    }
-                                }   
-                            }
-                        });
+                        headID.appendChild(newScript);
                     }
                 }
             },
