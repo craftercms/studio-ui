@@ -944,13 +944,8 @@ var CStudioForms = CStudioForms || function() {
 
                 var me = this;
 
-                this._loadDatasources(form, {
-                    success: function(responses){
-
-                    }
-                });
-
-                    
+                this._loadDatasources(form);
+                                    
                 if(iceId && iceId != "") {
                     var html = this._renderIceLayout(form);
                     form.containerEl.innerHTML = html;
@@ -1568,61 +1563,36 @@ var CStudioForms = CStudioForms || function() {
                 var formDef = form.definition;
                 form.datasourceMap = {};
 
-                var difModules = [];
                 for(var i=0; i < formDef.datasources.length; i++) {
-                    if(difModules.indexOf(formDef.datasources[i].type)) {
-                        difModules.push(formDef.datasources[i].type);
-                    }
+                    var datasourceDef = formDef.datasources[i];
+
+                    // initialize each datasource
+                    var cb = {
+                        moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
+                            try {
+                                var datasource = new moduleClass(
+                                    moduleConfig.config.id,
+                                    this.form,
+                                    moduleConfig.config.properties);
+                                form.datasourceMap[datasource.id] = datasource;
+                                amplify.publish("/datasource/loaded", { name: datasource.id});
+                            }
+                            catch (e) {
+                                //alert(e);
+                            }
+
+                        },
+                        context: this,
+                        form: form
+                    };
+
+                    CStudioAuthoring.Module.requireModule(
+                        "cstudio-forms-controls-" + datasourceDef.type,
+                        '/static-assets/components/cstudio-forms/data-sources/' + datasourceDef.type + ".js",
+                        { config: datasourceDef },
+                        cb);
                 }
-
-                var moduleLoadsRemaining = difModules.length;
-                var returnedData = [];
-
-                if(formDef.datasources.length == 0){ 
-                    callback.success(returnedData);
-                }else{
-                    for(var i=0; i < formDef.datasources.length; i++) {
-                        var datasourceDef = formDef.datasources[i];
-    
-                        // initialize each datasource
-                        var cb = {
-                            moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-                                try {
-                                    var datasource = new moduleClass(
-                                        moduleConfig.config.id,
-                                        this.form,
-                                        moduleConfig.config.properties);
-                                    form.datasourceMap[datasource.id] = datasource;
-                                    amplify.publish("/datasource/loaded", { name: datasource.id});
-                                }
-                                catch (e) {
-                                    //alert(e);
-                                }
-
-                                returnedData.push({moduleName: moduleName, moduleClass: moduleClass, moduleConfig: moduleConfig});
-                                --moduleLoadsRemaining;
-                                if (moduleLoadsRemaining <= 0) {
-                                    callback.success(returnedData);
-                                }
-                            },
-                            failed: function(){
-                                --moduleLoadsRemaining;
-                                if (moduleLoadsRemaining <= 0) {
-                                    callback.success(returnedData);
-                                }
-                            },
-    
-                            context: this,
-                            form: form
-                        };
-    
-                        CStudioAuthoring.Module.requireModule(
-                            "cstudio-forms-controls-" + datasourceDef.type,
-                            '/static-assets/components/cstudio-forms/data-sources/' + datasourceDef.type + ".js",
-                            { config: datasourceDef },
-                            cb);
-                    }
-                }
+                
             },
 
             /**
