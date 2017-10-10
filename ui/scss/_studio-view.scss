@@ -102,8 +102,8 @@
 #loading-GoLiveQueue,
 #loading-approvedScheduledItems,
 #loading-recentlyMadeLive {
-  position: absolute;
-  left: 47%;
+  position: fixed;
+  left: 48%;
   top: 238px;
 
   @media (max-width: 768px) {

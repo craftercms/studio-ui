@@ -53,9 +53,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 		 */
 		
 		var liLoadingEl = document.createElement("li");
-		liLoadingEl.id = "loading-" + widgetId;		
-		var imgEl = document.createElement("img");
-		imgEl.src = contextPath + CStudioAuthoringContext.baseUri + "/static-assets/themes/cstudioTheme/images/treeview-loading.gif";
+		liLoadingEl.id = "loading-" + widgetId;
+        var imgEl = document.createElement("i");
+        imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw';
 		liLoadingEl.appendChild(imgEl);
 
 		itemFilterEl.innerHTML = CMgs.format(langBundle, "dashletMyRecentActivityHideLiveItems");

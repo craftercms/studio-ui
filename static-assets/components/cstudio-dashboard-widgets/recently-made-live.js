@@ -61,8 +61,8 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
     this.renderAuxControls = function(containerEl) {
         var liLoadingEl = document.createElement("li");
         liLoadingEl.id = "loading-" + widgetId;
-        var imgEl = document.createElement("img");
-        imgEl.src = contextPath + CStudioAuthoringContext.baseUri + "/static-assets/themes/cstudioTheme/images/treeview-loading.gif";
+        var imgEl = document.createElement("i");
+        imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw';
         liLoadingEl.appendChild(imgEl);
         containerEl.appendChild(liLoadingEl);
         var filterBydiv =  document.createElement("li");
