@@ -7109,8 +7109,8 @@ address {
 #loading-GoLiveQueue,
 #loading-approvedScheduledItems,
 #loading-recentlyMadeLive {
-  position: absolute;
-  left: 47%;
+  position: fixed;
+  left: 48%;
   top: 238px; }
   @media (max-width: 768px) {
     .site-dashboard .panel .panel-heading .widget-controls > li#loading-MyRecentActivity,
@@ -15340,3 +15340,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */
