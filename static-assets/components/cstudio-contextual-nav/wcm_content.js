@@ -1066,7 +1066,9 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         var content = CStudioAuthoring.SelectedContent.getSelectedContent();
                         var showItem = (!item.isInFlight && ((isAdmin && item.allowAdmin) || (!isAdmin && item.allowAuthor)));
 
-                        showItem = content[0] && (content[0].mimeType.match(/\bimage\b/)) && ("Edit" === item.renderId) ? false : showItem;
+                        if(content[0] && content[0].mimeType){
+                            showItem = (content[0].mimeType.match(/\bimage\b/)) && ("Edit" === item.renderId) ? false : showItem;
+                        }
 
                         if(showItem) {
                             /* Do not attach items if links are not relevant */
