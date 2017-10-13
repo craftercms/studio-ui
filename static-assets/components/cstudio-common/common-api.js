@@ -1620,7 +1620,6 @@ var nodeOpen = false;
                                     minHeight: 50,
                                     grid: [10000, 1],
                                     create: function( event, ui ) {
-                                        console.log("Create");
                                     },
                                     start: function (event, ui) {
                                         $('#engineWindow', window.top.document).css('pointer-events', 'none');

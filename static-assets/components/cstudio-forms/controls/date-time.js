@@ -220,7 +220,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 				if (res.status == 200 && val.convertedTimezone) {
 					res = val.convertedTimezone.split(" ");
-					return res[0] + " " + res[1];
+                    return moment.parseZone(res[0] + " " + res[1]).format("YYYY-MM-DDTHH:mm:ss.SSSSZ");
 
 				} else {
 					return false;
@@ -1030,7 +1030,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	},
 
 	getValue: function() {
-		return this.value;
+        return moment.parseZone(this.value).format("YYYY-MM-DDTHH:mm:ss.SSSSZ");
 	},
 
 	getDateTimeObject: function (timeObj) {
@@ -1252,7 +1252,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	},
 
 	_setValue: function(value, configTimezone){
-		var storedVal = value,
+		var storedVal = moment.parseZone(value).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
+                moment.parseZone(value).format("MM/DD/YYYY HH:mm:ss") : value,
 			nowObj = new Date(),
 			cgTz = configTimezone,
 			_self = this;
@@ -1335,10 +1336,14 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			dateTime,
 			dateTimeSplit,
 			res,
+            studioFormat,
 			val;
 
 		if(this.getDescendantProp(dateTimePath, (this.id)) && value != '') {
-			dateTime = (this.getDescendantProp(dateTimePath, (this.id))).split(" ");
+            studioFormat = moment.parseZone(this.getDescendantProp(dateTimePath, (this.id))).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
+                moment.parseZone(this.getDescendantProp(dateTimePath, (this.id))).format("MM/DD/YYYY HH:mm:ss") :
+                this.getDescendantProp(dateTimePath, (this.id));
+			dateTime = (studioFormat).split(" ");
 			res = this.convertDateTimeSync(dateTime[0], dateTime[1], "GMT", this.timezone);
 			val = eval("(" + (res.responseText) + ")");
 			dateTime = val.convertedTimezone.split(" ");

@@ -30,6 +30,9 @@
     <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!''}"></script>
      <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!''}"></script>
 
+    <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!''}"></script>
+
     <script>document.domain = "${Request.serverName}";</script> <!-- blah blah -->
     
 </head>
