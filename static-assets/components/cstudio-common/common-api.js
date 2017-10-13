@@ -458,7 +458,6 @@ var nodeOpen = false;
              * event that module has been loaded for those wating
              */
             moduleLoaded: function(moduleName, moduleClass) {
-
                 this.loadedModules[moduleName] = moduleClass;
 
                 try {
@@ -6812,6 +6811,11 @@ var nodeOpen = false;
 
                     status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusScheduled");
                     status.key = status.key + "statusScheduled";
+
+                    if(contentTO.submitted && contentTO.scheduled){
+                        status.string = CMgs.format(siteDropdownLangBundle, "statusSubmitted");
+                        status.key = "statusSubmitted";
+                    }
                 }
 
                 //Disabled string not required in status to show on nav bar
