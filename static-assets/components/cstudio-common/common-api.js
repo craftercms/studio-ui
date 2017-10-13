@@ -1619,7 +1619,6 @@ var nodeOpen = false;
                                     minHeight: 50,
                                     grid: [10000, 1],
                                     create: function( event, ui ) {
-                                        console.log("Create");
                                     },
                                     start: function (event, ui) {
                                         $('#engineWindow', window.top.document).css('pointer-events', 'none');
@@ -5897,6 +5896,22 @@ var nodeOpen = false;
                     return "";
                 else
                     return this.formatDateFromString(dateTime, timeFormat);
+            },
+
+            /**
+             * format date to ISO
+             */
+            formatDateToISO: function(dateTime) {
+                return moment.parseZone(dateTime).format("YYYY-MM-DDTHH:mm:ss.SSSSZ");
+            },
+
+            /**
+             * format date to Studio format
+             */
+            formatDateToStudio: function(dateTime) {
+                var date = moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
+                        moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") : dateTime;
+                return date;
             },
 
             createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){

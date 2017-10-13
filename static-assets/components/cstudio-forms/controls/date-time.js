@@ -220,7 +220,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 				if (res.status == 200 && val.convertedTimezone) {
 					res = val.convertedTimezone.split(" ");
-					return res[0] + " " + res[1];
+                    return CStudioAuthoring.Utils.formatDateToISO(res[0] + " " + res[1]);
 
 				} else {
 					return false;
@@ -1030,7 +1030,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	},
 
 	getValue: function() {
-		return this.value;
+        return CStudioAuthoring.Utils.formatDateToISO(this.value);
 	},
 
 	getDateTimeObject: function (timeObj) {
@@ -1252,7 +1252,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	},
 
 	_setValue: function(value, configTimezone){
-		var storedVal = value,
+		var storedVal = CStudioAuthoring.Utils.formatDateToStudio(value),
 			nowObj = new Date(),
 			cgTz = configTimezone,
 			_self = this;
@@ -1335,10 +1335,12 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			dateTime,
 			dateTimeSplit,
 			res,
+            studioFormat,
 			val;
 
 		if(this.getDescendantProp(dateTimePath, (this.id)) && value != '') {
-			dateTime = (this.getDescendantProp(dateTimePath, (this.id))).split(" ");
+            studioFormat = CStudioAuthoring.Utils.formatDateToStudio(this.getDescendantProp(dateTimePath, (this.id)));
+			dateTime = (studioFormat).split(" ");
 			res = this.convertDateTimeSync(dateTime[0], dateTime[1], "GMT", this.timezone);
 			val = eval("(" + (res.responseText) + ")");
 			dateTime = val.convertedTimezone.split(" ");
