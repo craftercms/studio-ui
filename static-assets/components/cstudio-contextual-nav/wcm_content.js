@@ -991,6 +991,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                  isRelevant = false;
                                 if ( (state.indexOf("Submitted") != -1 
                                 || state.indexOf("Scheduled") != -1 
+                                || state.indexOf("In Workflow") != -1 
                                 || state.indexOf("Deleted") != -1)) {
                                     isRelevant = true;
                                 }
