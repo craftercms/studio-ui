@@ -5898,6 +5898,19 @@ var nodeOpen = false;
                     return this.formatDateFromString(dateTime, timeFormat);
             },
 
+            /**
+             * format a date to ISO
+             */
+            formatDateToISO: function(dateTime) {
+                return moment.parseZone(dateTime).format("YYYY-MM-DDTHH:mm:ss.SSSSZ");
+            },
+
+            formatDateToStudio: function(dateTime) {
+                var date = moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
+                        moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") : dateTime;
+                return date;
+            },
+
             createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
                 var baseUrl = CStudioAuthoringContext.authoringAppBaseUri;
                 var serviceUrl = "/api/1/services/util/time/convert-time.json?";
