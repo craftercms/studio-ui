@@ -5899,12 +5899,15 @@ var nodeOpen = false;
             },
 
             /**
-             * format a date to ISO
+             * format date to ISO
              */
             formatDateToISO: function(dateTime) {
                 return moment.parseZone(dateTime).format("YYYY-MM-DDTHH:mm:ss.SSSSZ");
             },
 
+            /**
+             * format date to Studio format
+             */
             formatDateToStudio: function(dateTime) {
                 var date = moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
                         moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") : dateTime;
