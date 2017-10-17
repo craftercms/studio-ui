@@ -910,9 +910,8 @@ var CStudioForms = CStudioForms || function() {
                         }
                     });
 
-                var nowTimestamp = getDateTimeObject(new Date());
                 // Timestamp in UTC
-                nowTimestamp = nowTimestamp.date + " " + nowTimestamp.time;
+                var nowTimestamp = new Date().toISOString();
 
                 /*
                  * register before save callback for created date and modified date
