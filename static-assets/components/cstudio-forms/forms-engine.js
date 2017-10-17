@@ -1050,7 +1050,7 @@ var CStudioForms = CStudioForms || function() {
                         {
                             form.model["file-name"] = (fileName += ".xml");
                         }
-                        if (edit == "true" || form.readOnly || saveDraft) { //This is also necessary in readonly mode
+                        if (edit == "true" || form.readOnly || draft) { //This is also necessary in readonly mode
                             // Get parent folder
                             entityId = entityId.substring(0, entityId.lastIndexOf("/"));
                         }
@@ -1264,11 +1264,14 @@ var CStudioForms = CStudioForms || function() {
                                         "studioDialog"
                                     );
                                 }catch (e) {
+                                    var error = eval("(" + err.responseText + ")"),
+                                        errorMessage = error.message ? error.message : CMgs.format(formsLangBundle, "errSaveFailed");
+
                                     CStudioAuthoring.Operations.showSimpleDialog(
                                         "error-dialog",
                                         CStudioAuthoring.Operations.simpleDialogTypeINFO,
                                         CMgs.format(formsLangBundle, "notification"),
-                                        CMgs.format(formsLangBundle, "errSaveFailed"),
+                                        errorMessage,
                                         null,
                                         YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                         "studioDialog"
