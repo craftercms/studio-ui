@@ -5902,7 +5902,7 @@ var nodeOpen = false;
              * format date to ISO
              */
             formatDateToISO: function(dateTime) {
-                return moment.parseZone(dateTime).format("YYYY-MM-DDTHH:mm:ss.SSSSZ");
+                return moment.parseZone(dateTime).toISOString();
             },
 
             /**
