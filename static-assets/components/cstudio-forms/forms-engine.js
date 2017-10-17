@@ -944,8 +944,6 @@ var CStudioForms = CStudioForms || function() {
                 var me = this;
 
                 this._loadDatasources(form, function(loaded, notLoaded){
-                    console.log(loaded);
-                    console.log(notLoaded);
 
                     if(iceId && iceId != "") {
                         var html = me._renderIceLayout(form);
