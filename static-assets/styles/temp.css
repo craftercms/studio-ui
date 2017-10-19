@@ -3099,7 +3099,8 @@ div#acn-active-content {
   background: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif") no-repeat left;
   background-position: 0 -101px;
   padding: 2px 0 0 18px;
-  text-decoration: none; }
+  text-decoration: none;
+  cursor: pointer; }
 
 .acn-dropdown-wrapper .acn-dropdown-menu .acn-parent-folder.loading {
   background: transparent url("/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif") no-repeat scroll 0 center;
