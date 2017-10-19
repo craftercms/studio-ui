@@ -90,7 +90,7 @@
                                     col2El = document.createElement('div');
                                     Dom.addClass(col2El, "c8");
 
-                                    col2El.innerHTML = CStudioAuthoring.Utils.formatDateFromString(version.lastModifiedDate, "full");
+                                    col2El.innerHTML = CStudioAuthoring.Utils.formatDateFromUTC(version.lastModifiedDate, studioTimeZone, 'full');
 
                                     var versionNumber = new Date(version.lastModifiedDate);
                                     versionNumber = versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');

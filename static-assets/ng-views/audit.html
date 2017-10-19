@@ -64,8 +64,8 @@
             <td>{{log.userId}}</td>
             <td>{{log.contentId}}</td>
             <td>{{log.type}}</td>
-            <td>{{log.creationDate | date:'MM-dd-yyyy HH:mm:ss'}}</td>
-            <td>{{log.modifiedDate | date:'MM-dd-yyyy HH:mm:ss'}}</td>
+            <td>{{log.creationDate | amTimezone:audit.timeZone | amDateFormat:'MM-DD-YYYY hh:mm:ss a'}} ({{audit.timeZone}})</td>
+            <td>{{log.modifiedDate | amTimezone:audit.timeZone | amDateFormat:'MM-DD-YYYY hh:mm:ss a'}} ({{audit.timeZone}})</td>
         </tr>
         </tbody>
     </table>

@@ -19,7 +19,6 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 	this.defaultSortBy='eventDate';
 	this.defaultSearchNumber=10;
 	this.tooltipLabels=null;
-    WcmDashboardWidgetCommon.retrieveTimezoneData();
 	WcmDashboardWidgetCommon.init(this);
 
 	/**
@@ -222,9 +221,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			'<td id="' + editLinkId + '"></td>',
 			'<td class="urlCol" title="', browserUri, '">', displayBrowserUri, '</td>',
 			'<td title="fullUri" class="width0">', fullUri, '</td>',
-            '<td class="">', item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, configTimeZone) : '', '</td>',
+            '<td class="">', item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '', '</td>',
 			'<td class="alignRight">', WcmDashboardWidgetCommon.getDisplayName(item), '</td>',
-			'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, configTimeZone), '</td>'
+			'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), '</td>'
         ];
 
         if(currentCheckItem && this.widgetId == currentDashboard){

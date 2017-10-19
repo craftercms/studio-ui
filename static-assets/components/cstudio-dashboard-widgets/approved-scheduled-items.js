@@ -18,7 +18,6 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
 	this.hideEmptyRow = false;
 	this.defaultSortBy='eventDate';
 	this.tooltipLabels=null;
-    WcmDashboardWidgetCommon.retrieveTimezoneData();
 	WcmDashboardWidgetCommon.init(this);
 	
 	/**
@@ -157,9 +156,9 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
             // to resolve page display issue
             displayName = CStudioAuthoring.Utils.replaceWithASCIICharacter(displayName);
 
-            var lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, configTimeZone);
+            var lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone);
             if (item.lastEditDateAsString != undefined && item.lastEditDateAsString != "") {
-                lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.lastEditDateAsString, configTimeZone);
+                lastEditTime = CStudioAuthoring.Utils.formatDateFromUTC(item.lastEditDateAsString, studioTimeZone);
             }
             
   

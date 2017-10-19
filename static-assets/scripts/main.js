@@ -7,6 +7,7 @@
         'ui.bootstrap',
         'smart-table',
         'pascalprecht.translate',
+        'angularMoment',
         'angularUtils.directives.dirPagination',
         'ngTagsInput'
     ]);

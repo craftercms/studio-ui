@@ -1598,18 +1598,4 @@ WcmDashboardWidgetCommon.clearItem = function (matchedElement, dashBoardData) {
     }
 };
 
-WcmDashboardWidgetCommon.retrieveTimezoneData = function() {
-
-    if(!configTimeZone) {
-        CStudioAuthoring.Service.getConfiguration(
-            CStudioAuthoringContext.site,
-            "/site-config.xml",
-            {
-                success: function (config) {
-                    configTimeZone = config["default-timezone"];
-                }
-            });
-    }
-};
-
 

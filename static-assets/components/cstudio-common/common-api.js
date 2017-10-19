@@ -37,7 +37,9 @@ var eventCM = document.createEvent("Event");
 // Define that the event name is 'build'.
 eventCM.initEvent("crafter.create.contenMenu", true, true);
 
-var nodeOpen = false;
+var nodeOpen = false,
+    studioTimeZone = null;
+
 
 (function(undefined){
 
@@ -5886,9 +5888,22 @@ var nodeOpen = false;
             /**
              * format a date from UTC to config Date
              */
-            formatDateFromUTC: function(dateTime, newTimeZone) {
-                var utcDate   = moment.tz(dateTime, "Etc/UTC");
-                return utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+            formatDateFromUTC: function(dateTime, newTimeZone, format) {
+                try{
+                    var utcDate   = moment.tz(dateTime, "Etc/UTC"),
+                        newDate;
+
+                    if(format === "full"){
+                        newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
+                        newDate = newDate + " ("+newTimeZone+")";
+                    }else{
+                        newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+                    }
+                    return newDate != "Invalid date" ? newDate : '';
+                }catch(err){
+                    console.log(err);
+                }
+
             },
 
             formatDateFromStringNullToEmpty: function(dateTime, timeFormat) {
@@ -7146,6 +7161,21 @@ var nodeOpen = false;
                 var scheduledDate = schedDateMonth + '/' + schedDateDay + ' ' + hours + ":" + mins + " " + meridian;
 
                 return scheduledDate;
+            },
+
+            getTimeZoneConfig: function (){
+
+                if(!studioTimeZone) {
+                    CStudioAuthoring.Service.getConfiguration(
+                        CStudioAuthoringContext.site,
+                        "/site-config.xml",
+                        {
+                            success: function (config) {
+                                studioTimeZone = config["default-timezone"];
+                            }
+                        });
+                }
+
             },
 
             buildToolTip: function (itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon) {
@@ -8705,6 +8735,9 @@ CStudioAuthoring.FilesDiff = {
 
             CStudioAuthoring.mimeTypes = mimeTypes;
         }});
+
+        CStudioAuthoring.Utils.getTimeZoneConfig();
+
     }, w);
 
 }) (window);

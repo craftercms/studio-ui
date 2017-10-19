@@ -1897,9 +1897,9 @@
 
                 var ttFormattedEditDate = "";
                 if (treeItem.eventDate != "" && treeItem.eventDate != undefined) {
-                    var formattedEditDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.eventDate);
+                    var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
                     retTransferObj.editedDate = formattedEditDate;
-                    ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.eventDate, "tooltipformat");
+                    ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
                 }
                 
                 var icon = treeItem.folder ? CStudioAuthoring.Utils.createIcon("", Self.defaultIcons.childClosed )
@@ -1909,9 +1909,9 @@
 
                     retTransferObj.scheduledDate = treeItem.scheduledDate;
 
-                    formattedSchedDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.scheduledDate);
+                    formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
                     retTransferObj.formattedScheduledDate = formattedSchedDate;
-                    var ttFormattedSchedDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.scheduledDate, "tooltipformat");
+                    var ttFormattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
 
                     retTransferObj.title = this.buildToolTipScheduled(
                             retTransferObj.label,
