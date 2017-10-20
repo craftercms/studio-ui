@@ -5897,7 +5897,11 @@ var nodeOpen = false,
                         newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
                         newDate = newDate + " ("+newTimeZone+")";
                     }else{
-                        newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+                        if(format === "medium"){
+                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
+                        }else{
+                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+                        }
                     }
                     return newDate != "Invalid date" ? newDate : '';
                 }catch(err){
