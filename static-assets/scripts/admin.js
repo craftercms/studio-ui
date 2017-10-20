@@ -119,6 +119,11 @@
                 })
             };
 
+            this.getTimeZone = function(data) {
+                return $http.get(api('get-configuration'), {
+                    params: data
+                })
+            };
 
 
             function api(action) {
@@ -152,15 +157,24 @@
     
     app.controller('AuditCtrl', [
         '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
-        '$stateParams', '$translate', '$location',
+        '$stateParams', '$translate', '$location', 'moment',
         function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
-                  $stateParams, $translate, $location) {
+                  $stateParams, $translate, $location, moment) {
 
             $scope.audit = {};
             var audit = $scope.audit;
             audit.logsPerPage = 15;
             audit.defaultDelay = 500;
             audit.site = $location.search().site;
+            audit.timeZone;
+
+            adminService.getTimeZone({
+                "site" : audit.site,
+                "path" : "/site-config.xml"
+            }).success(function (data) {
+                audit.timeZone = data["default-timezone"];
+            });
+
             var delayTimer;
 
             var getUsers = function(site) {

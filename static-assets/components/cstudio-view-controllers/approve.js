@@ -228,7 +228,7 @@
                 this.$('#approveSubmitVal').hide();
 
                 this.$('.date-picker-control').show();
-                this.$('input.date-picker')[0].value = getScheduledDateTimeFromJson(reference);
+                this.$('input.date-picker')[0].value = CStudioAuthoring.Utils.formatDateFromUTC(reference, studioTimeZone, "medium");
             }
         } else {
             this.$('[name="schedulingMode"]')[0].checked = false;
@@ -291,7 +291,7 @@
             var temp = item.scheduledDate,
                 itemDependenciesClass = "toggle-deps-" + index;
 
-            item.scheduledDate = CStudioAuthoring.Utils.formatDateFromString(temp);
+            item.scheduledDate = CStudioAuthoring.Utils.formatDateFromUTC(temp, studioTimeZone, "medium");
             item.index = itemDependenciesClass;
             var $parentRow = $(agent.get('ITEM_ROW', item));
             if(index == 0) $container.empty();

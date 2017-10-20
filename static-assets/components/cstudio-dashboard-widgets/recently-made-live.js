@@ -19,7 +19,6 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
     this.defaultSortBy='eventDate';
     this.defaultSearchNumber=20;
     this.tooltipLabels=null;
-    WcmDashboardWidgetCommon.retrieveTimezoneData();
     WcmDashboardWidgetCommon.init(this);
 
     /**
@@ -194,7 +193,7 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
                 "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
                 "<td title='fullUri' class='width0'>", uri, "</td>",
                 "<td title='",endpoint,"'>", displayEndpoint, "</td>",
-                "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, configTimeZone), "</td>",
+                "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), "</td>",
                 "<td class='alignRight ttThColLast'>", item.user, "</td>"
             ]);
         }
