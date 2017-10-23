@@ -139,39 +139,43 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         }, false);
 
                         document.addEventListener('crafter.refresh', function (e) {
-                            if(!nodeOpen)
-                            {
-                                document.dispatchEvent(eventCM);
-                                _this.refreshAllDashboards();
-                                lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
+                            function lookupSiteContent(curNode, paramCont) {
+                                var dataUri = e.data.uri ? e.data.uri : e.data[0].uri,
+                                    contentUri = curNode && curNode.uri ? curNode.uri : dataUri;
 
-                                function lookupSiteContent(curNode, paramCont) {
-                                    if (curNode) {
-                                        CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, curNode.uri, 1, "default", {
-                                            success: function (treeData) {
-                                                var cont = paramCont ? paramCont : 0;
+                                if (contentUri) {
+                                    CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, contentUri, 1, "default", {
+                                        success: function (treeData) {
+                                            var cont = paramCont ? paramCont : 0;
 
-                                                if (treeData.item.isInFlight) {
+                                            if (treeData.item.isInFlight) {
+                                                setTimeout(function () {
+                                                    lookupSiteContent(curNode);
+                                                }, 300);
+                                            } else {
+                                                cont++;
+                                                if (cont < 2) {
                                                     setTimeout(function () {
-                                                        lookupSiteContent(curNode);
+                                                        lookupSiteContent(curNode, cont);
                                                     }, 300);
                                                 } else {
-                                                    cont++;
-                                                    if (cont < 2) {
-                                                        setTimeout(function () {
-                                                            lookupSiteContent(curNode, cont);
-                                                        }, 300);
-                                                    } else {
-                                                        _this.refreshAllDashboards();
-                                                    }
+                                                    _this.refreshAllDashboards();
                                                 }
-                                            },
-                                            failure: function () {
                                             }
-                                        })
-                                    }
+                                        },
+                                        failure: function () {
+                                        }
+                                    })
                                 }
                             }
+
+                            if(!nodeOpen){
+                                document.dispatchEvent(eventCM);
+                                
+                            }
+
+                            _this.refreshAllDashboards();
+                            lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
 
                         }, false);
 
