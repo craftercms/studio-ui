@@ -74,7 +74,7 @@ CStudioAuthoringContext.site,
                         "&formId="+oCurrentTextNode.data.formId +
                         "&path="+path +
                         "&contentType="+oCurrentTextNode.data.formId +
-                        "&fileName=" + filename +
+                        "&fileName=" + encodeURI(filename) +
                         "&user=" + CStudioAuthoringContext.user +
                         "&unlock=true"+
                         "&createFolders=true";

@@ -141,7 +141,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 	            "?site=" + CStudioAuthoringContext.site +
 	            "&phase=onSave" +
 	            "&path=" + templatePath +
-	            "&fileName=" + name +
+	            "&fileName=" + encodeURI(name) +
 	            "&user=" + CStudioAuthoringContext.user +
 	            "&unlock=true";
 
