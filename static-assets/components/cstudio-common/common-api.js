@@ -2116,7 +2116,7 @@ var nodeOpen = false,
 
                 serviceURI = CSA.Service.createServiceUri(CSA.Service.getWorkflowAffectedPathsServiceUrl + '?' + serviceParams.join('&'));
 
-                Connect.asyncRequest('GET', serviceURI, {
+                Connect.asyncRequest('GET', encodeURI(serviceURI), {
                     success: function (response) {
                         var content;
                         try {
@@ -2616,7 +2616,7 @@ var nodeOpen = false,
                 };
 
                 var moduleConfig = {
-                    path: path,
+                    path: encodeURI(path),
                     site: site,
                     serviceUri: serviceUri,
                     callback: callback,
@@ -3196,7 +3196,7 @@ var nodeOpen = false,
                     url += '&old=' + oldPath;
                 }
 
-                return url;
+                return encodeURI(url);
             },
 
             /**
@@ -3374,7 +3374,7 @@ var nodeOpen = false,
             unlockContentItem: function(site, path, callback) {
                 var serviceUrl = this.unlockContentItemUrl +
                     "?site=" + site +
-                    "&path=" + path;
+                    "&path=" + encodeURI(path);
 
                 var serviceCallback = {
                     success: function(response) {
@@ -3396,7 +3396,7 @@ var nodeOpen = false,
                 var _self = this;
                 function isLockedByUser(site, path) {
                     var value = false, response, itemTO;
-                    var serviceUrl = _self.lookupContentItemServiceUri + "?site=" + site + "&path=" + path + "&populateDependencies=false";
+                    var serviceUrl = _self.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path) + "&populateDependencies=false";
                     var xhrObj = YConnect.createXhrObject();
                     xhrObj.conn.open("GET", _self.createServiceUri(serviceUrl), false);
                     xhrObj.conn.send(null);
@@ -3416,7 +3416,7 @@ var nodeOpen = false,
 
                 var serviceUrl = this.unlockContentItemUrl +
                     "?site=" + site +
-                    "&path=" + path;
+                    "&path=" + encodeURI(path);
 
                 var xhrObj = YConnect.createXhrObject();
                 xhrObj.conn.open("GET", this.createServiceUri(serviceUrl), false);
@@ -3549,7 +3549,7 @@ var nodeOpen = false,
             createGetContentServiceUri: function(path) {
                 return CStudioAuthoringContext.baseUri + this.getContentUri +
                     "?site=" + CStudioAuthoringContext.site +
-                    "&path=" + path +
+                    "&path=" + encodeURI(path)+
                     "&edit=false" +
                     "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
                     "&nocache=" + new Date();
@@ -3568,7 +3568,7 @@ var nodeOpen = false,
                 };
                 var serviceUri = this.createServiceUri(this.getContentUri) +
                     "?site=" + CStudioAuthoringContext.site +
-                    "&path=" + path +
+                    "&path=" + encodeURI(path) +
                     "&edit=true" +
                     "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
                     "&nocache=" + new Date();
@@ -3583,7 +3583,7 @@ var nodeOpen = false,
             getContent: function(path, edit, callback){
                 var serviceUrl = CStudioAuthoring.Service.getContentUri
                     + "?site=" + CStudioAuthoringContext.site
-                    + "&path=" + path +
+                    + "&path=" + encodeURI(path) +
                     "&edit=" + edit +
                     "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
                     "&nocache=" + new Date();
@@ -3837,7 +3837,7 @@ var nodeOpen = false,
                 CStudioAuthoring.Service.request({
                     method: "POST",
                     resetFormState: true,
-                    url: CStudioAuthoringContext.baseUri + serviceUrl,
+                    url: CStudioAuthoringContext.baseUri + encodeURI(serviceUrl),
                     callback: callback
                 });
             },
@@ -3848,7 +3848,7 @@ var nodeOpen = false,
                 CStudioAuthoring.Service.request({
                     method: "POST",
                     resetFormState: true,
-                    url: CStudioAuthoringContext.baseUri + serviceUrl,
+                    url: CStudioAuthoringContext.baseUri + encodeURI(serviceUrl),
                     callback: callback
                 });
             },
@@ -3879,7 +3879,7 @@ var nodeOpen = false,
 
             getUserPermissions: function(site, path, callback) {
                 var serviceUrl = this.getPermissionsServiceUrl;
-                serviceUrl += "?site=" + site + "&path=" + path + "&user=" + CStudioAuthoringContext.user;
+                serviceUrl += "?site=" + site + "&path=" + encodeURI(path) + "&user=" + CStudioAuthoringContext.user;
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
@@ -4384,7 +4384,7 @@ var nodeOpen = false,
              */
             lookupContentItem: function(site, path, callback, isDraft, populateDependencies) {
 
-                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + path;
+                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path);
                 if (isDraft) {
                     serviceUri = serviceUri + "&draft=true";
                 }
@@ -4451,6 +4451,7 @@ var nodeOpen = false,
 
                 var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
                 serviceUri = serviceUri + "&nocache="+new Date();
+                serviceUri = encodeURI(serviceUri);
 
                 var serviceCallback = {
                     success: function(response) {

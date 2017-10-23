@@ -390,7 +390,7 @@ CStudioAuthoring.Module.requireModule(
 									cancelEl.onclick = function() {
 										var cancelEditServiceUrl = "/api/1/services/api/1/content/unlock-content.json"
 											+ "?site=" + CStudioAuthoringContext.site
-											+ "&path=" + templatePath;
+											+ "&path=" + encodeURI(templatePath);
 
 										var cancelEditCb = {
 											success: function(response) {
@@ -431,7 +431,7 @@ CStudioAuthoring.Module.requireModule(
 												"?site=" + CStudioAuthoringContext.site +
 												"&phase=onSave" +
 												"&path=" + path +
-												"&fileName=" + filename +
+												"&fileName=" + encodeURI(filename) +
 												"&user=" + CStudioAuthoringContext.user +
 												"&unlock=true";
 
