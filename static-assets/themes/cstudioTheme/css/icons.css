@@ -191,7 +191,7 @@
 i.loading{
     position: fixed;
     left: 48%;
-    top: 238px;
+    top: 50%;
 }
 
 .yui-simple-dialog .bd .yui-icon.fa-spin-fix{
