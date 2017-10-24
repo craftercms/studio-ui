@@ -920,6 +920,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 && !isOneItemLocked);
 
                                 option.onclick = function() {
+                                    CStudioAuthoring.Utils.createLoadingIcon();
                                     CStudioAuthoring.Operations.approveCommon(
                                         CStudioAuthoringContext.site,
                                         CStudioAuthoring.SelectedContent.getSelectedContent(),

@@ -749,6 +749,7 @@ var nodeOpen = false,
                     controller: 'viewcontroller-approve',
                     callback: function(dialogue) {
                         var self = this;
+                        CStudioAuthoring.Utils.removeLoadingIcon();
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.loadItems(items);
                         this.loadPublishingChannels();
@@ -5934,7 +5935,25 @@ var nodeOpen = false,
                 return date;
             },
 
-            createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
+            /**
+             * create loading icon
+             */
+            createLoadingIcon: function() {
+                var imgEl = document.createElement("i");
+                imgEl.className += ' fa fa-spinner fa-spin fa-3x fa-fw loading';
+                imgEl.id = "loadingElt";
+                document.body.appendChild(imgEl);
+            },
+
+        /**
+         * remove loading icon
+         */
+            removeLoadingIcon: function() {
+                var publishLoading = document.getElementById("loadingElt");
+                publishLoading.parentNode.removeChild(publishLoading);
+            },
+
+        createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
                 var baseUrl = CStudioAuthoringContext.authoringAppBaseUri;
                 var serviceUrl = "/api/1/services/util/time/convert-time.json?";
                 var url = baseUrl;
