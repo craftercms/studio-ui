@@ -104,12 +104,7 @@
 #loading-recentlyMadeLive {
   position: fixed;
   left: 48%;
-  top: 238px;
-
-  @media (max-width: 768px) {
-    top: 294px;
-  }
-
+  top: 48%;
 }
 
 .site-dashboard-footer {

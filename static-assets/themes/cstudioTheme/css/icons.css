@@ -188,6 +188,12 @@
     filter: blur(0);
 }
 
+i.loading{
+    position: fixed;
+    left: 48%;
+    top: 50%;
+}
+
 .yui-simple-dialog .bd .yui-icon.fa-spin-fix{
     font-size: 16.5px;
     line-height: 17.5px;

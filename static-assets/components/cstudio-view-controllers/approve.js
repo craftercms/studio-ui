@@ -11,7 +11,7 @@
         Event = YAHOO.util.Event,
         agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(CStudioAuthoring.TemplateHolder.Approve),
         each = CStudioAuthoring.Utils.each,
-        genDependency;
+        genDependency = [];
         $ = jQuery;
 
     Base.extend('Approve', {
@@ -147,8 +147,11 @@
                 var respJson = oResponse.responseText;
                 var loadSpinner = document.getElementById('loadSpinner');
                 try {
+                    genDependency = [];
                     var dependencies = eval("(" + respJson + ")");
-                    genDependency = dependencies.dependencies;
+                    for (var i=0; i<=dependencies.items.length-1; i++){
+                        genDependency.push(dependencies.items[i].uri);
+                    }
                     var submissionCommentElem = me.getComponent('.submission-comment');
                     submissionCommentElem.value = dependencies.submissionComment + ' ' + submissionCommentElem.value;
                     //var scheduledDate = this.getTimeInJsonObject(dependencies.items, browserUri);
@@ -176,7 +179,8 @@
             },
             failure: function(oResponse) {
 
-            }
+            },
+            data: data
         };
 
         CStudioAuthoring.Service.loadItems(callback, data);
