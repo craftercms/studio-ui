@@ -936,14 +936,14 @@ var CStudioForms = CStudioForms || function() {
                 form.definition.pageName = this._getPageName(content);
 
                 form.definition.pageLocation = this._getPageLocation(path);
-                form.containerEl = document.getElementById("formContainer");
-
-                var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, "iceId");
-                var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, "iceComponent");
+                form.containerEl = document.getElementById("formContainer"); 
 
                 var me = this;
 
                 this._loadDatasources(form, function(loaded, notLoaded){
+
+                    var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, "iceId");
+                    var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, "iceComponent");
 
                     if(iceId && iceId != "") {
                         var html = me._renderIceLayout(form);
