@@ -280,8 +280,8 @@ WcmDashboardWidgetCommon.Ajax = {
             zIndex = "1000";
         }
 
-        WcmDashboardWidgetCommon.Ajax.loadingImage = document.createElement("img");
-        WcmDashboardWidgetCommon.Ajax.loadingImage.src = contextPath + CStudioAuthoringContext.baseUri + "/static-assets/themes/cstudioTheme/images/treeview-loading.gif";
+        WcmDashboardWidgetCommon.Ajax.loadingImage = document.createElement("i");
+        WcmDashboardWidgetCommon.Ajax.loadingImage.className = ' fa fa-spinner fa-spin fa-3x fa-fw';
 
         document.body.appendChild(WcmDashboardWidgetCommon.Ajax.container);
         document.body.appendChild(WcmDashboardWidgetCommon.Ajax.loadingImage);

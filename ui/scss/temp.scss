@@ -424,6 +424,12 @@ div#acn-active-content {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
+.fa-spinner.yui-module.yui-overlay{
+  border-radius: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
 .yui-skin-cstudioTheme .yui-menu-shadow-visible{
   border-radius: 6px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
