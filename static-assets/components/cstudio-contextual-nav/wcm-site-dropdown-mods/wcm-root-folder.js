@@ -2268,7 +2268,9 @@
                                                 if (isCreateContentAllowed) {
                                                     p_aArgs.addItems([ menuItems.newContentOption ]);
                                                 }
-					                        	p_aArgs.addItems([ menuItems.newFolderOption ]);
+                                                p_aArgs.addItems([ menuItems.newFolderOption ]);
+                                                p_aArgs.addItems([ menuItems.renameFolderOption ]);
+                                                
 					                        }
 				                        	if (isUserAllowed) {
 				                        		p_aArgs.addItems([ menuItems.separator ]);
@@ -2517,7 +2519,9 @@
 
 					newContentOption: { text: CMgs.format(siteDropdownLangBundle, "newContent"), onclick: { fn: Self.createContent } },
 
-					newFolderOption: { text: CMgs.format(siteDropdownLangBundle, "newFolder"), onclick: { fn: Self.createContainer } },
+                    newFolderOption: { text: CMgs.format(siteDropdownLangBundle, "newFolder"), onclick: { fn: Self.createContainer } },
+                    
+                    renameFolderOption: { text: CMgs.format(siteDropdownLangBundle, "renameFolder"), onclick: { fn: Self.renameContainer } },
 
 					editOption: { text: CMgs.format(siteDropdownLangBundle, "edit"), onclick: { fn: Self.editContent } },
 
@@ -2794,6 +2798,26 @@
 				};
 
 				CStudioAuthoring.Operations.createFolder(
+							CStudioAuthoringContext.site,
+							oCurrentTextNode.data.uri,
+							window,
+							createCb);
+            },
+            
+            /**
+			 * Rename a container, Opens a dialog box to enter new folder name
+			 */
+			renameContainer: function() {
+				var createCb = {
+					success: function() {
+                        Self.refreshNodes(this.currentNode.parent,false, false, null, null, true);
+					},
+					failure: function() { },
+					callingWindow: window,
+					currentNode: oCurrentTextNode
+                };
+
+				CStudioAuthoring.Operations.renameFolder(
 							CStudioAuthoringContext.site,
 							oCurrentTextNode.data.uri,
 							window,

@@ -256,8 +256,10 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     unlock: "Unlock",
     noActionsAvailable: "No Actions Available",
     createFolder: "Create Folder",
+    renameFolder: "Rename Folder",
     createTemplate: "Create Template",
     templateFilename: "Provide a filename for the template",
+    folderName: "Provide a new foldername",
     createController: "Create Controller",
     controllerFilename: "Provide a filename for the script",
     bulkUploadAssets: "Bulk Upload Assets",
@@ -294,6 +296,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "en", {
     wcmContentApprove: "Approve & Publish",
 
     create: "Create",
+    rename: "Rename",
     cancel: "Cancel"
 
 });

@@ -1004,6 +1004,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             "assetsFolderMenu" : [
                 { text: CMgs.format(siteDropdownLangBundle, "upload"), onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset, obj:tree } },
                 { text: CMgs.format(siteDropdownLangBundle, "createFolder"), onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.createContainer, obj:tree } },
+                { text: CMgs.format(siteDropdownLangBundle, "renameFolder"), onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.renameContainer, obj:tree } },
                 { text: CMgs.format(siteDropdownLangBundle, "delete"), onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContainer, obj:tree } }
             ],
             "assetsFolderMenuNoDelete" : [
@@ -1280,6 +1281,26 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         };
 
         CStudioAuthoring.Operations.createFolder(
+            CStudioAuthoringContext.site,
+            oCurrentTextNode.data.uri,
+            window,
+            createCb);
+    },
+
+    renameContainer: function() {
+        var createCb = {
+            success: function() {
+                Self.refreshNodes(this.tree.parent,false, false, null, null, true);
+            },
+
+            failure: function() {
+            },
+
+            callingWindow: window,
+            tree: oCurrentTextNode
+        };
+
+        CStudioAuthoring.Operations.renameFolder(
             CStudioAuthoringContext.site,
             oCurrentTextNode.data.uri,
             window,
