@@ -255,6 +255,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     unlock: "Desbloquear",
     noActionsAvailable: "No Hay Acciones Disponibles",
     createFolder: "Crear Carpeta",
+    renameFolder: "Renombrar Carpeta",
     createTemplate: "Crear Plantilla",
     templateFilename: "Ingrese un nombre de archivo para la plantilla",
     createController: "Crear Controlador",
@@ -292,6 +293,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "es", {
     wcmContentDependencies: "Dependencias",
 
     create: "Crear",
+    rename: "Renombrar",
     cancel: "Cancelar"
 
 });

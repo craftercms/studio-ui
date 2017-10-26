@@ -237,8 +237,10 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     unlock: "잠금 해제",
     noActionsAvailable: "가능한 조치가 없습니다",
     createFolder: "폴더를 만들",
+    renameFolder: "폴더 이름 바꾸기",
     createTemplate: "템플릿 만들기",
     templateFilename: "템플리트의 파일 이름 제공",
+    folderName: "새 폴더 이름 제공",
     createController: "컨트롤러 만들기",
     controllerFilename: "스크립트의 파일 이름을 입력하십시오.",
     bulkUploadAssets: "대량 업로드 자산",
@@ -275,6 +277,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "kr", {
     pageExistError: "페이지가 이미 대상에 있습니다.",
 
     create: "몹시 떠들어 대다",
+    rename: "이름 바꾸기",
     cancel: "취소"
 
 });

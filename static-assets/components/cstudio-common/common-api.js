@@ -2695,7 +2695,41 @@ var nodeOpen = false,
                 }
 
                 CStudioAuthoring.Module.requireModule("new-folder-name-dialog", "/static-assets/components/cstudio-dialogs/new-folder-name-dialog.js", moduleConfig, openCreateFolderDialogCb);
+            },
+
+            /**
+             * rename a folder at a given location within the web project
+             */
+            renameFolder: function(site, path, callingWindow, callback) {
+                CStudioAuthoring.Operations.openRenameFolderDialog(site, path, callingWindow, callback);
+            },
+
+            /**
+             * open the create folder dialog
+             */
+            openRenameFolderDialog: function(site, path, callingWindow, callback) {
+                if (path.lastIndexOf(".") > 0) {
+                    path = path.substring(0, path.lastIndexOf("/"));
+                }
+                var serviceUri = CStudioAuthoring.Service.renameFolderServiceUrl;
+                var openCreateFolderDialogCb = {
+                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                        dialogClass.showDialog(callback, moduleConfig.path, moduleConfig.serviceUri, moduleConfig.callingWindow, moduleConfig.callback);
+                    }
+                };
+
+                var moduleConfig = {
+                    path: path,
+                    site: site,
+                    serviceUri: serviceUri,
+                    callingWindow: callingWindow,
+                    callback: callback
+                }
+
+                CStudioAuthoring.Module.requireModule("rename-folder-dialog", "/static-assets/components/cstudio-dialogs/rename-folder.js", moduleConfig, openCreateFolderDialogCb);
             }
+
+
         },
         /**
          * all services are encapsulated here
@@ -2854,6 +2888,7 @@ var nodeOpen = false,
             submitDeleteContent: "/api/1/services/api/1/content/delete-content.json",
             deleteContentUrl: "/api/1/services/api/1/workflow/go-delete.json",
             createFolderServiceUrl: "/api/1/services/api/1/content/create-folder.json",
+            renameFolderServiceUrl: "/api/1/services/api/1/content/rename-folder.json",
 
             // ORDER SERVICES
             // READ
