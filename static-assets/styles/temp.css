@@ -4936,7 +4936,10 @@ span.acn-canned-search {
     color: #333333;
     font-weight: bold;
     background-color: whitesmoke;
-    border-color: #dddddd; }
+    border-color: #dddddd;
+    white-space: normal;
+    line-height: 1;
+    text-align: center; }
   #preview-tools-panel-container #component-panel-elem.expanded .acn-accordion-panel {
     display: none; }
 

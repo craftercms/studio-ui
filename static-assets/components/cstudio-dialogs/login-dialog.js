@@ -102,7 +102,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
         // Instantiate the Dialog
         login_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
             {   width : "360px",
-                height : "380px",
+                height : "388px",
                 effect:{
                     effect: YAHOO.widget.ContainerEffect.FADE,
                     duration: 0.25
@@ -166,7 +166,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                     loginError.innerHTML = response.message;
                     if(loginError.classList.contains("hidden")){
                         loginError.classList.remove("hidden");
-                        $(cstudioWcmPopup).height($(loginError).height() + $(cstudioWcmPopup).height() + 11);
+                        $(cstudioWcmPopup).height($(loginError).height() + $(cstudioWcmPopup).height() + 21);
                     }
 
                 }
@@ -177,7 +177,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                 loginError.innerHTML =  JSON.parse(response.responseText).message;
                 if(loginError.classList.contains("hidden")){
                     loginError.classList.remove("hidden");
-                    $(cstudioWcmPopup).height($(loginError).height() + $(cstudioWcmPopup).height() + 11);
+                    $(cstudioWcmPopup).height($(loginError).height() + $(cstudioWcmPopup).height() + 21);
                 }
             }
         };
