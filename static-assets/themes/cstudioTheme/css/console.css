@@ -27,7 +27,7 @@ body,tbody {
     margin: 0 0;
     height: 100%;
     display: block;
-    width: 200px;
+    width: 240px;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -35,8 +35,8 @@ body,tbody {
 }
 
 #admin-console #cstudio-admin-console-workarea {
-    width: calc(100% - 200px);
-    margin-left: 200px;
+    width: calc(100% - 239px);
+    margin-left: 239px;
 }
 
 
