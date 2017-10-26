@@ -494,6 +494,12 @@ body .mask{
 	margin-right: 4px;
 }
 
+#login_form .btn {
+    width: 153px;
+    white-space: normal;
+    height: 47px;
+}
+
 #cstudio-wcm-popup-div_h {
 	display: block;
 }
