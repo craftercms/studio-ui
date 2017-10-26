@@ -1,6 +1,7 @@
-CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template||  function(fieldName, containerEl)  {
+CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template = CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template||  function(fieldName, containerEl, currentContenType)  {
 	this.fieldName = fieldName;
 	this.containerEl = containerEl;
+    this.currentContenType = currentContenType;
 	return this;
 }
 
@@ -71,7 +72,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template, CStudi
 				}
 				else {
 					CStudioAuthoring.Operations.openTemplateEditor
-						(contentType, "default", { success: function() {}, failure: function() {}});
+						(contentType, "default", { success: function() {}, failure: function() {}}, _self.currentContenType.contentType);
 				}
 			}
 			
