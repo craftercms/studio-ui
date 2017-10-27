@@ -76,7 +76,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
     dashletIconGuideFloatingPage: "Floating Page",
     dashletIconGuideComponent: "Component",
     dashletIconGuideDocument: "Document",
-    dashletIconGuideStateNew: "Never published",
+    dashletIconGuideStateNew: "Never Published",
     dashletIconGuideStateDisabled: "Disabled",
     dashletIconGuideStateDeleted: "Deleted",
     dashletIconGuideStateInProgress: "Edited",
