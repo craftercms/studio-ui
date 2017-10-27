@@ -276,39 +276,8 @@
                 return !!user;
             };
 
-            // this.login = function (data) {
-            //     return $http({
-            //         data: data,
-            //         method: 'POST',
-            //         url: api('login'),
-            //         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            //         transformRequest: function (obj) {
-            //             var str = [];
-            //             for (var p in obj) {
-            //                 str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-            //             }
-            //             return str.join('&');
-            //         }
-            //     }).then(function (data) {
-            //         if (data.data.type === 'success') {
-            //
-            //             user = data.data.user;
-            //             // $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
-            //
-            //         }
-            //         return data.data;
-            //     });
-            // };
-
             this.login = function(data) {
                 return $http.post(security('login'), data).then(function (data) {
-                    // if (data.data.type === 'success') {
-                    //
-                    //     user = data.data.user;
-                    //     $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
-                    //
-                    // }
-
                     if(data.status == 200){
                         user = data.data;
                         $rootScope.$broadcast(Constants.AUTH_SUCCESS, user);
@@ -328,6 +297,12 @@
             this.getUser = function () {
                 return user;
             };
+
+            this.getCurrentUserData = function() {
+                return $http.get(api('get'), {
+                    params: { username : this.getUser().username }
+                });
+            }
 
             this.removeUser = function() {
                 $cookies['userSession'] = null;
@@ -539,6 +514,8 @@
                 $state.go('login');
             }
 
+            
+
             function mouseOverTopMenu(evt) {
                 var elt = $(evt.target).find('.nav-label');
                 $timeout(function () {
@@ -554,6 +531,13 @@
                 elt.addClass('nav-label');
                 elt.removeClass('nav-label-hover');
             }
+
+            authService.getCurrentUserData().then(
+                function successCallback(response) {
+                    $scope.externallyManaged = response.data.externally_managed;
+                }, function errorCallback(response) {
+                }
+            );
 
             function changePassword() {
                 $scope.data.username = $scope.user.username;
