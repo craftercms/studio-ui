@@ -256,6 +256,13 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             }
         }
 
+        new YAHOO.widget.Tooltip("acn-context-tooltipWrapper", {
+            context: treeNodesLabels,
+            hidedelay:0,
+            showdelay:1000,
+            container: "acn-context-tooltip"
+        });
+
         tree.subscribe('clickEvent', function(args) {
             CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTreeNodeClick(args.node);
         });
@@ -432,6 +439,13 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             }
         }
 
+        new YAHOO.widget.Tooltip("acn-context-tooltipWrapper", {
+            context: treeNodesLabels,
+            hidedelay:0,
+            showdelay:1000,
+            container: "acn-context-tooltip"
+        });
+
         if(nodeToOpen) {
             nodeToOpen.expand();
             //nodeToOpen.openToPath = remainingPath;
@@ -465,7 +479,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             }
 
             nodeSpan.innerHTML += treeNodeTO.label;
-            // nodeSpan.setAttribute("title", treeNodeTO.title);
+            nodeSpan.setAttribute("title", treeNodeTO.title);
             nodeSpan.className = treeNodeTO.style + " yui-resize-label treenode-label";
 
             if(treeNodeTO.previewable == false) {
@@ -950,6 +964,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         retTransferObj.mimeType = treeItem.mimeType;
         retTransferObj.contentType = treeItem.contentType;
         retTransferObj.isFloating = treeItem.isFloating;
+        var itemNameLabel = "Page";
 
         retTransferObj.statusObj = {
             deleted: treeItem.deleted,
@@ -965,6 +980,28 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
         retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem).string;
         retTransferObj.style = CStudioAuthoring.Utils.getContentItemClassName(treeItem);//, treeItem.container
+
+        //spilt status and made it as comma seperated items.
+        var statusStr = retTransferObj.status;
+        if (retTransferObj.status.indexOf(" and ") != -1) {
+            var statusArray = retTransferObj.status.split(" and ");
+            if (statusArray &&  statusArray.length >= 2) {
+                statusStr = "";
+                for (var statusIdx=0; statusIdx<statusArray.length; statusIdx++) {
+                    if (statusIdx == (statusArray.length - 1)) {
+                        statusStr += statusArray[statusIdx];
+                    } else {
+                        statusStr += statusArray[statusIdx] + ", ";
+                    }
+                }
+            }
+        }
+
+        if (treeItem.component) {
+            itemNameLabel = "Component";
+        } else if (treeItem.document) {
+            itemNameLabel = "Document";
+        }
 
         if(retTransferObj.internalName == "") {
             retTransferObj.internalName = treeItem.name;
@@ -987,12 +1024,84 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             retTransferObj.modifier = treeItem.userFirstName + " " + treeItem.userLastName;
         }
 
-        if(treeItem.eventDate != "" && treeItem.eventDate != undefined) {
-            var formattedEditDate = CStudioAuthoring.Utils.formatDateFromString(treeItem.eventDate);
+        var ttFormattedEditDate = "";
+        if (treeItem.eventDate != "" && treeItem.eventDate != undefined) {
+            var formattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
             retTransferObj.editedDate = formattedEditDate;
+            ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
         }
 
+        var icon = treeItem.folder ? CStudioAuthoring.Utils.createIcon("", Self.defaultIcons.childClosed )
+            : CStudioAuthoring.Utils.getContentItemIcon(treeItem);
+
+        if (treeItem.scheduled == true) {
+
+            retTransferObj.scheduledDate = treeItem.scheduledDate;
+
+            formattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
+            retTransferObj.formattedScheduledDate = formattedSchedDate;
+            var ttFormattedSchedDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.scheduledDate, studioTimeZone);
+
+            retTransferObj.title = this.buildToolTipScheduled(
+                retTransferObj.label,
+                retTransferObj.contentType,
+                retTransferObj.style,
+                statusStr,
+                ttFormattedEditDate,
+                retTransferObj.modifier,
+                retTransferObj.lockOwner,
+                itemNameLabel,
+                ttFormattedSchedDate,
+                icon);
+        } else {
+            retTransferObj.title = this.buildToolTipRegular(
+                retTransferObj.label,
+                retTransferObj.contentType,
+                retTransferObj.style,
+                statusStr,
+                ttFormattedEditDate,
+                retTransferObj.modifier,
+                retTransferObj.lockOwner,
+                itemNameLabel,
+                "",
+                icon);
+        }
         return retTransferObj;
+    },
+
+    /**
+     * build the HTML for the scheduled tool tip.
+     *
+     */
+    buildToolTipRegular: function(label, contentType, style, status, editedDate, modifier, lockOwner, itemNameLabel, nan, icon) {
+        if (!itemNameLabel) {
+            itemNameLabel = "Page";
+        }
+
+        label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
+
+        return CStudioAuthoring.Utils.buildToolTip(itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, "", icon)
+    },
+
+    /**
+     * build the HTML for the scheduled tool tip.
+     *
+     */
+    buildToolTipScheduled: function(label, contentType, style, status, editedDate, modifier, lockOwner, itemNameLabel, schedDate, icon) {
+        var toolTip = "";
+        if (!itemNameLabel) {
+            itemNameLabel = "Page";
+        }
+
+        label = CStudioAuthoring.Utils.replaceWithASCIICharacter(label);
+
+        try {
+            toolTip = CStudioAuthoring.Utils.buildToolTip(itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon);
+        }
+        catch(err) {
+            //console.log(err);
+        }
+        return toolTip;
     },
 
     onTriggerContextMenu: function(tree, p_aArgs, contextMenuId)	{
