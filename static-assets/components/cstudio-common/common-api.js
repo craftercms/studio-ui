@@ -749,7 +749,6 @@ var nodeOpen = false,
                     controller: 'viewcontroller-approve',
                     callback: function(dialogue) {
                         var self = this;
-                        CStudioAuthoring.Utils.removeLoadingIcon();
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.loadItems(items);
                         this.loadPublishingChannels();
