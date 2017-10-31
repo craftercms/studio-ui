@@ -41,7 +41,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 	 */
 	createDialog: function(path) {
 		var CMgs = CStudioAuthoring.Messages;
-		var previewLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
+        var siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
 
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
