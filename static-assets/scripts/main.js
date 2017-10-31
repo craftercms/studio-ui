@@ -450,10 +450,18 @@
                 return $http.get(server('get-available-languages'));
             };
 
+            this.getDocumentCookie = function(name) {
+                var value = "; " + document.cookie;
+                var parts = value.split("; " + name + "=");
+                if (parts.length == 2) return parts.pop().split(";").shift();
+            };
+
             this.getLanguages = function(scope, setLang) {
+                var me = this;
                 this.getAvailableLanguages()
                     .success(function (data) {
-                        var cookieLang = $cookies['crafterStudioLanguage'];
+                        var cookieLang = me.getDocumentCookie('crafterStudioLanguage');
+
                         if(cookieLang){
                             for(var i=0; i<data.length; i++){
                                 if(data[i].id == cookieLang){
@@ -589,6 +597,7 @@
 
             $scope.setLangCookie = function() {
                 $translate.use($scope.langSelected);
+                sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
 
                 $rootScope.modalInstance = $modal.open({
                     templateUrl: 'settingLanguajeConfirmation.html',
@@ -602,7 +611,6 @@
                 $timeout(function () {
                     $rootScope.modalInstance.close();
                 }, 1500, false);
-                sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
 
             };
 
