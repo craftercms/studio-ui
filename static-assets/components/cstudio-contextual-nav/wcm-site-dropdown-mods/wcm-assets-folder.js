@@ -1032,7 +1032,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         }
 
         var icon = treeItem.folder ? CStudioAuthoring.Utils.createIcon("", Self.defaultIcons.childClosed )
-            : CStudioAuthoring.Utils.getContentItemIcon(treeItem);
+            : CStudioAuthoring.Utils.getContentItemIcon(treeItem),
+            contentType = "unknown" != retTransferObj.contentType ? retTransferObj.contentType : retTransferObj.mimeType;
 
         if (treeItem.scheduled == true) {
 
@@ -1044,7 +1045,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
             retTransferObj.title = this.buildToolTipScheduled(
                 retTransferObj.label,
-                retTransferObj.contentType,
+                contentType,
                 retTransferObj.style,
                 statusStr,
                 ttFormattedEditDate,
@@ -1056,7 +1057,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         } else {
             retTransferObj.title = this.buildToolTipRegular(
                 retTransferObj.label,
-                retTransferObj.contentType,
+                contentType,
                 retTransferObj.style,
                 statusStr,
                 ttFormattedEditDate,
