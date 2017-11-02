@@ -760,7 +760,7 @@ var nodeOpen = false,
                             }
                             dialogue.hide();
                             eventNS.data = items;
-                            eventNS.typeAction = "";
+                            eventNS.typeAction = "publish";
                             eventNS.oldPath = null;
                             eventNS.dependencies = self.getGenDependency();
 

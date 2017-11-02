@@ -119,13 +119,19 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         });
 
                         document.addEventListener('crafter.create.contenMenu', function (e) {
-                            selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
+                            var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
+                            if(e.typeAction === "publish" && selectedContent.length>0 && (selectedContent[0].inProgress && !selectedContent[0].scheduled)){
+                                selectedContent[0].inFlight = true;
+                            }
                             if(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
                                 CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, {
                                     success: function (content) {
                                         if( CStudioAuthoring.Utils.getIconFWClasses(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) !=
                                             CStudioAuthoring.Utils.getIconFWClasses(content.item)){
                                             YDom.get("activeContentActions").innerHTML = "";
+                                            if(e.typeAction === "publish" && (content.item.inProgress && !content.item.scheduled)){
+                                                content.item.inFlight = true;
+                                            }
                                             CStudioAuthoring.SelectedContent.setContent(content.item);
                                             _this.drawNav();
                                         }
@@ -141,13 +147,17 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         document.addEventListener('crafter.refresh', function (e) {
                             function lookupSiteContent(curNode, paramCont) {
                                 var dataUri = e.data.uri ? e.data.uri : e.data[0].uri,
-                                    contentUri = curNode && curNode.uri ? curNode.uri : dataUri;
+                                    contentUri = curNode && curNode.uri ? curNode.uri : dataUri,
+                                    typeAction = e.typeAction ? e.typeAction : "";
 
                                 if (contentUri) {
                                     CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, contentUri, 1, "default", {
                                         success: function (treeData) {
                                             var cont = paramCont ? paramCont : 0;
 
+                                            if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled)){
+                                                treeData.item.inFlight = true;
+                                            }
                                             if (treeData.item.isInFlight) {
                                                 setTimeout(function () {
                                                     lookupSiteContent(curNode);
@@ -170,6 +180,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             }
 
                             if(!nodeOpen){
+                                eventCM.typeAction = e.typeAction;
                                 document.dispatchEvent(eventCM);
                                 
                             }
