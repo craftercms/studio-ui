@@ -250,7 +250,7 @@
 
         var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", {
             width: "400px",
-            height: message.height ? message.height : "199px",
+            height: message.height ? message.height : "222px",
             fixedcenter: true,
             visible: false,
             modal: true,
