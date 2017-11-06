@@ -555,6 +555,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     createNewType: "Crear un Nuevo Tipo",
     save: "Guardar",
     cancel: "Cancelar",
+    create: "Crear",
     close: "Cerrar",
     saved: "Guardado",
     clearVal: "Limpiar Valor",
@@ -590,6 +591,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     controller: "Controlador",
     notification: "Notificación",
     deploymentCanceled: "Elementos de implementación cancelados.",
+
+    createTemplate: "Crear Plantilla",
+    templateFilename: "Ingrese un nombre de archivo para la plantilla",
 
     /*Controls*/
     textArea: "Área de Texto",
