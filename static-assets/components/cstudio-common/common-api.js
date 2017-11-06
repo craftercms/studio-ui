@@ -5985,7 +5985,9 @@ var nodeOpen = false,
          */
             removeLoadingIcon: function() {
                 var publishLoading = document.getElementById("loadingElt");
-                publishLoading.parentNode.removeChild(publishLoading);
+                if(publishLoading){
+                    publishLoading.parentNode.removeChild(publishLoading);
+                }
             },
 
         createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
