@@ -752,6 +752,7 @@ var nodeOpen = false,
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.loadItems(items);
                         this.loadPublishingChannels();
+                        CStudioAuthoring.Utils.removeLoadingIcon();
 
                         this.on("submitComplete", function(evt, args){
                             //window.location.reload();
