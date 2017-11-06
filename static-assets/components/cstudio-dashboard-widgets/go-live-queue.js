@@ -218,7 +218,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     '<td id="' + editLinkId + '"></td>',
                     "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
                     "<td title='fullUri' class='width0'>", uri, "</td>",
-                    '<td class="">', item.scheduled ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, 'tooltipformat', studioTimeZone) : '', '</td>',
+                    '<td class="">', item.scheduled ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat') : '', '</td>',
                     "<td class='alignRight'>", WcmDashboardWidgetCommon.getDisplayName(item), "</td>",
                     "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), "</td>"
                 ]);
