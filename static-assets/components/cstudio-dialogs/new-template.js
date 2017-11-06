@@ -41,7 +41,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 	 */
 	createDialog: function(path) {
 		var CMgs = CStudioAuthoring.Messages;
-        var siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
+        var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
@@ -56,16 +56,16 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 		newdiv.className= "yui-pe-content";
         newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
                            '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-                           '<div class="contentTypePopupHeader">' + CMgs.format(siteDropdownLangBundle, "createTemplate") + '</div> ' +
+                           '<div class="contentTypePopupHeader">' + CMgs.format(langBundle, "createTemplate") + '</div> ' +
                            '<div class="contentTypeOuter">'+
                                '<div>'+
-                                 '<div class="newTempText">' + CMgs.format(siteDropdownLangBundle, "templateFilename") + '</div>'+
+                                 '<div class="newTempText">' + CMgs.format(langBundle, "templateFilename") + '</div>'+
                                  '<input type="text" id="templateName" size="50" autofocus><br/>' +
                                '</div>' +
                            '</div> ' +
 						   '<div class="contentTypePopupBtn"> ' +
-						       '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' + CMgs.format(siteDropdownLangBundle, "create") + '" />' +
-                               '<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="' + CMgs.format(siteDropdownLangBundle, "cancel") + '"/>' +
+						       '<input type="button" class="btn btn-primary cstudio-button ok" id="createButton" value="' + CMgs.format(langBundle, "create") + '" />' +
+                               '<input type="button" class="btn btn-default cstudio-button" id="createCancelButton" value="' + CMgs.format(langBundle, "cancel") + '"/>' +
                            '</div>' +
 
                            '</div> ' +
