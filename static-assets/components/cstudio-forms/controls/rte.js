@@ -221,10 +221,10 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	/**
 	 * Resize editor whether is text mode or code mode
 	 */
-	resize: function() {
+	resize: function(isPaste) {		
 		if (YDom.hasClass(this.containerEl, "text-mode")) {
 			// The RTE is in text mode
-			this.resizeEditor(this.editor);		// Resize the editor (in case its contents exceed its set height)
+			this.resizeEditor(this.editor, false, isPaste);		// Resize the editor (in case its contents exceed its set height)			
 		} else {
 			// The RTE is in code mode
 			this.resizeCodeMirror(this.editor.codeMirror);
@@ -274,7 +274,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		this.save(); // Save the content in RTE and update form model
 	},
 
-	resizeEditor: function (editor, onInit) {
+	resizeEditor: function (editor, onInit, isPaste) {		
 
 		var sizeCookie = tinymce.util.Cookie.getHash("TinyMCE_" + editor.id + "_size" + window.name);
 		var cookieHeight = (sizeCookie) ? sizeCookie.ch : 0;
@@ -293,7 +293,11 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 
 		if (currentHeight < heightVal || onInit) {
 			tinymce.DOM.setStyle(editor.editorId + "_ifr", "height", heightVal + "px");
-			formBody.scrollTop = scrollTop;
+			if(isPaste){
+				formBody.scrollTop = scrollTop + heightVal - 25;
+			}else{
+				formBody.scrollTop = scrollTop;
+			}
 		}
 	},
 
@@ -483,7 +487,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
             extended_valid_elements :"+*[*]",
             valid_children : "+*[*]",
 			valid_elements :"+*[*]",
-	        paste_auto_cleanup_on_paste : true,	        paste_auto_cleanup_on_paste : true,
+	        paste_auto_cleanup_on_paste : true,
 			relative_urls : false,
 
 			readonly: _thisControl.readonly,
@@ -520,6 +524,8 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 
 				try {
 					ed.contextControl = _thisControl;
+					ed.isPaste = false;
+					
 					_thisControl.editor = ed;
 	
 		      		ed.onKeyUp.add(function(ed, e) {
@@ -557,8 +563,13 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 						ed.contextControl._onChange(null, ed.contextControl);				
 			        });
 			        ed.onChange.add(function(ed, l) {
-                        _self.edited = true;
-						_self.resize();
+						_self.edited = true;
+						
+						if(!ed.isPaste){
+							_self.resize();
+						}else{
+							_self.resize(true);
+						}
 		            });
 
 		            ed.onInit.add(function(ed) {
