@@ -146,12 +146,36 @@
             success: function(oResponse) {
                 var respJson = oResponse.responseText;
                 var loadSpinner = document.getElementById('loadSpinner');
+                var flag = true;
                 try {
                     genDependency = [];
                     var dependencies = eval("(" + respJson + ")");
                     for (var i=0; i<=dependencies.items.length-1; i++){
-                        genDependency.push(dependencies.items[i].uri);
+                        flag = true;
+                        for(var j=0; j<=genDependency.length-1; j++){
+                            if(dependencies.items[i].uri == genDependency[j]){
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if(flag){
+                            genDependency.push(dependencies.items[i].uri);
+                        }
                     }
+
+                    for (var i=0; i<=dependencies.dependencies.length-1; i++){
+                        flag = true;
+                        for(var j=0; j<=genDependency.length-1; j++){
+                            if(dependencies.dependencies[i] == genDependency[j]){
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if(flag){
+                            genDependency.push(dependencies.dependencies[i]);
+                        }
+                    }
+
                     var submissionCommentElem = me.getComponent('.submission-comment');
                     submissionCommentElem.value = dependencies.submissionComment + ' ' + submissionCommentElem.value;
                     //var scheduledDate = this.getTimeInJsonObject(dependencies.items, browserUri);
