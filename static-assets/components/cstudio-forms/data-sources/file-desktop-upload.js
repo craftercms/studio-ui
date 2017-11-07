@@ -95,7 +95,11 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 			createEl.innerHTML = "Create New - " + newElTitle;
 			control.addContainerEl.create.appendChild(createEl);
 
+			var addContainerEl = control.addContainerEl;			
 			YAHOO.util.Event.on(createEl, 'click', function() {
+				control.addContainerEl = null;
+				control.containerEl.removeChild(addContainerEl);
+
 				CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
 			}, createEl);
 		}else{
