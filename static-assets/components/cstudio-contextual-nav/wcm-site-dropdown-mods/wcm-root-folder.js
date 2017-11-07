@@ -622,6 +622,7 @@
                     self.treePaths.push(tree.id);
                     (function (t, inst) {
                         document.addEventListener('crafter.refresh', function (e) {
+                            eventCM.typeAction = e.typeAction;
                             document.dispatchEvent(eventCM);
                             try {
                                 if(e.data && e.data.length) {
@@ -1610,6 +1611,9 @@
                                             curElt = YDom.get(curNode.labelElId);
                                         // curElt ? curElt.innerHTML = currentInternalName : null;
                                         curNode.data = Self.createTreeNodeTransferObject(treeData.item);
+                                        if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled)){
+                                            treeData.item.inFlight = true;
+                                        }
                                         style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                         if (treeData.item.isPreviewable) {
                                             style = style + " preview";
@@ -1636,6 +1640,7 @@
                                                 CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
                                                     CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
                                             }
+                                            eventCM.typeAction = typeAction;
                                             document.dispatchEvent(eventCM);
                                             Self.refreshAllDashboards();
                                         }
@@ -1662,6 +1667,7 @@
                                                                 CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
                                                         }
                                                         if((indexOfFolder == -1) && (typeAction != "edit")) {
+                                                            eventCM.typeAction = typeAction;
                                                             document.dispatchEvent(eventCM);
                                                             Self.refreshAllDashboards();
                                                         }

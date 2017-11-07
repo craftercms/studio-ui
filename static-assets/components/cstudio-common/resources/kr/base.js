@@ -532,6 +532,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     createNewType: "새로운 유형 만들기",
     save: "저장",
     cancel: "취소",
+    create: "몹시 떠들어 대다",
     close: "닫기",
     saved: "저장",
     clearVal: "지우기 값",
@@ -567,6 +568,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     controller: "Controller",
     notification: "공고",
     deploymentCanceled: "배포 항목이 취소되었습니다.",
+
+    createTemplate: "템플릿 만들기",
+    templateFilename: "템플리트의 파일 이름 제공",
 
     /*Controls*/
     textArea: "텍스트 영역",

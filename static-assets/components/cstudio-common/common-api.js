@@ -752,6 +752,7 @@ var nodeOpen = false,
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.loadItems(items);
                         this.loadPublishingChannels();
+                        CStudioAuthoring.Utils.removeLoadingIcon();
 
                         this.on("submitComplete", function(evt, args){
                             //window.location.reload();
@@ -760,7 +761,7 @@ var nodeOpen = false,
                             }
                             dialogue.hide();
                             eventNS.data = items;
-                            eventNS.typeAction = "";
+                            eventNS.typeAction = "publish";
                             eventNS.oldPath = null;
                             eventNS.dependencies = self.getGenDependency();
 
@@ -5984,7 +5985,9 @@ var nodeOpen = false,
          */
             removeLoadingIcon: function() {
                 var publishLoading = document.getElementById("loadingElt");
-                publishLoading.parentNode.removeChild(publishLoading);
+                if(publishLoading){
+                    publishLoading.parentNode.removeChild(publishLoading);
+                }
             },
 
         createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
