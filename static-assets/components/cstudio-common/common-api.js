@@ -8803,21 +8803,22 @@ CStudioAuthoring.FilesDiff = {
 
 }) (window);
 
- (function startAuthLoop() {
-  
-     if (typeof CStudioAuthoringContext != 'undefined') {
+if(window.top === window.self) {
+    (function startAuthLoop() {
 
-         var authLoopCb = {
-             success: function(config){
+        if (typeof CStudioAuthoringContext != 'undefined') {
 
-                function authRedirect(authConfig) {
-                       location = "/studio/#/login";
-                }
+            var authLoopCb = {
+                success: function (config) {
 
-                function authLoop(configObj) {
-                    var serviceUri,
-                        serviceCallback,
-                        delay = 60000;  // poll once every minute
+                    function authRedirect(authConfig) {
+                        location = "/studio/#/login";
+                    }
+
+                    function authLoop(configObj) {
+                        var serviceUri,
+                            serviceCallback,
+                            delay = 60000;  // poll once every minute
 
                         serviceUri = CStudioAuthoring.Service.validateSessionUrl;
 
@@ -8826,61 +8827,70 @@ CStudioAuthoring.FilesDiff = {
                         var networkErrorMsg = CMgs.format(formsLangBundle, 'networkError');
 
                         serviceCallback = {
-                            success: function(response) {
+                            success: function (response) {
                                 var resObj = response.responseText
                                 var resJson = JSON.parse(resObj);
 
                                 if (response.status == 200 && resJson.message == "OK") {
                                     // ticket is valid
-                                    setTimeout(function() { authLoop(configObj); }, delay);
+                                    setTimeout(function () {
+                                        authLoop(configObj);
+                                    }, delay);
                                 } else {
                                     //ticket is invalid
                                     var cb = {
                                         success: function (response) {
-                                            setTimeout(function() { authLoop(configObj); }, delay);
+                                            setTimeout(function () {
+                                                authLoop(configObj);
+                                            }, delay);
                                         }
                                     };
                                     CStudioAuthoring.Operations.loginDialog(cb);
                                 }
                             },
-                            failure: function(response) {
-                                if(response.status == 401){
+                            failure: function (response) {
+                                if (response.status == 401) {
                                     var cb = {
                                         success: function (response) {
-                                            setTimeout(function() { authLoop(configObj); }, delay);
+                                            setTimeout(function () {
+                                                authLoop(configObj);
+                                            }, delay);
                                         }
                                     };
                                     CStudioAuthoring.Operations.loginDialog(cb);
 
-                                }else{
-                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0 ,0, "errorNotify");
-                                    setTimeout(function() { authLoop(configObj); }, delay);
+                                } else {
+                                    CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0, 0, "errorNotify");
+                                    setTimeout(function () {
+                                        authLoop(configObj);
+                                    }, delay);
                                 }
                             }
                         };
 
                         YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
 
-                }
+                    }
 
-                // Start the authentication loop
-                if (config.authentication) {
-                    authLoop(config.authentication);
-                } else {
-                    authLoop(null);
-                }
-            },
+                    // Start the authentication loop
+                    if (config.authentication) {
+                        authLoop(config.authentication);
+                    } else {
+                        authLoop(null);
+                    }
+                },
 
-            failure: function(){
-                throw new Error('Unable to read site configuration');
+                failure: function () {
+                    throw new Error('Unable to read site configuration');
+                }
             }
+
+            CStudioAuthoring.Service.lookupConfigurtion(
+                CStudioAuthoringContext.site, "/site-config.xml", authLoopCb);
+
+        } else {
+            // The authentication loop cannot be started until CStudioAuthoringContext exists
+            setTimeout(startAuthLoop, 1000);
         }
-
-        CStudioAuthoring.Service.lookupConfigurtion(
-            CStudioAuthoringContext.site, "/site-config.xml", authLoopCb);
-
-    } else {
-        // The authentication loop cannot be started until CStudioAuthoringContext exists
-        setTimeout(startAuthLoop, 1000);
-    }
-})();
+    })();
+}
