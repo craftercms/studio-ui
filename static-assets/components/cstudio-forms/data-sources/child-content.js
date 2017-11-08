@@ -112,6 +112,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 		YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
 		control.addContainerEl.browse.appendChild(browseEl);
 
+		var addContainerEl = control.addContainerEl;		
 		YAHOO.util.Event.on(browseEl, 'click', function() {
 			control.addContainerEl = null;
 			control.containerEl.removeChild(addContainerEl);
