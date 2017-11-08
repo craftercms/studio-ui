@@ -54,9 +54,10 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		createEl.innerHTML = "Create New - " + newElTitle;
 		control.addContainerEl.create.appendChild(createEl);
 
+		var addContainerEl = control.addContainerEl;
 		YAHOO.util.Event.on(createEl, 'click', function() {
-			// control.addContainerEl = null;
-			// control.containerEl.removeChild(addContainerEl);
+			control.addContainerEl = null;
+			control.containerEl.removeChild(addContainerEl);
 
 			CStudioAuthoring.Operations.uploadAsset(CStudioAuthoringContext.site, _self.processPathsForMacros(_self.repoPath), true, {
 				success: function(fileData) {
@@ -76,9 +77,10 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		 YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
 		 control.addContainerEl.browse.appendChild(browseEl);
 
+		 var addContainerEl = control.addContainerEl;
 		 YAHOO.util.Event.on(browseEl, 'click', function() {
-			// control.addContainerEl = null;
-			// control.containerEl.removeChild(addContainerEl);
+			control.addContainerEl = null;
+			control.containerEl.removeChild(addContainerEl);
 
 			CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(_self.repoPath), "-1", "select", true, {
 				success: function(searchId, selectedTOs) {
