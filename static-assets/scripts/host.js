@@ -411,6 +411,21 @@
         communicator.publish(Topics.ICE_TOOLS_REGIONS, data);
     });
 
+    communicator.subscribe(Topics.IS_REVIEWER, function (resize) {
+
+        var callback = function(isRev) {
+            if(!isRev){
+                if(resize){
+                    communicator.publish(Topics.RESIZE_ICE_REGIONS);
+                }else{
+                    communicator.publish(Topics.INIT_ICE_REGIONS);
+                }
+            }
+        }
+
+        CStudioAuthoring.Utils.isReviewer(callback);
+    });
+
     function setHashPage(url) {
         window.location.hash = '#/?page=' + url;
     }
