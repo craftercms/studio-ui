@@ -6039,6 +6039,15 @@ a[ng-click] {
 .errorMessage {
   margin-top: 22px; }
 
+.showLoader {
+  position: fixed;
+  left: 48%;
+  top: 48%; }
+
+.showLoader .fa.loading {
+  color: #7e9dbb;
+  font-size: 3em; }
+
 .iframe .cstudio-navbar {
   display: none; }
 .iframe + #container {
