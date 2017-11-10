@@ -1,4 +1,4 @@
-CStudioForms.Controls.AWSVideoUpload = CStudioForms.Controls.AWSVideoUpload ||  
+CStudioForms.Controls.AWSFileUpload = CStudioForms.Controls.AWSFileUpload ||  
 function(id, form, owner, properties, constraints, readonly)  {
   this.owner = owner;
   this.owner.registerField(this);
@@ -27,22 +27,22 @@ function(id, form, owner, properties, constraints, readonly)  {
   return this;
 };
 
-YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField, {
+YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField, {
   
   getLabel: function() {
-    return "AWS Video Upload";
+    return "AWS File Upload";
   },
   
   getName: function() {
-    return "aws-video-upload";
+    return "aws-file-upload";
   },
   
   setValue: function(value) {
     var validationResult = true;
-    if(value && value[0] && value[0].base_key) {
+    if(value && value[0] && value[0].key) {
       this.value = value;
       this.form.updateModel(this.id, this.value);
-      this.fileEl.innerHTML = "s3://" + value[0].output_bucket + "/" + value[0].base_key + "*";
+      this.fileEl.innerHTML = "s3://" + value[0].bucket + "/" + value[0].key + "*";
       this.clearError("required");
     } else if(this.required) {
       validationResult = false;
@@ -69,7 +69,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   },
   
   _onChange: function(evt, obj) {
-    var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/aws/elastictranscoder/transcode.json");
+    var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/aws/s3/upload.json");
 
     var callback = { 
       cache: false,
@@ -185,4 +185,4 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-aws-video-upload", CStudioForms.Controls.AWSVideoUpload);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-aws-file-upload", CStudioForms.Controls.AWSFileUpload);
