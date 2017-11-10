@@ -251,7 +251,8 @@
     app.constant('Constants', {
         AUTH_SUCCESS: 'auth-success',
         PATH_IMG: '/images/',
-        SERVICE: '/studio/api/1/services/api/1/'
+        SERVICE: '/studio/api/1/services/api/1/',
+        SHOW_LOADER: 'show-loader'
     });
 
     app.service('authService', [
@@ -375,8 +376,8 @@
     ]);
 
     app.service('sitesService', [
-        '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
-        function ($http, Constants, $cookies, $timeout, $window, $translate) {
+        '$rootScope', '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
+        function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
 
             var me = this;
 
@@ -484,6 +485,20 @@
                     });
 
 
+            };
+
+            this.showLoaderProperty = function() {
+                var showLoader = false;
+
+                return {
+                    getProperty: function () {
+                        return showLoader;
+                    },
+                    setProperty: function(value) {
+                        showLoader = value;
+                        $rootScope.$broadcast(Constants.SHOW_LOADER, value);
+                    }
+                };
             };
 
             function api(action) {
@@ -681,9 +696,9 @@
     ]);
 
     app.controller('SitesCtrl', [
-        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies', '$timeout',
+        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies', '$timeout', 'Constants',
 
-        function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout) {
+        function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout, Constants) {
 
             $scope.sites = null;
 
@@ -696,6 +711,12 @@
             $scope.user = authService.getUser();
 
             $scope.siteValidation = $location.$$search.siteValidation;
+
+            $scope.showLoader = sitesService.showLoaderProperty().getProperty();
+
+            $scope.$on(Constants.SHOW_LOADER, function ($event, showLoader) {
+                $scope.showLoader = showLoader;
+            });
 
             $scope.sitesPag = {
                 sitesPerPage: $cookies['crafterStudioSitesPagination'] ? parseInt($cookies['crafterStudioSitesPagination'], 10) : 15
@@ -873,6 +894,7 @@
                 sitesService.removeSite(site)
                  .success(function (data) {
                  $modalInstance.close();
+                 sitesService.showLoaderProperty().setProperty(false);
                  })
                  .error(function () {
                  //$scope.sites = null;
@@ -881,6 +903,7 @@
             }
 
             $scope.ok = function () {
+                sitesService.showLoaderProperty().setProperty(true);
                 removeSiteSitesModal(siteToRemove);
             };
 
