@@ -58,7 +58,10 @@
                 "GUEST_CHECKOUT": "GUEST_CHECKOUT",
                 "GUEST_SITE_LOAD": "GUEST_SITE_LOAD",
                 "CHANGE_GUEST_REQUEST": "CHANGE_GUEST_REQUEST",
+                "IS_REVIEWER": "IS_REVIEWER",
 
+                "INIT_ICE_REGIONS": "INIT_ICE_REGIONS",
+                "RESIZE_ICE_REGIONS": "RESIZE_ICE_REGIONS",
                 "ICE_ZONE_ON": "ICE_ZONE_ON",
                 "ICE_ZONES": "ICE_ZONES",
                 "ICE_TOOLS_INDICATOR": "ICE_TOOLS_INDICATOR",

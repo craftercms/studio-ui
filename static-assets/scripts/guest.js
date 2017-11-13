@@ -242,9 +242,13 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     }
 
     function resizeProcess() {
-        if (!!(sessionStorage.getItem('ice-on'))  && sessionStorage.getItem('components-on') != 'true') {
-            initICERegions();
-        }
+        communicator.publish(Topics.IS_REVIEWER, true);
+        
+        communicator.on(Topics.RESIZE_ICE_REGIONS, function (message) {
+            if (!!(sessionStorage.getItem('ice-on'))  && sessionStorage.getItem('components-on') != 'true') {
+                initICERegions();
+            }
+        });
     }
 
     window.studioICERepaint = function() {
@@ -259,10 +263,18 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     if (!$("link[href*='font-awesome']").length)
         loadCss('/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css');
 
+    communicator.publish(Topics.GUEST_SITE_LOAD, {
+        location: window.location.href,
+        url: window.location.href.replace(window.location.origin, '')
+    });
 
-    if (!!(sessionStorage.getItem('ice-on')) && sessionStorage.getItem('components-on') != 'true') {
-        initICERegions();
-    }
+    communicator.publish(Topics.IS_REVIEWER);
+
+    communicator.on(Topics.INIT_ICE_REGIONS, function (message) {
+        if (!!(sessionStorage.getItem('ice-on')) && sessionStorage.getItem('components-on') != 'true') {
+            initICERegions();
+        }
+    });
 
     setRegionsCookie();
     if(window.parent.initRegCookie) window.parent.initRegCookie();
