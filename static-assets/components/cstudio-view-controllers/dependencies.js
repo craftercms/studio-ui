@@ -163,91 +163,96 @@
 
             var optionSelected = $(me.getComponent('.dependencies-option')).val();
 
-            var depsCallback = {
-                success: function(response){
-                    var item = JSON.parse(response.responseText);
+            var callback = function(isViewer){
+                var depsCallback = {
+                    success: function(response){
+                        var item = JSON.parse(response.responseText);
 
-                    $.each(item, function(index, dependency){
-                        var elem = {};
-                        elem.uri = dependency.uri;
-                        elem.internalName = dependency.internalName;
-                        elem.scheduledDate = '';
-                        elem.index = itemDependenciesClass;
+                        $.each(item, function(index, dependency){
+                            var elem = {};
+                            elem.uri = dependency.uri;
+                            elem.internalName = dependency.internalName;
+                            elem.scheduledDate = '';
+                            elem.index = itemDependenciesClass;
 
-                        if (dependency.uri.indexOf(".ftl") == -1
-                            && dependency.uri.indexOf(".css") == -1
-                            && dependency.uri.indexOf(".js") == -1
-                            && dependency.uri.indexOf(".groovy") == -1
-                            && dependency.uri.indexOf(".txt") == -1
-                            && dependency.uri.indexOf(".html") == -1
-                            && dependency.uri.indexOf(".hbs") == -1
-                            && dependency.uri.indexOf(".xml") == -1) {
-                            // editLink.hide();
-                            elem.hidden = "hidden";
-                        }
-
-                        var row = agent.get('SUBITEM_ROW', elem);
-                        // var editLink = $(row).find('.editLink');
-                        row = $container.append(row);
-
-                    });
-
-                    $('.editLink').on('click', function() {
-                        var url = $(this).attr('data-url');
-
-                        CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, url, {
-                            success: function (results) {
-
-                                var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
-
-                                if (isUserAllowed) {
-                                    //add event
-                                    var itemUrl = url;
-
-                                    var getContentCallback = {
-                                        success: function (contentTO) {
-                                            var contentTO = contentTO.item;
-
-                                            CStudioAuthoring.Operations.editContent(
-                                                contentTO.form,
-                                                CStudioAuthoringContext.siteId,
-                                                contentTO.uri,
-                                                contentTO.nodeRef,
-                                                contentTO.uri,
-                                                false,
-                                                {},
-                                                [{"ontop": true}]);
-                                        },
-
-                                        failure: function () {
-                                            WcmDashboardWidgetCommon.Ajax.enableDashboard();
-                                        }
-                                    };
-
-                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
-                                }
-                            },
-                            failure: function () {
-                                throw new Error('Unable to retrieve user permissions');
+                            if ((dependency.uri.indexOf(".ftl") == -1
+                                && dependency.uri.indexOf(".css") == -1
+                                && dependency.uri.indexOf(".js") == -1
+                                && dependency.uri.indexOf(".groovy") == -1
+                                && dependency.uri.indexOf(".txt") == -1
+                                && dependency.uri.indexOf(".html") == -1
+                                && dependency.uri.indexOf(".hbs") == -1
+                                && dependency.uri.indexOf(".xml") == -1)
+                                || isViewer) {
+                                // editLink.hide();
+                                elem.hidden = "hidden";
                             }
+
+                            var row = agent.get('SUBITEM_ROW', elem);
+                            // var editLink = $(row).find('.editLink');
+                            row = $container.append(row);
+
                         });
-                    });
+
+                        $('.editLink').on('click', function() {
+                            var url = $(this).attr('data-url');
+
+                            CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, url, {
+                                success: function (results) {
+
+                                    var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
+
+                                    if (isUserAllowed) {
+                                        //add event
+                                        var itemUrl = url;
+
+                                        var getContentCallback = {
+                                            success: function (contentTO) {
+                                                var contentTO = contentTO.item;
+
+                                                CStudioAuthoring.Operations.editContent(
+                                                    contentTO.form,
+                                                    CStudioAuthoringContext.siteId,
+                                                    contentTO.uri,
+                                                    contentTO.nodeRef,
+                                                    contentTO.uri,
+                                                    false,
+                                                    {},
+                                                    [{"ontop": true}]);
+                                            },
+
+                                            failure: function () {
+                                                WcmDashboardWidgetCommon.Ajax.enableDashboard();
+                                            }
+                                        };
+
+                                        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
+                                    }
+                                },
+                                failure: function () {
+                                    throw new Error('Unable to retrieve user permissions');
+                                }
+                            });
+                        });
+                    }
+                }
+
+                if(optionSelected == 'depends-on'){
+                    CStudioAuthoring.Service.loadDependantItems(
+                        CStudioAuthoringContext.site,
+                        item.uri,
+                        depsCallback
+                    );
+                }else{
+                    CStudioAuthoring.Service.loadDependencies(
+                        CStudioAuthoringContext.site,
+                        item.uri,
+                        depsCallback
+                    );
                 }
             }
 
-            if(optionSelected == 'depends-on'){
-                CStudioAuthoring.Service.loadDependantItems(
-                    CStudioAuthoringContext.site,
-                    item.uri,
-                    depsCallback
-                );
-            }else{
-                CStudioAuthoring.Service.loadDependencies(
-                    CStudioAuthoringContext.site,
-                    item.uri,
-                    depsCallback
-                );
-            }
+            CStudioAuthoring.Utils.isReviewer(callback);
 
         });
 
