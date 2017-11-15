@@ -1225,8 +1225,9 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                     } else {
                         if (this.isContainer) {
-                            this.menuWidth = "130px";
-                            this.aMenuItems = this.menuItems["assetsFolderMenuRead"].slice();
+                            // this.menuWidth = "130px";
+                            // this.aMenuItems = this.menuItems["assetsFolderMenuRead"].slice();
+                            this.aMenuItems = [];
                         } else {
                             this.menuWidth = "100px";
                             this.aMenuItems = this.menuItems["assetsMenuRead"].slice();
@@ -1295,29 +1296,31 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                     }
 
-                    this.aMenuItems.push({
-                        text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
-                        onclick: { fn: function(){
-                            var callback = {
-                                success: function(contentTO) {
-                                    var selectedContent = [];
-                                    selectedContent.push(contentTO.item);
+                    if (isWrite) {
+                        this.aMenuItems.push({
+                            text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
+                            onclick: { fn: function(){
+                                var callback = {
+                                    success: function(contentTO) {
+                                        var selectedContent = [];
+                                        selectedContent.push(contentTO.item);
 
-                                    CStudioAuthoring.Operations.viewDependencies(
-                                        CStudioAuthoringContext.site,
-                                        selectedContent,
-                                        false
-                                    );
-                                },
-                                failure: function() {
+                                        CStudioAuthoring.Operations.viewDependencies(
+                                            CStudioAuthoringContext.site,
+                                            selectedContent,
+                                            false
+                                        );
+                                    },
+                                    failure: function() {
 
-                                }
-                            };
+                                    }
+                                };
 
-                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
 
-                        } }
-                    });
+                            } }
+                        });
+                    }
 
                     var checkClipboardCb = {
                         success: function(collection) {
@@ -1351,11 +1354,14 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                     /* Removing Paste option until copy/cut are implemented */
                     //CSA.Clipboard.getClipboardContent(checkClipboardCb);
                     /* Remove these when add paste option */
-                    this.p_aArgs.addItems(this.aMenuItems);
-                    this.menuId.style.display = "block";
-                    this.menuId.style.width = this.menuWidth;
-                    this.p_aArgs.render();
-                    this.p_aArgs.show();
+
+                    if(0 < this.aMenuItems.length){
+                        this.p_aArgs.addItems(this.aMenuItems);
+                        this.menuId.style.display = "block";
+                        this.menuId.style.width = this.menuWidth;
+                        this.p_aArgs.render();
+                        this.p_aArgs.show();
+                    }
 
                 },
                 failure: function() { }
