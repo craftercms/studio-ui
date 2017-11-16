@@ -156,7 +156,7 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 						}, 
 						failure: function() {
 						}
-					});
+					}, null, null);
 			},
 			failure: function() {
 			}

@@ -72,7 +72,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Template, CStudi
 				}
 				else {
 					CStudioAuthoring.Operations.openTemplateEditor
-						(contentType, "default", { success: function() {}, failure: function() {}}, _self.currentContenType.contentType);
+						(contentType, "default", { success: function() {}, failure: function() {}}, _self.currentContenType.contentType, null);
 				}
 			}
 			

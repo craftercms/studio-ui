@@ -66,7 +66,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Config, CStudioA
                     path = '/config/studio/content-types' + contentType + '/config.xml';
 
                 CStudioAuthoring.Operations.openTemplateEditor
-                (path, "default", { success: function() {}, failure: function() {}});
+                (path, "default", { success: function() {}, failure: function() {}}, null, null);
 
             };
 
