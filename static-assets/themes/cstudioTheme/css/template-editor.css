@@ -102,3 +102,17 @@
 
 .CodeMirror-scroll.cm-s-default > div { text-align: left; }
 .CodeMirror-lines { color: #111; font-size: 13px; line-height: 14px;}  /* default text color */
+
+#cstudio-form-readonly-banner{
+    background-color: #3399CC;
+    border-bottom: 1px solid #115F85;
+    color: white;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    left: 0;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 99999999;
+}
