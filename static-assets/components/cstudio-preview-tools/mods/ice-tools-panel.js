@@ -183,7 +183,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                         },
                         failure: function () {
                         }
-                    }, contentType);
+                    }, contentType, null);
                 }else{
                     var dialogEl = document.getElementById("errNoTemplAssoc");
                     if(!dialogEl){
