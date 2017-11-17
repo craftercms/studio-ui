@@ -2279,7 +2279,10 @@
                                                 
 					                        }
 				                        	if (isUserAllowed) {
-				                        		p_aArgs.addItems([ menuItems.separator ]);
+
+                                                if (isDeleteAllowed || !isFolder && isChangeContentTypeAllowed){
+                                                    p_aArgs.addItems([ menuItems.separator ]);
+                                                }
 				                        		if (isDeleteAllowed) {
 					                        	    p_aArgs.addItems([ menuItems.deleteOption ]);
 					                        	}
