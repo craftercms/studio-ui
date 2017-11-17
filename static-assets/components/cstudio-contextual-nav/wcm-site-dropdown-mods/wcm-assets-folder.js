@@ -1742,7 +1742,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolderInstance = function(config) {
     this.type = config.name;
     this.label = config.params["label"];
     this.path = config.params["path"];
-    this.showRootItem = (config.params["showRootItem"]) ? config.params["showRootItem"] : false;
+    this.showRootItem = (config.params["showRootItem"]) === "true" ? true : false;
     this.onClickAction = (config.params["onClick"]) ? config.params["onClick"] : "";
     this.config = config;
 
