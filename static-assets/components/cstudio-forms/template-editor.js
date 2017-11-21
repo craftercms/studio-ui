@@ -436,6 +436,7 @@ CStudioAuthoring.Module.requireModule(
 
 											YAHOO.util.Connect.setDefaultPostHeader(false);
 											YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
+											YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
 											YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), saveSvcCb, value);
 										};
 									}

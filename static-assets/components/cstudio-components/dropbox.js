@@ -436,6 +436,7 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                         };
 
                         var directoryReader = entries[i].createReader();
+                        YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                         YConnect.asyncRequest('POST', serviceUri, serviceCallback);
 
                     } else {

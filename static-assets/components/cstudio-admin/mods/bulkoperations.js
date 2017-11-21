@@ -40,6 +40,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                         renameOpMessage.innerHTML = "Bulk rename failed";
                     }
                 }
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                 YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
                 renameOpMessage.innerHTML = "Executing bulk rename ...";
             }
@@ -97,6 +98,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                      failure: function(err) {}
                  }
 
+                 YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                  YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
                  goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
              }
@@ -166,6 +168,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                     }
                 }
 
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                 YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
                 deleteOpMessage.innerHTML = "Executing bulk Delete ...";
             }
