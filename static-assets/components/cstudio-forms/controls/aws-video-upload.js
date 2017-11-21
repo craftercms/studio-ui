@@ -126,6 +126,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     };
 
     YAHOO.util.Connect.setForm("upload_form", true);
+    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;    
     YAHOO.util.Connect.asyncRequest("POST", serviceUri, callback);
     document.getElementById("cstudioSaveAndClose").disabled="disabled";
     document.getElementById("cstudioSaveAndCloseDraft").disabled="disabled";

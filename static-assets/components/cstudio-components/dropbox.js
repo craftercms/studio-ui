@@ -426,6 +426,7 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                         }
                     };
 
+                    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                     YConnect.asyncRequest('POST', serviceUri, serviceCallback);
                 }
             }

@@ -23,7 +23,11 @@
 		openSiteDropdown: ${envConfig.openSiteDropdown!"false"},
 		isPreview: false,
 		liveAppBaseUri:"",
-		lang: "${envConfig.language!'UNSET'}"
+		lang: "${envConfig.language!'UNSET'}",
+		xsrfToken: "${_csrf.token}",
+		xsrfHeaderName: "${_csrf.headerName}",
+		xsrfParameterName: "${_csrf.parameterName}"
+
 	};
 
    	if(CStudioAuthoringContext.role === "") {
