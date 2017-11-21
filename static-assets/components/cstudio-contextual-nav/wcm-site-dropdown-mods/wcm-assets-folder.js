@@ -1151,6 +1151,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             "assetsMenuRead" : [
                 { text: CMgs.format(siteDropdownLangBundle, "upload"), disabled: true, onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.overwriteAsset, obj:tree } },
                 { text: CMgs.format(siteDropdownLangBundle, "delete"), disabled: true, onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent, obj:tree } }
+            ],
+
+            "assetsMenuView" : [
+                { text: CMgs.format(siteDropdownLangBundle, "view"), disabled: false, onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.editTemplate, obj:"read" }
+                }
             ]
         };
 
@@ -1230,7 +1235,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                             this.aMenuItems = [];
                         } else {
                             this.menuWidth = "100px";
-                            this.aMenuItems = this.menuItems["assetsMenuRead"].slice();
+                            this.aMenuItems = this.menuItems["assetsMenuView"].slice();
                         }
                     }
 
@@ -1464,7 +1469,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             path, oCurrentTextNode.data.nodeRef, path, false, editCb);
     },
 
-    editTemplate: function() {
+    editTemplate: function(p_sType, p_aArgs, mode) {
         var path = (oCurrentTextNode.data.uri);
 
         this.element.firstChild.style.pointerEvents = "none";
@@ -1497,7 +1502,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         CStudioAuthoring.Operations.editContent(
             oCurrentTextNode.data.formId,
             CStudioAuthoringContext.site,path,
-            oCurrentTextNode.data.nodeRef, path, false, editCb);
+            oCurrentTextNode.data.nodeRef, path, false, editCb, null, mode);
     },
 
     createNewTemplate: function() {
@@ -1737,7 +1742,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolderInstance = function(config) {
     this.type = config.name;
     this.label = config.params["label"];
     this.path = config.params["path"];
-    this.showRootItem = (config.params["showRootItem"]) ? config.params["showRootItem"] : false;
+    this.showRootItem = (config.params["showRootItem"]) === "true" ? true : false;
     this.onClickAction = (config.params["onClick"]) ? config.params["onClick"] : "";
     this.config = config;
 

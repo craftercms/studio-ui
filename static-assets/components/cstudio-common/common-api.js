@@ -2146,7 +2146,7 @@ var nodeOpen = false,
             /**
              * edit content
              */
-            editContent: function(formId, site, id, noderef, path, asPopup, callback,auxParams) {
+            editContent: function(formId, site, id, noderef, path, asPopup, callback,auxParams, mode) {
 
                 var CSA = CStudioAuthoring,
                     uri = id.replace("//", "/"),
@@ -2184,7 +2184,7 @@ var nodeOpen = false,
                                 callingWindow: window
                             };
 
-                            CStudioAuthoring.Operations.openTemplateEditor(uri, "default", editCb);
+                            CStudioAuthoring.Operations.openTemplateEditor(uri, "default", editCb, null ,mode);
                         }
 
                 };
@@ -2370,17 +2370,17 @@ var nodeOpen = false,
             /**
              * open template
              */
-            openTemplateEditor: function(displayTemplate, channel, templateSaveCb, contentType) {
+            openTemplateEditor: function(displayTemplate, channel, templateSaveCb, contentType, mode) {
                 var loadTemplateEditorCb = {
                     moduleLoaded: function(moduleName, moduleClass, moduleConfig) {                                                                     var editor = new moduleClass();
-                        editor.render(moduleConfig.displayTemplate, moduleConfig.channel, moduleConfig.cb, contentType);
+                        editor.render(moduleConfig.displayTemplate, moduleConfig.channel, moduleConfig.cb, contentType, mode);
                     }
                 }
 
                 CStudioAuthoring.Module.requireModule("cstudio-forms-template-editor",
                     "/static-assets/components/cstudio-forms/template-editor.js",
                     { displayTemplate: displayTemplate, channel: channel, cb: templateSaveCb},
-                    loadTemplateEditorCb, contentType);
+                    loadTemplateEditorCb, contentType, mode);
 
             },
 
@@ -8564,7 +8564,7 @@ CStudioAuthoring.InContextEdit = {
                         "-" + CStudioAuthoringContext.channel + ".ftl";
                     }
 
-                    CStudioAuthoring.Operations.openTemplateEditor(contentType, "default", onSaveCb);
+                    CStudioAuthoring.Operations.openTemplateEditor(contentType, "default", onSaveCb, null ,null);
 
                 }
 

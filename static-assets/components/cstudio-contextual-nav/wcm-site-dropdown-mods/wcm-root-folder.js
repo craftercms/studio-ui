@@ -409,7 +409,7 @@
              * to check, if extra ajax call can be reduced
              */
 			pathOnlyHasCannedSearch: function(path, instance) {
-				if (instance.showRootItem == "false" && instance.cannedSearchCache[path])
+				if (!instance.showRootItem && instance.cannedSearchCache && instance.cannedSearchCache[path])
 					return true;
 				return false;
 			},
@@ -2279,7 +2279,10 @@
                                                 
 					                        }
 				                        	if (isUserAllowed) {
-				                        		p_aArgs.addItems([ menuItems.separator ]);
+
+                                                if (isDeleteAllowed || !isFolder && isChangeContentTypeAllowed){
+                                                    p_aArgs.addItems([ menuItems.separator ]);
+                                                }
 				                        		if (isDeleteAllowed) {
 					                        	    p_aArgs.addItems([ menuItems.deleteOption ]);
 					                        	}
@@ -3408,7 +3411,7 @@
         this.type = config.name;
         this.label = config.params["label"];
         this.path = (config.params["path"]) ? config.params["path"] : config.params["paths"].path;
-        this.showRootItem = (config.params["showRootItem"]) ? config.params["showRootItem"] : false;
+        this.showRootItem = (config.params["showRootItem"]) === "true" ? true : false;
         this.onClickAction = (config.params["onClick"]) ? config.params["onClick"] : "";
         this.config = config;
         this.mods = [];

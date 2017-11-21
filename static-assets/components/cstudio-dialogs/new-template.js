@@ -160,7 +160,7 @@ CStudioAuthoring.Dialogs.NewTemplate = CStudioAuthoring.Dialogs.NewTemplate || {
 						}, 
 						failure: function() {
 						}
-					});
+					}, null, null);
 			},
 			failure: function() {
 			}

@@ -27,11 +27,11 @@ CStudioAuthoring.Module.requireModule(
 
 					CStudioForms.TemplateEditor.prototype = {
 
-						render: function(templatePath, channel, onSaveCb, contentType) {
+						render: function(templatePath, channel, onSaveCb, contentType, mode) {
 
 							var getContentCb = {
 								success: function(response) {
-									this.context.renderTemplateEditor(templatePath, response, onSaveCb, contentType);
+									this.context.renderTemplateEditor(templatePath, response, onSaveCb, contentType, mode);
 								},
 								failure: function() {
 								},
@@ -41,7 +41,7 @@ CStudioAuthoring.Module.requireModule(
 							CStudioAuthoring.Service.getContent(templatePath, true, getContentCb, false);
 						},
 
-						renderTemplateEditor: function(templatePath, content, onSaveCb, contentType) {
+						renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, isRead) {
 
 							var permsCallback = {
 								success: function(response) {
@@ -56,8 +56,14 @@ CStudioAuthoring.Module.requireModule(
 									containerEl.id = "cstudio-template-editor-container";
 									YAHOO.util.Dom.addClass(containerEl, 'seethrough');
 									modalEl.appendChild(containerEl);
+                                    var formHTML = '';
 
-									var formHTML =
+                                    if(isRead === "read"){
+                                        formHTML +='<div id="cstudio-form-readonly-banner">READ ONLY</div>';
+
+                                    }
+
+									formHTML +=
 										"<div id='template-editor-toolbar'><div id='template-editor-toolbar-variable'></div></div>" +
 										"<div id='editor-container'>"+
 										"</div>" +
@@ -108,7 +114,8 @@ CStudioAuthoring.Module.requireModule(
 												mode: mode,
 												lineNumbers: true,
 												lineWrapping: true,
-												smartIndent: false//
+												smartIndent: false,//
+                                                readOnly: isRead==="read" ? true : false
 												//    onGutterClick: foldFunc,
 												//    extraKeys: {"Ctrl-Q": function(cm){foldFunc(cm, cm.getCursor().line);}}
 											});

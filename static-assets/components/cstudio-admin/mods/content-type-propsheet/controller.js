@@ -66,7 +66,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Controller, CStu
                     path = '/config/studio/content-types' + contentType + '/controller.groovy';
 
                 CStudioAuthoring.Operations.openTemplateEditor
-                (path, "default", { success: function() {}, failure: function() {}});
+                (path, "default", { success: function() {}, failure: function() {}}, null, null);
 
             };
 
