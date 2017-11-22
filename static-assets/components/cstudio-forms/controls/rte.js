@@ -605,6 +605,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 							taEl = document.createElement("textarea"),
 							ctrlEl = document.createElement("th");
 
+                        YDom.addClass(refEl, 'cstudio-rte-add-component');
 						YDom.addClass(ctrlEl, 'cstudio-form-control-rte-count');
                         ctrlEl.setAttribute("colspan", "3");
 
