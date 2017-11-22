@@ -400,6 +400,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 	writeConfig: function(url, content, cb) {
 		YAHOO.util.Connect.setDefaultPostHeader(false);
 		YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
+		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
 		YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, content);		
 	},
 	

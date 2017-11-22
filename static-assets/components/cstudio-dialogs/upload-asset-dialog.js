@@ -80,8 +80,8 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 						            '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
 //						            '<tr><td>Title:</td><td><input type="text" name="title" /></td></tr>' +
 //						            '<tr><td>Description:</td><td><input type="text" name="desc" /></td></tr>' +
-						            '</table></div>' +
-                                '</div>' +
+									'</table></div>' +
+								'</div>' +
 						        '<div class="contentTypePopupBtn"> ' +
 						            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
                                     '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
@@ -223,6 +223,8 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 		YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
 		//the second argument of setForm is crucial,
 		//which tells Connection Manager this is an file upload form
+		 
+		serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;
 		YAHOO.util.Connect.setForm('asset_upload_form', true);
 		YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
 	},
@@ -260,6 +262,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 				YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
 				//the second argument of setForm is crucial,
 				//which tells Connection Manager this is an file upload form
+				serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;
 				YAHOO.util.Connect.setForm('asset_upload_form', true);
 				YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);				
             },

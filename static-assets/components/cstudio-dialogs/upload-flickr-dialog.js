@@ -217,6 +217,7 @@ CStudioAuthoring.Dialogs.UploadFlickrDialog = CStudioAuthoring.Dialogs.UploadFli
 		//the second argument of setForm is crucial,
 		//which tells Connection Manager this is an file upload form
 		YAHOO.util.Connect.setForm('asset_upload_form', true);
+		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
 		YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
 	},
 	
@@ -257,6 +258,7 @@ CStudioAuthoring.Dialogs.UploadFlickrDialog = CStudioAuthoring.Dialogs.UploadFli
 				//the second argument of setForm is crucial,
 				//which tells Connection Manager this is an file upload form
 				YAHOO.util.Connect.setForm('asset_upload_form', true);
+				YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
 				YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);				
             },
 

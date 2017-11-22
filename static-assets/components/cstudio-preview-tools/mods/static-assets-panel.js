@@ -160,6 +160,7 @@ CStudioAuthoring.StaticAssetsPanel = CStudioAuthoring.StaticAssetsPanel || {
 		};
 		YConnect.setDefaultPostHeader(false);
 		YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
+		YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
 		YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback, dependencyXml);
 	},
 
