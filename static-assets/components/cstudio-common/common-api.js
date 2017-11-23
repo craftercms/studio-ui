@@ -2748,7 +2748,7 @@ var nodeOpen = false,
                 }
                 Connect.setDefaultPostHeader(oRequest.defaultPostHeader || false);
                 Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                 Connect.asyncRequest(
                     oRequest.method || "GET",
                     oRequest.url,
@@ -2763,7 +2763,7 @@ var nodeOpen = false,
                 var Connect = YAHOO.util.Connect;
                 Connect.setDefaultPostHeader(oRequest.defaultPostHeader || false);
                 Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                 Connect.asyncRequest(
                     oRequest.method || "GET",
                     oRequest.url,
