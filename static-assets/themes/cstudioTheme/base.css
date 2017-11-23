@@ -438,3 +438,29 @@ span.navigation-separator-alt {
 .yui-skin-cstudioTheme .link-menu-button .yui-menu-button.yui-menu-button-hover button {
    text-decoration: none;
 }
+
+.cstudio-rte-add-component div[role="listbox"]{
+    max-height: calc(80vh - 68px ) !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    border: 1px solid #D4D0C8;
+    background: white;
+}
+
+.cstudio-rte-add-component div[role="presentation"]{
+    border: none;
+}
+
+.cstudio-rte-add-component .mceMenu table tr{
+    white-space: nowrap;
+}
+.cstudio-rte-add-component div[role="listbox"]::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 10px;
+}
+
+.cstudio-rte-add-component div[role="listbox"]::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
