@@ -84,6 +84,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                         failure: function(err) {}
                     }
    
+                    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
                     YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
                     goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
                 }
