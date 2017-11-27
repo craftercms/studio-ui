@@ -1342,7 +1342,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                             this.args.addItems(this.menuItems);
                             this.menuEl.style.display = "block";
-                            this.menuEl.style.width = this.menuWidth;
+                            this.menuEl.style.minWidth = this.menuWidth;
                             this.args.render();
                             this.args.show();
                         },
@@ -1363,7 +1363,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                     if(0 < this.aMenuItems.length){
                         this.p_aArgs.addItems(this.aMenuItems);
                         this.menuId.style.display = "block";
-                        this.menuId.style.width = this.menuWidth;
+                        this.menuId.style.minWidth = this.menuWidth;
                         this.p_aArgs.render();
                         this.p_aArgs.show();
                     }
