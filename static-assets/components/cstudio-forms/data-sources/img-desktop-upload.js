@@ -23,6 +23,9 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
 		var path = "/static-assets/images"; // default
 		var isUploadOverwrite = true;
 		
+		var CMgs = CStudioAuthoring.Messages;
+		var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+		
 		for(var i=0; i<this.properties.length; i++) {
 			if(this.properties[i].name == "repoPath") {
 				path = this.properties[i].value;
@@ -45,8 +48,23 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
 			},
 			context: this 
 		};
-	
-		CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+
+		if("" != path){
+			CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+		}else{
+			var errorString = CMgs.format(langBundle, "noPathSetError");
+			errorString = errorString.replace("{DATASOURCENAME}", "<b>" + this.getName() + "</b>");
+
+			dialog = CStudioAuthoring.Operations.showSimpleDialog(
+				"error-dialog",
+				CStudioAuthoring.Operations.simpleDialogTypeINFO,
+				"Notification",
+				errorString,
+				null,
+				YAHOO.widget.SimpleDialog.ICON_BLOCK,
+				"studioDialog"
+			);
+		}
 	},
 	
 	/**

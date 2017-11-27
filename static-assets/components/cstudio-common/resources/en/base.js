@@ -846,6 +846,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     cancelDeploymentError: "Failed to cancel deployment.",
     saveDateError: "Unable to save Date/Time field. Please contact your system administrator.",
     contentTypeModifiedWarn: "Content Type has been modified, are you sure you want to abandon your changes?",
+    noPathSetError: "The path field of the data source {DATASOURCENAME} is not configured properly. Please contact your administrator.",
 
     add: "Add",
     replace: "Replace",

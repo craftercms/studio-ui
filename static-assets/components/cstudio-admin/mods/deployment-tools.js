@@ -414,6 +414,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
                 }
             };
 
+            YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
             YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
         }
     },
