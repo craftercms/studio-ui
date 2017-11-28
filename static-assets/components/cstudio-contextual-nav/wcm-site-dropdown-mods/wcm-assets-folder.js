@@ -1239,7 +1239,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         }
                     }
 
-                    if (CSA.Utils.hasPerm(CSA.Constants.PERMISSION_WRITE, perms)){
+                    if (CSA.Utils.hasPerm(CSA.Constants.PERMISSION_WRITE, perms) && oCurrentTextNode.data.isContainer){
                         this.aMenuItems.push({
                             text: CMgs.format(siteDropdownLangBundle, "bulkUploadAssets"),
                             onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.bulkUpload }
