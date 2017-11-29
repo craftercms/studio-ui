@@ -3131,6 +3131,9 @@ div#acn-active-content {
   color: #333333;
   cursor: pointer; }
 
+#admin-console {
+  margin-top: 15px; }
+
 .acn-admin-console:hover {
   color: #333333;
   text-decoration: none; }
@@ -15342,5 +15345,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */
