@@ -295,6 +295,7 @@ CStudioAuthoring.Module.requireModule(
 												{label:"HTTP Request", value:"request"},
 												{label:"HTTP Response", value:"response"},
 												{label:"Session", value:"session"},
+												{label:"Transform PATH to URL", value:"urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)"},
 
 												{label:"User Profile", value:"profile"},
 												{label:"Current Authentication", value:"authentication"},
@@ -316,6 +317,7 @@ CStudioAuthoring.Module.requireModule(
 												{label:"Request parameter", value:"${RequestParameters[\"PARAMNAME\"]!\"DEFAULT\"}"},
 												{label:"Studio support", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n\t...\r\n\t<@studio.toolSupport />"},
 												{label:"Dynamic navigation", value:"<#include \"/templates/web/navigation/navigation.ftl\">\r\n\t...\r\n\t<@renderNavigation \"/site/website\", 1 />"},
+												{label:"Transform PATH to URL", value:"${urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)}"},
 
 												{label:"Incontext editing attribute (pencil)", value:"<@studio.iceAttr iceGroup=\"ICEGROUID\"/>"},
 												{label:"Component DropZone attribute", value:"<@studio.componentContainerAttr target=\"TARGETID\" objectId=contentModel.objectId />"},
