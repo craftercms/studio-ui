@@ -1300,31 +1300,29 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                     }
 
-                    if (isWrite) {
-                        this.aMenuItems.push({
-                            text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
-                            onclick: { fn: function(){
-                                var callback = {
-                                    success: function(contentTO) {
-                                        var selectedContent = [];
-                                        selectedContent.push(contentTO.item);
+                    this.aMenuItems.push({
+                        text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
+                        onclick: { fn: function(){
+                            var callback = {
+                                success: function(contentTO) {
+                                    var selectedContent = [];
+                                    selectedContent.push(contentTO.item);
 
-                                        CStudioAuthoring.Operations.viewDependencies(
-                                            CStudioAuthoringContext.site,
-                                            selectedContent,
-                                            false
-                                        );
-                                    },
-                                    failure: function() {
+                                    CStudioAuthoring.Operations.viewDependencies(
+                                        CStudioAuthoringContext.site,
+                                        selectedContent,
+                                        false
+                                    );
+                                },
+                                failure: function() {
 
-                                    }
-                                };
+                                }
+                            };
 
-                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
+                            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, callback, false, false);
 
-                            } }
-                        });
-                    }
+                        } }
+                    });
 
                     var checkClipboardCb = {
                         success: function(collection) {
