@@ -759,10 +759,33 @@ var nodeOpen = false,
                             if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
                                  CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
                             }
+
+                            eventNS.oldPath = items[0].uri;
+                            var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                            if(CStudioAuthoringContext.isPreview){
+                                try{
+                                    var currentContentTO,
+                                        URLBrowseUri = pageParameter,
+                                        contentTOBrowseUri = items[0].browserUri;
+
+                                    if (URLBrowseUri == contentTOBrowseUri){
+                                        currentContentTO = null;
+                                    } else{
+                                        currentContentTO = items[0];
+                                    }
+
+                                    if(currentContentTO.isPage){
+                                        CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                                    }else{
+                                        CStudioAuthoring.Operations.refreshPreview();
+                                    }
+                                }catch(err) {}
+                            }
+
+
                             dialogue.hide();
                             eventNS.data = items;
                             eventNS.typeAction = "publish";
-                            eventNS.oldPath = null;
                             eventNS.dependencies = self.getGenDependency();
 
                             document.dispatchEvent(eventNS);
