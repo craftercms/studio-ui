@@ -7,7 +7,8 @@
 (function(CStudioAuthoring){
 
     var Base = CStudioAuthoring.ViewController.Base,
-        $ = jQuery;
+        $ = jQuery,
+        currentItems;
 
     Base.extend('RequestPublish', {
 
@@ -81,7 +82,30 @@
                     _this.fire("submitComplete", oResp);
                     _this.fire("submitEnd", oResp);
                     loadSpinner.classList.add("hidden");
-                    eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
+
+                    eventNS.oldPath = currentItems.uri;
+                    var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                    if(CStudioAuthoringContext.isPreview){
+                        try{
+                            var currentContentTO,
+                                URLBrowseUri = pageParameter,
+                                contentTOBrowseUri = currentItems.browserUri;
+
+                            if (URLBrowseUri == contentTOBrowseUri){
+                                currentContentTO = null;
+                            } else{
+                                currentContentTO = currentItems;
+                            }
+
+                            if(currentContentTO.isPage){
+                                CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                            }else{
+                                CStudioAuthoring.Operations.refreshPreview();
+                            }
+                        }catch(err) {}
+                    }
+
+                    eventNS.data = currentItems;
                     eventNS.typeAction = "edit";
                     document.dispatchEvent(eventNS);
                     _this.end();
@@ -99,6 +123,7 @@
     }
 
     function renderItems(items) {
+        currentItems = items[0];
         var me = this,
             loadSpinner = document.getElementById('loadSpinner'),
             $container = this.$('.item-listing tbody'),
