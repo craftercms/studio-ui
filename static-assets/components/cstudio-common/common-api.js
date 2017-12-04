@@ -358,23 +358,27 @@ var nodeOpen = false,
             /**
              * content is selected, track it
              */
-            selectContent: function(contentTO) {
+            selectContent: function(contentTO, avoidEvent) {
                 if (this.at(contentTO) == -1) {
                     this.selectedContent.push(contentTO);
-                    CSA.Events.contentSelected.fire(contentTO);
+                    if(!avoidEvent){
+                        CSA.Events.contentSelected.fire(contentTO);
+                    }
                 }
             },
 
             /**
              * content unselected, stop tracking it
              */
-            unselectContent: function(contentTO) {
+            unselectContent: function(contentTO, avoidEvent) {
 
                 var position = this.at(contentTO);
 
                 if (position != -1) {
                     this.selectedContent.splice(position, 1);
-                    CSA.Events.contentUnSelected.fire(contentTO);
+                    if(!avoidEvent){
+                        CSA.Events.contentUnSelected.fire(contentTO);
+                    }
                 }
             },
 
@@ -4455,7 +4459,9 @@ var nodeOpen = false,
                     },
 
                     failure: function(response) {
-                        callback.failure("error loading data", callback.argument);
+                        if(callback.failure){
+                            callback.failure("error loading data", callback.argument);
+                        }
                     }
                 };
 
