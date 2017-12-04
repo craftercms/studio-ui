@@ -125,12 +125,15 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             if(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
                                 CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, {
                                     success: function (content) {
-                                        if( CStudioAuthoring.Utils.getIconFWClasses(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) !=
-                                            CStudioAuthoring.Utils.getIconFWClasses(content.item)){
+                                        if( (CStudioAuthoring.Utils.getIconFWClasses(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) !=
+                                            CStudioAuthoring.Utils.getIconFWClasses(content.item)) || e.typeAction === "publish"){
                                             YDom.get("activeContentActions").innerHTML = "";
                                             if(e.typeAction === "publish" && (content.item.inProgress && !content.item.scheduled)){
                                                 content.item.inFlight = true;
+                                                content.item.isInFlight = true;
+                                            }else{
                                             }
+                                            CStudioAuthoring.SelectedContent.clear();
                                             CStudioAuthoring.SelectedContent.setContent(content.item);
                                             _this.drawNav();
                                         }
@@ -700,7 +703,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     
                                     if(!CStudioAuthoringContext.isPreview) {
                                         if(draft) {
-                                            console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
+                                            //console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
                                             CStudioAuthoring.Utils.Cookies.createCookie("dashboard-checked", JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent()));
                                         }else{
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
