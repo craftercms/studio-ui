@@ -929,6 +929,10 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   vertical-align: top;
 }
 
+.acn-tooltip .acn-name {
+  word-break: break-word;
+}
+
 .acn-width80 {
   width: 80px;
 }
