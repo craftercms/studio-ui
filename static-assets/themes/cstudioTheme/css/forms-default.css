@@ -523,6 +523,10 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 	display: inline;
 }
 
+.cstudio-form-control-input-help-container input {
+    display: inline;
+}
+
 .cstudio-form-control-input-data {
 	display: inline-block;
 }
