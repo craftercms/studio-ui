@@ -154,6 +154,9 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     
     var formEl = document.createElement("form");
     formEl.id = "upload_form";
+
+    var inputContainerEl = document.createElement("div");
+    YAHOO.util.Dom.addClass(inputContainerEl, "cstudio-form-control-input-help-container");
     
     var inputEl = document.createElement("input");
 		this.inputEl = inputEl;
@@ -162,8 +165,12 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
 		YAHOO.util.Dom.addClass(inputEl, "datum");
 		YAHOO.util.Dom.addClass(inputEl, "cstudio-form-control-input");
     YAHOO.util.Event.on(inputEl, "change",  this._onChange, this);
+
+    inputContainerEl.appendChild(inputEl);
+
+    this.renderHelp(config, inputContainerEl);
     
-		formEl.appendChild(inputEl);
+    formEl.appendChild(inputContainerEl);
     
     var profileEl = document.createElement("input");
     profileEl.type = "hidden";
@@ -180,6 +187,13 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     formEl.appendChild(siteEl);
     
     controlWidgetContainerEl.appendChild(formEl);
+
+    var descriptionEl = document.createElement("span");
+    YAHOO.util.Dom.addClass(descriptionEl, 'description');
+    YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
+    descriptionEl.innerHTML = config.description;
+
+    controlWidgetContainerEl.appendChild(descriptionEl);
     
     containerEl.appendChild(controlWidgetContainerEl);
   }
