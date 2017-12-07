@@ -4,7 +4,7 @@ if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
 body='{
 "request": {
 "message": "StudioUI Build Request",
-  "branch":"master"
+  "branch":"develop"
 }}'
 curl -s -X POST \
   -H "Content-Type: application/json" \
