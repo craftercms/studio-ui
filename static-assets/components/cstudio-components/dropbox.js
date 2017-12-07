@@ -415,6 +415,7 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                         cfgSubFolder.path = cfg.path + "/" + entries[i].name;
 
                         var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/content/create-folder.json?site=" + cfg.site + "&path=" + cfg.path + "&name=" + entries[i].name);
+                        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;                 
 
                         if(!document.getElementById("folder" + cfg.path + '/' + entries[i].name)){
                             display.insertAdjacentHTML('beforeEnd',
@@ -623,7 +624,7 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
             fd.append(key, auxFormData[key]);
         }
 
-        xhr.open("POST", cfg.target);
+        xhr.open("POST", cfg.target + "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken);        
         xhr.send(fd);
 
         document.querySelector(".bulk-upload .buttons-container .cancel").style.display = "none";
