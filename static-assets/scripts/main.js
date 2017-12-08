@@ -13,8 +13,10 @@
     ]);
 
     app.run([
-        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants',
-        function ($rootScope, $state, $stateParams, authService, sitesService, Constants) {
+        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
+        function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
+
+            $http.defaults.headers.common['X-XSRF-TOKEN'] = xsrfToken;
 
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
@@ -68,7 +70,6 @@
     app.config([
         '$stateProvider', '$urlRouterProvider', '$translateProvider',
         function ($stateProvider, $urlRouterProvider, $translateProvider) {
-
             $urlRouterProvider
                 .otherwise('/sites');
 
