@@ -37,6 +37,8 @@
     <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!''}"></script>
     <link rel="shortcut icon" href="/studio/static-assets/img/favicon.png?version=${UIBuildId!''}">
 
+    <script> var xsrfToken = "${_csrf.token}" </script>
+
 </head>
 <body class="{{$state.current.cssClass}}">
 
