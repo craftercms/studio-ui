@@ -1818,8 +1818,9 @@ var nodeOpen = false,
                 $modal.find('.bd').append(template).end().appendTo(parentEl);
                 $modal.find('.studio-ice-container').css('z-index', 100525);
 
+                parent.iframeOpener = window;
                 window.open(url, name);
-
+        
                 animator.slideInDown();
             },
 

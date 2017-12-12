@@ -5,6 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Crafter Studio</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <#include "/templates/web/common/page-fragments/head.ftl" />
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
