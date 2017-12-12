@@ -27,7 +27,7 @@
     <script src="/studio/static-assets/libs/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular-cookies/angular-cookies.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular-ui-utils/ui-utils.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.js"></script>
     <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!''}"></script>
