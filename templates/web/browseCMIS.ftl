@@ -10,20 +10,20 @@
     <link rel="stylesheet" href="/static-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/browse.css" />
 
-    <link rel="stylesheet" href="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.contextMenu.min.css" type="text/css">
+    <link rel="stylesheet" href="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.contextMenu.css" type="text/css">
 
     <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
     <script src="/studio/static-assets/libs/handlebars/handlebars.js"></script>
-    <script src="/studio/static-assets/libs/jstree/dist/jstree.min.js"></script>
+    <script src="/studio/static-assets/libs/jstree/dist/jstree.js"></script>
 
-  
+
     <script src="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.contextMenu.js" type="text/javascript"></script>
-    <script src="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.ui.position.min.js" type="text/javascript"></script>
+    <script src="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.ui.position.js" type="text/javascript"></script>
 
 
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-browse/browse.js"></script>
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-browse/browseCMIS.js"></script>
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/libs/jstree/dist/themes/default/style.min.css" />
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/libs/jstree/dist/themes/default/style.css" />
     <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css" type="text/css" rel="stylesheet">
 
     <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
