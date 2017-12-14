@@ -2262,6 +2262,38 @@ CStudioAuthoring.Module.requireModule(
 					xml+= "\t</paths>\r\n";
 				}
 
+                if(config['delete-dependencies']) {
+                    xml += "\t<delete-dependencies>\r\n";
+
+                    if (config['delete-dependencies']['delete-dependency']) {
+
+                        if (config['delete-dependencies']['delete-dependency'] instanceof Array) {
+
+                            for (var x = 0; x < config['delete-dependencies']['delete-dependency'].length; x++) {
+                                xml += "\t\t<delete-dependency>\r\n";
+
+                                if (config['delete-dependencies']['delete-dependency'][x]['pattern']) {
+                                    xml += "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config['delete-dependencies']['delete-dependency'][x]['pattern']) + "</pattern>\r\n";
+                                }
+                                if (config['delete-dependencies']['delete-dependency'][x]['remove-empty-folder']) {
+                                    xml += "\t\t\t<remove-empty-folder>" + CStudioForms.Util.escapeXml(config['delete-dependencies']['delete-dependency'][x]['remove-empty-folder']) + "</remove-empty-folder>\r\n";
+                                }
+                                xml += "\t\t</delete-dependency>\r\n";
+                            }
+                        }else {
+                            xml += "\t\t<delete-dependency>\r\n";
+                            if(config['delete-dependencies']['delete-dependency']['pattern']){
+                                xml+= "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config['delete-dependencies']['delete-dependency']['pattern']) + "</pattern>\r\n";
+                            }
+                            if(config['delete-dependencies']['delete-dependency']['remove-empty-folder']){
+                                xml+= "\t\t\t<remove-empty-folder>" + CStudioForms.Util.escapeXml(config['delete-dependencies']['delete-dependency']['remove-empty-folder']) + "</remove-empty-folder>\r\n";
+                            }
+                            xml += "\t\t</delete-dependency>\r\n";
+                        }
+                    }
+                    xml+= "\t</delete-dependencies>\r\n";
+                }
+
                 xml += "</content-type>\r\n";
 
                 return xml;
