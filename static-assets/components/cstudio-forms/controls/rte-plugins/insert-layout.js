@@ -10,7 +10,7 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
 				}
 				
 				if(!layouts.length) {
-					layouts = [layouts.layout];
+					layouts = [layouts];
 				}
 
 				if(layouts.length > 0) {	
@@ -31,7 +31,7 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
                             
                             var onClickFn = function() {
 		                    	tinyMCE.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
-		                    	ed.contextControl.save();
+                                cm.editor.contextControl.save();
 		                   	};
 		                   	
 		                   	var layoutItem = {title : layout.name, onclick : onClickFn, layoutPrototype: prototype}
