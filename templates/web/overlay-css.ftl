@@ -751,13 +751,6 @@ div#acn-active-content div.acn-link-last a
   padding:0 0 0 17px;
 }
 
-.acn-dropdown-wrapper .acn-dropdown-menu .acn-analytics
-{
-  background:url('${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat left;
-  background-position:0 -1179px;
-  padding:2px 0 0 18px;
-}
-
 .acn-admin-console
 {
   background:url('${urlBase}/static-assets/themes/cstudioTheme/images/icons/icon_sm_gears.png') no-repeat left;
@@ -3292,16 +3285,6 @@ body.masked {
   padding-top: 5px;
 }
 
-#cstudioPreviewAnalyticsOverlay {
-   padding: 0;
-   border: 1px solid rgba(0,0,0,0.5);
-   background: rgba(0,0,0,0.6);
-   box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3), inset 0 10px rgba(255,255,255,0.2), inset 0 10px 20px rgba(255,255,255,0.25), inset 0 -15px 30px rgba(0,0,0,0.3);
-   -o-box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3), inset 0 10px rgba(255,255,255,0.2), inset 0 10px 20px rgba(255,255,255,0.25), inset 0 -15px 30px rgba(0,0,0,0.3);
-   -webkit-box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3), inset 0 10px rgba(255,255,255,0.2), inset 0 10px 20px rgba(255,255,255,0.25), inset 0 -15px 30px rgba(0,0,0,0.3);
-   -moz-box-shadow: 0 2px 6px rgba(0,0,0,0.5), inset 0 1px rgba(255,255,255,0.3)
-   z-index: 99999;
-}
 #cstudio-emulate { z-index: 99999; }
 
 .yui-carousel-content{

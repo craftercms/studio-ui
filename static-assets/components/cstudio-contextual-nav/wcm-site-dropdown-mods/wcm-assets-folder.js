@@ -1700,13 +1700,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                     ? YDom.getFirstChild(el)
                     : el.parentNode))
                     .style.backgroundColor = "";
-
-                var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
-
-                if(reportContainerEl) {
-                    document.body.removeChild(reportContainerEl);
-                }
-
             };
         for (var i = 0,
                  l = spanNodes.length,
