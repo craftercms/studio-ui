@@ -2970,9 +2970,6 @@ var nodeOpen = false,
             getClipboardItemsServiceUri: "/api/1/services/api/1/clipboard/get-items.json",
             duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",   
 
-            // Analytics
-            getAnalyticsReportUrl: "/api/1/services/analytics/get-report.json",
-
             // Dependencies
             lookupContentDependenciesServiceUri: "/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&",
 
@@ -3050,37 +3047,6 @@ var nodeOpen = false,
 
             createEngineServiceUri: function(service) {
                 return CStudioAuthoringContext.previewAppBaseUri + service;
-            },
-
-            Analytics: {
-                /**
-                 * get analytics report
-                 * @param site site ID
-                 * @param webPropertyId
-                 * @param reportId
-                 */
-                getReport: function(site, webPropertyId, reportId, callback, filter) {
-
-                    var serviceUrl = CStudioAuthoring.Service.getAnalyticsReportUrl;
-                    serviceUrl += "?site="+site;
-                    serviceUrl += "&webPropertyId=" + webPropertyId;
-                    serviceUrl += "&reportId=" + reportId;
-
-                    if(filter) {
-                        serviceUrl += "&filter="+filter
-                    }
-
-                    var serviceCallback = {
-                        success: function(response) {
-                            var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
-                            callback.success(YAHOO.lang.JSON.parse(res));
-                        },
-                        failure: function(response) {
-                            callback.failure(response);
-                        }
-                    };
-                    YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
-                }
             },
 
             /**
