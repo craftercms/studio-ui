@@ -329,13 +329,23 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
                                     //this.isUploadOverwrite = isUploadOverwrite;
                                 }else{
-                                    if(this.setImageData){
-                                        this.setImageData(imagePicker, imageData);
-                                        this.decreaseFormDialog();
+                                    var formContainer = this.form ? this.form.containerEl : self.form.containerEl;
+                                    // $(self.form.containerEl).find("#ice-body .cstudio-form-field-container")
+                                    if( $(formContainer).find("#ice-body .cstudio-form-field-container").length > 1){
+                                        if(this.setImageData){
+                                            this.setImageData(imagePicker, imageData);
+                                        }else{
+                                            self.setImageData(imagePicker, imageData);
+                                        }
                                     }else{
-                                        self.setImageData(imagePicker, imageData);
-                                        self.decreaseFormDialog();
-                                    }
+                                        if(this.setImageData){
+                                            this.setImageData(imagePicker, imageData);
+                                            this.decreaseFormDialog();
+                                        }else{
+                                            self.setImageData(imagePicker, imageData);
+                                            self.decreaseFormDialog();
+                                        }
+                                    }                                    
                                 }
                             };
                             image.addEventListener('load', imageLoaded, false);
