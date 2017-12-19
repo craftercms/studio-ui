@@ -290,12 +290,20 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 			currentHeight = +tinymce.DOM.getStyle(this.editor.editorId + "_ifr", "height").split("px")[0];
 
 		heightVal = (!onInit) ? Math.max(heightVal, editor.getDoc().body.scrollHeight) : heightVal;
+		tinyMCEMaxHeight = formBody.offsetHeight - 130 > this.rteControlHeight ? formBody.offsetHeight - 130 : this.rteControlHeight;
+
+		heightVal = heightVal > tinyMCEMaxHeight ? tinyMCEMaxHeight : heightVal;
 
 		if (currentHeight < heightVal || onInit) {
+			$(editor.editorId + "_tbl").height(10);
 			tinymce.DOM.setStyle(editor.editorId + "_ifr", "height", heightVal + "px");
 
 			if(isPaste){
-				formBody.scrollTop = scrollTop + heightVal - 25;
+				if( $("#" + tinymce.DOM.doc.activeElement.id).offset() ){
+					formBody.scrollTop = $("#" + tinymce.DOM.doc.activeElement.id).offset().top - 40;
+				}else{
+					formBody.scrollTop = scrollTop;	
+				}
 			}else{
 				formBody.scrollTop = scrollTop;
 			}
@@ -441,7 +449,9 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
                         }
                     }else{
                         height = 330;
-                    }
+					}
+					
+					this.rteControlHeight = height;
 					
 					break;
 				case "maxlength" :
@@ -568,6 +578,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 							_self.resize();
 						}else{
 							_self.resize(true);
+							ed.isPaste = false;
 						}
 						
 					});
