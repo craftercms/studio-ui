@@ -28,6 +28,8 @@
 			searchesToWire: [],
             myTree: null,
             myTreePages: [],
+            myTreeAssets: [],
+            currentTextNode : null,
             copiedItem: null,
             cutItem: null,
             instanceCount: 0,

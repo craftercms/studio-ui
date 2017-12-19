@@ -390,7 +390,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         }
 
         var treeId = tree.id.toString().replace(/-/g,'');
-        Self.myTreePages[treeId] = tree
+        Self.myTreePages[treeId] = tree;
+        if(treeNodeTO.path === "/static-assets"){
+            Self.currentTextNode = treeNodeTO;
+            Self.myTreeAssets = tree;
+        }
     },
 
     /**
