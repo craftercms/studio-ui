@@ -622,6 +622,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     richTextEditor: "Rich Text Editor",
     input: "Input",
     linkInput:"Link Input",
+    linkgroupedCheckboxes: "Link Grouped Checkboxes",
+    linkedInput:"Linked Input",
     dropdown: "Dropdown",
     linkedDropdown:"Linked Dropdown",
     dateTime: "Date / Time",
