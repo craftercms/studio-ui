@@ -182,6 +182,17 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                         context: this
                     });
 
+                    $( window ).resize(function() {
+                        if( window.innerWidth >= 768 ){
+                            $(".site-dropdown-open .studio-preview").css({ left :  cfg.width});
+                            $(".site-dropdown-open .site-dashboard").css({ left :  cfg.width});
+                        }else{
+                            $(".site-dropdown-open .studio-preview").css({ left :  0});
+                            $(".site-dropdown-open .site-dashboard").css({ left :  0});
+                        }
+
+                    });
+
                     return this;
                 },
                 /**
@@ -272,8 +283,14 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                     if (cfg.visible !== visible) {
                         if (visible) {
                             $('html').addClass('site-dropdown-open');
-                            $(".site-dropdown-open .studio-preview").css({ left :  cfg.width});
-                            $(".site-dropdown-open .site-dashboard").css({ left :  cfg.width});
+
+                            if( window.innerWidth >= 768 ){
+                                $(".site-dropdown-open .studio-preview").css({ left :  cfg.width});
+                                $(".site-dropdown-open .site-dashboard").css({ left :  cfg.width});
+                            }else{
+                                $(".site-dropdown-open .studio-preview").css({ left :  0});
+                                $(".site-dropdown-open .site-dashboard").css({ left :  0});
+                            }
                             YDom.addClass('acn-dropdown-wrapper', 'site-dropdown-open');
                             animator.slideIn();
                         } else {
