@@ -36,6 +36,10 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
 		
 		var callback = { 
 			success: function(imageData) {
+                var topWin = window.parent.Self;
+                if(topWin.currentTextNode && topWin.myTreeAssets){
+                    topWin.refreshNodes(topWin.currentTextNode,false, false, topWin.myTreeAssets, null, true);
+                }
 				var relativeUrl = path.endsWith("/") ? path + imageData.fileName : path + "/" + imageData.fileName;
 				var url = this.context.createPreviewUrl(relativeUrl);
 				imageData.previewUrl = url + "?" + new Date().getTime();
