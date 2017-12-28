@@ -28,17 +28,17 @@
                     </thead>
                     <tbody>
 
-                    <tr dir-paginate="group in groupsCollection.groups | filter:q | itemsPerPage: groups.itemsPerPage"
+                    <tr id="group-{{ group.group_name | nospace }}" dir-paginate="group in groupsCollection.groups | filter:q | itemsPerPage: groups.itemsPerPage"
                         current-page="groups.pagination.current" total-items="groups.totalLogs">
                         <td>{{group.group_name}}</td>
                         <td>{{group.description}}</td>
                         <td>
-                            <a ng-click="groups.viewGroup(group)" class="btn btn-sm">
+                            <a ng-click="groups.viewGroup(group)" class="btn btn-sm edit">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </td>
                         <td>
-                            <a ng-click="removeGroup(group)" class="btn btn-sm">
+                            <a ng-click="removeGroup(group)" class="btn btn-sm remove">
                                 <i class="fa fa-trash-o"></i>
                             </a>
                         </td>
@@ -95,7 +95,7 @@
             </tags-input>
 
             <div class="actions clearfix">
-                <a class="btn btn-default" ng-disabled="groups.usersToAdd.length <= 0" ng-click="groups.addUsers()" role="button" style="float: right;">{{ 'admin.groups.ADD_MEMBERS' | translate }}</a>
+                <a id="add-members-btn" class="btn btn-default" ng-disabled="groups.usersToAdd.length <= 0" ng-click="groups.addUsers()" role="button" style="float: right;">{{ 'admin.groups.ADD_MEMBERS' | translate }}</a>
             </div>
 
             <hr>
@@ -114,7 +114,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="user in displayedCollection">
+                <tr id="member-{{user.username}}" ng-repeat="user in displayedCollection">
                     <td>{{user.username}}</td>
                     <td>{{user.email}}</td>
                     <td>

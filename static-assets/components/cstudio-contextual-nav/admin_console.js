@@ -48,7 +48,9 @@ CStudioAuthoring.ContextualNav.AdminConsoleMod = CStudioAuthoring.ContextualNav.
                                         
                     	YDom.addClass(linkContainerEl, "acn-link");
                     	linkEl.innerHTML = action.name;
-                    	YDom.addClass(linkEl, "cursor");
+						YDom.addClass(linkEl, "cursor");
+						YDom.addClass(linkEl, action.name.replace(/\s+/g, '-').toLowerCase());
+
                     	linkEl.style.cursor = 'pointer';
                     	
                     	linkContainerEl.appendChild(linkEl);
