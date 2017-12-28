@@ -7569,13 +7569,13 @@ var nodeOpen = false,
                     styles = conf && conf.icon ? conf.icon.styles : null;
                 YDom.addClass(iconContainer, "icon-container");
                 if(!conf || !conf.icon || (conf && conf.icon && !conf.icon.stackedclass)){
-                    YDom.addClass(iconElt, "mr9 fa");
+                    YDom.addClass(iconElt, "status-icon mr9 fa");
                     YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
                 }else{
                     var icon1 = document.createElement("span"),
                         icon2 = document.createElement("span"),
                         icon1Size;
-                    YDom.addClass(iconElt, "mr9 studio-fa-stack");
+                    YDom.addClass(iconElt, "status-icon mr9 studio-fa-stack");
                     YDom.addClass(icon1, "fa studio-fa-stack-2x");
                     YDom.addClass(icon1, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
                     YDom.addClass(icon2, "fa studio-fa-stack-1x");

@@ -145,58 +145,58 @@
             <#assign classes="col-xs-6 col-sm-4 col-md-3 mb10" />
                 <div class="row workflow-states">
                     <div class="col-md-12 title">
-                        <p style="color: #7e9dbb; margin-bottom: 15px;"></p>
+                        <p id="workflow-states-text" style="color: #7e9dbb; margin-bottom: 15px;"></p>
                     </div>
 
-                    <div class="${classes}">
+                    <div class="${classes} guide-neverpublished">
                     <#-- Never Published -->
                         <div class="iconName">
                             <span id="guide-neverpublished" class="fa mr5"></span>
                             <span class="iconMess"><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateNew")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-edited">
                     <#-- Edited -->
                         <div class="iconName">
                             <span id="guide-edited" class="fa mr5"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInProgress")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-inworkflow">
                     <#-- In Workflow-->
                         <div class="iconName">
                             <span id="guide-inworkflow" class="fa mr5"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateInWorkflow")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-scheduled">
                     <#-- Scheduled -->
                         <div class="iconName">
                             <span id="guide-scheduled" class="fa mr5"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateScheduled")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-processing">
                     <#-- Processing -->
                         <div class="iconName">
                             <span id="guide-processing" class="fa mr5"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateSystemProcessing")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-disabled">
                     <#-- Disabled -->
                         <div class="iconText" style="margin: 0 0 0 20px; padding: 2px 0 1px;">
                             <script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDisabled")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-deleted">
                     <#-- Deleted -->
                         <div class="iconName">
                             <span id="guide-deleted" class="fa mr5"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideStateDeleted")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-locked">
                     <#-- Locked -->
                         <div class="iconName">
                             <span id="guide-locked" class="fa mr5"></span>
@@ -207,115 +207,115 @@
 
                 <div class="row item-types">
                     <div class="col-md-12 title">
-                        <p style="color: #7e9dbb; margin-top: 15px; margin-bottom: 15px;"></p>
+                        <p id="item-types-text" style="color: #7e9dbb; margin-top: 15px; margin-bottom: 15px;"></p>
                     </div>
 
-                    <div class="${classes}">
+                    <div class="${classes} guide-navigation-page">
                     <#-- Navigation Page -->
                         <div class="iconName">
                             <span class="fa fa-file mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideNavigationPage")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-floating-page">
                     <#-- Floating Page -->
                         <div class="iconName">
                             <span class="fa fa-file-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFloatingPage")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-component">
                     <#-- Component -->
                         <div class="iconName">
                             <span class="fa fa-puzzle-piece mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideComponent")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-template-script">
                     <#-- Template or Script -->
                         <div class="iconName">
                              <span class="fa fa-file-code-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideTemplateScript")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-taxonomy">
                     <#-- Taxonomy -->
                         <div class="iconName">
                             <span class="fa fa-tags mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideTaxonomy")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-image">
                     <#-- Image -->
                         <div class="iconName">
                             <span class="fa fa-file-image-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideImage")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-video">
                     <#-- Video -->
                         <div class="iconName">
                             <span class="fa fa-file-video-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideVideo")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-css">
                     <#-- CSS -->
                         <div class="iconName">
                             <span class="fa fa-css3 mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideCss")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-font">
                     <#-- Font -->
                         <div class="iconName">
                             <span class="fa fa-font mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideFont")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-pdf">
                     <#-- Pdf -->
                         <div class="iconName">
                             <span class="fa fa-file-pdf-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuidePdf")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-power-point">
                     <#-- PowerPoint -->
                         <div class="iconName">
                             <span class="fa fa-file-powerpoint-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuidePowerPoint")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-word">
                     <#-- Word -->
                         <div class="iconName">
                             <span class="fa fa-file-word-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideWord")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-excel">
                     <#-- Excel -->
                         <div class="iconName">
                             <span class="fa fa-file-excel-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideExcel")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-zip">
                     <#-- Zip -->
                         <div class="iconName">
                             <span class="fa fa-file-archive-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideZip")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-groovy">
                     <#-- groovy -->
                         <div class="iconName">
                             <span class="fa fa-file-code-o mr5" style="color: #8fc6fd; font-size: 14px;"></span>
                             <span class="iconMess" ><script>CStudioAuthoring.Messages.display(langBundle, "dashletIconGuideGroovy")</script></span>
                         </div>
                     </div>
-                    <div class="${classes}">
+                    <div class="${classes} guide-other-files">
                     <#-- Other -->
                         <div class="iconName">
                             <span class="fa fa-file-text mr5" style="color: #8fc6fd; font-size: 14px;"></span>

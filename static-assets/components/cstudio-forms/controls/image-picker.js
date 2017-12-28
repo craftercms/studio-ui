@@ -473,7 +473,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         downloadEl.style.display = "none";
         imageEl.appendChild(downloadEl);
 
-        var ctrlOptionsEl = document.createElement("div")
+        var ctrlOptionsEl = document.createElement("div");
         YAHOO.util.Dom.addClass(ctrlOptionsEl, 'cstudio-form-control-image-picker-options');
         bodyEl.appendChild(ctrlOptionsEl);
 
@@ -483,6 +483,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         this.addEl = addEl;
         addEl.type = "button";
         addEl.style.position = "relative";
+        addEl.id = "add-image";
         if (this.inputEl.value == null || this.inputEl.value == "") {
             addEl.value = CMgs.format(langBundle, "add");
         } else {
