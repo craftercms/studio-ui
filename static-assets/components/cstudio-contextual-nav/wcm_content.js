@@ -1093,6 +1093,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 linkEl = document.createElement("a");
 
                             YDom.addClass(linkContainerEl, "acn-link");
+
+                            if("Schedule" === item.name){
+                                YDom.addClass(linkEl, "Schedule");
+                            }else{
+                                YDom.addClass(linkEl, item.renderId);
+                            }
                             linkEl.innerHTML = item.name;
                             YDom.addClass(linkEl, "cursor");
                             linkEl.style.cursor = 'pointer';
