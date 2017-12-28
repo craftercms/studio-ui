@@ -24,7 +24,7 @@
                 <div class="navbar-right-wrapper">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a id="usersRightNav" class="nav-link ng-binding users-link hidden" href="/studio/#/users">
+                            <a id="homeUsers" class="nav-link ng-binding users-link hidden" href="/studio/#/users">
                                 <span class="nav-icon fa fa-users"></span>
                                 <span class="nav-label" data-translation="users">Users</span>
                             </a>

@@ -295,7 +295,6 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		heightVal = heightVal > tinyMCEMaxHeight ? tinyMCEMaxHeight : heightVal;
 
 		if (currentHeight < heightVal || onInit) {
-			$(editor.editorId + "_tbl").height(10);
 			tinymce.DOM.setStyle(editor.editorId + "_ifr", "height", heightVal + "px");
 
 			if(isPaste){

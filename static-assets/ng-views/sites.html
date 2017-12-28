@@ -6,7 +6,7 @@
 
     <div ng-if="sites">
         <div ng-show="createSites" class="m10 createSitesBtn pull-left">
-            <button class="btn btn-default btn-pill btn-block" ng-click="createSitesDialog()" ng-class="{ active: $state.includes('create') }">
+            <button id="create-site" class="btn btn-default btn-pill btn-block" ng-click="createSitesDialog()" ng-class="{ active: $state.includes('create') }">
                 <!-- ui-sref="home.sites.create" -->
                 <i class="fa fa-plus-circle"></i> <span>{{ 'dashboard.sites.CREATE_SITE' | translate }}</span>
             </button>
@@ -27,7 +27,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr dir-paginate="site in sites | filter:q | itemsPerPage: sitesPag.sitesPerPage" current-page="pagination" total-items="totalSites">
+                    <tr id="site-row-{{site.siteId}}" dir-paginate="site in sites | filter:q | itemsPerPage: sitesPag.sitesPerPage" current-page="pagination" total-items="totalSites">
                         <td class="name">{{site.name}}</td>
                         <td class="preview"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
                         <td class="dashboard"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
@@ -37,7 +37,7 @@
                 </tbody>
             </table>
 
-            <dir-pagination-controls class="ml10" on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+            <dir-pagination-controls id="sites-pagination" class="ml10" on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
         </div>
     </div>
 
@@ -48,15 +48,17 @@
 </div>
 
 <script type="text/ng-template" id="removeConfirmation.html">
-    <div class="modal-header">
-        <h3 class="modal-title">{{ 'common.CONFIRMATION' | translate }}</h3>
-    </div>
-    <div class="modal-body">
-        <p>{{ 'dashboard.sites.REMOVE_SITE_CONFIRMATION_MSG' | translate }} {{siteToRemove}} {{ 'common.INTERROGATION_SIGN' | translate }}</p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="ok()">{{ 'common.YES' | translate }}</button>
-        <button class="btn btn-default" ng-click="cancel()">{{ 'common.NO' | translate }}</button>
+    <div id="remove-site">
+        <div class="modal-header">
+            <h3 class="modal-title">{{ 'common.CONFIRMATION' | translate }}</h3>
+        </div>
+        <div class="modal-body">
+            <p>{{ 'dashboard.sites.REMOVE_SITE_CONFIRMATION_MSG' | translate }} {{siteToRemove}} {{ 'common.INTERROGATION_SIGN' | translate }}</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary yes" ng-click="ok()">{{ 'common.YES' | translate }}</button>
+            <button class="btn btn-default no" ng-click="cancel()">{{ 'common.NO' | translate }}</button>
+        </div>
     </div>
 </script>
 
