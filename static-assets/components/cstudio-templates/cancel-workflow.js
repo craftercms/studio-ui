@@ -9,7 +9,7 @@
 
     CSA.register("TemplateHolder.CancelWorkflow", {
         ROOT: [
-            '<div class="cstudio-view cancel-workflow-view">',
+            '<div id="cancel-workflow-dialog" class="cstudio-view cancel-workflow-view">',
 
                 '<h3 class="view-title">Warning: Workflow Cancellation</h3>',
 

@@ -1058,7 +1058,7 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
                     for (var i = 0; i < items.length; i++) {
                         var item = items[i];
                         //table = table + "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
-                        var itemRowStart = "<tr class='" + parentClass + "'>";
+                        var itemRowStart = "<tr class='" + parentClass + " " + items[i].path + "'>";
                         var itemRowEnd = "</tr>";
 
                         var subItemRowStart = "<tr class='" + parentClass + "'><td><span class='wcm-widget-margin'></span><span class='ttFirstCol128'><input title='All' class='dashlet-item-check1' id=tableName + 'CheckAll'  type='checkbox' /></span><span class='wcm-widget-margin'></span>";
@@ -1281,7 +1281,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
                 var parentClass = "wcm-table-parent-" + name + "-" + count;
 
                 if (!hideEmptyRow || sortDocuments[j].numOfChildren > 0) {
-                    var table = "<tr>";
+                    var table = "<tr class='itemId_"+sortDocuments[j].path+"'>";
                     table += WcmDashboardWidgetCommon.buildItemTableRow(sortDocuments[j], instance, true, count, 0);
                     table += "</tr>";
 
