@@ -47,7 +47,11 @@ CStudioAuthoring.ContextualNav.AdminConsoleMod = CStudioAuthoring.ContextualNav.
                     	var linkEl = document.createElement("a");
                                         
                     	YDom.addClass(linkContainerEl, "acn-link");
-                    	linkEl.innerHTML = action.name;
+                        if(action.icon){
+                            YDom.addClass(linkEl, "fa "+ action.icon);
+                        }else{
+                            linkEl.innerHTML = action.name;
+                        }
                     	YDom.addClass(linkEl, "cursor");
                     	linkEl.style.cursor = 'pointer';
                     	
