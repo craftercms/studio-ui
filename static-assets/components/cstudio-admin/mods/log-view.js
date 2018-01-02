@@ -31,7 +31,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
             "</div>";
 
         var actions = [
-            { name: "Play/Pause", context: this, method: this.playPauseToggleClick },
+            { name: "Play/Pause", context: this, method: this.playPauseToggleClick, icon: "fa-pause" },
             { name: "Clear", context: this, method: this.clear }
         ];
 
@@ -52,6 +52,16 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 
     playPauseToggleClick: function() {
         CStudioAdminConsole.Tool.LogView.pause = (!CStudioAdminConsole.Tool.LogView.pause);
+        var element = document.querySelector("#activeContentActions .fa");
+        if(!CStudioAdminConsole.Tool.LogView.pause ){
+            YDom.removeClass(element, "fa-caret-right");
+            YDom.removeClass(element, "fa-2x");
+            YDom.addClass(element, "fa-pause");
+        }else{
+            YDom.removeClass(element, "fa-pause");
+            YDom.addClass(element, "fa-2x");
+            YDom.addClass(element, "fa-caret-right");
+        }
     },
 
     renderLogView: function() {
