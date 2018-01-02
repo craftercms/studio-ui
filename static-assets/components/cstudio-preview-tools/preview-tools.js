@@ -109,11 +109,7 @@
                 this.panel.hide();
                 sessionStorage.setItem('pto-on', "");  // empty string value so that when we cast it to boolean we get false+
 
-                var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
                 var container = document.getElementById("container");
-                if(reportContainerEl) {
-                    document.body.removeChild(reportContainerEl);
-                }
                 if(container) {
                     container.style.display="none";
                 }

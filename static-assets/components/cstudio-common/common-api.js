@@ -2970,9 +2970,6 @@ var nodeOpen = false,
             getClipboardItemsServiceUri: "/api/1/services/api/1/clipboard/get-items.json",
             duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",   
 
-            // Analytics
-            getAnalyticsReportUrl: "/api/1/services/analytics/get-report.json",
-
             // Dependencies
             lookupContentDependenciesServiceUri: "/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&",
 
@@ -3050,37 +3047,6 @@ var nodeOpen = false,
 
             createEngineServiceUri: function(service) {
                 return CStudioAuthoringContext.previewAppBaseUri + service;
-            },
-
-            Analytics: {
-                /**
-                 * get analytics report
-                 * @param site site ID
-                 * @param webPropertyId
-                 * @param reportId
-                 */
-                getReport: function(site, webPropertyId, reportId, callback, filter) {
-
-                    var serviceUrl = CStudioAuthoring.Service.getAnalyticsReportUrl;
-                    serviceUrl += "?site="+site;
-                    serviceUrl += "&webPropertyId=" + webPropertyId;
-                    serviceUrl += "&reportId=" + reportId;
-
-                    if(filter) {
-                        serviceUrl += "&filter="+filter
-                    }
-
-                    var serviceCallback = {
-                        success: function(response) {
-                            var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
-                            callback.success(YAHOO.lang.JSON.parse(res));
-                        },
-                        failure: function(response) {
-                            callback.failure(response);
-                        }
-                    };
-                    YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
-                }
             },
 
             /**
@@ -7569,13 +7535,13 @@ var nodeOpen = false,
                     styles = conf && conf.icon ? conf.icon.styles : null;
                 YDom.addClass(iconContainer, "icon-container");
                 if(!conf || !conf.icon || (conf && conf.icon && !conf.icon.stackedclass)){
-                    YDom.addClass(iconElt, "mr9 fa");
+                    YDom.addClass(iconElt, "status-icon mr9 fa");
                     YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
                 }else{
                     var icon1 = document.createElement("span"),
                         icon2 = document.createElement("span"),
                         icon1Size;
-                    YDom.addClass(iconElt, "mr9 studio-fa-stack");
+                    YDom.addClass(iconElt, "status-icon mr9 studio-fa-stack");
                     YDom.addClass(icon1, "fa studio-fa-stack-2x");
                     YDom.addClass(icon1, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
                     YDom.addClass(icon2, "fa studio-fa-stack-1x");

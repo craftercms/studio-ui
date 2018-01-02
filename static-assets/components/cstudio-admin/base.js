@@ -118,7 +118,10 @@ CStudioAdminConsole.Toolbar.prototype = {
 
 		toolContainerEl.appendChild(span);
 		toolContainerEl.innerHTML += label;
-	   	YDom.addClass(toolContainerEl, "cstudio-admin-console-item");
+		YDom.addClass(toolContainerEl, "cstudio-admin-console-item");
+		   
+		var elId = label.replace(/\s+/g, '-').toLowerCase();
+		toolContainerEl.id = elId;
 
 	   	var onRenderWorkAreaFn =  function(evt, params) {
 	  		if(params.toolbar.selectedEl) {

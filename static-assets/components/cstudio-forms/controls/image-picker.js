@@ -329,13 +329,23 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
                                     //this.isUploadOverwrite = isUploadOverwrite;
                                 }else{
-                                    if(this.setImageData){
-                                        this.setImageData(imagePicker, imageData);
-                                        this.decreaseFormDialog();
+                                    var formContainer = this.form ? this.form.containerEl : self.form.containerEl;
+                                    // $(self.form.containerEl).find("#ice-body .cstudio-form-field-container")
+                                    if( $(formContainer).find("#ice-body .cstudio-form-field-container").length > 1){
+                                        if(this.setImageData){
+                                            this.setImageData(imagePicker, imageData);
+                                        }else{
+                                            self.setImageData(imagePicker, imageData);
+                                        }
                                     }else{
-                                        self.setImageData(imagePicker, imageData);
-                                        self.decreaseFormDialog();
-                                    }
+                                        if(this.setImageData){
+                                            this.setImageData(imagePicker, imageData);
+                                            this.decreaseFormDialog();
+                                        }else{
+                                            self.setImageData(imagePicker, imageData);
+                                            self.decreaseFormDialog();
+                                        }
+                                    }                                    
                                 }
                             };
                             image.addEventListener('load', imageLoaded, false);
@@ -473,7 +483,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         downloadEl.style.display = "none";
         imageEl.appendChild(downloadEl);
 
-        var ctrlOptionsEl = document.createElement("div")
+        var ctrlOptionsEl = document.createElement("div");
         YAHOO.util.Dom.addClass(ctrlOptionsEl, 'cstudio-form-control-image-picker-options');
         bodyEl.appendChild(ctrlOptionsEl);
 
@@ -483,6 +493,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         this.addEl = addEl;
         addEl.type = "button";
         addEl.style.position = "relative";
+        addEl.id = "add-image";
         if (this.inputEl.value == null || this.inputEl.value == "") {
             addEl.value = CMgs.format(langBundle, "add");
         } else {

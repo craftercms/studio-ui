@@ -417,6 +417,7 @@ CStudioAuthoring.Module.requireModule(
 				repeatContainerEl.innerHTML = CMgs.format(langBundle, "repeatingGroup");
 				var dd = new DragAndDropDecorator(repeatContainerEl);
 				YDom.addClass(repeatContainerEl, "new-control-type");
+				YDom.addClass(repeatContainerEl, "repeating-group");
 				repeatContainerEl.prototypeField = {
 					type: "repeat",
 
@@ -472,7 +473,10 @@ CStudioAuthoring.Module.requireModule(
                                         var dd = new DragAndDropDecorator(this.controlContainerEl);
                                         tool.id = tool.getFixedId();
                                         this.controlContainerEl.prototypeField = tool;
-                                        YDom.addClass(this.controlContainerEl, "new-control-type");
+										
+										YDom.addClass(this.controlContainerEl, "new-control-type");
+										YDom.addClass(this.controlContainerEl, tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
+
                                         var iconElt = CStudioAuthoring.Utils.createIcon(controls[idx], "fa-cube");
                                         this.controlContainerEl.insertBefore(iconElt, this.controlContainerEl.firstChild);
                                     }
@@ -517,7 +521,8 @@ CStudioAuthoring.Module.requireModule(
                                         CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()] = datasource;
                                         YDom.addClass(this.dsourceContainerEl, "datasource");
                                         YDom.addClass(this.dsourceContainerEl, "new-datasource-type");
-                                        this.dsourceContainerEl.innerHTML = datasource.getLabel();
+										this.dsourceContainerEl.innerHTML = datasource.getLabel();
+										YDom.addClass(this.dsourceContainerEl, datasource.getLabel().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
 
 
                                         var dd = new DragAndDropDecorator(this.dsourceContainerEl);
@@ -1780,6 +1785,7 @@ CStudioAuthoring.Module.requireModule(
 
 				var labelEl = document.createElement("div");
 				YAHOO.util.Dom.addClass(labelEl, "property-label");
+				YAHOO.util.Dom.addClass(labelEl, label.replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
 				labelEl.innerHTML = label;
 				propertyContainerEl.appendChild(labelEl);
 				

@@ -129,7 +129,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                         "</div>" +
                     "</div>" +
                     "</br>" +
-                    "<input type='button' class='action-button' value='" + CMgs.format(formsLangBundle, "bulkPublishPublish") + "' onclick='CStudioAdminConsole.Tool.BulkOperations.golive()' /></p>" +
+                    "<input type='button' id='bulk-submit' class='action-button' value='" + CMgs.format(formsLangBundle, "bulkPublishPublish") + "' onclick='CStudioAdminConsole.Tool.BulkOperations.golive()' /></p>" +
                     "<p id='bulk-golive-message'></p>" +
                 "</div>";
 

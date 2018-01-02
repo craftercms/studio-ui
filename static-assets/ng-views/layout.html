@@ -13,7 +13,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" ui-sref="home.sites">
-                    <img ng-src="{{crafterLogo}}" alt="Crafter Studio"/>
+                    <img id="crafter-studio-logo" ng-src="{{crafterLogo}}" alt="Crafter Studio"/>
                 </a>
             </div>
 
@@ -31,28 +31,28 @@
                             <span class="nav-label">{{ 'dashboard.sites.SITES_LABEL' | translate }}</span>
                         </a>
                     </li>
-                    <li class="dropdown" dropdown>
-                        <a id="homeHelp" class="nav-link dropdown-toggle" dropdown-toggle ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
+                    <li id="help-dropdown" class="dropdown" dropdown>
+                        <a class="nav-link dropdown-toggle" dropdown-toggle ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
                             <span class="nav-icon fa fa-life-ring"></span>
                             <span class="nav-label">
                                 {{ 'common.HELP' | translate }} <span class="caret"></span>
                             </span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="{{helpUrl}}" target="_blank">{{ 'common.DOCUMENTATION' | translate }}</a></li>
-                            <li><a ui-sref-active="active" ui-sref="home.about-us" >{{ 'common.ABOUT' | translate }}</a></li>
+                            <li><a class="documentation" href="{{helpUrl}}" target="_blank">{{ 'common.DOCUMENTATION' | translate }}</a></li>
+                            <li><a class="about" ui-sref-active="active" ui-sref="home.about-us" >{{ 'common.ABOUT' | translate }}</a></li>
                         </ul>
                     </li>
                     <li class="dropdown" dropdown>
-                        <a class="dropdown-toggle" dropdown-toggle>{{user.username}} <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
+                        <a id="account-dropdown" class="dropdown-toggle" dropdown-toggle>{{user.username}} <span class="caret"></span></a>
+                        <ul id="account-dropdown-container" class="dropdown-menu" role="menu">
                             <li class="user-display">
-                                <div class="name" ng-if="user.first_name">{{user.first_name}} {{user.last_name}}</div>
+                                <div class="first-name" ng-if="user.first_name">{{user.first_name}} {{user.last_name}}</div>
                                 <div class="name" ng-if="user.name">{{user.last_name}} {{user.name}} {{user.surname}}</div>
                                 <div class="email">{{user.email}}</div>
                             </li>
-                            <li><a ui-sref-active="active" ui-sref="home.settings">{{ 'common.SETTINGS' | translate }}</a></li>
-                            <li><a ng-click="logout()">{{ 'common.SIGN_OUT' | translate }}</a></li>
+                            <li><a class="settings" ui-sref-active="active" ui-sref="home.settings">{{ 'common.SETTINGS' | translate }}</a></li>
+                            <li><a class="sign-out" ng-click="logout()">{{ 'common.SIGN_OUT' | translate }}</a></li>
                         </ul>
                     </li>
                 </ul>

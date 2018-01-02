@@ -33,13 +33,13 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
 					$(document).on("keyup", function(e) {
 						if (e.keyCode == 10 || e.keyCode == 13) {	// enter
-							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
+							var reportContainerEl = document.getElementById("cstudioPreviewTargetingOverlay");
 							me.updateTargeting(reportContainerEl);
 							$(document).off("keyup");
 						}
 
 						if (e.keyCode === 27) {	// esc
-							var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay");
+							var reportContainerEl = document.getElementById("cstudioPreviewTargetingOverlay");
 							me.closeDialog(reportContainerEl);
 							$(document).off("keyup");
 						}
@@ -80,7 +80,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var CMgs = CStudioAuthoring.Messages;
 					var previewLangBundle = CMgs.getBundle("targeting", CStudioAuthoringContext.lang);
 
-					var reportContainerEl = document.getElementById("cstudioPreviewAnalyticsOverlay"),
+					var reportContainerEl = document.getElementById("cstudioPreviewTargetingOverlay"),
 						me = this,
 						model = this.model;
 
@@ -89,8 +89,8 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					}
 
 					var reportContainerEl = document.createElement("div");
-					reportContainerEl.id = "cstudioPreviewAnalyticsOverlay";
-					YAHOO.util.Dom.addClass(reportContainerEl, "cstudio-analytics-overlay row");
+					reportContainerEl.id = "cstudioPreviewTargetingOverlay";
+					YAHOO.util.Dom.addClass(reportContainerEl, "cstudio-targeting-overlay row");
 
 					reportContainerEl.style.position = "fixed";
 					reportContainerEl.style.width = "800px";
