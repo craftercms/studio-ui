@@ -2694,7 +2694,7 @@
                             try{
                                 var currentContentTO,
                                     URLBrowseUri = pageParameter,
-                                    contentTOBrowseUri = contentTO.item.browserUri;
+                                    contentTOBrowseUri = contentTO.item.browserUri == "" ? "/" : contentTO.item.browserUri;
                                 
                                 if (URLBrowseUri == contentTOBrowseUri){
                                     currentContentTO = null;
@@ -2702,7 +2702,7 @@
                                     currentContentTO = contentTO.item;
                                 }
 
-                                if(currentContentTO.isPage){
+                                if(contentTO.item.isPage){
                                     CStudioAuthoring.Operations.refreshPreview(currentContentTO);
                                 }else{
                                     CStudioAuthoring.Operations.refreshPreview();
