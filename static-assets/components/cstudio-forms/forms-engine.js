@@ -1833,8 +1833,8 @@ var CStudioForms = CStudioForms || function() {
                             containerEl.reRender(containerEl);
 
                             var containerElNodes = $(containerEl.childNodes);
-                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex)).offset().top;
-                            $('body').scrollTop(containerElLastChildTop);
+                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex+1)).offset().top;
+                            $('html').scrollTop(containerElLastChildTop);
 
                             repeatEdited = true;
                         }
@@ -1858,6 +1858,11 @@ var CStudioForms = CStudioForms || function() {
                             itemArray.splice(repeatArrayIndex, 1);
                             itemArray.splice(repeatArrayIndex-1, 0, itemToMove);
                             containerEl.reRender(containerEl);
+
+                            var containerElNodes = $(containerEl.childNodes);
+                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex-1)).offset().top;
+                            $('html').scrollTop(containerElLastChildTop);
+
                             repeatEdited = true;
                         }
                     }
@@ -1880,6 +1885,11 @@ var CStudioForms = CStudioForms || function() {
                             itemArray.splice(repeatArrayIndex, 1);
                             itemArray.splice(repeatArrayIndex+1, 0, itemToMove);
                             containerEl.reRender(containerEl);
+
+                            var containerElNodes = $(containerEl.childNodes);
+                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex+1)).offset().top;
+                            $('html').scrollTop(containerElLastChildTop);
+
                             repeatEdited = true;
                         }
                     }
@@ -1899,6 +1909,11 @@ var CStudioForms = CStudioForms || function() {
                             var repeatArrayIndex = this.parentNode._repeatIndex;
                             itemArray.splice(repeatArrayIndex, 1);
                             containerEl.reRender(containerEl);
+
+                            var containerElNodes = $(containerEl.childNodes);
+                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex)).offset().top;
+                            $('html').scrollTop(containerElLastChildTop);
+
                             repeatEdited = true;
                         }
                     }
