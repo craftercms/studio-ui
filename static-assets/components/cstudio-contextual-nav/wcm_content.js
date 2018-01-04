@@ -652,7 +652,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         try{
                                             var currentContentTO,
                                                 URLBrowseUri = pageParameter,
-                                                contentTOBrowseUri = contentTO.item.browserUri;
+                                                contentTOBrowseUri = contentTO.item.browserUri == "" ? "/" : contentTO.item.browserUri;
 
                                             if (URLBrowseUri == contentTOBrowseUri){
                                                 currentContentTO = null;
