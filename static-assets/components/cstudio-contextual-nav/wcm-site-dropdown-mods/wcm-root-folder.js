@@ -1592,10 +1592,12 @@
                                 treeToUpdateDependencies = tree.getNodesByProperty("uri", dependencies[i]);
                                 if(treeToUpdateDependencies) {
                                     for (var j = 0; j < treeToUpdateDependencies.length; j++) {
-                                        (function (treeToUpdateDependencies, j) {
-                                            lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
-                                            nodeOpen = true;
-                                        })(treeToUpdateDependencies, j);
+                                        if(treeToUpdateDependencies[j].data.contentType != "folder"){
+                                            (function (treeToUpdateDependencies, j) {
+                                                lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
+                                                nodeOpen = true;
+                                            })(treeToUpdateDependencies, j);
+                                        }
                                     }
                                 }
                             }
