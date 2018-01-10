@@ -8359,7 +8359,7 @@ CStudioAuthoring.InContextEdit = {
                     window.top.iceDialogs.splice(i, 1);
 
                     if(dialog) {
-                        dialog.close();
+                        dialog.end();
                     }
                 }
             }
