@@ -950,6 +950,8 @@
             $scope.site = null;
             $scope.blueprints = [];
             $scope.isValid = false;
+            $scope.isCollapsed = true;
+            $scope.isBluePrint = false;
 
             function getBlueprints() {
                 sitesService.getAvailableBlueprints().success(function (data) {
@@ -1036,11 +1038,22 @@
                     size: 'sm'
                 });
 
-                sitesService.create({
-                    site_id: $scope.site.siteId,
-                    description: $scope.site.description,
-                    blueprint: $scope.site.blueprint.id
-                })
+                var params = {site_id: $scope.site.siteId, description: $scope.site.description};
+                if (!$scope.isCollapsed){
+                    params.use_remote = !$scope.isCollapsed;
+                    params.remote_name = $scope.site.name;
+                    params.remote_url = $scope.site.url;
+                    params.remote_username = $scope.site.username;
+                    params.remote_password = $scope.site.password;
+                    params.create_option = $scope.site.options ? $scope.site.options : "clone";
+                    if($scope.site.options == "push"){
+                        params.blueprint = $scope.site.blueprint.id;
+                    }
+                }else{
+                    params.blueprint = $scope.site.blueprint.id;
+                }
+
+                sitesService.create(params)
                     .success(function (data) {
                         $timeout(function () {
                             sitesService.editSite($scope.site);

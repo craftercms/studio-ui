@@ -30,6 +30,82 @@
             </div>
 
             <div class="form-group">
+                <a ng-click="isCollapsed = !isCollapsed; isBluePrint = !isBluePrint">
+                    <span ng-hide="!isCollapsed" class="fa fa-plus-square-o"></span>
+                    <span ng-hide="isCollapsed" class="fa fa-minus-square-o"></span>
+                    Link to upstream remote Git repository</a>
+            </div>
+
+            <div id="remoteGitRepository" uib-collapse="isCollapsed" ng-hide="isCollapsed">
+
+                <div class="form-group">
+                    <label for="url">{{ 'dashboard.sites.create.NAME' | translate }}</label>
+                    <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="site.name" ng-required="!isCollapsed"/>
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.name.$error.required">
+                            {{ 'dashboard.sites.create.NAME' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="url">{{ 'dashboard.sites.create.URL' | translate }}</label>
+                    <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="site.url" ng-required="!isCollapsed"/>
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.url.$error.required">
+                            {{ 'dashboard.sites.create.URL' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="username">{{ 'dashboard.sites.create.USERNAME' | translate }}</label>
+                    <input type="text" class="form-control" id="username" name="username" maxlength="4000" ng-model="site.username" ng-required="!isCollapsed"/>
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.username.$error.required">
+                            {{ 'dashboard.sites.create.USERNAME' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="password">{{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
+                    <input type="password" class="form-control" id="password" name="password" maxlength="4000" ng-model="site.password" ng-required="!isCollapsed"/>
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.password.$error.required">
+                            {{ 'dashboard.sites.create.PASSWORD' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label>{{ 'dashboard.sites.create.OPTIONS' | translate }}:</label><br/>
+                    <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
+                    <input type="radio" id="clone" name="options" value="clone" ng-model="site.options" ng-checked="true">
+                    <label for="clone">{{ 'dashboard.sites.create.CLONE' | translate }}</label><br/>
+                    <input type="radio" id="push" name="options" value="push" ng-model="site.options">
+                    <label for="push">{{ 'dashboard.sites.create.PUSH' | translate }}</label><br/>
+                </div>
+
+            </div>
+
+            <div class="form-group" ng-show="!isBluePrint || site.options == 'push'">
                 <label for="blueprint">{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</label>
                 <select id="blueprint"
                         name="blueprint"
