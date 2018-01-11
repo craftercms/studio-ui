@@ -108,7 +108,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
             var header = [
                 Common.getSimpleRow("checkAll", widgetId, '<input title="Select all" class="dashlet-item-check" id="' + widgetId + 'CheckAll" name="check-all" type="checkbox"/>', "minimize"),
                 Common.getSortableRow("internalName", widgetId, CMgs.format(langBundle, "dashletGoLiveColPageName"), "minimize"),
-                Common.getSimpleRow("edit", widgetId, "View", "minimize"),
+                Common.getSimpleRow("view", widgetId, "View", "minimize"),
                 Common.getSimpleRow("edit", widgetId, CMgs.format(langBundle, "dashletGoLiveColEdit"), "minimize"),
                 Common.getSortableRow("browserUri", widgetId, CMgs.format(langBundle, "dashletGoLiveColURL"), "maximize"),
                 '<th id="fullUri" class="width0"></th>',
