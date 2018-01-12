@@ -1043,8 +1043,12 @@
                     params.use_remote = !$scope.isCollapsed;
                     params.remote_name = $scope.site.name;
                     params.remote_url = $scope.site.url;
-                    params.remote_username = $scope.site.username;
-                    params.remote_password = $scope.site.password;
+                    if($scope.site.username){
+                        params.remote_username = $scope.site.username;
+                    }
+                    if($scope.site.password){
+                        params.remote_password = $scope.site.password;
+                    }
                     params.create_option = $scope.site.options ? $scope.site.options : "clone";
                     if($scope.site.options == "push"){
                         params.blueprint = $scope.site.blueprint.id;
