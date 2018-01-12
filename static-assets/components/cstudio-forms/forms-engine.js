@@ -1981,8 +1981,13 @@ var CStudioForms = CStudioForms || function() {
                                 if(lastTwo){
                                     setTimeout(function(lastTwo){
                                         for(var k=0; k < formField.form.sections[0].fields.length; k++){
-                                            if(!formField.form.sections[0].fields[k].inputEl.disabled){
+                                            if(!formField.form.sections[0].fields[k].inputEl.disabled){                                            
+                                                
+                                                var position = $('html').scrollTop();
+                                                console.log(position);
                                                 formField.form.sections[0].fields[k].inputEl.focus();
+                                                $('html').scrollTop(position);
+
                                                 return
                                             }
                                         }
