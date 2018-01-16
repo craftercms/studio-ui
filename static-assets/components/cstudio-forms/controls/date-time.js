@@ -215,16 +215,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			if (this.showDate && dateValue != "" ||
 				this.showTime && !this.showDate && timeValue != "") {
 
-				res = this.convertDateTimeSync(dateVal, timeVal, this.timezone, "GMT");
-				val = eval("(" + (res.responseText) + ")");
-
-				if (res.status == 200 && val.convertedTimezone) {
-					res = val.convertedTimezone.split(" ");
-                    return CStudioAuthoring.Utils.formatDateToISO(res[0] + " " + res[1]);
-
-				} else {
-					return false;
-				}
+				res = this.convertDateTime(dateVal, timeValue, this.timezone, true, null).split(" ");
+                return CStudioAuthoring.Utils.formatDateToISO(res[0] + " " + res[1]);
 			} else {
 				return "";	// The date/time fields are empty
 			}
@@ -258,19 +250,6 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		this._onChangeVal(null, this)
 	},
 
-	createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
-		var baseUrl = CStudioAuthoringContext.authoringAppBaseUri;
-		var serviceUrl = "/api/1/services/util/time/convert-time.json?";
-		var url = baseUrl;
-		url += serviceUrl;
-		url += "time=" + time;
-		url += "&srcTimezone=" + srcTimezone;
-		url += "&destTimezone="  + destTimezone;
-		url += "&dateFormat=" + dateFormat;
-
-		return url;
-	},
-
 	// Get the date/time formatting for the time converting service
 	getConvertFormat: function (includeDate) {
 		var format = (includeDate) ? "MM/dd/yyyy%20HH:mm:ss" : "HH:mm:ss";
@@ -280,7 +259,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	// Get a date/time string to use with the time converting service
 	getDateTimeString: function (date, time) {
 		// There should always be a time value or else, we risk calculating the date value incorrectly; but, just in case ...
-		var dateTimeStr = (date) ? date + ((time) ? "%20" + time : "%2000:00:00") :
+		var dateTimeStr = (date) ? date + ((time) ? " " + time : " 00:00:00") :
 		"" + time;
 		return dateTimeStr;
 	},
@@ -290,30 +269,23 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	// information made through this call is small so it shouldn't affect UX considerably. This call is synchronous because 
 	// we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to 
 	// register "beforeSave" callbacks, but these are assumed to be synchronous (forms-engine.js, onBeforeSave method)
-	convertDateTimeSync: function(date, time, srcTimezone, destTimezone, callback) {
-		var xhrObj;
 
-		var format = this.getConvertFormat(date),
-			convertString = this.getDateTimeString(date, time);
+   convertDateTime: function(date, time, newTimeZone, toUTC, callback){
+        var convertString = this.getDateTimeString(date, time.replace(/\./g, ""));
+       var newDate;
 
-		var service = this.createServiceUri(convertString, srcTimezone, destTimezone, format);
-		YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-		// YAHOO.util.Connect.asyncRequest('GET',service, callback);
+       if(!toUTC){
+           newDate = CStudioAuthoring.Utils.formatDateFromUTC(convertString, newTimeZone, "large");
+       }else{
+           newDate = CStudioAuthoring.Utils.parseDateToUTC(convertString, newTimeZone, "large", "MM/DD/YYYY hh:mm:ss a");
+       }
 
-		var xhrObj = YAHOO.util.Connect.createXhrObject();
-		xhrObj.conn.open("GET", service, false);
-		xhrObj.conn.send(null);
-		return xhrObj.conn;
-	},
-
-	convertDateTime: function(date, time, srcTimezone, destTimezone, callback){
-		var format = this.getConvertFormat(date),
-			convertString = this.getDateTimeString(date, time);
-
-		var service = this.createServiceUri(convertString, srcTimezone, destTimezone, format);
-		YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-		YAHOO.util.Connect.asyncRequest('GET', service, callback);
-	},
+       if (callback){
+           callback.success(newDate);
+       }else{
+           return newDate
+       }
+    },
 
 	// set the timestamp and format for the output
 	setTimeStamp : function (timeStamp, timeFormat) {
@@ -697,8 +669,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 			cb = {
 				success: function (response) {
-					var data = eval("(" + response.responseText + ")"),
-						timezoneNow = data.convertedTimezone;
+					var timezoneNow = response;
 
 					timezoneNowObj = _self.getFormattedDateTimeObject(timezoneNow, true);
 					_self.populateDateTime(timezoneNowObj, _self.dateEl, _self.timeEl, _self.showDate, _self.showTime);
@@ -1116,8 +1087,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			cb = {
 				success: function(response) {
 					//Set date and time values in the UI
-					var data = eval("(" + response.responseText + ")"),
-						timezoneTime = data.convertedTimezone,
+					var timezoneTime = response,
 						tzDateTimeObj = _self.getFormattedDateTimeObject(timezoneTime, true),
 						res, data, timeObj;
 
@@ -1188,26 +1158,15 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 					emptyTime = true;
 				}
 			}
-			this.convertDateTime(dateVal, timeVal, "GMT", this.timezone, cb);
+            this.convertDateTime(dateVal, timeVal, this.timezone, false, cb);
+
 		} else {
 			//No value exists yet
 			if (this.populate) {
-
-				cb = {
-					success: function (response) {
-						var data = eval("(" + response.responseText + ")");
-						var	adjustedTimeZoneObj = _self.getFormattedDateTimeObject(data.convertedTimezone, true);
-						_self.populateDateTime(adjustedTimeZoneObj, _self.dateEl, _self.timeEl, _self.showDate, _self.showTime);
-						_self.validate(null, _self);
-					},
-					failure: function (response) {
-						console.log("Unable to convert current date/time");
-					}
-				};
-				var changeDate = _self.doDatePopulateExpression( new Date(this.startTzDateTimeStr));
-				this.getCurrentDateTime(changeDate, this.timezone, cb);
-				// Populate it with the current time (see getCurrentDateTime)
-			}
+                var	adjustedTimeZoneObj = _self.getFormattedDateTimeObject(this.startTzDateTimeStr, true);
+                _self.populateDateTime(adjustedTimeZoneObj, _self.dateEl, _self.timeEl, _self.showDate, _self.showTime);
+                _self.validate(null, _self);
+            }
 			this.validate(null, this);
 			// this.displayTimezoneWarning(this.startDateTimeObj, this.startTzDateTimeStr);
 		}
@@ -1248,7 +1207,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	getCurrentDateTime : function (now, configTimezone, callback) {
 		var dtObj = this.getDateTimeObject(now);
 
-		this.convertDateTime(dtObj.date, dtObj.time, "GMT", configTimezone, callback);
+        this.convertDateTime(dtObj.date, dtObj.time, configTimezone, false, callback);
 	},
 
 	_setValue: function(value, configTimezone){
@@ -1259,8 +1218,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 		var cb = {
 			success: function (response) {
-				var data = eval("(" + response.responseText + ")"),
-					timezoneNow = data.convertedTimezone;
+				var timezoneNow = response;
 				_self.startTzDateTimeStr = timezoneNow;
 
 				_self.routeDateTimePopulation(storedVal);
@@ -1341,9 +1299,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		if(this.getDescendantProp(dateTimePath, (this.id)) && value != '') {
             studioFormat = CStudioAuthoring.Utils.formatDateToStudio(this.getDescendantProp(dateTimePath, (this.id)));
 			dateTime = (studioFormat).split(" ");
-			res = this.convertDateTimeSync(dateTime[0], dateTime[1], "GMT", this.timezone);
-			val = eval("(" + (res.responseText) + ")");
-			dateTime = val.convertedTimezone.split(" ");
+			res = this.convertDateTime(dateTime[0], dateTime[1], this.timezone, false, null).split(" ");
 		}else {
 			var date = new Date(),
 				dd = date.getDate(),
@@ -1372,10 +1328,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			dateTime[1] = value;
 		}
 
-		res = this.convertDateTimeSync(dateTime[0], dateTime[1], this.timezone, "GMT");
-		val = eval("(" + (res.responseText) + ")");
-
-		this.value = val.convertedTimezone;
+		this.value = this.convertDateTime(dateTime[0], dateTime[1], this.timezone, true, null);
 
 		this.validate(null, this, true);
 

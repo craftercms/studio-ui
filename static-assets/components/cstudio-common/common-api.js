@@ -5948,11 +5948,16 @@ var nodeOpen = false,
                         newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
                         newDate = newDate + " ("+newTimeZone+")";
                     }else{
-                        if(format === "medium"){
-                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
+                        if(format === "large"){
+                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY HH:mm:ss a');
                         }else{
-                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+                            if(format === "medium"){
+                                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
+                            }else{
+                                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+                            }
                         }
+
                     }
                     return newDate != "Invalid date" ? newDate : '';
                 }catch(err){
@@ -5960,6 +5965,36 @@ var nodeOpen = false,
                 }
 
             },
+
+            /**
+             * format a date to UTC
+             */
+            parseDateToUTC: function(dateTime, newTimeZone, formatSize, format) {
+                try{
+                    var currentDate = moment.tz(dateTime, format, newTimeZone),
+                        newDate;
+
+                    if(formatSize === "full"){
+                        newDate = currentDate.clone().tz("Etc/UTC").format('dddd, MMMM DD, YYYY, hh:mm:ss A');
+                        newDate = newDate + " (Etc/UTC)";
+                    }else{
+                        if(formatSize === "large"){
+                            newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY HH:mm:ss a');
+                        }else{
+                            if(formatSize === "medium"){
+                                newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY hh:mm a');
+                            }else{
+                                newDate = currentDate.clone().tz("Etc/UTC").format('MM-DD hh:mm a');
+                            }
+                        }
+
+                    }
+                    return newDate != "Invalid date" ? newDate : '';
+                }catch(err){
+                    console.log(err);
+                }
+
+        },
 
             formatDateFromStringNullToEmpty: function(dateTime, timeFormat) {
                 if ( (dateTime == "null") || (dateTime == null) || (dateTime == undefined) || (dateTime == "") )
@@ -6004,19 +6039,6 @@ var nodeOpen = false,
                 }
             },
 
-        createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
-                var baseUrl = CStudioAuthoringContext.authoringAppBaseUri;
-                var serviceUrl = "/api/1/services/util/time/convert-time.json?";
-                var url = baseUrl;
-                url += serviceUrl;
-                url += "time=" + time;
-                url += "&srcTimezone=" + srcTimezone;
-                url += "&destTimezone="  + destTimezone;
-                url += "&dateFormat=" + dateFormat;
-
-                return url;
-            },
-
             // Get the date/time formatting for the time converting service
             getConvertFormat: function (includeDate) {
                 var format = (includeDate) ? "MM/dd/yyyy%20HH:mm:ss" : "HH:mm:ss";
@@ -6029,45 +6051,6 @@ var nodeOpen = false,
                 var dateTimeStr = (date) ? date + ((time) ? "%20" + time : "%2000:00:00") :
                 "" + time;
                 return dateTimeStr;
-            },
-
-            // Currently this is making a synchronous call to get the UTC representation of a date. The size of the transfer of
-            // information made through this call is small so it shouldn't affect UX considerably. This call is synchronous because
-            // we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to
-            // register "beforeSave" callbacks, but these are assumed to be synchronous (forms-engine.js, onBeforeSave method)
-            convertDateTimeSync: function(date, srcTimezone, destTimezone) {
-                //  convertString   7/13/2016%2020:21:49
-
-                var xhrObj;
-
-                var dd = date.getDate(),
-                    mm = date.getMonth()+1, //January is 0!
-                    yyyy = date.getFullYear(),
-                    hh = date.getHours(),
-                    m = date.getMinutes();
-
-                if(dd<10) {
-                    dd='0'+dd
-                }
-                if(mm<10) {
-                    mm='0'+mm
-                }
-
-                var dateString = mm+'/'+dd+'/'+yyyy,
-                    timeString = hh+':'+m+':'+'00',
-                    dateTime = [dateString, timeString];
-
-                var format = this.getConvertFormat(dateString),
-                    convertString = this.getDateTimeString(dateString, timeString);
-
-                var service = this.createServiceUri(convertString, srcTimezone, destTimezone, format);
-                YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                // YAHOO.util.Connect.asyncRequest('GET',service, callback);
-
-                var xhrObj = YAHOO.util.Connect.createXhrObject();
-                xhrObj.conn.open("GET", service, false);
-                xhrObj.conn.send(null);
-                return xhrObj.conn;
             },
             
             /**
