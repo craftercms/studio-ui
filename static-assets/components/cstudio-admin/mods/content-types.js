@@ -475,7 +475,7 @@ CStudioAuthoring.Module.requireModule(
                                         this.controlContainerEl.prototypeField = tool;
 										
 										YDom.addClass(this.controlContainerEl, "new-control-type");
-										YDom.addClass(this.controlContainerEl, tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
+										YDom.addClass(this.controlContainerEl, tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase()+"-control");
 
                                         var iconElt = CStudioAuthoring.Utils.createIcon(controls[idx], "fa-cube");
                                         this.controlContainerEl.insertBefore(iconElt, this.controlContainerEl.firstChild);
