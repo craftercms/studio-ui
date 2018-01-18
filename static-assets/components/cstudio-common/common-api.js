@@ -2559,7 +2559,7 @@ var nodeOpen = false,
 
                     var panel = YDom.getElementsByClassName("yui-panel-container")[0];
                     var  auxParentPath = "";
-                    if( panel && (panel.style.visibility == 'visible' || panel.style.visibility == '')){
+                    if( panel && (panel.style.visibility == 'visible' || panel.style.visibility == '') && flow!="deleteSchedule"){
                         panel.style.visibility = "hidden";
                     }
 

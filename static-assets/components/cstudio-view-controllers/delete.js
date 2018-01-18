@@ -231,7 +231,10 @@
                     var nodeName = data.split("/")[data.split("/").length - 2];
                     CStudioAuthoring.Operations.pageReload('deleteSchedule', nodeName);
                     if(CStudioAuthoringContext.isPreview) {
-                        CStudioAuthoring.PreviewTools.turnToolsOff();
+                        if(data.indexOf("/website/") != -1){
+                            CStudioAuthoring.PreviewTools.turnToolsOff();
+                        }
+
                     }
                 }, null, self);
             })(dataInf);
