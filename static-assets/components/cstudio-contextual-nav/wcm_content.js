@@ -83,25 +83,24 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         var thisContext = this;
                                         var saveDraftFlag = false;
                                         (function (saveDraftFlag) {
+                                            var currentContent;
                                             for(var s=0; s<selectedContent.length; s++) {
-                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
-                                                    success: function (content) {
-                                                        var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
-                                                        if(content.item.savedAsDraft == true) {
-                                                            saveDraftFlag = true;
-                                                            if(noticeEls.length < 1) {
-                                                                var noticeEl = document.createElement("div");
-                                                                thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                                                                YDom.addClass(noticeEl, "acnDraftContent");
-                                                                noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
-                                                            }
-                                                        }else{
-                                                            if(!saveDraftFlag) {
-                                                                me.removeNotices(noticeEls);
-                                                            }
-                                                        }
+                                                currentContent = selectedContent[s];
+                                                
+                                                var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
+                                                if(currentContent.savedAsDraft == true) {
+                                                    saveDraftFlag = true;
+                                                    if(noticeEls.length < 1) {
+                                                        var noticeEl = document.createElement("div");
+                                                        thisContext._self.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                        YDom.addClass(noticeEl, "acnDraftContent");
+                                                        noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
                                                     }
-                                                });
+                                                }else{
+                                                    if(!saveDraftFlag) {
+                                                        me.removeNotices(noticeEls);
+                                                    }
+                                                }
                                            }
                                         })(saveDraftFlag);
                                     },
@@ -126,12 +125,15 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             if(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
                                 CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, {
                                     success: function (content) {
-                                        if( CStudioAuthoring.Utils.getIconFWClasses(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) !=
-                                            CStudioAuthoring.Utils.getIconFWClasses(content.item)){
+                                        if( (CStudioAuthoring.Utils.getIconFWClasses(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) !=
+                                            CStudioAuthoring.Utils.getIconFWClasses(content.item)) || e.typeAction === "publish"){
                                             YDom.get("activeContentActions").innerHTML = "";
                                             if(e.typeAction === "publish" && (content.item.inProgress && !content.item.scheduled)){
                                                 content.item.inFlight = true;
+                                                content.item.isInFlight = true;
+                                            }else{
                                             }
+                                            CStudioAuthoring.SelectedContent.clear();
                                             CStudioAuthoring.SelectedContent.setContent(content.item);
                                             _this.drawNav();
                                         }
@@ -204,27 +206,22 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
                                 (function (saveDraftFlag, noticeEls, selectedContent) {
                                     if(selectedContent.length > 0) {
+                                        var currentContent = selectedContent[s];
                                         for (var s = 0; s < selectedContent.length; s++) {
-                                            (function (s) {
-                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, selectedContent[s].uri, {
-                                                    success: function (content) {
-                                                        if (content.item.savedAsDraft == true && selectedContent.length > 0) {
-                                                            saveDraftFlag = true;
-                                                            noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
-                                                            if (noticeEls.length < 1) {
-                                                                var noticeEl = document.createElement("div");
-                                                                _this.containerEl.parentNode.parentNode.appendChild(noticeEl);
-                                                                YDom.addClass(noticeEl, "acnDraftContent");
-                                                                noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
-                                                            }
-                                                        } else {
-                                                            if (!saveDraftFlag /*|| (saveDraftFlag && selectedContent.length-1 == s )*/) {
-                                                                me.removeNotices(noticeEls);
-                                                            }
-                                                        }
-                                                    }
-                                                });
-                                            })(s);
+                                            if (currentContent.savedAsDraft == true && selectedContent.length > 0) {
+                                                saveDraftFlag = true;
+                                                noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
+                                                if (noticeEls.length < 1) {
+                                                    var noticeEl = document.createElement("div");
+                                                    _this.containerEl.parentNode.parentNode.appendChild(noticeEl);
+                                                    YDom.addClass(noticeEl, "acnDraftContent");
+                                                    noticeEl.innerHTML = CMgs.format(contextNavLangBundle, "wcmContentSavedAsDraft");
+                                                }
+                                            } else {
+                                                if (!saveDraftFlag /*|| (saveDraftFlag && selectedContent.length-1 == s )*/) {
+                                                    me.removeNotices(noticeEls);
+                                                }
+                                            }
                                         }
                                     }else{
                                         noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
@@ -655,7 +652,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         try{
                                             var currentContentTO,
                                                 URLBrowseUri = pageParameter,
-                                                contentTOBrowseUri = contentTO.item.browserUri;
+                                                contentTOBrowseUri = contentTO.item.browserUri == "" ? "/" : contentTO.item.browserUri;
 
                                             if (URLBrowseUri == contentTOBrowseUri){
                                                 currentContentTO = null;
@@ -706,7 +703,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                     
                                     if(!CStudioAuthoringContext.isPreview) {
                                         if(draft) {
-                                            console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
+                                            //console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
                                             CStudioAuthoring.Utils.Cookies.createCookie("dashboard-checked", JSON.stringify(CStudioAuthoring.SelectedContent.getSelectedContent()));
                                         }else{
                                             CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
@@ -1096,6 +1093,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 linkEl = document.createElement("a");
 
                             YDom.addClass(linkContainerEl, "acn-link");
+
+                            if("Schedule" === item.name){
+                                YDom.addClass(linkEl, "Schedule");
+                            }else{
+                                YDom.addClass(linkEl, item.renderId);
+                            }
                             linkEl.innerHTML = item.name;
                             YDom.addClass(linkEl, "cursor");
                             linkEl.style.cursor = 'pointer';

@@ -1,4 +1,4 @@
-CStudioForms.Controls.AWSVideoUpload = CStudioForms.Controls.AWSVideoUpload ||  
+CStudioForms.Controls.BoxFileUpload = CStudioForms.Controls.BoxFileUpload ||  
 function(id, form, owner, properties, constraints, readonly)  {
   this.owner = owner;
   this.owner.registerField(this);
@@ -27,22 +27,22 @@ function(id, form, owner, properties, constraints, readonly)  {
   return this;
 };
 
-YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField, {
+YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField, {
   
   getLabel: function() {
-    return "AWS Video Upload";
+    return "Box File Upload";
   },
   
   getName: function() {
-    return "aws-video-upload";
+    return "box-file-upload";
   },
   
   setValue: function(value) {
     var validationResult = true;
-    if(value && value[0] && value[0].base_key) {
+    if(value && value[0] && value[0].id) {
       this.value = value;
       this.form.updateModel(this.id, this.value);
-      this.fileEl.innerHTML = "s3://" + value[0].output_bucket + "/" + value[0].base_key + "*";
+      this.fileEl.innerHTML = "box://" + value[0].name + "*";
       this.clearError("required");
     } else if(this.required) {
       validationResult = false;
@@ -58,7 +58,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   
   getSupportedProperties: function() {
     return [
-      { label: "Profile ID", name: "profile_id", type: "string", defaultValue: "elastic-transcoder-default" }
+      { label: "Profile ID", name: "profile_id", type: "string", defaultValue: "box-default" }
     ];
   },
   
@@ -69,7 +69,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   },
   
   _onChange: function(evt, obj) {
-    var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/aws/elastictranscoder/transcode.json");
+    var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/box/upload.json");
 
     var callback = { 
       cache: false,
@@ -154,9 +154,6 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     
     var formEl = document.createElement("form");
     formEl.id = "upload_form_" + this.id;
-
-    var inputContainerEl = document.createElement("div");
-    YAHOO.util.Dom.addClass(inputContainerEl, "cstudio-form-control-input-help-container");
     
     var inputEl = document.createElement("input");
 		this.inputEl = inputEl;
@@ -165,12 +162,8 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
 		YAHOO.util.Dom.addClass(inputEl, "datum");
 		YAHOO.util.Dom.addClass(inputEl, "cstudio-form-control-input");
     YAHOO.util.Event.on(inputEl, "change",  this._onChange, this);
-
-    inputContainerEl.appendChild(inputEl);
-
-    this.renderHelp(config, inputContainerEl);
     
-    formEl.appendChild(inputContainerEl);
+		formEl.appendChild(inputEl);
     
     var profileEl = document.createElement("input");
     profileEl.type = "hidden";
@@ -187,17 +180,10 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     formEl.appendChild(siteEl);
     
     controlWidgetContainerEl.appendChild(formEl);
-
-    var descriptionEl = document.createElement("span");
-    YAHOO.util.Dom.addClass(descriptionEl, 'description');
-    YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description');
-    descriptionEl.innerHTML = config.description;
-
-    controlWidgetContainerEl.appendChild(descriptionEl);
     
     containerEl.appendChild(controlWidgetContainerEl);
   }
   
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-aws-video-upload", CStudioForms.Controls.AWSVideoUpload);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-box-file-upload", CStudioForms.Controls.BoxFileUpload);

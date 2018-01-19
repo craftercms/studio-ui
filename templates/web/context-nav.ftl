@@ -4,12 +4,6 @@
         <div class="container-fluid">
 
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
                 <a class="navbar-brand" href="/studio/site-dashboard">
                     <img id="cstudio-logo" src="" alt="Crafter Studio">
                 </a>
@@ -30,7 +24,7 @@
                 <div class="navbar-right-wrapper">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a id="usersRightNav" class="nav-link ng-binding users-link hidden" href="/studio/#/users">
+                            <a id="homeUsers" class="nav-link ng-binding users-link hidden" href="/studio/#/users">
                                 <span class="nav-icon fa fa-users"></span>
                                 <span class="nav-label" data-translation="users">Users</span>
                             </a>

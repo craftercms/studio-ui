@@ -27,7 +27,7 @@
     <script src="/studio/static-assets/libs/angular-ui-bootstrap-bower/ui-bootstrap-tpls.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular-cookies/angular-cookies.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/angular-ui-utils/ui-utils.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.js"></script>
     <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!''}"></script>
@@ -36,6 +36,8 @@
     <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!''}"></script>
     <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!''}"></script>
     <link rel="shortcut icon" href="/studio/static-assets/img/favicon.png?version=${UIBuildId!''}">
+
+    <script> var xsrfToken = "${_csrf.token}" </script>
 
 </head>
 <body class="{{$state.current.cssClass}}">

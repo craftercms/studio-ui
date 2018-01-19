@@ -34,7 +34,7 @@ CStudioAuthoring.IceToolsPanel = CStudioAuthoring.IceToolsPanel || {
                 buttonEl = document.createElement("button");
                 pencilIcon = document.createElement("span");
                 labelEl = document.createElement("span");
-                YDom.addClass(wrapper, 'form-group');
+                YDom.addClass(wrapper, 'form-group ice-toogle');
                 YDom.addClass(buttonEl, 'btn btn-default btn-block');
                 YDom.addClass(labelEl, 'acn-ptools-ice-label');
 

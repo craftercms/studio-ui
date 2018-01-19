@@ -13,8 +13,10 @@
     ]);
 
     app.run([
-        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants',
-        function ($rootScope, $state, $stateParams, authService, sitesService, Constants) {
+        '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
+        function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
+
+            $http.defaults.headers.common['X-XSRF-TOKEN'] = xsrfToken;
 
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
@@ -68,7 +70,6 @@
     app.config([
         '$stateProvider', '$urlRouterProvider', '$translateProvider',
         function ($stateProvider, $urlRouterProvider, $translateProvider) {
-
             $urlRouterProvider
                 .otherwise('/sites');
 
@@ -949,6 +950,8 @@
             $scope.site = null;
             $scope.blueprints = [];
             $scope.isValid = false;
+            $scope.isCollapsed = true;
+            $scope.isBluePrint = false;
 
             function getBlueprints() {
                 sitesService.getAvailableBlueprints().success(function (data) {
@@ -1035,11 +1038,26 @@
                     size: 'sm'
                 });
 
-                sitesService.create({
-                    site_id: $scope.site.siteId,
-                    description: $scope.site.description,
-                    blueprint: $scope.site.blueprint.id
-                })
+                var params = {site_id: $scope.site.siteId, description: $scope.site.description};
+                if (!$scope.isCollapsed){
+                    params.use_remote = !$scope.isCollapsed;
+                    params.remote_name = $scope.site.name;
+                    params.remote_url = $scope.site.url;
+                    if($scope.site.username){
+                        params.remote_username = $scope.site.username;
+                    }
+                    if($scope.site.password){
+                        params.remote_password = $scope.site.password;
+                    }
+                    params.create_option = $scope.site.options ? $scope.site.options : "clone";
+                    if($scope.site.options == "push"){
+                        params.blueprint = $scope.site.blueprint.id;
+                    }
+                }else{
+                    params.blueprint = $scope.site.blueprint.id;
+                }
+
+                sitesService.create(params)
                     .success(function (data) {
                         $timeout(function () {
                             sitesService.editSite($scope.site);
@@ -1356,5 +1374,10 @@
         };
     });
 
+    app.filter('nospace', function () {
+        return function (value) {
+            return (!value) ? '' : value.replace(/ /g, '');
+        };
+    });
 
 })(angular);

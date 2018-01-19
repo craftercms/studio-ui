@@ -485,12 +485,6 @@ div#acn-active-content {
   padding: 0 0 0 17px;
 }
 
-.acn-dropdown-wrapper .acn-dropdown-menu .acn-analytics {
-  background: url('/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif') no-repeat left;
-  background-position: 0 -1179px;
-  padding: 2px 0 0 18px;
-}
-
 .acn-admin-console {
   font-size: 14px;
   line-height: 15px;
@@ -927,6 +921,10 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   padding-left: 2px;
   text-align: left;
   vertical-align: top;
+}
+
+.acn-tooltip .acn-name {
+  word-break: break-word;
 }
 
 .acn-width80 {
@@ -2708,7 +2706,7 @@ span.acn-canned-search {
   opacity: 0.5!important;
 }
 
-#cstudioPreviewAnalyticsOverlay {
+#cstudioPreviewTargetingOverlay {
   padding: 0;
   border: 1px solid rgba(201, 201, 201, 1);
   background: #efefef;

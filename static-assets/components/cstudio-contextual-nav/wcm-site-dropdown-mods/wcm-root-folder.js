@@ -28,6 +28,8 @@
 			searchesToWire: [],
             myTree: null,
             myTreePages: [],
+            myTreeAssets: [],
+            currentTextNode : null,
             copiedItem: null,
             cutItem: null,
             instanceCount: 0,
@@ -1590,10 +1592,12 @@
                                 treeToUpdateDependencies = tree.getNodesByProperty("uri", dependencies[i]);
                                 if(treeToUpdateDependencies) {
                                     for (var j = 0; j < treeToUpdateDependencies.length; j++) {
-                                        (function (treeToUpdateDependencies, j) {
-                                            lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
-                                            nodeOpen = true;
-                                        })(treeToUpdateDependencies, j);
+                                        if(treeToUpdateDependencies[j].data.contentType != "folder"){
+                                            (function (treeToUpdateDependencies, j) {
+                                                lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
+                                                nodeOpen = true;
+                                            })(treeToUpdateDependencies, j);
+                                        }
                                     }
                                 }
                             }
@@ -2692,7 +2696,7 @@
                             try{
                                 var currentContentTO,
                                     URLBrowseUri = pageParameter,
-                                    contentTOBrowseUri = contentTO.item.browserUri;
+                                    contentTOBrowseUri = contentTO.item.browserUri == "" ? "/" : contentTO.item.browserUri;
                                 
                                 if (URLBrowseUri == contentTOBrowseUri){
                                     currentContentTO = null;
@@ -2700,7 +2704,7 @@
                                     currentContentTO = contentTO.item;
                                 }
 
-                                if(currentContentTO.isPage){
+                                if(contentTO.item.isPage){
                                     CStudioAuthoring.Operations.refreshPreview(currentContentTO);
                                 }else{
                                     CStudioAuthoring.Operations.refreshPreview();
@@ -2868,84 +2872,114 @@
              */
             cutContent: function(sType, args, tree) {
 
-				var parentTreeNode = oCurrentTextNode.getEl();
-				var getChildNodeClass = YDom.getElementsByClassName("ygtvlp", null, parentTreeNode);
-				var isExpandableNode = YDom.getElementsByClassName("ygtvtp", null, parentTreeNode);
+                var params = { site: (CStudioAuthoringContext.site), path: oCurrentTextNode.data.uri };
+                var doCut = function (){
+                    var parentTreeNode = oCurrentTextNode.getEl();
+                    var getChildNodeClass = YDom.getElementsByClassName("ygtvlp", null, parentTreeNode);
+                    var isExpandableNode = YDom.getElementsByClassName("ygtvtp", null, parentTreeNode);
 
-				if(oCurrentTextNode.hasChildren() || getChildNodeClass.length > 0 || isExpandableNode.length > 0){
-					// alert("The page and its child pages have been cut to the clipboard");
-				}
-
-                var uri = oCurrentTextNode.data.uri;
-                Self.copiedItem = null;
-                Self.cutItem = oCurrentTextNode;
-
-				if(uri.lastIndexOf("index.xml")==-1){
-					var serviceUri = CStudioAuthoring.Service.getPagesServiceUrl + "?site=" + CStudioAuthoringContext.site + "&path=" + uri + "&depth=-1&order=default";
-
-				}
-				else {
-	                var folderPath = uri.substring(0, uri.lastIndexOf("index.xml"));
-
-    	            var serviceUri = CStudioAuthoring.Service.getPagesServiceUrl + "?site=" + CStudioAuthoringContext.site + "&path=" + folderPath + "&depth=-1&order=default";
-				}
-
-                var getTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
-
-                try {
-
-					var treeInner = YDom.get('acn-dropdown-menu-inner');
-					var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
-					for(var i=0; i<previousCutEl.length; i++){
-						if(previousCutEl[i].style.color == Self.CUT_STYLE_RGB || previousCutEl[i].style.color == Self.CUT_STYLE ){
-							previousCutEl[i].style.color = '';
-						}
-					}
-                    
-                    document.getElementById(oCurrentTextNode.labelElId).style.cssText += "color: " + Self.CUT_STYLE +  " !important";
-
-					if(oCurrentTextNode.hasChildren()){
-						var getTextNodes = YDom.getElementsByClassName("status-icon", null, parentTreeNode);
-						for(var i=0; i<getTextNodes.length; i++){
-							getTextNodes[i].style.cssText += "color: " + Self.CUT_STYLE +  " !important";
-						}
-					}
-
-				} catch (ex) {  }
-
-                //CStudioAuthoring.Operations.openCopyDialog(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, assignTemplateCb, args);
-                var cutCb = {
-                    success: function(response) {
-
-                        var content = YAHOO.lang.JSON.parse(response.responseText);
-
-                        var item = content.item;
-                        var jsonString= YAHOO.lang.JSON.stringify(item);
-                        var jsonArray="{\"item\":["+jsonString+"]}";
-                        var cutRequest = CStudioAuthoringContext.baseUri + "/api/1/services/api/1/clipboard/cut-item.json?site=" + CStudioAuthoringContext.site;
-
-                        var onComplete = {
-                            success:function(response) {
-
-                            },
-                            failure: function() {
-                            }
-
-                        };
-
-                        YAHOO.util.Connect.setDefaultPostHeader(false);
-                        YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
-                        YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
-
-                    },
-                    failure:function(response) {
-
+                    if(oCurrentTextNode.hasChildren() || getChildNodeClass.length > 0 || isExpandableNode.length > 0){
+                        // alert("The page and its child pages have been cut to the clipboard");
                     }
 
-                };
+                    var uri = oCurrentTextNode.data.uri;
+                    Self.copiedItem = null;
+                    Self.cutItem = oCurrentTextNode;
 
-               YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
+                    if(uri.lastIndexOf("index.xml")==-1){
+                        var serviceUri = CStudioAuthoring.Service.getPagesServiceUrl + "?site=" + CStudioAuthoringContext.site + "&path=" + uri + "&depth=-1&order=default";
+
+                    }
+                    else {
+                        var folderPath = uri.substring(0, uri.lastIndexOf("index.xml"));
+
+                        var serviceUri = CStudioAuthoring.Service.getPagesServiceUrl + "?site=" + CStudioAuthoringContext.site + "&path=" + folderPath + "&depth=-1&order=default";
+                    }
+
+                    var getTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
+
+                    try {
+
+                        var treeInner = YDom.get('acn-dropdown-menu-inner');
+                        var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
+                        for(var i=0; i<previousCutEl.length; i++){
+                            if(previousCutEl[i].style.color == Self.CUT_STYLE_RGB || previousCutEl[i].style.color == Self.CUT_STYLE ){
+                                previousCutEl[i].style.color = '';
+                            }
+                        }
+
+                        document.getElementById(oCurrentTextNode.labelElId).style.cssText += "color: " + Self.CUT_STYLE +  " !important";
+
+                        if(oCurrentTextNode.hasChildren()){
+                            var getTextNodes = YDom.getElementsByClassName("status-icon", null, parentTreeNode);
+                            for(var i=0; i<getTextNodes.length; i++){
+                                getTextNodes[i].style.cssText += "color: " + Self.CUT_STYLE +  " !important";
+                            }
+                        }
+
+                    } catch (ex) {  }
+
+                    //CStudioAuthoring.Operations.openCopyDialog(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, assignTemplateCb, args);
+                    var cutCb = {
+                        success: function(response) {
+
+                            var content = YAHOO.lang.JSON.parse(response.responseText);
+
+                            var item = content.item;
+                            var jsonString= YAHOO.lang.JSON.stringify(item);
+                            var jsonArray="{\"item\":["+jsonString+"]}";
+                            var cutRequest = CStudioAuthoringContext.baseUri + "/api/1/services/api/1/clipboard/cut-item.json?site=" + CStudioAuthoringContext.site;
+
+                            var onComplete = {
+                                success:function(response) {
+
+                                },
+                                failure: function() {
+                                }
+
+                            };
+
+                            YAHOO.util.Connect.setDefaultPostHeader(false);
+                            YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+                            YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                            YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
+
+                        },
+                        failure:function(response) {
+
+                        }
+
+                    };
+
+                    YConnect.asyncRequest('GET', getTreeItemReuest, cutCb);
+                }
+
+                CStudioAuthoring.Operations.getWorkflowAffectedFiles(params, {
+                    success: function (content) {
+                        if (content && content.length) {
+
+                            CStudioAuthoring.Operations._showDialogueView({
+                                controller: 'viewcontroller-cancel-workflow',
+                                fn: function (oAjaxCfg) {
+                                    // because _showDialogueView was designed to load the body from a
+                                    // webscript, must simulate the ajax process here
+                                    oAjaxCfg.success({ responseText: '' });
+                                },
+                                callback: function () {
+                                    var view = this;
+                                    view.setContent(content);
+                                    view.on('continue', function () {
+                                        doCut();
+                                    });
+                                }
+                            });
+
+                        } else {
+                            doCut();
+                        }
+                    }
+                });
+
             },
             /**
              * paste content to selected location

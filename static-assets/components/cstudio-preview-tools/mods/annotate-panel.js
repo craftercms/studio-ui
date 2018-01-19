@@ -1,6 +1,5 @@
-CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-preview-tools/mods/annotate/dist/drawingboard.min.js");
-CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-preview-tools/mods/annotate/dist/drawingboard.min.js");
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-preview-tools/mods/annotate/dist/drawingboard.min.css");
+CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-preview-tools/mods/annotate/dist/drawingboard.js");
+CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-preview-tools/mods/annotate/dist/drawingboard.css");
 
 
 //CStudioAuthoring.Utils.addJavascript("http://127.0.0.1:8080/static-assets/sui/scripts/social.js");

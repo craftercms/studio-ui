@@ -2,16 +2,16 @@
     <div class="row full">
         <div id="" class="col-lg-10 col-lg-offset-1">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12" id="admin-users">
                     <h2 class="page-header">{{ 'admin.users.HEADER_LABEL' | translate }}</h2>
 
                     <h4 class="pull-left mb20">{{ 'admin.users.ADD_TO_GROUP_TEXT' | translate }}</h4>
 
-                    <a class="btn btn-default" ng-click="users.createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
+                    <a id="new-user-btn" class="btn btn-default" ng-click="users.createUserDialog()" style="float: right; role="button">{{ 'admin.users.NEW_USER' | translate }}</a>
 
                     <div class="pull-right mr15">
                         <label>{{ 'admin.users.USERS_PER_PAGE' | translate }}: </label>
-                        <input class="audit-number-logs" type="number" name="input" ng-model="users.itemsPerPage"
+                        <input id="users-items-per-page" class="audit-number-logs" type="number" name="input" ng-model="users.itemsPerPage"
                                min="1" max="99" ng-model-options="{debounce: debounceDelay}" only-digits>
                     </div>
 
@@ -27,26 +27,26 @@
                         </tr>
                         <tr>
                             <th colspan="12">
-                                <input ng-model="q" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
+                                <input id="users-search-input" ng-model="q" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
 
                         <tr dir-paginate="user in usersCollection.users | filter:q | itemsPerPage: users.itemsPerPage"
-                            current-page="users.pagination.current" total-items="users.totalLogs">
-                            <td><a ng-click="users.viewUser(user)">{{user.username}}</a></td>
-                            <td>{{user.first_name}}</td>
-                            <td>{{user.last_name}}</td>
-                            <td>{{user.email}}</td>
+                            current-page="users.pagination.current" total-items="users.totalLogs" id="user-row-{{user.username}}">
+                            <td class="userName"><a ng-click="users.viewUser(user)">{{user.username}}</a></td>
+                            <td class="firstName">{{user.first_name}}</td>
+                            <td class="lastName">{{user.last_name}}</td>
+                            <td class="email">{{user.email}}</td>
 
-                            <td>
+                            <td class="edit">
                                 <a ng-click="users.editUserDialog(user)" class="btn btn-sm">
                                     <i class="fa fa-pencil">
                                     </i>
                                 </a>
                             </td>
-                            <td>
+                            <td class="remove">
                                 <a ng-click="users.removeUser(user)" class="btn btn-sm">
                                     <i class="fa fa-trash-o">
                                     </i>
@@ -69,192 +69,192 @@
         <h3 ng-if="!dialogMode" class="modal-title text-capitalize">{{user.name}}</h3>
     </div>
     <form name="createNameForm" id="user-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
-    <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
-        <div class="col-md-12">
-            <fieldset ng-disabled="user.externally_managed">
-                <div class="form-group" ng-if="!(dialogMode == 'create')">
-                    <label for="enabled" class="control-label">Enabled</label>
-                    <input type="checkbox"
-                           ng-disabled="!dialogMode"
-                           id="enabled"
-                           name="enabled"
-                           ng-checked="user.status.enabled"
-                           required
-                           style="margin-left: 12px;"
-                    >
-                </div>
-
-                <div class="form-group" ng-if="!(dialogMode == 'create')">
-                    <label for="enabled" class="control-label">Externally Managed</label>
-                    <input type="checkbox"
-                           ng-disabled="true"
-                           ng-checked="user.externally_managed"
-                           style="margin-left: 12px;"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="firstName" class="control-label">{{ 'admin.users.FIRST_NAME' | translate }}</label>
-                    <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.first_name" autofocus focus-me="true" required>
-
-                    <div class="error-container" ng-if="dialogMode"
-                         ng-show="(createNameForm.firstName.$dirty && createNameForm.firstName.$invalid) || (createNameForm.firstName.$touched && createNameForm.firstName.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.firstName.$error.required">
-                            {{ 'admin.users.NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-                        </small>
+        <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
+            <div class="col-md-12">
+                <fieldset ng-disabled="user.externally_managed">
+                    <div class="form-group" ng-if="!(dialogMode == 'create')">
+                        <label for="enabled" class="control-label">Enabled</label>
+                        <input type="checkbox"
+                               ng-disabled="!dialogMode"
+                               id="enabled"
+                               name="enabled"
+                               ng-checked="user.status.enabled"
+                               required
+                               style="margin-left: 12px;"
+                                >
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="lastName" class="control-label">{{ 'admin.users.LAST_NAME' | translate }}</label>
-                    <input ng-disabled="!dialogMode" type="text" class="form-control" id="lastName" name="lastName" ng-model="user.last_name" required>
 
-                    <div class="error-container" ng-if="dialogMode"
-                         ng-show="(createNameForm.lastName.$dirty && createNameForm.lastName.$invalid) || (createNameForm.lastName.$touched && createNameForm.lastName.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.firstName.$error.required">
-                            {{ 'admin.users.LAST_NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-                        </small>
+                    <div class="form-group" ng-if="!(dialogMode == 'create')">
+                        <label for="enabled" class="control-label">Externally Managed</label>
+                        <input type="checkbox"
+                               ng-disabled="true"
+                               ng-checked="user.externally_managed"
+                               style="margin-left: 12px;"
+                                >
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="email" class="control-label">{{ 'admin.users.EMAIL' | translate }}</label>
-                    <input ng-disabled="!dialogMode" type="email" class="form-control" id="email" name="email" ng-model="user.email" required>
 
-                    <div class="error-container"
-                         ng-show="(createNameForm.email.$dirty && createNameForm.email.$invalid) || (createNameForm.email.$touched && createNameForm.email.$invalid)">
-                        <small class="error" ng-if="dialogMode"
-                               ng-show="createNameForm.email.$error.required">
-                            {{ 'admin.users.EMAIL' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-                        </small>
-                        <small class="error" ng-if="dialogMode"
-                               ng-show="createNameForm.email.$invalid">
-                               {{ 'common.VALID_EMAIL' | translate }}.
-                        </small>
+                    <div class="form-group">
+                        <label for="firstName" class="control-label">{{ 'admin.users.FIRST_NAME' | translate }}</label>
+                        <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.first_name" autofocus focus-me="true" required>
+
+                        <div class="error-container" ng-if="dialogMode"
+                             ng-show="(createNameForm.firstName.$dirty && createNameForm.firstName.$invalid) || (createNameForm.firstName.$touched && createNameForm.firstName.$invalid)">
+                            <small class="error"
+                                   ng-show="createNameForm.firstName.$error.required">
+                                {{ 'admin.users.NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                            </small>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="username" class="control-label">{{ 'admin.users.USER_NAME' | translate }}</label>
-                    <input ng-disabled="!dialogMode || dialogEdit" type="text" class="form-control" id="username" name="username" ng-model="user.username" required>
+                    <div class="form-group">
+                        <label for="lastName" class="control-label">{{ 'admin.users.LAST_NAME' | translate }}</label>
+                        <input ng-disabled="!dialogMode" type="text" class="form-control" id="lastName" name="lastName" ng-model="user.last_name" required>
 
-                    <div class="error-container" ng-if="dialogMode"
-                         ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.username.$error.required">
-                            {{ 'admin.users.USER_NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-                        </small>
+                        <div class="error-container" ng-if="dialogMode"
+                             ng-show="(createNameForm.lastName.$dirty && createNameForm.lastName.$invalid) || (createNameForm.lastName.$touched && createNameForm.lastName.$invalid)">
+                            <small class="error"
+                                   ng-show="createNameForm.firstName.$error.required">
+                                {{ 'admin.users.LAST_NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                            </small>
+                        </div>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="email" class="control-label">{{ 'admin.users.EMAIL' | translate }}</label>
+                        <input ng-disabled="!dialogMode" type="email" class="form-control" id="email" name="email" ng-model="user.email" required>
 
-                <div ng-if="!dialogMode">
+                        <div class="error-container"
+                             ng-show="(createNameForm.email.$dirty && createNameForm.email.$invalid) || (createNameForm.email.$touched && createNameForm.email.$invalid)">
+                            <small class="error" ng-if="dialogMode"
+                                   ng-show="createNameForm.email.$error.required">
+                                {{ 'admin.users.EMAIL' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                            </small>
+                            <small class="error" ng-if="dialogMode"
+                                   ng-show="createNameForm.email.$invalid">
+                                {{ 'common.VALID_EMAIL' | translate }}.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="username" class="control-label">{{ 'admin.users.USER_NAME' | translate }}</label>
+                        <input ng-disabled="!dialogMode || dialogEdit" type="text" class="form-control" id="username" name="username" ng-model="user.username" required>
 
-                    <div ng-if="user.sites">
-                        <div class="form-group">
-                            <label class="control-label"> Sites </label>
-
-                            <!--<div ng-repeat="site in user.sites">-->
-                            <!--<span>{{ site.site_name }}</span>-->
-                            <!--<span ng-repeat="group in site.groups">{{ group.group_name }}, </span>-->
-
-                            <!--</div>-->
-
-                            <table class="table table-striped" style="margin-left: 128px; width: calc(100% - 128px);">
-                                <thead>
-                                <tr>
-                                    <th>Site</th>
-                                    <th>Groups</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="site in user.sites">
-                                    <td>{{ site.site_name }}</td>
-                                    <td>
-                                        <span ng-repeat="group in site.groups"> {{ group.group_name }} </span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
+                        <div class="error-container" ng-if="dialogMode"
+                             ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
+                            <small class="error"
+                                   ng-show="createNameForm.username.$error.required">
+                                {{ 'admin.users.USER_NAME' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                            </small>
                         </div>
                     </div>
 
-                    <div ng-if="user.groups">
-                        <div class="form-group">
-                            <label class="control-label"> Groups </label>
+                    <div ng-if="!dialogMode">
 
-                            <div ng-repeat="group in user.groups">
-                                <span>{{ group.group_name }}</span>
+                        <div ng-if="user.sites">
+                            <div class="form-group">
+                                <label class="control-label"> Sites </label>
+
+                                <!--<div ng-repeat="site in user.sites">-->
+                                <!--<span>{{ site.site_name }}</span>-->
+                                <!--<span ng-repeat="group in site.groups">{{ group.group_name }}, </span>-->
+
+                                <!--</div>-->
+
+                                <table class="table table-striped" style="margin-left: 128px; width: calc(100% - 128px);">
+                                    <thead>
+                                    <tr>
+                                        <th>Site</th>
+                                        <th>Groups</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="site in user.sites">
+                                        <td>{{ site.site_name }}</td>
+                                        <td>
+                                            <span ng-repeat="group in site.groups"> {{ group.group_name }} </span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
                             </div>
+                        </div>
 
+                        <div ng-if="user.groups">
+                            <div class="form-group">
+                                <label class="control-label"> Groups </label>
+
+                                <div ng-repeat="group in user.groups">
+                                    <span>{{ group.group_name }}</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="form-group" ng-if="dialogMode == 'create'">
+                        <label for="password" class="control-label">{{ 'admin.users.PASSWORD' | translate }}</label>
+                        <input ng-disabled="!dialogMode" type="password" class="form-control" id="password" name="password" ng-model="user.password" required>
+
+                        <div class="error-container" ng-if="dialogMode"
+                             ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
+                            <small class="error"
+                                   ng-show="createNameForm.password.$error.required">
+                                {{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                            </small>
                         </div>
                     </div>
+                    <div class="form-group" ng-if="dialogMode == 'create'">
 
+                        <label for="passwordVerification" class="control-label">{{ 'admin.users.PASSWORD_VERIFICATION' | translate }}</label>
+                        <input ng-disabled="!dialogMode"
+                               type="password"
+                               class="form-control"
+                               id="passwordVerification"
+                               name="passwordVerification"
+                               ng-model="user.passwordVerification"
+                               required
+                               compare-to="user.password">
 
-                </div>
-
-
-                <div class="form-group" ng-if="dialogMode == 'create'">
-                    <label for="password" class="control-label">{{ 'admin.users.PASSWORD' | translate }}</label>
-                    <input ng-disabled="!dialogMode" type="password" class="form-control" id="password" name="password" ng-model="user.password" required>
-
-                    <div class="error-container" ng-if="dialogMode"
-                         ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.password.$error.required">
-                            {{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-                        </small>
+                        <div class="error-container" ng-if="dialogMode"
+                             ng-show="createNameForm.passwordVerification.$error.compareTo">
+                            <small class="error"
+                                   ng-show="createNameForm.passwordVerification.$error.compareTo">
+                                {{ 'common.MATCH_ENTRY' | translate }}.
+                            </small>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group" ng-if="dialogMode == 'create'">
+                    <div class="form-group" ng-if="dialogMode == 'edit'">
+                        <hr/>
+                        <label for="newPassword" class="control-label">Reset Password
+                        </label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword"
+                               placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'>
 
-                    <label for="passwordVerification" class="control-label">{{ 'admin.users.PASSWORD_VERIFICATION' | translate }}</label>
-                    <input ng-disabled="!dialogMode"
-                           type="password"
-                           class="form-control"
-                           id="passwordVerification"
-                           name="passwordVerification"
-                           ng-model="user.passwordVerification"
-                           required
-                           compare-to="user.password">
-
-                    <div class="error-container" ng-if="dialogMode"
-                         ng-show="createNameForm.passwordVerification.$error.compareTo">
-                        <small class="error"
-                               ng-show="createNameForm.passwordVerification.$error.compareTo">
-                               {{ 'common.MATCH_ENTRY' | translate }}.
-                        </small>
+                        <!--<div class="error-container" ng-if="dialogMode"-->
+                        <!--ng-show="(createNameForm.newPassword.$dirty && createNameForm.newPassword.$invalid) || (createNameForm.newPassword.$touched && createNameForm.newPassword.$invalid)">-->
+                        <!--<small class="error"-->
+                        <!--ng-show="createNameForm.newPassword.$error.required">-->
+                        <!--{{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}-->
+                        <!--</small>-->
+                        <!--</div>-->
                     </div>
+                </fieldset>
+                <div class="alert alert-danger" ng-if="usersError">
+                    {{usersError.message}}
                 </div>
-                <div class="form-group" ng-if="dialogMode == 'edit'">
-                    <hr/>
-                    <label for="newPassword" class="control-label">Reset Password
-                    </label>
-                    <input type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword"
-                           placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'>
-
-                    <!--<div class="error-container" ng-if="dialogMode"-->
-                    <!--ng-show="(createNameForm.newPassword.$dirty && createNameForm.newPassword.$invalid) || (createNameForm.newPassword.$touched && createNameForm.newPassword.$invalid)">-->
-                    <!--<small class="error"-->
-                    <!--ng-show="createNameForm.newPassword.$error.required">-->
-                    <!--{{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}-->
-                    <!--</small>-->
-                    <!--</div>-->
-                </div>
-            </fieldset>
-            <div class="alert alert-danger" ng-if="usersError">
-                {{usersError.message}}
             </div>
         </div>
-    </div>
 
-    <div class="modal-footer">
-        <!--<button class="btn btn-primary text-capitalize" ng-if="dialogMode"-->
-                <!--ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>-->
-        <button class="btn btn-primary text-capitalize" ng-if="dialogMode"
-                ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externally_managed">{{ 'admin.users.SAVE' | translate }}</button>
-        <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
-        <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-    </div>
+        <div class="modal-footer" id="new-user-dialog-footer">
+            <!--<button class="btn btn-primary text-capitalize" ng-if="dialogMode"-->
+            <!--ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>-->
+            <button class="btn btn-primary text-capitalize save-new-user" ng-if="dialogMode"
+                    ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externally_managed">{{ 'admin.users.SAVE' | translate }}</button>
+            <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+            <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+        </div>
     </form>
 </script>
 
@@ -274,9 +274,9 @@
     <div class="modal-body">
         {{ confirmationText }}
     </div>
-    <div class="modal-footer">
-        <button class="btn" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
-        <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+    <div class="modal-footer" id="remove-user">
+        <button class="btn yes" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+        <button class="btn no" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
     </div>
 </script>
 
@@ -296,8 +296,8 @@
     <div class="modal-header">
         <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
     </div>
-    <div class="modal-body">
-        <p>{{ 'admin.users.DELETE_ERROR' | translate }}</p>
+    <div id="delete-user-error" class="modal-body">
+        <p class="errorTitle">{{ 'admin.users.DELETE_ERROR' | translate }}</p>
         <p class="word-wrap errorMessage">{{ 'admin.users.ERROR' | translate }} {{error}}</p>
     </div>
     <div class="modal-footer">

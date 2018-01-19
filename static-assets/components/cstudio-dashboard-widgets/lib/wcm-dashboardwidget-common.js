@@ -919,15 +919,15 @@ WcmDashboardWidgetCommon.previewItem = function (matchedElement, isChecked) {
 /**
  * Select an item in the dashboard widget
  */
-WcmDashboardWidgetCommon.selectItem = function (matchedElement, isChecked) {
+WcmDashboardWidgetCommon.selectItem = function (matchedElement, isChecked, triggerEvent) {
     if (matchedElement.type == "checkbox") WcmDashboardWidgetCommon.Ajax.disableDashboard();
     var callback = {
         success: function (contentTO) {
             if (isChecked == true) {
-                CStudioAuthoring.SelectedContent.selectContent(contentTO);
+                CStudioAuthoring.SelectedContent.selectContent(contentTO, triggerEvent);
             }
             else {
-                CStudioAuthoring.SelectedContent.unselectContent(contentTO);
+                CStudioAuthoring.SelectedContent.unselectContent(contentTO, triggerEvent);
             }
             WcmDashboardWidgetCommon.Ajax.enableDashboard();
         },
@@ -1058,7 +1058,7 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
                     for (var i = 0; i < items.length; i++) {
                         var item = items[i];
                         //table = table + "<tr class='" + parentClass + "'><td colspan='5' class='ttBlankRow3'></td></tr>";
-                        var itemRowStart = "<tr class='" + parentClass + "'>";
+                        var itemRowStart = "<tr class='" + parentClass + " " + items[i].path + "'>";
                         var itemRowEnd = "</tr>";
 
                         var subItemRowStart = "<tr class='" + parentClass + "'><td><span class='wcm-widget-margin'></span><span class='ttFirstCol128'><input title='All' class='dashlet-item-check1' id=tableName + 'CheckAll'  type='checkbox' /></span><span class='wcm-widget-margin'></span>";
@@ -1174,30 +1174,30 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
             }
 
             YEvent.addListener(tableName + "CheckAll", 'click', function (e) {
-                var checkAllElt = YDom.get(tableName + 'CheckAll');
-                var inputsElt = window.document.querySelectorAll("#" + tableName + " input:enabled");
 
-                if (checkAllElt.checked == true) {
-                    for (var i = 1; i < inputsElt.length; i++) {
-                        inputsElt[i].checked = true;
-                        if (instance.onCheckedClickHandler) {
-                            instance.onCheckedClickHandler(e, inputsElt[i]);
+                YDom.setStyle("loading-" + widgetId, "display", "");
+
+                setTimeout(function(){ 
+                    var checkAllElt = YDom.get(tableName + 'CheckAll');
+                    var inputsElt = window.document.querySelectorAll("#" + tableName + " input:enabled");
+                    var avoidEvent;
+    
+                    if (checkAllElt.checked == true) {
+                        for (var i = 1; i < inputsElt.length; i++) {
+                            inputsElt[i].checked = true;
+                            avoidEvent = i == (inputsElt.length - 1) ? false : true;
+                            WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked, avoidEvent);
                         }
-                        else {
-                            WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked);
+                    } else {
+                        for (var i = 1; i < inputsElt.length; i++) {
+                            inputsElt[i].checked = false;
+                            avoidEvent = i == (inputsElt.length - 1) ? false : true;
+                            WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked, avoidEvent);
                         }
                     }
-                } else {
-                    for (var i = 1; i < inputsElt.length; i++) {
-                        inputsElt[i].checked = false;
-                        if (instance.onCheckedClickHandler) {
-                            instance.onCheckedClickHandler(e, inputsElt[i]);
-                        }
-                        else {
-                            WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked);
-                        }
-                    }
-                }
+    
+                    YDom.setStyle("loading-" + widgetId, "display", "none");
+                }, 10);
             }, this, true);
 
             WcmDashboardWidgetCommon.hideURLCol();
@@ -1281,7 +1281,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
                 var parentClass = "wcm-table-parent-" + name + "-" + count;
 
                 if (!hideEmptyRow || sortDocuments[j].numOfChildren > 0) {
-                    var table = "<tr>";
+                    var table = "<tr class='itemId_"+sortDocuments[j].path+"'>";
                     table += WcmDashboardWidgetCommon.buildItemTableRow(sortDocuments[j], instance, true, count, 0);
                     table += "</tr>";
 
@@ -1404,25 +1404,17 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
                 var checkAllElt = YDom.get(tableName + 'CheckAll');
                 var inputsElt = window.document.querySelectorAll("#" + tableName + " input:enabled");
 
+                WcmDashboardWidgetCommon.Ajax.disableDashboard();
+
                 if (checkAllElt.checked == true) {
                     for (var i = 1; i < inputsElt.length; i++) {
                         inputsElt[i].checked = true;
-                        if (instance.onCheckedClickHandler) {
-                            instance.onCheckedClickHandler(e, inputsElt[i]);
-                        }
-                        else {
-                            WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked);
-                        }
+                        WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked);
                     }
                 } else {
                     for (var i = 1; i < inputsElt.length; i++) {
                         inputsElt[i].checked = false;
-                        if (instance.onCheckedClickHandler) {
-                            instance.onCheckedClickHandler(e, inputsElt[i]);
-                        }
-                        else {
-                            WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked);
-                        }
+                        WcmDashboardWidgetCommon.selectItem(inputsElt[i], inputsElt[i].checked);
                     }
                 }
             }, this, true);

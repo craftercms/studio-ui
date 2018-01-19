@@ -358,23 +358,27 @@ var nodeOpen = false,
             /**
              * content is selected, track it
              */
-            selectContent: function(contentTO) {
+            selectContent: function(contentTO, avoidEvent) {
                 if (this.at(contentTO) == -1) {
                     this.selectedContent.push(contentTO);
-                    CSA.Events.contentSelected.fire(contentTO);
+                    if(!avoidEvent){
+                        CSA.Events.contentSelected.fire(contentTO);
+                    }
                 }
             },
 
             /**
              * content unselected, stop tracking it
              */
-            unselectContent: function(contentTO) {
+            unselectContent: function(contentTO, avoidEvent) {
 
                 var position = this.at(contentTO);
 
                 if (position != -1) {
                     this.selectedContent.splice(position, 1);
-                    CSA.Events.contentUnSelected.fire(contentTO);
+                    if(!avoidEvent){
+                        CSA.Events.contentUnSelected.fire(contentTO);
+                    }
                 }
             },
 
@@ -759,10 +763,33 @@ var nodeOpen = false,
                             if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
                                  CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
                             }
+
+                            eventNS.oldPath = items[0].uri;
+                            var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                            if(CStudioAuthoringContext.isPreview){
+                                try{
+                                    var currentContentTO,
+                                        URLBrowseUri = pageParameter,
+                                        contentTOBrowseUri = items[0].browserUri;
+
+                                    if (URLBrowseUri == contentTOBrowseUri){
+                                        currentContentTO = null;
+                                    } else{
+                                        currentContentTO = items[0];
+                                    }
+
+                                    if(currentContentTO.isPage){
+                                        CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                                    }else{
+                                        CStudioAuthoring.Operations.refreshPreview();
+                                    }
+                                }catch(err) {}
+                            }
+
+
                             dialogue.hide();
                             eventNS.data = items;
                             eventNS.typeAction = "publish";
-                            eventNS.oldPath = null;
                             eventNS.dependencies = self.getGenDependency();
 
                             document.dispatchEvent(eventNS);
@@ -1791,8 +1818,9 @@ var nodeOpen = false,
                 $modal.find('.bd').append(template).end().appendTo(parentEl);
                 $modal.find('.studio-ice-container').css('z-index', 100525);
 
+                parent.iframeOpener = window;
                 window.open(url, name);
-
+        
                 animator.slideInDown();
             },
 
@@ -2531,7 +2559,7 @@ var nodeOpen = false,
 
                     var panel = YDom.getElementsByClassName("yui-panel-container")[0];
                     var  auxParentPath = "";
-                    if( panel && (panel.style.visibility == 'visible' || panel.style.visibility == '')){
+                    if( panel && (panel.style.visibility == 'visible' || panel.style.visibility == '') && flow!="deleteSchedule"){
                         panel.style.visibility = "hidden";
                     }
 
@@ -2942,9 +2970,6 @@ var nodeOpen = false,
             getClipboardItemsServiceUri: "/api/1/services/api/1/clipboard/get-items.json",
             duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",   
 
-            // Analytics
-            getAnalyticsReportUrl: "/api/1/services/analytics/get-report.json",
-
             // Dependencies
             lookupContentDependenciesServiceUri: "/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&",
 
@@ -3022,37 +3047,6 @@ var nodeOpen = false,
 
             createEngineServiceUri: function(service) {
                 return CStudioAuthoringContext.previewAppBaseUri + service;
-            },
-
-            Analytics: {
-                /**
-                 * get analytics report
-                 * @param site site ID
-                 * @param webPropertyId
-                 * @param reportId
-                 */
-                getReport: function(site, webPropertyId, reportId, callback, filter) {
-
-                    var serviceUrl = CStudioAuthoring.Service.getAnalyticsReportUrl;
-                    serviceUrl += "?site="+site;
-                    serviceUrl += "&webPropertyId=" + webPropertyId;
-                    serviceUrl += "&reportId=" + reportId;
-
-                    if(filter) {
-                        serviceUrl += "&filter="+filter
-                    }
-
-                    var serviceCallback = {
-                        success: function(response) {
-                            var res = response.responseText || "null";  // Some native JSON parsers (e.g. Chrome) don't like the empty string for input
-                            callback.success(YAHOO.lang.JSON.parse(res));
-                        },
-                        failure: function(response) {
-                            callback.failure(response);
-                        }
-                    };
-                    YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
-                }
             },
 
             /**
@@ -4455,7 +4449,9 @@ var nodeOpen = false,
                     },
 
                     failure: function(response) {
-                        callback.failure("error loading data", callback.argument);
+                        if(callback.failure){
+                            callback.failure("error loading data", callback.argument);
+                        }
                     }
                 };
 
@@ -5952,11 +5948,16 @@ var nodeOpen = false,
                         newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('dddd, MMMM DD, YYYY, hh:mm:ss A');
                         newDate = newDate + " ("+newTimeZone+")";
                     }else{
-                        if(format === "medium"){
-                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
+                        if(format === "large"){
+                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY HH:mm:ss a');
                         }else{
-                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+                            if(format === "medium"){
+                                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
+                            }else{
+                                newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM-DD hh:mm a');
+                            }
                         }
+
                     }
                     return newDate != "Invalid date" ? newDate : '';
                 }catch(err){
@@ -5964,6 +5965,36 @@ var nodeOpen = false,
                 }
 
             },
+
+            /**
+             * format a date to UTC
+             */
+            parseDateToUTC: function(dateTime, newTimeZone, formatSize, format) {
+                try{
+                    var currentDate = moment.tz(dateTime, format, newTimeZone),
+                        newDate;
+
+                    if(formatSize === "full"){
+                        newDate = currentDate.clone().tz("Etc/UTC").format('dddd, MMMM DD, YYYY, hh:mm:ss A');
+                        newDate = newDate + " (Etc/UTC)";
+                    }else{
+                        if(formatSize === "large"){
+                            newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY HH:mm:ss a');
+                        }else{
+                            if(formatSize === "medium"){
+                                newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY hh:mm a');
+                            }else{
+                                newDate = currentDate.clone().tz("Etc/UTC").format('MM-DD hh:mm a');
+                            }
+                        }
+
+                    }
+                    return newDate != "Invalid date" ? newDate : '';
+                }catch(err){
+                    console.log(err);
+                }
+
+        },
 
             formatDateFromStringNullToEmpty: function(dateTime, timeFormat) {
                 if ( (dateTime == "null") || (dateTime == null) || (dateTime == undefined) || (dateTime == "") )
@@ -6008,19 +6039,6 @@ var nodeOpen = false,
                 }
             },
 
-        createServiceUri: function(time, srcTimezone, destTimezone, dateFormat){
-                var baseUrl = CStudioAuthoringContext.authoringAppBaseUri;
-                var serviceUrl = "/api/1/services/util/time/convert-time.json?";
-                var url = baseUrl;
-                url += serviceUrl;
-                url += "time=" + time;
-                url += "&srcTimezone=" + srcTimezone;
-                url += "&destTimezone="  + destTimezone;
-                url += "&dateFormat=" + dateFormat;
-
-                return url;
-            },
-
             // Get the date/time formatting for the time converting service
             getConvertFormat: function (includeDate) {
                 var format = (includeDate) ? "MM/dd/yyyy%20HH:mm:ss" : "HH:mm:ss";
@@ -6033,45 +6051,6 @@ var nodeOpen = false,
                 var dateTimeStr = (date) ? date + ((time) ? "%20" + time : "%2000:00:00") :
                 "" + time;
                 return dateTimeStr;
-            },
-
-            // Currently this is making a synchronous call to get the UTC representation of a date. The size of the transfer of
-            // information made through this call is small so it shouldn't affect UX considerably. This call is synchronous because
-            // we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to
-            // register "beforeSave" callbacks, but these are assumed to be synchronous (forms-engine.js, onBeforeSave method)
-            convertDateTimeSync: function(date, srcTimezone, destTimezone) {
-                //  convertString   7/13/2016%2020:21:49
-
-                var xhrObj;
-
-                var dd = date.getDate(),
-                    mm = date.getMonth()+1, //January is 0!
-                    yyyy = date.getFullYear(),
-                    hh = date.getHours(),
-                    m = date.getMinutes();
-
-                if(dd<10) {
-                    dd='0'+dd
-                }
-                if(mm<10) {
-                    mm='0'+mm
-                }
-
-                var dateString = mm+'/'+dd+'/'+yyyy,
-                    timeString = hh+':'+m+':'+'00',
-                    dateTime = [dateString, timeString];
-
-                var format = this.getConvertFormat(dateString),
-                    convertString = this.getDateTimeString(dateString, timeString);
-
-                var service = this.createServiceUri(convertString, srcTimezone, destTimezone, format);
-                YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                // YAHOO.util.Connect.asyncRequest('GET',service, callback);
-
-                var xhrObj = YAHOO.util.Connect.createXhrObject();
-                xhrObj.conn.open("GET", service, false);
-                xhrObj.conn.send(null);
-                return xhrObj.conn;
             },
             
             /**
@@ -7272,7 +7251,7 @@ var nodeOpen = false,
                 var toolTipMarkup = [
                  "<table class='width300 acn-tooltip'>",
                     "<tr>",
-                    "<td class='acn-width280' colspan='2'><strong>{1}</strong></td>",
+                    "<td class='acn-width280 acn-name' colspan='2'><strong>{1}</strong></td>",
                     "</tr>",
                     "<tr><td class='acn-width80'><strong>Content&nbsp;Type:</strong> </td>",
                         "<td class='acn-width200' style='text-transform: capitalize;'>{8}</td></tr>",
@@ -7539,13 +7518,13 @@ var nodeOpen = false,
                     styles = conf && conf.icon ? conf.icon.styles : null;
                 YDom.addClass(iconContainer, "icon-container");
                 if(!conf || !conf.icon || (conf && conf.icon && !conf.icon.stackedclass)){
-                    YDom.addClass(iconElt, "mr9 fa");
+                    YDom.addClass(iconElt, "status-icon mr9 fa");
                     YDom.addClass(iconElt, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
                 }else{
                     var icon1 = document.createElement("span"),
                         icon2 = document.createElement("span"),
                         icon1Size;
-                    YDom.addClass(iconElt, "mr9 studio-fa-stack");
+                    YDom.addClass(iconElt, "status-icon mr9 studio-fa-stack");
                     YDom.addClass(icon1, "fa studio-fa-stack-2x");
                     YDom.addClass(icon1, conf && conf.icon && conf.icon.class ? conf.icon.class : defaultIcon);
                     YDom.addClass(icon2, "fa studio-fa-stack-1x");
@@ -8363,7 +8342,7 @@ CStudioAuthoring.InContextEdit = {
                     window.top.iceDialogs.splice(i, 1);
 
                     if(dialog) {
-                        dialog.close();
+                        dialog.end();
                     }
                 }
             }

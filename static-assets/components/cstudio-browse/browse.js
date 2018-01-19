@@ -331,23 +331,24 @@
     CStudioBrowse.saveContent = function() {
         var searchId = this.searchContext ? this.searchContext.searchId : "" ;
         var crossServerAccess = false;
+        var opener = window.opener ? window.opener : parent.iframeOpener;
 
         try {
             // unfortunately we cannot signal a form close across servers
             // our preview is in one server
             // our authoring is in another
             // in this case we just close the window, no way to pass back details which is ok in some cases
-            if(window.opener.CStudioAuthoring) { }
+            if(opener.CStudioAuthoring) { }
         }
         catch(crossServerAccessErr) {
             crossServerAccess = true;
         }
 
-        if(window.opener && !crossServerAccess) {
+        if(opener && !crossServerAccess) {
 
-            if(window.opener.CStudioAuthoring) {
+            if(opener.CStudioAuthoring) {
 
-                var openerChildSearchMgr = window.opener.CStudioAuthoring.ChildSearchManager;
+                var openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
 
                 if(openerChildSearchMgr) {
 

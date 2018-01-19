@@ -50,10 +50,10 @@
         </div>
         <div class="row">
             <div class="col-lg-12 columns">
-                <div class="alert alert-danger" ng-if="error">
+                <div id="error-message" class="alert alert-danger" ng-if="error">
                     {{error.message}}
                 </div>
-                <button type="submit" class="btn btn-primary" ng-click="login()">{{ 'dashboard.login.SIGN_IN' | translate }}</button>
+                <button id="login-submit" type="submit" class="btn btn-primary" ng-click="login()">{{ 'dashboard.login.SIGN_IN' | translate }}</button>
             </div>
         </div>
 
