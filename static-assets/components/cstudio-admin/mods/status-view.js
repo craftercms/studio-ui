@@ -18,8 +18,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.statusView, CStudioAdminConsole.Tool, {
         workareaEl.innerHTML =
             "<div id='status-view'>" +
                 "<div class='content'>" +
-                    "<h2 class='page-header'>Publish</h2>" +
-                    "<h3 class='mt5'>Status</h3>" +
+                    "<h2 class='page-header'>"+CMgs.format(langBundle, "publishing")+"</h2>" +
+                    "<h3 class='mt5'>"+CMgs.format(langBundle, "status")+"</h3>" +
                     "<div class='panel' id='publisherDashboard'>" +
                         "<div class='panel-heading'>"+
                             "<span id='statusText'>&nbsp;</span>"+

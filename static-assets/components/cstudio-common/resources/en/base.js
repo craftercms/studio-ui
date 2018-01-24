@@ -555,6 +555,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     logginglevels: "Logging Levels",
     logconsole: "Log Console",
     publishing: "Publishing",
+    status: "Status",
     audit: "Audit",
     groups: "Groups",
     contentTypes: "Content Types",

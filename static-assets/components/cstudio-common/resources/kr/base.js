@@ -515,9 +515,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     logginglevels: "로깅 수준",
     logconsole: "로그인 콘솔",
     publishing: "출판",
+    status: "지위",
     audit: "심사",
     groups: "여러 떼",
-
     contentTypes: "콘텐츠 형식",
     configuration: "구성",
     workflowJobs: "워크 플로 작업",
