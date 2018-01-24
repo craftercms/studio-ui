@@ -22,12 +22,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.statusView, CStudioAdminConsole.Tool, {
                     "<h3 class='mt5'>Status</h3>" +
                     "<div class='panel' id='publisherDashboard'>" +
                         "<div class='panel-heading'>"+
-                            "<span id='statusText'>Status</span>"+
+                            "<span id='statusText'>&nbsp;</span>"+
                             "<a id='refreshPublish' class='btn btn-primary mr15 fa fa-refresh pull-right'></a>"+
                         "</div>"+
                         "<div class='panel-body'>"+
                             "<span class='fa fa-cloud-upload f18 mr10' id='publishIcon'></span>"+
-                            "<span id='publishMessage'>Publish Message</span>"+
+                            "<span id='publishMessage'>&nbsp;</span>"+
                         "</div>"+
                     "</div>" +
                     "<div class='publish-buttons'>" +
