@@ -6493,7 +6493,7 @@ var nodeOpen = false;
                 var toolTipMarkup = [
                  "<table class='width300 acn-tooltip'>",
                     "<tr>",
-                    "<td class='acn-width280' colspan='2'><strong>{1}</strong></td>",
+                    "<td class='acn-width280 acn-name' colspan='2'><strong>{1}</strong></td>",
                     "</tr>",
                     "<tr><td class='acn-width80'><strong>Content&nbsp;Type:</strong> </td>",
                         "<td class='acn-width200' style='text-transform: capitalize;'>{8}</td></tr>",
