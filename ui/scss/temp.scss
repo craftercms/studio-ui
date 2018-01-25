@@ -901,6 +901,10 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   white-space: nowrap;
 }
 
+.acn-tooltip .acn-name {
+  word-break: break-word;
+}
+
 #yui-gen0 {
   padding-bottom: 3px;
   border-bottom: none;
