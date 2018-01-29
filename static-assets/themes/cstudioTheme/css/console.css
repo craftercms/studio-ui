@@ -39,29 +39,6 @@ body,tbody {
     margin-left: 239px;
 }
 
-#admin-console #cstudio-admin-console-workarea .content{
-    padding: 54px 15px 0 15px;
-}
-
-#admin-console #cstudio-admin-console-workarea .content .panel{
-    border-color: #ddd;
-}
-
-#admin-console #cstudio-admin-console-workarea .content .panel .panel-heading{
-    color: #333333;
-    background-color: #f5f5f5;
-    border-color: #ddd;
-    padding: 10px 15px;
-    border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
-    font-size: 19px;
-    font-weight: bold;
-}
-
-#admin-console #cstudio-admin-console-workarea .content .publish-buttons{
-    text-align: right;
-}
-
 .cstudio-admin-console-item {
     font-size: 14px;
     line-height: 25px;
