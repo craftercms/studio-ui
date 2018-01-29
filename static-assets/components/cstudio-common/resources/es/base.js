@@ -538,6 +538,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     workflowstates: "Flujo de Trabajo de Estados",
     logginglevels: "Niveles de Registro",
     logconsole: "Consola de Registros",
+    publishing: "Publicación",
+    status: "Estado",
     audit: "Auditoría",
     groups: "Grupos",
     contentTypes: "Tipos de Contenido",

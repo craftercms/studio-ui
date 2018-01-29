@@ -145,7 +145,21 @@
       "MODIFIED": "Modificado",
       "SITE": "Sitio",
       "LOGS_PER_PAGE": "Registros por página"
-    }
+    },
+      "publishing": {
+          "PUBLISHING": "Publicación",
+          "STATUS": "Estado",
+          "BULKPUBLISH": "Publicación Masiva",
+          "PATHPUBLISH": "Camino a publicar",
+          "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
+          "PUBLISHINGENVIRONMENT": "Ambiente editorial",
+          "PUBLISH": "Publicar",
+          "PATH":"Ruta",
+          "CHANNEL":"Canal",
+          "WARNINGBP":"Advertencia: Publicación Masiva",
+          "WRNINGGPBODY":"La publicación masiva obligará a publicar todos los artículos que coincidan con el patrón solicitado, incluidas sus dependencias. Asegúrese de que todos los elementos modificados (incluido el trabajo potencialmente en progreso) estén listos para publicarse antes de continuar.",
+          "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado."
+      }
   },
   "common": {
     "CANCEL_LABEL": "Cancelar",

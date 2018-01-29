@@ -144,6 +144,15 @@
                         }
                     }
                 })
+                .state('home.publishing', {
+                    url: 'publishing',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/publishing.html',
+                            controller: 'PublishingCtrl'
+                        }
+                    }
+                })
                 .state('login', {
                     url: '/login',
                     onEnter: [
@@ -253,7 +262,8 @@
         AUTH_SUCCESS: 'auth-success',
         PATH_IMG: '/images/',
         SERVICE: '/studio/api/1/services/api/1/',
-        SHOW_LOADER: 'show-loader'
+        SHOW_LOADER: 'show-loader',
+        BULK_ENVIRONMENT: 'Live'
     });
 
     app.service('authService', [
