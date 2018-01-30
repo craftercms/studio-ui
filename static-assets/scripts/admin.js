@@ -407,6 +407,7 @@
                     adminService.startPublishStatus(requestAsString)
                         .success(function (data) {
                             publish.getPublish(requestAsString);
+                            window.top.postMessage('status-changed', '*');
                         })
                         .error(function (err) {
                             publish.error = err.message;
@@ -419,6 +420,7 @@
                     adminService.stopPublishStatus(requestAsString)
                         .success(function (data) {
                             publish.getPublish(requestAsString);
+                            window.top.postMessage('status-changed', '*');
                         })
                         .error(function (err) {
                             publish.error = err.message;

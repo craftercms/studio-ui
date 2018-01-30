@@ -22,8 +22,63 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 		CStudioAuthoring.register({
 			"ContextualNav.StatusNav": {
 				init: function() {
-					this.render();
-				},
+                    var me = this;
+                    this.render();
+                    
+                    window.onmessage = function(e){
+                        if (e.data == "status-changed") {
+                            me.refreshStatus();                            
+                        }
+                    };
+                },
+                
+                refreshStatus: function() {
+                    var el, iconColor, iconClass, dialogEl,
+                        me = this;
+                        CMgs = CStudioAuthoring.Messages,
+                        contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
+                    
+                    el = YDom.get("acn-status");
+
+                    CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
+                        success: function (response) {
+                            dialogEl = YDom.getElementsByClassName("dialog-elt")[0];
+                            dialogText = YDom.getElementsByClassName("dialog-elt-text")[0];
+                            
+                            switch(response.status.toLowerCase()) {
+                                case "busy":
+                                    iconColor = "#FF8C00";
+                                    iconClass = "icon-orange";
+                                    if(dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add("fa-spin");
+                                    break;
+                                case "stopped":
+                                    iconColor = "#FF0000";
+                                    iconClass = "icon-red";
+                                    if(dialogEl && dialogEl.classList.contains('fa-spin')) dialogEl.classList.remove("fa-spin");
+                                    break;
+                                default:
+                                    iconColor = "#7e9dbb";
+                                    iconClass = "icon-default";
+                                    if(dialogEl && !dialogEl.classList.contains('fa-spin')) dialogEl.classList.add("fa-spin");
+                            }      
+                            
+                            YDom.setStyle(el.children[0], "color", iconColor);
+                            YDom.setStyle(dialogEl, "color", iconColor);
+
+                            // upate status message
+                            if(dialogText){
+                                dialogText.innerHTML = CMgs.format(contextNavLangBundle, response.status.toLowerCase());
+                            }                               
+                        },
+                        failure: function (response) {
+                            el = YDom.get("acn-status");
+                            YDom.setStyle(el.children[0], "color", "#777");
+
+                            //update status message     -   JSON.parse(response.responseText).message
+                            CMgs.format(contextNavLangBundle, JSON.parse(response.responseText).message);
+                        }
+                    });
+                },
 				
 				render: function() {
                     var el, iconColor, iconClass, dialogEl,
