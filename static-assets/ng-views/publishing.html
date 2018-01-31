@@ -2,7 +2,7 @@
     <h2 class="page-header">{{ 'admin.publishing.PUBLISHING' | translate }}</h2>
 
     <tabset>
-        <tab>
+        <tab id="publishingTab">
             <tab-heading>
                 <span class="mr10 fa fa-cloud-upload"></span>{{ 'admin.publishing.STATUS' | translate }}
             </tab-heading>
@@ -26,7 +26,7 @@
 
             </div>
         </tab>
-        <tab active="tab.active" disabled="tab.disabled">
+        <tab id="bulkTab" active="tab.active" disabled="tab.disabled">
             <tab-heading>
                 <span class="mr10 fa fa-arrows-alt"></span>{{ 'admin.publishing.BULKPUBLISH' | translate }}
             </tab-heading>
