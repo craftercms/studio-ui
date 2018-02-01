@@ -155,16 +155,6 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     var formEl = document.createElement("form");
     formEl.id = "upload_form_" + this.id;
     
-    var inputEl = document.createElement("input");
-		this.inputEl = inputEl;
-    inputEl.type = "file";
-    inputEl.name = "file";
-		YAHOO.util.Dom.addClass(inputEl, "datum");
-		YAHOO.util.Dom.addClass(inputEl, "cstudio-form-control-input");
-    YAHOO.util.Event.on(inputEl, "change",  this._onChange, this);
-    
-		formEl.appendChild(inputEl);
-    
     var profileEl = document.createElement("input");
     profileEl.type = "hidden";
     profileEl.name = "profile";
@@ -178,6 +168,16 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     siteEl.value = CStudioAuthoringContext.site;
     
     formEl.appendChild(siteEl);
+    
+    var inputEl = document.createElement("input");
+    this.inputEl = inputEl;
+    inputEl.type = "file";
+    inputEl.name = "file";
+    YAHOO.util.Dom.addClass(inputEl, "datum");
+    YAHOO.util.Dom.addClass(inputEl, "cstudio-form-control-input");
+    YAHOO.util.Event.on(inputEl, "change",  this._onChange, this);
+    
+    formEl.appendChild(inputEl);
     
     controlWidgetContainerEl.appendChild(formEl);
     
