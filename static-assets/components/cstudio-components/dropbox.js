@@ -606,10 +606,10 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
 
         auxFormData.path = cfg.path ? cfg.path : auxFormData.path;
 
-        fd.append(cfg.uploadPostKey, file);
         if (auxFormData) for (var key in auxFormData) {
             fd.append(key, auxFormData[key]);
         }
+        fd.append(cfg.uploadPostKey, file);
 
         xhr.open("POST", cfg.target + "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken);
         xhr.send(fd);
