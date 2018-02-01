@@ -154,23 +154,6 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     
     var formEl = document.createElement("form");
     formEl.id = "upload_form_" + this.id;
-
-    var inputContainerEl = document.createElement("div");
-    YAHOO.util.Dom.addClass(inputContainerEl, "cstudio-form-control-input-help-container");
-    
-    var inputEl = document.createElement("input");
-		this.inputEl = inputEl;
-    inputEl.type = "file";
-    inputEl.name = "file";
-		YAHOO.util.Dom.addClass(inputEl, "datum");
-		YAHOO.util.Dom.addClass(inputEl, "cstudio-form-control-input");
-    YAHOO.util.Event.on(inputEl, "change",  this._onChange, this);
-
-    inputContainerEl.appendChild(inputEl);
-
-    this.renderHelp(config, inputContainerEl);
-    
-    formEl.appendChild(inputContainerEl);
     
     var profileEl = document.createElement("input");
     profileEl.type = "hidden";
@@ -185,6 +168,23 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     siteEl.value = CStudioAuthoringContext.site;
     
     formEl.appendChild(siteEl);
+    
+    var inputContainerEl = document.createElement("div");
+    YAHOO.util.Dom.addClass(inputContainerEl, "cstudio-form-control-input-help-container");
+    
+    var inputEl = document.createElement("input");
+    this.inputEl = inputEl;
+    inputEl.type = "file";
+    inputEl.name = "file";
+    YAHOO.util.Dom.addClass(inputEl, "datum");
+    YAHOO.util.Dom.addClass(inputEl, "cstudio-form-control-input");
+    YAHOO.util.Event.on(inputEl, "change",  this._onChange, this);
+
+    inputContainerEl.appendChild(inputEl);
+
+    this.renderHelp(config, inputContainerEl);
+    
+    formEl.appendChild(inputContainerEl);
     
     controlWidgetContainerEl.appendChild(formEl);
 
