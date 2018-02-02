@@ -43,30 +43,13 @@
 
     function loadItems(data, dependenciesSelection) {
         itemsData = data;
+        this.element = data[0];
 
         var me = this,
-            data = CStudioAuthoring.Utils.createContentItemsJson(data),
-            callback = {
-                success: function(oResponse) {
-                    var respJson = oResponse.responseText;
-                    try {
-                        var elements = eval("(" + respJson + ")");
-                        depController.renderItems(elements.items);
-                        //enable submit button after loading items;
-                        verifyMixedSchedules(elements.items);
-
-                    } catch(err) {
-                        var error = err;
-                    }
-                },
-                failure: function(oResponse) {
-
-                }
-            },
             select = $('.dependencies-option');
 
         select.val(dependenciesSelection);
-        CStudioAuthoring.Service.loadItems(callback, data);
+        depController.renderItems(itemsData);
     }
 
     function traverse (items, referenceDate) {
@@ -125,124 +108,186 @@
 
     }
 
-    function renderItems(items) {
+    function renderItems(element) {
 
         //TODO: get data as needed - each element in items has all the item data
 
         var html = [],
             me = this,
-            $container = $(this.getComponent('tbody'));
+            $container = $(this.getComponent('tbody')),
+            depsItem = this.element;
 
         $container.empty();
 
-        each(items, function (index, item) {
-            var temp = item.scheduledDate,
-                itemDependenciesClass = "toggle-deps-" + index,
-                internalName = item.internalName;
+        var $nameEl = $(me.getComponent('.view-caption .show-for-item'));
+        $nameEl.text(depsItem.internalName);
+        $nameEl.addClass(CStudioAuthoring.Utils.getIconFWClasses(depsItem));
 
-            item.scheduledDate = CStudioAuthoring.Utils.formatDateFromString(temp);
-            item.index = itemDependenciesClass;
-            var $parentRow = $(agent.get('ITEM_ROW', item));
-            if(index == 0) $container.empty();
-            // $container.append($parentRow);
-            item.scheduledDate = temp;
+        //get dependencies or depends on - according to dropdown selection
 
-            var $nameEl = $(me.getComponent('.view-caption .show-for-item'));
-            $nameEl.text(internalName);
-            $nameEl.addClass(CStudioAuthoring.Utils.getIconFWClasses(item));
+        var optionSelected = $(me.getComponent('.dependencies-option')).val();
+        var $parentRow = $(agent.get('ITEM_ROW', element));
+        
+        var depsOnCallback = {
+            success: function(response){
+                var item = JSON.parse(response.responseText);
 
-            //get dependencies or depends on - according to dropdown selection
+                $.each(item, function(index, dependency){
+                    var elem = {};
+                    elem.uri = dependency.uri;
+                    elem.internalName = dependency.internalName;
+                    elem.scheduledDate = '';
+                    // elem.index = itemDependenciesClass;
 
-            var optionSelected = $(me.getComponent('.dependencies-option')).val();
+                    if (dependency.uri.indexOf(".ftl") == -1
+                        && dependency.uri.indexOf(".css") == -1
+                        && dependency.uri.indexOf(".js") == -1
+                        && dependency.uri.indexOf(".groovy") == -1
+                        && dependency.uri.indexOf(".txt") == -1
+                        && dependency.uri.indexOf(".html") == -1
+                        && dependency.uri.indexOf(".hbs") == -1
+                        && dependency.uri.indexOf(".xml") == -1) {
+                        // editLink.hide();
+                        elem.hidden = "hidden";
+                    }
 
-            var depsCallback = {
-                success: function(response){
-                    var item = JSON.parse(response.responseText);
+                    var row = agent.get('SUBITEM_ROW', elem);
+                    // var editLink = $(row).find('.editLink');
+                    row = $container.append(row);
 
-                    $.each(item, function(index, dependency){
-                        var elem = {};
-                        elem.uri = dependency.uri;
-                        elem.internalName = dependency.internalName;
-                        elem.scheduledDate = '';
-                        elem.index = itemDependenciesClass;
+                });
 
-                        if (dependency.uri.indexOf(".ftl") == -1
-                            && dependency.uri.indexOf(".css") == -1
-                            && dependency.uri.indexOf(".js") == -1
-                            && dependency.uri.indexOf(".groovy") == -1
-                            && dependency.uri.indexOf(".txt") == -1
-                            && dependency.uri.indexOf(".html") == -1
-                            && dependency.uri.indexOf(".hbs") == -1
-                            && dependency.uri.indexOf(".xml") == -1) {
-                            // editLink.hide();
-                            elem.hidden = "hidden";
-                        }
+                $('.editLink').on('click', function() {
+                    var url = $(this).attr('data-url');
 
-                        var row = agent.get('SUBITEM_ROW', elem);
-                        // var editLink = $(row).find('.editLink');
-                        row = $container.append(row);
+                    CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, url, {
+                        success: function (results) {
 
-                    });
+                            var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
 
-                    $('.editLink').on('click', function() {
-                        var url = $(this).attr('data-url');
+                            if (isUserAllowed) {
+                                //add event
+                                var itemUrl = url;
 
-                        CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, url, {
-                            success: function (results) {
+                                var getContentCallback = {
+                                    success: function (contentTO) {
+                                        var contentTO = contentTO.item;
 
-                                var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
+                                        CStudioAuthoring.Operations.editContent(
+                                            contentTO.form,
+                                            CStudioAuthoringContext.siteId,
+                                            contentTO.uri,
+                                            contentTO.nodeRef,
+                                            contentTO.uri,
+                                            false,
+                                            {},
+                                            [{"ontop": true}]);
+                                    },
 
-                                if (isUserAllowed) {
-                                    //add event
-                                    var itemUrl = url;
+                                    failure: function () {
+                                        WcmDashboardWidgetCommon.Ajax.enableDashboard();
+                                    }
+                                };
 
-                                    var getContentCallback = {
-                                        success: function (contentTO) {
-                                            var contentTO = contentTO.item;
-
-                                            CStudioAuthoring.Operations.editContent(
-                                                contentTO.form,
-                                                CStudioAuthoringContext.siteId,
-                                                contentTO.uri,
-                                                contentTO.nodeRef,
-                                                contentTO.uri,
-                                                false,
-                                                {},
-                                                [{"ontop": true}]);
-                                        },
-
-                                        failure: function () {
-                                            WcmDashboardWidgetCommon.Ajax.enableDashboard();
-                                        }
-                                    };
-
-                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
-                                }
-                            },
-                            failure: function () {
-                                throw new Error('Unable to retrieve user permissions');
+                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
                             }
-                        });
+                        },
+                        failure: function () {
+                            throw new Error('Unable to retrieve user permissions');
+                        }
                     });
-                }
-            };
-
-            if(optionSelected == 'depends-on'){
-                CStudioAuthoring.Service.loadDependantItems(
-                    CStudioAuthoringContext.site,
-                    item.uri,
-                    depsCallback
-                );
-            }else{
-                CStudioAuthoring.Service.loadDependencies(
-                    CStudioAuthoringContext.site,
-                    item.uri,
-                    depsCallback
-                );
+                });
             }
+        };
+        var depsCallback = {
+            success: function(response){
+                var item = JSON.parse(response.responseText);
 
-        });
+                $.each(item.dependecies, function(index, dependency){
+                    var elem = {};
+                    elem.uri = dependency.uri;
+                    elem.internalName = dependency.internalName;
+                    elem.scheduledDate = '';
+                    // elem.index = itemDependenciesClass;
 
+                    if (dependency.uri.indexOf(".ftl") == -1
+                        && dependency.uri.indexOf(".css") == -1
+                        && dependency.uri.indexOf(".js") == -1
+                        && dependency.uri.indexOf(".groovy") == -1
+                        && dependency.uri.indexOf(".txt") == -1
+                        && dependency.uri.indexOf(".html") == -1
+                        && dependency.uri.indexOf(".hbs") == -1
+                        && dependency.uri.indexOf(".xml") == -1) {
+                        // editLink.hide();
+                        elem.hidden = "hidden";
+                    }
+
+                    var row = agent.get('SUBITEM_ROW', elem);
+                    // var editLink = $(row).find('.editLink');
+                    row = $container.append(row);
+
+                });
+
+                $('.editLink').on('click', function() {
+                    var url = $(this).attr('data-url');
+
+                    CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, url, {
+                        success: function (results) {
+
+                            var isUserAllowed = CStudioAuthoring.Service.isUserAllowed(results.permissions);
+
+                            if (isUserAllowed) {
+                                //add event
+                                var itemUrl = url;
+
+                                var getContentCallback = {
+                                    success: function (contentTO) {
+                                        var contentTO = contentTO.item;
+
+                                        CStudioAuthoring.Operations.editContent(
+                                            contentTO.form,
+                                            CStudioAuthoringContext.siteId,
+                                            contentTO.uri,
+                                            contentTO.nodeRef,
+                                            contentTO.uri,
+                                            false,
+                                            {},
+                                            [{"ontop": true}]);
+                                    },
+
+                                    failure: function () {
+                                        WcmDashboardWidgetCommon.Ajax.enableDashboard();
+                                    }
+                                };
+
+                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, itemUrl, getContentCallback, false, false);
+                            }
+                        },
+                        failure: function () {
+                            throw new Error('Unable to retrieve user permissions');
+                        }
+                    });
+                });
+            }
+        };
+
+        if(optionSelected == 'depends-on'){
+            CStudioAuthoring.Service.loadDependantItems(
+                CStudioAuthoringContext.site,
+                depsItem.uri,
+                depsOnCallback
+            );
+        }else{  //Is referenced by this item - depends-on-me
+            // CStudioAuthoring.Service.loadDependencies(
+            //     CStudioAuthoringContext.site,
+            //     depsItem.uri,
+            //     depsCallback
+            // );
+
+            var data = CStudioAuthoring.Utils.createContentItemsJson(element)
+            CStudioAuthoring.Service.loadItems(depsCallback, data);
+        }
+        
         $('.toggleDependencies').on('click', function(){
             var $container = $(me.getComponent('tbody')),
                 parentId = $(this).attr('id'),
