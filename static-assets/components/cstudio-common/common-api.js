@@ -225,6 +225,11 @@ var nodeOpen = false,
                 scheduled: "fa-clock-o",
                 inworkflow: "fa-flag",
                 edited: "fa-pencil"
+            },
+            STATUS: {
+                submittedStatus: "submitted",
+                scheduledStatus: "scheduled",
+                inWorkflowStatus: "in workflow"
             }
         },
         /**
