@@ -203,7 +203,7 @@
             success: function(response){
                 var item = JSON.parse(response.responseText);
 
-                $.each(item.dependecies, function(index, dependency){
+                $.each(item, function(index, dependency){
                     var elem = {};
                     elem.uri = dependency.uri;
                     elem.internalName = dependency.internalName;
@@ -278,14 +278,11 @@
                 depsOnCallback
             );
         }else{  //Is referenced by this item - depends-on-me
-            // CStudioAuthoring.Service.loadDependencies(
-            //     CStudioAuthoringContext.site,
-            //     depsItem.uri,
-            //     depsCallback
-            // );
-
-            var data = CStudioAuthoring.Utils.createContentItemsJson(element)
-            CStudioAuthoring.Service.loadItems(depsCallback, data);
+            CStudioAuthoring.Service.loadDependencies(
+                CStudioAuthoringContext.site,
+                depsItem.uri,
+                depsCallback
+            );
         }
         
         $('.toggleDependencies').on('click', function(){
