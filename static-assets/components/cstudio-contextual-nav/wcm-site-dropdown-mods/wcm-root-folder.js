@@ -2082,8 +2082,9 @@
                                             }
                                         ]);
                                     }else {
-                                        if((oCurrentTextNode.data.status.toLowerCase().indexOf("submitted") === -1) &&
-                                            (oCurrentTextNode.data.status.toLowerCase().indexOf("scheduled") === -1)){
+                                        if(((oCurrentTextNode.data.status.toLowerCase().indexOf(CStudioAuthoring.Constants.STATUS.submittedStatus) === -1) &&
+                                            (oCurrentTextNode.data.status.toLowerCase().indexOf(CStudioAuthoring.Constants.STATUS.scheduledStatus) === -1)) &&
+                                            (oCurrentTextNode.data.status.toLowerCase().indexOf(CStudioAuthoring.Constants.STATUS.inWorkflowStatus) === -1)){
                                             p_aArgs.addItems([
                                                 {
                                                     text: CMgs.format(siteDropdownLangBundle, "wcmContentSubmit"),
