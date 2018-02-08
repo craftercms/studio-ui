@@ -1166,6 +1166,13 @@ var CStudioForms = CStudioForms || function() {
                                         if(saveAndCloseEl) saveAndCloseEl.disabled = false;
                                         if(saveAndPreviewEl) saveAndPreviewEl.disabled = false;
                                         if(saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = false;
+
+                                        if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
+                                            for(var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++){
+                                                window.parent.CStudioAuthoring.editDisabled[x].style.pointerEvents = "";
+                                            }
+                                            window.parent.CStudioAuthoring.editDisabled = [];
+                                        }
                     
                                         if(iceWindowCallback) {
                                             var value = form.model["internal-name"];
@@ -1212,12 +1219,7 @@ var CStudioForms = CStudioForms || function() {
                                             noticeEl.innerHTML = CMgs.format(formsLangBundle, "wcmContentSavedAsDraft");
                                         }
                     
-                                        if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
-                                            for(var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++){
-                                                window.parent.CStudioAuthoring.editDisabled[x].style.pointerEvents = "";
-                                            }
-                                            window.parent.CStudioAuthoring.editDisabled = [];
-                                        }
+
                                     },
                                     failure: function (err) {
                                         CStudioAuthoring.Operations.showSimpleDialog(
@@ -1984,7 +1986,6 @@ var CStudioForms = CStudioForms || function() {
                                             if(!formField.form.sections[0].fields[k].inputEl.disabled){                                            
                                                 
                                                 var position = $('html').scrollTop();
-                                                console.log(position);
                                                 formField.form.sections[0].fields[k].inputEl.focus();
                                                 $('html').scrollTop(position);
 
