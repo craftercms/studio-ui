@@ -1608,7 +1608,7 @@
                         if (curNode) {
                             CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, curNode.data.uri, 1, "default", {
                                 success: function (treeData) {
-                                    if (currentUri == treeData.item.uri) {
+                                    if (currentUri.replace(/ /g,"%20") == treeData.item.uri) {
                                         var style = "",
                                             cont = paramCont ? paramCont : 0,
                                             currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name),
