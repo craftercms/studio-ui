@@ -548,8 +548,6 @@
                 $state.go('login');
             }
 
-            
-
             function mouseOverTopMenu(evt) {
                 var elt = $(evt.target).find('.nav-label');
                 $timeout(function () {
@@ -702,6 +700,91 @@
                 $("body").addClass("iewarning")
                 $scope.ieWarning = true;
             }
+
+            $scope.reLogin = function() {
+                
+                var data =  {
+                    "username": $scope.user.username,
+                    "password": $scope.user.reLoginPass
+                }
+
+                authService.login(data)
+                    .then(function success(data) {
+                        window.reLoginModalOn = false; 
+                        $scope.reLoginModal.close();  
+                        setTimeout(function () {
+                            authLoop();
+                        }, $scope.authDelay);
+
+                    }, function error(response){
+                        $scope.reLoginError = {};
+
+                        if(response.status == 401){
+                            $scope.reLoginError.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
+                        }else{
+                            $scope.reLoginError.message = $translate.instant('dashboard.login.LOGIN_ERROR');
+                        }
+
+                    });
+            };
+
+            $scope.reLoginSignOut = function() {
+                if(window.reLoginModalOn){
+                    $scope.reLoginModal.close();
+                    window.reLoginModalOn = false;
+                }
+                $scope.logout();
+            };
+
+            function showReLoginModal() {
+                return $modal.open({
+                    templateUrl: 'reLoginModal.html',
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'sm',
+                    scope: $scope,
+                    windowClass: 'relogin-modal'
+                });
+            }
+
+            function authLoop() {
+                $scope.authDelay = 1000;
+                $scope.reLoginError = null;
+                var isInIframe = (window.location != window.parent.location) ? true : false;
+
+                if( !window.reLoginModalOn && !isInIframe && "login" !== $state.current.name ) {
+                    window.reLoginModalOn = true;
+
+                    authService.validateSession().then(
+                        function successCallback(response) {
+                            if (response.status == 200 && response.data.message == "OK") {
+                                window.reLoginModalOn = false;                                
+                                setTimeout(function () {
+                                    authLoop();
+                                }, $scope.authDelay);
+
+                            }else{
+                                $scope.reLoginModal = showReLoginModal();
+                            }
+
+
+                        }, function errorCallback(response) {
+                            if (response.status == 401) {
+                                $scope.reLoginModal = showReLoginModal();
+
+                            } else {
+                                window.reLoginModalOn = false;     
+                                setTimeout(function () {
+                                    authLoop();
+                                }, $scope.authDelay);
+                            }
+                        }
+                    );
+                }
+            }
+
+            authLoop();
+                
 
         }
     ]);
