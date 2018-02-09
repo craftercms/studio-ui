@@ -1498,7 +1498,8 @@
 	* methos that fires when new items added to tree.
 	*/
 	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, typeAction, oldPath, dependencies) {
-        if(treeNode.path == instance.path){
+        var refresh = typeAction == "edit" ? (instance && ( treeNode.path.indexOf(instance.path) == 0 )) : true;
+        if(refresh){
             var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
             var tree = tree ? tree : Self.myTree,
                 isMytree = false,
