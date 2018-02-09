@@ -61,3 +61,40 @@
     </nav>
 </header>
 <section id="container" ui-view="content"></section>
+
+
+
+<script type="text/ng-template" id="reLoginModal.html">
+    <!-- <div class="modal-header">
+        <h3 class="modal-title">Notification</h3>
+    </div> -->
+    <div class="modal-body">
+        <div class="contentTypePopupHeader loginHeader">
+            <img src="/studio/static-assets/images/crafter_studio_360.png" alt="Crafter Studio" id="crafterLogo">
+        </div> 
+
+        <form id="login_form">
+            <p class="subtitleErr">Your session has expired due to inactivity</p>
+            <div class="contentTypeOuter">
+                <div class="form-group">
+                    <label for="username">Email/Username</label>
+                    <input type="text" name="username" id="username" placeholder="john@example.com" value="{{user.username}}" disabled="">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="pass" id="password" ng-model="user.reLoginPass" autofocus="">
+                </div>
+                <div id="error-message" class="alert alert-danger" ng-if="reLoginError">
+                    {{reLoginError.message}}
+                </div>
+            </div>
+            <div class="contentTypePopupBtn"> 
+                <input type="submit" class="btn btn-primary cstudio-xform-button" ng-click="reLogin()" id="loginButton" value="Sign in to continue working">
+                <input type="button" class="btn btn-default cstudio-xform-button" ng-click="reLoginSignOut()" id="loginCancelButton" value="I'm done, signout">
+            </div>
+        </form>
+
+    </div> 
+
+    
+</script>
