@@ -147,7 +147,21 @@
       "MODIFIED": "Modified",
       "SITE": "Site",
       "LOGS_PER_PAGE": "Logs per page"
-    }
+    },
+      "publishing": {
+          "PUBLISHING": "Publishing",
+          "STATUS": "Status",
+          "BULKPUBLISH": "Bulk Publish",
+          "PATHPUBLISH": "Path to Publish",
+          "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
+          "PUBLISHINGENVIRONMENT": "Publishing Environment",
+          "PUBLISH": "Publish",
+          "PATH":"Path",
+          "CHANNEL":"Channel",
+          "WARNINGBP":"Warning: Bulk Publish",
+          "WRNINGGPBODY":" Bulk publish will force publish all items that match the pattern requested including their dependencies. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing.",
+          "PUBLISHSTARTED":"Bulk Publish process has been started."
+      }
   },
   "common": {
     "CANCEL_LABEL": "Cancel",

@@ -1,0 +1,114 @@
+<div class="publishing-view">
+    <h2 class="page-header">{{ 'admin.publishing.PUBLISHING' | translate }}</h2>
+
+    <tabset>
+        <tab id="publishingTab">
+            <tab-heading>
+                <span class="mr10 fa fa-cloud-upload"></span>{{ 'admin.publishing.STATUS' | translate }}
+            </tab-heading>
+            <div class="m10 mt25">
+                <h3 class='mt5 mb15'>{{ 'admin.publishing.STATUS' | translate }}</h3>
+
+                <div class='panel' id='publisherDashboard'>
+                    <div class='panel-heading'>
+                        <span class="capitalize" id='statusText'>{{publish.statusText}} &nbsp;</span>
+                        <a id='refreshPublish' class='btn btn-primary mr15 fa fa-refresh pull-right' ng-click="publish.getPublish()"></a>
+                        </div>
+                    <div class='panel-body'>
+                        <span class='fa fa-cloud-upload f18 mr10 {{publish.iconColor}}' id='publishIcon'></span>
+                        <span id='publishMessage'>{{publish.message}} &nbsp;{{publish.date | amTimezone:publish.timeZone | amDateFormat:'MM-DD-YYYY hh:mm:ss a'}}</span>
+                    </div>
+                </div>
+                <div class='publish-buttons'>
+                    <input id='startPublish' class='btn btn-primary mr10' type='button' value='Start' ng-click="publish.startPublish()" ng-disabled="publish.startDisabled" />
+                    <input id='stopPublish' class='btn btn-default' type='button' value='Stop' ng-click="publish.stopPublish()" ng-disabled="publish.stopDisabled" />
+                </div>
+
+            </div>
+        </tab>
+        <tab id="bulkTab" active="tab.active" disabled="tab.disabled">
+            <tab-heading>
+                <span class="mr10 fa fa-arrows-alt"></span>{{ 'admin.publishing.BULKPUBLISH' | translate }}
+            </tab-heading>
+            <div class="m10 mt25 bulkContainer">
+                <h3 class='mt5 mb15'>{{ 'admin.publishing.BULKPUBLISH' | translate }}</h3>
+
+                    <form name="bulkOperationForm" id="bulk-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+                        <div class="panel">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="bulkPath" class="control-label">{{ 'admin.publishing.PATHPUBLISH' | translate }}</label>
+                                    <span class="validationComment">{{ 'admin.publishing.PATHEXAMPLE' | translate }}</span>
+                                    <input type="text" class="form-control" id="bulkPath" name="bulkPath" ng-model="publish.pathPublish" autofocus focus-me="true" required>
+                                    <div class="error-container"
+                                         ng-show="(bulkOperationForm.bulkPath.$dirty && bulkOperationForm.bulkPath.$invalid) || (bulkOperationForm.bulkPath.$touched && bulkOperationForm.bulkPath.$invalid)">
+                                        <small class="error"
+                                               ng-show="bulkOperationForm.bulkPath.$error.required">
+                                            {{ 'admin.publishing.PATH' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!--<div class="form-group">
+                                    <label for="bulkChannel" class="control-label">{{ 'admin.publishing.PUBLISHINGENVIRONMENT' | translate }}</label>
+                                    <select class="form-control" id="bulkChannel" name="bulkChannel" ng-model="publish.selectedChannel" ng-options="item.name as item.name for item in publish.channels">
+                                    </select>
+                                    <div class="error-container" ng-if="dialogMode"
+                                         ng-show="(bulkOperationForm.bulkChannel.$dirty && bulkOperationForm.bulkChannel.$invalid) || (bulkOperationForm.bulkChannel.$touched && bulkOperationForm.bulkChannel.$invalid)">
+                                        <small class="error"
+                                               ng-show="bulkOperationForm.bulkChannel.$error.required">
+                                            {{ 'admin.publishing.CHANNEL' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                                        </small>
+                                    </div>
+                                </div>-->
+
+                            </div>
+                        </div>
+                        <div class='publish-buttons'>
+                            <input type='button' id='bulk-submit' class='btn btn-primary' value="{{ 'admin.publishing.PUBLISH' | translate }}" ng-click="publish.bulkPublish()" ng-disabled="bulkOperationForm.$invalid || isValid" />
+                        </div>
+                    </form>
+
+            </div>
+        </tab>
+    </tabset>
+
+</div>
+
+<script type="text/ng-template" id="confirmationModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'admin.publishing.WARNINGBP' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+        {{ 'admin.publishing.WRNINGGPBODY' | translate }}
+    </div>
+    <div class="modal-footer" id="bulk-publish">
+        <button class="btn btn-primary mr10" ng-click="publish.continue(); publish.hideAdminModal()">{{ 'common.YES' | translate }}</button>
+        <button class="btn btn-default" ng-click="publish.hideAdminModal()">{{ 'common.NO' | translate }}</button>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="confirmationBulk.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+        {{ 'admin.publishing.PUBLISHSTARTED' | translate }}
+    </div>
+    <div class="modal-footer" id="confirmationBulk-btns">
+        <button class="btn btn-primary mr10" ng-click="publish.hideConfirmationBulkModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="errorDialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
+    </div>
+    <div class="modal-body">
+        {{publish.error}}
+    </div>
+    <div class="modal-footer" id="errorDialog-btns">
+        <button class="btn btn-primary mr10" ng-click="publish.hideErrorModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+    </div>
+</script>

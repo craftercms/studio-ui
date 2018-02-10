@@ -1498,291 +1498,294 @@
 	* methos that fires when new items added to tree.
 	*/
 	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, typeAction, oldPath, dependencies) {
-        var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
-		var tree = tree ? tree : Self.myTree,
-            isMytree = false,
-            currentPath = treeNode.data ? treeNode.data.path : treeNode.path,
-            currentUri = treeNode.data ? treeNode.data.uri : treeNode.uri,
-            treePathsLocal = self.treePaths ? self.treePaths : WcmAssetsFolder.treePaths;
-        if(tree &&  Self.myTree) {
-            for (var i = 0; i < treePathsLocal.length; i++) {
-                if (treePathsLocal[i] == Self.myTree.id) {
-                    isMytree = true;
-                }
-            }
-            if (!isMytree) {
-                tree = Self.myTree;
-            }
-        }
-        if(tree) {
-            var copiedItemNode = Self.copiedItem;
-            var node = [];
-
-            if(currentPath == '/site/website' && typeAction == "createContent"){
-                var auxNodes = tree.getNodesByProperty("path", currentPath);
-                if(auxNodes.length){
-                    for(var i=0; i < auxNodes.length; i++){
-                        if(auxNodes[i].data.path == '/site/website'){
-                            node[0] = auxNodes[i];
-                        }
+        var refresh = typeAction == "edit" ? (instance && ( treeNode.path.indexOf(instance.path) == 0 )) : true;
+        if(refresh){
+            var WcmAssetsFolder = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
+            var tree = tree ? tree : Self.myTree,
+                isMytree = false,
+                currentPath = treeNode.data ? treeNode.data.path : treeNode.path,
+                currentUri = treeNode.data ? treeNode.data.uri : treeNode.uri,
+                treePathsLocal = self.treePaths ? self.treePaths : WcmAssetsFolder.treePaths;
+            if(tree &&  Self.myTree) {
+                for (var i = 0; i < treePathsLocal.length; i++) {
+                    if (treePathsLocal[i] == Self.myTree.id) {
+                        isMytree = true;
                     }
                 }
-            }else{
-                if(oldPath && currentUri != oldPath && tree.getNodesByProperty("uri", oldPath)) {
-                    node = tree.getNodesByProperty("uri", oldPath) ? tree.getNodesByProperty("uri", oldPath) : null;
+                if (!isMytree) {
+                    tree = Self.myTree;
+                }
+            }
+            if(tree) {
+                var copiedItemNode = Self.copiedItem;
+                var node = [];
+
+                if(currentPath == '/site/website' && typeAction == "createContent"){
+                    var auxNodes = tree.getNodesByProperty("path", currentPath);
+                    if(auxNodes.length){
+                        for(var i=0; i < auxNodes.length; i++){
+                            if(auxNodes[i].data.path == '/site/website'){
+                                node[0] = auxNodes[i];
+                            }
+                        }
+                    }
                 }else{
-                    node = tree.getNodesByProperty("path", currentPath) ? tree.getNodesByProperty("path", currentPath) : null;
-                }
-
-            }
-
-            if (copiedItemNode != null && (currentPath == copiedItemNode.data.path) && treeNode.parent) {
-                if(treeNode.parent.data.path) {
-                    node = tree.getNodesByProperty("path", treeNode.parent.data.path);
-                    Self.copiedItem = null;
-                }
-            }
-
-            if (node) {
-                for(var i=0; i<node.length; i++) {
-                    node[i] = parent ? node[i].parent : node[i];
-                    if (node[i].isLeaf) node[i].isLeaf = false;
-                }
-            }
-            else {
-                node = parent ? treeNode.parent : treeNode;
-            }
-
-            if(!changeStructure){
-
-                if(instance){
-                    //Self.initializeContentTree(instance.rootFolderEl, null, instance);
-                    var nodeToChange;
-                    if(parent){
-                        nodeToChange = tree.getNodesByProperty("path", currentPath);
+                    if(oldPath && currentUri != oldPath && tree.getNodesByProperty("uri", oldPath)) {
+                        node = tree.getNodesByProperty("uri", oldPath) ? tree.getNodesByProperty("uri", oldPath) : null;
                     }else{
-                        nodeToChange = node;
+                        node = tree.getNodesByProperty("path", currentPath) ? tree.getNodesByProperty("path", currentPath) : null;
                     }
 
-                    /* Updating the tree Url if the path has been change. */
-                    if(oldPath && currentPath != oldPath && tree.getNodesByProperty("uri", oldPath)) {
-                        var treeToUpdate = tree.getNodesByProperty("uri", oldPath);
-                        for(var i=0; i<treeToUpdate.length;i++) {
-                            Self.updateNote(treeToUpdate[i].data, treeNode.data ? treeNode.data : treeNode);
-                            treeToUpdate[i].label = treeNode.data ? treeNode.data.internalName : treeNode.internalName;
-                            treeToUpdate[i].treeNodeTO.path = treeNode.data ? treeNode.data.path : treeNode.path;
-                            treeToUpdate[i].treeNodeTO.uri = treeNode.data ? treeNode.data.uri : treeNode.uri;
+                }
+
+                if (copiedItemNode != null && (currentPath == copiedItemNode.data.path) && treeNode.parent) {
+                    if(treeNode.parent.data.path) {
+                        node = tree.getNodesByProperty("path", treeNode.parent.data.path);
+                        Self.copiedItem = null;
+                    }
+                }
+
+                if (node) {
+                    for(var i=0; i<node.length; i++) {
+                        node[i] = parent ? node[i].parent : node[i];
+                        if (node[i].isLeaf) node[i].isLeaf = false;
+                    }
+                }
+                else {
+                    node = parent ? treeNode.parent : treeNode;
+                }
+
+                if(!changeStructure){
+
+                    if(instance){
+                        //Self.initializeContentTree(instance.rootFolderEl, null, instance);
+                        var nodeToChange;
+                        if(parent){
+                            nodeToChange = tree.getNodesByProperty("path", currentPath);
+                        }else{
+                            nodeToChange = node;
                         }
-                        nodeToChange = treeToUpdate;
-                    }
 
-                    if(nodeToChange){
-                        for(var i=0; i<nodeToChange.length;i++) {
-                            (function (nodeToChange,i) {
-                                lookupSiteContent(nodeToChange[i], currentUri);
-                                nodeOpen = true;
-                            })(nodeToChange,i);
+                        /* Updating the tree Url if the path has been change. */
+                        if(oldPath && currentPath != oldPath && tree.getNodesByProperty("uri", oldPath)) {
+                            var treeToUpdate = tree.getNodesByProperty("uri", oldPath);
+                            for(var i=0; i<treeToUpdate.length;i++) {
+                                Self.updateNote(treeToUpdate[i].data, treeNode.data ? treeNode.data : treeNode);
+                                treeToUpdate[i].label = treeNode.data ? treeNode.data.internalName : treeNode.internalName;
+                                treeToUpdate[i].treeNodeTO.path = treeNode.data ? treeNode.data.path : treeNode.path;
+                                treeToUpdate[i].treeNodeTO.uri = treeNode.data ? treeNode.data.uri : treeNode.uri;
+                            }
+                            nodeToChange = treeToUpdate;
                         }
-                    }
 
-                    if(dependencies){
-                        var treeToUpdateDependencies;
-                        for(var i=0; i<dependencies.length;i++) {
-                            if(dependencies[i] != currentUri){
-                                treeToUpdateDependencies = tree.getNodesByProperty("uri", dependencies[i]);
-                                if(treeToUpdateDependencies) {
-                                    for (var j = 0; j < treeToUpdateDependencies.length; j++) {
-                                        if(treeToUpdateDependencies[j].data.contentType != "folder"){
-                                            (function (treeToUpdateDependencies, j) {
-                                                lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
-                                                nodeOpen = true;
-                                            })(treeToUpdateDependencies, j);
+                        if(nodeToChange){
+                            for(var i=0; i<nodeToChange.length;i++) {
+                                (function (nodeToChange,i) {
+                                    lookupSiteContent(nodeToChange[i], currentUri);
+                                    nodeOpen = true;
+                                })(nodeToChange,i);
+                            }
+                        }
+
+                        if(dependencies){
+                            var treeToUpdateDependencies;
+                            for(var i=0; i<dependencies.length;i++) {
+                                if(dependencies[i] != currentUri){
+                                    treeToUpdateDependencies = tree.getNodesByProperty("uri", dependencies[i]);
+                                    if(treeToUpdateDependencies) {
+                                        for (var j = 0; j < treeToUpdateDependencies.length; j++) {
+                                            if(treeToUpdateDependencies[j].data.contentType != "folder"){
+                                                (function (treeToUpdateDependencies, j) {
+                                                    lookupSiteContent(treeToUpdateDependencies[j], treeToUpdateDependencies[j].data.uri);
+                                                    nodeOpen = true;
+                                                })(treeToUpdateDependencies, j);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    function lookupSiteContent(curNode, currentUri, paramCont) {
-                        if (curNode) {
-                            CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, curNode.data.uri, 1, "default", {
-                                success: function (treeData) {
-                                    if (currentUri == treeData.item.uri) {
-                                        var style = "",
-                                            cont = paramCont ? paramCont : 0,
-                                            currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name),
-                                            curElt = YDom.get(curNode.labelElId);
-                                        // curElt ? curElt.innerHTML = currentInternalName : null;
-                                        curNode.data = Self.createTreeNodeTransferObject(treeData.item);
-                                        if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled)){
-                                            treeData.item.inFlight = true;
-                                        }
-                                        style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
-                                        if (treeData.item.isPreviewable) {
-                                            style = style + " preview";
-                                        } else {
-                                            style = style + " no-preview";
-                                        }
-                                        if (treeData.item.contentType == "asset") {
-                                            style = style + " component";
-                                        }
-                                        style = style + " treenode-label";
-                                        treeData.item.style = style;
-                                        if(curElt){
-                                            curElt.className = style;
-                                            if(curNode.data.title && curElt.title != curNode.data.title) {
-                                                curElt.title = curNode.data.title;
+                        function lookupSiteContent(curNode, currentUri, paramCont) {
+                            if (curNode) {
+                                CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, curNode.data.uri, 1, "default", {
+                                    success: function (treeData) {
+                                        if (currentUri.replace(/ /g,"%20") == treeData.item.uri) {
+                                            var style = "",
+                                                cont = paramCont ? paramCont : 0,
+                                                currentInternalName = (treeData.item.internalName != "" ? treeData.item.internalName  : treeData.item.name),
+                                                curElt = YDom.get(curNode.labelElId);
+                                            // curElt ? curElt.innerHTML = currentInternalName : null;
+                                            curNode.data = Self.createTreeNodeTransferObject(treeData.item);
+                                            if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled)){
+                                                treeData.item.inFlight = true;
                                             }
-                                        }
-                                        if (style.indexOf("deleted") != -1 || treeData.item.isDeleted) {
-                                            var tempSplit = curNode.labelElId.split("labelel");
-                                            var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
-                                            parentNode.style.display = 'none';
-                                            tree.removeNode(curNode);
-                                            if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                                                CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
-                                                    CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
-                                            }
-                                            eventCM.typeAction = typeAction;
-                                            document.dispatchEvent(eventCM);
-                                            Self.refreshAllDashboards();
-                                        }
-                                        else {
-                                            if (style.indexOf("in-flight") != -1) {
-                                                setTimeout(function () {
-                                                    lookupSiteContent(curNode, currentUri);
-                                                }, 300);
+                                            style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
+                                            if (treeData.item.isPreviewable) {
+                                                style = style + " preview";
                                             } else {
-                                                cont++;
-
-                                                var indexOfFolder = -1;
-                                                if (curNode.labelStyle){
-                                                    indexOfFolder = curNode.labelStyle.indexOf("folder");
-                                                }else{
-                                                    indexOfFolder = curNode.html.className.indexOf("folder");
-                                                }
-
-                                                if ((indexOfFolder != -1 && cont < 25) || (indexOfFolder == -1 && cont < 2)) {
-                                                    setTimeout(function () {
-                                                        lookupSiteContent(curNode, currentUri, cont);
-                                                        if (typeof WcmDashboardWidgetCommon != 'undefined' && (eventNS.typeAction =="edit" && !eventNS.draft)) {
-                                                            CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
-                                                                CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
-                                                        }
-                                                        if((indexOfFolder == -1) && (typeAction != "edit")) {
-                                                            eventCM.typeAction = typeAction;
-                                                            document.dispatchEvent(eventCM);
-                                                            Self.refreshAllDashboards();
-                                                        }
-                                                    }, 300);
+                                                style = style + " no-preview";
+                                            }
+                                            if (treeData.item.contentType == "asset") {
+                                                style = style + " component";
+                                            }
+                                            style = style + " treenode-label";
+                                            treeData.item.style = style;
+                                            if(curElt){
+                                                curElt.className = style;
+                                                if(curNode.data.title && curElt.title != curNode.data.title) {
+                                                    curElt.title = curNode.data.title;
                                                 }
                                             }
+                                            if (style.indexOf("deleted") != -1 || treeData.item.isDeleted) {
+                                                var tempSplit = curNode.labelElId.split("labelel");
+                                                var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
+                                                parentNode.style.display = 'none';
+                                                tree.removeNode(curNode);
+                                                if (typeof WcmDashboardWidgetCommon != 'undefined') {
+                                                    CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
+                                                        CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
+                                                }
+                                                eventCM.typeAction = typeAction;
+                                                document.dispatchEvent(eventCM);
+                                                Self.refreshAllDashboards();
+                                            }
+                                            else {
+                                                if (style.indexOf("in-flight") != -1) {
+                                                    setTimeout(function () {
+                                                        lookupSiteContent(curNode, currentUri);
+                                                    }, 300);
+                                                } else {
+                                                    cont++;
+
+                                                    var indexOfFolder = -1;
+                                                    if (curNode.labelStyle){
+                                                        indexOfFolder = curNode.labelStyle.indexOf("folder");
+                                                    }else{
+                                                        indexOfFolder = curNode.html.className.indexOf("folder");
+                                                    }
+
+                                                    if ((indexOfFolder != -1 && cont < 25) || (indexOfFolder == -1 && cont < 2)) {
+                                                        setTimeout(function () {
+                                                            lookupSiteContent(curNode, currentUri, cont);
+                                                            if (typeof WcmDashboardWidgetCommon != 'undefined' && (eventNS.typeAction =="edit" && !eventNS.draft)) {
+                                                                CStudioAuthoring.SelectedContent.getSelectedContent()[0] ?
+                                                                    CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
+                                                            }
+                                                            if((indexOfFolder == -1) && (typeAction != "edit")) {
+                                                                eventCM.typeAction = typeAction;
+                                                                document.dispatchEvent(eventCM);
+                                                                Self.refreshAllDashboards();
+                                                            }
+                                                        }, 300);
+                                                    }
+                                                }
+                                            }
+
+                                            var icon = CStudioAuthoring.Utils.getContentItemIcon(treeData.item);
+                                            curElt.innerHTML = "";
+                                            curElt.appendChild(icon);
+                                            curElt ? curElt.innerHTML += currentInternalName : null;
                                         }
-
-                                        var icon = CStudioAuthoring.Utils.getContentItemIcon(treeData.item);
-                                        curElt.innerHTML = "";
-                                        curElt.appendChild(icon);
-                                        curElt ? curElt.innerHTML += currentInternalName : null;
+                                    },
+                                    failure: function () {
                                     }
-                                },
-                                failure: function () {
-                                }
-                            })
+                                })
+                            }
                         }
-                    }
 
-                }
-            }else {
-                if(node) {
-                    nodeOpen = true;
-                    for(var i=0; i<node.length; i++) {
-                        var curNode = node[i];
-                        if (curNode.nodeType == "CONTENT") {
-                            var itemStore = instance ? storage.read(Self.getStoredPathKey(instance)) : null;
-                            //console.log(itemStore);
-                            if(YDom.get(curNode.labelElId)) {
-                                tree.removeChildren(curNode);
-                                var loadEl = YAHOO.util.Selector.query(".ygtvtp", curNode.getEl(), true);
-                                loadEl == null && (loadEl = YAHOO.util.Selector.query(".ygtvlp", curNode.getEl(), true));
-                                YDom.addClass(loadEl, "ygtvloading");
-                                curNode.renderChildren();
-                                curNode.refresh();
+                    }
+                }else {
+                    if(node) {
+                        nodeOpen = true;
+                        for(var i=0; i<node.length; i++) {
+                            var curNode = node[i];
+                            if (curNode.nodeType == "CONTENT") {
+                                var itemStore = instance ? storage.read(Self.getStoredPathKey(instance)) : null;
                                 //console.log(itemStore);
-                                if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
-                                self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
+                                if(YDom.get(curNode.labelElId)) {
+                                    tree.removeChildren(curNode);
+                                    var loadEl = YAHOO.util.Selector.query(".ygtvtp", curNode.getEl(), true);
+                                    loadEl == null && (loadEl = YAHOO.util.Selector.query(".ygtvlp", curNode.getEl(), true));
+                                    YDom.addClass(loadEl, "ygtvloading");
+                                    curNode.renderChildren();
+                                    curNode.refresh();
+                                    //console.log(itemStore);
+                                    if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
+                                    self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
+                                    Self.refreshAllDashboards();
+                                }
+
+                            } else {
+                                var root = false;
+                                if (Object.prototype.toString.call(instance.path) === '[object Array]') {
+                                    var path;
+                                    try {
+                                        path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.treeNodeTO.path : treeNode.treeNodeTO.path;
+                                    } catch (er) {
+                                        path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.path ? treeNode.path : null : treeNode.path ? treeNode.path : null;
+                                    }
+                                    for (var i = 0; i <= instance.path.length; i++) {
+                                        if (path == instance.path[i]) {
+                                            root = true;
+                                        }
+                                    }
+                                }
+                                if (root && instance) {
+                                    Self.initializeContentTree(instance.rootFolderEl, null, instance);
+                                    Self.toggleFolderState(instance, "open");
+                                }
                                 Self.refreshAllDashboards();
                             }
+                            if(i >= (node.length - 1)){
+                                eventYS.parent = null;
+                                eventNS.parent = null;
+                            }
+                        }
+                    }
+                    if (root && instance) {
+                        var __self = this;
+                        setTimeout(function () {
+                            __self.openLatest(instance);
+                        }, 100);
+                    }
+                }
 
+                var treeInner = YDom.get('acn-dropdown-menu-inner');
+                var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
+
+                for (var i = 0; i < previousCutEl.length; i++) {
+
+                    if (previousCutEl[i].style.color == Self.CUT_STYLE_RGB || previousCutEl[i].style.color == Self.CUT_STYLE) {
+
+                        if (status) {
+                            var tempSplit = previousCutEl[i].id.split("labelel");
+                            var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
+                            parentNode.style.display = 'none';
+                            if (Self.cutItem != null) {
+                                var parNode = tree.getNodeByProperty("path", Self.cutItem.parent.data.path);
+                                //if parent have single child and we did cut and paste the child,
+                                //we should refresh the parent node to remove expand collapse icon
+                                if (parNode && parNode.children && parNode.children.length == 1) {
+                                    tree.removeChildren(parNode);
+                                    var parLoadEl = YSelector(".ygtvtp", parNode.getEl(), true);
+                                    parLoadEl == null && (parLoadEl = YSelector(".ygtvlp", parNode.getEl(), true));
+                                    YDom.addClass(parLoadEl, "ygtvloading");
+                                    parNode.renderChildren();
+                                    parNode.refresh();
+                                } else if (parNode) {
+                                    //remove the only item from parent node.
+                                    tree.removeNode(Self.cutItem);
+                                }
+                                Self.cutItem = null;
+                            }
                         } else {
-                            var root = false;
-                            if (Object.prototype.toString.call(instance.path) === '[object Array]') {
-                                var path;
-                                try {
-                                    path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.treeNodeTO.path : treeNode.treeNodeTO.path;
-                                } catch (er) {
-                                    path = curNode.data ? curNode.data.path ? curNode.data.path : treeNode.path ? treeNode.path : null : treeNode.path ? treeNode.path : null;
-                                }
-                                for (var i = 0; i <= instance.path.length; i++) {
-                                    if (path == instance.path[i]) {
-                                        root = true;
-                                    }
-                                }
-                            }
-                            if (root && instance) {
-                                Self.initializeContentTree(instance.rootFolderEl, null, instance);
-                                Self.toggleFolderState(instance, "open");
-                            }
-                            Self.refreshAllDashboards();
-                        }
-                        if(i >= (node.length - 1)){
-                            eventYS.parent = null;
-                            eventNS.parent = null;
+                            previousCutEl[i].removeAttribute("style");
                         }
                     }
                 }
-                if (root && instance) {
-                    var __self = this;
-                    setTimeout(function () {
-                        __self.openLatest(instance);
-                    }, 100);
-                }
+
             }
-
-            var treeInner = YDom.get('acn-dropdown-menu-inner');
-            var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
-
-            for (var i = 0; i < previousCutEl.length; i++) {
-
-                if (previousCutEl[i].style.color == Self.CUT_STYLE_RGB || previousCutEl[i].style.color == Self.CUT_STYLE) {
-
-                    if (status) {
-                        var tempSplit = previousCutEl[i].id.split("labelel");
-                        var parentNode = YDom.get(tempSplit[0] + tempSplit[1]);
-                        parentNode.style.display = 'none';
-                        if (Self.cutItem != null) {
-                            var parNode = tree.getNodeByProperty("path", Self.cutItem.parent.data.path);
-                            //if parent have single child and we did cut and paste the child,
-                            //we should refresh the parent node to remove expand collapse icon
-                            if (parNode && parNode.children && parNode.children.length == 1) {
-                                tree.removeChildren(parNode);
-                                var parLoadEl = YSelector(".ygtvtp", parNode.getEl(), true);
-                                parLoadEl == null && (parLoadEl = YSelector(".ygtvlp", parNode.getEl(), true));
-                                YDom.addClass(parLoadEl, "ygtvloading");
-                                parNode.renderChildren();
-                                parNode.refresh();
-                            } else if (parNode) {
-                                //remove the only item from parent node.
-                                tree.removeNode(Self.cutItem);
-                            }
-                            Self.cutItem = null;
-                        }
-                    } else {
-                        previousCutEl[i].removeAttribute("style");
-                    }
-                }
-            }
-
         }
 	},
 
@@ -2082,8 +2085,9 @@
                                             }
                                         ]);
                                     }else {
-                                        if((oCurrentTextNode.data.status.toLowerCase().indexOf("submitted") === -1) &&
-                                            (oCurrentTextNode.data.status.toLowerCase().indexOf("scheduled") === -1)){
+                                        if(((oCurrentTextNode.data.status.toLowerCase().indexOf(CStudioAuthoring.Constants.STATUS.submittedStatus) === -1) &&
+                                            (oCurrentTextNode.data.status.toLowerCase().indexOf(CStudioAuthoring.Constants.STATUS.scheduledStatus) === -1)) &&
+                                            (oCurrentTextNode.data.status.toLowerCase().indexOf(CStudioAuthoring.Constants.STATUS.inWorkflowStatus) === -1)){
                                             p_aArgs.addItems([
                                                 {
                                                     text: CMgs.format(siteDropdownLangBundle, "wcmContentSubmit"),

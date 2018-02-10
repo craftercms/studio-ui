@@ -125,6 +125,27 @@
                 })
             };
 
+            //PUBLISHING
+            this.getPublishStatus = function(site) {
+                return $http.get(publish('status', 'site_id=' + site));
+            };
+
+            this.startPublishStatus = function(site) {
+                return $http.post(publish('start'), site);
+            };
+
+            this.stopPublishStatus = function(site) {
+                return $http.post(publish('stop'), site);
+            };
+
+            //BULKPUBLISH
+            this.getPublishingChannels = function(site) {
+                return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
+            };
+
+            this.bulkGoLive = function(site, path) {
+                return $http.post(bulkPublish('bulk-golive', 'site=' + site + "&path=" + path + "&environment=" + Constants.BULK_ENVIRONMENT));
+            };
 
             function api(action) {
                 return Constants.SERVICE + 'site/' + action + '.json';
@@ -135,6 +156,22 @@
                     return Constants.SERVICE + 'user/' + action + '.json?' + params;
                 }else {
                     return Constants.SERVICE + 'user/' + action + '.json';
+                }
+            }
+
+            function publish(action, params) {
+                if(params){
+                    return Constants.SERVICE + 'publish/' + action + '.json?' + params;
+                }else {
+                    return Constants.SERVICE + 'publish/' + action + '.json';
+                }
+            }
+
+            function bulkPublish(action, params) {
+                if(params){
+                    return Constants.SERVICE + 'deployment/' + action + '.json?' + params;
+                }else {
+                    return Constants.SERVICE + 'deployment/' + action + '.json';
                 }
             }
 
@@ -266,6 +303,162 @@
             };
 
             getAudit(audit.site);
+
+        }
+    ]);
+
+    app.controller('PublishingCtrl', [
+        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        '$stateParams', '$translate', '$location', 'moment',
+        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+                  $stateParams, $translate, $location, moment) {
+
+                //PUBLISHING
+
+                //MODAL
+
+                $scope.publish = {};
+                var currentIconColor;
+                var publish = $scope.publish;
+                publish.error = "";
+
+                publish.showModal = function(template, size, verticalCentered, styleClass){
+                    var modalInstance = $modal.open({
+                        templateUrl: template,
+                        windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+                        backdrop: 'static',
+                        keyboard: true,
+                        //controller: 'PublishingCtrl',
+                        scope: $scope,
+                        size: size ? size : ''
+                    });
+
+                    return modalInstance;
+                };
+                publish.hideAdminModal = function() {
+                    $scope.adminModal.close();
+                }
+                publish.hideConfirmationBulkModal = function() {
+                    $scope.confirmationBulk.close();
+                }
+                publish.hideErrorModal = function() {
+                    $scope.errorDialog.close();
+                }
+
+                publish.stopDisabled = false;
+                publish.startDisabled = false;
+                publish.site = $location.search().site;
+                publish.timeZone;
+
+                adminService.getTimeZone({
+                    "site" : publish.site,
+                    "path" : "/site-config.xml"
+                }).success(function (data) {
+                    publish.timeZone = data["default-timezone"];
+                });
+
+                publish.getPublish = function () {
+                    adminService.getPublishStatus(publish.site)
+                        .success(function (data) {
+                            publish.stopDisabled = false;
+                            publish.startDisabled = false;
+                            switch (data.status.toLowerCase()) {
+                                case "busy":
+                                    currentIconColor = "orange";
+                                    break;
+                                case "stopped":
+                                    currentIconColor = "red";
+                                    publish.stopDisabled = true;
+                                    break;
+                                default:
+                                    currentIconColor = "blue";
+                                    publish.startDisabled  = true;
+                            }
+                            var stringDate = data.message.match( /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/ );
+                            var date = null;
+                            if(stringDate && stringDate.length){
+                                publish.date = stringDate[0];
+                                data.message = data.message.replace(stringDate[0], "");
+                            }else{
+                                publish.date = "";
+                            }
+                            publish.iconColor = currentIconColor;
+                            publish.message = data.message;
+                            publish.statusText = data.status;
+                        })
+                        .error(function (err) {
+                        });
+                };
+
+                var renderStatusView = function() {
+                    publish.getPublish(publish.site);
+                    $timeout(function () {
+                        renderStatusView();
+                    }, 60000, false);
+                }
+                renderStatusView();
+
+                publish.startPublish = function () {
+                    var requestAsString = {"site_id": publish.site};
+                    adminService.startPublishStatus(requestAsString)
+                        .success(function (data) {
+                            publish.getPublish(requestAsString);
+                            window.top.postMessage('status-changed', '*');
+                        })
+                        .error(function (err) {
+                            publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
+                            $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
+                        });
+                };
+
+                publish.stopPublish = function () {
+                    var requestAsString = {"site_id": publish.site};
+                    adminService.stopPublishStatus(requestAsString)
+                        .success(function (data) {
+                            publish.getPublish(requestAsString);
+                            window.top.postMessage('status-changed', '*');
+                        })
+                        .error(function (err) {
+                            publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
+                            $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
+                        });
+                };
+
+                //BULK PUBLISH
+
+                var currentIconColor;
+                publish.channels;
+                //publish.getPublishingChannels;
+                publish.bulkPublish;
+                publish.continue;
+                //publish.selectedChannel ='';
+                publish.pathPublish = '';
+
+                /*publish.getPublishingChannels = function () {
+                    adminService.getPublishingChannels(publish.site)
+                        .success(function (data) {
+                            //data.availablePublishChannels = [{name: "Live", publish: true, updateStatus: false, order: 2147483647}, {name: "Test", publish: true, updateStatus: false, order: 2147483642}]
+                            publish.channels = data.availablePublishChannels;
+                            publish.selectedChannel = publish.channels[0].name.toString();
+                        })
+                        .error(function () {
+                        });
+                };
+
+                publish.getPublishingChannels();*/
+
+                publish.bulkPublish = function () {
+                    $scope.adminModal = publish.showModal('confirmationModal.html', 'md');
+                }
+
+                publish.continue = function () {
+                    adminService.bulkGoLive(publish.site, publish.pathPublish)
+                        .success(function (data) {
+                            $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
+                        })
+                        .error(function () {
+                        })
+                }
 
         }
     ]);

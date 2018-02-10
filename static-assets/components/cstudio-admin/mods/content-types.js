@@ -1785,7 +1785,7 @@ CStudioAuthoring.Module.requireModule(
 
 				var labelEl = document.createElement("div");
 				YAHOO.util.Dom.addClass(labelEl, "property-label");
-				YAHOO.util.Dom.addClass(labelEl, label.replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
+				YAHOO.util.Dom.addClass(labelEl, "label-"+label.replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
 				labelEl.innerHTML = label;
 				propertyContainerEl.appendChild(labelEl);
 				

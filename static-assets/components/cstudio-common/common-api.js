@@ -225,6 +225,11 @@ var nodeOpen = false,
                 scheduled: "fa-clock-o",
                 inworkflow: "fa-flag",
                 edited: "fa-pencil"
+            },
+            STATUS: {
+                submittedStatus: "submitted",
+                scheduledStatus: "scheduled",
+                inWorkflowStatus: "in workflow"
             }
         },
         /**
@@ -2906,6 +2911,8 @@ var nodeOpen = false,
             lookupFoldersServiceUri: "/api/1/services/api/1/content/get-pages.json", // NEED A SERVICE
 
             getPublishStatusServiceUrl: "/api/1/services/api/1/publish/status.json",
+            startPublishStatusServiceUrl: "/api/1/services/api/1/publish/start.json",
+            stopPublishStatusServiceUrl: "/api/1/services/api/1/publish/stop.json",
 
             //CMIS
             getCMISContentBySearchUri: "/api/1/services/api/1/cmis/search.json",
@@ -4607,6 +4614,59 @@ var nodeOpen = false,
                 };
 
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            /**
+             * start publish status
+             */
+            startPublishStatus: function(site, callback) {
+
+                var serviceUri = this.startPublishStatusServiceUrl;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var result = eval("(" + response.responseText + ")");
+                        callback.success(result);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                var requestAsString = JSON.stringify({"site_id":site});
+
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
+            },
+
+            /**
+             * stop publish status
+             */
+            stopPublishStatus: function(site, callback) {
+
+                var serviceUri = this.stopPublishStatusServiceUrl;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var result = eval("(" + response.responseText + ")");
+                        callback.success(result);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+                var requestAsString = JSON.stringify({"site_id":site});
+
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
+
             },
 
             /**

@@ -243,6 +243,66 @@ table {
   }
 }
 
+.publishing-view {
+
+  padding: 0 20px;
+
+  .panel{
+    border-color: #ddd;
+
+    .panel-heading{
+      color: #333333;
+      background-color: #f5f5f5;
+      border-color: #ddd;
+      padding: 10px 15px;
+      border-top-right-radius: 3px;
+      border-top-left-radius: 3px;
+      font-size: 19px;
+      font-weight: bold;
+
+      #refreshPublish{
+        font-size: 12px;
+      }
+
+    }
+
+    .orange{
+      color: #FF8C00;
+    }
+
+    .red{
+      color: #FF0000;
+    }
+
+    .blue{
+      color: #7e9dbb;
+    }
+
+    .capitalize{
+      text-transform: capitalize;
+    }
+
+    #publishIcon{
+      font-size: 18px;
+    }
+
+  }
+
+  .publish-buttons{
+    text-align: right;
+  }
+
+  .bulkContainer{
+    input, select{
+      max-width: 500px;
+    }
+    .error.ng-binding{
+      color:red;
+    }
+  }
+
+}
+
 .audit-number-logs {
   border: 1px solid #ccc;
   padding: 6px;

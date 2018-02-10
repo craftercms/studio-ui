@@ -313,6 +313,12 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     max-width: 100%;
 }
 
+.cstudio-form-field-container#dropdown{
+    padding-top: 18px;
+    float: none;
+    height: auto;
+}
+
 .cstudio-form-field-container#header, .cstudio-form-field-container#footer {
     background: none;
     width: 100%;

@@ -319,6 +319,8 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
 
             var uploadFile = function(file, cfg) {
                 var reader = new FileReader ();
+                var CHUNK_SIZE = 1024;
+                var offset = 0
 
                 if(cfg.path) cfg.target = queryStringUrlReplacement(cfg.target, "path", cfg.path);
 
@@ -382,7 +384,8 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                 }) (file);
 
                 // Read in the image file as a data url.
-                reader.readAsDataURL(file);
+                var slice = file.slice(offset, offset + CHUNK_SIZE);
+                reader.readAsDataURL(slice);
             };
 
             var toArray = function(list) {
@@ -606,10 +609,10 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
 
         auxFormData.path = cfg.path ? cfg.path : auxFormData.path;
 
-        fd.append(cfg.uploadPostKey, file);
         if (auxFormData) for (var key in auxFormData) {
             fd.append(key, auxFormData[key]);
         }
+        fd.append(cfg.uploadPostKey, file);
 
         xhr.open("POST", cfg.target + "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken);
         xhr.send(fd);
