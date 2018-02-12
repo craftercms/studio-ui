@@ -278,9 +278,11 @@
                 user = JSON.parse(script.html());
             }
 
-            if(!user){
+            if(!user || user.username == ""){
                 if($cookies['userSession']){
                     user = JSON.parse($cookies[['userSession']]);
+                }else{
+                    user = null;
                 }
             }
 
@@ -311,9 +313,11 @@
             };
 
             this.getCurrentUserData = function() {
-                return $http.get(api('get'), {
-                    params: { username : this.getUser().username }
-                });
+                if(this.getUser()){
+                    return $http.get(api('get'), {
+                        params: { username : this.getUser().username }
+                    });
+                }
             }
 
             this.removeUser = function() {
@@ -564,12 +568,16 @@
                 elt.removeClass('nav-label-hover');
             }
 
-            authService.getCurrentUserData().then(
-                function successCallback(response) {
-                    $scope.externallyManaged = response.data.externally_managed;
-                }, function errorCallback(response) {
-                }
-            );
+
+            if(authService.getUser()){
+                authService.getCurrentUserData().then(
+                    function successCallback(response) {
+                        $scope.externallyManaged = response.data.externally_managed;
+                    }, function errorCallback(response) {
+                    }
+                );
+            }
+
 
             function changePassword() {
                 $scope.data.username = $scope.user.username;
@@ -676,13 +684,15 @@
                 }
             );
 
-            authService.getStudioInfo().then(
-                function successCallback(response) {
-                    $scope.aboutStudio = response.data;
-                    $scope.versionNumber = response.data.packageVersion + "-" + response.data.build.substring(0,6);
-                }, function errorCallback(response) {
-                }
-            );
+            if(authService.getUser()) {
+                authService.getStudioInfo().then(
+                    function successCallback(response) {
+                        $scope.aboutStudio = response.data;
+                        $scope.versionNumber = response.data.packageVersion + "-" + response.data.build.substring(0, 6);
+                    }, function errorCallback(response) {
+                    }
+                );
+            }
 
             var isChromium = window.chrome,
                 vendorName = window.navigator.vendor,
@@ -783,8 +793,10 @@
                 }
             }
 
-            authLoop();
-                
+            if(authService.getUser()) {
+                authLoop();
+            }
+
 
         }
     ]);
@@ -843,21 +855,24 @@
 
             function getResultsPage(pageNumber) {
 
-                var params = {
-                    username: $scope.user.username
-                };
+                if(authService.getUser()){
+                    var params = {
+                        username: $scope.user.username
+                    };
 
-                if($scope.totalSites && $scope.totalSites > 0) {
-                    var start = (pageNumber - 1) * $scope.sitesPag.sitesPerPage,
-                        end = start + $scope.sitesPag.sitesPerPage;
-                    params.start = start;
-                    params.number = $scope.sitesPag.sitesPerPage;
-                }else{
-                    params.start = 0;
-                    params.number = $scope.sitesPag.sitesPerPage;
+                    if($scope.totalSites && $scope.totalSites > 0) {
+                        var start = (pageNumber - 1) * $scope.sitesPag.sitesPerPage,
+                            end = start + $scope.sitesPag.sitesPerPage;
+                        params.start = start;
+                        params.number = $scope.sitesPag.sitesPerPage;
+                    }else{
+                        params.start = 0;
+                        params.number = $scope.sitesPag.sitesPerPage;
+                    }
+
+                    getSites(params);
                 }
 
-                getSites(params);
             }
 
             getResultsPage(1);
