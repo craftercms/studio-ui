@@ -378,7 +378,7 @@ span.navigation-separator-alt {
     bottom: 0;
     position: fixed;
     width: 100%;
-    z-index: 45;
+    /*z-index: 45;*/
     padding: 10px 0 0;
     transition: background-color .5s ease-in-out;
     -moz-transition: background-color .5s ease-in-out;
