@@ -1,4 +1,4 @@
-CStudioAuthoring.Utils.addCss('https://cdn01.boxcdn.net/platform/elements/3.5.1/en-US/picker.css');
+CStudioAuthoring.Utils.addCss('/static-assets/styles/box-file-upload.css');
 CStudioAuthoring.Utils.addJavascript('https://cdn01.boxcdn.net/platform/elements/3.5.1/en-US/picker.js');
 
 CStudioForms.Controls.BoxFileUpload = CStudioForms.Controls.BoxFileUpload ||  
@@ -200,6 +200,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     
     var picker = document.createElement("div");
     picker.id = "box-picker";
+    picker.className = "box-picker";
     containerEl.appendChild(picker);
     
     var self = this;
