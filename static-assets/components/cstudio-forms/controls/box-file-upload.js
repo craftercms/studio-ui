@@ -1,3 +1,6 @@
+CStudioAuthoring.Utils.addCss('https://cdn01.boxcdn.net/platform/elements/3.5.1/en-US/picker.css');
+CStudioAuthoring.Utils.addJavascript('https://cdn01.boxcdn.net/platform/elements/3.5.1/en-US/picker.js');
+
 CStudioForms.Controls.BoxFileUpload = CStudioForms.Controls.BoxFileUpload ||  
 function(id, form, owner, properties, constraints, readonly)  {
   this.owner = owner;
@@ -12,6 +15,8 @@ function(id, form, owner, properties, constraints, readonly)  {
   this.form = form;
   this.id = id;
   this.readonly = readonly;
+  this.enable_upload = false;
+  this.enable_multi = false;
   
   if(properties) {
     var required = constraints.find(function(property){ return property.name === "required"; });
@@ -21,6 +26,14 @@ function(id, form, owner, properties, constraints, readonly)  {
     var profile_id = properties.find(function(property){ return property.name === "profile_id"; });
     if(profile_id) {
       this.profile_id = profile_id.value;
+    }
+    var enable_upload = properties.find(function(property){ return property.name === "enable_upload"; });
+    if(enable_upload) {
+      this.enable_upload = enable_upload.value;
+    }
+    var enable_multi = properties.find(function(property){ return property.name === "enable_multi_selection"; });
+    if(enable_multi) {
+      this.enable_multi = enable_multi.value;
     }
   }
   
@@ -58,7 +71,9 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
   
   getSupportedProperties: function() {
     return [
-      { label: "Profile ID", name: "profile_id", type: "string", defaultValue: "box-default" }
+      { label: "Profile ID", name: "profile_id", type: "string", defaultValue: "box-default" },
+      { label: "Enable Upload", name: "enable_upload", type: "boolean", defaultValue: false },
+      { label: "Enable Multiple Selection", name: "enable_multi_selection", type: "boolean", defaultValue: false },
     ];
   },
   
@@ -182,6 +197,36 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     controlWidgetContainerEl.appendChild(formEl);
     
     containerEl.appendChild(controlWidgetContainerEl);
+    
+    var picker = document.createElement("div");
+    picker.id = "box-picker";
+    containerEl.appendChild(picker);
+    
+    var self = this;
+    var tokenUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/box/token.json");
+    tokenUri += "&site=" + CStudioAuthoringContext.site;
+    tokenUri += "&profileId=" + this.profile_id;
+    tokenUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;    
+    YAHOO.util.Connect.asyncRequest("GET", tokenUri, {
+        success: function(o) {
+            var data = JSON.parse(o.responseText);
+            var folderId = '0';
+            var accessToken = data.accessToken;
+            var filePicker = new Box.FilePicker();
+            filePicker.addListener('choose', function(evt) {
+                self.edited = true;
+                self.setValue([{ 'id': evt[0].id, 'name': evt[0].name }])
+            });
+            filePicker.show(folderId, accessToken, {
+                    logoUrl: 'box',
+                    container: '#box-picker',
+                    maxSelectable: self.enable_multi? Infinity : 1,
+                    canUpload: self.enable_upload,
+                    canSetShareAccess: false,
+                    canCreateNewFolder: self.enable_upload
+            });
+        }
+    });
   }
   
 });

@@ -5761,8 +5761,10 @@ var nodeOpen = false,
                 if (!this.arrayContains(css, this.addedCss)) {
 
                     this.addedCss.push(css);
-
-                    css = CStudioAuthoringContext.baseUri + css + '?version=' + CStudioAuthoring.UIBuildId;
+                    
+                    if(css.indexOf("http") == -1) {
+                        css = CStudioAuthoringContext.baseUri + css + '?version=' + CStudioAuthoring.UIBuildId;
+                    }
 
                     css = (css.indexOf("?")==-1) ? 
                         css + "?nocache="+new Date() : css + "&nocache="+new Date();
