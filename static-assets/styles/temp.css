@@ -2806,7 +2806,7 @@ body, var {
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 100;
+  z-index: 99;
   position: fixed; }
   #authoringContextNavHeader table {
     font-size: inherit;
@@ -14931,6 +14931,9 @@ margin-left: -3px; */
 .studio-view input.schedulingMode {
   margin: 0 0 0 -20px; }
 
+.studio-view .navbar-fixed-top {
+  z-index: 100; }
+
 .cstudio-view {
   font-size: 12px; }
   .cstudio-view .view-square-wrp {
@@ -15233,3 +15236,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */

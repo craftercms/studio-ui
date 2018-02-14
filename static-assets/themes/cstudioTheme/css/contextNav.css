@@ -119,11 +119,11 @@
 body .mask{
   background-color: rgb(68, 68, 68)!important;
   opacity: 0.5!important;;
-  z-index: 1031!important;
+  /*z-index: 1031!important;*/
 }
 
 .yui-dialog {
-  z-index: 100102!important;
+  /*z-index: 100102!important;*/
 }
 
 .yui-dialog.inc-zindex {

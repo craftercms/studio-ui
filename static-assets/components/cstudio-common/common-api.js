@@ -1713,6 +1713,7 @@ var nodeOpen = false,
 
             openDiff: function(site, path, version, versionTO, escaped) {
 
+                window.top.studioFormZorder= (window.top.studioFormZorder) ? window.top.studioFormZorder + 1 : 9999;
                 var id = CSA.Utils.getScopedId(),
                     animator,
                     editorId =  CStudioAuthoring.Utils.generateUUID(),
@@ -1744,7 +1745,7 @@ var nodeOpen = false,
                 }, 1000);
 
                 $modal.find('.bd').html(template).end().appendTo(parentEl);
-                $modal.find('.studio-ice-container').css('z-index', 100525);
+                $modal.find('.studio-ice-container').css('z-index', 104000);
 
                 $('body').on("diff-end", function () {
                     $modal.remove();
