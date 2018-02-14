@@ -118,7 +118,6 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
 
         // Render the Dialog
         login_dialog.render();
-        YDom.addClass(newdiv.parentNode,"login-dialog");
 
         var eventParams = {
             self: this
