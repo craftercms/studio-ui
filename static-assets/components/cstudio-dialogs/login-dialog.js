@@ -52,9 +52,9 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
         var CMgs = CStudioAuthoring.Messages;
         var previewLangBundle = CMgs.getBundle("previewTools", CStudioAuthoringContext.lang);
 
-        YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
+        YDom.removeClass("cstudio-wcm-popup-div-login", "yui-pe-content");
 
-        var newdiv = YDom.get("cstudio-wcm-popup-div");
+        var newdiv = YDom.get("cstudio-wcm-popup-div-login");
         if (newdiv == undefined) {
             newdiv = document.createElement("div");
             document.body.appendChild(newdiv);
@@ -64,7 +64,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
             location = "/studio/#/login";
         }
 
-        var divIdName = "cstudio-wcm-popup-div";
+        var divIdName = "cstudio-wcm-popup-div-login";
         newdiv.setAttribute("id",divIdName);
         newdiv.className= "yui-pe-content";
         newdiv.innerHTML = '<div class="contentTypePopupInner" id="login-popup-inner">' +
@@ -100,7 +100,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
         document.getElementById("login-popup-inner").style.height = "180px";
 
         // Instantiate the Dialog
-        login_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
+        login_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div-login",
             {   width : "360px",
                 height : "388px",
                 effect:{
@@ -140,7 +140,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
 
        YAHOO.util.Event.addListener("loginButton", "click", this.loginPopupSubmit, eventParams);
        YAHOO.util.Event.addListener("loginCancelButton", "click", authRedirect);
-
+       setTimeout(function(){YDom.addClass(YAHOO.util.Selector.query('body > .mask:first-child'),"login-dialog-mask"); }, 100);
 
         return login_dialog;
     },
@@ -163,7 +163,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                     args.self.cb.success();
                 }else{
                     var loginError = document.getElementById("loginError");
-                    var cstudioWcmPopup = document.getElementById("cstudio-wcm-popup-div");
+                    var cstudioWcmPopup = document.getElementById("cstudio-wcm-popup-div-login");
                     loginError.innerHTML = response.message;
                     if(loginError.classList.contains("hidden")){
                         loginError.classList.remove("hidden");
@@ -174,7 +174,7 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
             },
             failure: function(response) {
                 var loginError = document.getElementById("loginError");
-                var cstudioWcmPopup = document.getElementById("cstudio-wcm-popup-div");
+                var cstudioWcmPopup = document.getElementById("cstudio-wcm-popup-div-login");
                 loginError.innerHTML =  JSON.parse(response.responseText).message;
                 if(loginError.classList.contains("hidden")){
                     loginError.classList.remove("hidden");
