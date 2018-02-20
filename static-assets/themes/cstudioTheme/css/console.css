@@ -110,7 +110,8 @@ body,tbody {
     position: fixed;
     right: 0;
     top: 0;
-    width: 32%;
+    /*width: 32%;*/
+    width: calc(calc(100% - 239px) * 0.38);
     padding-top: 32px;
     margin-top: 19px;
     font-size: 11.5px;
