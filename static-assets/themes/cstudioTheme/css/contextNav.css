@@ -73,7 +73,7 @@
     width: 598px;
 }
 
-#cstudio-wcm-popup-div .rename-container:before {
+#cstudio-wcm-popup-div .rename-container:before, #cstudio-wcm-popup-div-login .rename-container:before {
     content: "."attr(data-extension);
     top: 9px;
     right: 20px;
@@ -118,7 +118,7 @@
 
 body .mask{
   background-color: rgb(68, 68, 68)!important;
-  opacity: 0.5!important;;
+  opacity: 0.5!important;
   z-index: 1031!important;
 }
 
@@ -128,6 +128,14 @@ body .mask{
 
 .yui-dialog.inc-zindex {
     z-index: 100104!important;
+}
+
+.yui-dialog.login-dialog{
+    z-index:105000!important;
+}
+
+body .mask.login-dialog-mask{
+    z-index:104009!important;
 }
 
 .yui-dialog .yui-overlay.yui-panel{
@@ -380,27 +388,27 @@ body .mask{
 
 /* -- Upload Overlay -- */
 .yui-pe-content div, .yui-pe-content span,
-#cstudio-wcm-popup-div label, #cstudio-wcm-popup-div h1, #cstudio-wcm-popup-div h2, #cstudio-wcm-popup-div h3,
-#cstudio-wcm-popup-div b {
+#cstudio-wcm-popup-div label, #cstudio-wcm-popup-div-login label, #cstudio-wcm-popup-div h1, #cstudio-wcm-popup-div-login h1, #cstudio-wcm-popup-div h2,#cstudio-wcm-popup-div-login h2,
+#cstudio-wcm-popup-div h3, #cstudio-wcm-popup-div-login h3, #cstudio-wcm-popup-div b, #cstudio-wcm-popup-div-login b {
     cursor: auto; color: #000000; direction: ltr; font: normal normal normal 12px/normal; font-size-adjust: none;
     font-stretch: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0; text-justify: auto;
     text-outline: none; text-shadow: none; text-transform: none; white-space: normal; word-spacing: normal; word-break: normal;
     word-wrap: normal;
 }
-#cstudio-wcm-popup-div select, #cstudio-wcm-popup-div option {
+#cstudio-wcm-popup-div select, #cstudio-wcm-popup-div-login select, #cstudio-wcm-popup-div option, #cstudio-wcm-popup-div-login option {
 	cursor: auto; direction: ltr; font: normal normal normal 12px/normal; font-size-adjust: none;
     font-stretch: normal; letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0; text-justify: auto;
     text-outline: none; text-shadow: none; text-transform: none; white-space: pre; word-spacing: normal; word-break: normal;
     word-wrap: normal;
 }
 
-#cstudio-wcm-popup-div.yui-panel .hd {
+#cstudio-wcm-popup-div.yui-panel .hd, #cstudio-wcm-popup-div-login.yui-panel .hd {
     height: 0px;
     display: none;
     width: 400px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .bd {
+#cstudio-wcm-popup-div.yui-panel .bd, #cstudio-wcm-popup-div-login.yui-panel .bd {
     background: url(../images/bg/gradient_workflow.gif) repeat-x;
     background-color: #D6D6D6;
     height: 100%;
@@ -409,12 +417,12 @@ body .mask{
     width: 400px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .ft {
+#cstudio-wcm-popup-div.yui-panel .ft, #cstudio-wcm-popup-div-login.yui-panel .ft {
 
     height: 0px;
     display: none;
 }
-#cstudio-wcm-popup-div.yui-panel .header-title {
+#cstudio-wcm-popup-div.yui-panel .header-titl, #cstudio-wcm-popup-div-login.yui-panel .header-title {
     font-size: 14px;
     color: black;
     font-weight: bold;
@@ -422,37 +430,37 @@ body .mask{
     padding-top: 10px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-label {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-label, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-label {
     font-weight: bold;
 }
 
-#cstudio-wcm-popup-div.yui-panel .templateName,
-#cstudio-wcm-popup-div.yui-panel .previewImage {
+#cstudio-wcm-popup-div.yui-panel .templateName, #cstudio-wcm-popup-div-login.yui-panel .templateName,
+#cstudio-wcm-popup-div.yui-panel .previewImage, #cstudio-wcm-popup-div-login.yui-panel .previewImage {
     width:50%;
     float:left;
 }
 
-#cstudio-wcm-popup-div.yui-panel .templateName .contentTypeDropdown {
+#cstudio-wcm-popup-div.yui-panel .templateName .contentTypeDropdown, #cstudio-wcm-popup-div-login.yui-panel .templateName .contentTypeDropdown {
     margin-right:2px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .previewImage .contentTypePreview {
+#cstudio-wcm-popup-div.yui-panel .previewImage .contentTypePreview, #cstudio-wcm-popup-div-login.yui-panel .previewImage .contentTypePreview {
     margin-left:8px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control {
     height: 260px;
     width: 235px;
     margin: 5px 0 0 0;
 }
 
-#cstudio-wcm-popup-div .yui-resize .yui-resize-handle-br {
+#cstudio-wcm-popup-div .yui-resize .yui-resize-handle-br , #cstudio-wcm-popup-div-login .yui-resize .yui-resize-handle-br {
 	background-position: -20px -58px;
 	height:12px;
 	width:10px;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control {
 	color: #000000;
 	border:1px solid #C5D6E2;
 	background: #ffffff;
@@ -463,20 +471,20 @@ body .mask{
 	-moz-box-shadow:0 0 0 0 #000000 inset;
 }
 
-#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control option {
+#cstudio-wcm-popup-div.yui-panel .cstudio-wcm-popup-select-control option, #cstudio-wcm-popup-div-login.yui-panel .cstudio-wcm-popup-select-control option {
 	padding:0 5px 0 3px;
 }
 
-#cstudio-wcm-popup-div .contentTypePopupHeader {
+#cstudio-wcm-popup-div .contentTypePopupHeader, #cstudio-wcm-popup-div-login .contentTypePopupHeader {
     font: normal 1.8em;
 	margin: 0;
 	padding: 6px 0;
 }
-#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader{
+#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader, #cstudio-wcm-popup-div-login .contentTypePopupHeader.loginHeader{
     font-size: 1.5em;
     padding: 0px 15px 3px!important;
 }
-#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader #crafterLogo{
+#cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader #crafterLogo, #cstudio-wcm-popup-div-login .contentTypePopupHeader.loginHeader #crafterLogo{
     width: 140px;
     margin: 0 auto;
     display: block;
@@ -485,12 +493,12 @@ body .mask{
     text-align: center;
     color: red;
 }
-#cstudio-wcm-popup-div .contentTypePopupBtn {
+#cstudio-wcm-popup-div .contentTypePopupBtn, #cstudio-wcm-popup-div-login .contentTypePopupBtn {
     margin: 15px 0 0 0;
     padding: 0;
     text-align: center;
 }
-#cstudio-wcm-popup-div .contentTypePopupBtn input {
+#cstudio-wcm-popup-div .contentTypePopupBtn input, #cstudio-wcm-popup-div-login .contentTypePopupBtn input {
 	margin-right: 4px;
 }
 
@@ -559,9 +567,9 @@ body .mask{
 .contentTypePopupContent .content label.checkboxInput {}
 .contentTypePopupContent .content .checkboxInput input { padding: 0; vertical-align: 4px; width: 15px;}
 
-#cstudio-wcm-popup-div { border: none; }
-#cstudio-wcm-popup-div .content span,
-#cstudio-wcm-popup-div .content .selectInput label { text-align: right; }    /* Need to use ID selector or else styles are overriden */
+#cstudio-wcm-popup-div, #cstudio-wcm-popup-div-login { border: none; }
+#cstudio-wcm-popup-div .content span, #cstudio-wcm-popup-div-login .content span,
+#cstudio-wcm-popup-div .content .selectInput label, #cstudio-wcm-popup-div-login .content .selectInput label { text-align: right; }    /* Need to use ID selector or else styles are overriden */
 
 .acnDraftContent {
     background-color: DARKORANGE;
@@ -608,7 +616,7 @@ body.yui-skin-cstudioTheme .mask{
 
 }
 
-#cstudio-wcm-popup-div{
+#cstudio-wcm-popup-div, #cstudio-wcm-popup-div-login{
   box-shadow: none;
   background-color: transparent;
 }
