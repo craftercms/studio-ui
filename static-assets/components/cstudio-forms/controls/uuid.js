@@ -22,7 +22,7 @@ CStudioForms.Controls.UUID = CStudioForms.Controls.UUID  ||
 YAHOO.extend(CStudioForms.Controls.UUID, CStudioForms.CStudioFormField, {
 
 	getLabel: function() {
-		return "uuid";
+		return "UUID";
 	},
 
 	_onChange: function(evt, obj) {
