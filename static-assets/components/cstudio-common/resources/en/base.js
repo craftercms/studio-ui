@@ -582,7 +582,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     minOccurs: "Minimum Occurances",
     maxOccurs: "Maximum Occurances",
     formBasics: "Form Basics",
-    formTitle: "title",
+    formTitle: "Title",
     description: "Description",
     objectType: "Object Type",
     contentType: "Content Type",
