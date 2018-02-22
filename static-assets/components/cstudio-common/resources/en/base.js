@@ -623,6 +623,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     linkTextarea:"Link Text Area",
     richTextEditor: "Rich Text Editor",
     input: "Input",
+    uuid: "UUID",
     linkInput:"Link Input",
     dropdown: "Dropdown",
     linkedDropdown:"Linked Dropdown",

@@ -600,6 +600,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     linkTextarea: "Área de Texto Vinculante",
     richTextEditor: "Editor de Texto Enriquecido",
     input: "Campo de Entrada",
+    uuid: "UUID",
     linkInput:"Campo de Entrada Vinculante",
     dropdown: "Menú Desplegable",
     linkedDropdown:"Menú Desplegable Vinculado",
