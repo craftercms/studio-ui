@@ -7,6 +7,7 @@ CStudioAuthoring.Module.requireModule(
 			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/xml/xml.js");
 			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/javascript/javascript.js");
 			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/htmlmixed/htmlmixed.js");
+			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/groovy/groovy.js");
 			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/css/css.js");
 			CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-common/codemirror/lib/codemirror.css");
 			CStudioAuthoring.Utils.addCss("/static-assets/themes/cstudioTheme/css/template-editor.css");
@@ -108,8 +109,9 @@ CStudioAuthoring.Module.requireModule(
 											}
 											else if(templatePath.indexOf(".js") != -1) {
 												mode = "javascript";
+											}else if(templatePath.indexOf(".groovy") != -1){
+												mode = "groovy"
 											}
-
 											editorEl.codeMirrorEditor = CodeMirror.fromTextArea(editorEl, {
 												mode: mode,
 												lineNumbers: true,
