@@ -575,6 +575,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     textArea: "텍스트 영역",
     richTextEditor: "서식있는 텍스트 편집기s",
     input: "입력",
+    uuid: "UUID",
     dropdown: "쓰러지 다",
     dateTime: "날짜 시간",
     checkBox: "확인란",
