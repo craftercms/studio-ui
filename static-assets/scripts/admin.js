@@ -452,8 +452,11 @@
                 }
 
                 publish.continue = function () {
+                    publish.disable = true;
+
                     adminService.bulkGoLive(publish.site, publish.pathPublish)
                         .success(function (data) {
+                            publish.disable = false;
                             $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
                         })
                         .error(function () {
