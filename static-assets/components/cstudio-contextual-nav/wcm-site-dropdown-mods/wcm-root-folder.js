@@ -3061,14 +3061,14 @@
                     },
 
                     failure: function() {
-                        YDom.removeClass(oCurrentTextNode.getLabelEl().parentNode.previousSibling, "ygtvloading");
+                        YDom.removeClass(oCurrentTextNode.html.parentElement.previousSibling, "ygtvloading");
                     },
 
                     tree: oCurrentTextNode
                 };
 
                 try{
-					YDom.addClass(oCurrentTextNode.getLabelEl().parentNode.previousSibling, "ygtvloading");
+					YDom.addClass(oCurrentTextNode.html.parentElement.previousSibling, "ygtvloading");
 				}catch(e){}
 
 				CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
