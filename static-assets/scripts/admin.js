@@ -452,11 +452,14 @@
                 }
 
                 publish.continue = function () {
+                    var spinnerOverlay;
                     publish.disable = true;
+                    spinnerOverlay = $scope.spinnerOverlay();
 
                     adminService.bulkGoLive(publish.site, publish.pathPublish)
                         .success(function (data) {
                             publish.disable = false;
+                            spinnerOverlay.close();
                             $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
                         })
                         .error(function () {

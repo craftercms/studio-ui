@@ -68,3 +68,19 @@
     }
   }
 }
+
+.spinner-modal{
+  .modal-content{
+    background: none;
+    border: none;
+    box-shadow: none;
+    text-align: center;
+
+    .modal-body {
+      .spinner {
+        font-size: 40px;
+        color: #355475;
+      }
+    }
+  }
+}
