@@ -1281,8 +1281,9 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
                 var parentClass = "wcm-table-parent-" + name + "-" + count;
 
                 if (!hideEmptyRow || sortDocuments[j].numOfChildren > 0) {
-                    var table = "<tr class='itemId_"+sortDocuments[j].path+"'>";
-                    table += WcmDashboardWidgetCommon.buildItemTableRow(sortDocuments[j], instance, true, count, 0);
+                    var table = "<tr class='itemId_"+sortDocuments[j].path+"'>",
+                        tableRow = WcmDashboardWidgetCommon.buildItemTableRow(sortDocuments[j], instance, true, count, 0);
+                    table = tableRow ? table + tableRow : table;
                     table += "</tr>";
 
                     for (var i = 0; i < items.length; i++) {
