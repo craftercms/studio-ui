@@ -758,7 +758,7 @@
             }
 
             function authLoop() {
-                $scope.authDelay = 1000;
+                $scope.authDelay = 60000;
                 $scope.reLoginError = null;
                 var isInIframe = (window.location != window.parent.location) ? true : false;
 
@@ -797,6 +797,15 @@
                 authLoop();
             }
 
+            $scope.spinnerOverlay = function() {
+                return $modal.open({
+                    templateUrl: 'spinnerModal.html',
+                    backdrop: 'static',
+                    keyboard: false,
+                    size: 'sm',
+                    windowClass: 'spinner-modal centered-dialog',
+                });
+            }
 
         }
     ]);
