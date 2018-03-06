@@ -3414,12 +3414,14 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
 .ygtvrow .ygtvlp:before, .ygtvrow .ygtvtp:before, .ygtvrow .ygtvlph:before, .ygtvrow .ygtvlphh:before, .ygtvrow .ygtvtph:before, .ygtvrow .ygtvtphh:before {
   content: "\f196";
   position: absolute;
-  top: 2px;
+  top: 3px;
+  left: 2px;
   width: 10px; }
 .ygtvrow .ygtvtm:before, .ygtvrow .ygtvtmh:before, .ygtvrow .ygtvtmhh:before, .ygtvrow .ygtvlm:before, .ygtvrow .ygtvlmh:before, .ygtvrow .ygtvlmhh:before {
   content: "\f147";
   position: absolute;
-  top: 2px;
+  top: 3px;
+  left: 2px;
   width: 10px; }
 
 .ygtvlp, .ygtvtp, .ygtvlph, .ygtvlphh, .ygtvtph, .ygtvtphh {
@@ -6049,12 +6051,12 @@ th {
 
 html {
   font-size: 10px;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+  -webkit-tap-highlight-color: transparent; }
 
 body {
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   color: #333333;
   background-color: #fff; }
 
@@ -6093,7 +6095,7 @@ img {
 
 .img-thumbnail {
   padding: 4px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -6350,7 +6352,7 @@ dl {
 
 dt,
 dd {
-  line-height: 1.428571429; }
+  line-height: 1.42857; }
 
 dt {
   font-weight: bold; }
@@ -6398,7 +6400,7 @@ blockquote {
   blockquote .small {
     display: block;
     font-size: 80%;
-    line-height: 1.428571429;
+    line-height: 1.42857;
     color: #777777; }
     blockquote footer:before,
     blockquote small:before,
@@ -6430,7 +6432,7 @@ blockquote.pull-right {
 address {
   margin-bottom: 17px;
   font-style: normal;
-  line-height: 1.428571429; }
+  line-height: 1.42857; }
 
 @font-face {
   font-family: 'Glyphicons Halflings';
@@ -7173,7 +7175,7 @@ address {
   padding: 8px;
   margin: 0 0 8.5px;
   font-size: 11px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   word-break: break-all;
   word-wrap: break-word;
   color: #333333;
@@ -7391,11 +7393,11 @@ address {
 .studio-view .col-xs-1,
 .studio-dialog .col-xs-1,
 .site-dashboard .col-xs-1 {
-  width: 8.3333333333%; }
+  width: 8.33333%; }
 .studio-view .col-xs-2,
 .studio-dialog .col-xs-2,
 .site-dashboard .col-xs-2 {
-  width: 16.6666666667%; }
+  width: 16.66667%; }
 .studio-view .col-xs-3,
 .studio-dialog .col-xs-3,
 .site-dashboard .col-xs-3 {
@@ -7403,11 +7405,11 @@ address {
 .studio-view .col-xs-4,
 .studio-dialog .col-xs-4,
 .site-dashboard .col-xs-4 {
-  width: 33.3333333333%; }
+  width: 33.33333%; }
 .studio-view .col-xs-5,
 .studio-dialog .col-xs-5,
 .site-dashboard .col-xs-5 {
-  width: 41.6666666667%; }
+  width: 41.66667%; }
 .studio-view .col-xs-6,
 .studio-dialog .col-xs-6,
 .site-dashboard .col-xs-6 {
@@ -7415,11 +7417,11 @@ address {
 .studio-view .col-xs-7,
 .studio-dialog .col-xs-7,
 .site-dashboard .col-xs-7 {
-  width: 58.3333333333%; }
+  width: 58.33333%; }
 .studio-view .col-xs-8,
 .studio-dialog .col-xs-8,
 .site-dashboard .col-xs-8 {
-  width: 66.6666666667%; }
+  width: 66.66667%; }
 .studio-view .col-xs-9,
 .studio-dialog .col-xs-9,
 .site-dashboard .col-xs-9 {
@@ -7427,11 +7429,11 @@ address {
 .studio-view .col-xs-10,
 .studio-dialog .col-xs-10,
 .site-dashboard .col-xs-10 {
-  width: 83.3333333333%; }
+  width: 83.33333%; }
 .studio-view .col-xs-11,
 .studio-dialog .col-xs-11,
 .site-dashboard .col-xs-11 {
-  width: 91.6666666667%; }
+  width: 91.66667%; }
 .studio-view .col-xs-12,
 .studio-dialog .col-xs-12,
 .site-dashboard .col-xs-12 {
@@ -7443,11 +7445,11 @@ address {
 .studio-view .col-xs-pull-1,
 .studio-dialog .col-xs-pull-1,
 .site-dashboard .col-xs-pull-1 {
-  right: 8.3333333333%; }
+  right: 8.33333%; }
 .studio-view .col-xs-pull-2,
 .studio-dialog .col-xs-pull-2,
 .site-dashboard .col-xs-pull-2 {
-  right: 16.6666666667%; }
+  right: 16.66667%; }
 .studio-view .col-xs-pull-3,
 .studio-dialog .col-xs-pull-3,
 .site-dashboard .col-xs-pull-3 {
@@ -7455,11 +7457,11 @@ address {
 .studio-view .col-xs-pull-4,
 .studio-dialog .col-xs-pull-4,
 .site-dashboard .col-xs-pull-4 {
-  right: 33.3333333333%; }
+  right: 33.33333%; }
 .studio-view .col-xs-pull-5,
 .studio-dialog .col-xs-pull-5,
 .site-dashboard .col-xs-pull-5 {
-  right: 41.6666666667%; }
+  right: 41.66667%; }
 .studio-view .col-xs-pull-6,
 .studio-dialog .col-xs-pull-6,
 .site-dashboard .col-xs-pull-6 {
@@ -7467,11 +7469,11 @@ address {
 .studio-view .col-xs-pull-7,
 .studio-dialog .col-xs-pull-7,
 .site-dashboard .col-xs-pull-7 {
-  right: 58.3333333333%; }
+  right: 58.33333%; }
 .studio-view .col-xs-pull-8,
 .studio-dialog .col-xs-pull-8,
 .site-dashboard .col-xs-pull-8 {
-  right: 66.6666666667%; }
+  right: 66.66667%; }
 .studio-view .col-xs-pull-9,
 .studio-dialog .col-xs-pull-9,
 .site-dashboard .col-xs-pull-9 {
@@ -7479,11 +7481,11 @@ address {
 .studio-view .col-xs-pull-10,
 .studio-dialog .col-xs-pull-10,
 .site-dashboard .col-xs-pull-10 {
-  right: 83.3333333333%; }
+  right: 83.33333%; }
 .studio-view .col-xs-pull-11,
 .studio-dialog .col-xs-pull-11,
 .site-dashboard .col-xs-pull-11 {
-  right: 91.6666666667%; }
+  right: 91.66667%; }
 .studio-view .col-xs-pull-12,
 .studio-dialog .col-xs-pull-12,
 .site-dashboard .col-xs-pull-12 {
@@ -7495,11 +7497,11 @@ address {
 .studio-view .col-xs-push-1,
 .studio-dialog .col-xs-push-1,
 .site-dashboard .col-xs-push-1 {
-  left: 8.3333333333%; }
+  left: 8.33333%; }
 .studio-view .col-xs-push-2,
 .studio-dialog .col-xs-push-2,
 .site-dashboard .col-xs-push-2 {
-  left: 16.6666666667%; }
+  left: 16.66667%; }
 .studio-view .col-xs-push-3,
 .studio-dialog .col-xs-push-3,
 .site-dashboard .col-xs-push-3 {
@@ -7507,11 +7509,11 @@ address {
 .studio-view .col-xs-push-4,
 .studio-dialog .col-xs-push-4,
 .site-dashboard .col-xs-push-4 {
-  left: 33.3333333333%; }
+  left: 33.33333%; }
 .studio-view .col-xs-push-5,
 .studio-dialog .col-xs-push-5,
 .site-dashboard .col-xs-push-5 {
-  left: 41.6666666667%; }
+  left: 41.66667%; }
 .studio-view .col-xs-push-6,
 .studio-dialog .col-xs-push-6,
 .site-dashboard .col-xs-push-6 {
@@ -7519,11 +7521,11 @@ address {
 .studio-view .col-xs-push-7,
 .studio-dialog .col-xs-push-7,
 .site-dashboard .col-xs-push-7 {
-  left: 58.3333333333%; }
+  left: 58.33333%; }
 .studio-view .col-xs-push-8,
 .studio-dialog .col-xs-push-8,
 .site-dashboard .col-xs-push-8 {
-  left: 66.6666666667%; }
+  left: 66.66667%; }
 .studio-view .col-xs-push-9,
 .studio-dialog .col-xs-push-9,
 .site-dashboard .col-xs-push-9 {
@@ -7531,11 +7533,11 @@ address {
 .studio-view .col-xs-push-10,
 .studio-dialog .col-xs-push-10,
 .site-dashboard .col-xs-push-10 {
-  left: 83.3333333333%; }
+  left: 83.33333%; }
 .studio-view .col-xs-push-11,
 .studio-dialog .col-xs-push-11,
 .site-dashboard .col-xs-push-11 {
-  left: 91.6666666667%; }
+  left: 91.66667%; }
 .studio-view .col-xs-push-12,
 .studio-dialog .col-xs-push-12,
 .site-dashboard .col-xs-push-12 {
@@ -7547,11 +7549,11 @@ address {
 .studio-view .col-xs-offset-1,
 .studio-dialog .col-xs-offset-1,
 .site-dashboard .col-xs-offset-1 {
-  margin-left: 8.3333333333%; }
+  margin-left: 8.33333%; }
 .studio-view .col-xs-offset-2,
 .studio-dialog .col-xs-offset-2,
 .site-dashboard .col-xs-offset-2 {
-  margin-left: 16.6666666667%; }
+  margin-left: 16.66667%; }
 .studio-view .col-xs-offset-3,
 .studio-dialog .col-xs-offset-3,
 .site-dashboard .col-xs-offset-3 {
@@ -7559,11 +7561,11 @@ address {
 .studio-view .col-xs-offset-4,
 .studio-dialog .col-xs-offset-4,
 .site-dashboard .col-xs-offset-4 {
-  margin-left: 33.3333333333%; }
+  margin-left: 33.33333%; }
 .studio-view .col-xs-offset-5,
 .studio-dialog .col-xs-offset-5,
 .site-dashboard .col-xs-offset-5 {
-  margin-left: 41.6666666667%; }
+  margin-left: 41.66667%; }
 .studio-view .col-xs-offset-6,
 .studio-dialog .col-xs-offset-6,
 .site-dashboard .col-xs-offset-6 {
@@ -7571,11 +7573,11 @@ address {
 .studio-view .col-xs-offset-7,
 .studio-dialog .col-xs-offset-7,
 .site-dashboard .col-xs-offset-7 {
-  margin-left: 58.3333333333%; }
+  margin-left: 58.33333%; }
 .studio-view .col-xs-offset-8,
 .studio-dialog .col-xs-offset-8,
 .site-dashboard .col-xs-offset-8 {
-  margin-left: 66.6666666667%; }
+  margin-left: 66.66667%; }
 .studio-view .col-xs-offset-9,
 .studio-dialog .col-xs-offset-9,
 .site-dashboard .col-xs-offset-9 {
@@ -7583,11 +7585,11 @@ address {
 .studio-view .col-xs-offset-10,
 .studio-dialog .col-xs-offset-10,
 .site-dashboard .col-xs-offset-10 {
-  margin-left: 83.3333333333%; }
+  margin-left: 83.33333%; }
 .studio-view .col-xs-offset-11,
 .studio-dialog .col-xs-offset-11,
 .site-dashboard .col-xs-offset-11 {
-  margin-left: 91.6666666667%; }
+  margin-left: 91.66667%; }
 .studio-view .col-xs-offset-12,
 .studio-dialog .col-xs-offset-12,
 .site-dashboard .col-xs-offset-12 {
@@ -7622,11 +7624,11 @@ address {
   .studio-view .col-sm-1,
   .studio-dialog .col-sm-1,
   .site-dashboard .col-sm-1 {
-    width: 8.3333333333%; }
+    width: 8.33333%; }
   .studio-view .col-sm-2,
   .studio-dialog .col-sm-2,
   .site-dashboard .col-sm-2 {
-    width: 16.6666666667%; }
+    width: 16.66667%; }
   .studio-view .col-sm-3,
   .studio-dialog .col-sm-3,
   .site-dashboard .col-sm-3 {
@@ -7634,11 +7636,11 @@ address {
   .studio-view .col-sm-4,
   .studio-dialog .col-sm-4,
   .site-dashboard .col-sm-4 {
-    width: 33.3333333333%; }
+    width: 33.33333%; }
   .studio-view .col-sm-5,
   .studio-dialog .col-sm-5,
   .site-dashboard .col-sm-5 {
-    width: 41.6666666667%; }
+    width: 41.66667%; }
   .studio-view .col-sm-6,
   .studio-dialog .col-sm-6,
   .site-dashboard .col-sm-6 {
@@ -7646,11 +7648,11 @@ address {
   .studio-view .col-sm-7,
   .studio-dialog .col-sm-7,
   .site-dashboard .col-sm-7 {
-    width: 58.3333333333%; }
+    width: 58.33333%; }
   .studio-view .col-sm-8,
   .studio-dialog .col-sm-8,
   .site-dashboard .col-sm-8 {
-    width: 66.6666666667%; }
+    width: 66.66667%; }
   .studio-view .col-sm-9,
   .studio-dialog .col-sm-9,
   .site-dashboard .col-sm-9 {
@@ -7658,11 +7660,11 @@ address {
   .studio-view .col-sm-10,
   .studio-dialog .col-sm-10,
   .site-dashboard .col-sm-10 {
-    width: 83.3333333333%; }
+    width: 83.33333%; }
   .studio-view .col-sm-11,
   .studio-dialog .col-sm-11,
   .site-dashboard .col-sm-11 {
-    width: 91.6666666667%; }
+    width: 91.66667%; }
   .studio-view .col-sm-12,
   .studio-dialog .col-sm-12,
   .site-dashboard .col-sm-12 {
@@ -7674,11 +7676,11 @@ address {
   .studio-view .col-sm-pull-1,
   .studio-dialog .col-sm-pull-1,
   .site-dashboard .col-sm-pull-1 {
-    right: 8.3333333333%; }
+    right: 8.33333%; }
   .studio-view .col-sm-pull-2,
   .studio-dialog .col-sm-pull-2,
   .site-dashboard .col-sm-pull-2 {
-    right: 16.6666666667%; }
+    right: 16.66667%; }
   .studio-view .col-sm-pull-3,
   .studio-dialog .col-sm-pull-3,
   .site-dashboard .col-sm-pull-3 {
@@ -7686,11 +7688,11 @@ address {
   .studio-view .col-sm-pull-4,
   .studio-dialog .col-sm-pull-4,
   .site-dashboard .col-sm-pull-4 {
-    right: 33.3333333333%; }
+    right: 33.33333%; }
   .studio-view .col-sm-pull-5,
   .studio-dialog .col-sm-pull-5,
   .site-dashboard .col-sm-pull-5 {
-    right: 41.6666666667%; }
+    right: 41.66667%; }
   .studio-view .col-sm-pull-6,
   .studio-dialog .col-sm-pull-6,
   .site-dashboard .col-sm-pull-6 {
@@ -7698,11 +7700,11 @@ address {
   .studio-view .col-sm-pull-7,
   .studio-dialog .col-sm-pull-7,
   .site-dashboard .col-sm-pull-7 {
-    right: 58.3333333333%; }
+    right: 58.33333%; }
   .studio-view .col-sm-pull-8,
   .studio-dialog .col-sm-pull-8,
   .site-dashboard .col-sm-pull-8 {
-    right: 66.6666666667%; }
+    right: 66.66667%; }
   .studio-view .col-sm-pull-9,
   .studio-dialog .col-sm-pull-9,
   .site-dashboard .col-sm-pull-9 {
@@ -7710,11 +7712,11 @@ address {
   .studio-view .col-sm-pull-10,
   .studio-dialog .col-sm-pull-10,
   .site-dashboard .col-sm-pull-10 {
-    right: 83.3333333333%; }
+    right: 83.33333%; }
   .studio-view .col-sm-pull-11,
   .studio-dialog .col-sm-pull-11,
   .site-dashboard .col-sm-pull-11 {
-    right: 91.6666666667%; }
+    right: 91.66667%; }
   .studio-view .col-sm-pull-12,
   .studio-dialog .col-sm-pull-12,
   .site-dashboard .col-sm-pull-12 {
@@ -7726,11 +7728,11 @@ address {
   .studio-view .col-sm-push-1,
   .studio-dialog .col-sm-push-1,
   .site-dashboard .col-sm-push-1 {
-    left: 8.3333333333%; }
+    left: 8.33333%; }
   .studio-view .col-sm-push-2,
   .studio-dialog .col-sm-push-2,
   .site-dashboard .col-sm-push-2 {
-    left: 16.6666666667%; }
+    left: 16.66667%; }
   .studio-view .col-sm-push-3,
   .studio-dialog .col-sm-push-3,
   .site-dashboard .col-sm-push-3 {
@@ -7738,11 +7740,11 @@ address {
   .studio-view .col-sm-push-4,
   .studio-dialog .col-sm-push-4,
   .site-dashboard .col-sm-push-4 {
-    left: 33.3333333333%; }
+    left: 33.33333%; }
   .studio-view .col-sm-push-5,
   .studio-dialog .col-sm-push-5,
   .site-dashboard .col-sm-push-5 {
-    left: 41.6666666667%; }
+    left: 41.66667%; }
   .studio-view .col-sm-push-6,
   .studio-dialog .col-sm-push-6,
   .site-dashboard .col-sm-push-6 {
@@ -7750,11 +7752,11 @@ address {
   .studio-view .col-sm-push-7,
   .studio-dialog .col-sm-push-7,
   .site-dashboard .col-sm-push-7 {
-    left: 58.3333333333%; }
+    left: 58.33333%; }
   .studio-view .col-sm-push-8,
   .studio-dialog .col-sm-push-8,
   .site-dashboard .col-sm-push-8 {
-    left: 66.6666666667%; }
+    left: 66.66667%; }
   .studio-view .col-sm-push-9,
   .studio-dialog .col-sm-push-9,
   .site-dashboard .col-sm-push-9 {
@@ -7762,11 +7764,11 @@ address {
   .studio-view .col-sm-push-10,
   .studio-dialog .col-sm-push-10,
   .site-dashboard .col-sm-push-10 {
-    left: 83.3333333333%; }
+    left: 83.33333%; }
   .studio-view .col-sm-push-11,
   .studio-dialog .col-sm-push-11,
   .site-dashboard .col-sm-push-11 {
-    left: 91.6666666667%; }
+    left: 91.66667%; }
   .studio-view .col-sm-push-12,
   .studio-dialog .col-sm-push-12,
   .site-dashboard .col-sm-push-12 {
@@ -7778,11 +7780,11 @@ address {
   .studio-view .col-sm-offset-1,
   .studio-dialog .col-sm-offset-1,
   .site-dashboard .col-sm-offset-1 {
-    margin-left: 8.3333333333%; }
+    margin-left: 8.33333%; }
   .studio-view .col-sm-offset-2,
   .studio-dialog .col-sm-offset-2,
   .site-dashboard .col-sm-offset-2 {
-    margin-left: 16.6666666667%; }
+    margin-left: 16.66667%; }
   .studio-view .col-sm-offset-3,
   .studio-dialog .col-sm-offset-3,
   .site-dashboard .col-sm-offset-3 {
@@ -7790,11 +7792,11 @@ address {
   .studio-view .col-sm-offset-4,
   .studio-dialog .col-sm-offset-4,
   .site-dashboard .col-sm-offset-4 {
-    margin-left: 33.3333333333%; }
+    margin-left: 33.33333%; }
   .studio-view .col-sm-offset-5,
   .studio-dialog .col-sm-offset-5,
   .site-dashboard .col-sm-offset-5 {
-    margin-left: 41.6666666667%; }
+    margin-left: 41.66667%; }
   .studio-view .col-sm-offset-6,
   .studio-dialog .col-sm-offset-6,
   .site-dashboard .col-sm-offset-6 {
@@ -7802,11 +7804,11 @@ address {
   .studio-view .col-sm-offset-7,
   .studio-dialog .col-sm-offset-7,
   .site-dashboard .col-sm-offset-7 {
-    margin-left: 58.3333333333%; }
+    margin-left: 58.33333%; }
   .studio-view .col-sm-offset-8,
   .studio-dialog .col-sm-offset-8,
   .site-dashboard .col-sm-offset-8 {
-    margin-left: 66.6666666667%; }
+    margin-left: 66.66667%; }
   .studio-view .col-sm-offset-9,
   .studio-dialog .col-sm-offset-9,
   .site-dashboard .col-sm-offset-9 {
@@ -7814,11 +7816,11 @@ address {
   .studio-view .col-sm-offset-10,
   .studio-dialog .col-sm-offset-10,
   .site-dashboard .col-sm-offset-10 {
-    margin-left: 83.3333333333%; }
+    margin-left: 83.33333%; }
   .studio-view .col-sm-offset-11,
   .studio-dialog .col-sm-offset-11,
   .site-dashboard .col-sm-offset-11 {
-    margin-left: 91.6666666667%; }
+    margin-left: 91.66667%; }
   .studio-view .col-sm-offset-12,
   .studio-dialog .col-sm-offset-12,
   .site-dashboard .col-sm-offset-12 {
@@ -7853,11 +7855,11 @@ address {
   .studio-view .col-md-1,
   .studio-dialog .col-md-1,
   .site-dashboard .col-md-1 {
-    width: 8.3333333333%; }
+    width: 8.33333%; }
   .studio-view .col-md-2,
   .studio-dialog .col-md-2,
   .site-dashboard .col-md-2 {
-    width: 16.6666666667%; }
+    width: 16.66667%; }
   .studio-view .col-md-3,
   .studio-dialog .col-md-3,
   .site-dashboard .col-md-3 {
@@ -7865,11 +7867,11 @@ address {
   .studio-view .col-md-4,
   .studio-dialog .col-md-4,
   .site-dashboard .col-md-4 {
-    width: 33.3333333333%; }
+    width: 33.33333%; }
   .studio-view .col-md-5,
   .studio-dialog .col-md-5,
   .site-dashboard .col-md-5 {
-    width: 41.6666666667%; }
+    width: 41.66667%; }
   .studio-view .col-md-6,
   .studio-dialog .col-md-6,
   .site-dashboard .col-md-6 {
@@ -7877,11 +7879,11 @@ address {
   .studio-view .col-md-7,
   .studio-dialog .col-md-7,
   .site-dashboard .col-md-7 {
-    width: 58.3333333333%; }
+    width: 58.33333%; }
   .studio-view .col-md-8,
   .studio-dialog .col-md-8,
   .site-dashboard .col-md-8 {
-    width: 66.6666666667%; }
+    width: 66.66667%; }
   .studio-view .col-md-9,
   .studio-dialog .col-md-9,
   .site-dashboard .col-md-9 {
@@ -7889,11 +7891,11 @@ address {
   .studio-view .col-md-10,
   .studio-dialog .col-md-10,
   .site-dashboard .col-md-10 {
-    width: 83.3333333333%; }
+    width: 83.33333%; }
   .studio-view .col-md-11,
   .studio-dialog .col-md-11,
   .site-dashboard .col-md-11 {
-    width: 91.6666666667%; }
+    width: 91.66667%; }
   .studio-view .col-md-12,
   .studio-dialog .col-md-12,
   .site-dashboard .col-md-12 {
@@ -7905,11 +7907,11 @@ address {
   .studio-view .col-md-pull-1,
   .studio-dialog .col-md-pull-1,
   .site-dashboard .col-md-pull-1 {
-    right: 8.3333333333%; }
+    right: 8.33333%; }
   .studio-view .col-md-pull-2,
   .studio-dialog .col-md-pull-2,
   .site-dashboard .col-md-pull-2 {
-    right: 16.6666666667%; }
+    right: 16.66667%; }
   .studio-view .col-md-pull-3,
   .studio-dialog .col-md-pull-3,
   .site-dashboard .col-md-pull-3 {
@@ -7917,11 +7919,11 @@ address {
   .studio-view .col-md-pull-4,
   .studio-dialog .col-md-pull-4,
   .site-dashboard .col-md-pull-4 {
-    right: 33.3333333333%; }
+    right: 33.33333%; }
   .studio-view .col-md-pull-5,
   .studio-dialog .col-md-pull-5,
   .site-dashboard .col-md-pull-5 {
-    right: 41.6666666667%; }
+    right: 41.66667%; }
   .studio-view .col-md-pull-6,
   .studio-dialog .col-md-pull-6,
   .site-dashboard .col-md-pull-6 {
@@ -7929,11 +7931,11 @@ address {
   .studio-view .col-md-pull-7,
   .studio-dialog .col-md-pull-7,
   .site-dashboard .col-md-pull-7 {
-    right: 58.3333333333%; }
+    right: 58.33333%; }
   .studio-view .col-md-pull-8,
   .studio-dialog .col-md-pull-8,
   .site-dashboard .col-md-pull-8 {
-    right: 66.6666666667%; }
+    right: 66.66667%; }
   .studio-view .col-md-pull-9,
   .studio-dialog .col-md-pull-9,
   .site-dashboard .col-md-pull-9 {
@@ -7941,11 +7943,11 @@ address {
   .studio-view .col-md-pull-10,
   .studio-dialog .col-md-pull-10,
   .site-dashboard .col-md-pull-10 {
-    right: 83.3333333333%; }
+    right: 83.33333%; }
   .studio-view .col-md-pull-11,
   .studio-dialog .col-md-pull-11,
   .site-dashboard .col-md-pull-11 {
-    right: 91.6666666667%; }
+    right: 91.66667%; }
   .studio-view .col-md-pull-12,
   .studio-dialog .col-md-pull-12,
   .site-dashboard .col-md-pull-12 {
@@ -7957,11 +7959,11 @@ address {
   .studio-view .col-md-push-1,
   .studio-dialog .col-md-push-1,
   .site-dashboard .col-md-push-1 {
-    left: 8.3333333333%; }
+    left: 8.33333%; }
   .studio-view .col-md-push-2,
   .studio-dialog .col-md-push-2,
   .site-dashboard .col-md-push-2 {
-    left: 16.6666666667%; }
+    left: 16.66667%; }
   .studio-view .col-md-push-3,
   .studio-dialog .col-md-push-3,
   .site-dashboard .col-md-push-3 {
@@ -7969,11 +7971,11 @@ address {
   .studio-view .col-md-push-4,
   .studio-dialog .col-md-push-4,
   .site-dashboard .col-md-push-4 {
-    left: 33.3333333333%; }
+    left: 33.33333%; }
   .studio-view .col-md-push-5,
   .studio-dialog .col-md-push-5,
   .site-dashboard .col-md-push-5 {
-    left: 41.6666666667%; }
+    left: 41.66667%; }
   .studio-view .col-md-push-6,
   .studio-dialog .col-md-push-6,
   .site-dashboard .col-md-push-6 {
@@ -7981,11 +7983,11 @@ address {
   .studio-view .col-md-push-7,
   .studio-dialog .col-md-push-7,
   .site-dashboard .col-md-push-7 {
-    left: 58.3333333333%; }
+    left: 58.33333%; }
   .studio-view .col-md-push-8,
   .studio-dialog .col-md-push-8,
   .site-dashboard .col-md-push-8 {
-    left: 66.6666666667%; }
+    left: 66.66667%; }
   .studio-view .col-md-push-9,
   .studio-dialog .col-md-push-9,
   .site-dashboard .col-md-push-9 {
@@ -7993,11 +7995,11 @@ address {
   .studio-view .col-md-push-10,
   .studio-dialog .col-md-push-10,
   .site-dashboard .col-md-push-10 {
-    left: 83.3333333333%; }
+    left: 83.33333%; }
   .studio-view .col-md-push-11,
   .studio-dialog .col-md-push-11,
   .site-dashboard .col-md-push-11 {
-    left: 91.6666666667%; }
+    left: 91.66667%; }
   .studio-view .col-md-push-12,
   .studio-dialog .col-md-push-12,
   .site-dashboard .col-md-push-12 {
@@ -8009,11 +8011,11 @@ address {
   .studio-view .col-md-offset-1,
   .studio-dialog .col-md-offset-1,
   .site-dashboard .col-md-offset-1 {
-    margin-left: 8.3333333333%; }
+    margin-left: 8.33333%; }
   .studio-view .col-md-offset-2,
   .studio-dialog .col-md-offset-2,
   .site-dashboard .col-md-offset-2 {
-    margin-left: 16.6666666667%; }
+    margin-left: 16.66667%; }
   .studio-view .col-md-offset-3,
   .studio-dialog .col-md-offset-3,
   .site-dashboard .col-md-offset-3 {
@@ -8021,11 +8023,11 @@ address {
   .studio-view .col-md-offset-4,
   .studio-dialog .col-md-offset-4,
   .site-dashboard .col-md-offset-4 {
-    margin-left: 33.3333333333%; }
+    margin-left: 33.33333%; }
   .studio-view .col-md-offset-5,
   .studio-dialog .col-md-offset-5,
   .site-dashboard .col-md-offset-5 {
-    margin-left: 41.6666666667%; }
+    margin-left: 41.66667%; }
   .studio-view .col-md-offset-6,
   .studio-dialog .col-md-offset-6,
   .site-dashboard .col-md-offset-6 {
@@ -8033,11 +8035,11 @@ address {
   .studio-view .col-md-offset-7,
   .studio-dialog .col-md-offset-7,
   .site-dashboard .col-md-offset-7 {
-    margin-left: 58.3333333333%; }
+    margin-left: 58.33333%; }
   .studio-view .col-md-offset-8,
   .studio-dialog .col-md-offset-8,
   .site-dashboard .col-md-offset-8 {
-    margin-left: 66.6666666667%; }
+    margin-left: 66.66667%; }
   .studio-view .col-md-offset-9,
   .studio-dialog .col-md-offset-9,
   .site-dashboard .col-md-offset-9 {
@@ -8045,11 +8047,11 @@ address {
   .studio-view .col-md-offset-10,
   .studio-dialog .col-md-offset-10,
   .site-dashboard .col-md-offset-10 {
-    margin-left: 83.3333333333%; }
+    margin-left: 83.33333%; }
   .studio-view .col-md-offset-11,
   .studio-dialog .col-md-offset-11,
   .site-dashboard .col-md-offset-11 {
-    margin-left: 91.6666666667%; }
+    margin-left: 91.66667%; }
   .studio-view .col-md-offset-12,
   .studio-dialog .col-md-offset-12,
   .site-dashboard .col-md-offset-12 {
@@ -8084,11 +8086,11 @@ address {
   .studio-view .col-lg-1,
   .studio-dialog .col-lg-1,
   .site-dashboard .col-lg-1 {
-    width: 8.3333333333%; }
+    width: 8.33333%; }
   .studio-view .col-lg-2,
   .studio-dialog .col-lg-2,
   .site-dashboard .col-lg-2 {
-    width: 16.6666666667%; }
+    width: 16.66667%; }
   .studio-view .col-lg-3,
   .studio-dialog .col-lg-3,
   .site-dashboard .col-lg-3 {
@@ -8096,11 +8098,11 @@ address {
   .studio-view .col-lg-4,
   .studio-dialog .col-lg-4,
   .site-dashboard .col-lg-4 {
-    width: 33.3333333333%; }
+    width: 33.33333%; }
   .studio-view .col-lg-5,
   .studio-dialog .col-lg-5,
   .site-dashboard .col-lg-5 {
-    width: 41.6666666667%; }
+    width: 41.66667%; }
   .studio-view .col-lg-6,
   .studio-dialog .col-lg-6,
   .site-dashboard .col-lg-6 {
@@ -8108,11 +8110,11 @@ address {
   .studio-view .col-lg-7,
   .studio-dialog .col-lg-7,
   .site-dashboard .col-lg-7 {
-    width: 58.3333333333%; }
+    width: 58.33333%; }
   .studio-view .col-lg-8,
   .studio-dialog .col-lg-8,
   .site-dashboard .col-lg-8 {
-    width: 66.6666666667%; }
+    width: 66.66667%; }
   .studio-view .col-lg-9,
   .studio-dialog .col-lg-9,
   .site-dashboard .col-lg-9 {
@@ -8120,11 +8122,11 @@ address {
   .studio-view .col-lg-10,
   .studio-dialog .col-lg-10,
   .site-dashboard .col-lg-10 {
-    width: 83.3333333333%; }
+    width: 83.33333%; }
   .studio-view .col-lg-11,
   .studio-dialog .col-lg-11,
   .site-dashboard .col-lg-11 {
-    width: 91.6666666667%; }
+    width: 91.66667%; }
   .studio-view .col-lg-12,
   .studio-dialog .col-lg-12,
   .site-dashboard .col-lg-12 {
@@ -8136,11 +8138,11 @@ address {
   .studio-view .col-lg-pull-1,
   .studio-dialog .col-lg-pull-1,
   .site-dashboard .col-lg-pull-1 {
-    right: 8.3333333333%; }
+    right: 8.33333%; }
   .studio-view .col-lg-pull-2,
   .studio-dialog .col-lg-pull-2,
   .site-dashboard .col-lg-pull-2 {
-    right: 16.6666666667%; }
+    right: 16.66667%; }
   .studio-view .col-lg-pull-3,
   .studio-dialog .col-lg-pull-3,
   .site-dashboard .col-lg-pull-3 {
@@ -8148,11 +8150,11 @@ address {
   .studio-view .col-lg-pull-4,
   .studio-dialog .col-lg-pull-4,
   .site-dashboard .col-lg-pull-4 {
-    right: 33.3333333333%; }
+    right: 33.33333%; }
   .studio-view .col-lg-pull-5,
   .studio-dialog .col-lg-pull-5,
   .site-dashboard .col-lg-pull-5 {
-    right: 41.6666666667%; }
+    right: 41.66667%; }
   .studio-view .col-lg-pull-6,
   .studio-dialog .col-lg-pull-6,
   .site-dashboard .col-lg-pull-6 {
@@ -8160,11 +8162,11 @@ address {
   .studio-view .col-lg-pull-7,
   .studio-dialog .col-lg-pull-7,
   .site-dashboard .col-lg-pull-7 {
-    right: 58.3333333333%; }
+    right: 58.33333%; }
   .studio-view .col-lg-pull-8,
   .studio-dialog .col-lg-pull-8,
   .site-dashboard .col-lg-pull-8 {
-    right: 66.6666666667%; }
+    right: 66.66667%; }
   .studio-view .col-lg-pull-9,
   .studio-dialog .col-lg-pull-9,
   .site-dashboard .col-lg-pull-9 {
@@ -8172,11 +8174,11 @@ address {
   .studio-view .col-lg-pull-10,
   .studio-dialog .col-lg-pull-10,
   .site-dashboard .col-lg-pull-10 {
-    right: 83.3333333333%; }
+    right: 83.33333%; }
   .studio-view .col-lg-pull-11,
   .studio-dialog .col-lg-pull-11,
   .site-dashboard .col-lg-pull-11 {
-    right: 91.6666666667%; }
+    right: 91.66667%; }
   .studio-view .col-lg-pull-12,
   .studio-dialog .col-lg-pull-12,
   .site-dashboard .col-lg-pull-12 {
@@ -8188,11 +8190,11 @@ address {
   .studio-view .col-lg-push-1,
   .studio-dialog .col-lg-push-1,
   .site-dashboard .col-lg-push-1 {
-    left: 8.3333333333%; }
+    left: 8.33333%; }
   .studio-view .col-lg-push-2,
   .studio-dialog .col-lg-push-2,
   .site-dashboard .col-lg-push-2 {
-    left: 16.6666666667%; }
+    left: 16.66667%; }
   .studio-view .col-lg-push-3,
   .studio-dialog .col-lg-push-3,
   .site-dashboard .col-lg-push-3 {
@@ -8200,11 +8202,11 @@ address {
   .studio-view .col-lg-push-4,
   .studio-dialog .col-lg-push-4,
   .site-dashboard .col-lg-push-4 {
-    left: 33.3333333333%; }
+    left: 33.33333%; }
   .studio-view .col-lg-push-5,
   .studio-dialog .col-lg-push-5,
   .site-dashboard .col-lg-push-5 {
-    left: 41.6666666667%; }
+    left: 41.66667%; }
   .studio-view .col-lg-push-6,
   .studio-dialog .col-lg-push-6,
   .site-dashboard .col-lg-push-6 {
@@ -8212,11 +8214,11 @@ address {
   .studio-view .col-lg-push-7,
   .studio-dialog .col-lg-push-7,
   .site-dashboard .col-lg-push-7 {
-    left: 58.3333333333%; }
+    left: 58.33333%; }
   .studio-view .col-lg-push-8,
   .studio-dialog .col-lg-push-8,
   .site-dashboard .col-lg-push-8 {
-    left: 66.6666666667%; }
+    left: 66.66667%; }
   .studio-view .col-lg-push-9,
   .studio-dialog .col-lg-push-9,
   .site-dashboard .col-lg-push-9 {
@@ -8224,11 +8226,11 @@ address {
   .studio-view .col-lg-push-10,
   .studio-dialog .col-lg-push-10,
   .site-dashboard .col-lg-push-10 {
-    left: 83.3333333333%; }
+    left: 83.33333%; }
   .studio-view .col-lg-push-11,
   .studio-dialog .col-lg-push-11,
   .site-dashboard .col-lg-push-11 {
-    left: 91.6666666667%; }
+    left: 91.66667%; }
   .studio-view .col-lg-push-12,
   .studio-dialog .col-lg-push-12,
   .site-dashboard .col-lg-push-12 {
@@ -8240,11 +8242,11 @@ address {
   .studio-view .col-lg-offset-1,
   .studio-dialog .col-lg-offset-1,
   .site-dashboard .col-lg-offset-1 {
-    margin-left: 8.3333333333%; }
+    margin-left: 8.33333%; }
   .studio-view .col-lg-offset-2,
   .studio-dialog .col-lg-offset-2,
   .site-dashboard .col-lg-offset-2 {
-    margin-left: 16.6666666667%; }
+    margin-left: 16.66667%; }
   .studio-view .col-lg-offset-3,
   .studio-dialog .col-lg-offset-3,
   .site-dashboard .col-lg-offset-3 {
@@ -8252,11 +8254,11 @@ address {
   .studio-view .col-lg-offset-4,
   .studio-dialog .col-lg-offset-4,
   .site-dashboard .col-lg-offset-4 {
-    margin-left: 33.3333333333%; }
+    margin-left: 33.33333%; }
   .studio-view .col-lg-offset-5,
   .studio-dialog .col-lg-offset-5,
   .site-dashboard .col-lg-offset-5 {
-    margin-left: 41.6666666667%; }
+    margin-left: 41.66667%; }
   .studio-view .col-lg-offset-6,
   .studio-dialog .col-lg-offset-6,
   .site-dashboard .col-lg-offset-6 {
@@ -8264,11 +8266,11 @@ address {
   .studio-view .col-lg-offset-7,
   .studio-dialog .col-lg-offset-7,
   .site-dashboard .col-lg-offset-7 {
-    margin-left: 58.3333333333%; }
+    margin-left: 58.33333%; }
   .studio-view .col-lg-offset-8,
   .studio-dialog .col-lg-offset-8,
   .site-dashboard .col-lg-offset-8 {
-    margin-left: 66.6666666667%; }
+    margin-left: 66.66667%; }
   .studio-view .col-lg-offset-9,
   .studio-dialog .col-lg-offset-9,
   .site-dashboard .col-lg-offset-9 {
@@ -8276,11 +8278,11 @@ address {
   .studio-view .col-lg-offset-10,
   .studio-dialog .col-lg-offset-10,
   .site-dashboard .col-lg-offset-10 {
-    margin-left: 83.3333333333%; }
+    margin-left: 83.33333%; }
   .studio-view .col-lg-offset-11,
   .studio-dialog .col-lg-offset-11,
   .site-dashboard .col-lg-offset-11 {
-    margin-left: 91.6666666667%; }
+    margin-left: 91.66667%; }
   .studio-view .col-lg-offset-12,
   .studio-dialog .col-lg-offset-12,
   .site-dashboard .col-lg-offset-12 {
@@ -8325,7 +8327,7 @@ address {
   .site-dashboard .table > tfoot > tr > th,
   .site-dashboard .table > tfoot > tr > td {
     padding: 8px;
-    line-height: 1.428571429;
+    line-height: 1.42857;
     vertical-align: top;
     border-top: 1px solid #ddd; }
   .studio-view .table > thead > tr > th,
@@ -8839,15 +8841,17 @@ address {
   display: block;
   padding-top: 7px;
   font-size: 12px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   color: #555555; }
-.studio-view .form-control, .studio-dialog .form-control, .site-dashboard .form-control {
+.studio-view .form-control,
+.studio-dialog .form-control,
+.site-dashboard .form-control {
   display: block;
   width: 100%;
   height: 31px;
   padding: 6px 12px;
   font-size: 12px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   color: #555555;
   background-color: #fff;
   background-image: none;
@@ -8880,11 +8884,11 @@ address {
     color: #999; }
   .studio-view .form-control[disabled], .studio-view .form-control[readonly], fieldset[disabled] .studio-view .form-control,
   .studio-dialog .form-control[disabled],
-  .studio-dialog .form-control[readonly],
-  fieldset[disabled] .studio-dialog .form-control,
+  .studio-dialog .form-control[readonly], fieldset[disabled]
+  .studio-dialog .form-control,
   .site-dashboard .form-control[disabled],
-  .site-dashboard .form-control[readonly],
-  fieldset[disabled] .site-dashboard .form-control {
+  .site-dashboard .form-control[readonly], fieldset[disabled]
+  .site-dashboard .form-control {
     cursor: not-allowed;
     background-color: #eeeeee;
     opacity: 1; }
@@ -9171,49 +9175,43 @@ address {
   margin-left: 10px; }
 .studio-view input[type="radio"][disabled], .studio-view input[type="radio"].disabled, fieldset[disabled] .studio-view input[type="radio"],
 .studio-view input[type="checkbox"][disabled],
-.studio-view input[type="checkbox"].disabled,
-fieldset[disabled] .studio-view input[type="checkbox"],
+.studio-view input[type="checkbox"].disabled, fieldset[disabled]
+.studio-view input[type="checkbox"],
 .studio-dialog input[type="radio"][disabled],
-.studio-dialog input[type="radio"].disabled,
-fieldset[disabled] .studio-dialog input[type="radio"],
+.studio-dialog input[type="radio"].disabled, fieldset[disabled]
+.studio-dialog input[type="radio"],
 .studio-dialog input[type="checkbox"][disabled],
-.studio-dialog input[type="checkbox"].disabled,
-fieldset[disabled]
+.studio-dialog input[type="checkbox"].disabled, fieldset[disabled]
 .studio-dialog input[type="checkbox"],
 .site-dashboard input[type="radio"][disabled],
-.site-dashboard input[type="radio"].disabled,
-fieldset[disabled] .site-dashboard input[type="radio"],
+.site-dashboard input[type="radio"].disabled, fieldset[disabled]
+.site-dashboard input[type="radio"],
 .site-dashboard input[type="checkbox"][disabled],
-.site-dashboard input[type="checkbox"].disabled,
-fieldset[disabled]
+.site-dashboard input[type="checkbox"].disabled, fieldset[disabled]
 .site-dashboard input[type="checkbox"] {
   cursor: not-allowed; }
 .studio-view .radio-inline.disabled, fieldset[disabled] .studio-view .radio-inline,
-.studio-view .checkbox-inline.disabled,
-fieldset[disabled] .studio-view .checkbox-inline,
-.studio-dialog .radio-inline.disabled,
-fieldset[disabled] .studio-dialog .radio-inline,
-.studio-dialog .checkbox-inline.disabled,
-fieldset[disabled]
+.studio-view .checkbox-inline.disabled, fieldset[disabled]
+.studio-view .checkbox-inline,
+.studio-dialog .radio-inline.disabled, fieldset[disabled]
+.studio-dialog .radio-inline,
+.studio-dialog .checkbox-inline.disabled, fieldset[disabled]
 .studio-dialog .checkbox-inline,
-.site-dashboard .radio-inline.disabled,
-fieldset[disabled] .site-dashboard .radio-inline,
-.site-dashboard .checkbox-inline.disabled,
-fieldset[disabled]
+.site-dashboard .radio-inline.disabled, fieldset[disabled]
+.site-dashboard .radio-inline,
+.site-dashboard .checkbox-inline.disabled, fieldset[disabled]
 .site-dashboard .checkbox-inline {
   cursor: not-allowed; }
 .studio-view .radio.disabled label, fieldset[disabled] .studio-view .radio label,
-.studio-view .checkbox.disabled label,
-fieldset[disabled] .studio-view .checkbox label,
-.studio-dialog .radio.disabled label,
-fieldset[disabled] .studio-dialog .radio label,
-.studio-dialog .checkbox.disabled label,
-fieldset[disabled]
+.studio-view .checkbox.disabled label, fieldset[disabled]
+.studio-view .checkbox label,
+.studio-dialog .radio.disabled label, fieldset[disabled]
+.studio-dialog .radio label,
+.studio-dialog .checkbox.disabled label, fieldset[disabled]
 .studio-dialog .checkbox label,
-.site-dashboard .radio.disabled label,
-fieldset[disabled] .site-dashboard .radio label,
-.site-dashboard .checkbox.disabled label,
-fieldset[disabled]
+.site-dashboard .radio.disabled label, fieldset[disabled]
+.site-dashboard .radio label,
+.site-dashboard .checkbox.disabled label, fieldset[disabled]
 .site-dashboard .checkbox label {
   cursor: not-allowed; }
 .studio-view .form-control-static,
@@ -9827,7 +9825,9 @@ fieldset[disabled]
   .studio-dialog .form-horizontal .form-group-sm .control-label,
   .site-dashboard .form-horizontal .form-group-sm .control-label {
     padding-top: 6px; } }
-.studio-view .btn, .studio-dialog .btn, .site-dashboard .btn {
+.studio-view .btn,
+.studio-dialog .btn,
+.site-dashboard .btn {
   display: inline-block;
   margin-bottom: 0;
   font-weight: normal;
@@ -9840,7 +9840,7 @@ fieldset[disabled]
   white-space: nowrap;
   padding: 6px 12px;
   font-size: 12px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   border-radius: 4px;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -9882,18 +9882,20 @@ fieldset[disabled]
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); }
   .studio-view .btn.disabled, .studio-view .btn[disabled], fieldset[disabled] .studio-view .btn,
   .studio-dialog .btn.disabled,
-  .studio-dialog .btn[disabled],
-  fieldset[disabled] .studio-dialog .btn,
+  .studio-dialog .btn[disabled], fieldset[disabled]
+  .studio-dialog .btn,
   .site-dashboard .btn.disabled,
-  .site-dashboard .btn[disabled],
-  fieldset[disabled] .site-dashboard .btn {
+  .site-dashboard .btn[disabled], fieldset[disabled]
+  .site-dashboard .btn {
     cursor: not-allowed;
     pointer-events: none;
     opacity: 0.65;
     filter: alpha(opacity=65);
     -webkit-box-shadow: none;
     box-shadow: none; }
-.studio-view .btn-default, .studio-dialog .btn-default, .site-dashboard .btn-default {
+.studio-view .btn-default,
+.studio-dialog .btn-default,
+.site-dashboard .btn-default {
   color: #333;
   background-color: #fff;
   border-color: #ccc; }
@@ -9933,13 +9935,13 @@ fieldset[disabled]
   .studio-dialog .btn-default[disabled]:focus,
   .studio-dialog .btn-default[disabled].focus,
   .studio-dialog .btn-default[disabled]:active,
-  .studio-dialog .btn-default[disabled].active,
-  fieldset[disabled] .studio-dialog .btn-default,
-  fieldset[disabled] .studio-dialog .btn-default:hover,
-  fieldset[disabled] .studio-dialog .btn-default:focus,
-  fieldset[disabled] .studio-dialog .btn-default.focus,
-  fieldset[disabled] .studio-dialog .btn-default:active,
-  fieldset[disabled] .studio-dialog .btn-default.active,
+  .studio-dialog .btn-default[disabled].active, fieldset[disabled]
+  .studio-dialog .btn-default, fieldset[disabled]
+  .studio-dialog .btn-default:hover, fieldset[disabled]
+  .studio-dialog .btn-default:focus, fieldset[disabled]
+  .studio-dialog .btn-default.focus, fieldset[disabled]
+  .studio-dialog .btn-default:active, fieldset[disabled]
+  .studio-dialog .btn-default.active,
   .site-dashboard .btn-default.disabled,
   .site-dashboard .btn-default.disabled:hover,
   .site-dashboard .btn-default.disabled:focus,
@@ -9951,19 +9953,23 @@ fieldset[disabled]
   .site-dashboard .btn-default[disabled]:focus,
   .site-dashboard .btn-default[disabled].focus,
   .site-dashboard .btn-default[disabled]:active,
-  .site-dashboard .btn-default[disabled].active,
-  fieldset[disabled] .site-dashboard .btn-default,
-  fieldset[disabled] .site-dashboard .btn-default:hover,
-  fieldset[disabled] .site-dashboard .btn-default:focus,
-  fieldset[disabled] .site-dashboard .btn-default.focus,
-  fieldset[disabled] .site-dashboard .btn-default:active,
-  fieldset[disabled] .site-dashboard .btn-default.active {
+  .site-dashboard .btn-default[disabled].active, fieldset[disabled]
+  .site-dashboard .btn-default, fieldset[disabled]
+  .site-dashboard .btn-default:hover, fieldset[disabled]
+  .site-dashboard .btn-default:focus, fieldset[disabled]
+  .site-dashboard .btn-default.focus, fieldset[disabled]
+  .site-dashboard .btn-default:active, fieldset[disabled]
+  .site-dashboard .btn-default.active {
     background-color: #fff;
     border-color: #ccc; }
-  .studio-view .btn-default .badge, .studio-dialog .btn-default .badge, .site-dashboard .btn-default .badge {
+  .studio-view .btn-default .badge,
+  .studio-dialog .btn-default .badge,
+  .site-dashboard .btn-default .badge {
     color: #fff;
     background-color: #333; }
-.studio-view .btn-primary, .studio-dialog .btn-primary, .site-dashboard .btn-primary {
+.studio-view .btn-primary,
+.studio-dialog .btn-primary,
+.site-dashboard .btn-primary {
   color: #fff;
   background-color: #7e9dbb;
   border-color: #6d90b2; }
@@ -10003,13 +10009,13 @@ fieldset[disabled]
   .studio-dialog .btn-primary[disabled]:focus,
   .studio-dialog .btn-primary[disabled].focus,
   .studio-dialog .btn-primary[disabled]:active,
-  .studio-dialog .btn-primary[disabled].active,
-  fieldset[disabled] .studio-dialog .btn-primary,
-  fieldset[disabled] .studio-dialog .btn-primary:hover,
-  fieldset[disabled] .studio-dialog .btn-primary:focus,
-  fieldset[disabled] .studio-dialog .btn-primary.focus,
-  fieldset[disabled] .studio-dialog .btn-primary:active,
-  fieldset[disabled] .studio-dialog .btn-primary.active,
+  .studio-dialog .btn-primary[disabled].active, fieldset[disabled]
+  .studio-dialog .btn-primary, fieldset[disabled]
+  .studio-dialog .btn-primary:hover, fieldset[disabled]
+  .studio-dialog .btn-primary:focus, fieldset[disabled]
+  .studio-dialog .btn-primary.focus, fieldset[disabled]
+  .studio-dialog .btn-primary:active, fieldset[disabled]
+  .studio-dialog .btn-primary.active,
   .site-dashboard .btn-primary.disabled,
   .site-dashboard .btn-primary.disabled:hover,
   .site-dashboard .btn-primary.disabled:focus,
@@ -10021,19 +10027,23 @@ fieldset[disabled]
   .site-dashboard .btn-primary[disabled]:focus,
   .site-dashboard .btn-primary[disabled].focus,
   .site-dashboard .btn-primary[disabled]:active,
-  .site-dashboard .btn-primary[disabled].active,
-  fieldset[disabled] .site-dashboard .btn-primary,
-  fieldset[disabled] .site-dashboard .btn-primary:hover,
-  fieldset[disabled] .site-dashboard .btn-primary:focus,
-  fieldset[disabled] .site-dashboard .btn-primary.focus,
-  fieldset[disabled] .site-dashboard .btn-primary:active,
-  fieldset[disabled] .site-dashboard .btn-primary.active {
+  .site-dashboard .btn-primary[disabled].active, fieldset[disabled]
+  .site-dashboard .btn-primary, fieldset[disabled]
+  .site-dashboard .btn-primary:hover, fieldset[disabled]
+  .site-dashboard .btn-primary:focus, fieldset[disabled]
+  .site-dashboard .btn-primary.focus, fieldset[disabled]
+  .site-dashboard .btn-primary:active, fieldset[disabled]
+  .site-dashboard .btn-primary.active {
     background-color: #7e9dbb;
     border-color: #6d90b2; }
-  .studio-view .btn-primary .badge, .studio-dialog .btn-primary .badge, .site-dashboard .btn-primary .badge {
+  .studio-view .btn-primary .badge,
+  .studio-dialog .btn-primary .badge,
+  .site-dashboard .btn-primary .badge {
     color: #7e9dbb;
     background-color: #fff; }
-.studio-view .btn-success, .studio-dialog .btn-success, .site-dashboard .btn-success {
+.studio-view .btn-success,
+.studio-dialog .btn-success,
+.site-dashboard .btn-success {
   color: #fff;
   background-color: #5cb85c;
   border-color: #4cae4c; }
@@ -10073,13 +10083,13 @@ fieldset[disabled]
   .studio-dialog .btn-success[disabled]:focus,
   .studio-dialog .btn-success[disabled].focus,
   .studio-dialog .btn-success[disabled]:active,
-  .studio-dialog .btn-success[disabled].active,
-  fieldset[disabled] .studio-dialog .btn-success,
-  fieldset[disabled] .studio-dialog .btn-success:hover,
-  fieldset[disabled] .studio-dialog .btn-success:focus,
-  fieldset[disabled] .studio-dialog .btn-success.focus,
-  fieldset[disabled] .studio-dialog .btn-success:active,
-  fieldset[disabled] .studio-dialog .btn-success.active,
+  .studio-dialog .btn-success[disabled].active, fieldset[disabled]
+  .studio-dialog .btn-success, fieldset[disabled]
+  .studio-dialog .btn-success:hover, fieldset[disabled]
+  .studio-dialog .btn-success:focus, fieldset[disabled]
+  .studio-dialog .btn-success.focus, fieldset[disabled]
+  .studio-dialog .btn-success:active, fieldset[disabled]
+  .studio-dialog .btn-success.active,
   .site-dashboard .btn-success.disabled,
   .site-dashboard .btn-success.disabled:hover,
   .site-dashboard .btn-success.disabled:focus,
@@ -10091,19 +10101,23 @@ fieldset[disabled]
   .site-dashboard .btn-success[disabled]:focus,
   .site-dashboard .btn-success[disabled].focus,
   .site-dashboard .btn-success[disabled]:active,
-  .site-dashboard .btn-success[disabled].active,
-  fieldset[disabled] .site-dashboard .btn-success,
-  fieldset[disabled] .site-dashboard .btn-success:hover,
-  fieldset[disabled] .site-dashboard .btn-success:focus,
-  fieldset[disabled] .site-dashboard .btn-success.focus,
-  fieldset[disabled] .site-dashboard .btn-success:active,
-  fieldset[disabled] .site-dashboard .btn-success.active {
+  .site-dashboard .btn-success[disabled].active, fieldset[disabled]
+  .site-dashboard .btn-success, fieldset[disabled]
+  .site-dashboard .btn-success:hover, fieldset[disabled]
+  .site-dashboard .btn-success:focus, fieldset[disabled]
+  .site-dashboard .btn-success.focus, fieldset[disabled]
+  .site-dashboard .btn-success:active, fieldset[disabled]
+  .site-dashboard .btn-success.active {
     background-color: #5cb85c;
     border-color: #4cae4c; }
-  .studio-view .btn-success .badge, .studio-dialog .btn-success .badge, .site-dashboard .btn-success .badge {
+  .studio-view .btn-success .badge,
+  .studio-dialog .btn-success .badge,
+  .site-dashboard .btn-success .badge {
     color: #5cb85c;
     background-color: #fff; }
-.studio-view .btn-info, .studio-dialog .btn-info, .site-dashboard .btn-info {
+.studio-view .btn-info,
+.studio-dialog .btn-info,
+.site-dashboard .btn-info {
   color: #fff;
   background-color: #5bc0de;
   border-color: #46b8da; }
@@ -10143,13 +10157,13 @@ fieldset[disabled]
   .studio-dialog .btn-info[disabled]:focus,
   .studio-dialog .btn-info[disabled].focus,
   .studio-dialog .btn-info[disabled]:active,
-  .studio-dialog .btn-info[disabled].active,
-  fieldset[disabled] .studio-dialog .btn-info,
-  fieldset[disabled] .studio-dialog .btn-info:hover,
-  fieldset[disabled] .studio-dialog .btn-info:focus,
-  fieldset[disabled] .studio-dialog .btn-info.focus,
-  fieldset[disabled] .studio-dialog .btn-info:active,
-  fieldset[disabled] .studio-dialog .btn-info.active,
+  .studio-dialog .btn-info[disabled].active, fieldset[disabled]
+  .studio-dialog .btn-info, fieldset[disabled]
+  .studio-dialog .btn-info:hover, fieldset[disabled]
+  .studio-dialog .btn-info:focus, fieldset[disabled]
+  .studio-dialog .btn-info.focus, fieldset[disabled]
+  .studio-dialog .btn-info:active, fieldset[disabled]
+  .studio-dialog .btn-info.active,
   .site-dashboard .btn-info.disabled,
   .site-dashboard .btn-info.disabled:hover,
   .site-dashboard .btn-info.disabled:focus,
@@ -10161,19 +10175,23 @@ fieldset[disabled]
   .site-dashboard .btn-info[disabled]:focus,
   .site-dashboard .btn-info[disabled].focus,
   .site-dashboard .btn-info[disabled]:active,
-  .site-dashboard .btn-info[disabled].active,
-  fieldset[disabled] .site-dashboard .btn-info,
-  fieldset[disabled] .site-dashboard .btn-info:hover,
-  fieldset[disabled] .site-dashboard .btn-info:focus,
-  fieldset[disabled] .site-dashboard .btn-info.focus,
-  fieldset[disabled] .site-dashboard .btn-info:active,
-  fieldset[disabled] .site-dashboard .btn-info.active {
+  .site-dashboard .btn-info[disabled].active, fieldset[disabled]
+  .site-dashboard .btn-info, fieldset[disabled]
+  .site-dashboard .btn-info:hover, fieldset[disabled]
+  .site-dashboard .btn-info:focus, fieldset[disabled]
+  .site-dashboard .btn-info.focus, fieldset[disabled]
+  .site-dashboard .btn-info:active, fieldset[disabled]
+  .site-dashboard .btn-info.active {
     background-color: #5bc0de;
     border-color: #46b8da; }
-  .studio-view .btn-info .badge, .studio-dialog .btn-info .badge, .site-dashboard .btn-info .badge {
+  .studio-view .btn-info .badge,
+  .studio-dialog .btn-info .badge,
+  .site-dashboard .btn-info .badge {
     color: #5bc0de;
     background-color: #fff; }
-.studio-view .btn-warning, .studio-dialog .btn-warning, .site-dashboard .btn-warning {
+.studio-view .btn-warning,
+.studio-dialog .btn-warning,
+.site-dashboard .btn-warning {
   color: #fff;
   background-color: #f0ad4e;
   border-color: #eea236; }
@@ -10213,13 +10231,13 @@ fieldset[disabled]
   .studio-dialog .btn-warning[disabled]:focus,
   .studio-dialog .btn-warning[disabled].focus,
   .studio-dialog .btn-warning[disabled]:active,
-  .studio-dialog .btn-warning[disabled].active,
-  fieldset[disabled] .studio-dialog .btn-warning,
-  fieldset[disabled] .studio-dialog .btn-warning:hover,
-  fieldset[disabled] .studio-dialog .btn-warning:focus,
-  fieldset[disabled] .studio-dialog .btn-warning.focus,
-  fieldset[disabled] .studio-dialog .btn-warning:active,
-  fieldset[disabled] .studio-dialog .btn-warning.active,
+  .studio-dialog .btn-warning[disabled].active, fieldset[disabled]
+  .studio-dialog .btn-warning, fieldset[disabled]
+  .studio-dialog .btn-warning:hover, fieldset[disabled]
+  .studio-dialog .btn-warning:focus, fieldset[disabled]
+  .studio-dialog .btn-warning.focus, fieldset[disabled]
+  .studio-dialog .btn-warning:active, fieldset[disabled]
+  .studio-dialog .btn-warning.active,
   .site-dashboard .btn-warning.disabled,
   .site-dashboard .btn-warning.disabled:hover,
   .site-dashboard .btn-warning.disabled:focus,
@@ -10231,19 +10249,23 @@ fieldset[disabled]
   .site-dashboard .btn-warning[disabled]:focus,
   .site-dashboard .btn-warning[disabled].focus,
   .site-dashboard .btn-warning[disabled]:active,
-  .site-dashboard .btn-warning[disabled].active,
-  fieldset[disabled] .site-dashboard .btn-warning,
-  fieldset[disabled] .site-dashboard .btn-warning:hover,
-  fieldset[disabled] .site-dashboard .btn-warning:focus,
-  fieldset[disabled] .site-dashboard .btn-warning.focus,
-  fieldset[disabled] .site-dashboard .btn-warning:active,
-  fieldset[disabled] .site-dashboard .btn-warning.active {
+  .site-dashboard .btn-warning[disabled].active, fieldset[disabled]
+  .site-dashboard .btn-warning, fieldset[disabled]
+  .site-dashboard .btn-warning:hover, fieldset[disabled]
+  .site-dashboard .btn-warning:focus, fieldset[disabled]
+  .site-dashboard .btn-warning.focus, fieldset[disabled]
+  .site-dashboard .btn-warning:active, fieldset[disabled]
+  .site-dashboard .btn-warning.active {
     background-color: #f0ad4e;
     border-color: #eea236; }
-  .studio-view .btn-warning .badge, .studio-dialog .btn-warning .badge, .site-dashboard .btn-warning .badge {
+  .studio-view .btn-warning .badge,
+  .studio-dialog .btn-warning .badge,
+  .site-dashboard .btn-warning .badge {
     color: #f0ad4e;
     background-color: #fff; }
-.studio-view .btn-danger, .studio-dialog .btn-danger, .site-dashboard .btn-danger {
+.studio-view .btn-danger,
+.studio-dialog .btn-danger,
+.site-dashboard .btn-danger {
   color: #fff;
   background-color: #ED1C24;
   border-color: #de1219; }
@@ -10283,13 +10305,13 @@ fieldset[disabled]
   .studio-dialog .btn-danger[disabled]:focus,
   .studio-dialog .btn-danger[disabled].focus,
   .studio-dialog .btn-danger[disabled]:active,
-  .studio-dialog .btn-danger[disabled].active,
-  fieldset[disabled] .studio-dialog .btn-danger,
-  fieldset[disabled] .studio-dialog .btn-danger:hover,
-  fieldset[disabled] .studio-dialog .btn-danger:focus,
-  fieldset[disabled] .studio-dialog .btn-danger.focus,
-  fieldset[disabled] .studio-dialog .btn-danger:active,
-  fieldset[disabled] .studio-dialog .btn-danger.active,
+  .studio-dialog .btn-danger[disabled].active, fieldset[disabled]
+  .studio-dialog .btn-danger, fieldset[disabled]
+  .studio-dialog .btn-danger:hover, fieldset[disabled]
+  .studio-dialog .btn-danger:focus, fieldset[disabled]
+  .studio-dialog .btn-danger.focus, fieldset[disabled]
+  .studio-dialog .btn-danger:active, fieldset[disabled]
+  .studio-dialog .btn-danger.active,
   .site-dashboard .btn-danger.disabled,
   .site-dashboard .btn-danger.disabled:hover,
   .site-dashboard .btn-danger.disabled:focus,
@@ -10301,19 +10323,23 @@ fieldset[disabled]
   .site-dashboard .btn-danger[disabled]:focus,
   .site-dashboard .btn-danger[disabled].focus,
   .site-dashboard .btn-danger[disabled]:active,
-  .site-dashboard .btn-danger[disabled].active,
-  fieldset[disabled] .site-dashboard .btn-danger,
-  fieldset[disabled] .site-dashboard .btn-danger:hover,
-  fieldset[disabled] .site-dashboard .btn-danger:focus,
-  fieldset[disabled] .site-dashboard .btn-danger.focus,
-  fieldset[disabled] .site-dashboard .btn-danger:active,
-  fieldset[disabled] .site-dashboard .btn-danger.active {
+  .site-dashboard .btn-danger[disabled].active, fieldset[disabled]
+  .site-dashboard .btn-danger, fieldset[disabled]
+  .site-dashboard .btn-danger:hover, fieldset[disabled]
+  .site-dashboard .btn-danger:focus, fieldset[disabled]
+  .site-dashboard .btn-danger.focus, fieldset[disabled]
+  .site-dashboard .btn-danger:active, fieldset[disabled]
+  .site-dashboard .btn-danger.active {
     background-color: #ED1C24;
     border-color: #de1219; }
-  .studio-view .btn-danger .badge, .studio-dialog .btn-danger .badge, .site-dashboard .btn-danger .badge {
+  .studio-view .btn-danger .badge,
+  .studio-dialog .btn-danger .badge,
+  .site-dashboard .btn-danger .badge {
     color: #ED1C24;
     background-color: #fff; }
-.studio-view .btn-link, .studio-dialog .btn-link, .site-dashboard .btn-link {
+.studio-view .btn-link,
+.studio-dialog .btn-link,
+.site-dashboard .btn-link {
   color: #7e9dbb;
   font-weight: normal;
   border-radius: 0; }
@@ -10321,23 +10347,43 @@ fieldset[disabled]
   .studio-dialog .btn-link,
   .studio-dialog .btn-link:active,
   .studio-dialog .btn-link.active,
-  .studio-dialog .btn-link[disabled],
-  fieldset[disabled] .studio-dialog .btn-link,
+  .studio-dialog .btn-link[disabled], fieldset[disabled]
+  .studio-dialog .btn-link,
   .site-dashboard .btn-link,
   .site-dashboard .btn-link:active,
   .site-dashboard .btn-link.active,
-  .site-dashboard .btn-link[disabled],
-  fieldset[disabled] .site-dashboard .btn-link {
+  .site-dashboard .btn-link[disabled], fieldset[disabled]
+  .site-dashboard .btn-link {
     background-color: transparent;
     -webkit-box-shadow: none;
     box-shadow: none; }
-  .studio-view .btn-link, .studio-view .btn-link:hover, .studio-view .btn-link:focus, .studio-view .btn-link:active, .studio-dialog .btn-link, .studio-dialog .btn-link:hover, .studio-dialog .btn-link:focus, .studio-dialog .btn-link:active, .site-dashboard .btn-link, .site-dashboard .btn-link:hover, .site-dashboard .btn-link:focus, .site-dashboard .btn-link:active {
+  .studio-view .btn-link, .studio-view .btn-link:hover, .studio-view .btn-link:focus, .studio-view .btn-link:active,
+  .studio-dialog .btn-link,
+  .studio-dialog .btn-link:hover,
+  .studio-dialog .btn-link:focus,
+  .studio-dialog .btn-link:active,
+  .site-dashboard .btn-link,
+  .site-dashboard .btn-link:hover,
+  .site-dashboard .btn-link:focus,
+  .site-dashboard .btn-link:active {
     border-color: transparent; }
-  .studio-view .btn-link:hover, .studio-view .btn-link:focus, .studio-dialog .btn-link:hover, .studio-dialog .btn-link:focus, .site-dashboard .btn-link:hover, .site-dashboard .btn-link:focus {
+  .studio-view .btn-link:hover, .studio-view .btn-link:focus,
+  .studio-dialog .btn-link:hover,
+  .studio-dialog .btn-link:focus,
+  .site-dashboard .btn-link:hover,
+  .site-dashboard .btn-link:focus {
     color: #52779b;
     text-decoration: underline;
     background-color: transparent; }
-  .studio-view .btn-link[disabled]:hover, .studio-view .btn-link[disabled]:focus, fieldset[disabled] .studio-view .btn-link:hover, fieldset[disabled] .studio-view .btn-link:focus, .studio-dialog .btn-link[disabled]:hover, .studio-dialog .btn-link[disabled]:focus, fieldset[disabled] .studio-dialog .btn-link:hover, fieldset[disabled] .studio-dialog .btn-link:focus, .site-dashboard .btn-link[disabled]:hover, .site-dashboard .btn-link[disabled]:focus, fieldset[disabled] .site-dashboard .btn-link:hover, fieldset[disabled] .site-dashboard .btn-link:focus {
+  .studio-view .btn-link[disabled]:hover, .studio-view .btn-link[disabled]:focus, fieldset[disabled] .studio-view .btn-link:hover, fieldset[disabled] .studio-view .btn-link:focus,
+  .studio-dialog .btn-link[disabled]:hover,
+  .studio-dialog .btn-link[disabled]:focus, fieldset[disabled]
+  .studio-dialog .btn-link:hover, fieldset[disabled]
+  .studio-dialog .btn-link:focus,
+  .site-dashboard .btn-link[disabled]:hover,
+  .site-dashboard .btn-link[disabled]:focus, fieldset[disabled]
+  .site-dashboard .btn-link:hover, fieldset[disabled]
+  .site-dashboard .btn-link:focus {
     color: #777777;
     text-decoration: none; }
 .studio-view .btn-lg, .studio-view .btn-group-lg > .btn,
@@ -10505,7 +10551,7 @@ fieldset[disabled]
     padding: 3px 20px;
     clear: both;
     font-weight: normal;
-    line-height: 1.428571429;
+    line-height: 1.42857;
     color: #333333;
     white-space: nowrap; }
 .studio-view .dropdown-menu > li > a:hover, .studio-view .dropdown-menu > li > a:focus,
@@ -10569,7 +10615,7 @@ fieldset[disabled]
   display: block;
   padding: 3px 20px;
   font-size: 11px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   color: #777777;
   white-space: nowrap; }
 .studio-view .dropdown-backdrop,
@@ -11176,7 +11222,7 @@ fieldset[disabled]
     .studio-dialog .nav-tabs > li > a,
     .site-dashboard .nav-tabs > li > a {
       margin-right: 2px;
-      line-height: 1.428571429;
+      line-height: 1.42857;
       border: 1px solid transparent;
       border-radius: 4px 4px 0 0; }
       .studio-view .nav-tabs > li > a:hover,
@@ -11387,7 +11433,9 @@ fieldset[disabled]
   .studio-dialog .navbar-header,
   .site-dashboard .navbar-header {
     float: left; } }
-.studio-view .navbar-collapse, .studio-dialog .navbar-collapse, .site-dashboard .navbar-collapse {
+.studio-view .navbar-collapse,
+.studio-dialog .navbar-collapse,
+.site-dashboard .navbar-collapse {
   overflow-x: visible;
   padding-right: 15px;
   padding-left: 15px;
@@ -11410,7 +11458,9 @@ fieldset[disabled]
   .site-dashboard .navbar-collapse.in {
     overflow-y: auto; }
   @media (min-width: 768px) {
-    .studio-view .navbar-collapse, .studio-dialog .navbar-collapse, .site-dashboard .navbar-collapse {
+    .studio-view .navbar-collapse,
+    .studio-dialog .navbar-collapse,
+    .site-dashboard .navbar-collapse {
       width: auto;
       border-top: 0;
       box-shadow: none; }
@@ -11426,9 +11476,13 @@ fieldset[disabled]
       .studio-dialog .navbar-collapse.in,
       .site-dashboard .navbar-collapse.in {
         overflow-y: visible; }
-      .navbar-fixed-top .studio-view .navbar-collapse, .navbar-static-top .studio-view .navbar-collapse, .navbar-fixed-bottom .studio-view .navbar-collapse,
-      .navbar-fixed-top .studio-dialog .navbar-collapse, .navbar-static-top .studio-dialog .navbar-collapse, .navbar-fixed-bottom .studio-dialog .navbar-collapse,
-      .navbar-fixed-top .site-dashboard .navbar-collapse, .navbar-static-top .site-dashboard .navbar-collapse, .navbar-fixed-bottom .site-dashboard .navbar-collapse {
+      .navbar-fixed-top .studio-view .navbar-collapse, .navbar-static-top .studio-view .navbar-collapse, .navbar-fixed-bottom .studio-view .navbar-collapse, .navbar-fixed-top
+      .studio-dialog .navbar-collapse, .navbar-static-top
+      .studio-dialog .navbar-collapse, .navbar-fixed-bottom
+      .studio-dialog .navbar-collapse, .navbar-fixed-top
+      .site-dashboard .navbar-collapse, .navbar-static-top
+      .site-dashboard .navbar-collapse, .navbar-fixed-bottom
+      .site-dashboard .navbar-collapse {
         padding-left: 0;
         padding-right: 0; } }
 .studio-view .navbar-fixed-top .navbar-collapse,
@@ -11915,7 +11969,9 @@ fieldset[disabled]
     .studio-dialog .navbar-default .navbar-link:hover,
     .site-dashboard .navbar-default .navbar-link:hover {
       color: #333; }
-  .studio-view .navbar-default .btn-link, .studio-dialog .navbar-default .btn-link, .site-dashboard .navbar-default .btn-link {
+  .studio-view .navbar-default .btn-link,
+  .studio-dialog .navbar-default .btn-link,
+  .site-dashboard .navbar-default .btn-link {
     color: #777; }
     .studio-view .navbar-default .btn-link:hover, .studio-view .navbar-default .btn-link:focus,
     .studio-dialog .navbar-default .btn-link:hover,
@@ -11925,13 +11981,13 @@ fieldset[disabled]
       color: #333; }
     .studio-view .navbar-default .btn-link[disabled]:hover, .studio-view .navbar-default .btn-link[disabled]:focus, fieldset[disabled] .studio-view .navbar-default .btn-link:hover, fieldset[disabled] .studio-view .navbar-default .btn-link:focus,
     .studio-dialog .navbar-default .btn-link[disabled]:hover,
-    .studio-dialog .navbar-default .btn-link[disabled]:focus,
-    fieldset[disabled] .studio-dialog .navbar-default .btn-link:hover,
-    fieldset[disabled] .studio-dialog .navbar-default .btn-link:focus,
+    .studio-dialog .navbar-default .btn-link[disabled]:focus, fieldset[disabled]
+    .studio-dialog .navbar-default .btn-link:hover, fieldset[disabled]
+    .studio-dialog .navbar-default .btn-link:focus,
     .site-dashboard .navbar-default .btn-link[disabled]:hover,
-    .site-dashboard .navbar-default .btn-link[disabled]:focus,
-    fieldset[disabled] .site-dashboard .navbar-default .btn-link:hover,
-    fieldset[disabled] .site-dashboard .navbar-default .btn-link:focus {
+    .site-dashboard .navbar-default .btn-link[disabled]:focus, fieldset[disabled]
+    .site-dashboard .navbar-default .btn-link:hover, fieldset[disabled]
+    .site-dashboard .navbar-default .btn-link:focus {
       color: #ccc; }
 .studio-view .navbar-inverse,
 .studio-dialog .navbar-inverse,
@@ -12058,7 +12114,9 @@ fieldset[disabled]
     .studio-dialog .navbar-inverse .navbar-link:hover,
     .site-dashboard .navbar-inverse .navbar-link:hover {
       color: #fff; }
-  .studio-view .navbar-inverse .btn-link, .studio-dialog .navbar-inverse .btn-link, .site-dashboard .navbar-inverse .btn-link {
+  .studio-view .navbar-inverse .btn-link,
+  .studio-dialog .navbar-inverse .btn-link,
+  .site-dashboard .navbar-inverse .btn-link {
     color: #9d9d9d; }
     .studio-view .navbar-inverse .btn-link:hover, .studio-view .navbar-inverse .btn-link:focus,
     .studio-dialog .navbar-inverse .btn-link:hover,
@@ -12068,13 +12126,13 @@ fieldset[disabled]
       color: #fff; }
     .studio-view .navbar-inverse .btn-link[disabled]:hover, .studio-view .navbar-inverse .btn-link[disabled]:focus, fieldset[disabled] .studio-view .navbar-inverse .btn-link:hover, fieldset[disabled] .studio-view .navbar-inverse .btn-link:focus,
     .studio-dialog .navbar-inverse .btn-link[disabled]:hover,
-    .studio-dialog .navbar-inverse .btn-link[disabled]:focus,
-    fieldset[disabled] .studio-dialog .navbar-inverse .btn-link:hover,
-    fieldset[disabled] .studio-dialog .navbar-inverse .btn-link:focus,
+    .studio-dialog .navbar-inverse .btn-link[disabled]:focus, fieldset[disabled]
+    .studio-dialog .navbar-inverse .btn-link:hover, fieldset[disabled]
+    .studio-dialog .navbar-inverse .btn-link:focus,
     .site-dashboard .navbar-inverse .btn-link[disabled]:hover,
-    .site-dashboard .navbar-inverse .btn-link[disabled]:focus,
-    fieldset[disabled] .site-dashboard .navbar-inverse .btn-link:hover,
-    fieldset[disabled] .site-dashboard .navbar-inverse .btn-link:focus {
+    .site-dashboard .navbar-inverse .btn-link[disabled]:focus, fieldset[disabled]
+    .site-dashboard .navbar-inverse .btn-link:hover, fieldset[disabled]
+    .site-dashboard .navbar-inverse .btn-link:focus {
       color: #444; }
 .studio-view .breadcrumb,
 .studio-dialog .breadcrumb,
@@ -12118,7 +12176,7 @@ fieldset[disabled]
       position: relative;
       float: left;
       padding: 6px 12px;
-      line-height: 1.428571429;
+      line-height: 1.42857;
       text-decoration: none;
       color: #7e9dbb;
       background-color: #fff;
@@ -12316,7 +12374,9 @@ fieldset[disabled]
     color: #777777;
     background-color: #fff;
     cursor: not-allowed; }
-.studio-view .label, .studio-dialog .label, .site-dashboard .label {
+.studio-view .label,
+.studio-dialog .label,
+.site-dashboard .label {
   display: inline;
   padding: .2em .6em .3em;
   font-size: 75%;
@@ -12331,9 +12391,9 @@ fieldset[disabled]
   .studio-dialog .label:empty,
   .site-dashboard .label:empty {
     display: none; }
-  .btn .studio-view .label,
-  .btn .studio-dialog .label,
-  .btn .site-dashboard .label {
+  .btn .studio-view .label, .btn
+  .studio-dialog .label, .btn
+  .site-dashboard .label {
     position: relative;
     top: -1px; }
 .studio-view a.label:hover, .studio-view a.label:focus,
@@ -12404,7 +12464,9 @@ fieldset[disabled]
   .site-dashboard .label-danger[href]:hover,
   .site-dashboard .label-danger[href]:focus {
     background-color: #c61017; }
-.studio-view .badge, .studio-dialog .badge, .site-dashboard .badge {
+.studio-view .badge,
+.studio-dialog .badge,
+.site-dashboard .badge {
   display: inline-block;
   min-width: 10px;
   padding: 3px 7px;
@@ -12421,28 +12483,56 @@ fieldset[disabled]
   .studio-dialog .badge:empty,
   .site-dashboard .badge:empty {
     display: none; }
-  .btn .studio-view .badge,
-  .btn .studio-dialog .badge,
-  .btn .site-dashboard .badge {
+  .btn .studio-view .badge, .btn
+  .studio-dialog .badge, .btn
+  .site-dashboard .badge {
     position: relative;
     top: -1px; }
   .btn-xs .studio-view .badge, .studio-view .btn-group-xs > .btn .studio-view .badge,
   .studio-dialog .btn-group-xs > .btn .studio-view .badge,
-  .site-dashboard .btn-group-xs > .btn .studio-view .badge, .btn-xs .studio-dialog .badge, .studio-view .btn-group-xs > .btn .studio-dialog .badge,
-  .studio-dialog .btn-group-xs > .btn .studio-dialog .badge,
-  .site-dashboard .btn-group-xs > .btn .studio-dialog .badge, .btn-xs .site-dashboard .badge, .studio-view .btn-group-xs > .btn .site-dashboard .badge,
-  .studio-dialog .btn-group-xs > .btn .site-dashboard .badge,
-  .site-dashboard .btn-group-xs > .btn .site-dashboard .badge {
+  .site-dashboard .btn-group-xs > .btn .studio-view .badge, .btn-xs
+  .studio-dialog .badge, .studio-view .btn-group-xs > .btn
+  .studio-dialog .badge,
+  .studio-dialog .btn-group-xs > .btn
+  .studio-dialog .badge,
+  .site-dashboard .btn-group-xs > .btn
+  .studio-dialog .badge, .btn-xs
+  .site-dashboard .badge, .studio-view .btn-group-xs > .btn
+  .site-dashboard .badge,
+  .studio-dialog .btn-group-xs > .btn
+  .site-dashboard .badge,
+  .site-dashboard .btn-group-xs > .btn
+  .site-dashboard .badge {
     top: 0;
     padding: 1px 5px; }
-  .list-group-item.active > .studio-view .badge, .nav-pills > .active > a > .studio-view .badge, .list-group-item.active > .studio-dialog .badge, .nav-pills > .active > a > .studio-dialog .badge, .list-group-item.active > .site-dashboard .badge, .nav-pills > .active > a > .site-dashboard .badge {
+  .list-group-item.active > .studio-view .badge, .nav-pills > .active > a > .studio-view .badge, .list-group-item.active >
+  .studio-dialog .badge, .nav-pills > .active > a >
+  .studio-dialog .badge, .list-group-item.active >
+  .site-dashboard .badge, .nav-pills > .active > a >
+  .site-dashboard .badge {
     color: #7e9dbb;
     background-color: #fff; }
-  .list-group-item > .studio-view .badge, .list-group-item > .studio-dialog .badge, .list-group-item > .site-dashboard .badge {
+  .list-group-item > .studio-view .badge, .list-group-item >
+  .studio-dialog .badge, .list-group-item >
+  .site-dashboard .badge {
     float: right; }
-  .list-group-item > .studio-view .badge + .studio-view .badge, .list-group-item > .studio-dialog .badge + .studio-view .badge, .list-group-item > .site-dashboard .badge + .studio-view .badge, .list-group-item > .studio-view .badge + .studio-dialog .badge, .list-group-item > .studio-dialog .badge + .studio-dialog .badge, .list-group-item > .site-dashboard .badge + .studio-dialog .badge, .list-group-item > .studio-view .badge + .site-dashboard .badge, .list-group-item > .studio-dialog .badge + .site-dashboard .badge, .list-group-item > .site-dashboard .badge + .site-dashboard .badge {
+  .list-group-item > .studio-view .badge + .studio-view .badge, .list-group-item >
+  .studio-dialog .badge + .studio-view .badge, .list-group-item >
+  .site-dashboard .badge + .studio-view .badge, .list-group-item > .studio-view .badge +
+  .studio-dialog .badge, .list-group-item >
+  .studio-dialog .badge +
+  .studio-dialog .badge, .list-group-item >
+  .site-dashboard .badge +
+  .studio-dialog .badge, .list-group-item > .studio-view .badge +
+  .site-dashboard .badge, .list-group-item >
+  .studio-dialog .badge +
+  .site-dashboard .badge, .list-group-item >
+  .site-dashboard .badge +
+  .site-dashboard .badge {
     margin-right: 5px; }
-  .nav-pills > li > a > .studio-view .badge, .nav-pills > li > a > .studio-dialog .badge, .nav-pills > li > a > .site-dashboard .badge {
+  .nav-pills > li > a > .studio-view .badge, .nav-pills > li > a >
+  .studio-dialog .badge, .nav-pills > li > a >
+  .site-dashboard .badge {
     margin-left: 3px; }
 .studio-view a.badge:hover, .studio-view a.badge:focus,
 .studio-dialog a.badge:hover,
@@ -12452,7 +12542,9 @@ fieldset[disabled]
   color: #fff;
   text-decoration: none;
   cursor: pointer; }
-.studio-view .jumbotron, .studio-dialog .jumbotron, .site-dashboard .jumbotron {
+.studio-view .jumbotron,
+.studio-dialog .jumbotron,
+.site-dashboard .jumbotron {
   padding: 30px 15px;
   margin-bottom: 30px;
   color: inherit;
@@ -12474,21 +12566,33 @@ fieldset[disabled]
   .studio-dialog .jumbotron > hr,
   .site-dashboard .jumbotron > hr {
     border-top-color: #d5d5d5; }
-  .container .studio-view .jumbotron, .container-fluid .studio-view .jumbotron,
-  .container .studio-dialog .jumbotron, .container-fluid .studio-dialog .jumbotron,
-  .container .site-dashboard .jumbotron, .container-fluid .site-dashboard .jumbotron {
+  .container .studio-view .jumbotron, .container-fluid .studio-view .jumbotron, .container
+  .studio-dialog .jumbotron, .container-fluid
+  .studio-dialog .jumbotron, .container
+  .site-dashboard .jumbotron, .container-fluid
+  .site-dashboard .jumbotron {
     border-radius: 6px; }
-  .studio-view .jumbotron .container, .studio-dialog .jumbotron .container, .site-dashboard .jumbotron .container {
+  .studio-view .jumbotron .container,
+  .studio-dialog .jumbotron .container,
+  .site-dashboard .jumbotron .container {
     max-width: 100%; }
   @media screen and (min-width: 768px) {
-    .studio-view .jumbotron, .studio-dialog .jumbotron, .site-dashboard .jumbotron {
+    .studio-view .jumbotron,
+    .studio-dialog .jumbotron,
+    .site-dashboard .jumbotron {
       padding: 48px 0; }
-      .container .studio-view .jumbotron, .container-fluid .studio-view .jumbotron, .container .studio-dialog .jumbotron, .container-fluid .studio-dialog .jumbotron, .container .site-dashboard .jumbotron, .container-fluid .site-dashboard .jumbotron {
+      .container .studio-view .jumbotron, .container-fluid .studio-view .jumbotron, .container
+      .studio-dialog .jumbotron, .container-fluid
+      .studio-dialog .jumbotron, .container
+      .site-dashboard .jumbotron, .container-fluid
+      .site-dashboard .jumbotron {
         padding-left: 60px;
         padding-right: 60px; }
       .studio-view .jumbotron h1,
-      .studio-view .jumbotron .h1, .studio-dialog .jumbotron h1,
-      .studio-dialog .jumbotron .h1, .site-dashboard .jumbotron h1,
+      .studio-view .jumbotron .h1,
+      .studio-dialog .jumbotron h1,
+      .studio-dialog .jumbotron .h1,
+      .site-dashboard .jumbotron h1,
       .site-dashboard .jumbotron .h1 {
         font-size: 54px; } }
 .studio-view .thumbnail,
@@ -12497,7 +12601,7 @@ fieldset[disabled]
   display: block;
   padding: 4px;
   margin-bottom: 17px;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -12685,35 +12789,43 @@ fieldset[disabled]
   -webkit-animation: progress-bar-stripes 2s linear infinite;
   -o-animation: progress-bar-stripes 2s linear infinite;
   animation: progress-bar-stripes 2s linear infinite; }
-.studio-view .progress-bar-success, .studio-dialog .progress-bar-success, .site-dashboard .progress-bar-success {
+.studio-view .progress-bar-success,
+.studio-dialog .progress-bar-success,
+.site-dashboard .progress-bar-success {
   background-color: #5cb85c; }
-  .progress-striped .studio-view .progress-bar-success,
-  .progress-striped .studio-dialog .progress-bar-success,
-  .progress-striped .site-dashboard .progress-bar-success {
+  .progress-striped .studio-view .progress-bar-success, .progress-striped
+  .studio-dialog .progress-bar-success, .progress-striped
+  .site-dashboard .progress-bar-success {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent); }
-.studio-view .progress-bar-info, .studio-dialog .progress-bar-info, .site-dashboard .progress-bar-info {
+.studio-view .progress-bar-info,
+.studio-dialog .progress-bar-info,
+.site-dashboard .progress-bar-info {
   background-color: #5bc0de; }
-  .progress-striped .studio-view .progress-bar-info,
-  .progress-striped .studio-dialog .progress-bar-info,
-  .progress-striped .site-dashboard .progress-bar-info {
+  .progress-striped .studio-view .progress-bar-info, .progress-striped
+  .studio-dialog .progress-bar-info, .progress-striped
+  .site-dashboard .progress-bar-info {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent); }
-.studio-view .progress-bar-warning, .studio-dialog .progress-bar-warning, .site-dashboard .progress-bar-warning {
+.studio-view .progress-bar-warning,
+.studio-dialog .progress-bar-warning,
+.site-dashboard .progress-bar-warning {
   background-color: #f0ad4e; }
-  .progress-striped .studio-view .progress-bar-warning,
-  .progress-striped .studio-dialog .progress-bar-warning,
-  .progress-striped .site-dashboard .progress-bar-warning {
+  .progress-striped .studio-view .progress-bar-warning, .progress-striped
+  .studio-dialog .progress-bar-warning, .progress-striped
+  .site-dashboard .progress-bar-warning {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent); }
-.studio-view .progress-bar-danger, .studio-dialog .progress-bar-danger, .site-dashboard .progress-bar-danger {
+.studio-view .progress-bar-danger,
+.studio-dialog .progress-bar-danger,
+.site-dashboard .progress-bar-danger {
   background-color: #ED1C24; }
-  .progress-striped .studio-view .progress-bar-danger,
-  .progress-striped .studio-dialog .progress-bar-danger,
-  .progress-striped .site-dashboard .progress-bar-danger {
+  .progress-striped .studio-view .progress-bar-danger, .progress-striped
+  .studio-dialog .progress-bar-danger, .progress-striped
+  .site-dashboard .progress-bar-danger {
     background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
     background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent); }
@@ -13770,7 +13882,7 @@ fieldset[disabled]
 .site-dashboard .modal-header {
   padding: 15px;
   border-bottom: 1px solid #e5e5e5;
-  min-height: 16.428571429px; }
+  min-height: 16.42857px; }
 .studio-view .modal-header .close,
 .studio-dialog .modal-header .close,
 .site-dashboard .modal-header .close {
@@ -13779,7 +13891,7 @@ fieldset[disabled]
 .studio-dialog .modal-title,
 .site-dashboard .modal-title {
   margin: 0;
-  line-height: 1.428571429; }
+  line-height: 1.42857; }
 .studio-view .modal-body,
 .studio-dialog .modal-body,
 .site-dashboard .modal-body {
@@ -13976,7 +14088,7 @@ fieldset[disabled]
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
   font-weight: normal;
-  line-height: 1.428571429;
+  line-height: 1.42857;
   text-align: left;
   background-color: #fff;
   background-clip: padding-box;
@@ -14323,7 +14435,7 @@ fieldset[disabled]
     border-radius: 10px;
     cursor: pointer;
     background-color: #000 \9;
-    background-color: rgba(0, 0, 0, 0); }
+    background-color: transparent; }
   .studio-view .carousel-indicators .active,
   .studio-dialog .carousel-indicators .active,
   .site-dashboard .carousel-indicators .active {
@@ -15236,5 +15348,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */

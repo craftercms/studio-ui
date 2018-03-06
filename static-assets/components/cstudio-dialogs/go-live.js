@@ -638,7 +638,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
 
                             YDom.get('acnScrollBoxDiv').innerHTML = CSA.StringUtils.format(
                                 '<div class="spinner"><img src="{0}/static-assets/themes/cstudioTheme/images/wait.gif"> <span class="warn">{1}</span></div>',
-                                CSAContext.authoringAppBaseUri, 'Loading items &amp; dependecies, please wait.');
+                                CSAContext.authoringAppBaseUri, 'Loading items &amp; dependencies, please wait.');
 
                             YEvent.addListener("golivecancelButton", "click", me.closeDialog, me, true);
 

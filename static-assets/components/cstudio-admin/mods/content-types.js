@@ -2298,6 +2298,38 @@ CStudioAuthoring.Module.requireModule(
                         }
                     }
                     xml+= "\t</delete-dependencies>\r\n";
+				}
+				
+				if(config['copy-dependencies']) {
+                    xml += "\t<copy-dependencies>\r\n";
+
+                    if (config['copy-dependencies']['copy-dependency']) {
+
+                        if (config['copy-dependencies']['copy-dependency'] instanceof Array) {
+
+                            for (var x = 0; x < config['copy-dependencies']['copy-dependency'].length; x++) {
+                                xml += "\t\t<copy-dependency>\r\n";
+
+                                if (config['copy-dependencies']['copy-dependency'][x]['pattern']) {
+                                    xml += "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency'][x]['pattern']) + "</pattern>\r\n";
+                                }
+                                if (config['copy-dependencies']['copy-dependency'][x]['target']) {
+                                    xml += "\t\t\t<target>" + CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency'][x]['target']) + "</target>\r\n";
+                                }
+                                xml += "\t\t</copy-dependency>\r\n";
+                            }
+                        }else {
+                            xml += "\t\t<copy-dependency>\r\n";
+                            if(config['copy-dependencies']['copy-dependency']['pattern']){
+                                xml+= "\t\t\t<pattern>" + CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency']['pattern']) + "</pattern>\r\n";
+                            }
+                            if(config['copy-dependencies']['copy-dependency']['target']){
+                                xml+= "\t\t\t<target>" + CStudioForms.Util.escapeXml(config['copy-dependencies']['copy-dependency']['target']) + "</target>\r\n";
+                            }
+                            xml += "\t\t</copy-dependency>\r\n";
+                        }
+                    }
+                    xml+= "\t</copy-dependencies>\r\n";
                 }
 
                 xml += "</content-type>\r\n";

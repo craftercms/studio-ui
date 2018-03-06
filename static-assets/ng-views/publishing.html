@@ -65,7 +65,7 @@
                             </div>
                         </div>
                         <div class='publish-buttons'>
-                            <input type='button' id='bulk-submit' class='btn btn-primary' value="{{ 'admin.publishing.PUBLISH' | translate }}" ng-click="publish.bulkPublish()" ng-disabled="bulkOperationForm.$invalid || isValid" />
+                            <input type='button' id='bulk-submit' class='btn btn-primary' value="{{ 'admin.publishing.PUBLISH' | translate }}" ng-click="publish.bulkPublish()" ng-disabled="bulkOperationForm.$invalid || publish.disable" />
                         </div>
                     </form>
 

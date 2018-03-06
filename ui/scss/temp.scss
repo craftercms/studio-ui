@@ -836,14 +836,16 @@ span.acn-page-deleted a, span.acn-page-deleted a:hover {
   .ygtvlp:before, .ygtvtp:before, .ygtvlph:before, .ygtvlphh:before, .ygtvtph:before, .ygtvtphh:before {
     content: "\f196";
     position: absolute;
-    top: 2px;
+    top: 3px;
+    left: 2px;
     width: 10px;
   }
 
   .ygtvtm:before, .ygtvtmh:before, .ygtvtmhh:before, .ygtvlm:before, .ygtvlmh:before, .ygtvlmhh:before{
     content: "\f147";
     position: absolute;
-    top: 2px;
+    top: 3px;
+    left: 2px;
     width: 10px;
   }
 }

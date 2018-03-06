@@ -5916,6 +5916,15 @@ a[ng-click] {
   .relogin-modal #login_form .contentTypePopupBtn input[type="submit"] {
     margin-right: 4px; }
 
+.spinner-modal .modal-content {
+  background: none;
+  border: none;
+  box-shadow: none;
+  text-align: center; }
+  .spinner-modal .modal-content .modal-body .spinner {
+    font-size: 40px;
+    color: #355475; }
+
 .navbar {
   margin-bottom: 0; }
   .navbar .navbar-brand {
