@@ -1013,3 +1013,14 @@ body.yui-skin-cstudioTheme.masked{overflow: hidden;}
     width: 94.5%;
 }
 
+.removeItemBox{
+    float: right;
+    margin-right: 12%;
+    cursor: pointer;
+}
+
+.itemsSelected{
+    display: inline-block;
+    width: 67%;
+}
+
