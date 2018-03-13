@@ -8,22 +8,22 @@
     <#include "/templates/web/common/page-fragments/head.ftl" />
 
     <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
-    <script src="${path}en/base.js?version=${UIBuildId!''}"></script>
-    <script src="${path}kr/base.js?version=${UIBuildId!''}"></script>
-    <script src="${path}es/base.js?version=${UIBuildId!''}"></script>
+    <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <#assign path="/studio/static-assets/components/cstudio-dashboard-widgets/" />
-    <script src="${path}lib/wcm-dashboardwidget-common.js?version=${UIBuildId!''}"></script>
-    <script src="${path}go-live-queue.js?version=${UIBuildId!''}"></script>
-    <script src="${path}recently-made-live.js?version=${UIBuildId!''}"></script>
-    <script src="${path}my-recent-activity.js?version=${UIBuildId!''}"></script>
-    <script src="${path}my-notifications.js?version=${UIBuildId!''}"></script>
-    <script src="${path}icon-guide.js?version=${UIBuildId!''}"></script>
-    <script src="${path}approved-scheduled-items.js?version=${UIBuildId!''}"></script>
+    <script src="${path}lib/wcm-dashboardwidget-common.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}go-live-queue.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}recently-made-live.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}my-recent-activity.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}my-notifications.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}icon-guide.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}approved-scheduled-items.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <#assign path="/studio/static-assets/libs/" />
-    <script src="${path}momentjs/moment.min.js?version=${UIBuildId!''}"></script>
-    <script src="${path}momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!''}"></script>
+    <script src="${path}momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
     <#include "/templates/web/common/page-fragments/context-nav.ftl" />
@@ -36,11 +36,11 @@
                 siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
     </script>
 
-    <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/jquery-ui/jquery-ui.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/jquery-ui/jquery-ui.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 </head>
 

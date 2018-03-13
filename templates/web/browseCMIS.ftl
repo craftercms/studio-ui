@@ -27,9 +27,9 @@
     <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css" type="text/css" rel="stylesheet">
 
     <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
-    <script src="${path}en/base.js?version=${UIBuildId!''}"></script>
-    <script src="${path}kr/base.js?version=${UIBuildId!''}"></script>
-    <script src="${path}es/base.js?version=${UIBuildId!''}"></script>
+    <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script>
         var CMgs = CStudioAuthoring.Messages,
