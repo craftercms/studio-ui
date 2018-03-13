@@ -6,26 +6,26 @@
 
     <title>Crafter Studio</title>
 
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/console.css?version=${UIBuildId!''}" />
-         <script src="/studio/static-assets/modules/editors/tiny_mce/tiny_mce.js?version=${UIBuildId!''}"></script>
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/console.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+         <script src="/studio/static-assets/modules/editors/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!''}"></script>
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!''}"></script>
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!''}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/amplify-core.js?version=${UIBuildId!''}"></script>
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-admin/base.js?version=${UIBuildId!''}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/amplify-core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-admin/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
     <#include "/templates/web/common/page-fragments/context-nav.ftl" />
 
-    <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!''}" ></script>
+    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!.now?string('Mddyyyy')}" ></script>
 
     <script>
         CMgs = CStudioAuthoring.Messages;
