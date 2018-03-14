@@ -8909,7 +8909,8 @@ if(window.top === window.self) {
                                 }
                             },
                             failure: function (response) {
-                                if (response.status == 401) {
+                                if (response.status == 401 || response.status == 301 ||
+                                    response.status == 302 || response.status == 0) {
                                     var cb = {
                                         success: function (response) {
                                             setTimeout(function () {
