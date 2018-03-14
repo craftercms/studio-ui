@@ -384,8 +384,12 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                 }) (file);
 
                 // Read in the image file as a data url.
-                var slice = file.slice(offset, offset + CHUNK_SIZE);
-                reader.readAsDataURL(slice);
+                if( file.type.indexOf("image") !== -1){
+                    reader.readAsDataURL(file);
+                }else{
+                    var slice = file.slice(offset, offset + CHUNK_SIZE);
+                    reader.readAsDataURL(slice);
+                }
             };
 
             var toArray = function(list) {
