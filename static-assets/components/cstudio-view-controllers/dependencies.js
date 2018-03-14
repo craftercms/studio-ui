@@ -143,15 +143,16 @@
 
         $container.empty();
 
-        each(items, function (index, item) {
+        var item = items[0];
+
             var temp = item.scheduledDate,
-                itemDependenciesClass = "toggle-deps-" + index,
+                itemDependenciesClass = "toggle-deps",
                 internalName = item.internalName;
 
             item.scheduledDate = CStudioAuthoring.Utils.formatDateFromString(temp);
             item.index = itemDependenciesClass;
             var $parentRow = $(agent.get('ITEM_ROW', item));
-            if(index == 0) $container.empty();
+             $container.empty();
             // $container.append($parentRow);
             item.scheduledDate = temp;
 
@@ -349,7 +350,6 @@
 
             CStudioAuthoring.Utils.isReviewer(callback);*/
 
-        });
 
         $('.toggleDependencies').on('click', function(){
             var $container = $(me.getComponent('tbody')),
