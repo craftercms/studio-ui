@@ -213,8 +213,6 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
             YDom.setStyle(elements[0],'margin-top', '50px');
 			
 			this.resize();
-	       
-	        this.scrollToTopOfElement(this.containerEl, 30);
 		}
 	},
 
