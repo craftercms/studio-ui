@@ -144,7 +144,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
                     return { 'id': e.id, 'name': e.name };
                 });
 
-                if(self.value.length > 0){
+                if(Array.isArray(self.value) && self.value.length > 0){
                     var flag = true;
                     for(var i=0; i< self.value.length; i++){
                         flag = true;
@@ -166,7 +166,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
             filePicker.show(folderId, accessToken, {
                     logoUrl: self.logo,
                     container: '#box-picker-' + self.id,
-                    maxSelectable: self.enable_multi? Infinity : 1,
+                    maxSelectable: self.enable_multi !== "false" ? Infinity : 1,
                     canUpload: self.enable_upload,
                     canSetShareAccess: false,
                     canCreateNewFolder: self.enable_upload
