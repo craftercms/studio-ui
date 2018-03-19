@@ -2142,7 +2142,7 @@ sh6 {
 .studio-view, .studio-components-panel {
   font-family: "Open Sans", sans-serif;
   font-size: 12px;
-  line-height: 1.42857;
+  line-height: 1.428571429;
   color: #333333;
   /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */ }
   .studio-view html, .studio-components-panel html {
@@ -2530,7 +2530,7 @@ sh6 {
   .studio-view dt, .studio-components-panel dt,
   .studio-view dd,
   .studio-components-panel dd {
-    line-height: 1.42857; }
+    line-height: 1.428571429; }
   .studio-view dt, .studio-components-panel dt {
     font-weight: bold; }
   .studio-view dd, .studio-components-panel dd {
@@ -2577,7 +2577,7 @@ sh6 {
     .studio-components-panel blockquote .small {
       display: block;
       font-size: 80%;
-      line-height: 1.42857;
+      line-height: 1.428571429;
       color: #777777; }
       .studio-view blockquote footer:before, .studio-components-panel blockquote footer:before,
       .studio-view blockquote small:before,
@@ -2620,7 +2620,7 @@ sh6 {
   .studio-view address, .studio-components-panel address {
     margin-bottom: 17px;
     font-style: normal;
-    line-height: 1.42857; }
+    line-height: 1.428571429; }
   .studio-view *, .studio-components-panel * {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -2633,11 +2633,11 @@ sh6 {
     box-sizing: border-box; }
   .studio-view html, .studio-components-panel html {
     font-size: 10px;
-    -webkit-tap-highlight-color: transparent; }
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
   .studio-view body, .studio-components-panel body {
     font-family: "Open Sans", sans-serif;
     font-size: 12px;
-    line-height: 1.42857;
+    line-height: 1.428571429;
     color: #333333;
     background-color: #fff; }
   .studio-view input, .studio-components-panel input,
@@ -2672,7 +2672,7 @@ sh6 {
     border-radius: 6px; }
   .studio-view .img-thumbnail, .studio-components-panel .img-thumbnail {
     padding: 4px;
-    line-height: 1.42857;
+    line-height: 1.428571429;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -2718,7 +2718,7 @@ sh6 {
     white-space: nowrap;
     padding: 6px 12px;
     font-size: 12px;
-    line-height: 1.42857;
+    line-height: 1.428571429;
     border-radius: 4px;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -3102,8 +3102,8 @@ body.studio-dnd-enabled.studio-pointer-enabled .studio-pointer-over {
   .studio-components-panel .ui-draggable-dragging {
     cursor: move !important; }
 
-.fa {
-  color: #7e9dbb !important; }
+.studio-category .fa:before, .studio-component-drag-target .fa:before {
+  color: #7e9dbb; }
 
 .status-icon {
   margin-right: 3px; }
@@ -3122,3 +3122,5 @@ body.studio-dnd-enabled.studio-pointer-enabled .studio-pointer-over {
 .studio-component-drag-target.ui-draggable.ui-draggable-handle.ui-draggable-dragging {
   background-color: #fff;
   color: #000; }
+
+/*# sourceMappingURL=guest.css.map */

@@ -236,8 +236,8 @@ body.#{$class-prefix}-dnd-enabled {
 
 }
 
-.fa{
-  color: #7e9dbb!important;
+.studio-category .fa:before, .studio-component-drag-target .fa:before{
+  color: #7e9dbb;
 }
 
 .status-icon{
