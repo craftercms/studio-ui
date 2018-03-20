@@ -206,8 +206,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
                                 (function (saveDraftFlag, noticeEls, selectedContent) {
                                     if(selectedContent.length > 0) {
-                                        var currentContent = selectedContent[s];
                                         for (var s = 0; s < selectedContent.length; s++) {
+                                            var currentContent = selectedContent[s];
                                             if (currentContent.savedAsDraft == true && selectedContent.length > 0) {
                                                 saveDraftFlag = true;
                                                 noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
@@ -828,12 +828,15 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             }
 
                             if(isWrite) {
-                                var isRelevant = false;
-                                if (( stateKey.indexOf("statusInProgress") >= 0
-                                    || stateKey.indexOf("statusDeleted") >= 0
-                                    || stateKey.indexOf("statusSubmittedForDelete") >=0
-                                    || stateKey.indexOf("statusScheduledForDelete") >=0 ) && !isOneItemLocked) {
-                                    isRelevant = true;
+
+                                if(!isBulk){
+                                    var isRelevant = false;
+                                    if (( stateKey.indexOf("statusInProgress") >= 0
+                                        || stateKey.indexOf("statusDeleted") >= 0
+                                        || stateKey.indexOf("statusSubmittedForDelete") >=0
+                                        || stateKey.indexOf("statusScheduledForDelete") >=0 ) && !isOneItemLocked) {
+                                        isRelevant = true;
+                                    }
                                 }
 
                                 //Check for live items
