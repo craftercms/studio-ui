@@ -148,7 +148,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         document.addEventListener('crafter.refresh', function (e) {
                             function lookupSiteContent(curNode, paramCont) {
-                                var dataUri = e.data.uri ? e.data.uri : e.data[0].uri,
+                                var dataUri = e.data.uri ? e.data.uri : e.data[0] ? e.data[0].uri : e.data.data.uri,
                                     contentUri = curNode && curNode.uri ? curNode.uri : dataUri,
                                     typeAction = e.typeAction ? e.typeAction : "";
 
