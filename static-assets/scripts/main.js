@@ -1007,6 +1007,7 @@
         function ($scope, $state, sitesService, $modalInstance, siteToRemove) {
 
             $scope.siteToRemove = siteToRemove.siteId;
+            $scope.confirmationSubmitDisabled = false;
 
             function removeSiteSitesModal (site){
 
@@ -1023,10 +1024,12 @@
 
             $scope.ok = function () {
                 sitesService.showLoaderProperty().setProperty(true);
+                $scope.confirmationSubmitDisabled = true;
                 removeSiteSitesModal(siteToRemove);
             };
 
             $scope.cancel = function () {
+                $scope.confirmationSubmitDisabled = false;
                 $modalInstance.dismiss('cancel');
             };
 
