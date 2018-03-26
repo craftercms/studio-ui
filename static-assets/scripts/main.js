@@ -1164,11 +1164,19 @@
                     params.use_remote = !$scope.isCollapsed;
                     params.remote_name = $scope.site.name;
                     params.remote_url = $scope.site.url;
-                    if($scope.site.username){
+                    params.authentication_type = !$scope.site.authentication ? "none" : $scope.site.authentication;
+                    if($scope.site.authentication == "basic"){
                         params.remote_username = $scope.site.username;
-                    }
-                    if($scope.site.password){
                         params.remote_password = $scope.site.password;
+                    }
+                    if($scope.site.authentication == "token"){
+                        if($scope.site.username){
+                            params.remote_username = $scope.site.username;
+                        }
+                        params.remote_token = $scope.site.token;
+                    }
+                    if($scope.site.authentication == "key"){
+                        params.remote_private_key = $scope.site.key;
                     }
                     params.create_option = $scope.site.options ? $scope.site.options : "clone";
                     if($scope.site.options == "push"){
