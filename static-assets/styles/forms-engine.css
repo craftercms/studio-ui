@@ -37,6 +37,12 @@ div.xdsoft_datetimepicker {
 #targeting-container .control-container:hover .hint {
   display: block; }
 
+.panel-title {
+  display: inline-block; }
+
+.cstudio-form-section-validation {
+  line-height: 12px; }
+
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 html {
   font-family: sans-serif;
@@ -6053,5 +6059,3 @@ body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, .yui-panel.yui-overl
 
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   font-weight: 600; }
-
-/*# sourceMappingURL=forms-engine.css.map */

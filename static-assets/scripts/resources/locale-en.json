@@ -47,7 +47,7 @@
         "NAMEEXAMPLE":"(Example: origin)",
         "URL": "Remote Git Repository URL",
         "USERNAME": "Remote Git Repository Username",
-        "PASSWORD": "Remote Git Repository Password (if required)",
+        "PASSWORD": "Remote Git Repository Password",
         "IFREQUIRED": "(If required)",
         "OPTIONS": "Options",
         "CLONE": "Create site based on remote git repository",
@@ -57,7 +57,12 @@
         "CREATE_ERROR": "Unable to create site. Please contact your system administrator.",
         "SITE_ID_VALIDATION": "(Max length: 50 characters, lowercase, no spaces or special characters)",
         "LENGTH_VALIDATION_4000": "(Max length: 4000 characters)",
-        "ERROR": "Error:"
+        "ERROR": "Error:",
+        "AUTHENTICATION_TYPE":"Authentication Type",
+        "NONE": "None",
+        "BASIC":"Basic",
+        "TOKEN":"Remote Git Repository Token",
+        "KEY":"Remote Git Repository Private Key"
       }
     }
   },

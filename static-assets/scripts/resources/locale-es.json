@@ -55,7 +55,12 @@
         "CREATING_SITE": "Creando Sitio",
         "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, minúsculas, sin espacios ni caracteres especiales)",
         "LENGTH_VALIDATION_4000": "(Longitud máxima: 4000 caracteres)",
-        "ERROR": "Error:"
+        "ERROR": "Error:",
+        "AUTHENTICATION_TYPE":"Tipo de Autenticación",
+        "NONE": "Ninguna",
+        "BASIC":"Básico",
+        "TOKEN":"Token de repositorio remoto de Git",
+        "KEY":"Llave privada del repositorio remoto Git"
       }
     }
   },

@@ -3,35 +3,38 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Crafter Studio</title>
+    <script>
+        window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
+    </script>
 
-    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <link rel="stylesheet" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css?version=${UIBuildId!''}"/>
-    <link rel="stylesheet" href="/studio/static-assets/styles/forms-engine.css?version=${UIBuildId!''}"/>
+    <link rel="stylesheet" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
+    <link rel="stylesheet" href="/studio/static-assets/styles/forms-engine.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
 
     <#include "/templates/web/common/page-fragments/head.ftl" />
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!''}"></script>
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!''}"></script>
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!''}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/rte.css?version=${UIBuildId!''}" />
-    <script type="text/javascript" src="/studio/static-assets/modules/editors/tiny_mce/tiny_mce.js?version=${UIBuildId!''}"></script>
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/rte.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+    <script type="text/javascript" src="/studio/static-assets/modules/editors/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/amplify-core.js?version=${UIBuildId!''}"></script>
-    <script type="text/javascript" src="/studio/static-assets/components/cstudio-forms/forms-engine.js?version=${UIBuildId!''}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/amplify-core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/components/cstudio-forms/forms-engine.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/jquery-ui/jquery-ui.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!''}"></script>
-     <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/jquery-ui/jquery-ui.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+     <script src="/studio/static-assets/components/cstudio-components/loader.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!''}"></script>
-    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!''}"></script>
+    <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script>document.domain = "${Request.serverName}";</script> <!-- blah blah -->
     

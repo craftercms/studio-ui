@@ -1305,6 +1305,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                     }
 
                     this.aMenuItems.push({
+                        text: CMgs.format(siteDropdownLangBundle, "history"),
+                        onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.revertContent, obj:tree}
+                    });
+
+                    this.aMenuItems.push({
                         text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),
                         onclick: { fn: function(){
                             var callback = {
@@ -1640,6 +1645,14 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
      */
     deleteContent: function(p_sType, p_aArgs, tree) {
         CStudioAuthoring.Operations.deleteContent([oCurrentTextNode.data]);
+    },
+
+    /**
+     * History
+     *
+     */
+    revertContent: function(p_sType, p_aArgs, tree) {
+        CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data);
     },
 
     /**
