@@ -109,7 +109,7 @@
 
                 <div class="form-group" ng-show="site.authentication == 'token'">
                     <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label>
-                    <input type="text" class="form-control" id="tokenNum" name="tokenNum" ng-model="site.token" ng-required="site.authentication == 'token'" />
+                    <input type="password" class="form-control" id="tokenNum" name="tokenNum" ng-model="site.token" ng-required="site.authentication == 'token'" />
 
                     <div class="error-container"
                          ng-show="(createNameForm.tokenNum.$dirty && createNameForm.password.$invalid) || (createNameForm.tokenNum.$touched && createNameForm.tokenNum.$invalid)">
@@ -123,7 +123,8 @@
 
                 <div class="form-group" ng-show="site.authentication == 'key'">
                     <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
-                    <input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />
+                    <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
+                    <textarea rows="4" cols="50" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" ></textarea>
 
                     <div class="error-container"
                          ng-show="(createNameForm.keyNum.$dirty && createNameForm.password.$invalid) || (createNameForm.keyNum.$touched && createNameForm.keyNum.$invalid)">
