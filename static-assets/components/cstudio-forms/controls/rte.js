@@ -651,7 +651,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 							// you click on it; therefore, it becomes impossible for 
 							// the RTE to lose focus. To work around this, we'll focus
 							// on the RTE only after clicking on its body.
-							tinymce.dom.Event.add(ed.getBody(), 'click', function(e) {
+							tinymce.dom.Event.add(ed.getBody(), 'focus', function(e) {
 								_thisControl.form.setFocusedField(_thisControl);
 							});
 						}
