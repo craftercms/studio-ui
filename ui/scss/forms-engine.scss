@@ -66,6 +66,14 @@ div.xdsoft_datetimepicker {
   display: block;
 }
 
+.panel-title{
+  display: inline-block;
+}
+
+.cstudio-form-section-validation {
+  line-height: 12px;
+}
+
 // Reset and dependencies
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/normalize";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/print";

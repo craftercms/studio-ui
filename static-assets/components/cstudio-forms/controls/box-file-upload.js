@@ -54,14 +54,27 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
   getName: function() {
     return "box-file-upload";
   },
-  
+
   setValue: function(value) {
-    var validationResult = true;
+    var validationResult = true,
+        self=this;
     if(value) {
       this.value = value;
       this.form.updateModel(this.id, this.value);
-      this.fileEl.innerHTML = value.map(function(f){ return "box://" + f.name + "*"; }).join("<br/>")
+      this.fileEl.innerHTML = value.map(function(f){ return "<span id='"+f.name+"'>box://" + f.name + "*" + "<a class='removeItemBox' data-id='"+f.id+"' ><i class='fa fa-trash'></i></a></span>"; }).join("<br/>")
       this.clearError("required");
+        var _self;
+        var removeItems = document.getElementsByClassName("removeItemBox");
+        for (var i = 0; i < removeItems.length; i++) {
+            removeItems[i].addEventListener('click', function(){
+                _self = this;
+                self.value = self.value.filter(function(el) {
+                    return el.id !== _self.getAttribute("data-id");
+                });
+                self.setValue(self.value);
+            });
+        }
+
     } else if(this.required) {
       validationResult = false;
       this.setError("required", "Field is Required");
@@ -103,7 +116,8 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
 		YAHOO.util.Dom.addClass(validEl, "cstudio-form-control-validation fa fa-check");
 		controlWidgetContainerEl.appendChild(validEl);
 
-    this.fileEl = document.createElement("span");
+    this.fileEl = document.createElement("p");
+    YAHOO.util.Dom.addClass(this.fileEl, "itemsSelected");
     controlWidgetContainerEl.appendChild(this.fileEl);
     
     var picker = document.createElement("div");
@@ -126,14 +140,33 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
             var filePicker = new Box.FilePicker();
             filePicker.addListener('choose', function(evt) {
                 self.edited = true;
-                self.setValue(evt.map(function(e){
+                var value = evt.map(function(e){
                     return { 'id': e.id, 'name': e.name };
-                }));
+                });
+
+                if(Array.isArray(self.value) && self.value.length > 0){
+                    var flag = true;
+                    for(var i=0; i< self.value.length; i++){
+                        flag = true;
+                        for(var j=0; j< value.length; j++) {
+                            if(self.value[i].id == value[j].id){
+                                flag = false;
+                            }
+                        }
+                        if(flag == true){
+                            value.push(self.value[i]);
+                        }
+
+                    }
+                }
+
+                self.setValue(value);
+
             });
             filePicker.show(folderId, accessToken, {
                     logoUrl: self.logo,
                     container: '#box-picker-' + self.id,
-                    maxSelectable: self.enable_multi? Infinity : 1,
+                    maxSelectable: self.enable_multi !== "false" ? Infinity : 1,
                     canUpload: self.enable_upload,
                     canSetShareAccess: false,
                     canCreateNewFolder: self.enable_upload

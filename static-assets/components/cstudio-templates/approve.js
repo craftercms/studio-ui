@@ -23,7 +23,7 @@
                 '<td style="width:5%;"></td>',
                 // '<td class="text-center small" style="padding-left: 25px;width: 1%;"><input type="checkbox" class="item-checkbox" data-item-id="{uri}" checked/></td>', //TODO: checkbox to remove dependencies publish
                 '<td class="text-center small" style="padding-left: 25px;width: 5%;"></td>',
-                '<td class="name large"><div class="in">{internalName} {uri}</div></div></td>',
+                '<td class="name large"><div class="in">{uri}</div></div></td>',
             '</tr>'
         ].join("")
     });

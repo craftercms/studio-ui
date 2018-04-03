@@ -8,6 +8,7 @@
         function ($http, Constants, $cookies, $timeout, $window) {
 
             var me = this;
+            this.maxInt = 32000;
 
             this.getSites = function() {
                 return $http.get(users('get-sites-3'));
@@ -22,6 +23,13 @@
                         params: params
                     });
                 }else{
+                    if (typeof params == 'undefined'){
+                        params = {
+                            number: this.maxInt,
+                            start: 0
+                        }
+                    }
+
                     return $http.get(users('get-all'), {
                         params: params
                     });
@@ -532,6 +540,7 @@
 
             var getUsers = function() {
                 users.totalUsers = 0;
+                users.searchdirty = false;
                 getResultsPage(1);
 
                 users.pagination = {
@@ -564,6 +573,26 @@
             };
 
             getUsers();
+
+            users.searchUser = function(query){
+                if( "" === query){
+                    $scope.usersCollection.users = users.usersCollectionBackup;
+                    users.itemsPerPage = users.itemsPerPageBackup;
+                    users.searchdirty = false;
+                }else{
+                    if(!users.searchdirty){
+                        users.searchdirty = true;
+
+                        
+                        adminService.getUsers().success(function(data){
+                            users.usersCollectionBackup = $scope.usersCollection.users;  
+                            users.itemsPerPageBackup = users.itemsPerPage;
+                            $scope.usersCollection.users = data.users;    
+                            users.itemsPerPage = adminService.maxInt;
+                        });
+                    }
+                }
+            }
 
             users.createUserDialog = function() {
                 $scope.user = {};

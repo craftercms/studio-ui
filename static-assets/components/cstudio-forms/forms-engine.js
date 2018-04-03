@@ -1047,7 +1047,7 @@ var CStudioForms = CStudioForms || function() {
                         {
                             form.model["file-name"] = (fileName += ".xml");
                         }
-                        if (edit == "true" || form.readOnly || draft) { //This is also necessary in readonly mode
+                        if (edit == "true" || form.readOnly) { //This is also necessary in readonly mode
                             // Get parent folder
                             entityId = entityId.substring(0, entityId.lastIndexOf("/"));
                         }

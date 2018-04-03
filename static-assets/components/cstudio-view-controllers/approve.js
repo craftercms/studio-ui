@@ -334,8 +334,8 @@
 
                     $.each(item.dependencies, function(index, dependency){
                         var elem = {};
-                        elem.uri = dependency;
-                        elem.internalName = '';
+                        elem.uri = dependency.uri;
+                        elem.internalName = dependency.internalName;
                         elem.scheduledDate = '';
                         elem.index = itemDependenciesClass;
                         $parentRow.after(agent.get('SUBITEM_ROW', elem));
