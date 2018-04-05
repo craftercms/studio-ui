@@ -166,6 +166,24 @@
           "WARNINGBP":"Warning: Bulk Publish",
           "WRNINGGPBODY":" Bulk publish will force publish all items that match the pattern requested including their dependencies. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing.",
           "PUBLISHSTARTED":"Bulk Publish process has been started."
+      },
+      "repositories": {
+          "REPOSITORIES": "Repositories",
+          "NEW_REPOSITORY":"New Repository",
+          "REPOSITORIES_PER_PAGE": "Repositories per page",
+          "NAME": "Name",
+          "URL": "URL",
+          "FETCH": "Fetch",
+          "PUSH_URL": "Push URL",
+          "CREATE_REPOSITORY": "Create Repository",
+          "REMOTE_BRANCH": "Remote Branch",
+          "PULL": "Pull",
+          "PUSH": "Push",
+          "REMOTE_BRANCH_PULL":"Remote Branch to pull",
+          "REMOTE_BRANCH_PUSH":"Remote Branch to push to ",
+          "SUCCESSFULLY_PUSHED": "Successfully Pushed",
+          "SUCCESSFULLY_PULLED": "Successfully Pulled",
+          "REPO_DELETED": "repository deleted"
       }
   },
   "common": {
@@ -185,6 +203,7 @@
     "CONFIRMATION": "Confirmation",
     "YES": "Yes",
     "NO": "No",
+    "OK":"Ok",
     "HELP": "Help",
     "DOCUMENTATION": "Documentation",
     "ABOUT": "About",
@@ -194,6 +213,9 @@
     "CANCEL" : "Cancel",
     "INTERROGATION_SIGN": "?",
     "VALID_EMAIL": "Enter a valid email",
-    "MATCH_ENTRY": "Must match the previous entry"
+    "MATCH_ENTRY": "Must match the previous entry",
+    "ERROR": "Error",
+    "DELETE_QUESTION":"Do you want to delete"
+
   }
 }

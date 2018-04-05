@@ -1,0 +1,241 @@
+<div class="container-fluid admin-view">
+    <div class="row full">
+        <div class="col-md-12">
+            <h2 class="page-header">{{ 'admin.repositories.REPOSITORIES' | translate }}</h2>
+
+
+            <div class="actions clearfix pull-right mb10" style="width: 100%;">
+                <!--<h3 class="pull-left mt5">{{ 'admin.groups.HEADER_LABEL' | translate }}</h3>-->
+
+                <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.repositories.NEW_REPOSITORY' | translate }}</a>
+                <!--<div class="pull-right mr15">
+                    <label>{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
+                    <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
+                           min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
+                </div>-->
+            </div>
+
+            <div class="">
+                <!--<input ng-model="q" class="form-control mb10" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>-->
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{{ 'admin.repositories.NAME' | translate }}</th>
+                            <th>{{ 'admin.repositories.URL' | translate }}</th>
+                            <th>{{ 'admin.repositories.FETCH' | translate }}</th>
+                            <th>{{ 'admin.repositories.PUSH_URL' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr id="repo" ng-repeat="repo in repositories.repositories.remotes track by $index">
+                        <td>{{repo.name}}</td>
+                        <td>{{repo.url}}</td>
+                        <td>{{repo.fetch}}</td>
+                        <td>{{repo.push_url}}</td>
+                        <td>
+                            <a ng-click="pullRepo(repo)" class="btn btn-sm pull">
+                                <i class="fa fa-arrow-down" title="Pull"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a ng-click="pushRepo(repo)" class="btn btn-sm push">
+                                <i class="fa fa-arrow-up" title="Push"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
+                                <i class="fa fa-trash-o" title="Remove"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!--<dir-pagination-controls on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="modalView.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{dialogTitle}}</h3>
+    </div>
+    <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+        <div class="modal-body clearfix">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="url">{{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
+                    <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="repo.remote_name" />
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.name.$error.required">
+                            {{ 'dashboard.sites.create.NAME' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label for="url">{{ 'dashboard.sites.create.URL' | translate }}</label>
+                    <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="repo.remote_url" />
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.url.$error.required">
+                            {{ 'dashboard.sites.create.URL' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
+                    <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
+                    <input type="radio" id="none" name="authentication" value="none" ng-model="repo.authentication_type" ng-checked="true">
+                    <label for="none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
+                    <input type="radio" id="basic" name="authentication" value="basic" ng-model="repo.authentication_type">
+                    <label for="basic">{{ 'dashboard.sites.create.BASIC' | translate }}</label><br/>
+                    <input type="radio" id="token" name="authentication" value="token" ng-model="repo.authentication_type">
+                    <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
+                    <input type="radio" id="key" name="authentication" value="key" ng-model="repo.authentication_type">
+                    <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
+                </div>
+
+                <div class="form-group" ng-show="repo.authentication_type == 'basic'">
+                    <label for="username">{{ 'dashboard.sites.create.USERNAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.IFREQUIRED' | translate }}</span>
+                    <input type="text" class="form-control" id="username" name="username" ng-model="repo.remote_username" ng-required="repo.authentication_type == 'basic'" />
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.username.$error.required">
+                            {{ 'dashboard.sites.create.USERNAME' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group" ng-show="repo.authentication_type == 'basic'">
+                    <label for="password">{{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
+                    <input type="password" class="form-control" id="password" name="password" ng-model="repo.remote_password" autocomplete="new-password" ng-required="repo.authentication_type == 'basic'" />
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.password.$error.required">
+                            {{ 'dashboard.sites.create.PASSWORD' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group" ng-show="repo.authentication_type == 'token'">
+                    <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label>
+                    <input type="password" class="form-control" id="tokenNum" name="tokenNum" ng-model="repo.remote_token" ng-required="repo.authentication_type == 'token'" />
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.tokenNum.$dirty && createNameForm.password.$invalid) || (createNameForm.tokenNum.$touched && createNameForm.tokenNum.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.tokenNum.$error.required">
+                            {{ 'dashboard.sites.create.TOKEN' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group" ng-show="repo.authentication_type == 'key'">
+                    <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
+                    <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
+                    <textarea rows="4" cols="50" class="form-control" id="keyNum" name="keyNum" ng-model="repo.remote_private_key" ng-required="repo.authentication_type == 'key'" ></textarea>
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.keyNum.$dirty && createNameForm.password.$invalid) || (createNameForm.keyNum.$touched && createNameForm.keyNum.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.keyNum.$error.required">
+                            {{ 'dashboard.sites.create.KEY' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-primary text-capitalize"
+                    ng-click="okModalFunction(repo)" ng-disabled="createNameForm.$invalid">{{ 'common.' + dialogMode + '_LABEL' | translate }}</button>
+            <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+        </div>
+
+    </form>
+</script>
+
+<script type="text/ng-template" id="confirmationModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        {{ confirmationText }}
+    </div>
+    <div class="modal-footer">
+        <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+        <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="notificationModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Notification</h3>
+    </div>
+    <div class="modal-body">
+        <p class="notificationBody">
+            <span class="icon fa fa-{{ notificationType }}"></span>
+            <span class="text"> {{ notificationText }}</span>
+        </p>
+    </div>
+</script>
+
+<script type="text/ng-template" id="messageModal.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ messageTitle }}</h3>
+    </div>
+    <div class="modal-body">
+        {{ messageText }}
+    </div>
+    <div class="modal-footer">
+        <button class="btn" ng-click="hideModal()">{{ 'common.OK' | translate }}</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="pushPull.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{dialogTitle}}</h3>
+    </div>
+    <form name="pullPushForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="branch">{{ confirmationText }}</label>
+                <input type="text" class="form-control" id="branch" name="branch" ng-model="branch" required/>
+
+                <div class="error-container"
+                     ng-show="(pullPushForm.branch.$dirty && pullPushForm.branch.$invalid) || (pullPushForm.branch.$touched && pullPushForm.branch.$invalid)">
+                    <small class="error"
+                           ng-show="pullPushForm.branch.$error.required">
+                        {{ 'dashboard.repositories.REMOTE_BRANCH' | translate }} is required.
+                    </small>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" ng-disabled="pullPushForm.$invalid" ng-click="confirmationAction(branch); hideModal()">{{ 'common.YES' | translate }}</button>
+            <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+        </div>
+    </form>
+</script>
+
