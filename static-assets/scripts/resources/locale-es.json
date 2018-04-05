@@ -164,6 +164,23 @@
           "WARNINGBP":"Advertencia: Publicación Masiva",
           "WRNINGGPBODY":"La publicación masiva obligará a publicar todos los artículos que coincidan con el patrón solicitado, incluidas sus dependencias. Asegúrese de que todos los elementos modificados (incluido el trabajo potencialmente en progreso) estén listos para publicarse antes de continuar.",
           "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado."
+      },
+      "repositories": {
+          "REPOSITORIES": "Repositorios",
+          "NEW_REPOSITORY":"Repositorios Nuevos",
+          "NAME": "Nombre",
+          "URL": "URL",
+          "FETCH": "Recuperar",
+          "PUSH_URL": "Empujar URL",
+          "CREATE_REPOSITORY": "Crear repositorio",
+          "REMOTE_BRANCH": "Sucursal remota",
+          "PULL": "Halar",
+          "PUSH": "Empujar",
+          "REMOTE_BRANCH_PULL":"Sucursal remota para jalar",
+          "REMOTE_BRANCH_PUSH":"Sucursal remota para empujar a ",
+          "SUCCESSFULLY_PUSHED": "Empujado con éxito",
+          "SUCCESSFULLY_PULLED": "Jaló con éxito",
+          "REPO_DELETED": "repositorio borrado"
       }
   },
   "common": {
@@ -183,6 +200,7 @@
     "CONFIRMATION": "Confirmación",
     "YES": "Si",
     "NO": "No",
+    "OK":"Ok",
     "HELP": "Ayuda",
     "DOCUMENTATION": "Documentación",
     "ABOUT": "Acerca de nosotros",
@@ -192,6 +210,8 @@
     "CANCEL" : "Cancelar",
     "INTERROGATION_SIGN": "?",
     "VALID_EMAIL": "Ingrese un correo válido",
-    "MATCH_ENTRY": "Debe coincidir con la entrada anterior"
+    "MATCH_ENTRY": "Debe coincidir con la entrada anterior",
+    "ERROR": "Error",
+    "DELETE_QUESTION":"Quieres borrar"
   }
 }

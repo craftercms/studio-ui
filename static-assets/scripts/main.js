@@ -153,6 +153,15 @@
                         }
                     }
                 })
+                .state('home.repositories', {
+                    url: 'repositories',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/admin-repository.html',
+                            controller: 'RepositoriesCtrl'
+                        }
+                    }
+                })
                 .state('login', {
                     url: '/login',
                     onEnter: [
