@@ -397,8 +397,7 @@ CStudioAuthoring.Module.requireModule(
 										}
 									}
 
-									var cancelEl = document.getElementById('template-editor-cancel-button');
-									cancelEl.onclick = function() {
+									var cancelEdit = function() {
 										var cancelEditServiceUrl = "/api/1/services/api/1/content/unlock-content.json"
 											+ "?site=" + CStudioAuthoringContext.site
 											+ "&path=" + encodeURI(templatePath);
@@ -419,6 +418,18 @@ CStudioAuthoring.Module.requireModule(
 										}
 
 										YAHOO.util.Connect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(cancelEditServiceUrl), cancelEditCb);
+									}
+
+									$(document).keyup(function(e) {
+										if (e.keyCode == 27) { // escape key maps to keycode `27`
+											cancelEdit();
+											$(document).off("keyup");
+									   	}
+								   	});
+
+									var cancelEl = document.getElementById('template-editor-cancel-button');
+									cancelEl.onclick = function() {
+										cancelEdit();
 									};
 
 									var saveSvcCb = {
