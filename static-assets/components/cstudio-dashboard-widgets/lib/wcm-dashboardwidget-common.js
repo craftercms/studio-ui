@@ -1265,15 +1265,7 @@ WcmDashboardWidgetCommon.loadFilterTableData = function (sortBy, container, widg
             // update total count
             var totalCountEl = YDom.get(widgetId + "-total-count");
             if (totalCountEl != undefined) {
-                var total = 0;
-
-                $.each(results.documents, function() {
-                    if(this.contentType !== "folder"){
-                        total ++;
-                    }
-                })
-
-                totalCountEl.innerHTML = total;
+                totalCountEl.innerHTML = results.total;
             }
 
             // update custom header controls
