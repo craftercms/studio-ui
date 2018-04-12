@@ -159,7 +159,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 	 * Call back to render each line item of the table
 	 */
 	this.renderLineItem = function(item) {
-		if(!item.folder){
+		
 			var itemName = item.internalName;
 			if (!itemName || itemName == "") {
 				itemName = item.title;
@@ -226,11 +226,36 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 				'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), '</td>'
 			];
 
+			var folderRow = [
+				'<td style="padding-right:0px">',
+					'<div class="dashlet-ident">',
+					'</div>',
+				'</td>',
+				'<td style="padding-left:0px" class="itemNameCol">' +
+					'<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
+					'<div class="icon-container  cs-item-icon"><span class="status-icon mr9 studio-fa-stack"><span class="fa studio-fa-stack-2x fa-folder-o"></span><span class=""></span></span></div>',
+				'<a class="anchorRow' , (item.disabled == true ? ' dashboard-item disabled' : '') , (item.previewable == true ? ' previewLink' : ' non-previewable-link') , '" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', '">',
+						itemNameForDisplay,
+						'</a>',
+					'</div>',
+				'</td>',
+				'<td></td>',
+				'<td class="urlCol" title="', browserUri, '">', displayBrowserUri, '</td>',
+				'<td title="fullUri" class="width0">', fullUri, '</td>',
+				'<td class="">', item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '', '</td>',
+				'<td class="alignRight">', WcmDashboardWidgetCommon.getDisplayName(item), '</td>',
+				'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), '</td>'
+			]
+
 			if(currentCheckItem && this.widgetId == currentDashboard){
 				CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
 			}
 
-			return itemRow.join('');
-		}
+			if(!item.folder){
+				return itemRow.join('');
+			}else{
+				return folderRow.join('');
+			}
+		
 	};
 };
