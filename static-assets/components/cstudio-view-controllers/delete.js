@@ -220,7 +220,8 @@
         afterSubmit: function(message, dataInf){
             var agent = new TemplateAgent(template),
                 body = agent.get("SUCCESS", {
-                    msg: message
+                    title: CMgs.format(formsLangBundle, "deletedTitle"), 
+                    msg: CMgs.format(formsLangBundle, "deletedMessage")
                 }),
                 self = this;
             this.getComponent(".studio-view.admin-delete-view").innerHTML = body;
