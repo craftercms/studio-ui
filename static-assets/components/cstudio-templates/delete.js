@@ -63,7 +63,7 @@
             '</div>'
         ].join(""),
         SUCCESS: [
-            '<h1 class="view-title">Submittal Complete</h1>',
+            '<h1 class="view-title">{title}</h1>',
             '<div class="msg-area" style="height:100px;margin-top:15px;color:#000;">{msg}</div>',
             '<div class="action-wrapper acnSubmitButtons">',
                 '<input id="submittal-complete-btn" type="button" value="OK" style="width:80px;" class="action-complete-close1 btn btn-primary" />',

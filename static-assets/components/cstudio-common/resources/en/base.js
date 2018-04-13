@@ -393,6 +393,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     deleteDialogNow: "Now",
     deleteDialogFeedBack: "Dependencies must be checked before you can submit",
     deleteDialogNoItemsSelected: "No items selected",
+    deletedTitle: "Selection Deleted",
+    deletedMessage: "The selection is being deleted and will be removed shortly.",
 
     deleteSubmitDialogTitle: "Submit for deletion",
     deleteSubmitDialogTime: "When would you like the checked item(s) to be deleted?",
