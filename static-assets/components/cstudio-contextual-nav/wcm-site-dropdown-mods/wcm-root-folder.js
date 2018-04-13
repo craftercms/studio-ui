@@ -3290,6 +3290,7 @@
                 var cancelFn = function cancelFn (e) {
                     e.preventDefault();
                     dialog.destroy();
+                    $("body").off("keyup", "#cstudio-wcm-popup-div");
                 }
 
                 modalBody.innerHTML = '<div class="contentTypePopupInner changeContent-type-dialog" style="width:460px;height:140px;">' +
@@ -3325,6 +3326,13 @@
 
                 YAHOO.util.Event.addListener("acceptCTChange", "click", continueFn);
                 YAHOO.util.Event.addListener("cancelCTChange", "click", cancelFn);
+
+                $("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
+                    if (e.keyCode === 27) {	// esc
+                        dialog.destroy();
+                        $("body").off("keyup", "#cstudio-wcm-popup-div");
+                    }
+                });
 
                 dialog.show();
             },

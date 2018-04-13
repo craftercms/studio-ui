@@ -902,7 +902,7 @@
                     templateUrl: 'removeConfirmation.html',
                     controller: 'RemoveSiteCtrl',
                     backdrop: 'static',
-                    keyboard: false,
+                    keyboard: true,
                     windowClass: "studioMedium",
                     resolve: {
                         siteToRemove: function () {

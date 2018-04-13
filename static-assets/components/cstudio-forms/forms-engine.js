@@ -1536,6 +1536,11 @@ var CStudioForms = CStudioForms || function() {
                         //YAHOO.util.Event.addListener(window, "beforeunload", beforeUnloadFn, this);
                         YAHOO.util.Event.addListener(window, "unload",unloadFn, me);
                         YAHOO.util.Event.addListener(closeButtonEl, "click", cancelFn, me);
+
+                        focusEl = window;
+                        setTimeout(function(){
+                                focusEl.focus();
+                        }, 500);
                     }
                     var colExpButtonEl = document.createElement("input");
                     colExpButtonEl.id = "colExpButtonBtn";
