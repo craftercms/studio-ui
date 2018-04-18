@@ -283,7 +283,8 @@
                 for (var i = 0; i < selectedTOs.length; i++) {
                     var item = selectedTOs[i];
                     communicator.publish(Topics.DND_CREATE_BROWSE_COMP, {
-                        component: selectedTOs[i]
+                        component: selectedTOs[i],
+                        initialContentModel: initialContentModel
                     });
                 }
             },

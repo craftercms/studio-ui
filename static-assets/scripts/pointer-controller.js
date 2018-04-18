@@ -13,6 +13,7 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
     var $body       = $('body:first');
     var $document   = $(document);
     var $window     = $(window);
+    var currentModel = {};
 
     function pointerController(config) {
 
@@ -40,6 +41,12 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
             $el && animator.$el($el);
             return animator;
         };
+
+        if (communicator) {
+            communicator.on(Topics.DND_COMPONENTS_MODEL_LOAD, function (data) {
+                currentModel = data;
+            });
+        }
     }
 
     pointerController.prototype = {
@@ -65,7 +72,9 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
         this.stop();
     }
 
-    function enablePointer(components) {
+    function enablePointer(components, initialContentModel) {
+
+        currentModel = initialContentModel;
 
         if (this.active()) return;
         this.active(true);
@@ -141,6 +150,8 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
         var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
         var objectId = $dropZone.attr('data-studio-components-objectid');
         var dropName = $dropZone.attr('data-studio-components-target');
+        var trackingZone = $dropZone.attr('data-studio-zone-tracking');
+        var index = 0, currentTag = "", zone;
 
         var me = this,
             isNew = "existing",
@@ -161,7 +172,12 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
         setTimeout(function () {
 
             $('[data-studio-components-target]').each(function () {
-                if(objectId == $(this).attr('data-studio-components-objectid')){
+                zone = $(this).attr("data-studio-components-target");
+                if(currentTag !== zone){
+                    index = 0;
+                    currentTag = zone;
+                }
+                if(objectId == $(this).attr('data-studio-components-objectid')&& trackingZone == $(this).attr('data-studio-zone-tracking')){
                     if(dropName == $(this).attr('data-studio-components-target')){
                         conRepeat++;
                     }
@@ -174,7 +190,18 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
                             zones[zoneName].push($comp.data('model') || tracking);
                         });
                     }
+                    if(zone.indexOf('.') > 0){
+                        if(currentTag !== zone){
+                            index = 0;
+                            currentTag = zone;
+                        }
+                        var structure1 = zone.split('.')[0],
+                            structure2 = zone.split('.')[1];
+                        currentModel[structure1][index][structure2] = zones[zone];
+                        zones[structure1] = currentModel[structure1];
+                    }
                 }
+                index++;
             });
 
             publish.call(me, Topics.COMPONENT_DROPPED, {
