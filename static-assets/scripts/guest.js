@@ -68,7 +68,7 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
                 communicator: communicator
             }));
 
-            pointerControllerVar.start(message.component);
+            pointerControllerVar.start(message.component, message.initialContentModel);
 
         });
     });

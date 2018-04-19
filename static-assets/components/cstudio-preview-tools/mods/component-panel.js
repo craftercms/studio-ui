@@ -89,7 +89,10 @@
                                                     pagePath: data.pagePath,
                                                     formDefinition: formDefinition,
                                                     isNew: (data.operation === 'save-components-new') ? true : false,
-                                                    conComp: data.conComp
+                                                    conComp: data.conComp,
+                                                    zones: data.zones ? data.zones : self.zones,
+                                                    comPath: data.compPath
+
                                                 });
                                             },
                                             failure: function () {
@@ -118,7 +121,7 @@
 
                         amplify.subscribe('components/form-def/loaded', function (data) {
                             amplify.publish('/operation/started');
-                            self.saveModel(data.pagePath, data.formDefinition, data.contentMap, false, true, data.isNew, data.conComp);
+                            self.saveModel(data.pagePath, data.formDefinition, data.contentMap, false, true, data.isNew, data.conComp, data.zones, data.compPath);
                         });
 
                         amplify.subscribe(cstopic('COMPONENT_DROPPED'), function () {
@@ -347,7 +350,7 @@
                     // console.log("initial model ", contentMap);
                 },
 
-                saveModel: function (pagePath, formDefinition, contentMap, start, complete, isNew, conComp) {
+                saveModel: function (pagePath, formDefinition, contentMap, start, complete, isNew, conComp, zones, compPath) {
 
                     if (start) {
                         amplify.publish('/operation/started');
@@ -363,7 +366,7 @@
                             success: function () {
                                 if (complete) {
                                     amplify.publish('/operation/completed');
-                                    if(isNew || conComp){
+                                    if (isNew || conComp) {
                                         setTimeout(function () {
                                             amplify.publish(cstopic('REFRESH_PREVIEW'));
                                         });
@@ -371,10 +374,15 @@
 
                                 }
                             },
-                            failure: function () {
+                            failure: function (err) {
+                                var message = eval("(" + err.responseText + ")");
+                                if (message.message.indexOf('is in system processing') > 0) {
+                                    ComponentsPanel.save(isNew, zones, compPath, conComp);
+                                }
                                 amplify.publish('/operation/failed');
                             }
                         });
+
                 },
 
                 expand: function (containerEl, config) {

@@ -24,6 +24,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     var $document   = $(document);
     var $window     = $(window);
     var found = {};
+    var currentModel = {};
 
     function DnDController(config) {
 
@@ -44,7 +45,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         this.active = function (value) {
             if (arguments.length) {
                 (active = !!value);
-                (active) ? $window.resize(onresize) : $window.unbind('resize', onresize);
             }
             return active;
         };
@@ -81,13 +81,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
             communicator.on(Topics.DND_COMPONENTS_MODEL_LOAD, function (data) {
                 componentsModelLoad.call(me, data);
             });
-        }
-
-        function onresize() {
-            clearTimeout(timeout);
-            timeout = setTimeout(function () {
-                resize.call(me);
-            }, 300);
         }
 
     }
@@ -153,6 +146,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         amplify.publish(Topics.ICE_TOOLS_OFF);
         sessionStorage.setItem('components-on', 'true');
         publish.call(this, Topics.ICE_CHANGE_PENCIL_OFF);
+        currentModel = initialComponentModel;
 
         if (this.active()) return;
         this.active(true);
@@ -165,7 +159,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
         $o.appendTo($body);
         $p.appendTo($body);
-        resize.call(this);
 
         renderPalette.call(this, components, browse);
 
@@ -246,13 +239,21 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
                 var objectId = $(this).parent().parents('[data-studio-components-target]').attr('data-studio-components-objectid');
                 var compTracking = $(this).parent().parents('[data-studio-component-path]').attr('data-studio-tracking-number');
                 var dropName = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-components-target');
+                var trackingZone = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-zone-tracking');
+                var index = 0, currentTag = "", zone;
                 removeComponent(this, function () {
                     var zones = {};
                     var conRepeat = 0;
+                    var indexStructure = 0;
                     setTimeout(function () {
 
                         $('[data-studio-components-target]').each(function () {
-                            if(objectId == $(this).attr('data-studio-components-objectid')){
+                            zone = $(this).attr("data-studio-components-target");
+                            if(currentTag !== zone){
+                                index = 0;
+                                currentTag = zone;
+                            }
+                            if(objectId == $(this).attr('data-studio-components-objectid') && trackingZone == $(this).attr('data-studio-zone-tracking') ){
                                 if(dropName == $(this).attr('data-studio-components-target')){
                                     conRepeat++;
                                 }
@@ -265,7 +266,18 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
                                         zones[zoneName].push($comp.data('model') || tracking);
                                     });
                                 }
+                                if(zone.indexOf('.') > 0){
+                                    if(currentTag !== zone){
+                                        index = 0;
+                                        currentTag = zone;
+                                    }
+                                    var structure1 = zone.split('.')[0],
+                                        structure2 = zone.split('.')[1];
+                                    currentModel[structure1][index][structure2] = zones[zone];
+                                    zones[structure1] = currentModel[structure1];
+                                }
                             }
+                            index++;
                         });
 
                         publish.call(me, Topics.SAVE_DRAG_AND_DROP, {
@@ -291,10 +303,12 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         var objectId = $dropZone.attr('data-studio-components-objectid');
         var trackingZone = $dropZone.attr('data-studio-zone-tracking');
         var dropName = $dropZone.attr('data-studio-components-target');
+        var componentZoneTracking = $component.parents('[data-studio-components-target]').attr('data-studio-zone-tracking');
+        var index = 0, currentTag = "", zone;
 
         var me = this,
             isNew = $component.hasClass('studio-component-drag-target'),
-            tracking, path, type, name, zones = {};
+            tracking, path, type, name, zones = {}, indexStructure = 0;
 
         if (isNew) {
             path = $component.attr('data-studio-component-path');
@@ -317,7 +331,12 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         setTimeout(function () {
 
             $('[data-studio-components-target]').each(function () {
-                if(objectId == $(this).attr('data-studio-components-objectid')){
+                zone = $(this).attr("data-studio-components-target");
+                if(currentTag !== zone){
+                    index = 0;
+                    currentTag = zone;
+                }
+                if(objectId == $(this).attr('data-studio-components-objectid') && trackingZone == $(this).attr('data-studio-zone-tracking') ){
                     if(dropName == $(this).attr('data-studio-components-target')){
                         conRepeat++;
                     }
@@ -330,7 +349,14 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
                             zones[zoneName].push($comp.data('model') || tracking);
                         });
                     }
+                    if(zone.indexOf('.') > 0){
+                        var structure1 = zone.split('.')[0],
+                        structure2 = zone.split('.')[1];
+                        currentModel[structure1][index][structure2] = zones[zone];
+                        zones[structure1] = currentModel[structure1];
+                    }
                 }
+                index++;
             });
 
             publish.call(me, Topics.COMPONENT_DROPPED, {
@@ -351,10 +377,12 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     }
 
     function componentsModelLoad(data) {
-        console.log("test");
+        //console.log("test");
         var aNotFound = [],
             me = this,
-            noObjectid = 0;
+            noObjectid = 0,
+            structure1, structure2, index = 0, currentTag = "";
+
         $('[data-studio-components-target]').each(function () {
             var $el = $(this),
                 objectId = $el.attr('data-studio-components-objectid'),
@@ -362,28 +390,61 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
                 name = $el.attr('data-studio-components-target'),
                 path = $el.parents('[data-studio-component-path]').attr('data-studio-component-path'),
                 id = objectId + "-" + name;
-            if(objectId){
-                if(!found[id] || objectId == data['objectId']){
-                    if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
-                        found[id] = true;
-                        $el.find('> [data-studio-component]').each(function (i, el) {
-                            $(this).data('model', data[name][i]);
-                        });
-                    } else {
-                        var repeated = false;
-                        for(var j=0; j<aNotFound.length ; j++){
-                            if(aNotFound[j].path == path && aNotFound[j].name == name){
-                                repeated = true;
+            if(name.indexOf('.') < 0){
+                if(objectId){
+                    if(!found[id] || objectId == data['objectId']){
+                        if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
+                            found[id] = true;
+                            $el.find('> [data-studio-component]').each(function (i, el) {
+                                $(this).data('model', data[name][i]);
+                            });
+                        } else {
+                            var repeated = false;
+                            for(var j=0; j<aNotFound.length ; j++){
+                                if(aNotFound[j].path == path && aNotFound[j].name == name){
+                                    repeated = true;
+                                }
+                            }
+                            if(!repeated){
+                                aNotFound.push({path: path, name:name});
                             }
                         }
-                        if(!repeated){
-                            aNotFound.push({path: path, name:name});
-                        }
                     }
+                }else{
+                    noObjectid++
                 }
             }else{
-                noObjectid++
+                if(currentTag !== name){
+                    index = 0;
+                    currentTag = name;
+                }
+                structure1 = name.split('.')[0];
+                structure2 = name.split('.')[1];
+                if(objectId){
+                    if(!found[id] || objectId == data['objectId']){
+                        if ((data[structure1][index][structure2] || data[structure1][index][structure2] == "") && objectId == data['objectId']) { ///objid?
+                            found[id] = true;
+                            $el.find('> [data-studio-component]').each(function (i, el) {
+                                $(this).data('model', data[structure1][index][structure2][i]);
+                            });
+                        } else {
+                            var repeated = false;
+                            for(var j=0; j<aNotFound.length ; j++){
+                                if(aNotFound[j].path == path && aNotFound[j].name == name){
+                                    repeated = true;
+                                }
+                            }
+                            if(!repeated){
+                                aNotFound.push({path: path, name:name});
+                            }
+                        }
+                        index++;
+                    }
+                }else{
+                    noObjectid++
+                }
             }
+
         });
 
         if(aNotFound.length && aNotFound.length > 0){
