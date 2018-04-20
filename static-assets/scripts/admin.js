@@ -1156,7 +1156,6 @@
                 };
 
                 $scope.confirmationAction = pullRepo;
-                $scope.branch = repo.url;
                 $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PULL')+":";
                 $scope.dialogTitle = $translate.instant('admin.repositories.PULL');
 
@@ -1183,7 +1182,6 @@
                 };
 
                 $scope.confirmationAction = pushRepo;
-                $scope.branch = repo.url;
                 $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PUSH') + repo.name + ":";
                 $scope.dialogTitle = $translate.instant('admin.repositories.PUSH');
 
