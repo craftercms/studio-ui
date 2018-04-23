@@ -226,15 +226,15 @@
                      ng-show="(pullPushForm.branch.$dirty && pullPushForm.branch.$invalid) || (pullPushForm.branch.$touched && pullPushForm.branch.$invalid)">
                     <small class="error"
                            ng-show="pullPushForm.branch.$error.required">
-                        {{ 'dashboard.repositories.REMOTE_BRANCH' | translate }} is required.
+                        {{ 'admin.repositories.REMOTE_BRANCH' | translate }} is required.
                     </small>
                 </div>
 
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" ng-disabled="pullPushForm.$invalid" ng-click="confirmationAction(branch); hideModal()">{{ 'common.YES' | translate }}</button>
-            <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+            <button class="btn" ng-disabled="pullPushForm.$invalid" ng-click="confirmationAction(branch); hideModal()">{{ 'common.OK' | translate }}</button>
+            <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
         </div>
     </form>
 </script>
