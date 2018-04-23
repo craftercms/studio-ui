@@ -130,6 +130,18 @@ var CStudioForms = CStudioForms || function() {
                     path = path.replace("{parentPath}", CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/, "$1"));
                 }
 
+                if(path.indexOf("{yyyy}") != -1) {
+                    path = path.replace("{yyyy}", currentDate.getFullYear());
+                }
+
+                if(path.indexOf("{mm}") != -1) {
+                    path = path.replace("{mm}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
+                }
+
+                if(path.indexOf("{dd}") != -1) {
+                    path = path.replace("{dd}", ("0" + (currentDate.getDate())).slice(-2));
+                }
+
                 return path;
             }
         };
