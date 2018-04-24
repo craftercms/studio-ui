@@ -272,7 +272,8 @@
         PATH_IMG: '/images/',
         SERVICE: '/studio/api/1/services/api/1/',
         SHOW_LOADER: 'show-loader',
-        BULK_ENVIRONMENT: 'Live'
+        BULK_ENVIRONMENT: 'Live',
+        HEADERS: 'headers'
     });
 
     app.service('authService', [
@@ -767,7 +768,7 @@
             }
 
             function authLoop() {
-                $scope.authDelay = 60000;
+                $scope.authDelay = 600;
                 $scope.reLoginError = null;
                 var isInIframe = (window.location != window.parent.location) ? true : false;
 
@@ -783,14 +784,22 @@
                                 }, $scope.authDelay);
 
                             }else{
-                                $scope.reLoginModal = showReLoginModal();
+                                if(authService.getUser().authenticationType == Constants.HEADERS){
+                                    $state.go('login');
+                                }else{
+                                    $scope.reLoginModal = showReLoginModal();
+                                }
                             }
 
 
                         }, function errorCallback(response) {
                             if (response.status == 401 || response.status == 301 ||
                                 response.status == 302 || response.status == 0) {
-                                $scope.reLoginModal = showReLoginModal();
+                                if(authService.getUser().authenticationType == Constants.HEADERS){
+                                    $state.go('login');
+                                }else{
+                                    $scope.reLoginModal = showReLoginModal();
+                                }
 
                             } else {
                                 window.reLoginModalOn = false;     

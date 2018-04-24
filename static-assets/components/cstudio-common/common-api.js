@@ -230,7 +230,8 @@ var nodeOpen = false,
                 submittedStatus: "submitted",
                 scheduledStatus: "scheduled",
                 inWorkflowStatus: "in workflow"
-            }
+            },
+            HEADERS: "headers"
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -8878,7 +8879,7 @@ if(window.top === window.self) {
                     function authLoop(configObj) {
                         var serviceUri,
                             serviceCallback,
-                            delay = 60000;  // poll once every minute
+                            delay = 600;  // poll once every minute
 
                         serviceUri = CStudioAuthoring.Service.validateSessionUrl;
 
@@ -8905,7 +8906,12 @@ if(window.top === window.self) {
                                             }, delay);
                                         }
                                     };
-                                    CStudioAuthoring.Operations.loginDialog(cb);
+                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
+                                        window.location = '/studio/#/login';
+                                    }else{
+                                        CStudioAuthoring.Operations.loginDialog(cb);
+                                    }
+
                                 }
                             },
                             failure: function (response) {
@@ -8918,7 +8924,12 @@ if(window.top === window.self) {
                                             }, delay);
                                         }
                                     };
-                                    CStudioAuthoring.Operations.loginDialog(cb);
+                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
+                                        window.location = '/studio/#/login';
+                                    }else{
+                                        CStudioAuthoring.Operations.loginDialog(cb);
+                                    }
+
 
                                 } else {
                                     CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0, 0, "errorNotify");
