@@ -8879,7 +8879,7 @@ if(window.top === window.self) {
                     function authLoop(configObj) {
                         var serviceUri,
                             serviceCallback,
-                            delay = 600;  // poll once every minute
+                            delay = 60000;  // poll once every minute
 
                         serviceUri = CStudioAuthoring.Service.validateSessionUrl;
 

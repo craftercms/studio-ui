@@ -768,7 +768,7 @@
             }
 
             function authLoop() {
-                $scope.authDelay = 600;
+                $scope.authDelay = 60000;
                 $scope.reLoginError = null;
                 var isInIframe = (window.location != window.parent.location) ? true : false;
 
