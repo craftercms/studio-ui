@@ -347,6 +347,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
                     var handleYes = function() {
                         _self.inputEl.disabled = false;
+                        _self.inputEl.focus();
                         editFileNameEl.style.display='none';
                         this.hide();
                     };
