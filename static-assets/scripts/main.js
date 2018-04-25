@@ -26,6 +26,12 @@
             $rootScope.$on('$stateChangeStart', function (event, toState) {
                 authService.validateSession().then(
                     function successCallback(response) {
+                        if (toState.name.indexOf('login') !== -1) {
+                            if (authService.getUser() && authService.getUser().authenticationType == Constants.HEADERS) {
+                                $state.go('home.sites');
+                            }
+                        }
+
                     }, function errorCallback() {
                         authService.removeUser();
 
@@ -1243,10 +1249,6 @@
 
             var credentials = {};
             $scope.langSelected = '';
-
-            if(authService.getUser() && authService.getUser().authenticationType){
-                $state.go('home.sites');
-            }
 
             function login() {
 
