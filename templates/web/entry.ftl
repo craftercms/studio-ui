@@ -1,3 +1,4 @@
+<#include "/templates/system/common/versionInfo.ftl" />
 <!doctype html>
 <html class="no-js" lang="" ng-app="studio">
 <head>
