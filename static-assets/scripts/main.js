@@ -1244,6 +1244,10 @@
             var credentials = {};
             $scope.langSelected = '';
 
+            if(authService.getUser() && authService.getUser().authenticationType){
+                $state.go('home.sites');
+            }
+
             function login() {
 
                 authService.login(credentials)
