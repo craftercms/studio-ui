@@ -162,6 +162,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 								}
 								YConnect.setDefaultPostHeader(false);
 								YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
 								// call go-live
 								YConnect.asyncRequest(
 										'POST',
