@@ -1115,6 +1115,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         var aMenuItems;
         var menuWidth = "80px";
         var menuItems = {
+            "separator-asset": { text: "<div>&nbsp;</div>", disabled:true, classname:"menu-separator" },
+            "separator": [{ text: "<div>&nbsp;</div>", disabled:true, classname:"menu-separator" }],
             "assetsFolderMenu" : [
                 { text: CMgs.format(siteDropdownLangBundle, "upload"), onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.uploadAsset, obj:tree } },
                 { text: CMgs.format(siteDropdownLangBundle, "createFolder"), onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.createContainer, obj:tree } },
@@ -1211,6 +1213,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         }
 
                         if(oCurrentTextNode.data.uri.indexOf("/templates") != -1) {
+                            this.aMenuItems.push(this.menuItems["separator"]);
                             this.aMenuItems.push(this.menuItems["assetsFolderTemplate"]);
                         }
 
@@ -1333,45 +1336,71 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         } }
                     });
 
-                    var checkClipboardCb = {
-                        success: function(collection) {
+                    if (isWrite == true) {
 
-                            if(collection.count > 0) {
-                                if (isWrite == true) {
-                                    this.menuItems.push(
-                                        { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.pasteContent } });
-                                } else {
-                                    this.menuItems.push(
-                                        { text: CMgs.format(siteDropdownLangBundle, "paste"), disabled: true, onclick: { fn: CSA.ContextualNav.WcmAssetsFolder.pasteContent } });
+                        this.aMenuItems.push(this.menuItems["separator-asset"]);
+
+                        this.aMenuItems.push({
+                            text: CMgs.format(siteDropdownLangBundle, "copy"),
+                            onclick: { fn: Self.copyTree, obj: tree }
+                        });
+
+                        this.aMenuItems.push({
+                            text: CMgs.format(siteDropdownLangBundle, "cut"),
+                            onclick: { fn: Self.cutContent, obj: tree }
+                        });
+
+                        var checkClipboardCb = {
+                            success: function (collection) {
+
+                                if(oCurrentTextNode.data.isContainer){
+                                    if (collection.count > 0) {
+                                        if (isWrite == true) {
+                                            this.menuItems.push(
+                                                { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: Self.pasteContent} });
+                                        } else {
+                                            this.menuItems.push(
+                                                { text: CMgs.format(siteDropdownLangBundle, "paste"), disabled: true, onclick: { fn: Self.pasteContent} });
+                                        }
+                                    }
                                 }
-                            }
 
-                            this.args.addItems(this.menuItems);
-                            this.menuEl.style.display = "block";
-                            this.menuEl.style.minWidth = this.menuWidth;
-                            this.args.render();
-                            this.args.show();
-                        },
+                                    this.args.addItems(this.menuItems);
+                                    this.menuEl.style.display = "block";
+                                    this.menuEl.style.minWidth = this.menuWidth;
+                                    this.args.render();
+                                    this.args.show();
 
-                        failure: function() {
-                        },
 
-                        args: this.p_aArgs,
-                        menuItems: this.aMenuItems,
-                        menuEl: this.menuId,
-                        menuWidth: this.menuWidth
-                    };
+                            },
 
-                    /* Removing Paste option until copy/cut are implemented */
-                    //CSA.Clipboard.getClipboardContent(checkClipboardCb);
-                    /* Remove these when add paste option */
+                            failure: function () {
+                            },
 
-                    if(0 < this.aMenuItems.length){
-                        this.p_aArgs.addItems(this.aMenuItems);
-                        this.menuId.style.display = "block";
-                        this.menuId.style.minWidth = this.menuWidth;
-                        this.p_aArgs.render();
-                        this.p_aArgs.show();
+                            args: this.p_aArgs,
+                            menuItems: this.aMenuItems,
+                            menuEl: this.menuId,
+                            menuWidth: this.menuWidth
+                        };
+
+                        /* Removing Paste option until copy/cut are implemented */
+                        CSA.Clipboard.getClipboardContent(checkClipboardCb);
+                        /* Remove these when add paste option */
+
+                        /*if(0 < this.aMenuItems.length){
+                         this.p_aArgs.addItems(this.aMenuItems);
+                         this.menuId.style.display = "block";
+                         this.menuId.style.minWidth = this.menuWidth;
+                         this.p_aArgs.render();
+                         this.p_aArgs.show();
+                         }*/
+
+                        if(!oCurrentTextNode.data.isContainer) {
+                            this.aMenuItems.push({
+                                text: CMgs.format(siteDropdownLangBundle, "duplicate"),
+                                onclick: { fn: Self.duplicateContent, obj: tree }
+                            });
+                        }
                     }
 
                 },

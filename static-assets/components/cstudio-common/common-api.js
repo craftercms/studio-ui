@@ -2208,9 +2208,12 @@ var nodeOpen = false,
                                     }else{
                                         CStudioAuthoring.SelectedContent.init();
                                     }
-                                    eventNS.typeAction = "";
+                                    //eventNS.data = items;
+                                    /*eventNS.typeAction = "";
                                     eventNS.oldPath = null;
-                                    document.dispatchEvent(eventNS);
+                                    eventNS.parent = false;
+                                    document.dispatchEvent(eventNS);*/
+                                    callback.success(noderef);
                                 },
 
                                 failure: function () {
