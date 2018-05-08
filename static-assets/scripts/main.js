@@ -1188,6 +1188,10 @@
                     params.use_remote = !$scope.isCollapsed;
                     params.remote_name = $scope.site.name;
                     params.remote_url = $scope.site.url;
+                    if($scope.site.remote_branch){
+                        params.remote_branch = $scope.site.remote_branch;
+                    }
+                    params.single_branch = false;
                     params.authentication_type = !$scope.site.authentication ? "none" : $scope.site.authentication;
                     if($scope.site.authentication == "basic"){
                         params.remote_username = $scope.site.username;
