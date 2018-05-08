@@ -124,6 +124,10 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
 			$(this).select();
 		});
 
+        $("#folderName").on("keyup", function () {
+            this.value = this.value.toLocaleLowerCase();
+        });
+
 		
 		return dialog;
 	},
