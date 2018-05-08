@@ -241,8 +241,10 @@
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
     }
 
-    function showAllDeps () {
-        var me = this;
+    function showAllDeps (el) {
+        var me = this,
+            $el = $(el),
+            loadSpinner = document.getElementById('loadSpinner');
 
         var entities = { "entities" : [] },
             callback = {
@@ -270,6 +272,9 @@
                         $childItems.show();
                         $currentEl.attr('class', 'ttClose parent-div-widget');
 
+                        loadSpinner.classList.add("hidden");
+                        $el.removeAttr('disabled');
+
                     });
                 },
                 failure: function(error) {
@@ -277,9 +282,14 @@
                 }
             };
 
+        $el.attr('disabled', 'true');
+        loadSpinner.classList.remove("hidden");
+
         $.each( this.submitItems, function(){
             entities.entities.push({ "item": this.uri });
         })
+
+
 
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
     }
