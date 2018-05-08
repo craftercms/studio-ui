@@ -67,6 +67,20 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="url">{{ 'admin.repositories.REMOTE_BRANCH' | translate }}</label>
+                    <input type="text" class="form-control" id="remoteBranch" name="remoteBranch" maxlength="4000" ng-model="site.remote_branch" />
+
+                    <div class="error-container"
+                         ng-show="(createNameForm.remoteBranch.$dirty && createNameForm.remoteBranch.$invalid) || (createNameForm.remoteBranch.$touched && createNameForm.remoteBranch.$invalid)">
+                        <small class="error"
+                               ng-show="createNameForm.remoteBranch.$error.required">
+                            {{ 'admin.repositories.REMOTE_BRANCH' | translate }} is required.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
                     <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
                     <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
                     <input type="radio" id="none" name="authentication" value="none" ng-model="site.authentication" ng-checked="true">

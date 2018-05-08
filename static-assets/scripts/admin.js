@@ -122,7 +122,7 @@
             //REPOSITORIES
 
             this.getRepositories = function(data) {
-                return $http.get(repositories('list-remote', '&site_id=' + data.site));
+                return $http.get(repositories('list-remote', 'site_id=' + data.site));
             };
 
             this.createRepository = function(data) {
@@ -135,6 +135,10 @@
 
             this.pullRepository = function(data) {
                 return $http.post(repositories('pull-from-remote'), data);
+            };
+
+            this.pushRepository = function(data) {
+                return $http.post(repositories('push-to-remote'), data);
             };
 
             this.pushRepository = function(data) {
@@ -1137,7 +1141,7 @@
             };
 
             $scope.pullRepo = function(repo) {
-                $scope.branch = '';
+                $scope.branch = repositories.repositories.remotes[0].name;
                 var pullRepo = function(branch) {
                     var currentRepo = {};
                     currentRepo.site_id = repositories.site;
@@ -1163,7 +1167,7 @@
             };
 
             $scope.pushRepo = function(repo) {
-                $scope.branch = '';
+                $scope.branch = repositories.repositories.remotes[0].name;
                 var pushRepo = function(branch) {
                     var currentRepo = {};
                     currentRepo.site_id = repositories.site;

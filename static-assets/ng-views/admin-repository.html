@@ -68,7 +68,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="url">{{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
-                    <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="repo.remote_name" />
+                    <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="repo.remote_name" required />
 
                     <div class="error-container"
                          ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
@@ -82,7 +82,7 @@
 
                 <div class="form-group">
                     <label for="url">{{ 'dashboard.sites.create.URL' | translate }}</label>
-                    <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="repo.remote_url" />
+                    <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="repo.remote_url" required />
 
                     <div class="error-container"
                          ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
@@ -169,7 +169,7 @@
         <div class="modal-footer">
             <button class="btn btn-primary text-capitalize"
                     ng-click="okModalFunction(repo)" ng-disabled="createNameForm.$invalid">{{ 'common.' + dialogMode + '_LABEL' | translate }}</button>
-            <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+            <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
         </div>
 
     </form>
@@ -183,8 +183,8 @@
         {{ confirmationText }}
     </div>
     <div class="modal-footer">
-        <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
-        <button class="btn" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+        <button class="btn btn-primary" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+        <button class="btn btn-default" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
     </div>
 </script>
 
@@ -208,7 +208,7 @@
         {{ messageText }}
     </div>
     <div class="modal-footer">
-        <button class="btn" ng-click="hideModal()">{{ 'common.OK' | translate }}</button>
+        <button class="btn btn-primary" ng-click="hideModal()">{{ 'common.OK' | translate }}</button>
     </div>
 </script>
 
@@ -220,8 +220,9 @@
         <div class="modal-body">
             <div class="form-group">
                 <label for="branch">{{ confirmationText }}</label>
-                <input type="text" class="form-control" id="branch" name="branch" ng-model="branch" required/>
-
+                <select class="form-control" id="branch" name="branch" ng-model="branch" required>
+                    <option ng-repeat="remote in repositories.repositories.remotes" value="{{remote.name}}">{{remote.name}}</option>
+                </select>
                 <div class="error-container"
                      ng-show="(pullPushForm.branch.$dirty && pullPushForm.branch.$invalid) || (pullPushForm.branch.$touched && pullPushForm.branch.$invalid)">
                     <small class="error"
@@ -233,8 +234,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn" ng-disabled="pullPushForm.$invalid" ng-click="confirmationAction(branch); hideModal()">{{ 'common.OK' | translate }}</button>
-            <button class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+            <button class="btn btn-primary" ng-disabled="pullPushForm.$invalid" ng-click="confirmationAction(branch); hideModal()">{{ 'common.OK' | translate }}</button>
+            <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
         </div>
     </form>
 </script>
