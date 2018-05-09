@@ -57,6 +57,7 @@
         "CREATE_ERROR": "Unable to create site. Please contact your system administrator.",
         "SITE_ID_VALIDATION": "(Max length: 50 characters, lowercase, no spaces or special characters)",
         "LENGTH_VALIDATION_4000": "(Max length: 4000 characters)",
+        "BRANCH_DEFAULTS": "(Branch defaults to 'master' when blank)",
         "ERROR": "Error:",
         "AUTHENTICATION_TYPE":"Authentication Type",
         "NONE": "None",

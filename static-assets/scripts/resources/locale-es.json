@@ -55,6 +55,7 @@
         "CREATING_SITE": "Creando Sitio",
         "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, minúsculas, sin espacios ni caracteres especiales)",
         "LENGTH_VALIDATION_4000": "(Longitud máxima: 4000 caracteres)",
+        "BRANCH_DEFAULTS": "(El branch por defecto es 'master' si el espacio esta en blanco)",
         "ERROR": "Error:",
         "AUTHENTICATION_TYPE":"Tipo de Autenticación",
         "NONE": "Ninguna",
