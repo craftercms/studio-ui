@@ -16,7 +16,7 @@
     Base.extend('Approve', {
 
         events: ['submitStart','submitComplete','submitEnd'],
-        actions: ['.close-button', '.submit-button', '.select-all-check'],
+        actions: ['.close-button', '.submit-button', '.select-all-check', '.show-all-deps'],
         startup: ['itemsClickedDelegation'],
 
         itemsClickedDelegation: itemsClickedDelegation,
@@ -36,6 +36,8 @@
         selectAllCheckActionClicked: selectAllItems,
 
         closeButtonActionClicked: closeButtonClicked,
+
+        showAllDepsActionClicked: showAllDeps,
 
         initDatePicker: initDatePicker
 
@@ -129,43 +131,17 @@
     }
 
     function loadItems(data) {
-        var me = this,
-        data = CStudioAuthoring.Utils.createContentItemsJson(data),
-        callback = {
-            success: function(oResponse) {
-                var respJson = oResponse.responseText;
-                try {
-                    var dependencies = eval("(" + respJson + ")");
-                    var submissionCommentElem = me.getComponent('.submission-comment');
-                    submissionCommentElem.value = dependencies.submissionComment + ' ' + submissionCommentElem.value;
-                    //var scheduledDate = this.getTimeInJsonObject(dependencies.items, browserUri);
-                    me.renderItems(dependencies.items);
-                    //enable submit button after loading items
-                    $("#approveSubmit").prop('disabled', false);
-                    verifyMixedSchedules(dependencies.items);
+        var me = this;
+        
+        // var loadSpinner = document.getElementById('loadSpinner');
+        var flag = true;
 
-                } catch(err) {
-                    var error = err;
-                }/*
-                 var responseData = {
-                 submissionComment: 'Blah',
-                 items: [
-                 { internalName: 'Home', uri: '/site/website/index.xml', scheduleDateString: 'Now' },
-                 { internalName: 'Home', uri: '/site/website/index.xml', scheduleDateString: '2015-02-02 5:50pm' }
-                 ]
-                 };
-
-                 var submissionCommentElem = me.getComponent('.submission-comment');
-                 submissionCommentElem.value = responseData.submissionComment + ' ' + submissionCommentElem.value;
-
-                 me.renderItems(responseData.items);*/
-            },
-            failure: function(oResponse) {
-
-            }
-        };
-
-        CStudioAuthoring.Service.loadItems(callback, data);
+        var items = data;
+        // loadSpinner.classList.add("hidden");
+        me.submitItems = items;
+        me.renderItems(items);
+        $("#approveSubmit").prop('disabled', false);
+        verifyMixedSchedules(items);
     }
 
     function traverse (items, referenceDate) {
@@ -184,12 +160,6 @@
             if (!allHaveSameDate) {
                 break;
             }
-/*
-            if (children.length > 0) {
-                allHaveSameDate = traverse(children, referenceDate);
-            }
-
-*/
         }
 
         return allHaveSameDate;
@@ -232,29 +202,6 @@
                     var respJson = oResponse.responseText;
                     var allChannels = eval("(" + respJson + ")");
                     var channels = allChannels.availablePublishChannels;
-                    /*
-                     var respJson = oResponse.responseText;
-                     try {
-                     var dependencies = eval("(" + respJson + ")");
-                     var submissionCommentElem = me.getComponent('.submission-comment');
-                     submissionCommentElem.value = dependencies.submissionComment + ' ' + submissionCommentElem.value;
-                     me.renderItems(dependencies.items);
-
-                     } catch(err) {
-                     var error = err;
-                     }/*
-                     var responseData = {
-                     submissionComment: 'Blah',
-                     items: [
-                     { internalName: 'Home', uri: '/site/website/index.xml', scheduleDateString: 'Now' },
-                     { internalName: 'Home', uri: '/site/website/index.xml', scheduleDateString: '2015-02-02 5:50pm' }
-                     ]
-                     };
-
-                     var submissionCommentElem = me.getComponent('.submission-comment');
-                     submissionCommentElem.value = responseData.submissionComment + ' ' + submissionCommentElem.value;
-
-                     me.renderItems(responseData.items);*/
                     populatePublishingOptions.call(me, channels);
                 },
                 failure: function (oResponse) {
@@ -263,6 +210,60 @@
             };
         CStudioAuthoring.Service.getAvailablePublishingChannels(callback);
     }
+
+    function calculateDependencies(data, callback){
+        var entities = { "entities" : [] }; 
+
+        if( typeof data === 'string' || data instanceof String ){
+            entities.entities.push({ "item": data });
+        }
+
+        CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
+    }
+
+    function showAllDeps () {
+        var me = this;
+
+        var entities = { "entities" : [] },
+            callback = {
+                success: function(response) {
+                    var response = eval("(" + response.responseText + ")")
+                    $.each(response.entities, function(){
+                        var currentItem = this.item,
+                            $currentEl = $("[data-path='" + this.item + "']"),
+                            currentElId = $currentEl.attr("id"),
+                            $parentEl = $currentEl.closest("tr"),
+                            $container = $(me.getComponent('tbody'));
+
+                        if( $currentEl.attr("data-loaded") === "false" ){
+                            $.each(this.dependencies, function(index, dependency){
+                                var elem = {};
+                                elem.uri = dependency.item;
+                                elem.index = currentElId;
+                                $parentEl.after(agent.get('SUBITEM_ROW', elem));
+                            }); 
+
+                            $currentEl.attr("data-loaded", "true");
+                        }
+
+                        $childItems = $container.find("." + currentElId);
+                        $childItems.show();
+                        $currentEl.attr('class', 'ttClose parent-div-widget');
+
+                    });
+                },
+                failure: function(error) {
+                    
+                }
+            };
+
+        $.each( this.submitItems, function(){
+            entities.entities.push({ "item": this.uri });
+        })
+
+        CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
+    }
+
 
     function renderItems(items) {
 
@@ -280,37 +281,52 @@
             if(index == 0) $container.empty();
             $container.append($parentRow);
             item.scheduledDate = temp;
-            
-            var data = "[ { uri:\"" +  item.uri + "\" }]";
-
-            CStudioAuthoring.Service.loadItems({
-                success: function(response){
-                    var item = JSON.parse(response.responseText);
-
-                    $.each(item.dependencies, function(index, dependency){
-                        var elem = {};
-                        elem.uri = dependency;
-                        elem.internalName = '';
-                        elem.scheduledDate = '';
-                        elem.index = itemDependenciesClass;
-                        $parentRow.after(agent.get('SUBITEM_ROW', elem));
-                    });
-                }
-            }, data);
-
         });
 
         $('.toggleDependencies').on('click', function(){
-            var $container = $(me.getComponent('tbody')),
-                parentId = $(this).attr('id'),
+            var $currentEl = $(this),
+                $container = $(me.getComponent('tbody')),
+                parentId = $currentEl.attr('id'),
                 $childItems = $container.find("." + parentId);
 
-            if($(this).attr('class') == "ttClose parent-div-widget"){
+            if($currentEl.attr('class') == "ttClose parent-div-widget"){
                 $childItems.hide();
-                $(this).attr('class', 'ttOpen parent-div-widget');
+                $currentEl.attr('class', 'ttOpen parent-div-widget');
             }else{
-                $childItems.show();
-                $(this).attr('class', 'ttClose parent-div-widget');
+                //If no deps data has been loaded - load
+                if( $currentEl.attr("data-loaded") === "false"){
+                    $currentEl.attr("data-loaded", "true");
+                    
+                    var callback = {
+                        success: function(response) {
+                            var response = eval("(" + response.responseText + ")")
+
+                            $.each(response.entities, function(){
+                                var currentElId = $currentEl.attr("id"),
+                                    $parentEl = $currentEl.closest("tr");
+        
+                                $.each(this.dependencies, function(index, dependency){
+                                    var elem = {};
+                                    elem.uri = dependency.item;
+                                    elem.index = currentElId;
+                                    $parentEl.after(agent.get('SUBITEM_ROW', elem));
+                                });                            
+                            });
+                            $childItems = $container.find("." + parentId);
+
+                            $childItems.show();
+                            $currentEl.attr('class', 'ttClose parent-div-widget');
+                        },
+                        failure: function(error) {
+                            
+                        }
+                    };
+
+                    calculateDependencies($currentEl.attr("data-path"), callback);
+                }else{
+                    $childItems.show();
+                    $currentEl.attr('class', 'ttClose parent-div-widget');
+                }
             }
         })
 

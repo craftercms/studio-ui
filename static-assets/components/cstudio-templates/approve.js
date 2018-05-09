@@ -12,8 +12,9 @@
                 '<td class="text-center small"><input type="checkbox" class="item-checkbox" data-item-id="{uri}" checked/></td>',
                 '<td class="name large">',
                     '<div class="in">',
-                        '<span id="{index}" class="toggleDependencies ttOpen parent-div-widget" style="margin-right:17px; margin-bottom: -2px; float: left;"></span>',
-                        '<span style="overflow:hidden; display: block;">{internalName} {uri}</span></div>',
+                    '<span id="{index}" class="toggleDependencies ttOpen parent-div-widget" style="margin-right:17px; margin-bottom: -2px; float: left;" ',
+                    'data-loaded="false" data-path="{uri}"></span>',
+                    '<span style="overflow:hidden; display: block;">{internalName} {uri}</span></div>',
                 '</td>',
                 '<td class="text-right schedule medium">{scheduledDate}</td>',
             '</tr>'
