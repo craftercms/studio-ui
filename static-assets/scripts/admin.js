@@ -141,11 +141,6 @@
                 return $http.post(repositories('push-to-remote'), data);
             };
 
-            this.pushRepository = function(data) {
-                return $http.post(repositories('push-to-remote'), data);
-            };
-
-
             //AUDIT
 
             this.getAudit = function(data) {
@@ -1141,7 +1136,8 @@
             };
 
             $scope.pullRepo = function(repo) {
-                $scope.branch = repositories.repositories.remotes[0].name;
+                $scope.branch = repo.branches[0];
+                $scope.branches = repo.branches;
                 var pullRepo = function(branch) {
                     var currentRepo = {};
                     currentRepo.site_id = repositories.site;
@@ -1167,7 +1163,8 @@
             };
 
             $scope.pushRepo = function(repo) {
-                $scope.branch = repositories.repositories.remotes[0].name;
+                $scope.branch = repo.branches[0];
+                $scope.branches = repo.branches;
                 var pushRepo = function(branch) {
                     var currentRepo = {};
                     currentRepo.site_id = repositories.site;

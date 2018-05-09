@@ -221,7 +221,7 @@
             <div class="form-group">
                 <label for="branch">{{ confirmationText }}</label>
                 <select class="form-control" id="branch" name="branch" ng-model="branch" required>
-                    <option ng-repeat="remote in repositories.repositories.remotes" value="{{remote.name}}">{{remote.name}}</option>
+                    <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
                 </select>
                 <div class="error-container"
                      ng-show="(pullPushForm.branch.$dirty && pullPushForm.branch.$invalid) || (pullPushForm.branch.$touched && pullPushForm.branch.$invalid)">
