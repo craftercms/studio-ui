@@ -384,6 +384,7 @@ span.navigation-separator-alt {
     -moz-transition: background-color .5s ease-in-out;
     -webkit-transition: background-color .5s ease-in-out;
     -o-transition: background-color .5s ease-in-out;
+    overflow: hidden;
 }
 
 /* DataTable overrides */
