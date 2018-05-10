@@ -130,6 +130,18 @@ var CStudioForms = CStudioForms || function() {
                     path = path.replace("{parentPath}", CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/, "$1"));
                 }
 
+                if(path.indexOf("{yyyy}") != -1) {
+                    path = path.replace("{yyyy}", currentDate.getFullYear());
+                }
+
+                if(path.indexOf("{mm}") != -1) {
+                    path = path.replace("{mm}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
+                }
+
+                if(path.indexOf("{dd}") != -1) {
+                    path = path.replace("{dd}", ("0" + (currentDate.getDate())).slice(-2));
+                }
+
                 return path;
             }
         };
@@ -1536,6 +1548,11 @@ var CStudioForms = CStudioForms || function() {
                         //YAHOO.util.Event.addListener(window, "beforeunload", beforeUnloadFn, this);
                         YAHOO.util.Event.addListener(window, "unload",unloadFn, me);
                         YAHOO.util.Event.addListener(closeButtonEl, "click", cancelFn, me);
+
+                        focusEl = window;
+                        setTimeout(function(){
+                                focusEl.focus();
+                        }, 500);
                     }
                     var colExpButtonEl = document.createElement("input");
                     colExpButtonEl.id = "colExpButtonBtn";

@@ -56,6 +56,19 @@
                 }
             });
 
+            $("body").on("keyup", function(e) {
+                if(e.keyCode === 13 || e.keyCode === 10) {
+                    controller.fire('end');
+                    controller.fire('continue');
+                    $("body").off("keyup");
+                }
+                if (e.keyCode === 27) {	// esc
+                    controller.fire('end');
+                    controller.fire('cancel');
+                    $("body").off("keyup");
+                }
+            });
+
         },
         get: function (elem) {
             return this.controller.getComponent(elem);

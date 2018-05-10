@@ -10,6 +10,7 @@
 		role: "${envConfig.role!'UNSET'}",
 		site: "${envConfig.site!'UNSET'}",
 		siteId: "${envConfig.site!'UNSET'}",
+        authenticationType: "${envConfig.authenticationType!'UNSET'}",
 		collabSandbox: "",
 		baseUri: "/studio",
 		authoringAppBaseUri: "${envConfig.authoringServerUrl!'/studio'}",

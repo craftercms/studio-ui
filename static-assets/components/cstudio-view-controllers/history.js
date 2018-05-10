@@ -139,7 +139,7 @@
                                         new YAHOO.widget.Tooltip("tooltipView" + viewActionEl.version, {
                                             context: "actionView" + viewActionEl.version,
                                             text: CMgs.format(formsLangBundle, "historyDialogViewFileMessage"),
-                                            zIndex: 100103
+                                            zIndex: 104103
                                         });
 
                                         var compareActionEl = document.createElement("a");
@@ -150,7 +150,7 @@
                                         new YAHOO.widget.Tooltip("tooltipCompare" + compareActionEl.version, {
                                             context: "actionCompare" + viewActionEl.version,
                                             text: CMgs.format(formsLangBundle, "historyDialogCompareFileMessage"),
-                                            zIndex: 100103
+                                            zIndex: 104103
                                         });
                                     }
 
@@ -161,7 +161,7 @@
                                     new YAHOO.widget.Tooltip("tooltipRevert"+ revertActionEl.version, {
                                         context: "actionRevert" + revertActionEl.version,
                                         text: CMgs.format(formsLangBundle, "historyDialogRevertFileMessage"),
-                                        zIndex: 100103
+                                        zIndex: 104103
                                     });
 
                                     col5El.appendChild(revertActionEl);

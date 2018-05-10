@@ -442,6 +442,10 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
             var event = e;
 
             var items = event.dataTransfer.items;
+
+            if( !items ){
+                items = event.dataTransfer.files;
+            }
             for (var i=0; i<items.length; i++) {
                 try{    //chrome feature to upload folders
                     // webkitGetAsEntry for chrome
@@ -450,11 +454,10 @@ if (typeof HTMLElement != "undefined" && !HTMLElement.prototype.insertAdjacentEl
                         traverseFileTree(item, cfg);
                     }
                 }catch(e){      //other browsers
-                    var file = files[x];
+                    var file = items[i];
                     uploadFile(file, cfg);
                 }
             }
-
 
             /////////////////////////////////////
 

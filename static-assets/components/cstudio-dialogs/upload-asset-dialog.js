@@ -43,7 +43,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 				setFormSizeVal(320, id);
 				$($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease', true);
             }
-        }
+		}
 	},
 	
 	/**
@@ -57,6 +57,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	 * create dialog
 	 */
 	createDialog: function(path, site, serviceUri, isUploadOverwrite) {
+		var me = this;
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 		
 		if (isUploadOverwrite == "overwrite") {
@@ -129,8 +130,14 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 //			YAHOO.util.Event.addListener("uploadButton", "click", this.overwritePopupSubmit, eventParams);
 		}
 		YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
-
 		
+		$("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
+            if (e.keyCode === 27) {	// esc
+                me.closeDialog();
+                $("#cstudio-wcm-popup-div").off("keyup");
+            }
+        });
+
 		return upload_dialog;
 	},
 

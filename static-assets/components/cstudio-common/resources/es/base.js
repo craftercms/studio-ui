@@ -389,6 +389,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     deleteDialogNow:"Ahora",
     deleteDialogFeedBack:"Las dependencias deben comprobarse antes de enviarlas",
     deleteDialogNoItemsSelected:"No hay artículos seleccionados",
+    deletedTitle: "Selección eliminada",
+    deletedMessage: "La selección se está eliminando y será removida pronto.",
 
     deleteSubmitDialogTitle:"Enviar para su eliminación",
     deleteSubmitDialogTime:"¿Cuándo desea eliminar los artículos marcados?",

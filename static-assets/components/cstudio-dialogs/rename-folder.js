@@ -109,17 +109,24 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
 
 		YAHOO.util.Event.addListener("createCancelButton", "click", this.popupCancelClick);
 
-		YAHOO.util.Event.on(newdiv, 'keyup', function (e) {
-			if (e.which === 27) {	// esc
-				me.popupCancelClick();
-			} else if(e.which === 13 || e.which === 10){
+		$("body").on("keyup", function(e) {
+			if(e.keyCode === 13 || e.keyCode === 10) {
 				me.createClick(e, eventParams);
+				$("body").off("keyup");
 			}
-		}, newdiv);
+            if (e.keyCode === 27) {	// esc
+				me.closeDialog();
+				$("body").off("keyup");
+			}
+        });
 
 		$("#folderName").on("focus", function () {
 			$(this).select();
 		});
+
+        $("#folderName").on("keyup", function () {
+            this.value = this.value.toLocaleLowerCase();
+        });
 
 		
 		return dialog;

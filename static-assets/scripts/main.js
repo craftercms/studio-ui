@@ -26,6 +26,12 @@
             $rootScope.$on('$stateChangeStart', function (event, toState) {
                 authService.validateSession().then(
                     function successCallback(response) {
+                        if (toState.name.indexOf('login') !== -1) {
+                            if (authService.getUser() && authService.getUser().authenticationType == Constants.HEADERS) {
+                                $state.go('home.sites');
+                            }
+                        }
+
                     }, function errorCallback() {
                         authService.removeUser();
 
@@ -153,6 +159,15 @@
                         }
                     }
                 })
+                .state('home.repositories', {
+                    url: 'repositories',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/admin-repository.html',
+                            controller: 'RepositoriesCtrl'
+                        }
+                    }
+                })
                 .state('login', {
                     url: '/login',
                     onEnter: [
@@ -263,7 +278,8 @@
         PATH_IMG: '/images/',
         SERVICE: '/studio/api/1/services/api/1/',
         SHOW_LOADER: 'show-loader',
-        BULK_ENVIRONMENT: 'Live'
+        BULK_ENVIRONMENT: 'Live',
+        HEADERS: 'headers'
     });
 
     app.service('authService', [
@@ -774,14 +790,22 @@
                                 }, $scope.authDelay);
 
                             }else{
-                                $scope.reLoginModal = showReLoginModal();
+                                if(authService.getUser().authenticationType == Constants.HEADERS){
+                                    $state.go('login');
+                                }else{
+                                    $scope.reLoginModal = showReLoginModal();
+                                }
                             }
 
 
                         }, function errorCallback(response) {
                             if (response.status == 401 || response.status == 301 ||
                                 response.status == 302 || response.status == 0) {
-                                $scope.reLoginModal = showReLoginModal();
+                                if(authService.getUser().authenticationType == Constants.HEADERS){
+                                    $state.go('login');
+                                }else{
+                                    $scope.reLoginModal = showReLoginModal();
+                                }
 
                             } else {
                                 window.reLoginModalOn = false;     
@@ -893,7 +917,7 @@
                     templateUrl: 'removeConfirmation.html',
                     controller: 'RemoveSiteCtrl',
                     backdrop: 'static',
-                    keyboard: false,
+                    keyboard: true,
                     windowClass: "studioMedium",
                     resolve: {
                         siteToRemove: function () {
@@ -1164,6 +1188,10 @@
                     params.use_remote = !$scope.isCollapsed;
                     params.remote_name = $scope.site.name;
                     params.remote_url = $scope.site.url;
+                    if($scope.site.remote_branch){
+                        params.remote_branch = $scope.site.remote_branch;
+                    }
+                    params.single_branch = false;
                     params.authentication_type = !$scope.site.authentication ? "none" : $scope.site.authentication;
                     if($scope.site.authentication == "basic"){
                         params.remote_username = $scope.site.username;

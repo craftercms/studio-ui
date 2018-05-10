@@ -55,6 +55,7 @@
         "CREATING_SITE": "사이트 만들기",
         "SITE_ID_VALIDATION": "(최대 길이 : 50 자, 소문자, 공백 또는 특수 문자 없음)",
         "LENGTH_VALIDATION_4000": "(최대 길이 : 4000 자)",
+        "BRANCH_DEFAULTS": "(비어있을 때 브랜치는 기본적으로 마스터가됩니다)",
         "ERROR": "오류:",
         "AUTHENTICATION_TYPE":"인증 유형",
         "NONE": "없음",
@@ -164,6 +165,23 @@
           "WARNINGBP":"경고 : 대량 게시",
           "WRNINGGPBODY":" 대량 게시는 요청한 패턴과 일치하는 모든 항목을 해당 종속성을 포함하여 강제로 게시합니다. 잠재적으로 누군가 진행중인 작업을 포함하여 모든 수정 된 항목이 계속되기 전에 게시 될 준비가되었는지 확인하십시오.",
           "PUBLISHSTARTED":"대량 게시 프로세스가 시작되었습니다."
+      },
+      "repositories": {
+          "REPOSITORIES": "저장소",
+          "NEW_REPOSITORY":"새 저장소",
+          "NAME": "이름",
+          "URL": "URL",
+          "FETCH": "술책",
+          "PUSH_URL": "푸시 URL",
+          "CREATE_REPOSITORY": "저장소 만들기",
+          "REMOTE_BRANCH": "원격 지점",
+          "PULL": "당겨서",
+          "PUSH": "푸시",
+          "REMOTE_BRANCH_PULL":"당겨 받기위한 원격 지점",
+          "REMOTE_BRANCH_PUSH":"푸시 할 원격 지점 ",
+          "SUCCESSFULLY_PUSHED": "성공적으로 푸시 됨",
+          "SUCCESSFULLY_PULLED": "성공적으로 당겨서",
+          "REPO_DELETED": "저장소 삭제됨"
       }
   },
   "common": {
@@ -183,6 +201,7 @@
     "CONFIRMATION": "확인",
     "YES": "예",
     "NO": "아니",
+    "OK":"확인",
     "HELP": "도움",
     "DOCUMENTATION": "선적 서류 비치",
     "ABOUT": "약",
@@ -192,6 +211,8 @@
     "CANCEL" : "Cancel",
     "INTERROGATION_SIGN": "?",
     "VALID_EMAIL": "유효한 이메일을 입력하십시오",
-    "MATCH_ENTRY": "이전 항목과 일치해야합니다."
+    "MATCH_ENTRY": "이전 항목과 일치해야합니다.",
+    "ERROR": "오류",
+    "DELETE_QUESTION":"삭제 하시겠습니까"
   }
 }

@@ -143,12 +143,12 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 
         var header = [
             Common.getSimpleRow("checkAll", widgetId, '<input title="Select all" class="dashlet-item-check" id="' + widgetId + 'CheckAll" name="check-all" type="checkbox"/>', "minimize"),
-            Common.getSortableRow("internalName", widgetId,  CMgs.format(langBundle, "dashletMyRecentActivityColPageName"), "minimize"),
+            Common.getSimpleRow("internalName", widgetId,  CMgs.format(langBundle, "dashletMyRecentActivityColPageName"), "minimize"),
             Common.getSimpleRow("edit", widgetId, CMgs.format(langBundle, "dashletMyRecentActivityColEdit"), "minimize"),
             Common.getSortableRow("browserUri", widgetId, CMgs.format(langBundle, "dashletMyRecentActivityColURL"), "maximize"),
             '<th id="fullUri" class="hide"></th>',
             Common.getSimpleRow("scheduledDate", widgetId, CMgs.format(langBundle, "dashletMyRecentActivityColPublishDate"), ""),
-            Common.getSortableRow("userLastName", widgetId, CMgs.format(langBundle, "dashletMyRecentActivityColLastEditedBy"), "alignRight minimize"),
+            Common.getSimpleRow("userLastName", widgetId, CMgs.format(langBundle, "dashletMyRecentActivityColLastEditedBy"), "alignRight minimize"),
             Common.getSortableRow("eventDate",widgetId,CMgs.format(langBundle, "dashletMyRecentActivityColMyLastEdit"),"ttThColLast alignRight minimize")
         ].join('');
 
@@ -159,7 +159,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 	 * Call back to render each line item of the table
 	 */
 	this.renderLineItem = function(item) {
-		if(!item.folder){
+		
 			var itemName = item.internalName;
 			if (!itemName || itemName == "") {
 				itemName = item.title;
@@ -226,11 +226,36 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 				'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), '</td>'
 			];
 
+			var folderRow = [
+				'<td style="padding-right:0px">',
+					'<div class="dashlet-ident">',
+					'</div>',
+				'</td>',
+				'<td style="padding-left:0px" class="itemNameCol">' +
+					'<div class="', (item.disabled == true ? ' disabled' : ''), '" id="' + ttSpanId + '" title="' + itemTitle + '">',
+					'<div class="icon-container  cs-item-icon"><span class="status-icon mr9 studio-fa-stack"><span class="fa studio-fa-stack-2x fa-folder-o"></span><span class=""></span></span></div>',
+				'<a class="anchorRow' , (item.disabled == true ? ' dashboard-item disabled' : '') , (item.previewable == true ? ' previewLink' : ' non-previewable-link') , '" ', (item.previewable == true) ? 'href="/studio/preview/#/?page='+currentBrowserUri+'&site='+CStudioAuthoringContext.site+'"' : '', '">',
+						itemNameForDisplay,
+						'</a>',
+					'</div>',
+				'</td>',
+				'<td></td>',
+				'<td class="urlCol" title="', browserUri, '">', displayBrowserUri, '</td>',
+				'<td title="fullUri" class="width0">', fullUri, '</td>',
+				'<td class="">', item.published ? CStudioAuthoring.Utils.formatDateFromUTC(item.publishedDate, studioTimeZone) : '', '</td>',
+				'<td class="alignRight">', WcmDashboardWidgetCommon.getDisplayName(item), '</td>',
+				'<td class="ttThColLast alignRight">', CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), '</td>'
+			]
+
 			if(currentCheckItem && this.widgetId == currentDashboard){
 				CStudioAuthoring.Utils.Cookies.eraseCookie("dashboard-checked");
 			}
 
-			return itemRow.join('');
-		}
+			if(!item.folder){
+				return itemRow.join('');
+			}else{
+				return folderRow.join('');
+			}
+		
 	};
 };

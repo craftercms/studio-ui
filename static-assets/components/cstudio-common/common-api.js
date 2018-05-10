@@ -230,7 +230,8 @@ var nodeOpen = false,
                 submittedStatus: "submitted",
                 scheduledStatus: "scheduled",
                 inWorkflowStatus: "in workflow"
-            }
+            },
+            HEADERS: "headers"
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -2207,9 +2208,12 @@ var nodeOpen = false,
                                     }else{
                                         CStudioAuthoring.SelectedContent.init();
                                     }
-                                    eventNS.typeAction = "";
+                                    //eventNS.data = items;
+                                    /*eventNS.typeAction = "";
                                     eventNS.oldPath = null;
-                                    document.dispatchEvent(eventNS);
+                                    eventNS.parent = false;
+                                    document.dispatchEvent(eventNS);*/
+                                    callback.success(noderef);
                                 },
 
                                 failure: function () {
@@ -3879,6 +3883,18 @@ var nodeOpen = false,
                     url: CStudioAuthoringContext.baseUri + serviceUrl,
                     callback: callback
                 });
+            },
+
+            calculateDependencies: function(data, callback) {
+                var serviceUrl = '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site=' + CStudioAuthoringContext.site;
+                CStudioAuthoring.Service.request({
+                    method: "POST",
+                    data: data,
+                    resetFormState: true,
+                    url: CStudioAuthoringContext.baseUri + encodeURI(serviceUrl),
+                    callback: callback
+                });
+
             },
 
             loadDependencies: function(site, path, callback) {
@@ -8905,7 +8921,12 @@ if(window.top === window.self) {
                                             }, delay);
                                         }
                                     };
-                                    CStudioAuthoring.Operations.loginDialog(cb);
+                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
+                                        window.location = '/studio/#/login';
+                                    }else{
+                                        CStudioAuthoring.Operations.loginDialog(cb);
+                                    }
+
                                 }
                             },
                             failure: function (response) {
@@ -8918,7 +8939,12 @@ if(window.top === window.self) {
                                             }, delay);
                                         }
                                     };
-                                    CStudioAuthoring.Operations.loginDialog(cb);
+                                    if(CStudioAuthoringContext.authenticationType == CStudioAuthoring.Constants.HEADERS){
+                                        window.location = '/studio/#/login';
+                                    }else{
+                                        CStudioAuthoring.Operations.loginDialog(cb);
+                                    }
+
 
                                 } else {
                                     CStudioAuthoring.Utils.showNotification(networkErrorMsg, "bottom", "right", "error", 0, 0, "errorNotify");

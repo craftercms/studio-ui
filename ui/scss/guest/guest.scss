@@ -65,7 +65,7 @@
 .#{$class-prefix}-dnd-controller-overlay {
   z-index: 1;
   display: none;
-  position: absolute;
+  position: fixed;
   background: rgba(#555, .7);
   bottom: 0;
   right: 0;

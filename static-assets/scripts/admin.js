@@ -119,6 +119,28 @@
                 return $http.post(groups('add-user'), data);
             };
 
+            //REPOSITORIES
+
+            this.getRepositories = function(data) {
+                return $http.get(repositories('list-remote', 'site_id=' + data.site));
+            };
+
+            this.createRepository = function(data) {
+                return $http.post(repositories('add-remote'), data);
+            };
+
+            this.deleteRepository = function(data) {
+                return $http.post(repositories('remove-remote'), data);
+            };
+
+            this.pullRepository = function(data) {
+                return $http.post(repositories('pull-from-remote'), data);
+            };
+
+            this.pushRepository = function(data) {
+                return $http.post(repositories('push-to-remote'), data);
+            };
+
             //AUDIT
 
             this.getAudit = function(data) {
@@ -188,6 +210,14 @@
                     return Constants.SERVICE + 'group/' + action + '.json?' + params;
                 }else {
                     return Constants.SERVICE + 'group/' + action + '.json';
+                }
+            }
+
+            function repositories(action, params) {
+                if(params){
+                    return Constants.SERVICE + 'repo/' + action + '.json?' + params;
+                }else {
+                    return Constants.SERVICE + 'repo/' + action + '.json';
                 }
             }
 
@@ -995,6 +1025,170 @@
 
                 });
             };
+        }
+    ]);
+
+    app.controller('RepositoriesCtrl', [
+        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        '$stateParams', '$translate', '$location', '$q',
+        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+                  $stateParams, $translate, $location, $q) {
+
+
+            $scope.repositories = {};
+            var repositories = $scope.repositories;
+            repositories.site = $location.search().site;
+
+            this.init = function() {
+
+                $scope.showModal = function(template, size, verticalCentered, styleClass){
+                    $scope.groupsError = null;
+                    var modalInstance = $modal.open({
+                        templateUrl: template,
+                        windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+                        backdrop: 'static',
+                        keyboard: true,
+                        controller: 'RepositoriesCtrl',
+                        scope: $scope,
+                        size: size ? size : ''
+                    });
+
+                    return modalInstance;
+                };
+                $scope.hideModal = function() {
+                    $scope.adminModal.close();
+                };
+
+                $scope.notification = function(notificationText, showOnTop, styleClass){
+                    var verticalAlign = showOnTop ? false : true;
+                    $scope.notificationText = notificationText;
+                    $scope.notificationType = 'exclamation-triangle';
+
+                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
+
+                    $timeout(function () {
+                        modal.close();
+                    }, 1500, false);
+
+                };
+
+                adminService.getRepositories(repositories).success(function (data) {
+                    repositories.repositories = data;
+                }).error(function () {
+                    //TODO: properly display error.
+                });
+
+            };
+            this.init();
+
+            $scope.createGroupDialog = function(){
+                $scope.repo = {};
+                $scope.okModalFunction = $scope.createRepo;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+
+                $scope.dialogMode = $translate.instant('common.CREATE');
+                $scope.dialogTitle = $translate.instant('admin.repositories.CREATE_REPOSITORY');
+            }
+            $scope.createRepo = function(repo) {
+                repo.site_id = repositories.site;
+                repo.authentication_type = repo.authentication_type ? repo.authentication_type : "none";
+
+                adminService.createRepository(repo).success(function (data) {
+                    $scope.hideModal();
+                    adminService.getRepositories(repositories).success(function (data) {
+                        repositories.repositories = data;
+                    }).error(function () {
+                        //TODO: properly display error.
+                    });
+                }).error(function(error){
+                    $scope.messageTitle = $translate.instant('common.ERROR');
+                    $scope.messageText = error.message;
+                    $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                });
+
+            };
+
+            $scope.removeRepo = function(repo) {
+                var deleteRepo = function() {
+                    var currentRepo = {};
+                    currentRepo.site_id = repositories.site;
+                    currentRepo.remote_name = repo.name;
+
+                    adminService.deleteRepository(currentRepo).success(function (data) {
+                        var index = repositories.repositories.remotes.indexOf(repo);
+                        if (index !== -1) {
+                            repositories.repositories.remotes.splice(index, 1);
+                        }
+                        $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', null,"studioMedium");
+
+                    }).error(function (error) {
+                        $scope.messageTitle = $translate.instant('common.ERROR');
+                        $scope.messageText = error.message;
+                        $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                    });
+                };
+
+                $scope.confirmationAction = deleteRepo;
+                $scope.confirmationText = $translate.instant('common.DELETE_QUESTION')+" " + repo.name + "?";
+
+                $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
+            };
+
+            $scope.pullRepo = function(repo) {
+                $scope.branch = repo.branches[0];
+                $scope.branches = repo.branches;
+                var pullRepo = function(branch) {
+                    var currentRepo = {};
+                    currentRepo.site_id = repositories.site;
+                    currentRepo.remote_name = repo.name;
+                    currentRepo.remote_branch = branch;
+
+                    adminService.pullRepository(currentRepo).success(function (data) {
+
+                        $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', null,"studioMedium");
+
+                    }).error(function (error) {
+                        $scope.messageTitle = $translate.instant('common.ERROR');
+                        $scope.messageText = error.message;
+                        $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                    });
+                };
+
+                $scope.confirmationAction = pullRepo;
+                $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PULL')+":";
+                $scope.dialogTitle = $translate.instant('admin.repositories.PULL');
+
+                $scope.adminModal = $scope.showModal('pushPull.html', 'sm', true, "studioMedium");
+            };
+
+            $scope.pushRepo = function(repo) {
+                $scope.branch = repo.branches[0];
+                $scope.branches = repo.branches;
+                var pushRepo = function(branch) {
+                    var currentRepo = {};
+                    currentRepo.site_id = repositories.site;
+                    currentRepo.remote_name = repo.name;
+                    currentRepo.remote_branch = branch;
+
+                    adminService.pushRepository(currentRepo).success(function (data) {
+
+                        $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'), '', null,"studioMedium");
+
+                    }).error(function (error) {
+                        $scope.messageTitle = $translate.instant('common.ERROR');
+                        $scope.messageText = error.message;
+                        $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                    });
+                };
+
+                $scope.confirmationAction = pushRepo;
+                $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PUSH') + repo.name + ":";
+                $scope.dialogTitle = $translate.instant('admin.repositories.PUSH');
+
+                $scope.adminModal = $scope.showModal('pushPull.html', 'sm', true, "studioMedium");
+            };
+
         }
     ]);
 

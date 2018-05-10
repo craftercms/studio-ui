@@ -364,6 +364,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     deleteDialogNow:"지금",
     deleteDialogFeedBack:"제출하기 전에 종속성 확인해야합니다",
     deleteDialogNoItemsSelected:"선택 항목이 없습니다",
+    deletedTitle: "선택 삭제됨",
+    deletedMessage: "선택 항목이 삭제되며 곧 삭제됩니다.",
 
     deleteSubmitDialogTitle:"삭제 제출",
     deleteSubmitDialogTime:"당신이 체크 된 항목을 원하는 경우 삭제할?",
