@@ -547,7 +547,9 @@
 
             if(results){
                 var filesPresent = false;
-                results = results.item.children;
+                var currentResults = results.item.children;
+                currentResults.unshift(results.item);
+                results = currentResults;
 
                 var pathLabel = path.replace(/\//g, ' / ');
                 $('.current-folder .path').html(pathLabel);
