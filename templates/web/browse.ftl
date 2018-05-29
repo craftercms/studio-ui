@@ -136,7 +136,13 @@
                 {{#if showUrl}}
                 <span class="cstudio-search-component cstudio-search-component-url">
                   <span class="component-title bold">{{labelUrl}}:</span>
-                  <a href="{{browserUri}}" target="_blank">{{browserUri}}</a>
+                  <a href="{{#if browserUri}}{{browserUri}}{{else}}/{{/if}}" target="_blank">
+                      {{#if browserUri}}
+                        {{browserUri}}
+                      {{else}}
+                        /
+                      {{/if}}
+                  </a>
                 </span>
                 {{/if}}
 
