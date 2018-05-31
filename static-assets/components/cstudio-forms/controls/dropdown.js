@@ -59,7 +59,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 			datasource.getList(this.callback);
     	}
 	},
-    	
+
 	render: function(config, containerEl) {
 		// we need to make the general layout of a control inherit from common
 		// you should be able to override it -- but most of the time it wil be the same
@@ -143,7 +143,8 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 						for(var j=0; j<keyValueList.length; j++) {
 							var item = keyValueList[j];
 							var optionEl = document.createElement("option");
-							optionEl.text = item.value;
+							optionEl.text = item.value || item.value_f || item.value_smv || item.value_imv
+                                || item.value_fmv || item.value_dtmv || item.value_htmlmv;
 							optionEl.value = item.key;
 							_self.controlWidgetContainerEl.inputEl.add(optionEl);
 						}
@@ -153,14 +154,13 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 						inputEl.disabled = true;
 					}
 
-					_self.inputEl.value = _self.getValue(); // set value after loading data source
-
-                    // TODO remove comment once CRAFTERCMS-41 is closed
-                    // This call only makes sense for user actioned changes and
-                    // it is actually wiping out the value of the model when initialising
-                    // _self._onChange(null, _self);
-
-					_self.validate(_self);
+                    var configValue = _self.getValue();
+                    for(var x = 0; x < _self.inputEl.options.length; x++) {
+                        if(_self.inputEl.options[x].label.toLowerCase() === configValue.toLowerCase()) {
+                            _self.inputEl.value = configValue; // set value after loading data source
+                            _self.validate(_self);
+                        }
+                    }
 				}
 			};
 
@@ -172,7 +172,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 				datasources.push(currentDatasource);
 
 				if(currentDatasource){
-					currentDatasource.getList(cb);
+                    currentDatasource.getList(cb);
 				}else{
 					this.callback = cb;
 				}
