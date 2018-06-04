@@ -494,7 +494,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         self.decreaseFormDialog();
     },
 
-    setImageData: function(imagePicker, imageData){
+    setImageData: function(imagePicker, imageData, error){
         imagePicker.inputEl.value = imageData.relativeUrl;
 
 
@@ -504,11 +504,16 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
         imagePicker.addEl.value = "Replace";
 
-        imagePicker.noPreviewEl.style.display = "none";
-        imagePicker.previewEl.style.display = "inline";
+        if(!error){
+            imagePicker.noPreviewEl.style.display = "none";
+            imagePicker.previewEl.style.display = "inline";
+
+        }else{
+            this.originalWidth = parseInt(this.previewBoxWidth,10);
+            this.originalHeight = parseInt(this.previewBoxHeight,10);
+        }
+
         YAHOO.util.Dom.addClass(imagePicker.previewEl, 'cstudio-form-control-asset-picker-preview-content');
-
-
         imagePicker.adjustImage();
 
         imagePicker._onChangeVal(null, imagePicker);
@@ -604,7 +609,8 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                     success: function(imageData, repoImage) {
                         var valid = false,
                             message = '',
-                            repoImage;
+                            repoImage,
+                            isError = false;
 
                         if (this.imagePicker.validExtensions.indexOf(imageData.fileExtension) != -1) {
                             valid = true;
@@ -624,6 +630,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                                 imagePicker.originalHeight = this.height;
 
                                 valid = imagePicker.isImageValid();
+                                if (isError){
+                                    self.noPreviewEl.style.display = "inline";
+                                    self.previewEl.style.display = "none";
+                                }
                                 if (!valid) {
                                     var widthConstrains = JSON.parse(self.width);
                                     var heightConstrains = JSON.parse(self.height);
@@ -646,18 +656,18 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                                     //this.isUploadOverwrite = isUploadOverwrite;
                                 }else{
                                     if(this.setImageData){
-                                        this.setImageData(imagePicker, imageData);
+                                        this.setImageData(imagePicker, imageData, isError);
                                         this.decreaseFormDialog();
                                     }else{
-                                        self.setImageData(imagePicker, imageData);
+                                        self.setImageData(imagePicker, imageData, isError);
                                         self.decreaseFormDialog();
                                     }
                                 }
                             };
                             image.addEventListener('load', imageLoaded, false);
                             image.addEventListener('error', function () {
-                                message = "Unable to load the selected image. Please try again or select another image";
-                                imagePicker.showAlert(message);
+                                isError = true;
+                                imageLoaded();
                             });
                             CStudioAuthoring.Operations.getImageRequest({
                                 url: imageData.previewUrl,
@@ -1017,7 +1027,8 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
     },
 
     setValue: function(value) {
-        var _self = this;
+        var _self = this,
+            isError = false;
         this.value = value;
         this.inputEl.value = value;
 
@@ -1038,9 +1049,19 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             function imageLoaded(){
                 _self.originalWidth = this.width;
                 _self.originalHeight = this.height;
+                if (isError){
+                    _self.noPreviewEl.style.display = "inline";
+                    _self.previewEl.style.display = "none";
+                    _self.originalWidth = parseInt(_self.previewBoxWidth,10);
+                    _self.originalHeight = parseInt(_self.previewBoxHeight,10);
+                }
                 _self.adjustImage();
             };
             image.addEventListener('load', imageLoaded, false);
+            image.addEventListener('error', function () {
+                isError = true;
+                imageLoaded();
+            });
             image.src = CStudioAuthoringContext.previewAppBaseUri + value + "?" + (new Date().getTime());
         }
         this._onChange(null, this);
