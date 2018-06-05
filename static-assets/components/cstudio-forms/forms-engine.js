@@ -48,6 +48,7 @@ var CStudioForms = CStudioForms || function() {
         var cstopic = crafter.studio.preview.cstopic;
         var repeatEdited = false;
         var saveDraft = false;
+        var lastDraft = false;
 
         // private methods
 
@@ -1059,7 +1060,7 @@ var CStudioForms = CStudioForms || function() {
                         {
                             form.model["file-name"] = (fileName += ".xml");
                         }
-                        if (edit == "true" || form.readOnly) { //This is also necessary in readonly mode
+                        if (edit == "true" || form.readOnly || lastDraft) { //This is also necessary in readonly mode
                             // Get parent folder
                             entityId = entityId.substring(0, entityId.lastIndexOf("/"));
                         }
@@ -1072,6 +1073,7 @@ var CStudioForms = CStudioForms || function() {
                         if(!(form.isInError() && draft==false) && !(form.isInErrorDraft() && draft ==true)){
                             saveDraft = true;
                         }
+                        lastDraft = draft;
                         return entityId;
                     }
                     
