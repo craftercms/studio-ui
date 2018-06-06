@@ -139,6 +139,14 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 						containerEl.appendChild(descriptionEl);
 					}
 
+                    if(_self.controlWidgetContainerEl.inputEl.options.length <= 0){
+                        var optionElEmpty = document.createElement("option");
+                        optionElEmpty.classList.add("hide");
+                        optionElEmpty.disabled = true;
+                        optionElEmpty.selected = "selected";
+                        _self.controlWidgetContainerEl.inputEl.add(optionElEmpty);
+                    }
+
 					if(keyValueList){
 						for(var j=0; j<keyValueList.length; j++) {
 							var item = keyValueList[j];
