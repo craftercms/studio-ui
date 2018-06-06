@@ -770,7 +770,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
         var noPreviewEl = document.createElement("span");
         this.noPreviewText = "No Image Available";
-        this.noPreviewImgAvText= "Image preview unavailable";
+        this.noPreviewImgAvText= "Image Preview Unavailable";
         this.noPreviewEl = noPreviewEl;
         noPreviewEl.innerHTML = this.noPreviewText;
         YAHOO.util.Dom.addClass(noPreviewEl, 'cstudio-form-control-asset-picker-no-preview-content');
