@@ -53,7 +53,7 @@
         "PUSH": "Crea un sitio basado en una plantilla y luego subirlo en el repositorio remoto de GIT",
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Creando Sitio",
-        "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, minúsculas, sin espacios ni caracteres especiales)",
+        "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, que consta de: letras minúsculas, números, guión (-) y guión bajo (_) )",
         "LENGTH_VALIDATION_4000": "(Longitud máxima: 4000 caracteres)",
         "BRANCH_DEFAULTS": "(El branch por defecto es 'master' si el espacio esta en blanco)",
         "ERROR": "Error:",
