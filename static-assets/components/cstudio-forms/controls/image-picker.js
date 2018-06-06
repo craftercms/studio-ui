@@ -631,6 +631,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
                                 valid = imagePicker.isImageValid();
                                 if (isError){
+                                    self.noPreviewEl.innerText = self.noPreviewImgAvText ;
                                     self.noPreviewEl.style.display = "inline";
                                     self.previewEl.style.display = "none";
                                 }
@@ -699,6 +700,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             this.urlEl.innerHTML = '';
             this.previewEl.style.display = "none";
             this.previewEl.src = "";
+            this.noPreviewEl.innerText = this.noPreviewText;
             this.noPreviewEl.style.display = "inline";
             this.addEl.value = "Add";
 
@@ -767,8 +769,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         bodyEl.appendChild(imageEl);
 
         var noPreviewEl = document.createElement("span");
+        this.noPreviewText = "No Image Available";
+        this.noPreviewImgAvText= "Image preview unavailable";
         this.noPreviewEl = noPreviewEl;
-        noPreviewEl.innerHTML = "No Image Available";
+        noPreviewEl.innerHTML = this.noPreviewText;
         YAHOO.util.Dom.addClass(noPreviewEl, 'cstudio-form-control-asset-picker-no-preview-content');
         imageEl.appendChild(noPreviewEl);
 
@@ -1033,6 +1037,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         this.inputEl.value = value;
 
         if (value == null || value == '') {
+            this.noPreviewEl.innerText = this.noPreviewText;
             this.noPreviewEl.style.display = "inline";
         } else {
             this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value;
@@ -1050,6 +1055,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                 _self.originalWidth = this.width;
                 _self.originalHeight = this.height;
                 if (isError){
+                    _self.noPreviewEl.innerText = _self.noPreviewImgAvText;
                     _self.noPreviewEl.style.display = "inline";
                     _self.previewEl.style.display = "none";
                     _self.originalWidth = parseInt(_self.previewBoxWidth,10);
