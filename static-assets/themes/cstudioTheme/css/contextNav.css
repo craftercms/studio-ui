@@ -115,6 +115,9 @@
 }
 
 /* Modal */
+#status-dialog_mask{
+    z-index: 997 !important;
+}
 
 body .mask{
   background-color: rgb(68, 68, 68)!important;
