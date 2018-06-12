@@ -45,6 +45,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
                      WcmDashboardWidgetCommon.getSimpleRow("edit",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColEdit"),"minimize")+
 		             WcmDashboardWidgetCommon.getSimpleRow("browserUri",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColURL"),"maximize")+
 		             "<th id='fullUri' class='width0'></th>"+
+                     WcmDashboardWidgetCommon.getSimpleRow("server",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColEnvironment"),"maximize")+
                      WcmDashboardWidgetCommon.getSimpleRow("lastEdit",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColLastEdited"),"ttThColLast alignRight minimize");
 		return header;	
 	};
@@ -113,7 +114,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
 
         if (isFirst) {
 
-            html.push('<td colspan="4">');
+            html.push('<td colspan="6">');
 
             if (item.numOfChildren > 0) {
                 var parentClass = ['wcm-table-parent-', name, '-', count].join("");
@@ -129,15 +130,15 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
                 '<span class="wcm-widget-margin-align" title="', name, '">',
                     displayName, ' (', item.numOfChildren, ')',
                 '</span>',
-                '</td>',
-                '<td colspan="1">&nbsp;</td>'
+                '</td>'
             ]);
 
         } else {
 
             var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
                 displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80),
-                uri = item.uri;
+                uri = item.uri,
+                environment = item.environment;
 
                 editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
 
@@ -190,7 +191,8 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
                     '</td>',
                     '<td id="' + editLinkId + '"></td>',
                     "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
-                    "<td title='fullUri' class='width0'>", uri, "</td>",                
+                    "<td title='fullUri' class='width0'>", uri, "</td>",
+                    "<td title='server'>", environment, "</td>",
                     "<td class='alignRight ttThColLast'>", lastEditTime, "</td>"
                 ]);
             }

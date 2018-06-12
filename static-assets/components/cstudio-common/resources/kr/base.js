@@ -36,6 +36,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletApprovedSchedColGoLiveDate: "라이브 날짜로 이동",
     dashletApprovedSchedColEdit: "편집",
     dashletApprovedSchedColURL: "URL",
+    dashletApprovedSchedColEnvironment: "환경",
     dashletApprovedSchedColLastEdited: "최근 편집",
 
     showNumItems: "쇼",
@@ -46,7 +47,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletRecentDeployColMadeLiveDateDate: "날짜 게시",
     dashletRecentDeployColEdit: "편집",
     dashletRecentDeployColURL: "URL",
-    dashletRecentDeployColEndpoint: "서버",
+    dashletRecentDeployColEndpoint: "환경",
     dashletRecentDeployColDeployBy: "에 의해 게시",
     dashletRecentDeployColLastEdited: "최근 편집",
     dashletRecentDeployColPageName: "항목 이름",
