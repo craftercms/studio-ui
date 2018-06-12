@@ -45,7 +45,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
                      WcmDashboardWidgetCommon.getSimpleRow("edit",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColEdit"),"minimize")+
 		             WcmDashboardWidgetCommon.getSimpleRow("browserUri",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColURL"),"maximize")+
 		             "<th id='fullUri' class='width0'></th>"+
-                     WcmDashboardWidgetCommon.getSimpleRow("server",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColServer"),"maximize")+
+                     WcmDashboardWidgetCommon.getSimpleRow("server",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColEnvironment"),"maximize")+
                      WcmDashboardWidgetCommon.getSimpleRow("lastEdit",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColLastEdited"),"ttThColLast alignRight minimize");
 		return header;	
 	};
