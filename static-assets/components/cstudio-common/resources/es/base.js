@@ -36,6 +36,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
     dashletApprovedSchedColGoLiveDate: "Fecha para ir en Vivo",
     dashletApprovedSchedColEdit: "Editar",
     dashletApprovedSchedColURL: "URL",
+    dashletApprovedSchedColServer: "Servidor",
     dashletApprovedSchedColLastEdited: "Última Edición",
     dashletApprovedSchedFilterPages: "Páginas",
     dashletApprovedSchedFilterComponents: "Componentes",

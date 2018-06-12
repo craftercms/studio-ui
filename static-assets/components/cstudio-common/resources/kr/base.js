@@ -36,6 +36,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletApprovedSchedColGoLiveDate: "라이브 날짜로 이동",
     dashletApprovedSchedColEdit: "편집",
     dashletApprovedSchedColURL: "URL",
+    dashletApprovedSchedColServer: "섬기는 사람",
     dashletApprovedSchedColLastEdited: "최근 편집",
 
     showNumItems: "쇼",
