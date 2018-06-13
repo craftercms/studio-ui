@@ -341,7 +341,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             WcmAssetsFolder.treePaths.push(tree.id);
             (function (t, inst) {
                 document.addEventListener('crafter.refresh', function (e) {
-                    document.dispatchEvent(eventCM);
+                    /*document.dispatchEvent(eventCM);*/
                     try {
                         if(e.data && e.data.length) {
                             for (var i = 0; i < e.data.length; i++){
