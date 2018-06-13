@@ -624,8 +624,8 @@
                     self.treePaths.push(tree.id);
                     (function (t, inst) {
                         document.addEventListener('crafter.refresh', function (e) {
-                            eventCM.typeAction = e.typeAction;
-                            document.dispatchEvent(eventCM);
+                            /*eventCM.typeAction = e.typeAction;
+                            document.dispatchEvent(eventCM);*/
                             try {
                                 if(e.data && e.data.length) {
                                     for (var i = 0; i < e.data.length; i++){
@@ -1505,7 +1505,9 @@
                 isMytree = false,
                 currentPath = treeNode.data ? treeNode.data.path : treeNode.path,
                 currentUri = treeNode.data ? treeNode.data.uri : treeNode.uri,
-                treePathsLocal = self.treePaths ? self.treePaths : WcmAssetsFolder.treePaths;
+                currentBrowserUri = treeNode.data ? treeNode.data.browserUri : treeNode.browserUri,
+                treePathsLocal = self.treePaths ? self.treePaths : WcmAssetsFolder.treePaths,
+                oldPath = Array.isArray(oldPath) ? oldPath[currentBrowserUri.replace(/\//g, '')] : oldPath;
             if(tree &&  Self.myTree) {
                 for (var i = 0; i < treePathsLocal.length; i++) {
                     if (treePathsLocal[i] == Self.myTree.id) {
@@ -1617,9 +1619,12 @@
                                                 curElt = YDom.get(curNode.labelElId);
                                             // curElt ? curElt.innerHTML = currentInternalName : null;
                                             curNode.data = Self.createTreeNodeTransferObject(treeData.item);
-                                            if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled)){
+                                            if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled) && cont < 5){
                                                 treeData.item.inFlight = true;
                                             }
+                                            eventCM.typeAction = typeAction;
+                                            eventCM.item = treeData.item;
+                                            document.dispatchEvent(eventCM);
                                             style = CStudioAuthoring.Utils.getIconFWClasses(treeData.item);
                                             if (treeData.item.isPreviewable) {
                                                 style = style + " preview";
@@ -1647,14 +1652,16 @@
                                                         CStudioAuthoring.SelectedContent.unselectContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) : null;
                                                 }
                                                 eventCM.typeAction = typeAction;
+                                                eventCM.item = treeData.item;
                                                 document.dispatchEvent(eventCM);
                                                 Self.refreshAllDashboards();
                                             }
                                             else {
                                                 if (style.indexOf("in-flight") != -1) {
+                                                    cont++;
                                                     setTimeout(function () {
-                                                        lookupSiteContent(curNode, currentUri);
-                                                    }, 300);
+                                                        lookupSiteContent(curNode, currentUri, cont);
+                                                    }, 3000);
                                                 } else {
                                                     cont++;
 
@@ -1674,6 +1681,7 @@
                                                             }
                                                             if((indexOfFolder == -1) && (typeAction != "edit")) {
                                                                 eventCM.typeAction = typeAction;
+                                                                eventCM.item = treeData.item;
                                                                 document.dispatchEvent(eventCM);
                                                                 Self.refreshAllDashboards();
                                                             }

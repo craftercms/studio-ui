@@ -770,7 +770,15 @@ var nodeOpen = false,
                                  CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
                             }
 
-                            eventNS.oldPath = items[0].uri;
+                            if(items.length > 1){
+                                var oldItems = [];
+                                for(var i = 0; i < items.length; i++ ){
+                                    oldItems[items[i].browserUri.replace(/\//g, '')] = items[i].uri;
+                                }
+                                eventNS.oldPath = oldItems;
+                            }else{
+                                eventNS.oldPath = items[0].uri;
+                            }
                             var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
                             if(CStudioAuthoringContext.isPreview){
                                 try{
@@ -799,17 +807,6 @@ var nodeOpen = false,
                             eventNS.dependencies = self.getGenDependency();
 
                             document.dispatchEvent(eventNS);
-
-                            var retry = window.setInterval(function(){
-                                //checkIconState
-                                var inProgress = (document.querySelector("#activeContentActions .status-icon.in-progress") ||
-                                                  document.querySelector("#activeContentActions .cs-item-icon .processing"));
-                                if(inProgress && !inProgress.classList.contains('scheduled') ){
-                                    document.dispatchEvent(eventNS);
-                                }else{
-                                    window.clearInterval(retry);
-                                }
-                            }, 5000);
 
                             eventNS.dependencies = null;
 

@@ -118,32 +118,15 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         });
 
                         document.addEventListener('crafter.create.contenMenu', function (e) {
-                            var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
-                            if(e.typeAction === "publish" && selectedContent.length>0 && (selectedContent[0].inProgress && !selectedContent[0].scheduled)){
-                                selectedContent[0].inFlight = true;
-                            }
-                            if(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
-                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, {
-                                    success: function (content) {
-                                        if( (CStudioAuthoring.Utils.getIconFWClasses(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) !=
-                                            CStudioAuthoring.Utils.getIconFWClasses(content.item)) || e.typeAction === "publish"){
-                                            YDom.get("activeContentActions").innerHTML = "";
-                                            if(e.typeAction === "publish" && (content.item.inProgress && !content.item.scheduled)){
-                                                content.item.inFlight = true;
-                                                content.item.isInFlight = true;
-                                            }else{
-                                            }
-                                            CStudioAuthoring.SelectedContent.clear();
-                                            CStudioAuthoring.SelectedContent.setContent(content.item);
-                                            _this.drawNav();
-                                        }
+                        if(e.item && CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
+                            CStudioAuthoring.SelectedContent.clear();
+                            CStudioAuthoring.SelectedContent.setContent(e.item);
+                             _this.drawNav();
+                        }else{
+                            YDom.get("activeContentActions").innerHTML = "";
+                            _this.drawNav();
+                        }
 
-                                    }
-                                });
-                            }else{
-                                YDom.get("activeContentActions").innerHTML = "";
-                                _this.drawNav();
-                            }
                         }, false);
 
                         document.addEventListener('crafter.refresh', function (e) {
@@ -157,13 +140,18 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         success: function (treeData) {
                                             var cont = paramCont ? paramCont : 0;
 
-                                            if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled)){
+                                            if(typeAction === "publish" && (treeData.item.inProgress && !treeData.item.scheduled) && cont < 5){
                                                 treeData.item.inFlight = true;
                                             }
-                                            if (treeData.item.isInFlight) {
-                                                setTimeout(function () {
-                                                    lookupSiteContent(curNode);
-                                                }, 300);
+                                            if (treeData.item.inFlight) {
+                                                cont++;
+                                                if (cont < 5) {
+                                                    setTimeout(function () {
+                                                        lookupSiteContent(curNode, cont);
+                                                    }, 3000);
+                                                }else {
+                                                    _this.refreshAllDashboards();
+                                                }
                                             } else {
                                                 cont++;
                                                 if (cont < 2) {
@@ -183,6 +171,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                             if(!nodeOpen){
                                 eventCM.typeAction = e.typeAction;
+                                eventCM.item = treeData.item;
                                 document.dispatchEvent(eventCM);
                                 
                             }
