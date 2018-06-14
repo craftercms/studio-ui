@@ -1163,7 +1163,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		} else {
 			//No value exists yet
 			if (this.populate) {
-                var changeDate = _self.doDatePopulateExpression( new Date(this.startTzDateTimeStr));
+                var res = this.startTzDateTimeStr.split(' ');
+                var currentDate = res[0] + " " + res[1];
+                var changeDate = _self.doDatePopulateExpression( new Date(currentDate) );
                 var	adjustedTimeZoneObj = _self.getFormattedDateTimeObject(CStudioAuthoring.Utils.formatDateToStudio(changeDate), true);
                 _self.populateDateTime(adjustedTimeZoneObj, _self.dateEl, _self.timeEl, _self.showDate, _self.showTime);
                 _self.validate(null, _self);
