@@ -81,7 +81,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                 },
 				
 				render: function() {
-                    var el, iconColor, iconClass, dialogEl,
+                    var el, iconColor, iconClass, dialogEl, dialog,
                         me = this;
                         CMgs = CStudioAuthoring.Messages,
                         contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
@@ -157,7 +157,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                             success: function(response) {
                                 
                                 CStudioAuthoring.Operations.showSimpleDialog(
-                                    "error-dialog",
+                                    "status-dialog",
                                     CStudioAuthoring.Operations.simpleDialogTypeINFO,
                                     CMgs.format(contextNavLangBundle, "publishStatus"),
                                     "<span class='dialog-elt-text'>" + CMgs.format(contextNavLangBundle, response.status.toLowerCase()) + "</span>",
@@ -170,6 +170,8 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                                 );
                                 
                                 dialogEl = YDom.getElementsByClassName("dialog-elt")[0];
+                                dialog = YDom.get("status-dialog");
+                                YDom.setStyle(dialog.parentNode, "z-index", "999");
 
                                 switch(response.status.toLowerCase()) {
                                     case "busy":
