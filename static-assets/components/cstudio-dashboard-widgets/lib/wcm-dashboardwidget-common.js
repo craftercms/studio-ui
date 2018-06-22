@@ -153,31 +153,29 @@ WcmDashboardWidgetCommon.sortItems = function (items, currentSortBy, currentSort
                         }
                     }
                 }
-            } else if (firstItem[currentSortBy]) {
-                if (currentSortBy == "eventDate") {
-                    var firstDate = WcmDashboardWidgetCommon.convertDate(firstItem[currentSortBy]);
-                    var secondDate = WcmDashboardWidgetCommon.convertDate(secondItem[currentSortBy]);
-                    if (currentSortType == "true") {
-                        return (firstDate == secondDate) ? 0 : (firstDate < secondDate) ? -1 : 1;
-                    } else {
-                        return (firstDate == secondDate) ? 0 : (secondDate < firstDate) ? -1 : 1;
-                    }
-                } else if (!isNaN(firstItem[currentSortBy]) && !isNaN(secondItem[currentSortBy])) {
-                    var firstValue = parseInt(firstItem[currentSortBy], 10);
-                    var secondValue = parseInt(secondItem[currentSortBy], 10);
-                    if (currentSortType == "true") {
-                        return (firstValue == secondValue) ? 0 : (firstValue < secondValue) ? -1 : 1;
-                    } else {
-                        return (firstValue == secondValue) ? 0 : (secondValue < firstValue) ? -1 : 1;
-                    }
-                } else if (typeof(firstItem[currentSortBy]) == "string") {
-                    var firstString = firstItem[currentSortBy].toLowerCase();
-                    var secondString = secondItem[currentSortBy].toLowerCase();
-                    if (currentSortType == "true") {
-                        return (firstString == secondString) ? 0 : (firstString < secondString) ? -1 : 1;
-                    } else {
-                        return (firstString == secondString) ? 0 : (secondString < firstString) ? -1 : 1;
-                    }
+            } else if (currentSortBy == "eventDate" || currentSortBy == "scheduledDate") {
+                var firstDate = WcmDashboardWidgetCommon.convertDate(firstItem[currentSortBy]);
+                var secondDate = WcmDashboardWidgetCommon.convertDate(secondItem[currentSortBy]) != 0 ? WcmDashboardWidgetCommon.convertDate(secondItem[currentSortBy]) : new Date(0);
+                if (currentSortType == "true") {
+                    return (firstDate == secondDate) ? 0 : (firstDate < secondDate) ? -1 : 1;
+                } else {
+                    return (firstDate == secondDate) ? 0 : (secondDate < firstDate) ? -1 : 1;
+                }
+            } else if (!isNaN(firstItem[currentSortBy]) && !isNaN(secondItem[currentSortBy])) {
+                var firstValue = parseInt(firstItem[currentSortBy], 10);
+                var secondValue = parseInt(secondItem[currentSortBy], 10);
+                if (currentSortType == "true") {
+                    return (firstValue == secondValue) ? 0 : (firstValue < secondValue) ? -1 : 1;
+                } else {
+                    return (firstValue == secondValue) ? 0 : (secondValue < firstValue) ? -1 : 1;
+                }
+            } else if (typeof(firstItem[currentSortBy]) == "string") {
+                var firstString = firstItem[currentSortBy].toLowerCase();
+                var secondString = secondItem[currentSortBy].toLowerCase();
+                if (currentSortType == "true") {
+                    return (firstString == secondString) ? 0 : (firstString < secondString) ? -1 : 1;
+                } else {
+                    return (firstString == secondString) ? 0 : (secondString < firstString) ? -1 : 1;
                 }
             }
             return 0;
@@ -1007,7 +1005,7 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
             var previousSortedBy = YDom.get('sortedBy-' + widgetId).innerHTML;
             var previousSortType = YDom.get('sort-type-' + widgetId).innerHTML;
 
-            if (previousSortedBy == currentSortBy) {
+            if ((previousSortedBy == currentSortBy)) {
                 if (previousSortType == "true") {
                     currentSortType = "false";
                 }

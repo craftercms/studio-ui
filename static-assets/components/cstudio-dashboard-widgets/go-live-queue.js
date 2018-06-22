@@ -112,7 +112,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                 Common.getSimpleRow("edit", widgetId, CMgs.format(langBundle, "dashletGoLiveColEdit"), "minimize"),
                 Common.getSortableRow("browserUri", widgetId, CMgs.format(langBundle, "dashletGoLiveColURL"), "maximize"),
                 '<th id="fullUri" class="width0"></th>',
-                Common.getSimpleRow("scheduledDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColPublishDate"), ""),
+                Common.getSortableRow("scheduledDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColPublishDate"), ""),
                 Common.getSimpleRow("userLastName", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedBy"), "alignRight minimize"),
                 Common.getSortableRow("eventDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedDate"), "ttThColLast alignRight minimize")
             ].join('');
