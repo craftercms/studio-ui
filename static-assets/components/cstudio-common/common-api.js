@@ -7330,12 +7330,16 @@ var nodeOpen = false,
                     "<td class='acn-width280 acn-name' colspan='2'><strong>{1}</strong></td>",
                     "</tr>",
                     "<tr><td class='acn-width80'><strong>Content&nbsp;Type:</strong> </td>",
-                        "<td class='acn-width200' style='text-transform: capitalize;'>{8}</td></tr>",
-                    
-                    "<tr><td class='acn-width83'><strong>Status:</strong></td>",
-                    "<td class='acn-width200'>", iconHTML, "</span>",
-                    "<span style='padding-left:2px;'>{3}</span></td></tr>",
+                        "<td class='acn-width200' style='text-transform: capitalize;'>{8}</td>",
                     "<tr>"].join("");
+
+                if(status) {
+                    toolTipMarkup += [
+                        "<tr><td class='acn-width83'><strong>Status:</strong></td>",
+                        "<td class='acn-width200'>", iconHTML, "</span>",
+                        "<span style='padding-left:2px;'>{3}</span></td></tr>",
+                        "</tr>"].join("");
+                }
 
                 if(modifier && modifier != null && modifier.trim() != "") {
                     toolTipMarkup += [
