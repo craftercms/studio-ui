@@ -647,13 +647,6 @@ CStudioSearch.fireSearchRequest = function(searchContext) {
 						var resultStatusIconStyle = CStudioAuthoring.Utils.getIconFWClasses(_item),
                             resultStatusEl = YDom.get("result-status"+contentItem.resultId),
 				      	    nextElement = resultStatusEl.nextElementSibling;
-				      	
-				      	//Adding Stike To next Element of the Icon (Title) EMO-9406
-				      	if(_item.disabled) {
-							var titleEl = nextElement.firstChild.firstChild;
-				      		YDom.addClass(titleEl, 'strike-dashboard-item');
-				      		titleEl.style.color = "#0176B1";
-				      	}
 
                         //Removing it for the release 2.5.0
                         //YDom.addClass(resultStatusEl, resultStatusIconStyle);
@@ -662,7 +655,7 @@ CStudioSearch.fireSearchRequest = function(searchContext) {
 					//Add Tool tip information for item
 					var searReultItem = resultStatusEl.nextSibling;
 					if (searReultItem) {
-						var itemTitle = CStudioAuthoring.Utils.getTooltipContent(contentItem.item);
+						var itemTitle = CStudioAuthoring.Utils.buildToolTip(contentItem.item.internalName, contentItem.item.internalName, contentItem.item.contentType);
 						var oSpan = document.createElement("div");
 						oSpan.setAttribute("id", "search-item-tt-" + contentItem.resultId);
                         oSpan.setAttribute("class","cstudio-search-result-cont");
@@ -702,10 +695,7 @@ CStudioSearch.fireSearchRequest = function(searchContext) {
 				      		controlEl.type = "checkbox";
 				      		controlEl.name = "result-select";
 							controlEl.contentTO = contentItem;							
-				      		selectResultEl.appendChild(controlEl);				      		 
-							if (contentItem != null && contentItem.item != null && contentItem.item.inFlight) {
-								controlEl.disabled = true;
-							}
+				      		selectResultEl.appendChild(controlEl);
 				      		controlEl.onchange = function() { 
 				      			
 				      			if(this.checked) {
