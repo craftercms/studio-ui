@@ -1038,6 +1038,7 @@
             $scope.repositories = {};
             var repositories = $scope.repositories;
             repositories.site = $location.search().site;
+            repositories.spinnerOverlay;
 
             this.init = function() {
 
@@ -1091,6 +1092,7 @@
                 $scope.dialogTitle = $translate.instant('admin.repositories.CREATE_REPOSITORY');
             }
             $scope.createRepo = function(repo) {
+                repositories.spinnerOverlay = $scope.spinnerOverlay();
                 repo.site_id = repositories.site;
                 repo.authentication_type = repo.authentication_type ? repo.authentication_type : "none";
 
@@ -1098,6 +1100,7 @@
                     $scope.hideModal();
                     adminService.getRepositories(repositories).success(function (data) {
                         repositories.repositories = data;
+                        repositories.spinnerOverlay.close();
                     }).error(function () {
                         //TODO: properly display error.
                     });
@@ -1105,6 +1108,7 @@
                     $scope.messageTitle = $translate.instant('common.ERROR');
                     $scope.messageText = error.message;
                     $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                    repositories.spinnerOverlay.close();
                 });
 
             };
@@ -1139,6 +1143,7 @@
                 $scope.branch = repo.branches[0];
                 $scope.branches = repo.branches;
                 var pullRepo = function(branch) {
+                    repositories.spinnerOverlay = $scope.spinnerOverlay();
                     var currentRepo = {};
                     currentRepo.site_id = repositories.site;
                     currentRepo.remote_name = repo.name;
@@ -1146,9 +1151,11 @@
 
                     adminService.pullRepository(currentRepo).success(function (data) {
 
+                        repositories.spinnerOverlay.close();
                         $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', null,"studioMedium");
 
                     }).error(function (error) {
+                        repositories.spinnerOverlay.close();
                         $scope.messageTitle = $translate.instant('common.ERROR');
                         $scope.messageText = error.message;
                         $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
@@ -1166,6 +1173,7 @@
                 $scope.branch = repo.branches[0];
                 $scope.branches = repo.branches;
                 var pushRepo = function(branch) {
+                    repositories.spinnerOverlay = $scope.spinnerOverlay();
                     var currentRepo = {};
                     currentRepo.site_id = repositories.site;
                     currentRepo.remote_name = repo.name;
@@ -1173,9 +1181,11 @@
 
                     adminService.pushRepository(currentRepo).success(function (data) {
 
+                        repositories.spinnerOverlay.close();
                         $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'), '', null,"studioMedium");
 
                     }).error(function (error) {
+                        repositories.spinnerOverlay.close();
                         $scope.messageTitle = $translate.instant('common.ERROR');
                         $scope.messageText = error.message;
                         $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
