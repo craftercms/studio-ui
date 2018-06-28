@@ -22,7 +22,7 @@
     <label>{{ 'admin.audit.actions.ACTIONS' | translate }}: </label>
 
     <div class="btn-group audit-actions" dropdown is-open="actionsDropdown.isopen" style="margin-right: 20px;">
-        <button type="button" class="btn btn-default dropdown-toggle" style="text-transform: capitalize;" dropdown-toggle>
+        <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle>
             {{ audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate }} <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">
@@ -37,6 +37,33 @@
             </a></li>
             <li><a ng-class="{'active':( audit.actions.indexOf('deleted') > -1 )}" ng-click="audit.updateActions('deleted')">
                 {{ 'admin.audit.actions.DELETED' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('add_user_to_group') > -1 )}" ng-click="audit.updateActions('add_user_to_group')">
+                {{ 'admin.audit.actions.ADD_USER_TO_GROUP' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('remove_user_from_group') > -1 )}" ng-click="audit.updateActions('remove_user_from_group')">
+                {{ 'admin.audit.actions.REMOVE_USER_FROM_GROUP' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('push_to_remote') > -1 )}" ng-click="audit.updateActions('push_to_remote')">
+                {{ 'admin.audit.actions.PUSH_TO_REMOTE' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('pull_from_remote') > -1 )}" ng-click="audit.updateActions('pull_from_remote')">
+                {{ 'admin.audit.actions.PULL_FROM_REMOTE' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('request_publish') > -1 )}" ng-click="audit.updateActions('request_publish')">
+                {{ 'admin.audit.actions.REQUEST_PUBLISH' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('approve') > -1 )}" ng-click="audit.updateActions('approve')">
+                {{ 'admin.audit.actions.APPROVE' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('approve_scheduled') > -1 )}" ng-click="audit.updateActions('approve_scheduled')">
+                {{ 'admin.audit.actions.APPROVE_SCHEDULED' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('reject') > -1 )}" ng-click="audit.updateActions('reject')">
+                {{ 'admin.audit.actions.REJECT' | translate }}
+            </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('published') > -1 )}" ng-click="audit.updateActions('published')">
+                {{ 'admin.audit.actions.PUBLISHED' | translate }}
             </a></li>
         </ul>
     </div>
