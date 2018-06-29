@@ -145,6 +145,7 @@
         "CREATED": "Created",
         "UPDATED": "Updated",
         "DELETED": "Deleted",
+        "MOVED": "Moved",
         "ADD_USER_TO_GROUP": "Add user to group",
         "REMOVE_USER_FROM_GROUP": "Remove user from group",
         "PUSH_TO_REMOTE": "Push to remote",

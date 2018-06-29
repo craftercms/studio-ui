@@ -143,6 +143,7 @@
         "CREATED": "만들어진",
         "UPDATED": "업데이트 됨",
         "DELETED": "삭제됨",
+        "MOVED": "움직이는",
         "ADD_USER_TO_GROUP": "그룹에 사용자 추가",
         "REMOVE_USER_FROM_GROUP": "그룹에서 사용자 제거",
         "PUSH_TO_REMOTE": "리모컨으로 푸시",

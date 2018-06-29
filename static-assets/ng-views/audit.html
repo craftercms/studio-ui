@@ -38,6 +38,9 @@
             <li><a ng-class="{'active':( audit.actions.indexOf('Deleted') > -1 )}" ng-click="audit.updateActions('Deleted')">
                 {{ 'admin.audit.actions.DELETED' | translate }}
             </a></li>
+            <li><a ng-class="{'active':( audit.actions.indexOf('Moved') > -1 )}" ng-click="audit.updateActions('Moved')">
+                {{ 'admin.audit.actions.MOVED' | translate }}
+            </a></li>
             <li><a ng-class="{'active':( audit.actions.indexOf('Add_user_to_group') > -1 )}" ng-click="audit.updateActions('Add_user_to_group')">
                 {{ 'admin.audit.actions.ADD_USER_TO_GROUP' | translate }}
             </a></li>
