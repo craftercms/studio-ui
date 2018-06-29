@@ -142,7 +142,16 @@
         "ALL_ACTIONS": "Todas las Acciones",
         "CREATED": "Creado",
         "UPDATED": "Modificado",
-        "DELETED": "Borrado"
+        "DELETED": "Borrado",
+        "ADD_USER_TO_GROUP": "Agregar usuario al grupo",
+        "REMOVE_USER_FROM_GROUP": "Eliminar usuario del grupo",
+        "PUSH_TO_REMOTE": "Empujar al control remoto",
+        "PULL_FROM_REMOTE": "Tire desde el control remoto",
+        "REQUEST_PUBLISH": "Solicitar publicación",
+        "APPROVE": "Aprobar",
+        "APPROVE_SCHEDULED": "Aprobar programado",
+        "REJECT": "Rechazar",
+        "PUBLISHED": "Publicado"
       },
       "USER": "Usuario",
       "CONTENT": "Contenido",

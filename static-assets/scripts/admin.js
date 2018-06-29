@@ -331,7 +331,8 @@
                     }
                 }
 
-                audit.actionsInputVal = audit.actions.toString();
+                var replaceChars={ ",":", " , "_":" " };
+                audit.actionsInputVal = audit.actions.toString().replace(/,|_/g, function(match) {return replaceChars[match];});
 
                 $timeout.cancel(delayTimer);
                 delayTimer = $timeout(function() {
