@@ -1061,6 +1061,10 @@
                     $scope.adminModal.close();
                 };
 
+                $scope.hideMessageModal = function() {
+                    $scope.messageModal.close();
+                };
+
                 $scope.notification = function(notificationText, showOnTop, styleClass){
                     var verticalAlign = showOnTop ? false : true;
                     $scope.notificationText = notificationText;
@@ -1108,7 +1112,7 @@
                 }).error(function(error){
                     $scope.messageTitle = $translate.instant('common.ERROR');
                     $scope.messageText = error.message;
-                    $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                    $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     repositories.spinnerOverlay.close();
                 });
 
