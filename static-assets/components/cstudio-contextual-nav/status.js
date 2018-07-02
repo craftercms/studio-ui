@@ -89,7 +89,7 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
                     el = YDom.get("acn-status");
 
                     function statusLoop(extDelay) {
-                        var delay = extDelay ? extDelay : 60000;
+                        var delay = extDelay ? extDelay : 2500;
 
                         CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
                             success: function (response) {
