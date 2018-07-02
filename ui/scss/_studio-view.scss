@@ -212,7 +212,7 @@
   }
 
   .view-caption {
-    margin: 0 0 20px;
+    margin: 0 0 15px;
   }
 
   .action-wrapper{
@@ -257,6 +257,17 @@
   p.validation{
     color: #a94442;
     padding: 0px;
+  }
+
+  #differentRequestedDatesWarning{
+    display: none;
+    margin-top: 15px;
+    margin-bottom: 18px;
+
+    p{
+      color: #dd7e2c;
+    }
+
   }
 
 }

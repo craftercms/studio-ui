@@ -404,6 +404,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
 
     approveDialogTitle: "Approve for Publish",
     approveDialogSubTitle: "The following checked items will go live.",
+    approveDialogWarning:"WARNING: The items you have selected for approval were submitted with different requested publish dates/times.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
     dependsOn: "Refers to this item",
