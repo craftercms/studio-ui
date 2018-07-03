@@ -375,6 +375,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
 
     approveDialogTitle: "게시에 대한 승인",
     approveDialogSubTitle: "다음 선택 항목이 게재됩니다.",
+    approveDialogWarning:"경고 : 승인을 위해 선택한 항목이 요청 된 다른 게시 날짜 / 시간과 함께 제출되었습니다.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
     dependsOn: "Depends On",

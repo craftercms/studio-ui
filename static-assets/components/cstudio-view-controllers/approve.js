@@ -208,6 +208,7 @@
             this.$('[name="schedulingMode"]')[0].checked = false;
             this.$('[name="schedulingMode"]')[1].checked = true;
 
+            this.$('#differentRequestedDatesWarning').show();
             this.$('.date-picker-control').show();
         }
 

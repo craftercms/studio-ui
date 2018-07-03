@@ -14859,7 +14859,7 @@ address {
   margin: 0 0 5px; }
 .studio-view .view-caption,
 .studio-dialog .view-caption {
-  margin: 0 0 20px; }
+  margin: 0 0 15px; }
 .studio-view .action-wrapper,
 .studio-dialog .action-wrapper {
   float: right; }
@@ -14891,6 +14891,14 @@ address {
 .studio-dialog p.validation {
   color: #a94442;
   padding: 0px; }
+.studio-view #differentRequestedDatesWarning,
+.studio-dialog #differentRequestedDatesWarning {
+  display: none;
+  margin-top: 15px;
+  margin-bottom: 18px; }
+  .studio-view #differentRequestedDatesWarning p,
+  .studio-dialog #differentRequestedDatesWarning p {
+    color: #dd7e2c; }
 
 table.scroll-body {
   width: 100%;
@@ -15348,3 +15356,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */

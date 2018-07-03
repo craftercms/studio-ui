@@ -400,6 +400,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
 
     approveDialogTitle: "Aprobar para Publicar",
     approveDialogSubTitle: "Los siguientes elementos seleccionados estarán en vivo.",
+    approveDialogWarning:"ADVERTENCIA: los elementos que ha seleccionado para su aprobación se enviaron con diferentes fechas/horas de publicación solicitadas.",
     dependenciesDialogTitle: "Dependencias",
     dependenciesDialogSubTitle: "Dependencias mostradas para:",
     dependsOn: "Depende de",
