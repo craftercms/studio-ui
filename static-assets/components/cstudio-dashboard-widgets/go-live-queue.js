@@ -112,7 +112,8 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                 Common.getSimpleRow("edit", widgetId, CMgs.format(langBundle, "dashletGoLiveColEdit"), "minimize"),
                 Common.getSortableRow("browserUri", widgetId, CMgs.format(langBundle, "dashletGoLiveColURL"), "maximize"),
                 '<th id="fullUri" class="width0"></th>',
-                Common.getSortableRow("scheduledDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColPublishDate"), ""),
+                Common.getSimpleRow("server", widgetId, CMgs.format(langBundle, "dashletGoLiveColEnvironment"),"maximize"),
+                Common.getSortableRow("scheduledDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColPublishDate"), "minimize"),
                 Common.getSimpleRow("userLastName", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedBy"), "alignRight minimize"),
                 Common.getSortableRow("eventDate", widgetId, CMgs.format(langBundle, "dashletGoLiveColLastEditedDate"), "ttThColLast alignRight minimize")
             ].join('');
@@ -169,7 +170,8 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
                         displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, (50 - removeCharCount)),
                         uri = item.uri,
-                        fmt = CStudioAuthoring.Utils.formatDateFromString;
+                        fmt = CStudioAuthoring.Utils.formatDateFromString,
+                        environment = item.submittedToEnvironment ? item.submittedToEnvironment : "";
 
                     editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
                     viewLinkId = 'previewLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
@@ -220,6 +222,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                         '<td id="' + editLinkId + '"></td>',
                         "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
                         "<td title='fullUri' class='width0'>", uri, "</td>",
+                        "<td title='server'>", environment, "</td>",
                         '<td class="">', item.scheduled ? CStudioAuthoring.Utils.formatDateFromUTC(item.scheduledDate, studioTimeZone, 'tooltipformat') : '', '</td>',
                         "<td class='alignRight'>", WcmDashboardWidgetCommon.getDisplayName(item), "</td>",
                         "<td class='alignRight ttThColLast'>", CStudioAuthoring.Utils.formatDateFromUTC(item.eventDate, studioTimeZone), "</td>"
