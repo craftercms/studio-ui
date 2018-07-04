@@ -842,6 +842,7 @@ var nodeOpen = false,
                     callback: function(dialog) {
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
                         this.renderItems(contentItems);
+                        this.loadPublishingChannels();
                     }
                 }, true, '800px');
 

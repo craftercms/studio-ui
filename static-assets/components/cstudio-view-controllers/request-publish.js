@@ -41,6 +41,10 @@
 
         renderItems: renderItems,
 
+        loadPublishingChannels: loadPublishingChannels,
+
+        populatePublishingOptions: populatePublishingOptions,
+
         submitButtonActionClicked: submit,
 
         closeButtonActionClicked: closeButtonClicked,
@@ -58,11 +62,36 @@
         this.end();
     }
 
+    function populatePublishingOptions(items) {
+        var select = this.getComponent('.publish-option');
+        for (var i = 0, option; i < items.length; ++i) {
+            option = new Option(items[i].name, items[i].name);
+            select.options[i] = option;
+        }
+    }
+
+    function loadPublishingChannels() {
+        var me = this,
+            callback = {
+                success: function (oResponse) {
+                    var respJson = oResponse.responseText;
+                    var allChannels = eval("(" + respJson + ")");
+                    var channels = allChannels.availablePublishChannels;
+                    populatePublishingOptions.call(me, channels);
+                },
+                failure: function (oResponse) {
+
+                }
+            };
+        CStudioAuthoring.Service.getAvailablePublishingChannels(callback);
+    }
+
     function submit() {
         var data = {
             sendEmail: this.getComponent('[name="notifyApproval"]').checked,
             schedule: this.getComponent('[name="schedulingMode"]:checked').value,
             submissionComment: this.getComponent('.submission-comment').value,
+            environment: this.getComponent('.publish-option').value,
             items: []
         };
 
