@@ -2528,6 +2528,7 @@ var CStudioForms = CStudioForms || function() {
 
             printFieldsToXml: function(formModel, formDynamicFields, formSections, formConfig) {
                 var fieldInstructions = [];
+                var fieldLists = [];
                 var validFields = ['$!', 'objectGroupId', 'objectId', 'folder-name', 'createdDate', 'createdDate_dt', 'lastModifiedDate', 'lastModifiedDate_dt', 'components', 'orderDefault_f', 'placeInNav', 'rteComponents'],
                     output = '',
                     validFieldsStr, fieldRe, section;
@@ -2546,6 +2547,8 @@ var CStudioForms = CStudioForms || function() {
                         validFields.push(section.fields[j].id);
                         var fieldInstruction = { tokenize: false };
                         fieldInstructions[field.id] = fieldInstruction;
+                        var fieldList = { list : false };
+                        fieldLists[field.id] = fieldList;
 
                         for(var p=0; p<field.properties.length; p++) {
                             try {
@@ -2565,6 +2568,9 @@ var CStudioForms = CStudioForms || function() {
                                     "studioDialog"
                                 );
                             }
+                        }
+                        if(field.type === "repeat" || field.type === "node-selector"){
+                            fieldList.list = true;
                         }
                     }
                 }
@@ -2586,11 +2592,15 @@ var CStudioForms = CStudioForms || function() {
                 for (var key in formModel) {
                     var attributes = "";
                     var fieldInstruction = fieldInstructions[key];
+                    var fieldList = fieldLists[key];
                     var invalidFields = [];
 
                     try {
                         if(fieldInstruction && fieldInstruction.tokenize == true) {
                             attributes += " tokenized='true' ";
+                        }
+                        if(fieldList && fieldList.list == true) {
+                            attributes += " list=\"true\" ";
                         }
                     }
                     catch(err) {
