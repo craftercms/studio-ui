@@ -2600,7 +2600,7 @@ var CStudioForms = CStudioForms || function() {
                             attributes += " tokenized='true' ";
                         }
                         if(fieldList && fieldList.list == true) {
-                            attributes += " list=\"true\" ";
+                            attributes += " item-list=\"true\" ";
                         }
                     }
                     catch(err) {
