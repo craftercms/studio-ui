@@ -70,3 +70,7 @@
 	height: 600px;
 	width: 500px;
 }
+
+#edit-window .CodeMirror pre, #sample-window .CodeMirror pre{
+    overflow: initial;
+}

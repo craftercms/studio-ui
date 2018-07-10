@@ -196,6 +196,7 @@ CStudioAuthoring.Module.requireModule(
 									sampleAreaEl.style.display = 'inline';
 									sampleEditor.setValue(response.responseText);
 									CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(sampleEditor);
+                                    CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(editor);
 									viewSampleButtonEl.style.display = 'inline';
 									var hideSampleButtonEl = document.getElementById("hide-sample-button");
 									hideSampleButtonEl.style.display = 'none';
@@ -323,14 +324,14 @@ CStudioAuthoring.Module.requireModule(
                 }
 
                 viewSampleButtonEl.onclick = function () {
-                    CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditorParent(contentArea);
+                    CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditorParent(contentArea, editor);
                     hideSampleButtonEl.style.display = 'inline';
                     viewSampleButtonEl.style.display = 'none';
                     sampleAreaEl.style.display = 'inline';
                 };
 
                 hideSampleButtonEl.onclick = function () {
-                    CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
+                    CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea, editor);
                     hideSampleButtonEl.style.display = 'none';
                     viewSampleButtonEl.style.display = 'inline';
                     sampleAreaEl.style.display = 'none';
@@ -346,12 +347,18 @@ CStudioAuthoring.Module.requireModule(
 				editor.setSize(this.width/2, this.height);
 			},
 
-            expandEditorParent: function(editor) {
-                editor.classList.remove("sample");
+            expandEditorParent: function(contentArea, editor) {
+                contentArea.classList.remove("sample");
+                if (editor){
+                    editor.setSize("100%", this.height);
+                }
             },
 
-            shrinkEditorParent: function(editor) {
-                editor.classList.add("sample");
+            shrinkEditorParent: function(contentArea, editor) {
+                contentArea.classList.add("sample");
+                if (editor){
+                    editor.setSize("100%", this.height);
+                }
             },
 
             clearCache: function() {
