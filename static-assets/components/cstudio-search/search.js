@@ -52,7 +52,7 @@ CStudioSearch.determineSearchContextFromUrl = function() {
 	var queryString = document.location.search;
 	
 	var paramMode = CStudioAuthoring.Utils.getQueryVariable(queryString, "mode");
-	var paramContext = CStudioAuthoring.Utils.getQueryVariable(queryString, "context");
+	var paramContext = "default";
 	var paramSelection = CStudioAuthoring.Utils.getQueryVariable(queryString, "selection");
 	var searchId = CStudioAuthoring.Utils.getQueryVariable(queryString, "searchId");
 	var itemsPerPage = CStudioAuthoring.Utils.getQueryVariable(queryString, "ipp");
@@ -284,7 +284,7 @@ CStudioSearch.initializeSearchFilter = function(filter) {
 		}
 	}
 		
-	CStudioSearch.activeFilter.renderFilterBody(FilterControlsEl, renderCb); 
+	CStudioSearch.activeFilter.renderFilterBody(FilterControlsEl, renderCb);
 }
 
 /** 
@@ -1118,6 +1118,7 @@ CStudioSearch.loadFiltersAndResultTemplates = function(callback) {
 		onCompleteCb: callback,
 		templatesFlag: false,
 		filtersFlag: false,
+        config : {"resultTemplates":{"template":{"name":"default","type":"*"}},"filters":{"filter":{"default":"true","name":"default","label":"Default"}}},
 
 		templatesComplete: function() {
 			this.templatesFlag = true;
@@ -1134,37 +1135,26 @@ CStudioSearch.loadFiltersAndResultTemplates = function(callback) {
 		}
 	};
 
-	CStudioAuthoring.Service.lookupConfigurtion(
-		CStudioAuthoringContext.site, 
-		"/search/config.xml", {
-			success: function(config) {
-				if(config){
-					if(config.filters && config.filters.filter) {
-						this.context.loadFilters(config.filters.filter, triggerOnCompleteCb);
-					}
-					else {
-						this.context.loadFilters([], triggerOnCompleteCb);
-					}
+    if(config){
+        if(config.filters && config.filters.filter) {
+            this.loadFilters(config.filters.filter, triggerOnCompleteCb);
+        }
+        else {
+            this.loadFilters([], triggerOnCompleteCb);
+        }
 
-					if(config.resultTemplates && config.resultTemplates.template) {
-						this.context.loadResultTemplates(config.resultTemplates.template, triggerOnCompleteCb);
-					}
-					else {
-						this.context.loadResultTemplates([], triggerOnCompleteCb);
-					}
-				}
-				else {
-					triggerOnCompleteCb.filtersComplete();
-					triggerOnCompleteCb.templatesComplete();
+        if(config.resultTemplates && config.resultTemplates.template) {
+            this.loadResultTemplates(config.resultTemplates.template, triggerOnCompleteCb);
+        }
+        else {
+            this.loadResultTemplates([], triggerOnCompleteCb);
+        }
+    }
+    else {
+        triggerOnCompleteCb.filtersComplete();
+        triggerOnCompleteCb.templatesComplete();
 
-				}
-			},
-			
-			failure: function() {
-			},
-			
-			context: this
-	});		
+    }
 }
 
 CStudioSearch.loadFilters = function(filters, callback) {
