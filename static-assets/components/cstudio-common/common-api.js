@@ -1028,10 +1028,6 @@ var nodeOpen = false,
                     CStudioAuthoringContext.site +
                     "&s="+searchContext.keywords;
 
-                if (searchType) {
-                    searchUrl += "&context=" + searchType;
-                }
-
                 if (searchContext.includeAspects && searchContext.includeAspects.length > 0) {
                     searchUrl += "&includeAspects=";
 
