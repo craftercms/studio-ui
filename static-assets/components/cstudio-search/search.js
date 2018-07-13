@@ -1118,7 +1118,6 @@ CStudioSearch.loadFiltersAndResultTemplates = function(callback) {
 		onCompleteCb: callback,
 		templatesFlag: false,
 		filtersFlag: false,
-        config : {"resultTemplates":{"template":{"name":"default","type":"*"}},"filters":{"filter":{"default":"true","name":"default","label":"Default"}}},
 
 		templatesComplete: function() {
 			this.templatesFlag = true;
@@ -1133,7 +1132,8 @@ CStudioSearch.loadFiltersAndResultTemplates = function(callback) {
 				this.onCompleteCb.success();
 			}
 		}
-	};
+    },
+    config = {"resultTemplates":{"template":{"name":"default","type":"*"}},"filters":{"filter":{"default":"true","name":"default","label":"Default"}}};  
 
     if(config){
         if(config.filters && config.filters.filter) {
