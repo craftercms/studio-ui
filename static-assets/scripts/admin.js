@@ -433,7 +433,7 @@
                     publish.getPublish(publish.site);
                     $timeout(function () {
                         renderStatusView();
-                    }, 60000, false);
+                    }, 3000, false);
                 }
                 renderStatusView();
 
