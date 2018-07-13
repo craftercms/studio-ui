@@ -257,7 +257,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             var currentDatasource = this.form.datasourceMap[dataSourceNames[x]];
             datasources.push(currentDatasource);
 
-            if(currentDatasource.add){
+            if(currentDatasource.add && !this.readonly){
                 YAHOO.util.Dom.removeClass(this.addButtonEl, 'cstudio-button-disabled');
                 this.addButtonEl.disabled = false;
             }
