@@ -216,7 +216,7 @@
     Loader.addModule({
         type: 'js',
         name:'viewcontroller-approve',
-        path: 'components/cstudio-view-controllers/approve.js?version=' + CStudioAuthoring.UIBuildIds,
+        path: 'components/cstudio-view-controllers/approve.js?version=' + CStudioAuthoring.UIBuildId,
         requires: [
             'viewcontroller-base',
             'component-templateagent',
