@@ -2828,36 +2828,36 @@ var nodeOpen = false,
             },
 
             getHistoryView: function(callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/history.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/history.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getApproveView: function(callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/approve.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/approve.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getDependenciesView: function(callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/dependencies.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/dependencies.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getRequestPublishView: function (callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/request-publish.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/request-publish.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getRequestDeleteView: function (callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/request-delete.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/request-delete.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getSubmitForDeleteView: function(callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/submit-for-delete.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/submit-for-delete.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getDeleteView: function(callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/delete.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/delete.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getSchedulingPolicyView: function(callback) {
                 var srv = CStudioAuthoring.Service,
-                    url = srv._formatURL("{base}/service/ui/workflow-actions/schedule-policy?site={site}");
+                    url = srv._formatURL("{base}/service/ui/workflow-actions/schedule-policy?version=" + CStudioAuthoring.UIBuildId + "&site={site}");
                 srv._getView({
                     url: url,
                     callback: callback,
@@ -2866,11 +2866,11 @@ var nodeOpen = false,
             },
 
             getScheduleView: function (callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/schedule.html?site={site}', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/schedule.html?version=' + CStudioAuthoring.UIBuildId + '&site={site}', callback);
             },
 
             getInContextEditView: function(callback) {
-                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/in-context-edit.html', callback);
+                CSA.Service.getViewCommon('{base}/static-assets/components/cstudio-dialogs-templates/in-context-edit.html?version=' + CStudioAuthoring.UIBuildId, callback);
             },
 
             getImageRequest: function(data) {

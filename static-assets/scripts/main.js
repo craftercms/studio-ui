@@ -974,7 +974,7 @@
 
             $scope.createSitesDialog = function() {
                 $scope.adminModal = $modal.open({
-                    templateUrl: '/studio/static-assets/ng-views/create-site.html',
+                    templateUrl: '/studio/static-assets/ng-views/create-site.html?version='+ UIBuildId,
                     backdrop: 'static',
                     keyboard: true,
                     controller: 'SiteCtrl',
