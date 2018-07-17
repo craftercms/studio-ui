@@ -38,6 +38,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
     dashletApprovedSchedColEdit: "Editar",
     dashletApprovedSchedColURL: "URL",
     dashletApprovedSchedColEnvironment: "Ambiente",
+    dashletApprovedSchedColPackageId: "Id del Paquete",
     dashletApprovedSchedColLastEdited: "Última Edición",
     dashletApprovedSchedFilterPages: "Páginas",
     dashletApprovedSchedFilterComponents: "Componentes",

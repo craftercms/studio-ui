@@ -38,6 +38,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletApprovedSchedColEdit: "편집",
     dashletApprovedSchedColURL: "URL",
     dashletApprovedSchedColEnvironment: "환경",
+    dashletApprovedSchedColPackageId: "패키지 ID",
     dashletApprovedSchedColLastEdited: "최근 편집",
 
     showNumItems: "쇼",

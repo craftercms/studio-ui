@@ -46,6 +46,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
 		             WcmDashboardWidgetCommon.getSimpleRow("browserUri",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColURL"),"maximize")+
 		             "<th id='fullUri' class='width0'></th>"+
                      WcmDashboardWidgetCommon.getSimpleRow("server",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColEnvironment"),"maximize")+
+                     WcmDashboardWidgetCommon.getSimpleRow("packageId",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColPackageId"),"maximize")+
                      WcmDashboardWidgetCommon.getSimpleRow("lastEdit",widgetId,CMgs.format(langBundle, "dashletApprovedSchedColLastEdited"),"ttThColLast alignRight minimize");
 		return header;	
 	};
@@ -138,7 +139,8 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
             var browserUri = CStudioAuthoring.Operations.getPreviewUrl(item, false, true),
                 displayBrowserUri = WcmDashboardWidgetCommon.getFormattedString(browserUri, 80),
                 uri = item.uri,
-                environment = item.environment;
+                environment = item.environment,
+                packageId = item.packageId;
 
                 editLinkId = 'editLink_' + this.widgetId + '_' + WcmDashboardWidgetCommon.encodePathToNumbers(item.uri);
 
@@ -193,6 +195,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
                     "<td class='urlCol' title='",browserUri,"'>", displayBrowserUri, "</td>",
                     "<td title='fullUri' class='width0'>", uri, "</td>",
                     "<td title='server'>", environment, "</td>",
+                    "<td title='packageId'>", packageId, "</td>",
                     "<td class='alignRight ttThColLast'>", lastEditTime, "</td>"
                 ]);
             }
