@@ -6,7 +6,7 @@
     <label>{{ 'admin.audit.USER' | translate }}: </label>
 
     <div class="btn-group" dropdown is-open="usersDropdown.isopen" style="margin-right: 20px;">
-        <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle >
+        <button type="button" class="btn btn-default dropdown-toggle text-capitalize" dropdown-toggle >
             {{audit.userSelected || 'admin.audit.ALL_USERS' | translate }}  <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
@@ -14,7 +14,7 @@
                 <a ng-click="audit.updateUser()">{{ 'admin.audit.ALL_USERS' | translate }}</a>
             </li>
             <li ng-repeat="user in audit.users">
-                <a ng-click="audit.updateUser(user)">{{user.username}}</a>
+                <a class="text-capitalize" ng-click="audit.updateUser(user)">{{user.username}}</a>
             </li>
         </ul>
     </div>

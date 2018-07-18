@@ -342,6 +342,7 @@
             };
 
             getAudit(audit.site);
+            getUsers(audit.site);
 
         }
     ]);
