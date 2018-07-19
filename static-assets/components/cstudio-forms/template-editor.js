@@ -147,7 +147,7 @@ CStudioAuthoring.Module.requireModule(
 
 															if(parent){
 																var parentVarContainsDash = (sections.id.indexOf('-') > -1),
-																	parentId = parentVarContainsDash ? "[\"" + sections.id + "\"]" : "." + sections.id;
+																	parentId = parentVarContainsDash ? "[\"" + sections.id + "\"]" : sections.id;
 																value = parent + " - " + value;
 																id = containsDash ? parentId + ".item[0]" + id : parentId + ".item[0]." + id;
 															}
@@ -184,7 +184,7 @@ CStudioAuthoring.Module.requireModule(
 
 														if(parent){
 															var parentVarContainsDash = (sections.id.indexOf('-') > -1),
-																parentId = parentVarContainsDash ? "[\"" + sections.id + "\"]" : "." + sections.id;
+																parentId = parentVarContainsDash ? "[\"" + sections.id + "\"]" : sections.id;
 															value = parent + " - " + value;
 															id = containsDash ? parentId + ".item[0]" + id : parentId + ".item[0]." + id;
 														}
