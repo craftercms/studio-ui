@@ -1082,7 +1082,7 @@ WcmDashboardWidgetCommon.loadTableData = function (sortBy, container, widgetId, 
             newtable = blankRow + newtable + blankRow;
 
             var tableContentStart = '<table id="' + tableName + '-table" class="table">';
-            var theadContent = '<thead id="' + tableName + '-thead"><tr class="avoid">' + instance.renderItemsHeading() + '</tr></thead>';
+            var theadContent = '<thead class="ttThead" id="' + tableName + '-thead"><tr class="avoid">' + instance.renderItemsHeading() + '</tr></thead>';
             var tbodyContent = '<tbody id="' + tableName + '-tbody" class="ttTbody">' + newtable + '</tbody>';
             var tableContentEnd = '</table>';
 
