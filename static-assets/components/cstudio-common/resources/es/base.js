@@ -22,7 +22,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
     dashletGoLiveColEdit: "Editar",
     dashletGoLiveColURL: "URL",
     dashletGoLiveColEnvironment: "Ambiente",
-    dashletGoLiveColPublishDate: "Fecha y Hora de Publicación",
+    dashletGoLiveColPublishDate: "Fecha de Publicación",
     dashletGoLiveColLastEditedBy: "Ultima Edición por",
     dashletGoLiveColLastEditedDate: "Última Edición",
     dashletGoLivePages: "Páginas ({0})",

@@ -22,7 +22,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletGoLiveColEdit: "편집",
     dashletGoLiveColURL: "URL",
     dashletGoLiveColEnvironment: "환경",
-    dashletGoLiveColPublishDate: "날짜 및 시간 게시",
+    dashletGoLiveColPublishDate: "날짜 게시",
     dashletGoLiveColLastEditedBy: "마지막 편집으로",
     dashletGoLiveColLastEditedDate: "최근 편집",
     dashletGoLivePages: "페이지 ({0})",
