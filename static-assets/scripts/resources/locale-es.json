@@ -42,6 +42,8 @@
         "SITE_NAME": "Nombre de Sitio",
         "SITE_ID": "Id de Sitio",
         "DESCRIPTION": "Descripción",
+        "SANDBOX_BRANCH": "Branch de Sandbox",
+        "SANDBOX_BRANCH_MSG": "(El Branch se predetermina a 'maestro' cuando está en blanco)",
         "NAME": "Nombre del repositorio remoto de Git",
         "NAMEEXAMPLE":"(Ejemplo: origen)",
         "URL": "URL del repositorio remoto de Git",
