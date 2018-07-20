@@ -1184,6 +1184,9 @@
                 });
 
                 var params = {site_id: $scope.site.siteId, description: $scope.site.description};
+                if($scope.site.sandbox_branch){
+                    params.sandbox_branch = $scope.site.sandbox_branch;
+                }
                 if (!$scope.isCollapsed){
                     params.use_remote = !$scope.isCollapsed;
                     params.remote_name = $scope.site.name;
