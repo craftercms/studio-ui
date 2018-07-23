@@ -3887,7 +3887,7 @@ var nodeOpen = false,
             },
 
             calculateDependencies: function(data, callback) {
-                var serviceUrl = '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site=' + CStudioAuthoringContext.site;
+                var serviceUrl = '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site_id=' + CStudioAuthoringContext.site;
                 CStudioAuthoring.Service.request({
                     method: "POST",
                     data: data,
