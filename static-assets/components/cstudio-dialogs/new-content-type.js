@@ -140,10 +140,8 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 		YEvent.on("contentTypeDisplayName", "keyup", function() {
                     YAHOO.Bubbling.fire("content-type.values.changed");
 					value = document.getElementById('contentTypeDisplayName').value;
-
-					var find = ' ';
-					var re = new RegExp(find, 'g');
-					value = value.replace(re, '-');
+            
+					value = value.replace(/[^a-z0-9]/gi, '');
 					value = value.toLowerCase();
 
                     document.getElementById('contentTypeName').value = value;
