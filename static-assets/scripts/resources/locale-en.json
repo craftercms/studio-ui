@@ -172,7 +172,7 @@
           "BULKPUBLISH": "Bulk Publish",
           "PATHPUBLISH": "Path to Publish",
           "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
-          "PUBLISHINGENVIRONMENT": "Publishing Environment",
+          "PUBLISHINGENVIRONMENT": "Environment",
           "PUBLISH": "Publish",
           "PATH":"Path",
           "CHANNEL":"Channel",
