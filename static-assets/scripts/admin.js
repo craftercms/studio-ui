@@ -173,8 +173,9 @@
                 return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
             };
 
-            this.bulkGoLive = function(site, path) {
-                return $http.post(bulkPublish('bulk-golive', 'site=' + site + "&path=" + path + "&environment=" + Constants.BULK_ENVIRONMENT));
+            this.bulkGoLive = function(site, path, environmet) {
+                environmet = environmet ? environmet : Constants.BULK_ENVIRONMENT;
+                return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet));
             };
 
             function api(action) {
@@ -468,24 +469,24 @@
 
                 var currentIconColor;
                 publish.channels;
-                //publish.getPublishingChannels;
+                publish.getPublishingChannels;
                 publish.bulkPublish;
                 publish.continue;
-                //publish.selectedChannel ='';
+                publish.selectedChannel ='';
                 publish.pathPublish = '';
 
-                /*publish.getPublishingChannels = function () {
+                publish.getPublishingChannels = function () {
                     adminService.getPublishingChannels(publish.site)
                         .success(function (data) {
-                            //data.availablePublishChannels = [{name: "Live", publish: true, updateStatus: false, order: 2147483647}, {name: "Test", publish: true, updateStatus: false, order: 2147483642}]
                             publish.channels = data.availablePublishChannels;
                             publish.selectedChannel = publish.channels[0].name.toString();
                         })
                         .error(function () {
+                            publish.channels = [];
                         });
                 };
 
-                publish.getPublishingChannels();*/
+                publish.getPublishingChannels();
 
                 publish.bulkPublish = function () {
                     $scope.adminModal = publish.showModal('confirmationModal.html', 'md');
@@ -496,7 +497,7 @@
                     publish.disable = true;
                     spinnerOverlay = $scope.spinnerOverlay();
 
-                    adminService.bulkGoLive(publish.site, publish.pathPublish)
+                    adminService.bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel)
                         .success(function (data) {
                             publish.disable = false;
                             spinnerOverlay.close();
