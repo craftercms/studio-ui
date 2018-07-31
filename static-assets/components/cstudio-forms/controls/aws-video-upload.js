@@ -58,6 +58,11 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   
   getSupportedProperties: function() {
     return [
+      { label: "Service", name: "service", type: "dropdown", defaultValue: [
+          { value: "elastictranscoder", label: "Elastic Transcoder", selected: true },
+          { value: "mediaconvert", label: "MediaConver", selected: false },
+        ]
+      },
       { label: "Profile ID", name: "profile_id", type: "string", defaultValue: "elastic-transcoder-default" }
     ];
   },
@@ -69,7 +74,14 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   },
   
   _onChange: function(evt, obj) {
-    var serviceUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/aws/elastictranscoder/transcode.json");
+    var service = JSON.parse(obj.properties.find(function(p) { return p.name == "service"; }).value).find(function(p){ return p.selected; }).value;
+    var url;
+    if(service == 'elastictranscoder') {
+      url = "/api/1/services/api/1/aws/elastictranscoder/transcode.json";
+    } else if(service == 'mediaconvert') {
+      url = "/api/1/services/api/1/aws/mediaconvert/upload.json";
+    }
+    var serviceUri = CStudioAuthoring.Service.createServiceUri(url);
 
     var callback = { 
       cache: false,
