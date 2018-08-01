@@ -13,7 +13,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     ROOT_OPEN: "open",
     ROOT_CLOSED: "closed",
     ROOT_TOGGLE: "toggle",
-    ISCONTENTMENUCREATED: false,
     treePaths: [],
     storage: CStudioAuthoring.Storage,
     customIcons: {},
@@ -49,6 +48,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                     instance.openArray.push(latestStored);
                 }
             }
+
+            instance.IsContentMenuCreated = false;
 
             var key = config.params.label;
             key = key.replace(/\s/g,'');
@@ -333,8 +334,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             }
         );
 
-        if(WcmAssetsFolder.ISCONTENTMENUCREATED == false){
-            WcmAssetsFolder.ISCONTENTMENUCREATED = true;
+        if(instance.IsContentMenuCreated == false){
+            instance.IsContentMenuCreated = true;
             contextMenu.subscribe('beforeShow', function() {
                 CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(tree, this, contextMenuId);
             }, tree, false);
