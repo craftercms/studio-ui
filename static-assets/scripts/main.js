@@ -9,7 +9,8 @@
         'pascalprecht.translate',
         'angularMoment',
         'angularUtils.directives.dirPagination',
-        'ngTagsInput'
+        'ngTagsInput',
+        'ngPatternRestrict'
     ]);
 
     app.run([
