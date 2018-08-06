@@ -1,20 +1,25 @@
 
 CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 
-REJECT_DIALOG_TEMPLATE = ['<div class=\"bd\">'+
+REJECT_DIALOG_TEMPLATE = [
+'<div class=\"bd\">'+
 			'<div id=\"acnVersionWrapper\" class=\"acnBox\">'+
 			'<h3>Reject</h3>'+
 			'<p>The following checked item(s) will be rejected.</p>'+
-			'<div class="acnScroll">'+
-  			'<h5>'+
-			'<span class="left">Item</span>'+
-			'<span class="right">Submitted By</span>'+
-			'</h5>'+
-    '<div class="acnScrollBox" style="height:100px">'+
-			'<table class="acnLiveTable liveTable">'+
-        '<tbody id="tbodyDepend">'+
-       '</tbody></table>'+
-		'</div>'+
+			'<div class="acnScroll rejectContainer">'+
+    //'<div class="acnScrollBox" style="height:100px">'+
+	    '<table class="acnLiveTable liveTable">'+
+            '<thead class="ttThead">'+
+                '<tr>'+
+                    '<th class="checkboxTh"></th>'+
+                    '<th class="itemTh">Item</th>'+
+                    '<th class="submittedTh">Submitted By</th>'+
+                '</tr>' +
+            '</thead>' +
+            '<tbody id="tbodyDepend">'+
+            '</tbody>' +
+        '</table>'+
+        // '</div>'+
 	'</div>'+
 	'<div class="formRow padTop">'+
 		'<label>Rejection Reason:</label>'+
