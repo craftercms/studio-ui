@@ -44,7 +44,7 @@
         "SITE_ID": "Site Id",
         "DESCRIPTION": "Description",
         "SANDBOX_BRANCH": "Sandbox Branch",
-        "SANDBOX_BRANCH_MSG": "(Branch defaults to 'master' when blank)",
+        "SANDBOX_BRANCH_MSG": "(Branch typically defaults to 'master' when blank)",
         "NAME": "Remote Git Repository Name",
         "NAMEEXAMPLE":"(Example: origin)",
         "URL": "Remote Git Repository URL",
