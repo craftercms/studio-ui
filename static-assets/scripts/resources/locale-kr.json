@@ -43,7 +43,7 @@
         "SITE_ID": "사이트 신분증",
         "DESCRIPTION": "기술",
         "SANDBOX_BRANCH": "샌드 박스 지점",
-        "SANDBOX_BRANCH_MSG": "(비어 있으면 브랜치는 마스터로 기본 설정됩니다)",
+        "SANDBOX_BRANCH_MSG": "(비어 있으면 일반적으로 지점은 '마스터'로 기본 설정됩니다)",
         "NAME": "원격 Git 저장소 이름",
         "NAMEEXAMPLE":"(예 : 출발지)",
         "URL": "원격 Git 저장소 URL",
