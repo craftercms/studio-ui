@@ -4307,6 +4307,45 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight {
 .liveTable td.alignCenter, th.alignCenter {
   text-align: center; }
 
+div.rejectContainer {
+  color: #000 !important;
+  overflow: initial !important; }
+  div.rejectContainer table.acnLiveTable {
+    width: 100% !important;
+    table-layout: fixed; }
+    div.rejectContainer table.acnLiveTable thead {
+      background-color: #7f9db9;
+      color: #fff;
+      font-weight: normal;
+      margin: 0;
+      overflow: hidden;
+      padding: 7px 20px 7px 27px;
+      width: 100%;
+      border-radius: 6px 6px 0 0; }
+      div.rejectContainer table.acnLiveTable thead tr {
+        height: 45px; }
+        div.rejectContainer table.acnLiveTable thead tr th {
+          border-radius: inherit; }
+          div.rejectContainer table.acnLiveTable thead tr th.checkboxTh {
+            width: 10%;
+            border-top-left-radius: 6px; }
+          div.rejectContainer table.acnLiveTable thead tr th.itemTh {
+            width: 65%; }
+          div.rejectContainer table.acnLiveTable thead tr th.submittedTh {
+            width: 25%;
+            border-top-right-radius: 6px; }
+    div.rejectContainer table.acnLiveTable tbody {
+      border: 1px solid #CCCCCC; }
+      div.rejectContainer table.acnLiveTable tbody tr {
+        border-bottom: 1px solid #fff;
+        height: 40px; }
+        div.rejectContainer table.acnLiveTable tbody tr td {
+          padding: 3px 5px 10px 0; }
+      div.rejectContainer table.acnLiveTable tbody tr:last-child {
+        border-bottom-color: #CCC; }
+      div.rejectContainer table.acnLiveTable tbody div.in {
+        word-break: break-all !important; }
+
 .liveColLast {
   padding-right: 20px;
   _padding-right: 35px; }

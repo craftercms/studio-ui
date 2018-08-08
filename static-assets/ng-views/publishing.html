@@ -71,6 +71,78 @@
 
             </div>
         </tab>
+        <tab id="commitsTab">
+            <tab-heading>
+                <span class="mr10 fa fa-arrow-up"></span>{{ 'admin.publishing.PUBLISHBYCOMMITS' | translate }}
+            </tab-heading>
+            <div class="m10 mt25 commitsContainer">
+                <h3 class='mt5 mb15'>{{ 'admin.publishing.PUBLISHBYCOMMITS' | translate }}</h3>
+
+                <form name="commitsForm" id="commits-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+                    <div class="panel">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="bulkPath" class="control-label">{{ 'admin.publishing.COMMITIDS' | translate
+                                    }}</label>
+                                <span class="validationComment">{{ 'admin.publishing.COMMITIDSEXAMPLE' | translate }}</span>
+                                <textarea class="form-control" id="commitIds" name="commitIds"
+                                          ng-pattern-restrict="^[A-Za-z0-9,\s]*$" ng-model="publish.commitIds" autofocus focus-me="true" required></textarea>
+
+                                <div class="error-container"
+                                     ng-show="(commitsForm.commitIds.$dirty && commitsForm.commitIds.$invalid) || (commitsForm.commitIds.$touched && commitsForm.commitIds.$invalid)">
+                                    <small class="error"
+                                           ng-show="commitsForm.commitIds.$error.required">
+                                        {{ 'admin.publishing.COMMITIDS' | translate }} {{ 'common.IS_REQUIRED_LABEL' |
+                                        translate }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="commitChannel" class="control-label">{{
+                                    'admin.publishing.PUBLISHINGENVIRONMENT' | translate }}</label>
+                                <select class="form-control" id="commitChannel" name="commitChannel"
+                                        ng-model="publish.selectedChannelCommit"
+                                        ng-options="item.name as item.name for item in publish.channels">
+                                </select>
+
+                                <div class="error-container" ng-if="dialogMode"
+                                     ng-show="(commitsForm.commitChannel.$dirty && commitsForm.commitChannel.$invalid) || (commitsForm.commitChannel.$touched && commitsForm.commitChannel.$invalid)">
+                                    <small class="error"
+                                           ng-show="commitsForm.commitChannel.$error.required">
+                                        {{ 'admin.publishing.CHANNEL' | translate }} {{ 'common.REQUIRED_LABEL' |
+                                        translate }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="publishComment" class="control-label">{{ 'admin.publishing.COMMENT' |
+                                    translate }}</label>
+                                <textarea class="form-control" id="publishComment" name="publishComment"
+                                          ng-model="publish.publishComment"></textarea>
+
+                                <div class="error-container"
+                                     ng-show="(commitsForm.publishComment.$dirty && commitsForm.publishComment.$invalid) || (commitsForm.publishComment.$touched && commitsForm.publishComment.$invalid)">
+                                    <small class="error"
+                                           ng-show="commitsForm.publishComment.$error.required">
+                                        {{ 'admin.publishing.COMMENT' | translate }} {{ 'common.IS_REQUIRED_LABEL' |
+                                        translate }}
+                                    </small>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class='publish-buttons'>
+                        <input type='button' id='commits-submit' class='btn btn-primary'
+                               value="{{ 'admin.publishing.PUBLISH' | translate }}" ng-click="publish.commitsPublish()"
+                               ng-disabled="commitsForm.$invalid || publish.commitIdsDisable"/>
+                    </div>
+                </form>
+            </div>
+        </tab>
+
     </tabset>
 
 </div>

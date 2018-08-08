@@ -178,6 +178,13 @@
                 return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet));
             };
 
+            //COMMITSPUBLISH
+
+            this.commitsPublish = function(data) {
+                //return $http.post(publish('commits', 'site_id=' + site + "&commit_ids=" + commitIds + "&environment=" + environmet));
+                return $http.post(publish('commits'), data);
+            };
+
             function api(action) {
                 return Constants.SERVICE + 'site/' + action + '.json';
             }
@@ -473,6 +480,7 @@
                 publish.bulkPublish;
                 publish.continue;
                 publish.selectedChannel ='';
+                publish.selectedChannelCommit ='';
                 publish.pathPublish = '';
 
                 publish.getPublishingChannels = function () {
@@ -480,6 +488,7 @@
                         .success(function (data) {
                             publish.channels = data.availablePublishChannels;
                             publish.selectedChannel = publish.channels[0].name.toString();
+                            publish.selectedChannelCommit = publish.channels[0].name.toString();
                         })
                         .error(function () {
                             publish.channels = [];
@@ -503,9 +512,42 @@
                             spinnerOverlay.close();
                             $scope.confirmationBulk = publish.showModal('confirmationBulk.html', 'md');
                         })
-                        .error(function () {
+                        .error(function (err) {
+                            publish.error = err.message;
+                            $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
+                            spinnerOverlay.close();
+                            publish.disable = false;
                         })
                 }
+
+            //COMMITS PUBLISH
+
+            publish.commitIds;
+            publish.publishComment = '';
+
+            publish.commitsPublish = function () {
+                var spinnerOverlay,
+                    data = {},
+                    selectedChannelCommit = publish.commitIds.replace(/ /g,'').split(",");
+                data['site_id'] = publish.site;
+                data['commit_ids'] = selectedChannelCommit;
+                data.environment = publish.selectedChannelCommit ? publish.selectedChannelCommit : Constants.BULK_ENVIRONMENT;
+                data.comment = publish.publishComment;
+                publish.commitIdsDisable = true;
+                spinnerOverlay = $scope.spinnerOverlay();
+
+                adminService.commitsPublish(data)
+                    .success(function (data) {
+                        publish.commitIdsDisable = false;
+                        spinnerOverlay.close();
+                    })
+                    .error(function (err) {
+                        publish.error = err.message;
+                        $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
+                        spinnerOverlay.close();
+                        publish.commitIdsDisable = false;
+                    })
+            }
 
         }
     ]);

@@ -34,6 +34,7 @@
     <script src="/studio/static-assets/libs/angular-ui-utils/ui-utils.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/Smart-Table/dist/smart-table.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.js"></script>
+    <script src="/studio/static-assets/libs/ng-pattern-restrict/ng-pattern-restrict.min.js"></script>
     <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>

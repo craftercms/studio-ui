@@ -6279,9 +6279,9 @@ table td {
       font-size: 18px; }
   .publishing-view .publish-buttons {
     text-align: right; }
-  .publishing-view .bulkContainer input, .publishing-view .bulkContainer select {
+  .publishing-view .bulkContainer input, .publishing-view .bulkContainer select, .publishing-view .commitsContainer input, .publishing-view .commitsContainer select {
     max-width: 500px; }
-  .publishing-view .bulkContainer .error.ng-binding {
+  .publishing-view .bulkContainer .error.ng-binding, .publishing-view .commitsContainer .error.ng-binding {
     color: red; }
 
 .audit-number-logs {
@@ -6565,3 +6565,5 @@ body.iewarning header {
   margin-top: 21px; }
 body.iewarning .ccms-iewarning {
   display: block; }
+
+/*# sourceMappingURL=main.css.map */

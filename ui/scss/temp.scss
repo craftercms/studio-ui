@@ -1906,6 +1906,78 @@ div.acnBox table.acnLiveTable td.acnLiveTableRight {
   text-align: center;
 }
 
+div.rejectContainer{
+
+
+  color:#000 !important;
+  overflow: initial !important;
+
+  table.acnLiveTable{
+    width: 100% !important;
+    table-layout: fixed;
+
+    thead{
+      background-color: #7f9db9;
+      color: #fff;
+      font-weight: normal;
+      margin: 0;
+      overflow: hidden;
+      padding: 7px 20px 7px 27px;
+      width: 100%;
+      border-radius: 6px 6px 0 0;
+
+      tr{
+        height: 45px;
+
+        th{
+          border-radius: inherit;
+
+          &.checkboxTh{
+            width: 10%;
+            border-top-left-radius: 6px;
+          }
+          &.itemTh{
+            width: 65%;
+          }
+          &.submittedTh{
+            width: 25%;
+            border-top-right-radius: 6px;
+          }
+
+        }
+      }
+
+    }
+
+    tbody{
+
+      border: 1px solid #CCCCCC;
+
+      tr{
+        border-bottom: 1px solid #fff;
+        height: 40px;
+
+        td {
+          padding: 3px 5px 10px 0;
+        }
+
+      }
+
+      tr:last-child{
+        border-bottom-color: #CCC;
+      }
+
+      div.in{
+        word-break: break-all !important;
+      }
+    }
+
+  }
+
+}
+
+
+
 .liveColLast {
   padding-right: 20px;
   _padding-right: 35px;

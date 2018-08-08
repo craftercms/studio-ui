@@ -43,7 +43,7 @@
         "SITE_ID": "Id de Sitio",
         "DESCRIPTION": "Descripción",
         "SANDBOX_BRANCH": "Branch de Sandbox",
-        "SANDBOX_BRANCH_MSG": "(El Branch se predetermina a 'maestro' cuando está en blanco)",
+        "SANDBOX_BRANCH_MSG": "(La sucursal generalmente se predetermina a 'maestro' cuando está en blanco)",
         "NAME": "Nombre del repositorio remoto de Git",
         "NAMEEXAMPLE":"(Ejemplo: origen)",
         "URL": "URL del repositorio remoto de Git",
@@ -176,7 +176,11 @@
           "CHANNEL":"Canal",
           "WARNINGBP":"Advertencia: Publicación Masiva",
           "WRNINGGPBODY":"La publicación masiva obligará a publicar todos los artículos que coincidan con el patrón solicitado, incluidas sus dependencias. Asegúrese de que todos los elementos modificados (incluido el trabajo potencialmente en progreso) estén listos para publicarse antes de continuar.",
-          "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado."
+          "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado.",
+          "PUBLISHBYCOMMITS": "Públicar por id(s) de commit",
+          "COMMITIDS": "ID de commits",
+          "COMMENT": "Comentario",
+          "COMMITIDSEXAMPLE": "(por ejemplo, bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbbb5b91fb31841303b0c428f14b0e66f8a7)"
       },
       "repositories": {
           "REPOSITORIES": "Repositorios",
@@ -208,6 +212,7 @@
     "SAVE": "Guardar",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "es requerido.",
+    "REQUIRED_LABEL": "requerido.",
     "ALL_LABEL": "Todos",
     "REMOVE_LABEL": "Eliminar",
     "CONFIRMATION": "Confirmación",
