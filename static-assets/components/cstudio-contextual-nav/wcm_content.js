@@ -145,6 +145,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             }
                                             if (treeData.item.inFlight) {
                                                 cont++;
+                                                if(!nodeOpen){
+                                                    eventCM.typeAction = e.typeAction;
+                                                    eventCM.item = treeData.item;
+                                                    document.dispatchEvent(eventCM);
+
+                                                }
                                                 if (cont < 5) {
                                                     setTimeout(function () {
                                                         lookupSiteContent(curNode, cont);
@@ -159,6 +165,13 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                                         lookupSiteContent(curNode, cont);
                                                     }, 300);
                                                 } else {
+                                                    if(!nodeOpen){
+                                                        eventCM.typeAction = e.typeAction;
+                                                        eventCM.item = treeData.item;
+                                                        console.log(treeData.item);
+                                                        document.dispatchEvent(eventCM);
+
+                                                    }
                                                     _this.refreshAllDashboards();
                                                 }
                                             }
@@ -167,13 +180,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         }
                                     })
                                 }
-                            }
-
-                            if(!nodeOpen){
-                                eventCM.typeAction = e.typeAction;
-                                eventCM.item = treeData.item;
-                                document.dispatchEvent(eventCM);
-                                
                             }
 
                             _this.refreshAllDashboards();
