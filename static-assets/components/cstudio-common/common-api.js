@@ -7113,7 +7113,7 @@ var nodeOpen = false,
                         }else{
                             mainIconClass = defaultIcons.navPage.class;
                         }
-                    }else if(treeNodeTO.contentType.toLowerCase().indexOf("taxonomy") !== -1){
+                    }else if(treeNodeTO.contentType && treeNodeTO.contentType.toLowerCase().indexOf("taxonomy") !== -1){
                         mainIconClass = defaultIcons.taxonomy.class;
                     }
                 }
