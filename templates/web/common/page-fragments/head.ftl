@@ -41,6 +41,8 @@
 <script src="/studio/static-assets/libs/jquery/dist/jquery.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 <script src="/studio/static-assets/libs/jquery-ui/jquery-ui.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 <script src="/studio/static-assets/yui/bubbling.v1.5.0-min.js?version=${UIBuildId!.now?string('Mddyyyy')}" type="text/javascript"></script>
+<script src="/studio/static-assets/libs/css-element-queries/ElementQueries.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+<script src="/studio/static-assets/libs/css-element-queries/ResizeSensor.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 
 <script>document.domain = "${cookieDomain}";</script>
