@@ -503,6 +503,16 @@
                     CStudioAuthoring.SelectedContent.setContent(content.item);
                 }
             });
+
+              new ResizeSensor($('.navbar-default'), function(){
+                  console.log(this);
+                  if($('.navbar-default').height() > 55){
+                      $('.studio-preview').css('top', 100 + "px");
+                  }else{
+                      $('.studio-preview').css('top', 50 + "px");
+                  }
+              });
+
           },
           failure: function(response) {
             console.error("Can't load site-config.xml file:", response);
