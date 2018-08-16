@@ -74,11 +74,11 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
   },
   
   _onChange: function(evt, obj) {
-    var service = JSON.parse(obj.properties.find(function(p) { return p.name == "service"; }).value).find(function(p){ return p.selected; }).value;
+    var service = JSON.parse(obj.properties.find(function(p) { return p.name === "service"; }).value).find(function(p){ return p.selected; }).value;
     var url;
-    if(service == 'elastictranscoder') {
+    if(service === 'elastictranscoder') {
       url = "/api/1/services/api/1/aws/elastictranscoder/transcode.json";
-    } else if(service == 'mediaconvert') {
+    } else if(service === 'mediaconvert') {
       url = "/api/1/services/api/1/aws/mediaconvert/upload.json";
     }
     var serviceUri = CStudioAuthoring.Service.createServiceUri(url);
