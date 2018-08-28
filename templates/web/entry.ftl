@@ -48,7 +48,14 @@
 </head>
 <body class="{{$state.current.cssClass}}">
 
-<ui-view></ui-view>
+<ui-view class="general-view"></ui-view>
+
+<div class="footer-general" ng-show="isFooter">
+    <section class="footer-body">
+        <p class="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</p>
+        <img class="crafter-studio-logo" alt="Crafter Studio" ng-src="/studio/static-assets/images/crafter_studio_360.png" src="/studio/static-assets/images/crafter_studio_360.png">
+    </section>
+</div>
 
 </body>
 </html>

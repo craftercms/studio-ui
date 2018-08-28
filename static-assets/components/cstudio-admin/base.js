@@ -5,7 +5,7 @@ CStudioAdminConsole = {
 		this.containerEl = containerEl;
 		
 		containerEl.innerHTML = 
-				"<div class='categories-panel'></div>" +
+				"<div id='categories-panel' class='categories-panel'><div id='categoriesPanelWrapper'></div></div>" +
 				"<div id='cstudio-admin-console-workarea'></div>";
 
 		CStudioAuthoring.Service.lookupConfigurtion(
@@ -13,7 +13,7 @@ CStudioAdminConsole = {
 			"/administration/site-config-tools.xml",
 			{
 				success: function(config) {
-					var panelEl = YAHOO.util.Selector.query("#admin-console .categories-panel", null, true);
+					var panelEl = YAHOO.util.Selector.query("#admin-console .categories-panel #categoriesPanelWrapper", null, true);
 					this.context.toolbar = new CStudioAdminConsole.Toolbar(panelEl);
 
 					this.context.buildModules(config, panelEl);
@@ -78,6 +78,11 @@ CStudioAdminConsole = {
 				}
 			}
 		}
+
+        var entitlementValidatorP= document.createElement('p');
+        YDom.addClass(entitlementValidatorP, "entitlementValidator");
+        entitlementValidatorP.innerHTML = entitlementValidator;
+        document.getElementById('categories-panel').appendChild(entitlementValidatorP);
     }
 }
 
