@@ -53,7 +53,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                             '<div id="acn-context-tooltip" class="acn-context-tooltip"></div>' +
                             '<div id="acn-dropdown-menu" style="height:100%" class="acn-dropdown-menu">' +
                                 '<div id="acn-dropdown-menu-inner" class="acn-dropdown-menu-inner unselectable"></div>' +
-                                '<div id="acn-dropdown-footer" class="acn-dropdown-footer"></div>' +
+                                '<div id="acn-dropdown-footer" class="acn-dropdown-footer"><p>'+ entitlementValidator +'</p></div>' +
                             '</div>' +
                         '</div>' +
                         '</div>' +
