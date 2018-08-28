@@ -33,6 +33,8 @@
         formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
     </script>
 
+    <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
+
 </head>
 
 <body class="yui-skin-cstudioTheme">

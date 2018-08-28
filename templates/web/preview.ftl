@@ -18,7 +18,11 @@
         formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
         previewLangBundle = CMgs.getBundle("previewTools", CStudioAuthoringContext.lang);
         siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
+       /* window.entitlementValidator = "${applicationContext.get("crafter.entitlementValidator").getDescription()}";*/
+        /*var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };*/
     </script>
+
+    <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 
     <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
