@@ -72,6 +72,12 @@
     font-family: monospace, sans-serif;
 }
 
+#editor-container pre {
+    height: 100%;
+	resize: none;
+	width: 100%;
+}
+
 #template-editor-button-container {
 	position: fixed;
     width: 100%;
@@ -115,4 +121,8 @@
     top: 0;
     width: 100%;
     z-index: 99999999;
+}
+
+.ace_editor.ace_autocomplete {
+    z-index: 9999999 !important;
 }

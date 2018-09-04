@@ -10,9 +10,6 @@
 	margin: 10px 0 10px 0;
 }
 
-#edit-area {
-}
-
 #menu-area {
 	display: inline-block;
 	margin: 10px 0 10px 0;
@@ -51,11 +48,10 @@
     width: 45%;
 }
 
-#edit-window textarea {
-	height: 100%;
+#edit-window .editor-text {
+	height: 600px;
 	resize: none;
 	width: 100%;
-	font-size: 12px;
     font-family: monospace, sans-serif;
 }
 
@@ -68,7 +64,6 @@
 
 #sample-text {
 	height: 600px;
-	width: 500px;
 }
 
 #edit-window .CodeMirror pre, #sample-window .CodeMirror pre{

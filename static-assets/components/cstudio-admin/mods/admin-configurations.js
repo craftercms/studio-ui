@@ -1,15 +1,10 @@
 CStudioAuthoring.Module.requireModule(
-	'codemirror',
-	'/static-assets/components/cstudio-common/codemirror/lib/codemirror.js', {}, {
+	'ace',
+	'/static-assets/components/cstudio-common/ace/ace.js', {}, {
 	moduleLoaded: function() {
 
-		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/lib/util/formatting.js");
-		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/xml/xml.js");
-		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/javascript/javascript.js");
-		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/htmlmixed/htmlmixed.js");
-		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/css/css.js");
-		CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-common/codemirror/lib/codemirror.css");
 		CStudioAuthoring.Utils.addCss("/static-assets/themes/cstudioTheme/css/template-editor.css");
+		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/ace/ext-language_tools.js");
 
 		CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/admin-configurations.css");
 		CStudioAdminConsole.Tool.AdminConfig = CStudioAdminConsole.Tool.AdminConfig ||  function(config, el)  {
@@ -60,30 +55,26 @@ CStudioAuthoring.Module.requireModule(
 							"</div>" + 
 							"<div id='content-area'>" +
 								"<div id='edit-window'>" + 
-									"<textarea id='text-editor'></textarea>" +
 								"</div>" +
 								"<div id='sample-window'>" +
-									"<textarea id='sample-text'></textarea>" + 
 								"</div>" + 
 							"</div>" + 
 						"</div>" + 
 					"</div>";
-				// set editor for configuration file 
-				var editorEl = document.getElementById("text-editor");	
+				// set editor for configuration file 	
 				var editorContainerEl = document.getElementById("edit-window");	
-				this.setEditor(editorContainerEl, editorEl, false);
+				var editorEl = this.setEditor(editorContainerEl, false);
 				// set editor for sample configuration file 
-				var sampleEditorEl = document.getElementById("sample-text");	
 				var sampleEditorContainerEl = document.getElementById("sample-window");	
-				this.setEditor(sampleEditorContainerEl, sampleEditorEl, true);
+				var sampleEditorEl = this.setEditor(sampleEditorContainerEl, true);
 
 				var itemSelectEl = document.getElementById("config-list");
 				// add action buttons
                 var buttonAreaEl = document.getElementById("config-buttons");
-				this.addButtons(buttonAreaEl, itemSelectEl, editorEl.codeMirrorEditor);
+				this.addButtons(buttonAreaEl, itemSelectEl, editorEl);
 				// set configuration dropdown
 				var editAreaEl = document.getElementById("edit-area");
-				this.loadConfigFiles(itemSelectEl, editAreaEl, editorEl.codeMirrorEditor, sampleEditorEl.codeMirrorEditor);
+				this.loadConfigFiles(itemSelectEl, editAreaEl, editorEl, sampleEditorEl);
 
 				// hide display area by default
 				editAreaEl.style.display = 'none';
@@ -150,7 +141,7 @@ CStudioAuthoring.Module.requireModule(
 						var getConfigCb = {
 							success: function(response) {
 								editor.setValue(response.responseText);
-                                editor.clearHistory();
+                                editor.clearSelection(); // This will remove the highlight over the text
                                 CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 
 								//add history
@@ -195,6 +186,7 @@ CStudioAuthoring.Module.requireModule(
 									var sampleAreaEl = document.getElementById("sample-window");
 									sampleAreaEl.style.display = 'inline';
 									sampleEditor.setValue(response.responseText);
+									sampleEditor.clearSelection(); // This will remove the highlight over the text
 									CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(sampleEditor);
                                     CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(editor);
 									viewSampleButtonEl.style.display = 'inline';
@@ -221,31 +213,32 @@ CStudioAuthoring.Module.requireModule(
 			},
 			
 			/*
-			* create CodeMirror editor
+			* create editor
 			*/
-			setEditor: function (editorContainerEl, editorEl, readOnly) {
-				// create edit area
-				editorEl.style.backgroundColor= "white";
-				editorEl.codeMirrorEditor = CodeMirror.fromTextArea(editorEl, {
-					mode: 'xml',
-					lineNumbers: true,
-					lineWrapping: true,
-					smartIndent: false
+			setEditor: function (editorContainerEl, readOnly) {
+				var editorEl = document.createElement("pre");
+				editorEl.id = readOnly ? "sample-text" : "text-editor";
+				editorEl.className += "editor-text";
+				editorContainerEl.appendChild(editorEl);
+				
+				var mode = "ace/mode/xml";
+
+				var langTools = ace.require("ace/ext/language_tools");
+				var aceEditor = ace.edit(editorEl.id);
+				aceEditor.session.setMode(mode);
+				aceEditor.setOptions({
+					showPrintMargin: false,
+					fontSize: "12px"
 				});
-				
-				var codeEditorEl = YAHOO.util.Dom.getElementsByClassName("CodeMirror", null, editorContainerEl)[0];
-				var codeEditorCanvasEl = YAHOO.util.Dom.getElementsByClassName("CodeMirror-wrap", null, editorContainerEl)[0];
-						codeEditorCanvasEl.style.height = "100%";
-						codeEditorCanvasEl.style.border = "thick solid #EEEEEE";
-				var codeEditorScrollEl = YAHOO.util.Dom.getElementsByClassName("CodeMirror-scroll", null, editorContainerEl)[0];
-						codeEditorScrollEl.style.height = "100%";
-				
+
 				if (readOnly) {
-					codeEditorEl.style.backgroundColor = "#EEEEEE";
-					editorEl.codeMirrorEditor.setOption("readOnly", true);
+					aceEditor.setReadOnly(true);
+					aceEditor.container.style.background="#EEEEEE";
 				} else {
-					codeEditorEl.style.backgroundColor = "white";
+					aceEditor.container.style.background="white";
 				}
+
+				return aceEditor;
 
 			},
 			
@@ -340,24 +333,36 @@ CStudioAuthoring.Module.requireModule(
 			},
 			
 			expandEditor: function(editor) {
-				editor.setSize(this.width, this.height);
+				var editorContainer = editor.container;
+				editorContainer.style.width = this.width;
+				editorContainer.style.height = this.height;
+				editor.resize();
 			},
 			
 			shrinkEditor: function(editor) {
-				editor.setSize(this.width/2, this.height);
+				var editorContainer = editor.container;
+				editorContainer.style.width = this.width/2;
+				editorContainer.style.height = this.height;
+				editor.resize();
 			},
 
             expandEditorParent: function(contentArea, editor) {
                 contentArea.classList.remove("sample");
                 if (editor){
-                    editor.setSize("100%", this.height);
+					var editorContainer = editor.container;
+					editorContainer.style.width = "100%";
+					editorContainer.style.height = this.height;
+					editor.resize();
                 }
             },
 
             shrinkEditorParent: function(contentArea, editor) {
                 contentArea.classList.add("sample");
                 if (editor){
-                    editor.setSize("100%", this.height);
+					var editorContainer = editor.container;
+					editorContainer.style.width = "100%";
+					editorContainer.style.height = this.height;
+					editor.resize();
                 }
             },
 

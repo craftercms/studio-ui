@@ -651,7 +651,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     text-align: right;
     padding-right: 5px;
 }
-.text-mode .CodeMirror {
+.text-mode .ace_editor {
     display: none;
 }
 .code-mode td.mceIframeContainer {
