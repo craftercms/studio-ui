@@ -2960,7 +2960,7 @@ var nodeOpen = false,
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
-            getUserInfoServiceURL: "/api/1/services/api/1/user/get.json",
+            getUserInfoServiceURL: "/api/2/users/",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
 
@@ -4071,11 +4071,12 @@ var nodeOpen = false,
              */
             getUserInfo: function(callback) {
                 var serviceUrl = this.getUserInfoServiceURL;
-                serviceUrl += "?username=" + CStudioAuthoringContext.user;
+                serviceUrl += CStudioAuthoringContext.user;
 
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
+                        results = results.result.entity
                         callback.success(results);
                     },
                     failure: function(response) {
