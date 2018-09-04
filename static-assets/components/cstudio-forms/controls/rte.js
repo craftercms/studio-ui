@@ -225,7 +225,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 			this.resizeEditor(this.editor, false, isPaste);		// Resize the editor (in case its contents exceed its set height)
 		} else {
 			// The RTE is in code mode
-			this.resizeCodeMirror(this.editor.codeMirror);
+			this.resizeCodeView(this.editor.codeView);
 		}
 	},
 	
@@ -257,17 +257,17 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		} else {
 			// The RTE is in code mode
 			widthVal = this.containerEl.clientWidth - this.codeModeXreduction;
-			this.editor.codeMirror.setSelection({
-				line: 0,
-				ch: 0
-			}); // Clear the current selection -in case there was any
-			this.editor.codeMirror.setCursor({
-				line: 0,
-				ch: 0
-			}); // Set the cursor to the beginning of the code editor
-			this.editor.codeMirror.setSize(widthVal, +this.editor.settings.height);
-			this.editor.codeMirror.scrollTo(0, 0); // Scroll to the top of the editor window
-			this.editor.setContent(this.editor.codeMirror.getValue()); // Transfer content in codeMirror to RTE
+		
+			this.editor.codeView.selection.moveTo(0, 0); // Set the cursor to the beginning of the code editor
+
+			var editorContainer = this.editor.codeView.container;
+			editorContainer.style.width = widthVal + "px";
+			editorContainer.style.height = this.editor.settings.height + "px";
+			this.editor.codeView.resize();
+
+			this.editor.setContent(this.editor.codeView.getValue()); // Transfer content in codeView to RTE
+
+			this.editor.codeView.clearSelection(); // Clear the current selection -in case there was any
 		}
 		this.save(); // Save the content in RTE and update form model
 	},
@@ -307,13 +307,16 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		}
 	},
 
-	resizeCodeMirror : function (codeMirror) {
+	resizeCodeView : function (codeView) {
 		var cmHeight = 400,
 			cmWidth = this.containerEl.clientWidth - this.codeModeXreduction,
-			currentHeight = +tinymce.DOM.getStyle(this.editor.codeMirror.getScrollerElement(), "height").split("px")[0];
+			currentHeight = +tinymce.DOM.getStyle(codeView.container, "height").split("px")[0];
 
 		if (currentHeight < cmHeight) {
-			codeMirror.setSize(cmWidth, cmHeight);
+			var editorContainer = codeView.container;
+			editorContainer.style.width = cmWidth + "px";
+			editorContainer.style.height = cmHeight + "px";
+			codeView.resize();
 		}
 	},
 
@@ -678,9 +681,9 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
         var callback = {};
         callback.beforeSave = function () {
 
-			//if codemirror has changes - update rte.
+			//if codeView has changes - update rte.
 			if (! YDom.hasClass(_thisControl.containerEl, "text-mode")) {
-				_thisControl.editor.setContent(_thisControl.editor.codeMirror.getValue()); // Transfer content in codeMirror to RTE
+				_thisControl.editor.setContent(_thisControl.editor.codeView.getValue()); // Transfer content in codeView to RTE
 			}
             _thisControl.save();
         };

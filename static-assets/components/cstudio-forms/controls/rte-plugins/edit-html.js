@@ -1,15 +1,11 @@
-/* global CStudioAuthoring, CStudioAuthoringContext, CStudioForms, YAHOO, CodeMirror, tinymce */
+/* global CStudioAuthoring, CStudioAuthoringContext, CStudioForms, YAHOO, aceEditor, tinymce */
 
 CStudioAuthoring.Module.requireModule(
-	'codemirror',
-	'/static-assets/components/cstudio-common/codemirror/lib/codemirror.js', {}, {
+	'ace',
+	'/static-assets/components/cstudio-common/ace/ace.js', {}, {
 	moduleLoaded: function() {
 
-		CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/codemirror/mode/xml/xml.js');
-		CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/codemirror/mode/javascript/javascript.js');
-		CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/codemirror/mode/htmlmixed/htmlmixed.js');
-		CStudioAuthoring.Utils.addJavascript('/static-assets/components/cstudio-common/codemirror/mode/css/css.js');
-		CStudioAuthoring.Utils.addCss('/static-assets/components/cstudio-common/codemirror/lib/codemirror.css');
+		CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/ace/ext-language_tools.js");
 		CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/template-editor.css');
 
 		var YDom = YAHOO.util.Dom,
@@ -48,8 +44,13 @@ CStudioAuthoring.Module.requireModule(
 						el.element.style[style] = el.styles[style];
 					}
 				});
-				editor.codeMirror.setSize(cmWidth, 100); // the scrollheight depends on the width of the codeMirror so first we set the width (the 100 value could be replaced for anything)
-				editor.contextControl.resizeCodeMirror(editor.codeMirror);
+
+				var editorContainer = editor.codeView.container;
+				editorContainer.style.width = cmWidth + "px";
+				editorContainer.style.height = 100 + "px";
+				editor.codeView.resize();
+
+				editor.contextControl.resizeCodeView(editor.codeView);
 			},
 
 			/*
@@ -144,38 +145,32 @@ CStudioAuthoring.Module.requireModule(
 				this.collapseComponents(editor, componentSelector);
 				editor.codeTextArea.value = editor.getContent();
 
-				if (!editor.codeMirror) {
-					// console.log('Loading codeMirror');
-					editor.codeMirror = CodeMirror.fromTextArea(editor.codeTextArea, {
-						mode: 'htmlmixed',
-						lineNumbers: true,
-						lineWrapping: true,
-						smartIndent: true, // Although this won't work unless there are opening and closing HTML tags
-						onFocus: function() {
-							rteControl.form.setFocusedField(rteControl);
-						},
-						onChange: function(ed) {
-							rteControl.resizeCodeMirror(ed);
-                            rteControl.edited = true;
-						}
+				if (!editor.codeView) {
+					var mode = "ace/mode/html";
+
+					editor.codeView = ace.edit(editor.codeTextArea);
+					editor.codeView.session.setMode(mode);
+					editor.codeView.setOptions({
+						showPrintMargin: false,
+						fontSize: "14px"
 					});
+
+					editor.codeView.on("focus", function(){
+						rteControl.form.setFocusedField(rteControl);						
+					});
+
+					editor.codeView.on("change", function(){
+						rteControl.edited = true;
+					});
+
 				} else {
-					// Bug fix for IE -9: flush the contents of the input field that stores selected content so that it is
-					// not inserted into the code editor
-					if (YAHOO.env.ua.ie <= 9 && 
-								editor.codeMirror.getSelection() != "" && 
-								editor.codeMirror.getSelection() === editor.codeMirror.getInputField().value) {
-
-						editor.codeMirror.setSelection({line: 0, ch: 0});	
-						editor.codeMirror.getInputField().value = "";
-					}
-
+					editor.codeView.setValue(editor.codeTextArea.value);
 					// Set the cursor to the beginning of the code editor; this will clear any text selection in
-					// codeMirror -if there's any
-					editor.codeMirror.setCursor({line: 0, ch: 0});
-					editor.codeMirror.setValue(editor.codeTextArea.value);
+					// codeView -if there's any
+					editor.codeView.selection.moveTo(0, 0);
+					editor.codeView.clearSelection(); // This will remove the highlight over the text
 				}
-				// We resize codeMirror each time in case the user has resized the window
+				// We resize codeView each time in case the user has resized the window
 				this.resizeCodeView(editor, [{
 					'element': rteContainer,
 					'styles': {
@@ -190,11 +185,10 @@ CStudioAuthoring.Module.requireModule(
 						'height': 'auto'
 					}
 				}]);
-				editor.codeMirror.focus();
-				editor.codeMirror.scrollTo(0, 0); // Scroll to the top of the editor window
+				editor.codeView.focus();
 				rteControl.scrollToTopOfElement(rteControl.containerEl, 30);
                 try{
-                    editor.codeMirror.onChange()
+                    editor.codeView.onChange()
                 }catch(err){
 
                 }
@@ -204,7 +198,7 @@ CStudioAuthoring.Module.requireModule(
 				var rteControl = editor.contextControl,
 					rteContainer = YAHOO.util.Selector.query('.cstudio-form-control-rte-container', rteControl.containerEl, true);
 
-				editor.setContent(editor.codeMirror.getValue());
+				editor.setContent(editor.codeView.getValue());
 				this.extendComponents(editor, componentSelector);
 				rteControl.resizeTextView(rteControl.containerEl, rteControl.rteWidth, {
 					'rte-container': rteContainer,

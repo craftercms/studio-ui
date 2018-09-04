@@ -1,16 +1,10 @@
 CStudioAuthoring.Module.requireModule(
-	'codemirror',
-	'/static-assets/components/cstudio-common/codemirror/lib/codemirror.js', {}, {
+	'ace',
+	'/static-assets/components/cstudio-common/ace/ace.js', {}, {
 		moduleLoaded: function() {
 
-			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/lib/util/formatting.js");
-			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/xml/xml.js");
-			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/javascript/javascript.js");
-			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/htmlmixed/htmlmixed.js");
-			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/groovy/groovy.js");
-			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/codemirror/mode/css/css.js");
-			CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-common/codemirror/lib/codemirror.css");
 			CStudioAuthoring.Utils.addCss("/static-assets/themes/cstudioTheme/css/template-editor.css");
+			CStudioAuthoring.Utils.addJavascript("/static-assets/components/cstudio-common/ace/ext-language_tools.js");
 
 			CStudioAuthoring.Module.requireModule(
 				"cstudio-forms-engine",
@@ -43,10 +37,8 @@ CStudioAuthoring.Module.requireModule(
 						},
 
 						renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, isRead) {
-
 							var permsCallback = {
 								success: function(response) {
-
 									var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
 
 									var modalEl = document.createElement("div");
@@ -65,7 +57,15 @@ CStudioAuthoring.Module.requireModule(
                                     }
 
 									formHTML +=
-										"<div id='template-editor-toolbar'><div id='template-editor-toolbar-variable'></div></div>" +
+										"<div id='template-editor-toolbar'><div id='template-editor-toolbar-variable'></div>" +
+											"<div class='' style='position: absolute; right: 20px; top: 23px;'>" +
+											"Theme: " +
+											"<select id='themeSelector'>"+
+												"<option value='chrome'>Light</option>" +
+												"<option value='tomorrow_night'>Dark</option>"+
+										  	"</select>" +
+											"</div>" +
+										"</div>" +
 										"<div id='editor-container'>"+
 										"</div>" +
 										"<div id='template-editor-button-container'>";
@@ -89,51 +89,60 @@ CStudioAuthoring.Module.requireModule(
 
 									containerEl.innerHTML = formHTML;
 									var editorContainerEl = document.getElementById("editor-container");
-									var editorEl = document.createElement("textarea");
-									//editorEl.cols= "79";
-									//editorEl.rows= "40";
-									editorEl.style.backgroundColor= "white";
-									editorEl.value= content;
+									var editorEl = document.createElement("pre");
+									editorEl.id = "editorPreEl"
+									editorEl.textContent= content;
 									editorContainerEl.appendChild(editorEl);
 
+									var langTools;
 
 									var initEditorFn = function() {
-										if(typeof CodeMirror === "undefined" ) {
+										if(typeof ace === "undefined" ) {
 											window.setTimeout(500, initEditorFn);
 										}
 										else {
-											var mode = "htmlmixed";
+											var modePath = "ace/mode/";
+											var mode = modePath + "htmlmixed";
 
 											if(templatePath.indexOf(".css") != -1) {
-												mode = "css";
-											}
-											else if(templatePath.indexOf(".js") != -1) {
-												mode = "javascript";
+												mode = modePath + "css";
+											}else if(templatePath.indexOf(".js") != -1) {
+												mode = modePath + "javascript";
 											}else if(templatePath.indexOf(".groovy") != -1){
-												mode = "groovy"
+												mode = modePath + "groovy";
+											}else if(templatePath.indexOf(".ftl") != -1){
+												mode = modePath + "ftl";
+											}else if(templatePath.indexOf(".xml") != -1){
+												mode = modePath + "xml";
 											}
-											editorEl.codeMirrorEditor = CodeMirror.fromTextArea(editorEl, {
-												mode: mode,
-												lineNumbers: true,
-												lineWrapping: true,
-												smartIndent: false,//
-                                                readOnly: isRead==="read" ? true : false
-												//    onGutterClick: foldFunc,
-												//    extraKeys: {"Ctrl-Q": function(cm){foldFunc(cm, cm.getCursor().line);}}
+
+											langTools = ace.require("ace/ext/language_tools");
+											var aceEditor = ace.edit("editorPreEl"),
+												theme = CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") ? CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") : "chrome";
+
+											aceEditor.setTheme("ace/theme/" + theme);
+											aceEditor.session.setMode(mode);
+
+											aceEditor.setOptions({
+												enableBasicAutocompletion: true,
+												enableSnippets: true,
+												enableLiveAutocompletion: true,
+												showPrintMargin: false,
+												fontSize: "11pt"
 											});
 
-											var codeEditorEl = YAHOO.util.Dom.getElementsByClassName("CodeMirror", null, editorContainerEl)[0];
-											codeEditorEl.style.backgroundColor = "white";
+											$("#themeSelector").val(theme);
 
-											var codeEditorCanvasEl = YAHOO.util.Dom.getElementsByClassName("CodeMirror-wrap", null, editorContainerEl)[0];
-											codeEditorCanvasEl.style.height = "100%";
+											$('#themeSelector').on('change', function() {
+												aceEditor.setTheme("ace/theme/" + this.value);
+												CStudioAuthoring.Utils.Cookies.createCookie("templateEditorTheme", this.value);
+											})
 
-											var codeEditorScrollEl = YAHOO.util.Dom.getElementsByClassName("CodeMirror-scroll", null, editorContainerEl)[0];
-											codeEditorScrollEl.style.height = "100%";
+											return aceEditor;
 										}
 									};
 
-									initEditorFn();
+									var aceEditor = initEditorFn();
 
 									var _getVarsFromSections = function(sections, parent, variables) {
 										var variables = variables ? variables : [],
@@ -278,10 +287,8 @@ CStudioAuthoring.Module.requireModule(
 									filenameH2.innerHTML = filename;
 									templateEditorToolbarVarElt.appendChild(filenameH2);
 
-
-
-
 									if(templatePath.indexOf(".ftl") != -1 || templatePath.indexOf(".groovy")) {
+
 										//Create array of options to be added
 										var variableOpts = [];
 
@@ -311,9 +318,24 @@ CStudioAuthoring.Module.requireModule(
 
 												{label:"Get Spring Bean", value:"applicationContext.get(\"SPRING_BEAN_NAME\")"}
 											];
+
+											langTools = ace.require("ace/ext/language_tools");
+											var customCompleter = {
+												getCompletions: function(editor, session, pos, prefix, callback) {
+													callback(null, Object.keys(variableOpts).map(function(key, index) {
+														return {
+															caption: variableOpts[key].label,
+															value: variableOpts[key].value,
+															meta: "Crafter Studio"
+														};
+													}));
+											
+												}
+											}
+											// aceEditor.completers = [staticWordCompleter]
+											langTools.addCompleter(customCompleter);
 										}
 										else if(templatePath.indexOf(".ftl") != -1) {
-
 											variableOpts = [
 												{label:"Content variable", value:"${contentModel.VARIABLENAME}"},
 												{label:"Request parameter", value:"${RequestParameters[\"PARAMNAME\"]!\"DEFAULT\"}"},
@@ -339,6 +361,24 @@ CStudioAuthoring.Module.requireModule(
 												{label:"HTML Component", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<div <@studio.componentAttr path=contentModel.storeUrl ice=false /> >\r\nCOMPONENT MARKUP</div>"},
 
 											];
+
+											langTools = ace.require("ace/ext/language_tools");
+											var customCompleter = {
+												getCompletions: function(editor, session, pos, prefix, callback) {
+													callback(null, Object.keys(variableOpts).map(function(key, index) {
+														// console.log(variableOpts[key].value);
+
+														return {
+															caption: variableOpts[key].label,
+															value: variableOpts[key].value,
+															meta: "Crafter Studio"
+														};
+													}));
+											
+												}
+											}
+											// aceEditor.completers = [staticWordCompleter]
+											langTools.addCompleter(customCompleter);
 										}
 
 										//Create and append select list
@@ -390,9 +430,10 @@ CStudioAuthoring.Module.requireModule(
 												};
 											}
 
-											//TODO: need to change to selected variable
 											addButton.onclick = function() {
-												editorEl.codeMirrorEditor.replaceRange(selectList.options[selectList.selectedIndex].value, editorEl.codeMirrorEditor.getCursor());
+												var cursorPosition = aceEditor.getCursorPosition();
+												// Insert text (second argument) with given position
+												aceEditor.session.insert(cursorPosition, selectList.options[selectList.selectedIndex].value);
 											};
 										}
 									}
@@ -444,8 +485,7 @@ CStudioAuthoring.Module.requireModule(
 									if(isWrite == true) {
 										var saveEl = document.getElementById('template-editor-update-button');
 										saveEl.onclick = function() {
-											editorEl.codeMirrorEditor.save();
-											var value = editorEl.value;
+											var value = aceEditor.getValue();
 											var path = templatePath.substring(0, templatePath.lastIndexOf("/"));
 											var filename = templatePath.substring(templatePath.lastIndexOf("/")+1);
 
@@ -456,7 +496,6 @@ CStudioAuthoring.Module.requireModule(
 												"&fileName=" + encodeURI(filename) +
 												"&user=" + CStudioAuthoringContext.user +
 												"&unlock=true";
-
 
 											YAHOO.util.Connect.setDefaultPostHeader(false);
 											YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
