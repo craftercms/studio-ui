@@ -230,6 +230,7 @@
     "VALID_EMAIL": "유효한 이메일을 입력하십시오",
     "MATCH_ENTRY": "이전 항목과 일치해야합니다.",
     "ERROR": "오류",
-    "DELETE_QUESTION":"삭제 하시겠습니까"
+    "DELETE_QUESTION":"삭제 하시겠습니까",
+    "GLOBAL_MENU": "글로벌 메뉴"
   }
 }
