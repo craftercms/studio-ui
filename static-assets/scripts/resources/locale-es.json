@@ -230,6 +230,7 @@
     "VALID_EMAIL": "Ingrese un correo válido",
     "MATCH_ENTRY": "Debe coincidir con la entrada anterior",
     "ERROR": "Error",
-    "DELETE_QUESTION":"Quieres borrar"
+    "DELETE_QUESTION":"Quieres borrar",
+    "GLOBAL_MENU": "Menu Global"
   }
 }

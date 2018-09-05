@@ -29,7 +29,7 @@
                     function successCallback(response) {
                         if (toState.name.indexOf('login') !== -1) {
                             if (authService.getUser() && authService.getUser().authenticationType == Constants.HEADERS) {
-                                $state.go('home.sites');
+                                $state.go('home.globalMenu');
                             }
                         }
 
@@ -61,7 +61,7 @@
                                 }
 
                                 if(!createSitePermissions){
-                                    $state.go('home.sites');
+                                    $state.go('home.globalMenu');
                                 }
                             })
                     }
@@ -78,7 +78,7 @@
         '$stateProvider', '$urlRouterProvider', '$translateProvider',
         function ($stateProvider, $urlRouterProvider, $translateProvider) {
             $urlRouterProvider
-                .otherwise('/sites');
+                .otherwise('/globalMenu');
 
             $stateProvider
                 .state('home', {
@@ -86,6 +86,42 @@
                     abstract: true,
                     templateUrl: '/studio/static-assets/ng-views/layout.html',
                     controller: 'AppCtrl'
+                })
+                .state('home.globalMenu', {
+                    url: 'globalMenu',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/globalMenu.html',
+                            controller: 'GlobalMenuCtrl'
+                        }
+                    }
+                })
+                .state('home.globalMenu.sites', {
+                    url: '/sites',
+                    views: {
+                        contentTab: {
+                            templateUrl: '/studio/static-assets/ng-views/sites.html',
+                            controller: 'SitesCtrl'
+                        }
+                    }
+                })
+                .state('home.globalMenu.users', {
+                    url: '/users',
+                    views: {
+                        contentTab: {
+                            templateUrl: '/studio/static-assets/ng-views/admin-users.html',
+                            controller: 'UsersCtrl'
+                        }
+                    }
+                })
+                .state('home.globalMenu.groups', {
+                    url: '/groups',
+                    views: {
+                        contentTab: {
+                            templateUrl: '/studio/static-assets/ng-views/admin-groups.html',
+                            controller: 'GroupsCtrl'
+                        }
+                    }
                 })
                 .state('home.sites', {
                     url: 'sites',
@@ -278,6 +314,7 @@
         AUTH_SUCCESS: 'auth-success',
         PATH_IMG: '/images/',
         SERVICE: '/studio/api/1/services/api/1/',
+        SERVICE2:'/studio/api/2/',
         SHOW_LOADER: 'show-loader',
         BULK_ENVIRONMENT: 'Live',
         HEADERS: 'headers'
@@ -331,9 +368,7 @@
 
             this.getCurrentUserData = function() {
                 if(this.getUser()){
-                    return $http.get(api('get'), {
-                        params: { username : this.getUser().username }
-                    });
+                    return $http.get(usersActions(this.getUser().username));
                 }
             }
 
@@ -400,6 +435,14 @@
             function security(action){
                 var api = "security/";
                 return Constants.SERVICE + api + action + '.json';
+            }
+
+            function usersActions(action, params) {
+                if(params){
+                    return Constants.SERVICE2 + 'users/' + action + params;
+                }else {
+                    return Constants.SERVICE2 + 'users/' + action;
+                }
             }
 
             return this;
@@ -533,6 +576,10 @@
                 };
             };
 
+            this.getGlobalMenu = function(){
+                return $http.get(uiApi('global_menu'));
+            };
+
             function api(action) {
                 return Constants.SERVICE + 'site/' + action + '.json';
             }
@@ -547,6 +594,10 @@
 
             function server(action) {
                 return Constants.SERVICE + 'server/' + action + '.json';
+            }
+
+            function uiApi(action) {
+                return Constants.SERVICE2+ 'ui/views/' + action + '.json';
             }
 
             return this;
@@ -594,7 +645,7 @@
             if(authService.getUser()){
                 authService.getCurrentUserData().then(
                     function successCallback(response) {
-                        $scope.externallyManaged = response.data.externally_managed;
+                        $scope.externallyManaged = response.data.result.entity.externallyManaged;
                     }, function errorCallback(response) {
                     }
                 );
@@ -839,6 +890,50 @@
             }
 
         }
+    ]);
+
+    app.controller('GlobalMenuCtrl', [
+        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies', '$timeout', 'Constants',
+
+        function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout, Constants) {
+
+
+            //console.log('innn');
+            $scope.entities;
+            $scope.changeTab = function(tab, route) {
+                $scope.view_tab = tab;
+                $state.go(route ? route : ' ');
+            }
+
+            sitesService.getGlobalMenu()
+                .success(function (data) {
+                    $scope.entities = data.result.entities;
+                    //console.log('general ' + data.result.entities);
+                    //$scope.entities = [{"id":"home.globalMenu.sites","label":"Sites","icon":"fa-sitemap"}];
+
+                    if($scope.entities.length > 1){
+                        $scope.entities.forEach(function(entry, i) {
+                            entry.tabName = 'tab'+ entry.label.replace(/ /g,'').toLocaleLowerCase();
+                            if (i<1){
+                                $scope.view_tab = entry.tabName;
+                                //console.log('1 entry: '+entry.id);
+                                $state.go(entry.id);
+                            }
+                        });
+                    }else{
+                        if($scope.entities.length > 0) {
+                            //console.log('2 entry: '+data.result.entities[0].id.replace("globalMenu.", ""));
+                            $state.go(data.result.entities[0].id.replace("globalMenu.", ""));
+                        }
+                    }
+
+
+                })
+                .error(function (er) {
+                    console.log(er);
+                });
+        }
+
     ]);
 
     app.controller('SitesCtrl', [
@@ -1273,7 +1368,7 @@
                         }  else if (data.error) {
                             $scope.error = data.error;
                         } else {
-                            $state.go('home.sites');
+                            $state.go('home.globalMenu');
                             sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
                         }
                     }, function error(response){

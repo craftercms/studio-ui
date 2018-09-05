@@ -353,3 +353,31 @@ table {
 }
 
 
+.admin-console-view {
+
+  .tab-content > .tab-pane {
+    display: block;
+    visibility: visible;
+  }
+
+  .nav-stacked > li {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 2px;
+
+    > a{
+      margin-right: 0px;
+    }
+  }
+
+  .nav-tabs {
+    border-bottom: none;
+  }
+
+  .nav-icon{
+    min-width: 20px;
+  }
+
+}
+
+

@@ -6339,6 +6339,20 @@ table td {
     .tags-input .autocomplete .left-panel span em {
       font-size: 13px; }
 
+.admin-console-view .tab-content > .tab-pane {
+  display: block;
+  visibility: visible; }
+.admin-console-view .nav-stacked > li {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 2px; }
+  .admin-console-view .nav-stacked > li > a {
+    margin-right: 0px; }
+.admin-console-view .nav-tabs {
+  border-bottom: none; }
+.admin-console-view .nav-icon {
+  min-width: 20px; }
+
 /* open-sans-300 - latin */
 @font-face {
   font-family: 'Open Sans';
