@@ -16,48 +16,52 @@
 
             //USERS
 
-            this.getUsers = function(params) {
-
-                if(params && params.site_id && params.site_id != "all"){
-                    return $http.get(users('get-per-site'), {
-                        params: params
-                    });
-                }else{
-                    if (typeof params == 'undefined'){
-                        params = {
-                            number: this.maxInt,
-                            start: 0
-                        }
+            this.getUsers = function(params, isNewApi) {
+                if (params){
+                        return $http.get(users2(), {
+                            params: params
+                        });
+                    }else{
+                        return $http.get(users2());
                     }
-
-                    return $http.get(users('get-all'), {
-                        params: params
-                    });
-                }
             };
 
-            this.getUser = function(username) {
-                return $http.get(users('get', 'username=' + username));
+            this.getUser = function(id) {
+                return $http.get(usersActions(id));
             };
 
             this.createUser = function (user) {
-                return $http.post(users('create'),user);
+                delete user.passwordVerification;
+                return $http.post(users2(), user);
             };
 
             this.editUser = function(user) {
-                return $http.post(users('update'), user);
+                return $http.patch(users2(), user);
             };
 
             this.deleteUser = function(user){
-                return $http.post(users('delete'), user);
+                return $http.delete(users2('id=' + user.id));
             };
 
             this.getUserStatus = function(username){
                 return $http.get(users('status', 'username=' + username));
             };
 
-            this.toggleUserStatus = function(user, status){
-                return $http.post(users(status), user);
+            this.toggleUserStatus = function(user, action){
+                var body = {
+                    "userIds": [
+                        user.id
+                    ],
+                    "usernames": [
+                        user.username
+                    ]
+                }
+                //return $http.patch(users(status), user);
+                return $http.patch(usersActions(action), body);
+            };
+
+            this.getSitesPerUser = function(id, params){
+                return $http.get(usersActions(id+'/sites', 'id=' + params.id + '&offset=' + params.offset + '&limit=' + params.limit + '&sort=' + params.sort));
             };
 
             this.setPassword = function(data){
@@ -80,43 +84,45 @@
             //GROUPS
 
             this.getGroups = function(params) {
-                if(params.site_id && params.site_id != "all"){
-                    return $http.get(groups('get-per-site'), {
+                return $http.get(groups2(), {
                         params: params
                     });
-                }else{
-                    return $http.get(groups('get-all'), {
-                        params: params
-                    });
-                }
             };
 
             this.getGroup = function(group) {
                 return $http.get(groups('get', 'group_name=' + group.group_name + '&site_id=' + group.site_id));
             };
 
-            this.getUsersFromGroup = function(group) {
-                return $http.get(groups('users', 'group_name=' + group.group_name + "&site_id=" + group.site_id));
+            this.getUsersFromGroup = function(params) {
+                return $http.get(groupsMembers(params.id, true, "offset=0&limit=1000&sort=desc"));
             };
 
             this.deleteUserFromGroup = function(user){
-                return $http.post(groups('remove-user'), user);
+                return $http.delete(groupsMembers(user.id, true, user));
             };
 
             this.createGroup = function (group) {
-                return $http.post(groups('create'),group);
+                return $http.post(groups2(),group);
             };
 
             this.editGroup = function(group) {
-                return $http.post(groups('update'), group);
+                return $http.patch(groups2(), group);
             };
 
             this.deleteGroup = function(group){
-                return $http.post(groups('delete'), group);
+                return $http.delete(groups2('id='+group.id));
             };
 
             this.addUserToGroup = function(data) {
-                return $http.post(groups('add-user'), data);
+                var body = {
+                    "userIds": [
+                        data.userId
+                    ],
+                    "usernames": [
+                        data.username
+                    ]
+                }
+                return $http.post(groupsMembers(data.groupId, true), body);
             };
 
             //REPOSITORIES
@@ -197,6 +203,22 @@
                 }
             }
 
+            function users2(params) {
+                if(params){
+                    return Constants.SERVICE2 + 'users?' + params;
+                }else {
+                    return Constants.SERVICE2 + 'users';
+                }
+            }
+
+            function usersActions(action, params) {
+                if(params){
+                    return Constants.SERVICE2 + 'users/' + action + params;
+                }else {
+                    return Constants.SERVICE2 + 'users/' + action;
+                }
+            }
+
             function publish(action, params) {
                 if(params){
                     return Constants.SERVICE + 'publish/' + action + '.json?' + params;
@@ -219,6 +241,24 @@
                 }else {
                     return Constants.SERVICE + 'group/' + action + '.json';
                 }
+            }
+            function groups2(params) {
+                if(params) {
+                    return Constants.SERVICE2 + 'groups?' + params;
+                }else{
+                    return Constants.SERVICE2 + 'groups';
+                }
+            }
+            function groupsMembers(id, isMember, params) {
+                var url = Constants.SERVICE2 + 'groups/' + id;
+                if (isMember){
+                    url += '/members';
+                }
+                if(params){
+                    url += "?"+params;
+                }
+                return url;
+                //'/members.json?offset=0&limit=1000&sort=desc';
             }
 
             function repositories(action, params) {
@@ -263,7 +303,7 @@
             var getUsers = function(site) {
                 adminService.getUsers(site)
                     .success(function (data) {
-                        audit.users = data.users;
+                        audit.users = data.result.entities;
                         audit.userSelected = '';
                     })
                     .error(function () {
@@ -611,7 +651,7 @@
 
             //table setup
             users.itemsPerPage = 10;
-            $scope.usersCollection = {};
+            $scope.usersCollection = [];
 
             var getUsers = function() {
                 users.totalUsers = 0;
@@ -631,18 +671,19 @@
                     var params = {};
 
                     if(users.totalLogs && users.totalLogs > 0) {
-                        var start = (pageNumber - 1) * users.itemsPerPage,
-                            end = start + users.itemsPerPage;
-                        params.start = start;
-                        params.number = users.itemsPerPage;
+                        var offset = (pageNumber - 1) * users.itemsPerPage,
+                            end = offset + users.itemsPerPage;
+                        params.offset = offset;
+                        params.limit = users.itemsPerPage;
                     }else{
-                        params.start = 0;
-                        params.number = users.itemsPerPage;
+                        params.offset = 0;
+                        params.limit = users.itemsPerPage;
                     }
+                    params.sort = 'desc';
 
                     adminService.getUsers(params).success(function (data) {
-                        users.totalLogs = data.total;
-                        $scope.usersCollection = data;
+                        users.totalLogs = data.result.total;
+                        $scope.usersCollection = data.result.entities;
                     });
                 }
             };
@@ -651,7 +692,7 @@
 
             users.searchUser = function(query){
                 if( "" === query){
-                    $scope.usersCollection.users = users.usersCollectionBackup;
+                    $scope.usersCollection = users.usersCollectionBackup;
                     users.itemsPerPage = users.itemsPerPageBackup;
                     users.searchdirty = false;
                 }else{
@@ -660,9 +701,9 @@
 
                         
                         adminService.getUsers().success(function(data){
-                            users.usersCollectionBackup = $scope.usersCollection.users;  
+                            users.usersCollectionBackup = $scope.usersCollection;
                             users.itemsPerPageBackup = users.itemsPerPage;
-                            $scope.usersCollection.users = data.users;    
+                            $scope.usersCollection = data.result.entities;
                             users.itemsPerPage = adminService.maxInt;
                         });
                     }
@@ -680,7 +721,7 @@
             users.createUser = function(user) {
                 adminService.createUser(user).success(function (data) {
                     $scope.hideModal();
-                    $scope.usersCollection.users.push(user);
+                    $scope.usersCollection.push(user);
                     $scope.notification('\''+ user.username + '\' created.','','studioMedium');
                 }).error(function(error){
                     $scope.usersError = error
@@ -697,14 +738,15 @@
                 $scope.dialogEdit = true;
 
                 adminService.getUser(user.username).success(function (data) {
-                    $scope.user = data;
+                    $scope.user = data.result.entity;
+                    //$scope.user.status = data.result.entity.enabled;
 
-                    adminService.getUserStatus(user.username).success(function(data){
+                    /*adminService.getUserStatus(user.username).success(function(data){
                         $scope.user.status = data;
                     }).error(function(error){
                         console.log(error);
                         //TODO: properly display error
-                    });
+                    });*/
                 }).error(function (error) {
                     console.log(error);
                     //TODO: properly display error
@@ -714,11 +756,11 @@
                 $scope.hideModal();
 
                 adminService.editUser(user).success(function (data) {
-                    var index = $scope.usersCollection.users.indexOf($scope.editedUser);
+                    var index = $scope.usersCollection.indexOf($scope.editedUser);
 
                     if(index != -1){
-                        $scope.usersCollection.users[index] = user;
-                        $scope.displayedCollection = $scope.usersCollection.users;
+                        $scope.usersCollection[index] = user;
+                        $scope.displayedCollection = $scope.usersCollection;
                     }
 
                     $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
@@ -728,10 +770,12 @@
                 });
 
                 if(user.newPassword){
+                    user.password = user.newPassword;
                     adminService.resetPassword({
                         "username" : user.username,
                         "new" : user.newPassword
                     });
+                    delete user.newPassword;
                 }
 
                 users.toggleUserStatus(user);
@@ -744,13 +788,13 @@
                 $scope.adminModal = $scope.showModal('modalView.html');
 
                 adminService.getUser(user.username).success(function (data) {
-                    $scope.user = data;
+                    $scope.user = data.result.entity;
 
-                    adminService.getUserStatus(user.username).success(function(status){
+                    /*adminService.getUserStatus(user.username).success(function(status){
                         $scope.user.status = status;
                     }).error(function(error){
                         console.log(error);
-                    });
+                    });*/
                 }).error(function (error) {
                     console.log(error);
                     //TODO: properly display error
@@ -758,7 +802,7 @@
             };
             users.toggleUserStatus = function(user){
                 var newStatus = $('#enabled').is(':checked') ? 'enable' : 'disable';
-                user.status.enabled = $('#enabled').is(':checked');
+                //user.status.enabled = $('#enabled').is(':checked');
 
                 adminService.toggleUserStatus(user, newStatus);
             };
@@ -766,9 +810,9 @@
 
                 var deleteUser = function() {
                     adminService.deleteUser(user).success(function (data) {
-                        var index = $scope.usersCollection.users.indexOf(user);
+                        var index = $scope.usersCollection.indexOf(user);
                         if (index !== -1) {
-                            $scope.usersCollection.users.splice(index, 1);
+                            $scope.usersCollection.splice(index, 1);
                         }
 
                         $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
@@ -855,21 +899,21 @@
 
                     var params = {};
 
-                    params.site_id = site;
+                    //params.site_id = site;
 
                     if(groups.totalLogs && groups.totalLogs > 0) {
-                        var start = (pageNumber - 1) * groups.itemsPerPage,
-                            end = start + groups.itemsPerPage;
-                        params.start = start;
-                        params.number = groups.itemsPerPage;
+                        var offset = (pageNumber - 1) * groups.itemsPerPage,
+                            end = offset + groups.itemsPerPage;
+                        params.offset = offset;
+                        params.limit = groups.itemsPerPage;
                     }else{
-                        params.start = 0;
-                        params.number = groups.itemsPerPage;
+                        params.offset = 0;
+                        params.limit = groups.itemsPerPage;
                     }
 
                     adminService.getGroups(params).success(function (data) {
-                        groups.totalLogs = data.total;
-                        $scope.groupsCollection = data;
+                        groups.totalLogs = data.result.total;
+                        $scope.groupsCollection = data.result.entities;
                     });
 
                 }
@@ -886,19 +930,19 @@
                 $scope.dialogTitle = $translate.instant('admin.groups.CREATE_GROUP');
             }
             $scope.createGroup = function(group) {
-                group.site_id = groups.site;
+                //group.site_id = groups.site;
 
                 adminService.createGroup(group).success(function (data) {
                     $scope.hideModal();
-                    $scope.groupsCollection.groups.push(group);
-                    $scope.notification('\''+ group.group_name + '\' created.', '', null,"studioMedium");
+                    $scope.groupsCollection.push(group);
+                    $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
                 }).error(function(error){
                     $scope.groupsError = error;
                 });
 
             };
             $scope.editGroupDialog = function(group){
-                group.site_id = groups.site;
+                //group.site_id = groups.site;
 
                 $scope.editedGroup = group;
                 $scope.group = {};
@@ -915,10 +959,10 @@
                 });
             };
             $scope.editGroup = function(group) {
-                group.site_id = groups.site;
+                //group.site_id = groups.site;
 
                 adminService.editGroup(group).success(function (data) {
-                    $scope.notification('\''+ group.group_name + '\' edited.', '', null, "studioMedium");
+                    $scope.notification('\''+ group.name + '\' edited.', '', null, "studioMedium");
                 }).error(function(error){
                     if("Unauthorized" === error.message) {;
                         $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
@@ -927,18 +971,18 @@
             };
             $scope.removeGroup = function(group) {
                 var deleteGroup = function() {
-                    group.site_id = groups.site;
+                    //group.site_id = groups.site;
 
                     adminService.deleteGroup(group).success(function (data) {
-                        var index = $scope.groupsCollection.groups.indexOf(group);
+                        var index = $scope.groupsCollection.indexOf(group);
                         if (index !== -1) {
-                            $scope.groupsCollection.groups.splice(index, 1);
+                            $scope.groupsCollection.splice(index, 1);
                         }
 
                         $scope.usersFromGroupCollection = [];
                         $scope.noGroupSelected = true;
 
-                        $scope.notification('\''+ group.group_name + '\' group deleted.', '', null,"studioMedium");
+                        $scope.notification('\''+ group.name + '\' group deleted.', '', null,"studioMedium");
 
                     }).error(function (error) {
                         if("Unauthorized" === error.message) {
@@ -948,7 +992,7 @@
                 };
 
                 $scope.confirmationAction = deleteGroup;
-                $scope.confirmationText = "Do you want to delete " + group.group_name + "?";
+                $scope.confirmationText = "Do you want to delete " + group.name + "?";
 
                 $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
             };
@@ -968,9 +1012,9 @@
                 adminService.getUsers().success(function(data){
                     groups.usersAutocomplete = [];
 
-                    data.users.forEach(function(user){
+                    data.result.entities.forEach(function(user){
                         var added = false;
-                        groups.usersFromGroupCollection.users.forEach(function(userCompare){
+                        groups.usersFromGroupCollection.forEach(function(userCompare){
                             if(user.username == userCompare.username){
                                 added = true;
                             }
@@ -1004,8 +1048,8 @@
                 return users.filter(function(user) {
                     var username= user.username.toLowerCase().indexOf($query.toLowerCase()) != -1,
                         email = user.email.toLowerCase().indexOf($query.toLowerCase()) != -1,
-                        first_name = user.first_name.toLowerCase().indexOf($query.toLowerCase()) != -1,
-                        last_name = user.last_name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+                        first_name = user.firstName.toLowerCase().indexOf($query.toLowerCase()) != -1,
+                        last_name = user.lastName.toLowerCase().indexOf($query.toLowerCase()) != -1;
                     return username || email || first_name || last_name;
                 });
 
@@ -1028,10 +1072,10 @@
                 $scope.activeGroup = group;
                 $scope.noGroupSelected = false;
 
-                group.site_id = groups.site;
+                //group.site_id = groups.site;
 
                 adminService.getUsersFromGroup(group).success(function (data) {
-                    groups.usersFromGroupCollection = data;
+                    groups.usersFromGroupCollection = data.result.entities;
                     groups.getUsersAutocomplete();
                 }).error(function () {
                     //TODO: properly display error
@@ -1041,7 +1085,7 @@
             $scope.removeUserFromGroup = function(user, group) {
 
                 user.group_name = group.group_name;
-                user.site_id = groups.site;
+                //user.site_id = groups.site;
 
                 var removeUserFromGroup = function() {
                     adminService.deleteUserFromGroup(user).success(function () {
@@ -1062,8 +1106,8 @@
 
                 return adminService.addUserToGroup({
                     "username": user.username,
-                    "group_name": activeGroup.group_name,
-                    "site_id": groups.site
+                    "userId": user.id,
+                    "groupId": activeGroup.id
                 }).success(function (data) {
                     $scope.getUsersFromGroup(activeGroup);
                 }).error(function () {

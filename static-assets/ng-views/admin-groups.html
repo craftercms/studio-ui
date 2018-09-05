@@ -28,10 +28,10 @@
                     </thead>
                     <tbody>
 
-                    <tr id="group-{{ group.group_name | nospace }}" dir-paginate="group in groupsCollection.groups | filter:q | itemsPerPage: groups.itemsPerPage"
+                    <tr id="group-{{ group.name | nospace }}" dir-paginate="group in groupsCollection | filter:q | itemsPerPage: groups.itemsPerPage"
                         current-page="groups.pagination.current" total-items="groups.totalLogs">
-                        <td>{{group.group_name}}</td>
-                        <td>{{group.description}}</td>
+                        <td>{{group.name}}</td>
+                        <td>{{group.desc}}</td>
                         <td>
                             <a ng-click="groups.viewGroup(group)" class="btn btn-sm edit">
                                 <i class="fa fa-pencil"></i>
@@ -58,13 +58,13 @@
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;">{{ 'admin.groups.GROUP_NAME'| translate }}</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputPassword3" disabled="true" ng-model="groups.selectedGroup.group_name">
+                        <input type="text" class="form-control" id="inputPassword3" disabled="true" ng-model="groups.selectedGroup.name">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-3 control-label" style="text-align: left;">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputPassword3" ng-model="groups.selectedGroup.description">
+                        <input type="text" class="form-control" id="inputPassword3" ng-model="groups.selectedGroup.desc">
                     </div>
                 </div>
                 <div class="form-group">
@@ -102,7 +102,7 @@
 
             <h3>{{ 'admin.groups.MEMBERS' | translate }}</h3>
 
-            <table st-table="displayedCollection" st-safe-src="groups.usersFromGroupCollection.users" class="table table-striped">
+            <table st-table="displayedCollection" st-safe-src="groups.usersFromGroupCollection" class="table table-striped">
                 <thead>
                 <tr>
                     <th colspan="12"><input st-search="" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/></th>
@@ -145,7 +145,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
-                    <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.group_name" ng-change="" autofocus focus-me="true" required>
+                    <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.name" ng-change="" autofocus focus-me="true" required>
                 </div>
 
                 <div class="error-container"
@@ -157,13 +157,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="description" class="control-label">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
-                    <input type="text" class="form-control" id="description" name="description" ng-model="group.description" ng-change="">
+                    <label for="desc" class="control-label">{{ 'admin.groups.DESCRIPTION' | translate }}</label>
+                    <input type="text" class="form-control" id="desc" name="desc" ng-model="group.desc" ng-change="">
 
                     <div class="error-container"
-                         ng-show="(createNameForm.description.$dirty && createNameForm.description.$invalid) || (createNameForm.description.$touched && createNameForm.description.$invalid)">
+                         ng-show="(createNameForm.desc.$dirty && createNameForm.desc.$invalid) || (createNameForm.desc.$touched && createNameForm.desc.$invalid)">
                         <small class="error"
-                               ng-show="createNameForm.description.$error.required">
+                               ng-show="createNameForm.desc.$error.required">
                             {{ 'admin.groups.GROUP_DESCRIPTION_ERROR_MESSAGE' | translate }}
                         </small>
                     </div>

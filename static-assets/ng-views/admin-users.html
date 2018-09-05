@@ -33,11 +33,11 @@
                         </thead>
                         <tbody>
 
-                        <tr dir-paginate="user in usersCollection.users | filter:q | itemsPerPage: users.itemsPerPage"
+                        <tr dir-paginate="user in usersCollection | filter:q | itemsPerPage: users.itemsPerPage"
                             current-page="users.pagination.current" total-items="users.totalLogs" id="user-row-{{user.username}}">
                             <td class="userName"><a ng-click="users.viewUser(user)">{{user.username}}</a></td>
-                            <td class="firstName">{{user.first_name}}</td>
-                            <td class="lastName">{{user.last_name}}</td>
+                            <td class="firstName">{{user.firstName}}</td>
+                            <td class="lastName">{{user.lastName}}</td>
                             <td class="email">{{user.email}}</td>
 
                             <td class="edit">
@@ -71,14 +71,14 @@
     <form name="createNameForm" id="user-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
         <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
             <div class="col-md-12">
-                <fieldset ng-disabled="user.externally_managed">
+                <fieldset ng-disabled="user.externallyManaged">
                     <div class="form-group" ng-if="!(dialogMode == 'create')">
                         <label for="enabled" class="control-label">Enabled</label>
                         <input type="checkbox"
                                ng-disabled="!dialogMode"
                                id="enabled"
                                name="enabled"
-                               ng-checked="user.status.enabled"
+                               ng-checked="user.enabled"
                                required
                                style="margin-left: 12px;"
                                 >
@@ -88,14 +88,14 @@
                         <label for="enabled" class="control-label">Externally Managed</label>
                         <input type="checkbox"
                                ng-disabled="true"
-                               ng-checked="user.externally_managed"
+                               ng-checked="user.externallyManaged"
                                style="margin-left: 12px;"
                                 >
                     </div>
 
                     <div class="form-group">
                         <label for="firstName" class="control-label">{{ 'admin.users.FIRST_NAME' | translate }}</label>
-                        <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.first_name" autofocus focus-me="true" required>
+                        <input ng-disabled="!dialogMode" type="text" class="form-control" id="firstName" name="firstName" ng-model="user.firstName" autofocus focus-me="true" required>
 
                         <div class="error-container" ng-if="dialogMode"
                              ng-show="(createNameForm.firstName.$dirty && createNameForm.firstName.$invalid) || (createNameForm.firstName.$touched && createNameForm.firstName.$invalid)">
@@ -107,7 +107,7 @@
                     </div>
                     <div class="form-group">
                         <label for="lastName" class="control-label">{{ 'admin.users.LAST_NAME' | translate }}</label>
-                        <input ng-disabled="!dialogMode" type="text" class="form-control" id="lastName" name="lastName" ng-model="user.last_name" required>
+                        <input ng-disabled="!dialogMode" type="text" class="form-control" id="lastName" name="lastName" ng-model="user.lastName" required>
 
                         <div class="error-container" ng-if="dialogMode"
                              ng-show="(createNameForm.lastName.$dirty && createNameForm.lastName.$invalid) || (createNameForm.lastName.$touched && createNameForm.lastName.$invalid)">
@@ -251,7 +251,7 @@
             <!--<button class="btn btn-primary text-capitalize" ng-if="dialogMode"-->
             <!--ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid">{{dialogMode}}</button>-->
             <button class="btn btn-primary text-capitalize save-new-user" ng-if="dialogMode"
-                    ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externally_managed">{{ 'admin.users.SAVE' | translate }}</button>
+                    ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externallyManaged">{{ 'admin.users.SAVE' | translate }}</button>
             <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
             <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
         </div>
