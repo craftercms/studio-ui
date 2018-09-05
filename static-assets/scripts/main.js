@@ -91,8 +91,8 @@
                     url: 'globalMenu',
                     views: {
                         content: {
-                            templateUrl: '/studio/static-assets/ng-views/adminConsole.html',
-                            controller: 'AdminConsoleCtrl'
+                            templateUrl: '/studio/static-assets/ng-views/globalMenu.html',
+                            controller: 'GlobalMenuCtrl'
                         }
                     }
                 })
@@ -892,7 +892,7 @@
         }
     ]);
 
-    app.controller('AdminConsoleCtrl', [
+    app.controller('GlobalMenuCtrl', [
         '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies', '$timeout', 'Constants',
 
         function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout, Constants) {
