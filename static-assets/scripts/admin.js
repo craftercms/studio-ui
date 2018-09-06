@@ -600,6 +600,7 @@
 
             $scope.users = {};
             var users = $scope.users;
+            $scope.user.enabled = true;
 
             this.init = function() {
                 $scope.debounceDelay = 500;
@@ -739,14 +740,7 @@
 
                 adminService.getUser(user.username).success(function (data) {
                     $scope.user = data.result.entity;
-                    //$scope.user.status = data.result.entity.enabled;
-
-                    /*adminService.getUserStatus(user.username).success(function(data){
-                        $scope.user.status = data;
-                    }).error(function(error){
-                        console.log(error);
-                        //TODO: properly display error
-                    });*/
+                    $scope.user.enabled = data.result.entity.enabled;
                 }).error(function (error) {
                     console.log(error);
                     //TODO: properly display error
@@ -789,12 +783,8 @@
 
                 adminService.getUser(user.username).success(function (data) {
                     $scope.user = data.result.entity;
+                    $scope.user.enabled = data.result.entity.enabled;
 
-                    /*adminService.getUserStatus(user.username).success(function(status){
-                        $scope.user.status = status;
-                    }).error(function(error){
-                        console.log(error);
-                    });*/
                 }).error(function (error) {
                     console.log(error);
                     //TODO: properly display error
