@@ -98,7 +98,9 @@
             };
 
             this.deleteUserFromGroup = function(groupId, params){
-                return $http.delete(groupsMembers(groupId, true), params);
+                return $http.delete(groupsMembers(groupId, true), {
+                    params: params
+                });
             };
 
             this.createGroup = function (group) {
@@ -1082,7 +1084,7 @@
                 var removeUserFromGroup = function() {
                     adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
                         $scope.getUsersFromGroup(group);
-                        $scope.notification(user.username + ' successfully removed from ' + group.group_name, false, null, "studioMedium");
+                        $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, "studioMedium");
                     }).error(function () {
                     });
                 };
