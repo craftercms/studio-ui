@@ -94,11 +94,11 @@
             };
 
             this.getUsersFromGroup = function(params) {
-                return $http.get(groupsMembers(params.id, true, "offset=0&limit=1000&sort=desc"));
+                return $http.get(groupsMembers(params.id, true));
             };
 
-            this.deleteUserFromGroup = function(user){
-                return $http.delete(groupsMembers(user.id, true, user));
+            this.deleteUserFromGroup = function(groupId, params){
+                return $http.delete(groupsMembers(groupId, true), params);
             };
 
             this.createGroup = function (group) {
@@ -116,7 +116,7 @@
             this.addUserToGroup = function(data) {
                 var body = {
                     "userIds": [
-                        data.userId
+                        data.userId.toString()
                     ],
                     "usernames": [
                         data.username
@@ -1074,11 +1074,13 @@
 
             $scope.removeUserFromGroup = function(user, group) {
 
-                user.group_name = group.group_name;
+                var deleteUserFromGroupParams = {};
+                deleteUserFromGroupParams.userId = user.id;
+                deleteUserFromGroupParams.username = user.username;
                 //user.site_id = groups.site;
 
                 var removeUserFromGroup = function() {
-                    adminService.deleteUserFromGroup(user).success(function () {
+                    adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
                         $scope.getUsersFromGroup(group);
                         $scope.notification(user.username + ' successfully removed from ' + group.group_name, false, null, "studioMedium");
                     }).error(function () {
@@ -1086,7 +1088,7 @@
                 };
 
                 $scope.confirmationAction = removeUserFromGroup;
-                $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.group_name + "?";
+                $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.name + "?";
 
                 $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
             };
