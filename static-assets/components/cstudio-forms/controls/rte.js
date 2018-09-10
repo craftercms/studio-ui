@@ -469,7 +469,11 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 			}
 		}
 
-		var pluginList = "paste, noneditable, cs_table, cs_inlinepopups, lists, ";  //cs_contextmenu - contextual nav
+		var pluginList = "advhr, cs_inlinepopups, cs_table, directionality, emotions, " +
+						 "fullscreen, inlinepopups, insertdatetime, layer, media, " +
+						 "nonbreaking, paste, preview, searchreplace, " +
+						 "style, table, template, visualblocks, visualchars, wordcount, xhtmlxtras, ";
+
 		for(var l=0; l<rteConfig.rteModules.module.length; l++) {
 			// mce plugin names cannot have a - in them
 			pluginList += "-"+rteConfig.rteModules.module[l].replace(/-/g,"")+",";
