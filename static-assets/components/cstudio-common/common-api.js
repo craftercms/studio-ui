@@ -2998,6 +2998,9 @@ var nodeOpen = false,
             // Rejection Reason
             getRejectionReasonServiceUri: "/api/1/services/api/1/site/get-canned-message.json",
 
+            // Global Menu
+            getGlobalMenuURL: "/api/2/ui/views/global_menu.json",
+
             /**
              * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
              * this method is used in preview overlay
@@ -4077,6 +4080,26 @@ var nodeOpen = false,
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
                         results = results.result.entity
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+
+            /**
+             * get global menu
+             */
+            getGlobalMenu: function(callback) {
+                var serviceUrl = this.getGlobalMenuURL;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        results = results.result.entities
                         callback.success(results);
                     },
                     failure: function(response) {
