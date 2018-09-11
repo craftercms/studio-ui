@@ -24,15 +24,9 @@
                 <div class="navbar-right-wrapper">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a id="homeUsers" class="nav-link ng-binding users-link hidden" href="/studio/#/users">
-                                <span class="nav-icon fa fa-users"></span>
-                                <span class="nav-label" data-translation="users">Users</span>
-                            </a>
-                        </li>
-                        <li>
                             <a id="sitesRightNav" class="nav-link" href="/studio/#/sites">
-                                <span class="nav-icon fa fa-sitemap"></span>
-                                <span class="nav-label" data-translation="sites">Sites</span>
+                                <span class="nav-icon fa"></span>
+                                <span class="nav-label" data-translation="globalMenu">Sites</span>
                             </a>
                         </li>
                         <li class="dropdown" dropdown>
