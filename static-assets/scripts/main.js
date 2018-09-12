@@ -368,7 +368,7 @@
 
             this.getCurrentUserData = function() {
                 if(this.getUser()){
-                    return $http.get(usersActions(this.getUser().username));
+                    return $http.get(userActions());
                 }
             }
 
@@ -437,12 +437,8 @@
                 return Constants.SERVICE + api + action + '.json';
             }
 
-            function usersActions(action, params) {
-                if(params){
-                    return Constants.SERVICE2 + 'users/' + action + params;
-                }else {
-                    return Constants.SERVICE2 + 'users/' + action;
-                }
+            function userActions(action, params) {
+                return Constants.SERVICE2 + 'user';
             }
 
             return this;
@@ -467,6 +463,10 @@
                     params: { siteId: id }
                 });
             };
+
+            this.getSitesPerUser = function(params) {
+                return $http.get(userActions('sites'));
+            }
 
             this.setCookie = function(cookieGenName, value){
                 //$cookies[cookieName] = site.siteId;
@@ -598,6 +598,14 @@
 
             function uiApi(action) {
                 return Constants.SERVICE2+ 'ui/views/' + action + '.json';
+            }
+
+            function userActions(action, params) {
+                if(params){
+                    return Constants.SERVICE2 + 'user/' + action + params;
+                }else {
+                    return Constants.SERVICE2 + 'user/' + action;
+                }
             }
 
             return this;
@@ -997,10 +1005,10 @@
             };
 
             function getSites (params) {
-                sitesService.getSites(params)
+                sitesService.getSitesPerUser(params)
                     .success(function (data) {
-                        $scope.totalSites = data.total;
-                        $scope.sites = data.sites;
+                        $scope.totalSites = data.result.total ? data.result.total : null;
+                        $scope.sites = data.result.entities;
                         isRemove();
                         createSitePermission();
                     })
@@ -1017,17 +1025,17 @@
 
                 if(authService.getUser()){
                     var params = {
-                        username: $scope.user.username
+                        id: $scope.user.username
                     };
 
                     if($scope.totalSites && $scope.totalSites > 0) {
-                        var start = (pageNumber - 1) * $scope.sitesPag.sitesPerPage,
-                            end = start + $scope.sitesPag.sitesPerPage;
-                        params.start = start;
-                        params.number = $scope.sitesPag.sitesPerPage;
+                        var offset = (pageNumber - 1) * $scope.sitesPag.sitesPerPage,
+                            limit = offset + $scope.sitesPag.sitesPerPage;
+                        params.offset = offset;
+                        params.limit = $scope.sitesPag.sitesPerPage;
                     }else{
-                        params.start = 0;
-                        params.number = $scope.sitesPag.sitesPerPage;
+                        params.offset = 0;
+                        params.limit = $scope.sitesPag.sitesPerPage;
                     }
 
                     getSites(params);
