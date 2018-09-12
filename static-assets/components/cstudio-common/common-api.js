@@ -2960,7 +2960,7 @@ var nodeOpen = false,
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
-            getUserInfoServiceURL: "/api/2/users/",
+            getUserInfoServiceURL: "/api/2/user",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
 
@@ -4074,7 +4074,7 @@ var nodeOpen = false,
              */
             getUserInfo: function(callback) {
                 var serviceUrl = this.getUserInfoServiceURL;
-                serviceUrl += CStudioAuthoringContext.user;
+                //serviceUrl += CStudioAuthoringContext.user;
 
                 var serviceCallback = {
                     success: function(jsonResponse) {
