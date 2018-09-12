@@ -889,6 +889,35 @@
                 });
             }
 
+            $rootScope.globalMenu = [];
+            $scope.rightMenu = {};
+
+            sitesService.getGlobalMenu()
+                .success(function (data) {
+                    $scope.globalMenu = data.result.entities;
+                    //$scope.globalMenu = [{"id":"home.globalMenu.sites","label":"Sites","icon":"fa-sitemap"}];
+
+                    if($scope.globalMenu.length > 1){
+                        $scope.rightMenu.label="Global Menu";
+                        $scope.rightMenu.href="#/globalMenu";
+                        $scope.rightMenu.state="home.globalMenu";
+                        $scope.rightMenu.icon="fa-bars";
+
+                    }else{
+                        if($scope.globalMenu.length > 0) {
+                            $scope.rightMenu.label = $scope.globalMenu[0].label;
+                            $scope.rightMenu.state = $scope.globalMenu[0].id;
+                            $scope.rightMenu.href = '#/'+$scope.globalMenu[0].id.split('.')[$scope.globalMenu[0].id.split.length];
+                            $scope.rightMenu.icon = $scope.globalMenu[0].icon;
+                        }
+                    }
+
+
+                })
+                .error(function (er) {
+                    console.log(er);
+                });
+
         }
     ]);
 
@@ -898,7 +927,6 @@
         function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout, Constants) {
 
 
-            //console.log('innn');
             $scope.entities;
             $scope.changeTab = function(tab, route) {
                 $scope.view_tab = tab;
@@ -908,7 +936,6 @@
             sitesService.getGlobalMenu()
                 .success(function (data) {
                     $scope.entities = data.result.entities;
-                    //console.log('general ' + data.result.entities);
                     //$scope.entities = [{"id":"home.globalMenu.sites","label":"Sites","icon":"fa-sitemap"}];
 
                     if($scope.entities.length > 1){
@@ -916,13 +943,11 @@
                             entry.tabName = 'tab'+ entry.label.replace(/ /g,'').toLocaleLowerCase();
                             if (i<1){
                                 $scope.view_tab = entry.tabName;
-                                //console.log('1 entry: '+entry.id);
                                 $state.go(entry.id);
                             }
                         });
                     }else{
                         if($scope.entities.length > 0) {
-                            //console.log('2 entry: '+data.result.entities[0].id.replace("globalMenu.", ""));
                             $state.go(data.result.entities[0].id.replace("globalMenu.", ""));
                         }
                     }
