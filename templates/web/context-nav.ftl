@@ -24,9 +24,9 @@
                 <div class="navbar-right-wrapper">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a id="sitesRightNav" class="nav-link" href="/studio/#/sites">
+                            <a id="sitesRightNav" class="nav-link" href="/studio/#/globalMenu">
                                 <span class="nav-icon fa"></span>
-                                <span class="nav-label" data-translation="globalMenu">Sites</span>
+                                <span class="nav-label" data-translation="globalMenu">Global Menu</span>
                             </a>
                         </li>
                         <li class="dropdown" dropdown>
