@@ -4074,7 +4074,6 @@ var nodeOpen = false,
              */
             getUserInfo: function(callback) {
                 var serviceUrl = this.getUserInfoServiceURL;
-                //serviceUrl += CStudioAuthoringContext.user;
 
                 var serviceCallback = {
                     success: function(jsonResponse) {

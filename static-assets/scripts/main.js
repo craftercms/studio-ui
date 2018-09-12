@@ -1007,8 +1007,8 @@
             function getSites (params) {
                 sitesService.getSitesPerUser(params)
                     .success(function (data) {
-                        $scope.totalSites = data.result.total;
-                        $scope.sites = data.result.entities.sites;
+                        $scope.totalSites = data.result.total ? data.result.total : null;
+                        $scope.sites = data.result.entities;
                         isRemove();
                         createSitePermission();
                     })
