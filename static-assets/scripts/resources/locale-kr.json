@@ -231,6 +231,7 @@
     "MATCH_ENTRY": "이전 항목과 일치해야합니다.",
     "ERROR": "오류",
     "DELETE_QUESTION":"삭제 하시겠습니까",
-    "GLOBAL_MENU": "글로벌 메뉴"
+    "GLOBAL_MENU": "글로벌 메뉴",
+    "MAIN_MENU": "기본 메뉴"
   }
 }

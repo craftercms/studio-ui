@@ -231,6 +231,7 @@
     "MATCH_ENTRY": "Debe coincidir con la entrada anterior",
     "ERROR": "Error",
     "DELETE_QUESTION":"Quieres borrar",
-    "GLOBAL_MENU": "Menu Global"
+    "GLOBAL_MENU": "Menu Global",
+    "MAIN_MENU": "Menu Principal"
   }
 }

@@ -221,7 +221,7 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "es", {
     about: "Acerca De",
     settings: "Preferencias",
     signOut: "Desloguearse",
-    globalMenu: "Menu Global"
+    mainMenu: "Menu Principal"
 
 });
 
