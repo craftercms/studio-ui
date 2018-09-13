@@ -896,36 +896,6 @@
                     windowClass: 'spinner-modal centered-dialog',
                 });
             }
-
-            $rootScope.globalMenu = [];
-            $scope.rightMenu = {};
-
-            sitesService.getGlobalMenu()
-                .success(function (data) {
-                    $scope.globalMenu = data.result.entities;
-                    //$scope.globalMenu = [{"id":"home.globalMenu.sites","label":"Sites","icon":"fa-sitemap"}];
-
-                    if($scope.globalMenu.length > 1){
-                        $scope.rightMenu.label="Global Menu";
-                        $scope.rightMenu.href="#/globalMenu";
-                        $scope.rightMenu.state="home.globalMenu";
-                        $scope.rightMenu.icon="fa-bars";
-
-                    }else{
-                        if($scope.globalMenu.length > 0) {
-                            $scope.rightMenu.label = $scope.globalMenu[0].label;
-                            $scope.rightMenu.state = $scope.globalMenu[0].id;
-                            $scope.rightMenu.href = '#/'+$scope.globalMenu[0].id.split('.')[$scope.globalMenu[0].id.split.length];
-                            $scope.rightMenu.icon = $scope.globalMenu[0].icon;
-                        }
-                    }
-
-
-                })
-                .error(function (er) {
-                    console.log(er);
-                });
-
         }
     ]);
 

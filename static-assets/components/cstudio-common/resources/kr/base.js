@@ -213,7 +213,7 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     about: "약",
     settings: "설정",
     signOut: "로그 아웃",
-    globalMenu: "글로벌 메뉴"
+    mainMenu: "기본 메뉴"
 
 });
 

@@ -167,30 +167,6 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	showRightModules: function(modules, barEl) {
 		var modulesMap = CStudioAuthoring.ContextualNav.RightModulesMap;
 		this.showModules(modulesMap, modules, barEl);
-
-        var callback = {
-            success: function(results) {
-                //results = [{"id":"home.globalMenu.sites","label":"Sites","icon":"fa-sitemap"}];
-                var sitesRightNav =  document.getElementById('sitesRightNav');
-                if(results.length > 1){
-                    sitesRightNav.href = '/studio/#/globalMenu';
-                    sitesRightNav.getElementsByClassName('nav-icon')[0].classList.add('fa-bars');
-                    sitesRightNav.getElementsByClassName('nav-label')[0].innerHTML = "Global Menu";
-                }else{
-                    if(results.length > 0) {
-                        sitesRightNav.href = '/studio/#/'+results[0].id.split('.')[results[0].id.split.length];
-                        sitesRightNav.getElementsByClassName('nav-icon')[0].classList.add(results[0].icon);
-                        sitesRightNav.getElementsByClassName('nav-label')[0].innerHTML = results[0].label;
-                        sitesRightNav.getElementsByClassName('nav-label')[0].setAttribute('data-translation', results[0].label.replace(/ /g,'').toLocaleLowerCase());
-                    }
-                }
-            },
-            failure: function(response) {
-
-            }
-        };
-        CStudioAuthoring.Service.getGlobalMenu(callback);
-
         this.showLabelsRightModules();
 	},
 

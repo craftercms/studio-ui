@@ -234,7 +234,8 @@
     "MATCH_ENTRY": "Must match the previous entry",
     "ERROR": "Error",
     "DELETE_QUESTION":"Do you want to delete",
-    "GLOBAL_MENU": "Global Menu"
+    "GLOBAL_MENU": "Global Menu",
+    "MAIN_MENU": "Main Menu"
 
   }
 }
