@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <internal-name>Browse WebDAV</internal-name>
+  <content-type>/page/browseWebDAV</content-type>	
+  <display-template>/templates/web/browseWebDAV.ftl</display-template>
+  <merge-strategy>inherit-levels</merge-strategy>
+</page>
