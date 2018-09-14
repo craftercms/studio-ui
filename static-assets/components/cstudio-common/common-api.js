@@ -4088,6 +4088,26 @@ var nodeOpen = false,
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
             },
 
+            /**
+             * get user roles
+             */
+            getUserRoles: function(callback) {
+                var serviceUrl = this.getUserInfoServiceURL;
+                serviceUrl += "/sites/" + CStudioAuthoringContext.site + "/roles";
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        results = results.result.entities
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
 
             /**
              * get global menu
@@ -7589,20 +7609,12 @@ var nodeOpen = false,
 
             isReviewer: function(cb){
                 var callback = {
-                    success: function(results) {
-                        var sites = results.sites,
+                    success: function(data) {
+                        var roles = data,
                             isRev = false;
-                        for(var i=0; i<sites.length; i++){
-                            if(sites[i].site_name == CStudioAuthoringContext.site){
-                                var groups = sites[i].groups;
-                                //console.log(CStudioAuthoringContext.site);
-                                for(var j=0; j<groups.length; j++){
-                                    if(groups[j].group_name == "Reviewer"){
-                                        //console.log(groups[j].group_name);
-                                        isRev = true;
-                                        break;
-                                    }
-                                }
+                        for(var i=0; i<roles.length; i++){
+                            if(roles[i].toLocaleLowerCase() == "reviewer"){
+                                isRev = true;
                                 break;
                             }
                         }
@@ -7613,7 +7625,7 @@ var nodeOpen = false,
                     }
                 };
 
-                CStudioAuthoring.Service.getUserInfo(callback);
+                CStudioAuthoring.Service.getUserRoles(callback);
             },
 
             /**
