@@ -221,7 +221,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     documentation: "Documentation",
     about: "About",
     settings: "Settings",
-    signOut: "Sign Out"
+    signOut: "Sign Out",
+    mainMenu: "Main Menu"
 
 });
 

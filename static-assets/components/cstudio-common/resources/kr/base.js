@@ -212,7 +212,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     documentation: "선적 서류 비치",
     about: "약",
     settings: "설정",
-    signOut: "로그 아웃"
+    signOut: "로그 아웃",
+    mainMenu: "기본 메뉴"
 
 });
 

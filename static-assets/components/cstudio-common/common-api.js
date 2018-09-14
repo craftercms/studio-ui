@@ -3075,7 +3075,7 @@ var nodeOpen = false,
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
-            getUserInfoServiceURL: "/api/2/users/",
+            getUserInfoServiceURL: "/api/2/user",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
 
@@ -3112,6 +3112,9 @@ var nodeOpen = false,
 
             // Rejection Reason
             getRejectionReasonServiceUri: "/api/1/services/api/1/site/get-canned-message.json",
+
+            // Global Menu
+            getGlobalMenuURL: "/api/2/ui/views/global_menu.json",
 
             /**
              * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
@@ -4186,12 +4189,51 @@ var nodeOpen = false,
              */
             getUserInfo: function(callback) {
                 var serviceUrl = this.getUserInfoServiceURL;
-                serviceUrl += CStudioAuthoringContext.user;
 
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
                         results = results.result.entity
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * get user roles
+             */
+            getUserRoles: function(callback) {
+                var serviceUrl = this.getUserInfoServiceURL;
+                serviceUrl += "/sites/" + CStudioAuthoringContext.site + "/roles";
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        results = results.result.entities
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+
+            /**
+             * get global menu
+             */
+            getGlobalMenu: function(callback) {
+                var serviceUrl = this.getGlobalMenuURL;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        results = results.result.entities
                         callback.success(results);
                     },
                     failure: function(response) {
@@ -7701,20 +7743,12 @@ var nodeOpen = false,
 
             isReviewer: function(cb){
                 var callback = {
-                    success: function(results) {
-                        var sites = results.sites,
+                    success: function(data) {
+                        var roles = data,
                             isRev = false;
-                        for(var i=0; i<sites.length; i++){
-                            if(sites[i].site_name == CStudioAuthoringContext.site){
-                                var groups = sites[i].groups;
-                                //console.log(CStudioAuthoringContext.site);
-                                for(var j=0; j<groups.length; j++){
-                                    if(groups[j].group_name == "Reviewer"){
-                                        //console.log(groups[j].group_name);
-                                        isRev = true;
-                                        break;
-                                    }
-                                }
+                        for(var i=0; i<roles.length; i++){
+                            if(roles[i].toLocaleLowerCase() == "reviewer"){
+                                isRev = true;
                                 break;
                             }
                         }
@@ -7725,7 +7759,7 @@ var nodeOpen = false,
                     }
                 };
 
-                CStudioAuthoring.Service.getUserInfo(callback);
+                CStudioAuthoring.Service.getUserRoles(callback);
             },
 
             /**
