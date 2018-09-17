@@ -1254,7 +1254,7 @@
                          l = sites.length;
                      i < l;
                      site = sites[++i]) {
-                    if ((site.id + '') === (siteId + '')) {
+                    if ((site.siteId + '') === (siteId + '')) {
                         $scope.site = site;
                         break;
                     }
