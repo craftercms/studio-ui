@@ -1314,6 +1314,61 @@ var nodeOpen = false,
 
             },
 
+            /**
+             * open a browse page for WebDAV repo
+             */
+            openWebDAVBrowse: function(path, studioPath, profileId, baseUrl, mode, newWindow, callback) {
+                var searchId = null;
+                var searchContext = CStudioAuthoring.Service.createSearchContext();
+                var openInSameWindow = (newWindow) ? false : true;
+                var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
+                   "/browseWebDAV?site=" +
+                   CStudioAuthoringContext.site;
+                if (path) {
+                   browseUrl += "&path=" + path;
+               }
+                if (studioPath) {
+                   browseUrl += "&studioPath=" + studioPath;
+               }
+                if(profileId){
+                   browseUrl += "&profileId=" + profileId;
+               }
+                if(baseUrl){
+                   browseUrl += "&baseUrl=" + baseUrl;
+               }
+                if (!CStudioAuthoring.Utils.isEmpty(mode)) {
+                   browseUrl += "&mode=" + mode;
+               }
+                var childSearch = null;
+                if (!searchId || searchId == null || searchId == "undefined"
+                   || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
+                   childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
+                   childSearch.openInSameWindow = openInSameWindow;
+                   searchId = CStudioAuthoring.Utils.generateUUID();
+                    childSearch.searchId = searchId;
+                   childSearch.searchUrl = browseUrl + "&searchId=" + searchId;
+                   childSearch.saveCallback = callback;
+                    CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
+                }
+               else {
+                   if (window.opener) {
+                        if (window.opener.CStudioAuthoring) {
+                            var openerChildSearchMgr = window.opener.CStudioAuthoring.ChildSearchManager;
+                            if (openerChildSearchMgr) {
+                                childSearch = openerChildSearchMgr.searches[searchId];
+                               childSearch.searchUrl = browseUrl;
+                                openerChildSearchMgr.openChildSearch(childSearch);
+                           }
+                       }
+                   }
+                   else {
+                       childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
+                       childSearch.searchUrl = browseUrl;
+                        CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
+                   }
+               }
+            },
+
             refreshPreviewParent: function() {
                 var previewFrameEl = window.parent.document.getElementById("engineWindow");
                 if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
@@ -2664,6 +2719,35 @@ var nodeOpen = false,
                 CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
             },
 
+            uploadWebDAVAsset: function(site, path, profileId, uploadCb) {
+                CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb);                  
+            },
+             /**
+             *  opens a dialog to upload an asset to webdav server
+             */
+            openWebDAVUploadDialog: function(site, path, profileId, callback) {
+                 var serviceUri = CStudioAuthoring.Service.writeWebDAVContentUri;
+                 var openUploadDialogCb = {
+                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                        dialogClass.showDialog(
+                            moduleConfig.site, 
+                            moduleConfig.path, 
+                            moduleConfig.profile, 
+                            moduleConfig.serviceUri, 
+                            moduleConfig.callback);
+                    }
+                };
+                 var moduleConfig = {
+                    path: encodeURI(path),
+                    site: site,
+                    profile: profileId,
+                    serviceUri: serviceUri,
+                    callback: callback
+                }
+                 CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
+                 CStudioAuthoring.Module.requireModule("upload-webdav-dialog", "/static-assets/components/cstudio-dialogs/uploadWebDAV-dialog.js", moduleConfig, openUploadDialogCb);
+            },
+
             cropperImage: function(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback) {
                 CStudioAuthoring.Operations.openCropDialog(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback);
             },
@@ -2924,6 +3008,10 @@ var nodeOpen = false,
             getCMISContentBySearchUri: "/api/1/services/api/1/cmis/search.json",
             getCMISContentByBrowseUri: "/api/1/services/api/1/cmis/list.json",
             getCMISCloneUri: "/api/1/services/api/1/cmis/clone.json",
+
+            //WEBDAV
+            getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
+            writeWebDAVContentUri: "/api/1/services/api/1/webdav/upload.json",
 
             // WRITE OPS
             getRevertContentServiceUrl: "/api/1/services/api/1/content/revert-content.json",
@@ -5392,6 +5480,20 @@ var nodeOpen = false,
 
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
+
+            getWebDAVContentByBrowser: function(site, profileId, path, callback) {
+                var serviceUri = this.getWebDAVContentByBrowseUri + "?site_id=" + site + "&profile=" + profileId + "&path=" + path;
+                var serviceCallback = {
+                   success: function(response) {
+                       var contentResults = eval("(" + response.responseText + ")");
+                       callback.success(contentResults);
+                   },
+                    failure: function(response) {
+                       callback.failure(response);
+                   }
+               };
+                YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+           },
 
             contentCloneCMIS: function(paramJson, callback){
                 var serviceUri = this.getCMISCloneUri;
