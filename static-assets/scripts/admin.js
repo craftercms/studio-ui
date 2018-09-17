@@ -726,8 +726,13 @@
                     $scope.hideModal();
                     $scope.usersCollection.push(user);
                     $scope.notification('\''+ user.username + '\' created.','','studioMedium');
-                }).error(function(error){
-                    $scope.usersError = error
+                }).error(function(response){
+                    var response = response.result.response,
+                        error = {
+                            message: response.message,
+                            remedialAction: response.remedialAction
+                        }
+                    $scope.usersError = error;
                 });
 
             };
