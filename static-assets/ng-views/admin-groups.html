@@ -51,7 +51,7 @@
         </div>
         <div ng-show="groups.groupView" class="col-md-12">
             <h2 class="page-header">
-                {{ groups.site }}
+                {{ groups.selectedGroup.desc }}
                 <button class="close" ng-click="groups.groupView = false">« {{ 'admin.groups.BACK_TO_GROUPS'| translate }}</button>
             </h2>
             <form class="form-horizontal" style="max-width: 600px;">
