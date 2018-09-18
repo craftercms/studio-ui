@@ -496,7 +496,11 @@
                             window.top.postMessage('status-changed', '*');
                         })
                         .error(function (err) {
-                            publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
+                            if(err.message){
+                                publish.error =err.message;
+                            }else{
+                                publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
+                            }
                             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
                         });
                 };
@@ -509,7 +513,11 @@
                             window.top.postMessage('status-changed', '*');
                         })
                         .error(function (err) {
-                            publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
+                            if(err.message){
+                                publish.error =err.message;
+                            }else{
+                                publish.error = err.match(/<title[^>]*>([^<]+)<\/title>/)[1];
+                            }
                             $scope.errorDialog = publish.showModal('errorDialog.html', 'md');
                         });
                 };
