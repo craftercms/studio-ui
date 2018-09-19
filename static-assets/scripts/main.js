@@ -315,6 +315,7 @@
         PATH_IMG: '/images/',
         SERVICE: '/studio/api/1/services/api/1/',
         SERVICE2:'/studio/api/2/',
+        STUDIO_PATH: '/studio',
         SHOW_LOADER: 'show-loader',
         BULK_ENVIRONMENT: 'Live',
         HEADERS: 'headers'
@@ -355,11 +356,18 @@
                 });
             };
 
-            this.logout = function () {
-                $http.post(security('logout'), null);
+            this.logout = function (info) {
+                $http({
+                    method: info.method,
+                    url: info.url
+                });
                 user = null;
 
                 $cookies['userSession'] = null;
+            };
+
+            this.getLogoutInfo = function () {
+                return $http.get(userActions("/logout/url"));
             };
 
             this.getUser = function () {
@@ -437,8 +445,13 @@
                 return Constants.SERVICE + api + action + '.json';
             }
 
-            function userActions(action, params) {
-                return Constants.SERVICE2 + 'user';
+            function userActions(action) {
+                if(action){
+                    return Constants.SERVICE2 + 'user' + action;
+                }else{
+                    return Constants.SERVICE2 + 'user';
+                }
+
             }
 
             return this;
@@ -623,14 +636,30 @@
             $scope.helpUrl = 'http://docs.craftercms.org/en/3.0/';
             $scope.isIframeClass = $location.search().iframe ? 'iframe' : '';
             $rootScope.isFooter = true;
+            $scope.showLogoutLink = false;
+            $scope.logoutInfo = {};
 
             if($location.$$search.iframe){
                 $rootScope.isFooter = false;
             }
 
+            authService.getLogoutInfo()
+                .success(function (data) {
+                    //delete data.result['entity'];
+                    var result = data.result.hasOwnProperty('entity') ? true : false;
+                    if(result){
+                        $scope.showLogoutLink = true;
+                        $scope.logoutInfo.url = data.result.entity.url;
+                        $scope.logoutInfo.method = data.result.entity.method;
+                    }
+                })
+
             function logout() {
-                authService.logout();
-                $state.go('login');
+                if($scope.showLogoutLink){
+                    authService.logout($scope.logoutInfo);
+                    $state.go('login');
+                }
+
             }
 
             function mouseOverTopMenu(evt) {

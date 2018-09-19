@@ -47,7 +47,7 @@
                                     <div id="nav-user-email"></div>
                                 </li>
                                 <li><a href="/studio/#/settings" data-translation="settings">Settings</a></li>
-                                <li><a id="acn-logout-link" data-translation="signOut">Sign out</a></li>
+                                <li><a id="acn-logout-link" class="hide" data-translation="signOut">Sign out</a></li>
                             </ul>
                         </li>
                     </ul>
