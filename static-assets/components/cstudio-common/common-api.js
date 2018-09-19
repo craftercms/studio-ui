@@ -1317,7 +1317,7 @@ var nodeOpen = false,
             /**
              * open a browse page for CMIS repo
              */
-            openWebDAVBrowse: function(path, studioPath, profileId, baseUrl, mode, newWindow, callback) {
+            openWebDAVBrowse: function(path, profileId, baseUrl, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
 
@@ -1333,12 +1333,12 @@ var nodeOpen = false,
                     browseUrl += "&path=" + path;
                 }
 
-                if (studioPath) {
-                    browseUrl += "&studioPath=" + studioPath;
-                }
-
                 if(profileId){
                     browseUrl += "&profileId=" + profileId;
+                }
+
+                if(filter !== 'none'){
+                    browseUrl += "&filter=" + filter;
                 }
 
                 if(baseUrl){
@@ -5551,9 +5551,12 @@ var nodeOpen = false,
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
 
-            getWebDAVContentByBrowser: function(site, profileId, path, callback) {
-
+            getWebDAVContentByBrowser: function(site, profileId, path, callback, filter) {
                 var serviceUri = this.getWebDAVContentByBrowseUri + "?site_id=" + site + "&profile=" + profileId + "&path=" + path;
+
+                if(filter){
+                    serviceUri += "&type=" + filter;
+                }
 
                 var serviceCallback = {
                     success: function(response) {

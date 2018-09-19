@@ -281,15 +281,16 @@
     };
 
     CStudioBrowseWebDAV.parseItemObj = function(item) {
-        var parsed = {
-            itemId: item.item_id,
-            selectMode: "",
-            status: "",
-            internalName: item.name,
-            type: item.mime_type ? item.mime_type : "asset",
-            browserUri: item.url,
-            mimeType: item.mime_type ? item.mime_type : "asset"
-        };
+        var filter = CStudioAuthoring.Utils.getQueryParameterByName("filter"),
+            parsed = {
+                itemId: item.item_id,
+                selectMode: "",
+                status: "",
+                internalName: item.name,
+                type: filter ? filter : "asset",
+                browserUri: item.url,
+                mimeType: filter ? filter : "asset"
+            };
 
         return parsed;
     };
@@ -412,7 +413,8 @@
         var pathURL = CStudioAuthoring.Utils.getQueryParameterByName("path"),
             path = cPath ? cPath : pathURL.slice(-1)=="/" ? pathURL.substring(0, pathURL.length - 1) : pathURL,
             profileId = CStudioAuthoring.Utils.getQueryParameterByName("profileId"),
-            site = CStudioAuthoring.Utils.getQueryParameterByName("site");
+            site = CStudioAuthoring.Utils.getQueryParameterByName("site"),
+            filter = CStudioAuthoring.Utils.getQueryParameterByName("filter");
 
 
         var callbackContent = {
@@ -421,9 +423,10 @@
             },
             failure: function(response){
                 var message = (CMgs.format(browseLangBundle, "" + response.status + ""));
-                var error = JSON.parse(response.responseText)
+                var error = JSON.parse(response.responseText),
+                    errorMessage = error.errors[0];
                 
-                message += "</br></br><div id='errorCode' style='display: none; padding-left: 26px; width: calc(100% - 26px);'>" + error.message + "</div>";
+                message += "</br></br><div id='errorCode' style='display: none; padding-left: 26px; width: calc(100% - 26px);'>" + errorMessage + "</div>";
 
                 message += "<div style='margin-left: 26px;'><a style='color: #4F81A0;' href='#' data-open='false' class='show-more-toggle'>Show More" + 
                 "<i class='fa fa-chevron-right' aria-hidden='true' style='font-size: 10px;margin-left: 5px;'></i></span></div>";
@@ -457,7 +460,7 @@
             }
         }
             
-        CStudioAuthoring.Service.getWebDAVContentByBrowser(site, profileId, path, callbackContent);
+        CStudioAuthoring.Service.getWebDAVContentByBrowser(site, profileId, path, callbackContent, filter);
 
     };
 

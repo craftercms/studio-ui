@@ -127,28 +127,14 @@
               </div>
               {{#equal type "image"}}
                 <div class="cstudio-search-description-preview">
-                    {{#if repoPath}}
-                    <img src="{{repoPath}}" alt="{{name}}" class="cstudio-search-banner-image"">
-                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{repoPath}}" data-type="{{mimeType}}">
-                    {{else}}
-                    <img src="{{browserUri}}" alt="{{name}}" class="cstudio-search-banner-image"">
+                    <img src="{{browserUri}}" alt="{{name}}" class="cstudio-search-banner-image">
                     <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}" data-type="{{mimeType}}" >
-                    {{/if}}
                 </div>
               {{/equal}}
               {{#equal type "video"}}
                 <div class="cstudio-search-description-preview">
-                    {{#if repoPath}}
-                    <video class="cstudio-search-banner-image" controls="true">
-                        <source src="{{repoPath}}" type="{{mimeType}}">
-                    </video>
-                    <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{repoPath}}" data-type="{{mimeType}}">
-                    {{else}}
-                    <video class="cstudio-search-banner-image" controls="true">
-                        <source src="{{browserUri}}" type="{{mimeType}}">
-                    </video>
+                    <video class="cstudio-search-banner-image" src="{{browserUri}}" type="{{mimeType}}" controls="true"></video>
                     <img src="/studio/static-assets/themes/cstudioTheme/images/magnify.jpg" class="magnify-icon" style="position: absolute; right: 0; bottom: 0;" data-source="{{browserUri}}" data-type="{{mimeType}}">
-                    {{/if}}
                 </div>
               {{/equal}}
             </div>
@@ -179,6 +165,18 @@
             CStudioBrowseWebDAV.init();
         });
 
+    </script>
+
+    <script type="text/javascript">
+      Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
+        if (arguments.length < 3)
+            throw new Error("Handlebars Helper equal needs 2 parameters");
+        if( lvalue!=rvalue ) {
+            return options.inverse(this);
+        } else {
+            return options.fn(this);
+        }
+      });
     </script>
   
    </body>
