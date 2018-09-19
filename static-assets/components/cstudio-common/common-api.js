@@ -1317,7 +1317,7 @@ var nodeOpen = false,
             /**
              * open a browse page for WebDAV repo
              */
-            openWebDAVBrowse: function(path, studioPath, profileId, baseUrl, mode, newWindow, callback) {
+            openWebDAVBrowse: function(path, profileId, baseUrl, mode, newWindow, callback, filter = 'none') {
                 var searchId = null;
                 var searchContext = CStudioAuthoring.Service.createSearchContext();
                 var openInSameWindow = (newWindow) ? false : true;
@@ -1326,19 +1326,19 @@ var nodeOpen = false,
                    CStudioAuthoringContext.site;
                 if (path) {
                    browseUrl += "&path=" + path;
-               }
-                if (studioPath) {
-                   browseUrl += "&studioPath=" + studioPath;
-               }
+                }
                 if(profileId){
                    browseUrl += "&profileId=" + profileId;
-               }
+                }
+                if(filter !== 'none'){
+                    browseUrl += "&filter=" + filter;
+                }
                 if(baseUrl){
                    browseUrl += "&baseUrl=" + baseUrl;
-               }
+                }
                 if (!CStudioAuthoring.Utils.isEmpty(mode)) {
                    browseUrl += "&mode=" + mode;
-               }
+                }
                 var childSearch = null;
                 if (!searchId || searchId == null || searchId == "undefined"
                    || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
@@ -5481,8 +5481,13 @@ var nodeOpen = false,
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
 
-            getWebDAVContentByBrowser: function(site, profileId, path, callback) {
+            getWebDAVContentByBrowser: function(site, profileId, path, callback, filter) {
                 var serviceUri = this.getWebDAVContentByBrowseUri + "?site_id=" + site + "&profile=" + profileId + "&path=" + path;
+
+                if(filter){
+                    serviceUri += "&type=" + filter;
+                }
+
                 var serviceCallback = {
                    success: function(response) {
                        var contentResults = eval("(" + response.responseText + ")");
@@ -5493,7 +5498,7 @@ var nodeOpen = false,
                    }
                };
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
-           },
+            },
 
             contentCloneCMIS: function(paramJson, callback){
                 var serviceUri = this.getCMISCloneUri;
