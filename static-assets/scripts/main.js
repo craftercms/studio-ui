@@ -478,7 +478,9 @@
             };
 
             this.getSitesPerUser = function(params) {
-                return $http.get(userActions('sites'));
+                return $http.get(userActions('sites'), {
+                    params: params
+                });
             }
 
             this.setCookie = function(cookieGenName, value){
@@ -1023,9 +1025,7 @@
             function getResultsPage(pageNumber) {
 
                 if(authService.getUser()){
-                    var params = {
-                        id: $scope.user.username
-                    };
+                    var params = {};
 
                     if($scope.totalSites && $scope.totalSites > 0) {
                         var offset = (pageNumber - 1) * $scope.sitesPag.sitesPerPage,
