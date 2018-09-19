@@ -133,7 +133,7 @@
       "PASSWORD": "Password",
       "PASSWORD_VERIFICATION": "Password Verification",
       "SAVE": "Save",
-      "ADD_TO_GROUP_TEXT": "To add a user to a group/site, please use the SiteConfig tools within the site.",
+      "ADD_TO_GROUP_TEXT": "To add a user to a group/site, please use the Site Config tools within the site.",
       "DELETE_ERROR": "Unable to delete user. Please contact your system administrator.",
       "ERROR": "Error:",
       "USERS_PER_PAGE": "Users per page"
