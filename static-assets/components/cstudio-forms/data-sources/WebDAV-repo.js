@@ -12,9 +12,6 @@ CStudioForms.Datasources.WebDAVRepo = CStudioForms.Datasources.WebDAVRepo ||
             if(properties[i].name === "profileId") {
                 this.profileId = properties[i].value;
             }
-            if(properties[i].name === "studioPath") {
-                this.studioPath = properties[i].value;
-            }
         }
 
         return this;
@@ -75,14 +72,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
                     addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
                 }
 
-                // var datasourceDef = this.form.definition.datasources,
                 var newElTitle = 'WebDAV';  //TODO: check how to get DS title
-
-                // for(var x = 0; x < datasourceDef.length; x++){
-                //     if (datasourceDef[x].id == this.id){
-                //         newElTitle = datasourceDef[x].title;
-                //     }
-                // }
 
                 var createEl = document.createElement("div");
                 YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
@@ -93,10 +83,10 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
                 YAHOO.util.Event.on(createEl, 'click', function() {
                     control.addContainerEl = null;
                     control.containerEl.removeChild(addContainerEl);
-                    CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.studioPath, _self.profileId, baseUrl, "select", true, browseCb);
+                    CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.profileId, baseUrl, "select", true, browseCb);
                 }, createEl);
             }else{
-                CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.studioPath, _self.profileId, baseUrl, "select", true, browseCb);
+                CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.profileId, baseUrl, "select", true, browseCb);
             }            
         }
 
