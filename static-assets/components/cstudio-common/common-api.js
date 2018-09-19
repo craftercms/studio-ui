@@ -3078,6 +3078,7 @@ var nodeOpen = false,
             getUserInfoServiceURL: "/api/2/user",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
+            getLogoutInfoURL: "/api/2/user/logout/url",
 
             // Configuration Services
             getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
@@ -4233,8 +4234,34 @@ var nodeOpen = false,
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
-                        results = results.result.entities
+                        results = results.result.entities;
                         callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * get logout info
+             */
+            getLogoutInfo: function(callback) {
+                var serviceUrl = this.getLogoutInfoURL;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        //delete results.result['entity'];
+                        var hasResult = results.result.hasOwnProperty('entity') ? true : false;
+                        if(hasResult){
+                            results = results.result.entity;
+                        }else{
+                            results = false;
+                        }
+                        callback.success(results);
+                        results = results.result;
                     },
                     failure: function(response) {
                         callback.failure(response);
