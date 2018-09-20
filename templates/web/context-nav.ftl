@@ -35,7 +35,7 @@
                                 <span class="nav-label"><span data-translation="help">Help</span><span class="caret"></span></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="http://docs.craftercms.org/en/3.0/" target="_blank" data-translation="documentation">Documentation</a></li>
+                                <li><a href="https://docs.craftercms.org/en/3.1/index.html" target="_blank" data-translation="documentation">Documentation</a></li>
                                 <li><a href="/studio/#/about-us" data-translation="about">About</a></li>
                             </ul>
                         </li>
