@@ -9,9 +9,7 @@
         </div>
         <div class="col-sm-9">
             <div class="tab-content">
-                <div ng-repeat="entity in entities" class="tab-pane" ng-show="view_tab == entity.tabName">
-                    <div ui-view="contentTab"></div>
-                </div>
+                <div ui-view="contentTab"></div>
             </div>
         </div>
     </div>
