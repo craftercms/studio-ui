@@ -318,7 +318,8 @@
         STUDIO_PATH: '/studio',
         SHOW_LOADER: 'show-loader',
         BULK_ENVIRONMENT: 'Live',
-        HEADERS: 'headers'
+        HEADERS: 'headers',
+        AUTH_HEADERS: "AUTH_HEADERS"
     });
 
     app.service('authService', [
@@ -356,7 +357,7 @@
                 });
             };
 
-            this.logout = function (info) {
+            /*this.logout = function (info) {
                 $http({
                     method: info.method,
                     url: info.url
@@ -364,10 +365,17 @@
                 user = null;
 
                 $cookies['userSession'] = null;
+            };*/
+
+            this.logout = function () {
+                $http.post(security('logout'), null);
+                user = null;
+
+                $cookies['userSession'] = null;
             };
 
-            this.getLogoutInfo = function () {
-                return $http.get(userActions("/logout/url"));
+            this.getSSOLogoutInfo = function () {
+                return $http.get(userActions("/logout/sso/url"));
             };
 
             this.getUser = function () {
@@ -629,8 +637,8 @@
     ]);
 
     app.controller('AppCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout', '$location',
-        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout, $location) {
+        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout', '$location', '$window',
+        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout, $location, $window) {
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
@@ -645,21 +653,34 @@
                 $rootScope.isFooter = false;
             }
 
-            authService.getLogoutInfo()
-                .success(function (data) {
-                    //delete data.result['entity'];
-                    var result = data.result.hasOwnProperty('entity') ? true : false;
-                    if(result){
-                        $scope.showLogoutLink = true;
-                        $scope.logoutInfo.url = data.result.entity.url;
-                        $scope.logoutInfo.method = data.result.entity.method;
+            if(authService.getUser()){
+                authService.getCurrentUserData().then(
+                    function successCallback(response) {
+                        $scope.externallyManaged = response.data.result.entity.externallyManaged;
+                        $scope.showLogoutLink = response.data.result.entity.authenticationType == Constants.AUTH_HEADERS ? false : true;
+                        if(!$scope.showLogoutLink) {
+                            authService.getSSOLogoutInfo()
+                                .success(function (data) {
+                                    var result = data.result.entity ? true : false;
+                                    if (result) {
+                                        $scope.showLogoutLink = true;
+                                        $scope.logoutInfo.url = data.result.entity;
+                                    }
+                                })
+                        }
+                    }, function errorCallback(response) {
                     }
-                })
+                );
+            }
 
             function logout() {
                 if($scope.showLogoutLink){
-                    authService.logout($scope.logoutInfo);
-                    $state.go('login');
+                    authService.logout();
+                    if($scope.logoutInfo.url){
+                        $window.location.href = $scope.logoutInfo.url;
+                    }else {
+                        $state.go('login');
+                    }
                 }
 
             }
@@ -678,16 +699,6 @@
                 var elt = $(evt.target).find('.nav-label-hover');
                 elt.addClass('nav-label');
                 elt.removeClass('nav-label-hover');
-            }
-
-
-            if(authService.getUser()){
-                authService.getCurrentUserData().then(
-                    function successCallback(response) {
-                        $scope.externallyManaged = response.data.result.entity.externallyManaged;
-                    }, function errorCallback(response) {
-                    }
-                );
             }
 
 
