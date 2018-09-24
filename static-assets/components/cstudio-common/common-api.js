@@ -231,7 +231,8 @@ var nodeOpen = false,
                 scheduledStatus: "scheduled",
                 inWorkflowStatus: "in workflow"
             },
-            HEADERS: "headers"
+            HEADERS: "headers",
+            AUTH_HEADERS: "AUTH_HEADERS"
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -3078,7 +3079,7 @@ var nodeOpen = false,
             getUserInfoServiceURL: "/api/2/user",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
-            getLogoutInfoURL: "/api/2/user/logout/url",
+            getLogoutInfoURL: "/api/2/user/logout/sso/url",
 
             // Configuration Services
             getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
@@ -4245,9 +4246,9 @@ var nodeOpen = false,
             },
 
             /**
-             * get logout info
+             * get SSO logout info
              */
-            getLogoutInfo: function(callback) {
+            getSSOLogoutInfo: function(callback) {
                 var serviceUrl = this.getLogoutInfoURL;
 
                 var serviceCallback = {
