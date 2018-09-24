@@ -637,13 +637,8 @@
     ]);
 
     app.controller('AppCtrl', [
-<<<<<<< HEAD
         '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location',
         function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location) {
-=======
-        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout', '$location', '$window',
-        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout, $location, $window) {
->>>>>>> b5cfa35074d7148d5f7f90010cd0aaa02d920491
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
