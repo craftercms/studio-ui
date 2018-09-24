@@ -762,6 +762,19 @@
                 $rootScope.modalInstance.close();
             };
 
+            $scope.loadHomeState = function() {
+                var currentState = $state.current.name,
+                    homeState = 'home.globalMenu';
+
+                // If current state = home, reload controller
+                if( currentState.indexOf(homeState) !== -1 ){
+                    $state.go('home.globalMenu',{},{reload:true});
+                }else{
+                    $state.go('home.globalMenu');
+                }
+
+            }
+
             $scope.user = authService.getUser();
 
             if($scope.user && $scope.user.username) {
