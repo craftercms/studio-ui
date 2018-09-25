@@ -281,9 +281,9 @@
     ]);
     
     app.controller('AuditCtrl', [
-        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        '$scope', '$state', '$window', '$sce', 'adminService', '$timeout',
         '$stateParams', '$translate', '$location', 'moment',
-        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+        function ($scope, $state, $window, $sce, adminService, $timeout,
                   $stateParams, $translate, $location, moment) {
 
             $scope.audit = {};
@@ -398,9 +398,9 @@
     ]);
 
     app.controller('PublishingCtrl', [
-        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
         '$stateParams', '$translate', '$location', 'moment',
-        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+        function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
                   $stateParams, $translate, $location, moment) {
 
                 //PUBLISHING
@@ -413,7 +413,7 @@
                 publish.error = "";
 
                 publish.showModal = function(template, size, verticalCentered, styleClass){
-                    var modalInstance = $modal.open({
+                    var modalInstance = $uibModal.open({
                         templateUrl: template,
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
@@ -603,9 +603,9 @@
     ]);
 
     app.controller('UsersCtrl', [
-        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
         '$stateParams', '$translate', '$location',
-        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+        function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
                   $stateParams, $translate, $location) {
 
             $scope.users = {};
@@ -618,7 +618,7 @@
                 $scope.showModal = function(template, size, verticalCentered, styleClass){
                     $scope.usersError = null;
 
-                    var modalInstance = $modal.open({
+                    var modalInstance = $uibModal.open({
                         templateUrl: template,
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
@@ -836,9 +836,9 @@
     ]);
 
     app.controller('GroupsCtrl', [
-        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
         '$stateParams', '$translate', '$location', '$q',
-        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+        function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
                   $stateParams, $translate, $location, $q) {
 
             $scope.groups = {};
@@ -850,7 +850,7 @@
 
                 $scope.showModal = function(template, size, verticalCentered, styleClass){
                     $scope.groupsError = null;
-                    var modalInstance = $modal.open({
+                    var modalInstance = $uibModal.open({
                         templateUrl: template,
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
@@ -1125,9 +1125,9 @@
     ]);
 
     app.controller('RepositoriesCtrl', [
-        '$scope', '$state', '$window', '$sce', 'adminService', '$modal', '$timeout',
+        '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
         '$stateParams', '$translate', '$location', '$q',
-        function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
+        function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
                   $stateParams, $translate, $location, $q) {
 
 
@@ -1140,7 +1140,7 @@
 
                 $scope.showModal = function(template, size, verticalCentered, styleClass){
                     $scope.groupsError = null;
-                    var modalInstance = $modal.open({
+                    var modalInstance = $uibModal.open({
                         templateUrl: template,
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',

@@ -5,8 +5,8 @@
 
     <label>{{ 'admin.audit.USER' | translate }}: </label>
 
-    <div class="btn-group" dropdown is-open="usersDropdown.isopen" style="margin-right: 20px;">
-        <button type="button" class="btn btn-default dropdown-toggle text-capitalize" dropdown-toggle >
+    <div class="btn-group" uib-dropdown is-open="usersDropdown.isopen" style="margin-right: 20px;">
+        <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle >
             {{audit.userSelected || 'admin.audit.ALL_USERS' | translate }}  <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
@@ -21,8 +21,8 @@
 
     <label>{{ 'admin.audit.actions.ACTIONS' | translate }}: </label>
 
-    <div class="btn-group audit-actions" dropdown is-open="actionsDropdown.isopen" style="margin-right: 20px;">
-        <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle>
+    <div class="btn-group audit-actions" uib-dropdown is-open="actionsDropdown.isopen" style="margin-right: 20px;">
+        <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle>
             {{ audit.actionsInputVal || 'admin.audit.actions.ALL_ACTIONS' | translate }} <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" ng-click="$event.stopPropagation()">

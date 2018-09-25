@@ -208,10 +208,10 @@
                 .state('login', {
                     url: '/login',
                     onEnter: [
-                        '$rootScope', '$state', '$modal',
-                        function ($rootScope, $state, $modal) {
+                        '$rootScope', '$state', '$uibModal',
+                        function ($rootScope, $state, $uibModal) {
 
-                            $rootScope.loginModal = $modal.open({
+                            $rootScope.loginModal = $uibModal.open({
                                 templateUrl: '/studio/static-assets/ng-views/login.html',
                                 controller: 'LoginCtrl',
                                 backdrop: 'static',
@@ -238,10 +238,10 @@
                 .state('login.recover', {
                     url: '/recover',
                     onEnter: [
-                        '$rootScope', '$state', '$modal',
-                        function ($rootScope, $state, $modal) {
+                        '$rootScope', '$state', '$uibModal',
+                        function ($rootScope, $state, $uibModal) {
 
-                            $rootScope.recoverModal = $modal.open({
+                            $rootScope.recoverModal = $uibModal.open({
                                 templateUrl: '/studio/static-assets/ng-views/recover.html',
                                 controller: 'RecoverCtrl',
                                 backdrop: 'static',
@@ -268,10 +268,10 @@
                 .state('home.reset', {
                     url: 'reset-password',
                     onEnter: [
-                        '$rootScope', '$state', '$modal',
-                        function ($rootScope, $state, $modal) {
+                        '$rootScope', '$state', '$uibModal',
+                        function ($rootScope, $state, $uibModal) {
 
-                            $rootScope.resetModal = $modal.open({
+                            $rootScope.resetModal = $uibModal.open({
                                 templateUrl: '/studio/static-assets/ng-views/reset-password.html',
                                 controller: 'ResetCtrl',
                                 backdrop: 'static',
@@ -637,8 +637,8 @@
     ]);
 
     app.controller('AppCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$modal', '$translate', '$timeout', '$location', '$window',
-        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $modal, $translate, $timeout, $location, $window) {
+        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location',
+        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location) {
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
@@ -717,7 +717,7 @@
                             } else {
                                 $scope.message = data.message;
 
-                                $rootScope.modalInstance = $modal.open({
+                                $rootScope.modalInstance = $uibModal.open({
                                     templateUrl: 'passwordUpdated.html',
                                     windowClass: 'centered-dialog',
                                     controller: 'AppCtrl',
@@ -754,7 +754,7 @@
                 $translate.use($scope.langSelected);
                 sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
 
-                $rootScope.modalInstance = $modal.open({
+                $rootScope.modalInstance = $uibModal.open({
                     templateUrl: 'settingLanguajeConfirmation.html',
                     windowClass: 'centered-dialog',
                     controller: 'AppCtrl',
@@ -772,6 +772,19 @@
             $scope.cancel = function () {
                 $rootScope.modalInstance.close();
             };
+
+            $scope.loadHomeState = function() {
+                var currentState = $state.current.name,
+                    homeState = 'home.globalMenu';
+
+                // If current state = home, reload controller
+                if( currentState.indexOf(homeState) !== -1 ){
+                    $state.go('home.globalMenu',{},{reload:true});
+                }else{
+                    $state.go('home.globalMenu');
+                }
+
+            }
 
             $scope.user = authService.getUser();
 
@@ -870,7 +883,7 @@
             };
 
             function showReLoginModal() {
-                return $modal.open({
+                return $uibModal.open({
                     templateUrl: 'reLoginModal.html',
                     backdrop: 'static',
                     keyboard: false,
@@ -930,7 +943,7 @@
             }
 
             $scope.spinnerOverlay = function() {
-                return $modal.open({
+                return $uibModal.open({
                     templateUrl: 'spinnerModal.html',
                     backdrop: 'static',
                     keyboard: false,
@@ -942,9 +955,9 @@
     ]);
 
     app.controller('GlobalMenuCtrl', [
-        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies', '$timeout', 'Constants',
+        '$scope', '$state', '$location', 'sitesService',
 
-        function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout, Constants) {
+        function ($scope, $state, $location, sitesService) {
 
 
             $scope.entities;
@@ -982,9 +995,9 @@
     ]);
 
     app.controller('SitesCtrl', [
-        '$scope', '$state', '$location', 'sitesService', 'authService', '$modal', '$cookies', '$timeout', 'Constants',
+        '$scope', '$state', '$location', 'sitesService', 'authService', '$uibModal', '$cookies', '$timeout', 'Constants',
 
-        function ($scope, $state, $location, sitesService, authService, $modal, $cookies, $timeout, Constants) {
+        function ($scope, $state, $location, sitesService, authService, $uibModal, $cookies, $timeout, Constants) {
 
             $scope.sites = null;
 
@@ -1057,7 +1070,7 @@
 
             $scope.removeSiteSites = function (site){
 
-                var modalInstance = $modal.open({
+                var modalInstance = $uibModal.open({
                     templateUrl: 'removeConfirmation.html',
                     controller: 'RemoveSiteCtrl',
                     backdrop: 'static',
@@ -1117,7 +1130,7 @@
             }
 
             $scope.createSitesDialog = function() {
-                $scope.adminModal = $modal.open({
+                $scope.adminModal = $uibModal.open({
                     templateUrl: '/studio/static-assets/ng-views/create-site.html?version='+ UIBuildId,
                     backdrop: 'static',
                     keyboard: true,
@@ -1155,7 +1168,7 @@
             }
 
             if($scope.siteValidation){
-                $scope.adminModal = $modal.open({
+                $scope.adminModal = $uibModal.open({
                     templateUrl: 'invalidSite.html',
                     backdrop: 'static',
                     keyboard: false,
@@ -1232,8 +1245,8 @@
     ]);
 
     app.controller('SiteCtrl', [
-        '$scope', '$state', 'sitesService', '$timeout', '$window', '$modal',
-        function ($scope, $state, sitesService,$timeout, $window, $modal) {
+        '$scope', '$state', 'sitesService', '$timeout', '$window', '$uibModal',
+        function ($scope, $state, sitesService,$timeout, $window, $uibModal) {
 
             // View models
             $scope.site = null;
@@ -1320,7 +1333,7 @@
                 $scope.error = "";
                 $scope.adminModal.close();
 
-                $scope.createModalInstance = $modal.open({
+                $scope.createModalInstance = $uibModal.open({
                     templateUrl: 'creatingSiteConfirmation.html',
                     backdrop: 'static',
                     keyboard: false,
@@ -1376,7 +1389,7 @@
                         }else{
                             $scope.createModalInstance.close();
                             $scope.error = data.message;
-                            $scope.modalInstance = $modal.open({
+                            $scope.modalInstance = $uibModal.open({
                                 templateUrl: "createSiteError.html",
                                 backdrop: "static",
                                 keyboard: false,
@@ -1526,8 +1539,8 @@
     ]);
 
     app.controller('ResetCtrl', [
-        '$scope', '$state', '$location', 'authService', '$modal', '$timeout', '$translate',
-        function ($scope, $state, $location, authService, $modal, $timeout, $translate) {
+        '$scope', '$state', '$location', 'authService', '$timeout', '$translate',
+        function ($scope, $state, $location, authService, $timeout, $translate) {
 
             var successDelay = 2500;
             $scope.user = {};
