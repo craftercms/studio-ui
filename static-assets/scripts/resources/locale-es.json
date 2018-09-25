@@ -131,7 +131,7 @@
       "PASSWORD": "Contraseña",
       "PASSWORD_VERIFICATION": "Verificación de Contraseña",
       "SAVE": "Guardar",
-      "ADD_TO_GROUP_TEXT": "Para agregar un usuario a un grupo / sitio, utilice las herramientas Configuracion dentro del sitio.",
+      "ADD_TO_GROUP_TEXT": "Para agregar un usuario a un grupo, use Grupos del menú principal.",
       "DELETE_ERROR": "No se puede eliminar el usuario. Por favor, póngase en contacto con el administrador del sistema.",
       "ERROR": "Error:",
       "USERS_PER_PAGE": "Usuarios por página"
