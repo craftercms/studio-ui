@@ -10,14 +10,14 @@ CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelec
 					
 					if(prop.name == "supportedChannels") {
 						if(prop.value && prop.Value != "") {
-							channels = prop.value;
+							channels = eval(prop.value);
 						}
 					}
 				}
 
 				if(channels) {
 
-					if(channels.length && channels.length > 0) {	
+                   if(channels.length && channels.length > 0) {
 	                	var mlb = cm.createListBox('channelSelect', {
 	                    	 title : 'Channel',
 	                     	 onselect : function(v) {
@@ -36,7 +36,7 @@ CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelec
 						mlb.add("Default", "default:"+defaultWidth);
 						
 						for(var i=0; i<channels.length; i++) {
-		            		mlb.add(channels[i].value, channels[i].name+":"+channels[i].size);
+		            		mlb.add(channels[i].key, channels[i].value+":"+channels[i].size);
 		            	};
 
                 		return mlb;
