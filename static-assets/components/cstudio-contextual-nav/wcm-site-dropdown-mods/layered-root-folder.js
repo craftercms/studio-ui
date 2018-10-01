@@ -38,6 +38,7 @@ CStudioAuthoringContext.site,
             ROOT_TOGGLE: "toggle",
             CUT_STYLE_RGB: "rgb(159, 182, 205)",
             CUT_STYLE: "#9FB6CD",
+            IS_WRITE: false,
 			searchesToWire: [],
             myTree: null,
             myTreePages: null,
@@ -1765,7 +1766,7 @@ CStudioAuthoringContext.site,
 				var permsCallback = {
 					success: function(response) {
 						var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
-						
+                        Self.IS_WRITE = true;
 						if(isWrite) {
 							LSelf._renderContextMenu(
 								target,
@@ -1936,7 +1937,7 @@ CStudioAuthoringContext.site,
              * Revert the content item
              */
             revertContent: function(p_sType, p_aArgs, tree) {
-				CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data);
+				CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, Self.IS_WRITE);
             },
 
             /**

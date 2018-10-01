@@ -25,6 +25,7 @@
             ROOT_TOGGLE: "toggle",
             CUT_STYLE_RGB: "rgb(159, 182, 205)",
             CUT_STYLE: "#9FB6CD",
+            IS_WRITE: false,
 			searchesToWire: [],
             myTree: null,
             myTreePages: [],
@@ -2240,6 +2241,11 @@
                                     dependenciesAllowed();
                                 }
 
+                                if(isUserAllowed) {
+                                    p_aArgs.addItems([ menuItems.separator ]);
+                                    p_aArgs.addItems([ menuItems.revertOption ]);
+                                }
+
 		                   		p_aArgs.render();
 								menuId.removeChild(d);
 		                   	}
@@ -2575,6 +2581,7 @@
 						var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
 
 						if(isWrite) {
+                            Self.IS_WRITE = true;
 							this._self._renderContextMenu(
 								target,
 								p_aArgs,
@@ -2853,7 +2860,7 @@
              * Revert the content item
              */
             revertContent: function(p_sType, p_aArgs, tree) {
-				CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data);
+				CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, Self.IS_WRITE);
             },
 
             /**
