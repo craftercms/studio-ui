@@ -939,7 +939,7 @@
 
                 adminService.createGroup(group).success(function (data) {
                     $scope.hideModal();
-                    $scope.groupsCollection.push(group);
+                    $scope.groupsCollection.push(data.result.entity);
                     $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
                 }).error(function(error){
                     $scope.groupsError = error;
