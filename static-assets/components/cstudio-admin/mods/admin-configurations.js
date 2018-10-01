@@ -158,7 +158,7 @@ CStudioAuthoring.Module.requireModule(
 										uri: elemPath,
 										escaped: true
 									};
-									CStudioAuthoring.Operations.viewContentHistory(content);
+									CStudioAuthoring.Operations.viewContentHistory(content, true);
 								};
 
 								document.getElementById('historyEl').append(historyLink);

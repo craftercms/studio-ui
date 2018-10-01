@@ -13,6 +13,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     ROOT_OPEN: "open",
     ROOT_CLOSED: "closed",
     ROOT_TOGGLE: "toggle",
+    IS_WRITE: false,
     treePaths: [],
     storage: CStudioAuthoring.Storage,
     customIcons: {},
@@ -1195,6 +1196,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         isCreateFolder = CSA.Service.isCreateFolder(perms);
 
                     if (isWrite == true) {
+                        Self.IS_WRITE = true;
                         if (this.isContainer) {
                             this.menuWidth = "130px";
                             if (isDeleteAllowed) {
@@ -1688,7 +1690,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
      *
      */
     revertContent: function(p_sType, p_aArgs, tree) {
-        CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data);
+        CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, Self.IS_WRITE);
     },
 
     /**

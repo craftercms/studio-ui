@@ -44,8 +44,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         { name: CMgs.format(contextNavLangBundle, "wcmContentSchedule"), allowAuthor: true, allowAdmin: true, allowBulk: true, renderId: "ApproveCommon"  },
                         { name: CMgs.format(contextNavLangBundle, "wcmContentApprove"), allowAuthor: true, allowAdmin: true, allowBulk: true, renderId: "ApproveCommon"  },
                         { name: CMgs.format(contextNavLangBundle, "wcmContentDuplicate"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "Duplicate" },
-                        { name: CMgs.format(contextNavLangBundle, "wcmContentHistory"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "VersionHistory" },
-                        { name: CMgs.format(contextNavLangBundle, "wcmContentDependencies"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "ViewDependencies" }
+                        { name: CMgs.format(contextNavLangBundle, "wcmContentDependencies"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "ViewDependencies" },
+                        { name: CMgs.format(contextNavLangBundle, "wcmContentHistory"), allowAuthor: true, allowAdmin: true, allowBulk: false, renderId: "VersionHistory" }
                     ],
 
                     /**
@@ -903,15 +903,13 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         }
                     },
                     renderVersionHistory: {
-                        render: function(option, isBulk, isAdmin, state, isRelevant, isWrite) {
-                            if(isWrite){
-                                option.onclick = function() {
-                                    CStudioAuthoring.Operations.viewContentHistory(
-                                        CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
-                                }
-                                //Making this link false as this feature is not yet completed.
-                                _this.createNavItem(option, isBulk, isAdmin, true, !isWrite);
+                        render: function (option, isBulk, isAdmin, state, isRelevant, isWrite) {
+                            option.onclick = function () {
+                                CStudioAuthoring.Operations.viewContentHistory(
+                                    CStudioAuthoring.SelectedContent.getSelectedContent()[0], isWrite);
                             }
+                            //Making this link false as this feature is not yet completed.
+                            _this.createNavItem(option, isBulk, isAdmin, true, false);
                         }
                     },
 

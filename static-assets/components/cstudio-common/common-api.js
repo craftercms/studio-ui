@@ -714,7 +714,7 @@ var nodeOpen = false,
                 });
             },
 
-            viewContentHistory: function(contentObj, callback){
+            viewContentHistory: function(contentObj, isWrite){
                 CSA.Operations._showDialogueView({
                     fn: CSA.Service.getHistoryView,
                     controller: "viewcontroller-history",
@@ -724,7 +724,7 @@ var nodeOpen = false,
 
                         YDom.get("historyCloseBtn").value = CMgs.format(formsLangBundle, "close");
 
-                        this.loadHistory(contentObj);
+                        this.loadHistory(contentObj, isWrite);
 
                         this.on("submitComplete", function(evt, args){
 
