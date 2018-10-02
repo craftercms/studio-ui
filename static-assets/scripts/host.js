@@ -492,6 +492,9 @@
                 if (hash.page && hash.page.indexOf('#') != -1) {
                     hashPage = hash.page.substring(0, hash.page.indexOf('#'));
                 }
+                if (hash.page && hash.page.indexOf(';') != -1) {
+                    hashPage = hash.page.substring(0, hash.page.indexOf(';'));
+                }
 
                 path = ('/site/website/'+ hashPage+'/index.xml').replace('//','/');
             }
