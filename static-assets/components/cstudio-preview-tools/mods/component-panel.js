@@ -253,6 +253,12 @@
                     if(previewPath.indexOf("?") > 0){
                         previewPath = previewPath.split("?")[0];
                     }
+                    if(previewPath.indexOf('#') > 0){
+                        previewPath = previewPath.split("#")[0];
+                    }
+                    if(previewPath.indexOf(';') > 0){
+                        previewPath = previewPath.split(";")[0];
+                    }
                     var pagePath = previewPath.replace(".html", ".xml");
                     if (pagePath.indexOf(".xml") == -1) {
                         if (pagePath.substring(pagePath.length - 1) != "/") {
