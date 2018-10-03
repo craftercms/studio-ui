@@ -822,7 +822,7 @@
 
                         $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
                     }).error(function (data) {
-                        $scope.error = data.message;
+                        $scope.error = data.result.response.message;
                         $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
                     });
                 }
