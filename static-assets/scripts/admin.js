@@ -764,7 +764,17 @@
             users.editUser = function(user) {
                 $scope.hideModal();
 
-                adminService.editUser(user).success(function (data) {
+                var currentUser = {};
+                currentUser.id = user.id;
+                currentUser.username = user.username
+                currentUser.password = user.password
+                currentUser.firstName = user.firstName
+                currentUser.lastName = user.lastName
+                currentUser.email = user.email
+                currentUser.enabled = user.enabled
+                currentUser.externallyManaged = user.externallyManaged;
+
+                adminService.editUser(currentUser).success(function (data) {
                     var index = $scope.usersCollection.indexOf($scope.editedUser);
 
                     if(index != -1){
