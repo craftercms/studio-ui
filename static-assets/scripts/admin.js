@@ -969,8 +969,10 @@
                 adminService.editGroup(group).success(function (data) {
                     $scope.notification('\''+ group.name + '\' edited.', '', null, "studioMedium");
                 }).error(function(error){
-                    if("Unauthorized" === error.message) {;
+                    if("Unauthorized" === error.result.response.message) {;
                         $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
+                    }else{
+                        $scope.notification(error.result.response.message, false, 3000, "studioMedium");
                     }
                 });
             };
@@ -990,8 +992,10 @@
                         $scope.notification('\''+ group.name + '\' group deleted.', '', null,"studioMedium");
 
                     }).error(function (error) {
-                        if("Unauthorized" === error.message) {
+                        if("Unauthorized" === error.result.response.message) {
                             $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
+                        }else{
+                            $scope.notification(error.result.response.message, false, 3000, "studioMedium");
                         }
                     });
                 };
