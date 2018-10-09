@@ -30,6 +30,11 @@
 
         var isWrite = false;
         var par = [];
+        var currentPath = (message.itemId) ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
+        var cachePermissionsKey = CStudioAuthoringContext.site+'_'+currentPath+'_'+CStudioAuthoringContext.user+'_permissions',
+            isPermissionCached = cache.get(cachePermissionsKey),
+            cacheContentKey = CStudioAuthoringContext.site+'_'+currentPath+'_'+CStudioAuthoringContext.user+'_content',
+            isContentCached = cache.get(cacheContentKey);
         var isLockOwner = function (lockOwner){
             if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
                 par = [];
@@ -57,9 +62,11 @@
             failure: function() {
             }
         };
-        var currentPath = (message.itemId) ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
         var editPermsCallback = {
             success: function (response) {
+                if(!isPermissionCached){
+                    cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
+                }
                 isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
                 if (!isWrite) {
                     par.push({name: "readonly"});
@@ -78,6 +85,9 @@
                 } else {
                     var getContentItemsCb = {
                         success: function (contentTO) {
+                            if(!isContentCached){
+                                cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
+                            }
                             isLockOwner(contentTO.item.lockOwner);
                             CStudioAuthoring.Operations.performSimpleIceEdit(
                                 contentTO.item,
@@ -93,20 +103,32 @@
                         editCb: editCb
                     };
 
-                    CStudioAuthoring.Service.lookupContentItem(
-                        CStudioAuthoringContext.site,
-                        message.itemId,
-                        getContentItemsCb,
-                        false, false);
+                    if(isContentCached){
+                        var contentTO = {};
+                        contentTO.item = isContentCached;
+                        getContentItemsCb.success(contentTO);
+                    }else {
+                        CStudioAuthoring.Service.lookupContentItem(
+                            CStudioAuthoringContext.site,
+                            message.itemId,
+                            getContentItemsCb,
+                            false, false);
+                    }
 
                 }
             }, failure: function () {}
         }
 
-        CStudioAuthoring.Service.getUserPermissions(
-            CStudioAuthoringContext.site,
-            currentPath,
-            editPermsCallback);
+        if(isPermissionCached){
+            var response = {};
+            response.permissions = isPermissionCached;
+            editPermsCallback.success(response);
+        }else {
+            CStudioAuthoring.Service.getUserPermissions(
+                CStudioAuthoringContext.site,
+                currentPath,
+                editPermsCallback);
+        }
 
     });
 
@@ -122,9 +144,16 @@
                 params.class = 'lock';
             }
         }
+        var cachePermissionsKey = CStudioAuthoringContext.site+'_'+currentPath+'_'+CStudioAuthoringContext.user+'_permissions',
+            isPermissionCached = cache.get(cachePermissionsKey),
+            cacheContentKey = CStudioAuthoringContext.site+'_'+currentPath+'_'+CStudioAuthoringContext.user+'_content',
+            isContentCached = cache.get(cacheContentKey);
 
         var permsCallback = {
             success: function (response) {
+                if(!isPermissionCached){
+                    cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
+                }
                 var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
 
                 if (!message.path) {
@@ -137,17 +166,26 @@
                 } else {
                     var itemCallback = {
                         success: function (contentTO) {
+                            if(!isContentCached){
+                                cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
+                            }
                             isLockOwner(contentTO.item.lockOwner);
                             communicator.publish(Topics.ICE_TOOLS_INDICATOR, params);
                         },failure: function () {}
                     }
 
                     if (isWrite) {
-                        CStudioAuthoring.Service.lookupContentItem(
-                            CStudioAuthoringContext.site,
-                            currentPath,
-                            itemCallback,
-                            false, false);
+                        if(isContentCached){
+                            var contentTO = {};
+                            contentTO.item = isContentCached;
+                            itemCallback.success(contentTO);
+                        }else {
+                            CStudioAuthoring.Service.lookupContentItem(
+                                CStudioAuthoringContext.site,
+                                currentPath,
+                                itemCallback,
+                                false, false);
+                        }
                     } else {
                         params.class = 'read';
                     }
@@ -156,10 +194,16 @@
             },failure: function () {}
         }
 
-        CStudioAuthoring.Service.getUserPermissions(
-            CStudioAuthoringContext.site,
-            currentPath,
-            permsCallback);
+        if(isPermissionCached){
+            var response = {};
+            response.permissions = isPermissionCached;
+            permsCallback.success(response);
+        }else {
+            CStudioAuthoring.Service.getUserPermissions(
+                CStudioAuthoringContext.site,
+                currentPath,
+                permsCallback);
+        }
 
     });
 
@@ -508,7 +552,6 @@
             });
 
               new ResizeSensor($('.navbar-default'), function(){
-                  console.log(this);
                   if($('.navbar-default').height() > 55){
                       $('.studio-preview').css('top', 100 + "px");
                   }else{
