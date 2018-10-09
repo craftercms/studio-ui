@@ -198,6 +198,9 @@ var nodeOpen = false,
             CONFIG_FILES_PATH_ADMIN: '/config',
             IMAGE_VALID_EXTENSIONS: ["jpg", "jpeg", "gif", "png", "tiff", "tif", "bmp", "svg", "JPG", "JPEG", "GIF", "PNG", "TIFF", "TIF", "BMP", "SVG"],
             MAX_INT_VALUE: 2147483647,
+            CACHE_TIME_PERMISSION: 900000,
+            CACHE_TIME_GET_CONTENT_ITEM: 0,
+            CACHE_TIME_GET_ROLES: 900000 ,
             MIMETYPES :  {
                 "navPage": { class: "fa-file" },
                 "floatingPage": { class: "fa-file-o" },
@@ -4161,16 +4164,27 @@ var nodeOpen = false,
                 var serviceUrl = this.getUserInfoServiceURL;
                 serviceUrl += "?username=" + CStudioAuthoringContext.user;
 
+                var cacheRolesKey = CStudioAuthoringContext.site+'_Roles_'+CStudioAuthoringContext.user,
+                    rolesCached = cache.get(cacheRolesKey);
+
                 var serviceCallback = {
                     success: function(jsonResponse) {
-                        var results = eval("(" + jsonResponse.responseText + ")");
+                        var results =  jsonResponse.responseText ? eval("(" + jsonResponse.responseText + ")") : jsonResponse;
+                        if(!rolesCached){
+                            cache.set(cacheRolesKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
+                        }
                         callback.success(results);
                     },
                     failure: function(response) {
                         callback.failure(response);
                     }
                 };
-                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+                if(rolesCached){
+                    var results = rolesCached;
+                    serviceCallback.success(results);
+                }else{
+                    YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+                }
             },
 
             /**
