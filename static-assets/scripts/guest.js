@@ -1,4 +1,4 @@
-define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller'], function (crafter, $, Communicator, ICEOverlay, DnDController, PointerController) {
+define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-controller', 'pointer-controller', 'cache'], function (crafter, $, Communicator, ICEOverlay, DnDController, PointerController, Cache) {
     'use strict';
 
     $.noConflict(true);
@@ -10,6 +10,10 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     var origin = window.location.origin; // 'http://127.0.0.1:8080';
     var Topics = crafter.studio.preview.Topics;
     var communicator = new Communicator({window: window.parent, origin: origin}, origin);
+    var Constants = {
+        TIME_RESIZE: 500 ,
+        TIME_SCROLL: 250
+    }
 
     // When the page has successfully loaded, notify the host window of it's readiness
     communicator.publish(Topics.GUEST_SITE_LOAD, {
@@ -242,21 +246,26 @@ define('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay', 'dnd-contro
     }
 
     function resizeProcess() {
+        //console.log('resizeFun');
         communicator.publish(Topics.IS_REVIEWER, true);
-        
-        communicator.on(Topics.RESIZE_ICE_REGIONS, function (message) {
-            if (!!(sessionStorage.getItem('ice-on'))  && sessionStorage.getItem('components-on') != 'true') {
-                initICERegions();
-            }
-        });
     }
+
+    communicator.on(Topics.RESIZE_ICE_REGIONS, function (message) {
+        if (!!(sessionStorage.getItem('ice-on'))  && sessionStorage.getItem('components-on') != 'true') {
+            initICERegions();
+        }
+    });
 
     window.studioICERepaint = function() {
-        clearSetTimeout(600);
+        clearSetTimeout(Constants.TIME_RESIZE);
     }
 
-    $(window).resize(function() {
-        clearSetTimeout(700);
+    $(window).resize(function(e) {
+        clearSetTimeout(Constants.TIME_RESIZE);
+    });
+
+    $('window, *').scroll(function(e) {
+        clearSetTimeout(Constants.TIME_SCROLL);
     });
 
     loadCss('/studio/static-assets/styles/guest.css');
