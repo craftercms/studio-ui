@@ -36,12 +36,13 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
                         ed.addCommand('mceInsertManagedImage', function(param, datasource) {
                             var CMgs = CStudioAuthoring.Messages;
                             var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-                            var actualCaretPositionBookmark = ed.selection.getBookmark();
+
                         	if(datasource) {
                         		if(datasource.insertImageAction) {
 	                        		datasource.insertImageAction({
 	                        			success: function(imageData) {
                                             var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
+                                            var actualCaretPositionBookmark = { id: ed.id };
 
                                             ed.selection.moveToBookmark(actualCaretPositionBookmark);
 
