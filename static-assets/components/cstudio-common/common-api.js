@@ -7573,7 +7573,7 @@ var nodeOpen = false,
    
                 if (schedDate) {
                     toolTipMarkup +=  ["<tr>",
-                       "<td class='acn-width80'>Scheduled: </td>",
+                       "<td class='acn-width80'><strong>Scheduled:<strong> </td>",
                        "<td class='acn-width200'>{7}</td></tr>"].join("");
                 }
 
