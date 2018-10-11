@@ -738,7 +738,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 			dom.loadCSS(u);
 		});
 		
-		if(configuration) {
+		if(configuration && styleOverrides) {
 			ss.setAttribute('type', 'text/css');
 			//ss.setAttribute('title', channel);
 			dom.doc.head.appendChild(ss);
@@ -747,7 +747,9 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 				ss.styleSheet.cssText = styleOverrides;
 			} 
 			else {
-				ss.appendChild(tt);		// all other browsers
+                if (tt.data != 'undefined'){
+                    ss.appendChild(tt);		// all other browsers
+                }
 			}
 		} 
 	},
@@ -773,14 +775,21 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		};
 
 		// if rteStylesheets xml tag is defined, add them to the style sheet list
-		for(var i=0; i<rteConfig.rteStylesheets.link.length; i++) {
-			var item = rteConfig.rteStylesheets.link[i];
-			if(!item.appliesToChannel 
-					|| (!channel && item.appliesToChannel == "default")
-					|| (channel && item.appliesToChannel.indexOf(channel) != -1 )) {				
-				stylesheets += ", " + item.url;
-			}
-		}
+        if(rteConfig.rteStylesheets.link.length){
+            for(var i=0; i<rteConfig.rteStylesheets.link.length; i++) {
+                var item = rteConfig.rteStylesheets.link[i];
+                if(!item.appliesToChannel
+                    || (!channel && item.appliesToChannel == "default")
+                    || (channel && item.appliesToChannel.indexOf(channel) != -1 )) {
+                    stylesheets += ", " + item.url;
+                }
+            }
+        }else{
+            if(rteConfig.rteStylesheets.link.url){
+                stylesheets += ", " + rteConfig.rteStylesheets.link.url;
+            }
+        }
+
 		return stylesheets;
 	},
 	
