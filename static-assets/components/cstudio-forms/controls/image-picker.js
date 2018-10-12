@@ -722,7 +722,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         var CMgs = CStudioAuthoring.Messages;
         var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
-        var external = value.indexOf("?crafterCMIS=true") !== -1;
+        var external = value.indexOf("?crafterCMIS=true") !== -1 || value.indexOf('http') <= 0;
 
         if (value == null || value == '') {
             this.noPreviewEl.style.display = "inline";

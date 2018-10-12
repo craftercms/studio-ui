@@ -473,7 +473,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         this.value = value;
         this.inputEl.value = value;
 
-        var external = value.indexOf("?crafterCMIS=true") !== -1;
+        var external = value.indexOf("?crafterCMIS=true") !== -1 || value.indexOf('http') <= 0;
 
         if (value == null || value == '') {
             this.noPreviewEl.style.display = "inline";
