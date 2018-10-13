@@ -19,6 +19,7 @@ CStudioForms.Controls.ImagePicker = CStudioForms.Controls.ImagePicker ||
         this.originalHeight = null;
         this.previewBoxHeight = 100;
         this.previewBoxWidth = 300;
+        this.external = null;
 
         return this;
     }
@@ -93,9 +94,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             imgWidth = imgObj.width,
             imgHeight = imgObj.height,
             width = (imgWidth)?imgWidth:500,
-            height = (imgHeight)?imgHeight:500;
+            height = (imgHeight)?imgHeight:500,
+            url = !this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value;
         newdiv.innerHTML = '<img width=\"' + width + 'px\" height=\"' + height + 'px\" src=\"' +
-            CStudioAuthoringContext.previewAppBaseUri + this.inputEl.value + '\"></img>' +
+            url + '\"></img>' +
             '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-cancel-button" id="zoomCancelButton" value="Close"/>'+
             '<input type="button" class="zoom-button btn btn-primary cstudio-form-control-asset-picker-zoom-full-button" id="zoomFullButton" value="Full"/>';
 
@@ -722,20 +724,20 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         var CMgs = CStudioAuthoring.Messages;
         var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
-        var external = value.indexOf("?crafterCMIS=true") !== -1 || value.indexOf('http') <= 0;
+        this.external = value.indexOf("?crafterCMIS=true") !== -1 || value.indexOf('http') <= 0;
 
         if (value == null || value == '') {
             this.noPreviewEl.style.display = "inline";
         } else {
-            if(external){
+            if(this.external){
                 this.previewEl.src = value.replace(/ /g, "%20");
             }else{
                 this.previewEl.src = CStudioAuthoringContext.previewAppBaseUri + value.replace(/ /g, "%20");
             }
             this.previewEl.style.display = "inline";
             this.noPreviewEl.style.display = "none";
-            this.urlEl.innerHTML = external ? value.replace("?crafterCMIS=true","") : value;
-            this.downloadEl.href = CStudioAuthoringContext.previewAppBaseUri + value;
+            this.urlEl.innerHTML = this.external ? value.replace("?crafterCMIS=true","") : value;
+            this.downloadEl.href = this.external ? value.replace("?crafterCMIS=true","") : value;
 
             this.addEl.value = CMgs.format(langBundle, "replace");
 
