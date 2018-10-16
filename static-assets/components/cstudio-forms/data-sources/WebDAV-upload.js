@@ -115,7 +115,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
 	},
 
     getLabel: function() {
-        return CMgs.format(langBundle, "WebDAV Upload");
+        return CMgs.format(langBundle, "fileUploadedWebDavRepository");
     },
 
    	getInterface: function() {
