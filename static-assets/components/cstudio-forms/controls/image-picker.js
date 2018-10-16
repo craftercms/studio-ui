@@ -116,7 +116,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         // Render the Dialog
         upload_dialog.render();
         YAHOO.util.Event.addListener("zoomCancelButton", "click", this.uploadPopupCancel, this, true);
-        YAHOO.util.Event.addListener("zoomFullButton", "click", function() {this.fullImageTab(CStudioAuthoringContext.previewAppBaseUri + this.inputEl.value);}, this, true);
+        YAHOO.util.Event.addListener("zoomFullButton", "click", function() {this.fullImageTab(!this.external ? CStudioAuthoringContext.previewAppBaseUri : '' + this.inputEl.value);}, this, true);
         this.upload_dialog = upload_dialog;
         upload_dialog.show();
     },
