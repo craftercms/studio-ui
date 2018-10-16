@@ -654,6 +654,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     /*Datasources */
     childContent: "Child Content",
     imageUploadedDesktop: "Image Uploaded From Desktop",
+    WebDAVUploadImage: "WebDAV Upload Image",
     DAMImage: "DAM Image Flickr",
     fileUploadedDesktop: "File Uploaded From Desktop",
     flashUploadedDesktop: "Flash Uploaded from Desktop",
