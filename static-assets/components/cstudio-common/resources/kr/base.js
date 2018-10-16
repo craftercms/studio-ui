@@ -605,6 +605,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     childContent: "자식 내용",
     imageUploadedDesktop: "이미지 바탕 화면에서 업로드",
     WebDAVUploadImage: "WebDAV 업로드 이미지",
+    WebDAVUploadVideo: "WebDAV 업로드 비디오",
     DAMImage: "DAM 이미지 플리커 (Flickr)",
     fileUploadedDesktop: "파일 바탕 화면에서 업로드",
     flashUploadedDesktop: "플래시 바탕 화면에서 업로드",
