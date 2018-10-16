@@ -631,6 +631,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     childContent: "Contenido Hijos",
     imageUploadedDesktop: "Imagen Subida Desde El Escritorio",
     WebDAVUploadImage: "Subir imagen a WebDAV",
+    WebDAVUploadVideo: "Subir video a WebDAV",
     DAMImage: "Imagen DAM (Flickr)",
     fileUploadedDesktop: "Archivo Subido Desde El Escritorio",
     flashUploadedDesktop: "Flash Subido Desde El Escritorio",
