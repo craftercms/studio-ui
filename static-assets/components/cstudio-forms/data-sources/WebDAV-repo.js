@@ -106,7 +106,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
     },
 
     getLabel: function() {
-        return CMgs.format(langBundle, "WebDAV Repository");
+        return CMgs.format(langBundle, "fileWebDavRepository");
     },
 
     getInterface: function() {

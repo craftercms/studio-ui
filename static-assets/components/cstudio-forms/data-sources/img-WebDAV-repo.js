@@ -75,7 +75,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVRepo, CStudioForms.CStudioFormDat
     },
 
     getLabel: function() {
-        return CMgs.format(langBundle, "WebDAV Repository Image");
+        return CMgs.format(langBundle, "imageWebDavRepository");
     },
 
     getInterface: function() {
