@@ -55,7 +55,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVRepo, CStudioForms.CStudioFormD
                 }
             };
 
-            CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.profileId, baseUrl, "select", true, browseCb, 'video');
+            CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, baseUrl, "select", true, browseCb, 'video');
 
         }
 

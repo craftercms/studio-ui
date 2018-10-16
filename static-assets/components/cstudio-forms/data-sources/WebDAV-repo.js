@@ -83,10 +83,10 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
                 YAHOO.util.Event.on(createEl, 'click', function() {
                     control.addContainerEl = null;
                     control.containerEl.removeChild(addContainerEl);
-                    CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.profileId, baseUrl, "select", true, browseCb);
+                    CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, baseUrl, "select", true, browseCb);
                 }, createEl);
             }else{
-                CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.profileId, baseUrl, "select", true, browseCb);
+                CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, baseUrl, "select", true, browseCb);
             }            
         }
 
