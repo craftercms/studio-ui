@@ -55,7 +55,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVRepo, CStudioForms.CStudioFormDat
                 }
             };
 
-            CStudioAuthoring.Operations.openWebDAVBrowse(_self.repoPath, _self.profileId, baseUrl, "select", true, browseCb, 'image');
+            CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, baseUrl, "select", true, browseCb, 'image');
 
         }
 
