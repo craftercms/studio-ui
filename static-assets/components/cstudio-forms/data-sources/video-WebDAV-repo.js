@@ -60,7 +60,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVRepo, CStudioForms.CStudioFormD
             });
     },
     getLabel: function() {
-        return CMgs.format(langBundle, "WebDAV Repository Video");
+        return CMgs.format(langBundle, "videoWebDavRepository");
     },
     getInterface: function() {
         return "video";
