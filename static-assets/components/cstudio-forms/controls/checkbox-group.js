@@ -403,6 +403,14 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
         if(value === "") {
             value = [];
         }
+        else if(typeof value === 'string') {
+            try {
+                value = JSON.parse(value);
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
 
         this.value = value;
         this.form.updateModel(this.id, this.getValue());
