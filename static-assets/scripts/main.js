@@ -1018,7 +1018,7 @@
             });
 
             $scope.sitesPag = {
-                sitesPerPage: $cookies['crafterStudioSitesPagination'] ? parseInt($cookies['crafterStudioSitesPagination'], 10) : 15
+                sitesPerPage: $cookies.get("crafterStudioSitesPagination") ? parseInt($cookies.get("crafterStudioSitesPagination"), 10) : 15
             }
 
             $scope.totalSites = 0;
