@@ -1509,7 +1509,7 @@
                 currentBrowserUri = treeNode.data ? treeNode.data.browserUri : treeNode.browserUri,
                 treePathsLocal = self.treePaths ? self.treePaths : WcmAssetsFolder.treePaths,
                 oldPath = Array.isArray(oldPath) ? oldPath[currentBrowserUri.replace(/\//g, '')] : oldPath;
-            if(tree &&  Self.myTree) {
+            if(tree &&  Self.myTree && !self.treePaths) {
                 for (var i = 0; i < treePathsLocal.length; i++) {
                     if (treePathsLocal[i] == Self.myTree.id) {
                         isMytree = true;
