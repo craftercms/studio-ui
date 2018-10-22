@@ -60,7 +60,7 @@ YAHOO.extend(CStudioForms.Controls.AWSVideoUpload, CStudioForms.CStudioFormField
     return [
       { label: "Service", name: "service", type: "dropdown", defaultValue: [
           { value: "elastictranscoder", label: "Elastic Transcoder", selected: true },
-          { value: "mediaconvert", label: "MediaConver", selected: false },
+          { value: "mediaconvert", label: "MediaConvert", selected: false },
         ]
       },
       { label: "Profile ID", name: "profile_id", type: "string", defaultValue: "elastic-transcoder-default" }
