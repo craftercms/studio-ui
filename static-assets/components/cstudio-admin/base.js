@@ -129,22 +129,48 @@ CStudioAdminConsole.Toolbar.prototype = {
 		toolContainerEl.id = elId;
 
 	   	var onRenderWorkAreaFn =  function(evt, params) {
-	  		if(params.toolbar.selectedEl) {
-		  		YDom.removeClass(params.toolbar.selectedEl, "cstudio-admin-console-item-selected");
-                CStudioAdminConsole.CommandBar.hide();
-	  		}
-	  		
-	  		params.toolbar.selectedEl = this;
-		   	YDom.addClass(this, "cstudio-admin-console-item-selected");
-			params.tool.renderWorkarea();
-			var arrowEl = document.getElementById("cstudio-admin-console-item-selected-arrow");
-			
-			if(!arrowEl) {
-				arrowEl =  document.createElement("div");
-				arrowEl.id = "cstudio-admin-console-item-selected-arrow";
-			}
-			
-			params.toolbar.selectedEl.appendChild(arrowEl);
+            var self = this;
+
+            if(CStudioAdminConsole.isDirty){
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "error-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, "notification"),
+                    CMgs.format(langBundle, "contentTypeModifiedWarn"),
+                    [ { text:CMgs.format(formsLangBundle, "yes"),  handler:function(){
+                        CStudioAdminConsole.isDirty = false;
+                        selectedItem();
+                        this.hide();}, isDefault:false },
+                        { text:CMgs.format(formsLangBundle, "no"),  handler:function(){
+                            this.hide();
+                        }, isDefault:false }],
+                    YAHOO.widget.SimpleDialog.ICON_WARN,
+                    "studioDialog"
+                );
+            }else {
+                CStudioAdminConsole.isDirty = false;
+                selectedItem();
+            }
+
+            function selectedItem(){
+                if(params.toolbar.selectedEl) {
+                    YDom.removeClass(params.toolbar.selectedEl, "cstudio-admin-console-item-selected");
+                    CStudioAdminConsole.CommandBar.hide();
+                }
+
+                params.toolbar.selectedEl = self;
+                YDom.addClass(self, "cstudio-admin-console-item-selected");
+                params.tool.renderWorkarea();
+                var arrowEl = document.getElementById("cstudio-admin-console-item-selected-arrow");
+
+                if(!arrowEl) {
+                    arrowEl =  document.createElement("div");
+                    arrowEl.id = "cstudio-admin-console-item-selected-arrow";
+                }
+
+                params.toolbar.selectedEl.appendChild(arrowEl);
+            }
+
 		}
 
 		onRenderWorkAreaFn.containerEl = toolContainerEl;

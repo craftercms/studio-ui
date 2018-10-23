@@ -596,8 +596,28 @@ CStudioAuthoring.Module.requireModule(
 					context: this
 				};
 
-				CStudioAuthoring.Service.getAllContentTypesForSite(
-					CStudioAuthoringContext.site, chooseTemplateCb);
+                if(CStudioAdminConsole.isDirty){
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "error-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "contentTypeModifiedWarn"),
+                        [ { text:CMgs.format(formsLangBundle, "yes"),  handler:function(){
+                            CStudioAdminConsole.isDirty = false;
+                            CStudioAuthoring.Service.getAllContentTypesForSite(
+                                CStudioAuthoringContext.site, chooseTemplateCb);
+                            this.hide();}, isDefault:false },
+                            { text:CMgs.format(formsLangBundle, "no"),  handler:function(){
+                                this.hide();
+                            }, isDefault:false }],
+                        YAHOO.widget.SimpleDialog.ICON_WARN,
+                        "studioDialog"
+                    );
+                }else {
+                    CStudioAdminConsole.isDirty = false;
+                    CStudioAuthoring.Service.getAllContentTypesForSite(
+                        CStudioAuthoringContext.site, chooseTemplateCb);
+                }
 			},
 
 			/**
@@ -625,10 +645,32 @@ CStudioAuthoring.Module.requireModule(
 					context: this.context
 				};
 
-				CStudioAuthoring.Module.requireModule("new-content-type-dialog",
-					"/static-assets/components/cstudio-dialogs/new-content-type.js",
-					moduleConfig,
-					dialogLoadedCb);
+                if(CStudioAdminConsole.isDirty){
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                        "error-dialog",
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, "notification"),
+                        CMgs.format(langBundle, "contentTypeModifiedWarn"),
+                        [ { text:CMgs.format(formsLangBundle, "yes"),  handler:function(){
+                            CStudioAdminConsole.isDirty = false;
+                            CStudioAuthoring.Module.requireModule("new-content-type-dialog",
+                                "/static-assets/components/cstudio-dialogs/new-content-type.js",
+                                moduleConfig,
+                                dialogLoadedCb);
+                            this.hide();}, isDefault:false },
+                            { text:CMgs.format(formsLangBundle, "no"),  handler:function(){
+                                this.hide();
+                            }, isDefault:false }],
+                        YAHOO.widget.SimpleDialog.ICON_WARN,
+                        "studioDialog"
+                    );
+                }else {
+                    CStudioAdminConsole.isDirty = false;
+                    CStudioAuthoring.Module.requireModule("new-content-type-dialog",
+                        "/static-assets/components/cstudio-dialogs/new-content-type.js",
+                        moduleConfig,
+                        dialogLoadedCb);
+                }
 
 			}
 		});
