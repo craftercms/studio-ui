@@ -166,7 +166,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         this.getAnimator($o).fadeIn();
         this.getAnimator($p).slideInRight(function () {
             expandContractChannel('expand');
-        });;
+        });
 
         $("[data-studio-components-size='small']").each(function( index ) {
             $(this).width($(this).width()/2);
@@ -295,8 +295,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
             };
             $( this ).append(delControl);
         });
-
-        //expandContractChannel('expand');
 
     }
 
