@@ -30,7 +30,7 @@ function(id, form, owner, properties, constraints, readonly)  {
     }
     var enable_upload = properties.find(function(property){ return property.name === "enable_upload"; });
     if(enable_upload) {
-      this.enable_upload = enable_upload.value;
+      this.enable_upload = enable_upload.value === "true";
     }
     var enable_multi = properties.find(function(property){ return property.name === "enable_multi_selection"; });
     if(enable_multi) {
