@@ -249,6 +249,31 @@ body {
     display: none; }
   body .tab.active {
     display: block; }
+  body .yui-dialog .contentTypePopupHeader {
+    font-size: 21.6px; }
+  body .yui-dialog #asset_upload_form .contentTypeOuter {
+    cursor: auto;
+    color: #000000;
+    direction: ltr;
+    font: normal normal normal 12px/normal;
+    font-size-adjust: none;
+    font-stretch: normal;
+    letter-spacing: normal;
+    line-height: normal;
+    text-align: left;
+    text-indent: 0;
+    text-justify: auto;
+    text-outline: none;
+    text-shadow: none;
+    text-transform: none;
+    white-space: normal;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    font-family: "Open Sans", sans-serif;
+    font-size: 12px; }
+    body .yui-dialog #asset_upload_form .contentTypeOuter table tr td {
+      padding: 0; }
   body ::-webkit-scrollbar {
     width: 8px; }
   body ::-webkit-scrollbar-thumb:hover {
@@ -262,5 +287,3 @@ body {
     background: rgba(128, 128, 128, 0.7); }
   body ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(128, 128, 128, 0.4); }
-
-/*# sourceMappingURL=browse.css.map */
