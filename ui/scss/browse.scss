@@ -335,8 +335,8 @@ body {
     border-radius:3px 3px 0px 0px;
     background:#8eafc5;
     font-size:16px;
-    font-weight:600;
     text-decoration: none;
+    font-weight:600;
     color:#4c4c4c;
     transition:all linear 0.15s;
   }
@@ -367,7 +367,40 @@ body {
     display:block;
   }
 
+  .yui-dialog {
+	.contentTypePopupHeader {
+		font-size: 21.6px;
+	}
 
+	#asset_upload_form {
+		.contentTypeOuter {
+			cursor: auto;
+			color: #000000;
+			direction: ltr;
+			font: normal normal normal 12px/normal;
+			font-size-adjust: none;
+			font-stretch: normal;
+			letter-spacing: normal;
+			line-height: normal;
+			text-align: left;
+			text-indent: 0;
+			text-justify: auto;
+			text-outline: none;
+			text-shadow: none;
+			text-transform: none;
+			white-space: normal;
+			word-spacing: normal;
+			word-break: normal;
+			word-wrap: normal;
+			font-family: "Open Sans", sans-serif;
+			font-size: 12px;
+
+			table tr td {
+				padding: 0;			
+			}
+		}
+	}
+  }
 
 	/* Scrollbar styling - webkit */
 
