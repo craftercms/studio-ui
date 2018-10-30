@@ -375,7 +375,7 @@
             };
 
             this.getSSOLogoutInfo = function () {
-                return $http.get(userActions("/logout/sso/url"));
+                return $http.get(userActions("/me/logout/sso/url"));
             };
 
             this.getUser = function () {

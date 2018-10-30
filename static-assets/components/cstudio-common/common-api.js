@@ -3082,7 +3082,7 @@ var nodeOpen = false,
             getUserInfoServiceURL: "/api/2/users",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
-            getLogoutInfoURL: "/api/2/users/logout/sso/url",
+            getLogoutInfoURL: "/api/2/users/me/logout/sso/url",
 
             // Configuration Services
             getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
