@@ -49,7 +49,7 @@
 
             this.toggleUserStatus = function(user, action){
                 var body = {
-                    "userIds": [
+                    "ids": [
                         user.id
                     ],
                     "usernames": [
@@ -117,7 +117,7 @@
 
             this.addUserToGroup = function(data) {
                 var body = {
-                    "userIds": [
+                    "ids": [
                         data.userId.toString()
                     ],
                     "usernames": [
@@ -305,7 +305,7 @@
             var getUsers = function(site) {
                 adminService.getUsers(site)
                     .success(function (data) {
-                        audit.users = data.result.entities;
+                        audit.users = data.users;
                         audit.userSelected = '';
                     })
                     .error(function () {
@@ -693,8 +693,8 @@
                     params.sort = 'desc';
 
                     adminService.getUsers(params).success(function (data) {
-                        users.totalLogs = data.result.total;
-                        $scope.usersCollection = data.result.entities;
+                        users.totalLogs = data.total;
+                        $scope.usersCollection = data.users;
                     });
                 }
             };
@@ -714,7 +714,7 @@
                         adminService.getUsers().success(function(data){
                             users.usersCollectionBackup = $scope.usersCollection;
                             users.itemsPerPageBackup = users.itemsPerPage;
-                            $scope.usersCollection = data.result.entities;
+                            $scope.usersCollection = data.user;
                             users.itemsPerPage = adminService.maxInt;
                         });
                     }
@@ -735,7 +735,7 @@
                     $scope.usersCollection.push(user);
                     $scope.notification('\''+ user.username + '\' created.','','studioMedium');
                 }).error(function(response){
-                    var response = response.result.response,
+                    var response = response.response,
                         error = {
                             message: response.message,
                             remedialAction: response.remedialAction
@@ -754,8 +754,8 @@
                 $scope.dialogEdit = true;
 
                 adminService.getUser(user.username).success(function (data) {
-                    $scope.user = data.result.entity;
-                    $scope.user.enabled = data.result.entity.enabled;
+                    $scope.user = data.user;
+                    $scope.user.enabled = data.user.enabled;
                 }).error(function (error) {
                     console.log(error);
                     //TODO: properly display error
@@ -807,8 +807,8 @@
                 $scope.adminModal = $scope.showModal('modalView.html');
 
                 adminService.getUser(user.username).success(function (data) {
-                    $scope.user = data.result.entity;
-                    $scope.user.enabled = data.result.entity.enabled;
+                    $scope.user = data.user;
+                    $scope.user.enabled = data.user.enabled;
 
                 }).error(function (error) {
                     console.log(error);
@@ -832,7 +832,7 @@
 
                         $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
                     }).error(function (data) {
-                        $scope.error = data.result.response.message;
+                        $scope.error = data.response.message;
                         $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
                     });
                 }
@@ -927,8 +927,8 @@
                     }
 
                     adminService.getGroups(params).success(function (data) {
-                        groups.totalLogs = data.result.total;
-                        $scope.groupsCollection = data.result.entities;
+                        groups.totalLogs = data.total;
+                        $scope.groupsCollection = data.groups;
                     });
 
                 }
@@ -949,10 +949,10 @@
 
                 adminService.createGroup(group).success(function (data) {
                     $scope.hideModal();
-                    $scope.groupsCollection.push(data.result.entity);
+                    $scope.groupsCollection.push(data.group);
                     $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
                 }).error(function(error){
-                    $scope.groupsError = error;
+                    $scope.groupsError = error.response.message;
                 });
 
             };
@@ -979,10 +979,10 @@
                 adminService.editGroup(group).success(function (data) {
                     $scope.notification('\''+ group.name + '\' edited.', '', null, "studioMedium");
                 }).error(function(error){
-                    if("Unauthorized" === error.result.response.message) {;
+                    if("Unauthorized" === error.response.message) {
                         $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
                     }else{
-                        $scope.notification(error.result.response.message, false, 3000, "studioMedium");
+                        $scope.notification(error.response.message, false, 3000, "studioMedium");
                     }
                 });
             };
@@ -1002,10 +1002,10 @@
                         $scope.notification('\''+ group.name + '\' group deleted.', '', null,"studioMedium");
 
                     }).error(function (error) {
-                        if("Unauthorized" === error.result.response.message) {
+                        if("Unauthorized" === error.response.message) {
                             $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
                         }else{
-                            $scope.notification(error.result.response.message, false, 3000, "studioMedium");
+                            $scope.notification(error.response.message, false, 3000, "studioMedium");
                         }
                     });
                 };
@@ -1031,7 +1031,7 @@
                 adminService.getUsers().success(function(data){
                     groups.usersAutocomplete = [];
 
-                    data.result.entities.forEach(function(user){
+                    data.users.forEach(function(user){
                         var added = false;
                         groups.usersFromGroupCollection.forEach(function(userCompare){
                             if(user.username == userCompare.username){
@@ -1094,7 +1094,7 @@
                 //group.site_id = groups.site;
 
                 adminService.getUsersFromGroup(group).success(function (data) {
-                    groups.usersFromGroupCollection = data.result.entities;
+                    groups.usersFromGroupCollection = data.users;
                     groups.getUsersAutocomplete();
                 }).error(function () {
                     //TODO: properly display error

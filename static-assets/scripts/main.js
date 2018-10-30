@@ -382,9 +382,9 @@
                 return user;
             };
 
-            this.getCurrentUserData = function() {
+            this.getCurrentUserData = function(action) {
                 if(this.getUser()){
-                    return $http.get(userActions());
+                    return $http.get(userActions('/' + action));
                 }
             }
 
@@ -455,9 +455,9 @@
 
             function userActions(action) {
                 if(action){
-                    return Constants.SERVICE2 + 'user' + action;
+                    return Constants.SERVICE2 + 'users' + action;
                 }else{
-                    return Constants.SERVICE2 + 'user';
+                    return Constants.SERVICE2 + 'users';
                 }
 
             }
@@ -485,8 +485,8 @@
                 });
             };
 
-            this.getSitesPerUser = function(params) {
-                return $http.get(userActions('sites'), {
+            this.getSitesPerUser = function(id, params) {
+                return $http.get(userActions(id + '/sites'), {
                     params: params
                 });
             }
@@ -625,9 +625,9 @@
 
             function userActions(action, params) {
                 if(params){
-                    return Constants.SERVICE2 + 'user/' + action + params;
+                    return Constants.SERVICE2 + 'users/' + action + params;
                 }else {
-                    return Constants.SERVICE2 + 'user/' + action;
+                    return Constants.SERVICE2 + 'users/' + action;
                 }
             }
 
@@ -654,17 +654,17 @@
             }
 
             if(authService.getUser()){
-                authService.getCurrentUserData().then(
+                authService.getCurrentUserData('me').then(
                     function successCallback(response) {
-                        $scope.externallyManaged = response.data.result.entity.externallyManaged;
-                        $scope.showLogoutLink = response.data.result.entity.authenticationType == Constants.AUTH_HEADERS ? false : true;
+                        $scope.externallyManaged = response.data.authenticatedUser.externallyManaged;
+                        $scope.showLogoutLink = response.data.authenticatedUser.authenticationType == Constants.AUTH_HEADERS ? false : true;
                         if(!$scope.showLogoutLink) {
                             authService.getSSOLogoutInfo()
                                 .success(function (data) {
-                                    var result = data.result.entity ? true : false;
+                                    var result = data.logoutUrl ? true : false;
                                     if (result) {
                                         $scope.showLogoutLink = true;
-                                        $scope.logoutInfo.url = data.result.entity;
+                                        $scope.logoutInfo.url = data.logoutUrl;
                                     }
                                 })
                         }
@@ -968,7 +968,7 @@
 
             sitesService.getGlobalMenu()
                 .success(function (data) {
-                    $scope.entities = data.result.entities;
+                    $scope.entities = data.menuItems;
                     //$scope.entities = [{"id":"home.globalMenu.sites","label":"Sites","icon":"fa-sitemap"}];
 
                     if($scope.entities.length > 1){
@@ -981,7 +981,7 @@
                         });
                     }else{
                         if($scope.entities.length > 0) {
-                            $state.go(data.result.entities[0].id.replace("globalMenu.", ""));
+                            $state.go(data.menuItems[0].id.replace("globalMenu.", ""));
                         }
                     }
 
@@ -1030,10 +1030,10 @@
             };
 
             function getSites (params) {
-                sitesService.getSitesPerUser(params)
+                sitesService.getSitesPerUser('me',params)
                     .success(function (data) {
-                        $scope.totalSites = data.result.total ? data.result.total : null;
-                        $scope.sites = data.result.entities;
+                        $scope.totalSites = data.total ? data.total : null;
+                        $scope.sites = data.sites;
                         isRemove();
                         createSitePermission();
                     })
