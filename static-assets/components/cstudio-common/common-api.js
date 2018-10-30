@@ -3079,10 +3079,10 @@ var nodeOpen = false,
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
             lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
-            getUserInfoServiceURL: "/api/2/user",
+            getUserInfoServiceURL: "/api/2/users",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
-            getLogoutInfoURL: "/api/2/user/logout/sso/url",
+            getLogoutInfoURL: "/api/2/users/me/logout/sso/url",
 
             // Configuration Services
             getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
@@ -4192,13 +4192,15 @@ var nodeOpen = false,
             /**
              * get user info
              */
-            getUserInfo: function(callback) {
+            getUserInfo: function(callback, user) {
                 var serviceUrl = this.getUserInfoServiceURL;
+                var user = !user ? 'me' : user;
+                serviceUrl += "/" + user;
 
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
-                        results = results.result.entity
+                        results = results.authenticatedUser
                         callback.success(results);
                     },
                     failure: function(response) {
@@ -4211,9 +4213,10 @@ var nodeOpen = false,
             /**
              * get user roles
              */
-            getUserRoles: function(callback) {
+            getUserRoles: function(callback, user) {
                 var serviceUrl = this.getUserInfoServiceURL;
-                serviceUrl += "/sites/" + CStudioAuthoringContext.site + "/roles";
+                var user = !user ? 'me' : user;
+                serviceUrl += "/" + user +"/sites/" + CStudioAuthoringContext.site + "/roles";
 
                 var cacheRolesKey = CStudioAuthoringContext.site+'_Roles_'+CStudioAuthoringContext.user,
                     rolesCached = cache.get(cacheRolesKey);
@@ -4222,7 +4225,7 @@ var nodeOpen = false,
                     success: function(jsonResponse) {
                         var results = jsonResponse.responseText ? eval("(" + jsonResponse.responseText + ")") : jsonResponse;
                         if(!rolesCached){
-                            results = results.result.entities;
+                            results = results.roles;
                             cache.set(cacheRolesKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
                         }
                         callback.success(results);
@@ -4249,7 +4252,7 @@ var nodeOpen = false,
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
-                        results = results.result.entities;
+                        results = results.menuItems;
                         callback.success(results);
                     },
                     failure: function(response) {
@@ -4269,9 +4272,9 @@ var nodeOpen = false,
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
                         //delete results.result['entity'];
-                        var hasResult = results.result.hasOwnProperty('entity') ? true : false;
+                        var hasResult = results.hasOwnProperty('logoutUrl') ? true : false;
                         if(hasResult){
-                            results = results.result.entity;
+                            results = results.logoutUrl;
                         }else{
                             results = false;
                         }
