@@ -666,6 +666,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     supportedChannels: "Canales soportados",
     RTEConfiguration: "Configuración RTE",
     imageManager: "Administrador de Imágenes",
+    videoManager: "Administrador de Videos",
     showDate: "Mostrar Fecha",
     showTime: "Mostrar Hora",
     showClear: "Mostrar Limpiar Valor",

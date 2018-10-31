@@ -948,6 +948,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		this.editor.save();	
 		this._onChange(null, this);
 		this.updateModel(this.inputEl.value);
+		console.log("RTE VALUE", this.inputEl.value);
     }
 });
 

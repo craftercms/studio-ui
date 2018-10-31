@@ -690,6 +690,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     supportedChannels: "Supported Channels",
     RTEConfiguration: "RTE Configuration",
     imageManager: "Image Manager",
+    videoManager: "Video Manager",
     showDate: "Show Date",
     showTime: "Show Time",
     showClear: "Show Clear Value",
