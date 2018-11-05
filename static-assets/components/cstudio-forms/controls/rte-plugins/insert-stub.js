@@ -2,7 +2,7 @@ CStudioForms.Controls.RTE.InsertStub = CStudioForms.Controls.RTE.InsertStub || {
     createControl: function(n, cm, editor) {
         switch (n) {
             case 'insertStub':
-				var config = tinyMCE.activeEditor.contextControl.rteConfig;
+				var config = tinymce2.activeEditor.contextControl.rteConfig;
 				var layouts = config.rteStubs.stub;
 				
 				if(!layouts) {
@@ -30,7 +30,7 @@ CStudioForms.Controls.RTE.InsertStub = CStudioForms.Controls.RTE.InsertStub || {
                            
                             
                             var onClickFn = function() {
-		                    	tinyMCE.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
+		                    	tinymce2.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
 		                    	ed.contextControl.save();
 		                   	};
 		                   	
@@ -51,9 +51,9 @@ CStudioForms.Controls.RTE.InsertStub = CStudioForms.Controls.RTE.InsertStub || {
     }
 }
 
-tinymce.create('tinymce.plugins.CStudioInsertStubPlugin', CStudioForms.Controls.RTE.InsertStub);
+tinymce2.create('tinymce2.plugins.CStudioInsertStubPlugin', CStudioForms.Controls.RTE.InsertStub);
 
 // Register plugin with a short name
-tinymce.PluginManager.add('insertstub', tinymce.plugins.CStudioInsertStubPlugin);
+tinymce2.PluginManager.add('insertstub', tinymce2.plugins.CStudioInsertStubPlugin);
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-insert-stub", CStudioForms.Controls.RTE.InsertStub);

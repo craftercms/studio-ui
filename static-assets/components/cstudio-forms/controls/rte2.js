@@ -187,17 +187,11 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
 
 		rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : '';
 
-		// global var 'tinymce4' was set to avoid conflicts with old control (using old tinymce), here 'tinymce' var is overriden
-		// for the plugin to work correctly, this code can be deleted after old control is removed. Also check on 'focus' and 'blur'
-		// events on editor initialization, and on 'beforeSave' callback function 
-		var oldTinyMCE = tinymce;
-		tinymce = tinymce4;
-
 		/* 
 			Using aceEditor as codeView plugin
 				-https://github.com/plasmadancom/tinymce-ace-plugin
 		*/
-		editor = tinymce4.init({
+		editor = tinymce.init({
 			selector: '#' + rteId,
 			height: _thisControl.rteHeight,
 			theme: 'modern',
@@ -236,12 +230,10 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
 				});
 
 				editor.on('focus', function (e) {
-					tinymce = tinymce4;
 					_thisControl._showBars(this.contentAreaContainer.parentElement);
 				});
 
 				editor.on('blur', function (e) {
-					tinymce = oldTinyMCE;
 					_thisControl._hideBars(this.contentAreaContainer.parentElement);					
 				});
 
@@ -260,7 +252,6 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
 		// Update all content before saving the form (all content is automatically updated on focusOut)
 		callback = {};
 		callback.beforeSave = function () {
-			tinymce = oldTinyMCE;	// This is to avoid issues with old tinymce, it can be removes when we get rid of old tinymce
 			_thisControl.save();
         };
         _thisControl.form.registerBeforeSaveCallback(callback);
@@ -357,7 +348,7 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
 		if(datasource && datasource.insertVideoAction) {
 			datasource.insertVideoAction({
 				success: function(videoData) {
-					cb(videoData.previewUrl, { title: videoData.fileName });
+					cb(videoData.relativeUrl, { title: videoData.fileName });
 
 					// var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
 				},

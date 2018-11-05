@@ -2,7 +2,7 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
     createControl: function(n, cm, editor) {
         switch (n) {
             case 'insertLayout':
-				var config = tinyMCE.activeEditor.contextControl.rteConfig;
+				var config = tinymce2.activeEditor.contextControl.rteConfig;
 				var layouts = config.rteLayouts.layout;
 				
 				if(!layouts) {
@@ -30,7 +30,7 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
                            
                             
                             var onClickFn = function() {
-		                    	tinyMCE.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
+		                    	tinymce2.activeEditor.execCommand('mceInsertContent', false, this.layoutPrototype);
                                 cm.editor.contextControl.save();
 		                   	};
 		                   	
@@ -51,9 +51,9 @@ CStudioForms.Controls.RTE.InsertLayout = CStudioForms.Controls.RTE.InsertLayout 
     }
 }
 
-tinymce.create('tinymce.plugins.CStudioInsertLayoutPlugin', CStudioForms.Controls.RTE.InsertLayout);
+tinymce2.create('tinymce2.plugins.CStudioInsertLayoutPlugin', CStudioForms.Controls.RTE.InsertLayout);
 
 // Register plugin with a short name
-tinymce.PluginManager.add('insertlayout', tinymce.plugins.CStudioInsertLayoutPlugin);
+tinymce2.PluginManager.add('insertlayout', tinymce2.plugins.CStudioInsertLayoutPlugin);
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-insert-layout", CStudioForms.Controls.RTE.InsertLayout);

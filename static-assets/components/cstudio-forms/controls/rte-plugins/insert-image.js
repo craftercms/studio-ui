@@ -1,7 +1,7 @@
 CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert || {
                 /**
                  * Initializes the plugin
-                 * @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
+                 * @param {tinymce2.Editor} ed Editor instance that the plugin is initialized in.
                  * @param {string} url Absolute URL to where the plugin is located.
                  */
                 init : function(ed, url) {
@@ -32,7 +32,7 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
 
 						ed.contextControl.form.registerBeforeSaveCallback(beforeSaveCb);
 
-                        // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceExample');
+                        // Register the command so that it can be invoked by using tinymce2.activeEditor.execCommand('mceExample');
                         ed.addCommand('mceInsertManagedImage', function(param, datasource) {
                             var CMgs = CStudioAuthoring.Messages;
                             var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
@@ -146,7 +146,7 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
                                     this.add({
                                         title: el.title,
                                         onclick: function() {
-                                            tinyMCE.activeEditor.execCommand('mceInsertManagedImage', false, mapDatasource);
+                                            tinymce2.activeEditor.execCommand('mceInsertManagedImage', false, mapDatasource);
                                         }
                                     });
                                 }
@@ -178,9 +178,9 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
 
 }
 
-tinymce.create('tinymce.plugins.CStudioManagedImagePlugin', CStudioForms.Controls.RTE.ImageInsert);
+tinymce2.create('tinymce2.plugins.CStudioManagedImagePlugin', CStudioForms.Controls.RTE.ImageInsert);
 
 // Register plugin with a short name
-tinymce.PluginManager.add('insertimage', tinymce.plugins.CStudioManagedImagePlugin);
+tinymce2.PluginManager.add('insertimage', tinymce2.plugins.CStudioManagedImagePlugin);
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-insert-image", CStudioForms.Controls.RTE.ImageInsert);

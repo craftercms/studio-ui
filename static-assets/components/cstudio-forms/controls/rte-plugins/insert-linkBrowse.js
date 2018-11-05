@@ -277,7 +277,7 @@ CStudioForms.Controls.RTE.InsertLinkBrowse = CStudioForms.Controls.RTE.InsertLin
 			controlsEl.innerHTML = controlsHTML;
 			el.appendChild(controlsEl);
 			
-			moveEl = tinymce.DOM.select("#cstudio-component-controls .move > a", editor.getDoc())[0];
+			moveEl = tinymce2.DOM.select("#cstudio-component-controls .move > a", editor.getDoc())[0];
 			moveEl.onclick = function() {
 				var id = el.id;
 				var contentItem = null;
@@ -293,7 +293,7 @@ CStudioForms.Controls.RTE.InsertLinkBrowse = CStudioForms.Controls.RTE.InsertLin
 				}
 			}
 			
-			editEl = tinymce.DOM.select("#cstudio-component-controls .edit > a", editor.getDoc())[0];
+			editEl = tinymce2.DOM.select("#cstudio-component-controls .edit > a", editor.getDoc())[0];
 			editEl.onclick = function() {
 				var id = el.id;
 				var contentItem = null;
@@ -310,7 +310,7 @@ CStudioForms.Controls.RTE.InsertLinkBrowse = CStudioForms.Controls.RTE.InsertLin
 						success: function(contentTO) {
 							var formSaveCb = { 
 								success: function(formName, name, value) {
-									_self.renderComponent(tinyMCE.activeEditor, contentItem);	
+									_self.renderComponent(tinymce2.activeEditor, contentItem);	
 								},
 								failure: function() {
 								}	
@@ -334,7 +334,7 @@ CStudioForms.Controls.RTE.InsertLinkBrowse = CStudioForms.Controls.RTE.InsertLin
 				}					
 			}
 			
-			deleteEl = tinymce.DOM.select("#cstudio-component-controls .delete > a", editor.getDoc())[0];
+			deleteEl = tinymce2.DOM.select("#cstudio-component-controls .delete > a", editor.getDoc())[0];
 			deleteEl.onclick = function() {
 				var id = el.id;
 				var components = model['rteComponents'];
@@ -357,10 +357,10 @@ CStudioForms.Controls.RTE.InsertLinkBrowse = CStudioForms.Controls.RTE.InsertLin
 				var componentEl = ed.dom.doc.getElementById(_self.componentOnTheMove.id);
 				componentEl.parentNode.removeChild(componentEl);
 
-				tinyMCE.activeEditor.execCommand('mceInsertContent', false, 
+				tinymce2.activeEditor.execCommand('mceInsertContent', false, 
 					"<div id=\"" + _self.componentOnTheMove.id + "\" class='crComponent' >" + WAITING_IMG + "</div>");
 				
-				_self.renderComponent(tinyMCE.activeEditor, _self.componentOnTheMove);				
+				_self.renderComponent(tinymce2.activeEditor, _self.componentOnTheMove);				
 
 				ed.dom.doc.body.style.cursor = "default";
 				_self.componentOnTheMove = null;
@@ -404,9 +404,9 @@ CStudioForms.Controls.RTE.InsertLinkBrowse = CStudioForms.Controls.RTE.InsertLin
 
 }) ();
 
-tinymce.create('tinymce.plugins.CStudioInsertLinkBrowsePlugin',  CStudioForms.Controls.RTE.InsertLinkBrowse);
+tinymce2.create('tinymce2.plugins.CStudioInsertLinkBrowsePlugin',  CStudioForms.Controls.RTE.InsertLinkBrowse);
 
 // Register plugin with a short name
-tinymce.PluginManager.add('insertLinkBrowse', tinymce.plugins.CStudioInsertLinkBrowsePlugin);
+tinymce2.PluginManager.add('insertLinkBrowse', tinymce2.plugins.CStudioInsertLinkBrowsePlugin);
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-insert-linkBrowse", CStudioForms.Controls.RTE.InsertLinkBrowse);

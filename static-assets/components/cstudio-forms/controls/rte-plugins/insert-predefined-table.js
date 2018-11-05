@@ -18,7 +18,7 @@ CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE.Inse
                         this.add({
                             title: el.name,
                             onclick: function() {
-                                tinyMCE.activeEditor.execCommand('mceInsertContent', false, el.prototype);
+                                tinymce2.activeEditor.execCommand('mceInsertContent', false, el.prototype);
                             }
                         });
                     }
@@ -47,9 +47,9 @@ CStudioForms.Controls.RTE.InsertPredefinedTable = CStudioForms.Controls.RTE.Inse
         }
     };
 
-tinymce.create('tinymce.plugins.CStudioManagedPredefinedTablePlugin', CStudioForms.Controls.RTE.InsertPredefinedTable);
+tinymce2.create('tinymce2.plugins.CStudioManagedPredefinedTablePlugin', CStudioForms.Controls.RTE.InsertPredefinedTable);
 
 // Register plugin with a short name
-tinymce.PluginManager.add('insertpredefinedtable', tinymce.plugins.CStudioManagedPredefinedTablePlugin);
+tinymce2.PluginManager.add('insertpredefinedtable', tinymce2.plugins.CStudioManagedPredefinedTablePlugin);
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-insert-predefined-table", CStudioForms.Controls.RTE.InsertPredefinedTable);
