@@ -104,7 +104,7 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
 			{ label: CMgs.format(langBundle, "forcePNewLines"), name: "forcePTags", type: "boolean", defaultValue: "true" },
 			{ label: CMgs.format(langBundle, "forceBRNewLines"), name: "forceBRTags", type: "boolean", defaultValue: "false" },
 			{ label: CMgs.format(langBundle, "supportedChannels"), name: "supportedChannels", type: "supportedChannels" },
-			{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "generic" },
+			{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "rte2" },
 			{ label: CMgs.format(langBundle, "imageManager"), name: "imageManager", type: "datasource:image" },
 			{ label: CMgs.format(langBundle, "videoManager"), name: "videoManager", type: "datasource:video" }
 		];

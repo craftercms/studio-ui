@@ -606,6 +606,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     textArea: "Área de Texto",
     linkTextarea: "Área de Texto Vinculante",
     richTextEditor: "Editor de Texto Enriquecido",
+    rte2: "Editor de Texto Enriquecido 2",
     input: "Campo de Entrada",
     uuid: "UUID",
     linkInput:"Campo de Entrada Vinculante",
