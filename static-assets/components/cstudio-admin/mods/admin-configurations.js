@@ -43,6 +43,7 @@ CStudioAuthoring.Module.requireModule(
 				
 				containerEl.innerHTML = 
 					"<div class='configuration-window'>" +
+                        "<p id='activeEnvironment' class='hide'><strong>Active Environment:</strong> <span id='active-environment-value'></span></p>" +
 						"<select id='config-list'>" +
 					 		" <option value='' >"+CMgs.format(langBundle, "confTabSelectConf")+"</option>" +
 						"</select>" +
@@ -68,7 +69,11 @@ CStudioAuthoring.Module.requireModule(
 				var sampleEditorContainerEl = document.getElementById("sample-window");	
 				var sampleEditorEl = this.setEditor(sampleEditorContainerEl, true);
 
-				var itemSelectEl = document.getElementById("config-list");
+                // set active environment
+                var activeEnvironmentElt = document.getElementById("active-environment-value");
+                this.loadActiveEnv(activeEnvironmentElt);
+
+                var itemSelectEl = document.getElementById("config-list");
 				// add action buttons
                 var buttonAreaEl = document.getElementById("config-buttons");
 				this.addButtons(buttonAreaEl, itemSelectEl, editorEl);
@@ -80,6 +85,26 @@ CStudioAuthoring.Module.requireModule(
 				editAreaEl.style.display = 'none';
 		
 			},
+
+            /*
+             * populate the list of configuration files
+             */
+            loadActiveEnv: function (elt) {
+
+                var callback = {
+                    success: function (data) {
+                        if (data.environment){
+                            elt.parentElement.classList.remove("hide");
+                            elt.innerHTML = data.environment;
+                        }
+                    },
+                    failure: function (data) {
+                        console.log(data.response.message);
+                    }
+                };
+
+                CStudioAuthoring.Service.getActiveEnvironment(callback);
+            },
 			
 			/*
 			* populate the list of configuration files
