@@ -198,6 +198,21 @@
           "SUCCESSFULLY_PUSHED": "Empujado con éxito",
           "SUCCESSFULLY_PULLED": "Jaló con éxito",
           "REPO_DELETED": "repositorio borrado"
+      },
+      "clustering": {
+          "HEADER_LABEL": "Agrupar",
+          "USER_LABEL": "Agrupar",
+          "NEW_CLUSTER": "Miembro Nuevo",
+          "GIT_NAME": "Nombre del Repositorio",
+          "GIT_URL": "URL",
+          "GIT_AUTH_TYPE": "Tipo de autentificación",
+          "GIT_USERNAME": "Usario",
+          "GIT_PASSWORD": "Contraseña",
+          "GIT_TOKEN": "Token",
+          "GIT_PRIVATE_KEY": "Llave Primaria",
+          "SAVE": "Salvar",
+          "DELETE_ERROR": "No se puede editar / eliminar miembro. Por favor, póngase en contacto con el administrador del sistema.",
+          "ERROR": "Error:"
       }
   },
   "common": {

@@ -198,6 +198,21 @@
           "SUCCESSFULLY_PUSHED": "성공적으로 푸시 됨",
           "SUCCESSFULLY_PULLED": "성공적으로 당겨서",
           "REPO_DELETED": "저장소 삭제됨"
+      },
+      "clustering": {
+          "HEADER_LABEL": "클러스터",
+          "USER_LABEL": "클러스터",
+          "NEW_CLUSTER": "New Member",
+          "GIT_NAME": "새로운 회원",
+          "GIT_URL": "URL",
+          "GIT_AUTH_TYPE": "인증 유형",
+          "GIT_USERNAME": "사용자 이름",
+          "GIT_PASSWORD": "암호",
+          "GIT_TOKEN": "Token",
+          "GIT_PRIVATE_KEY": "비공개 키",
+          "SAVE": "구하다",
+          "DELETE_ERROR": "회원을 편집 / 삭제할 수 없습니다. 시스템 관리자에게 문의하십시오",
+          "ERROR": "Error:"
       }
   },
   "common": {
