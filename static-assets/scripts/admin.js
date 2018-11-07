@@ -81,6 +81,23 @@
                 return $http.get(users('forgot-password', 'username=' + username));
             };
 
+            //CLUSTERS
+            this.getClusterMembers = function(id) {
+                return $http.get(cluster(id));
+            };
+
+            this.createClusterMember = function (clusterParam) {
+                return $http.post(cluster(), clusterParam);
+            };
+
+            this.editClusterMember = function(clusterParam) {
+                return $http.patch(cluster(), clusterParam);
+            };
+
+            this.deleteClusterMember = function(clusterParam){
+                return $http.delete(cluster('id=' + clusterParam.id));
+            };
+
             //GROUPS
 
             this.getGroups = function(params) {
@@ -218,6 +235,14 @@
                     return Constants.SERVICE2 + 'users/' + action + params;
                 }else {
                     return Constants.SERVICE2 + 'users/' + action;
+                }
+            }
+
+            function cluster(params) {
+                if(params){
+                    return Constants.SERVICE2 + 'cluster?' + params;
+                }else {
+                    return Constants.SERVICE2 + 'cluster';
                 }
             }
 
@@ -839,6 +864,147 @@
 
                 $scope.confirmationAction = deleteUser;
                 $scope.confirmationText = "Do you want to delete " + user.username + "?";
+
+                $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
+            };
+        }
+    ]);
+
+    app.controller('clusterCtrl', [
+        '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
+        '$stateParams', '$translate', '$location',
+        function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
+                  $stateParams, $translate, $location) {
+
+            $scope.clusters = {};
+            var clusters = $scope.clusters;
+
+            this.init = function() {
+                $scope.debounceDelay = 500;
+
+                $scope.showModal = function(template, size, verticalCentered, styleClass){
+                    $scope.clustersError = null;
+
+                    var modalInstance = $uibModal.open({
+                        templateUrl: template,
+                        windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+                        backdrop: 'static',
+                        keyboard: true,
+                        controller: 'clusterCtrl',
+                        scope: $scope,
+                        size: size ? size : ''
+                    });
+
+                    return modalInstance;
+                };
+                $scope.hideModal = function() {
+                    $scope.adminModal.close();
+                    $('input').each(function(index, input) {
+                        input.tabIndex = index + 1;
+                    });
+                };
+                $scope.notification = function(notificationText, showOnTop, styleClass){
+                    var verticalAlign = showOnTop ? false : true;
+                    $scope.notificationText = notificationText;
+                    $scope.notificationType = 'exclamation-triangle';
+
+                    var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
+
+                    $timeout(function () {
+                        modal.close();
+                    }, 1500, false);
+
+                };
+            };
+            this.init();
+
+            //table setup
+            $scope.membersCollection = [];
+
+            var getClusters = function() {
+                adminService.getClusterMembers().success(function (data) {
+                    $scope.membersCollection = data.clusterMembers;
+                });
+            };
+
+            getClusters();
+
+            clusters.createClusterMemberDialog = function() {
+                $scope.clusterMember = {};
+                $scope.clusterMember.gitAuthType = 'none';
+                $scope.okModalFunction = clusters.createClusterMember;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+                $scope.dialogMode = $translate.instant('common.CREATE');
+                $scope.dialogEdit = false;
+            };
+            clusters.createClusterMember = function(clusterMember) {
+                adminService.createClusterMember(clusterMember).success(function (data) {
+                    $scope.hideModal();
+                    $scope.membersCollection.push(data.clusterMember);
+                    $scope.notification('\''+ clusterMember.gitUrl + '\' created.','','studioMedium');
+                }).error(function(response){
+                    var response = response.response,
+                        error = {
+                            message: response.message,
+                            remedialAction: response.remedialAction
+                        }
+                    $scope.clustersError = error;
+                });
+
+            };
+
+            clusters.editClusterMemberDialog = function(clusterMember) {
+                $scope.editedCluster = clusterMember;
+                $scope.clusterMember = clusterMember;
+                $scope.okModalFunction = clusters.editClusterMember;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+                $scope.dialogMode = $translate.instant('common.EDIT');
+                $scope.dialogEdit = true;
+            };
+            clusters.editClusterMember = function(clusterMember) {
+                $scope.hideModal();
+
+                adminService.editClusterMember(clusterMember).success(function (data) {
+                    var index = $scope.membersCollection.indexOf($scope.editedCluster);
+
+                    if(index != -1){
+                        $scope.membersCollection[index] = clusterMember;
+                        $scope.displayedCollection = $scope.membersCollection;
+                    }
+
+                    $scope.notification('\''+ clusterMember.gitUrl + '\' edited.','',"studioMedium");
+                }).error(function (data) {
+                    $scope.error = data.response.message;
+                    $scope.adminModal = $scope.showModal('deleteClusterError.html', 'md', true);
+                });
+            };
+            clusters.viewClusterMember = function(clusterMember){
+                $scope.clusterMember = clusterMember;
+                $scope.dialogMode = false;
+                $scope.dialogEdit = false;
+
+                $scope.adminModal = $scope.showModal('modalView.html');
+            };
+            clusters.removeClusterMember = function(clusterMember) {
+
+                var deleteClusterMember = function() {
+                    adminService.deleteClusterMember(clusterMember).success(function (data) {
+                        var index = $scope.membersCollection.indexOf(clusterMember);
+                        if (index !== -1) {
+                            $scope.membersCollection.splice(index, 1);
+                        }
+
+                        $scope.notification('\''+ clusterMember.gitUrl + '\' deleted.','',"studioMedium");
+                    }).error(function (data) {
+                        $scope.error = data.response.message;
+                        $scope.adminModal = $scope.showModal('deleteClusterError.html', 'md', true);
+                    });
+                }
+
+                $scope.confirmationAction = deleteClusterMember;
+                $scope.confirmationText = "Do you want to delete " + clusterMember.gitUrl + "?";
 
                 $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
             };

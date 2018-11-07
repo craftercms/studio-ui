@@ -201,6 +201,21 @@
           "SUCCESSFULLY_PUSHED": "Successfully Pushed",
           "SUCCESSFULLY_PULLED": "Successfully Pulled",
           "REPO_DELETED": "repository deleted"
+      },
+      "clustering": {
+          "HEADER_LABEL": "Cluster",
+          "USER_LABEL": "Cluster",
+          "NEW_CLUSTER": "New Member",
+          "GIT_NAME": "Remote Name",
+          "GIT_URL": "URL",
+          "GIT_AUTH_TYPE": "Auth Type",
+          "GIT_USERNAME": "Username",
+          "GIT_PASSWORD": "Password",
+          "GIT_TOKEN": "Token",
+          "GIT_PRIVATE_KEY": "Private Key",
+          "SAVE": "Save",
+          "DELETE_ERROR": "Unable to edit/delete member. Please contact your system administrator.",
+          "ERROR": "Error:"
       }
   },
   "common": {
