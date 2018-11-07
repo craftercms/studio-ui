@@ -2847,8 +2847,53 @@ var nodeOpen = false,
                 }
 
                 CStudioAuthoring.Module.requireModule("rename-folder-dialog", "/static-assets/components/cstudio-dialogs/rename-folder.js", moduleConfig, openCreateFolderDialogCb);
-            }
+            },
 
+            /**
+             * handle macros in file paths
+             */
+            processPathsForMacros: function(path, model) {
+
+                if(path.indexOf("{objectId}") != -1) {
+                    path = path.replace("{objectId}", model["objectId"]);
+                }
+
+                if(path.indexOf("{objectGroupId}") != -1) {
+                    path = path.replace("{objectGroupId}", model["objectGroupId"]);
+                }
+
+                if(path.indexOf("{objectGroupId2}") != -1) {
+                    path = path.replace("{objectGroupId2}", model["objectGroupId"].substring(0,2))
+                }
+
+                /* Date macros */
+                var currentDate = new Date();
+                if(path.indexOf("{year}") != -1) {
+                    path = path.replace("{year}", currentDate.getFullYear());
+                }
+
+                if(path.indexOf("{month}") != -1) {
+                    path = path.replace("{month}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
+                }
+
+                if(path.indexOf("{parentPath}") != -1) {
+                    path = path.replace("{parentPath}", CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/, "$1"));
+                }
+
+                if(path.indexOf("{yyyy}") != -1) {
+                    path = path.replace("{yyyy}", currentDate.getFullYear());
+                }
+
+                if(path.indexOf("{mm}") != -1) {
+                    path = path.replace("{mm}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
+                }
+
+                if(path.indexOf("{dd}") != -1) {
+                    path = path.replace("{dd}", ("0" + (currentDate.getDate())).slice(-2));
+                }
+
+                return path;
+            }
 
         },
         /**
