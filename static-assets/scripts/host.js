@@ -261,6 +261,7 @@
     });
 
     communicator.subscribe(Topics.COMPONENT_DROPPED, function (message) {
+        message.model = initialContentModel;
         amplify.publish(cstopic('COMPONENT_DROPPED'),
             message.type,
             message.path,
@@ -268,7 +269,8 @@
             message.trackingNumber,
             message.zones,
             message.compPath,
-            message.conComp
+            message.conComp,
+            message.model
         );
     });
 
