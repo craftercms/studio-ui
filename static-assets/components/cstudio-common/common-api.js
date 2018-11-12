@@ -65,6 +65,8 @@ var nodeOpen = false,
      */
     if (typeof CStudioAuthoring == "undefined" || !CStudioAuthoring) CStudioAuthoring = {
 
+        processing: false,
+
         UIBuildId: window.UIBuildId,
 
         /**
@@ -2875,8 +2877,53 @@ var nodeOpen = false,
                 }
 
                 CStudioAuthoring.Module.requireModule("rename-folder-dialog", "/static-assets/components/cstudio-dialogs/rename-folder.js", moduleConfig, openCreateFolderDialogCb);
-            }
+            },
 
+            /**
+             * handle macros in file paths
+             */
+            processPathsForMacros: function(path, model) {
+
+                if(path.indexOf("{objectId}") != -1) {
+                    path = path.replace("{objectId}", model["objectId"]);
+                }
+
+                if(path.indexOf("{objectGroupId}") != -1) {
+                    path = path.replace("{objectGroupId}", model["objectGroupId"]);
+                }
+
+                if(path.indexOf("{objectGroupId2}") != -1) {
+                    path = path.replace("{objectGroupId2}", model["objectGroupId"].substring(0,2))
+                }
+
+                /* Date macros */
+                var currentDate = new Date();
+                if(path.indexOf("{year}") != -1) {
+                    path = path.replace("{year}", currentDate.getFullYear());
+                }
+
+                if(path.indexOf("{month}") != -1) {
+                    path = path.replace("{month}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
+                }
+
+                if(path.indexOf("{parentPath}") != -1) {
+                    path = path.replace("{parentPath}", CStudioAuthoring.Utils.getQueryParameterByName("path").replace(/\/[^\/]*\/[^\/]*\/([^\.]*)(\/[^\/]*\.xml)?$/, "$1"));
+                }
+
+                if(path.indexOf("{yyyy}") != -1) {
+                    path = path.replace("{yyyy}", currentDate.getFullYear());
+                }
+
+                if(path.indexOf("{mm}") != -1) {
+                    path = path.replace("{mm}", ("0" + (currentDate.getMonth() + 1)).slice(-2));
+                }
+
+                if(path.indexOf("{dd}") != -1) {
+                    path = path.replace("{dd}", ("0" + (currentDate.getDate())).slice(-2));
+                }
+
+                return path;
+            }
 
         },
         /**
@@ -3077,7 +3124,6 @@ var nodeOpen = false,
             // Security Services
             loginServiceUrl: "/api/1/services/api/1/security/login.json",
             getPermissionsServiceUrl: "/api/1/services/api/1/security/get-user-permissions.json",
-            lookupAuthoringRoleServiceUrl : "/api/1/services/api/1/security/get-user-roles.json",
             verifyAuthTicketUrl: "/api/1/services/api/1/user/validate-token.json",
             getUserInfoServiceURL: "/api/2/users",
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
@@ -3127,12 +3173,11 @@ var nodeOpen = false,
              *
              */
             lookupAuthoringRole: function(site, user, callback) {
-                var serviceUri = this.lookupAuthoringRoleServiceUrl + "?site=" + site + "&user=" + user;
-
                 var serviceCallback = {
                     success: function(response) {
-                        var contentResults = eval("(" + response.responseText + ")");
-                        var roles = contentResults.roles;
+                        var contentResults = {};
+                        contentResults.roles = response;
+                        var roles = contentResults;
                         var role = "contributor";
                         if (roles != undefined) {
                             for (var i = 0; i < roles.length; i++) {
@@ -3151,7 +3196,7 @@ var nodeOpen = false,
                     }
                 };
 
-                YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+                CStudioAuthoring.Service.getUserRoles(serviceCallback);
             },
 
             /**
@@ -4214,12 +4259,13 @@ var nodeOpen = false,
              * get user roles
              */
             getUserRoles: function(callback, user) {
-                var serviceUrl = this.getUserInfoServiceURL;
+                var serviceUrl = this.getUserInfoServiceURL,
+                    self = this;
                 var user = !user ? 'me' : user;
                 serviceUrl += "/" + user +"/sites/" + CStudioAuthoringContext.site + "/roles";
 
                 var cacheRolesKey = CStudioAuthoringContext.site+'_Roles_'+CStudioAuthoringContext.user,
-                    rolesCached = cache.get(cacheRolesKey);
+                    rolesCached;
 
                 var serviceCallback = {
                     success: function(jsonResponse) {
@@ -4227,6 +4273,7 @@ var nodeOpen = false,
                         if(!rolesCached){
                             results = results.roles;
                             cache.set(cacheRolesKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
+                            CStudioAuthoring.processing = false;
                         }
                         callback.success(results);
                     },
@@ -4234,14 +4281,24 @@ var nodeOpen = false,
                         callback.failure(response);
                     }
                 };
-                if(rolesCached){
-                    var results = rolesCached;
-                    serviceCallback.success(results);
-                }else{
-                    YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
-                }
-            },
 
+                var getInfo = function(){
+                    if (!CStudioAuthoring.processing) {
+                        rolesCached = cache.get(cacheRolesKey);
+
+                        if (rolesCached) {
+                            var results = rolesCached;
+                            serviceCallback.success(results);
+                        } else {
+                            CStudioAuthoring.processing = true;
+                            YConnect.asyncRequest('GET', self.createServiceUri(serviceUrl), serviceCallback);
+                        }
+                    }else{
+                        setTimeout(function(){ getInfo(); }, 100);
+                    }
+                }
+                getInfo();
+            },
 
             /**
              * get global menu
@@ -7793,11 +7850,18 @@ var nodeOpen = false,
                 var callback = {
                     success: function(data) {
                         var roles = data,
-                            isRev = false;
+                            isRev = false,
+                            topRoles = false;
                         for(var i=0; i<roles.length; i++){
-                            if(roles[i].toLocaleLowerCase() == "reviewer"){
+                            if(roles[i].toLocaleLowerCase() == "admin" || roles[i].toLocaleLowerCase() == "developer" ||
+                                roles[i].toLocaleLowerCase() == "publisher" || roles[i].toLocaleLowerCase() == "author"){
+                                topRoles = true;
+                            }
+                            if(roles[i].toLocaleLowerCase() == "reviewer" && !topRoles){
                                 isRev = true;
                                 break;
+                            }else{
+                                isRev = false;
                             }
                         }
                         cb(isRev);

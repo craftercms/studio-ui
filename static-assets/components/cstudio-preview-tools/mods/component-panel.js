@@ -163,7 +163,7 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP) {
 
                     if (isNew) {
                         function isNewEvent(value, modelPath){
@@ -188,7 +188,7 @@
                         }
                         if(isNew == true){
                             CStudioAuthoring.Operations.performSimpleIceEdit({
-                                uri: path,
+                                uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
                                 contentType: type
                             }, null, false, {
                                 failure: CStudioAuthoring.Utils.noop,

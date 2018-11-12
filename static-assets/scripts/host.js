@@ -261,6 +261,7 @@
     });
 
     communicator.subscribe(Topics.COMPONENT_DROPPED, function (message) {
+        message.model = initialContentModel;
         amplify.publish(cstopic('COMPONENT_DROPPED'),
             message.type,
             message.path,
@@ -268,7 +269,8 @@
             message.trackingNumber,
             message.zones,
             message.compPath,
-            message.conComp
+            message.conComp,
+            message.model
         );
     });
 
@@ -321,7 +323,7 @@
     });
 
     communicator.subscribe(Topics.OPEN_BROWSE, function (message) {
-        CStudioAuthoring.Operations.openBrowse("", message.path, 1, "select", true, {
+        CStudioAuthoring.Operations.openBrowse("", CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel ), 1, "select", true, {
             success: function (searchId, selectedTOs) {
 
                 for (var i = 0; i < selectedTOs.length; i++) {

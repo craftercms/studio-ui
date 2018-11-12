@@ -114,6 +114,24 @@
                         }
                     }
                 })
+                .state('home.globalMenu.cluster', {
+                    url: '/cluster',
+                    views: {
+                        contentTab: {
+                            templateUrl: '/studio/static-assets/ng-views/admin-cluster.html',
+                            controller: 'clusterCtrl'
+                        }
+                    }
+                })
+                .state('home.cluster', {
+                    url: 'cluster',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/admin-cluster.html',
+                            controller: 'clusterCtrl'
+                        }
+                    }
+                })
                 .state('home.globalMenu.groups', {
                     url: '/groups',
                     views: {
