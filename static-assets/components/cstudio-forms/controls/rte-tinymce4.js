@@ -1,4 +1,4 @@
-CStudioForms.Controls.RTE2 = CStudioForms.Controls.RTE2 ||  
+CStudioForms.Controls.RTETINYMCE4 = CStudioForms.Controls.RTETINYMCE4 ||  
 function(id, form, owner, properties, constraints, readonly, pencilMode)  {
 	this.owner = owner;
 	this.owner.registerField(this);
@@ -17,7 +17,7 @@ function(id, form, owner, properties, constraints, readonly, pencilMode)  {
 	return this;
 }
 
-CStudioForms.Controls.RTE2.plugins =  CStudioForms.Controls.RTE2.plugins || {};
+CStudioForms.Controls.RTETINYMCE4.plugins =  CStudioForms.Controls.RTETINYMCE4.plugins || {};
 
 CStudioAuthoring.Module.requireModule(
 	"cstudio-forms-rte-config-manager",
@@ -27,10 +27,10 @@ CStudioAuthoring.Module.requireModule(
 
 		var YDom = YAHOO.util.Dom;
 
-YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
+YAHOO.extend(CStudioForms.Controls.RTETINYMCE4, CStudioForms.CStudioFormField, {
 
     getLabel: function() {
-        return CMgs.format(langBundle, "rte2");
+        return CMgs.format(langBundle, "rteTinyMCE4");
     },
     
     /**
@@ -91,7 +91,7 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
 	 * get the widget name
 	 */
 	getName: function() {
-		return "rte2";
+		return "rte-tinymce4";
 	},
 	
 	/**
@@ -104,7 +104,7 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
 			{ label: CMgs.format(langBundle, "forcePNewLines"), name: "forcePTags", type: "boolean", defaultValue: "true" },
 			{ label: CMgs.format(langBundle, "forceBRNewLines"), name: "forceBRTags", type: "boolean", defaultValue: "false" },
 			{ label: CMgs.format(langBundle, "supportedChannels"), name: "supportedChannels", type: "supportedChannels" },
-			{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "rte2" },
+			{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "rteTinyMCE4" },
 			{ label: CMgs.format(langBundle, "imageManager"), name: "imageManager", type: "datasource:image" },
 			{ label: CMgs.format(langBundle, "videoManager"), name: "videoManager", type: "datasource:video" }
 		];
@@ -482,6 +482,6 @@ YAHOO.extend(CStudioForms.Controls.RTE2, CStudioForms.CStudioFormField, {
     }
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte2", CStudioForms.Controls.RTE2);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-tinymce4", CStudioForms.Controls.RTETINYMCE4);
 
 }} );
