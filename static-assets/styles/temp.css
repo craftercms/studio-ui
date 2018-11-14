@@ -3156,14 +3156,15 @@ a.acn-parent-folder:before {
   font-style: italic; }
 
 .acn-dropdown-menu-inner {
-  min-height: calc(100% - 122px); }
+  min-height: calc(100% - 131px); }
 
 .acn-dropdown-wrapper .acn-dropdown-footer {
   position: relative;
   text-align: center;
   width: inherit;
   border-top: 1px solid #ccc;
-  margin-top: 28px; }
+  margin-top: 28px;
+  height: 103px; }
 
 .acn-dropdown-wrapper .acn-dropdown-footer a {
   display: inline-block; }
@@ -15402,3 +15403,5 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
+
+/*# sourceMappingURL=temp.css.map */

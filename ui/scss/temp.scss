@@ -527,7 +527,7 @@ a.acn-parent-folder:before {
 }
 
 .acn-dropdown-menu-inner{
-  min-height: calc(100% - 122px);
+  min-height: calc(100% - 131px);
 }
 
 .acn-dropdown-wrapper .acn-dropdown-footer {
@@ -536,6 +536,7 @@ a.acn-parent-folder:before {
   width: inherit;
   border-top: 1px solid #ccc;
   margin-top: 28px;
+  height: 103px;
 }
 
 .acn-dropdown-wrapper .acn-dropdown-footer a{
