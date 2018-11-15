@@ -2,7 +2,7 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 
 	var validateAndClose = function () {
     	if (imageEditor.isSet()) {
-			if(tinymce.activeEditor.contextControl.forceImageAlts == true) {
+			if(tinymce2.activeEditor.contextControl.forceImageAlts == true) {
 				var altTextEl  = document.getElementById("rteImageAltText"),
 					value = altTextEl.value.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 
@@ -314,7 +314,7 @@ CStudioForms.Controls.RTE.ImageEditor =  CStudioForms.Controls.RTE.ImageEditor |
 		},
 
 		setStyleStr: function(editor, element, style, value) {
-				tinymce.DOM.setStyle(element, style, value);	
+				tinymce2.DOM.setStyle(element, style, value);	
 				var styleStr = typeof(element.getAttribute('style')) !== 'string' ?
 					 element.style.cssText : element.getAttribute('style');		
 

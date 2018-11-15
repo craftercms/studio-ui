@@ -2,7 +2,7 @@ CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelec
     createControl: function(n, cm, editor) {
         switch (n) {
             case 'channel':
-				var config = tinyMCE.activeEditor.contextControl.fieldConfig;
+				var config = tinymce2.activeEditor.contextControl.fieldConfig;
 	            var channels = null;
 	            
 				for(var i=0; i<config.properties.length; i++) {
@@ -23,16 +23,16 @@ CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelec
 	                     	 onselect : function(v) {
 	                     	 	var channelConfig = v.split(":");
 	                     	 	
-		                        tinyMCE.activeEditor.contextControl._applyChannelStyleSheets(channelConfig[0]);
+		                        tinymce2.activeEditor.contextControl._applyChannelStyleSheets(channelConfig[0]);
 		                         
-		                        var editorEl = document.getElementById(tinyMCE.activeEditor.id+'_ifr');
-		                        var editorContainerEl = document.getElementById(tinyMCE.activeEditor.id+'_tbl');
+		                        var editorEl = document.getElementById(tinymce2.activeEditor.id+'_ifr');
+		                        var editorContainerEl = document.getElementById(tinymce2.activeEditor.id+'_tbl');
 								editorEl.style.width = channelConfig[1] + "px";	 
 								editorContainerEl.style.width = channelConfig[1] + "px";                     
 	                     	}
 	                	});
 	
-	 					var defaultWidth = tinyMCE.activeEditor.contextControl.inputEl._width; 	
+	 					var defaultWidth = tinymce2.activeEditor.contextControl.inputEl._width; 	
 						mlb.add("Default", "default:"+defaultWidth);
 						
 						for(var i=0; i<channels.length; i++) {
@@ -54,9 +54,9 @@ CStudioForms.Controls.RTE.ChannelSelect = CStudioForms.Controls.RTE.ChannelSelec
     }
 }
 
-tinymce.create('tinymce.plugins.CStudioChannelSelectPlugin', CStudioForms.Controls.RTE.ChannelSelect);
+tinymce2.create('tinymce2.plugins.CStudioChannelSelectPlugin', CStudioForms.Controls.RTE.ChannelSelect);
 
 // Register plugin with a short name
-tinymce.PluginManager.add('channel', tinymce.plugins.CStudioChannelSelectPlugin);
+tinymce2.PluginManager.add('channel', tinymce2.plugins.CStudioChannelSelectPlugin);
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-channel", CStudioForms.Controls.RTE.ChannelSelect);

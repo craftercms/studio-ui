@@ -7,7 +7,9 @@
     <title>Crafter Studio</title>
 
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/console.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
-         <script src="/studio/static-assets/modules/editors/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    
+    <script type="text/javascript" src="/studio/static-assets/modules/editors/tinymce/v4/tinymce/tinymce.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>

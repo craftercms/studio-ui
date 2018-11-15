@@ -1,0 +1,1 @@
+tinymce2.addI18n('es.wordcount',{words:"Palabras:"});

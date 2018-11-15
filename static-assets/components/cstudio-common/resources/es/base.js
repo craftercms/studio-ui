@@ -605,7 +605,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     /*Controls*/
     textArea: "Área de Texto",
     linkTextarea: "Área de Texto Vinculante",
-    richTextEditor: "Editor de Texto Enriquecido",
+    richTextEditor: "Editor de Texto Enriquecido (TinyMCE 2)",
+    rteTinyMCE4: "Editor de Texto Enriquecido (TinyMCE 4)",
     input: "Campo de Entrada",
     uuid: "UUID",
     linkInput:"Campo de Entrada Vinculante",
@@ -666,6 +667,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     supportedChannels: "Canales soportados",
     RTEConfiguration: "Configuración RTE",
     imageManager: "Administrador de Imágenes",
+    videoManager: "Administrador de Videos",
     showDate: "Mostrar Fecha",
     showTime: "Mostrar Hora",
     showClear: "Mostrar Limpiar Valor",

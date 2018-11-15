@@ -72,10 +72,10 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 						
 						this.control.form.registerBeforeUiRefreshCallback({
 							beforeUiRefresh: function() {
-								var content = tinyMCE.activeEditor.getContent({format : 'raw'});
+								var content = tinymce2.activeEditor.getContent({format : 'raw'});
                                 if(content != ""){
                                     //Could be that the model hasn't been loaded yet
-                                    tinyMCE.activeEditor.contextControl.updateModel(content);
+                                    tinymce2.activeEditor.contextControl.updateModel(content);
                                 }
 							},
 							context: this.control
@@ -118,7 +118,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	setValue: function(value) {
 		this.value = value;
 		try {
-			tinyMCE.activeEditor.setContent(value, {format : 'raw'});
+			tinymce2.activeEditor.setContent(value, {format : 'raw'});
 		}
 		catch(err) {
 		};
@@ -183,7 +183,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	    window.scrollTo(0, scrollY);
 	},
 
-	// Clear the current selection in tinymce's text editor
+	// Clear the current selection in tinymce2's text editor
 	clearTextEditorSelection: function () {
 		var rootEl = this.editor.dom.getRoot(),
 			caretEl = document.createElement("span"),
@@ -240,20 +240,20 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 
 		if (YDom.hasClass(this.containerEl, "text-mode")) {
 			// The RTE is in text mode        	
-			sizeCookie = tinymce.util.Cookie.getHash("TinyMCE_" + this.editor.id + "_size" + window.name);
+			sizeCookie = tinymce2.util.Cookie.getHash("tinymce2_" + this.editor.id + "_size" + window.name);
 			cookieHeight = (sizeCookie) ? sizeCookie.ch : 0;
 
 			// Give priority to the height value stored in the cookie (if there's one)
 			heightVal = (cookieHeight) ? cookieHeight : this.editor.settings.height;
 
-			tinymce.DOM.setStyle(this.editor.editorId + "_ifr", "height", heightVal + "px");
+			tinymce2.DOM.setStyle(this.editor.editorId + "_ifr", "height", heightVal + "px");
 			this.editor.getWin().scrollTo(0, 0); // Scroll to the top of the editor window
 
 			// The editor selection is automatically cleared in IE9 when the text editor is blurred
 			/*if (!YAHOO.env.ua.ie || YAHOO.env.ua.ie >= 10) {
 				this.clearTextEditorSelection();
 			}*/
-			this.editor.onDeactivate.dispatch(this.editor, null); // Fire tinyMCE handlers for onDeactivate (eg. used by contextmenu)
+			this.editor.onDeactivate.dispatch(this.editor, null); // Fire tinymce2 handlers for onDeactivate (eg. used by contextmenu)
 		} else {
 			// The RTE is in code mode
 			widthVal = this.containerEl.clientWidth - this.codeModeXreduction;
@@ -274,7 +274,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 
 	resizeEditor: function (editor, onInit, isPaste) {
 
-		var sizeCookie = tinymce.util.Cookie.getHash("TinyMCE_" + editor.id + "_size" + window.name);
+		var sizeCookie = tinymce2.util.Cookie.getHash("tinymce2_" + editor.id + "_size" + window.name);
 		var cookieHeight = (sizeCookie) ? sizeCookie.ch : 0;
 		/* BEGIN: resizing editor treatment */
 		var formBody = document.querySelectorAll('html, body');
@@ -282,22 +282,22 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		formBody = formBody[0].scrollTop > 0 ? formBody[0] : formBody[1];
 		/* end */
 
-		tinymce.DOM.setStyle(editor.editorId + "_ifr", "height", cookieHeight + "px");
+		tinymce2.DOM.setStyle(editor.editorId + "_ifr", "height", cookieHeight + "px");
 
 		var heightVal = Math.max(editor.settings.height, cookieHeight),
-			currentHeight = +tinymce.DOM.getStyle(this.editor.editorId + "_ifr", "height").split("px")[0];
+			currentHeight = +tinymce2.DOM.getStyle(this.editor.editorId + "_ifr", "height").split("px")[0];
 
 		heightVal = (!onInit) ? Math.max(heightVal, editor.getDoc().body.scrollHeight) : heightVal;
-		tinyMCEMaxHeight = formBody.offsetHeight - 130 > this.rteControlHeight ? formBody.offsetHeight - 130 : this.rteControlHeight;
+		tinymce2MaxHeight = formBody.offsetHeight - 130 > this.rteControlHeight ? formBody.offsetHeight - 130 : this.rteControlHeight;
 
-		heightVal = heightVal > tinyMCEMaxHeight ? tinyMCEMaxHeight : heightVal;
+		heightVal = heightVal > tinymce2MaxHeight ? tinymce2MaxHeight : heightVal;
 
 		if (currentHeight < heightVal || onInit) {
-			tinymce.DOM.setStyle(editor.editorId + "_ifr", "height", heightVal + "px");
+			tinymce2.DOM.setStyle(editor.editorId + "_ifr", "height", heightVal + "px");
 
 			if(isPaste){
-				if( $("#" + tinymce.DOM.doc.activeElement.id).offset() ){
-					formBody.scrollTop = $("#" + tinymce.DOM.doc.activeElement.id).offset().top - 40;
+				if( $("#" + tinymce2.DOM.doc.activeElement.id).offset() ){
+					formBody.scrollTop = $("#" + tinymce2.DOM.doc.activeElement.id).offset().top - 40;
 				}else{
 					formBody.scrollTop = scrollTop;	
 				}
@@ -310,7 +310,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	resizeCodeView : function (codeView) {
 		var cmHeight = 400,
 			cmWidth = this.containerEl.clientWidth - this.codeModeXreduction,
-			currentHeight = +tinymce.DOM.getStyle(codeView.container, "height").split("px")[0];
+			currentHeight = +tinymce2.DOM.getStyle(codeView.container, "height").split("px")[0];
 
 		if (currentHeight < cmHeight) {
 			var editorContainer = codeView.container;
@@ -488,7 +488,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 
 		var styleFormats = (rteConfig.styleFormats && rteConfig.styleFormats.length !=0) ? eval(rteConfig.styleFormats) : [];	
 							
-		var editor = tinyMCE.init({
+		var editor = tinymce2.init({
 	        // General options
 	        mode : "textareas",
 	        editor_selector : rteUniqueInitClass,
@@ -650,7 +650,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 						
 						if (!navigator.appName == 'Microsoft Internet Explorer') {
 							// Bind focus event 
-							tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
+							tinymce2.dom.Event.add(ed.getWin(), 'focus', function(e) {
 								_thisControl.form.setFocusedField(_thisControl);
 							}); 
 						} else {
@@ -658,7 +658,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 							// you click on it; therefore, it becomes impossible for 
 							// the RTE to lose focus. To work around this, we'll focus
 							// on the RTE only after clicking on its body.
-							tinymce.dom.Event.add(ed.getBody(), 'focus', function(e) {
+							tinymce2.dom.Event.add(ed.getBody(), 'focus', function(e) {
 								_thisControl.form.setFocusedField(_thisControl);
 							});
 						}
@@ -732,9 +732,9 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 		tt = dom.doc.createTextNode(styleOverrides);
 
 		//First add the currentStyleSheets
-		var styleSheets = tinymce.explode(this._getContentCSS(editor) + "," + this._getCurrentStyleSheets());
+		var styleSheets = tinymce2.explode(this._getContentCSS(editor) + "," + this._getCurrentStyleSheets());
 
-		tinymce.each(styleSheets, function(u) {
+		tinymce2.each(styleSheets, function(u) {
 			dom.loadCSS(u);
 		});
 		
@@ -758,7 +758,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	 * Load the default theme style sheet
 	 */
 	_getContentCSS: function(editor){
-		var url = tinymce.ThemeManager.urls[editor.settings.theme] || tinymce.documentBaseURL.replace(/\/$/, '');
+		var url = tinymce2.ThemeManager.urls[editor.settings.theme] || tinymce2.documentBaseURL.replace(/\/$/, '');
 		return editor.baseURI.toAbsolute(url + "/skins/" + editor.settings.skin + "/content.css");
 	},
 	
@@ -799,7 +799,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	_applyChannelStyleSheets: function(channel) {
 		var stylesheets = this._getCurrentStyleSheets(channel).split(",");
 
-		var head = tinyMCE.activeEditor.dom.doc.getElementsByTagName('head')[0];
+		var head = tinymce2.activeEditor.dom.doc.getElementsByTagName('head')[0];
 
 		// Clear all elements from head; IE doesn't like head.innerHTML = ''
 		CStudioAuthoring.Utils.emptyElement(head);
@@ -823,7 +823,7 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	        head.appendChild(link);
 		}
 		
-		this._applyOverrideStyles(tinyMCE.activeEditor, this.rteConfig);
+		this._applyOverrideStyles(tinymce2.activeEditor, this.rteConfig);
 	},
 	
 	/**
@@ -962,20 +962,20 @@ YEvent.delegate("formContainer", "click", function(e, matchedEl) {
 		if (!rteRoot) {
 			// Clicked outside of an RTE
 			// Focus out of the RTE that's currently showing
-			tinymce.activeEditor.contextControl.form.setFocusedField(null);
+			tinymce2.activeEditor.contextControl.form.setFocusedField(null);
 		}
 	}, "div, span, td");
 
 
 /* -------------------------------------------- */
-/* --- Patch tinymce's ColorSplitButton methods --- */
-/* Original File : <studio-root>/src/main/webapp/modules/editors/tinymce/tiny_mce.js
+/* --- Patch tinymce2's ColorSplitButton methods --- */
+/* Original File : <studio-root>/src/main/webapp/modules/editors/tinymce2/tiny_mce.js
 /* -------------------------------------------- */
-tinymce.ui.ColorSplitButton.prototype.renderMenu = function() {
-	var d = tinymce, c = d.DOM, a = d.dom.Event, b = d.is, e = d.each;
+tinymce2.ui.ColorSplitButton.prototype.renderMenu = function() {
+	var d = tinymce2, c = d.DOM, a = d.dom.Event, b = d.is, e = d.each;
 
     var p = this, h, k = 0, q = p.settings, g, j, l, o, f;
-    o = c.add(document.getElementById(tinymce.activeEditor.editorId + "_toolbargroup"), "div", {role: "listbox",id: p.id + "_menu","class": q.menu_class + " " + q["class"],style: "position:absolute;left:0;top:-1000px;"});
+    o = c.add(document.getElementById(tinymce2.activeEditor.editorId + "_toolbargroup"), "div", {role: "listbox",id: p.id + "_menu","class": q.menu_class + " " + q["class"],style: "position:absolute;left:0;top:-1000px;"});
     h = c.add(o, "div", {"class": q["class"] + " mceSplitButtonMenu"});
     c.add(h, "span", {"class": "mceMenuLine"});
     g = c.add(h, "table", {role: "presentation","class": "mceColorSplitMenu"});
@@ -1027,8 +1027,8 @@ tinymce.ui.ColorSplitButton.prototype.renderMenu = function() {
     return o
 };
 
-tinymce.ui.ColorSplitButton.prototype.showMenu = function() {
-	var d = tinymce, c = d.DOM, a = d.dom.Event;
+tinymce2.ui.ColorSplitButton.prototype.showMenu = function() {
+	var d = tinymce2, c = d.DOM, a = d.dom.Event;
 
     var f = this, g, j, i, h;
     if (f.isDisabled()) {
@@ -1061,15 +1061,15 @@ tinymce.ui.ColorSplitButton.prototype.showMenu = function() {
 }
 
 /* --------------------------------------- */
-/* --- Patch tinymce's ListBox methods --- */
-/* Original File : <studio-root>/src/main/webapp/modules/editors/tinymce/tiny_mce.js
+/* --- Patch tinymce2's ListBox methods --- */
+/* Original File : <studio-root>/src/main/webapp/modules/editors/tinymce2/tiny_mce.js
 /* --------------------------------------- */
-tinymce.ui.ListBox.prototype.renderMenu =  function() {
-	var e = tinymce.each,
-		c = tinymce.DOM;
+tinymce2.ui.ListBox.prototype.renderMenu =  function() {
+	var e = tinymce2.each,
+		c = tinymce2.DOM;
 
     var g = this, f;
-    f = g.settings.control_manager.createDropMenu(g.id + "_menu", {menu_line: 1, "container": tinymce.activeEditor.editorId + "_toolbargroup" , "class": g.classPrefix + "Menu mceNoIcons",max_width: 160,max_height: 160});
+    f = g.settings.control_manager.createDropMenu(g.id + "_menu", {menu_line: 1, "container": tinymce2.activeEditor.editorId + "_toolbargroup" , "class": g.classPrefix + "Menu mceNoIcons",max_width: 160,max_height: 160});
     f.onHideMenu.add(function() {
         g.hideMenu();
         g.focus()
@@ -1100,8 +1100,8 @@ tinymce.ui.ListBox.prototype.renderMenu =  function() {
     g.menu = f
 };
 
-tinymce.ui.ListBox.prototype.showMenu = function() {
-	var d = tinymce,
+tinymce2.ui.ListBox.prototype.showMenu = function() {
+	var d = tinymce2,
 		b = d.dom.Event,
 		c = d.DOM,
 		e = d.each;
@@ -1137,12 +1137,12 @@ tinymce.ui.ListBox.prototype.showMenu = function() {
 };
 
 /* ------------------------------------------ */
-/* --- Patch tinymce's MenuButton methods --- */
-/* Original File : <studio-root>/src/main/webapp/modules/editors/tinymce/tiny_mce.js
+/* --- Patch tinymce2's MenuButton methods --- */
+/* Original File : <studio-root>/src/main/webapp/modules/editors/tinymce2/tiny_mce.js
 /* ------------------------------------------ */
-tinymce.ui.MenuButton.prototype.renderMenu = function() {
+tinymce2.ui.MenuButton.prototype.renderMenu = function() {
     var f = this, e;
-    e = f.settings.control_manager.createDropMenu(f.id + "_menu", {menu_line: 1, "container": tinymce.activeEditor.editorId + "_toolbargroup", "class": this.classPrefix + "Menu",icons: f.settings.icons});
+    e = f.settings.control_manager.createDropMenu(f.id + "_menu", {menu_line: 1, "container": tinymce2.activeEditor.editorId + "_toolbargroup", "class": this.classPrefix + "Menu",icons: f.settings.icons});
     e.onHideMenu.add(function() {
         f.hideMenu();
         f.focus()
@@ -1151,8 +1151,8 @@ tinymce.ui.MenuButton.prototype.renderMenu = function() {
     f.menu = e
 };
 
-tinymce.ui.MenuButton.prototype.showMenu = function() {
-	var c = tinymce,
+tinymce2.ui.MenuButton.prototype.showMenu = function() {
+	var c = tinymce2,
 		a = c.dom.Event,
 		b = c.DOM,
 		d = c.each;

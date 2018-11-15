@@ -628,7 +628,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     /*Controls*/
     textArea: "Text Area",
     linkTextarea:"Link Text Area",
-    richTextEditor: "Rich Text Editor",
+    richTextEditor: "Rich Text Editor (TinyMCE 2)",
+    rteTinyMCE4: "Rich Text Editor (TinyMCE 4)",
     input: "Input",
     uuid: "UUID",
     linkInput:"Link Input",
@@ -690,6 +691,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     supportedChannels: "Supported Channels",
     RTEConfiguration: "RTE Configuration",
     imageManager: "Image Manager",
+    videoManager: "Video Manager",
     showDate: "Show Date",
     showTime: "Show Time",
     showClear: "Show Clear Value",

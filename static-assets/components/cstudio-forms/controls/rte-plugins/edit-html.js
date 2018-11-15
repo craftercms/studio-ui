@@ -1,4 +1,4 @@
-/* global CStudioAuthoring, CStudioAuthoringContext, CStudioForms, YAHOO, aceEditor, tinymce */
+/* global CStudioAuthoring, CStudioAuthoringContext, CStudioForms, YAHOO, aceEditor, tinymce2 */
 
 CStudioAuthoring.Module.requireModule(
 	'ace',
@@ -131,7 +131,7 @@ CStudioAuthoring.Module.requireModule(
 				// that any buttons will ever respond to changes on a node of this kind.
 				var metaNode = document.createElement('meta');
 
-				editor.onDeactivate.dispatch(editor, null); // Fire tinyMCE handlers for onDeactivate
+				editor.onDeactivate.dispatch(editor, null); // Fire tinymce2 handlers for onDeactivate
 
 				// Clear any selections on the text editor, then dispatch an artificial event so all buttons go back to their 
 				// default state before saving their state. Then, when we restore the buttons' state (when we go back to text mode),
@@ -211,7 +211,7 @@ CStudioAuthoring.Module.requireModule(
 				rteControl.clearTextEditorSelection();
 
 				editor.contentWindow.frameElement.focus();
-				tinymce.activeEditor.getBody().focus();
+				tinymce2.activeEditor.getBody().focus();
 
 				//iefix - when an element with focus disappears programatically focus does not work unless another item is focused
 				$(editor.codeTextArea).show().focus();
@@ -236,8 +236,8 @@ CStudioAuthoring.Module.requireModule(
 			}
 		};
 
-		tinymce.create('tinymce.plugins.CStudioEditHTMLPlugin', CStudioForms.Controls.RTE.EditHTML);
-		tinymce.PluginManager.add('edithtml', tinymce.plugins.CStudioEditHTMLPlugin);
+		tinymce2.create('tinymce2.plugins.CStudioEditHTMLPlugin', CStudioForms.Controls.RTE.EditHTML);
+		tinymce2.PluginManager.add('edithtml', tinymce2.plugins.CStudioEditHTMLPlugin);
 
 		CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-rte-edit-html', CStudioForms.Controls.RTE.EditHTML);
 

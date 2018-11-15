@@ -1,0 +1,1 @@
+tinymce2.addI18n('fr.wordcount',{words:"Mots:"});

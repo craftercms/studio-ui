@@ -580,7 +580,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
 
     /*Controls*/
     textArea: "텍스트 영역",
-    richTextEditor: "서식있는 텍스트 편집기s",
+    richTextEditor: "서식있는 텍스트 편집기s (TinyMCE 2)",
+    rteTinyMCE4: "서식있는 텍스트 편집기s (TinyMCE 4)",
     input: "입력",
     uuid: "UUID",
     dropdown: "쓰러지 다",
@@ -639,6 +640,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     supportedChannels: "지원 채널",
     RTEConfiguration: "RTE 구성",
     imageManager: "이미지 관리자",
+    videoManager: "비디오 매니저",
     showDate: "쇼 날짜",
     showTime: "쇼 타임",
     showClear: "표시 지우기 값",
