@@ -487,14 +487,16 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
             html.push('<sdiv class="studio-category">');
             html.push('<sh2 class="studio-category-name studio-category-name-collapse">'+category.label+'</sh2>');
             html.push('<sul>');
-            if(category.components.length){
-                $.each(category.components, function (j, component) {
+            if(category.components){
+                if(category.components.length){
+                    $.each(category.components, function (j, component) {
+                        html.push(crafter.String(COMPONENT_TPL)
+                            .fmt(component.path, component.type, component.label));
+                    });
+                }else{
                     html.push(crafter.String(COMPONENT_TPL)
-                        .fmt(component.path, component.type, component.label));
-                });
-            }else{
-                html.push(crafter.String(COMPONENT_TPL)
-                    .fmt(category.components.path, category.components.type, category.components.label));
+                        .fmt(category.components.path, category.components.type, category.components.label));
+                }
             }
             html.push('</sul>');
             html.push('</sdiv>');
