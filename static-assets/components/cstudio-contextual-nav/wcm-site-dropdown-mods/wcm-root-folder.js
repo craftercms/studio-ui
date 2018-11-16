@@ -2374,7 +2374,9 @@
                                                         p_aArgs.addItems([ menuItems.changeTemplateOption ]);
                                                     }
                                                     p_aArgs.addItems([ menuItems.separator ]);
-                                                    p_aArgs.addItems([ menuItems.copyOption ]);
+                                                    if(isCreateContentAllowed){
+                                                        p_aArgs.addItems([ menuItems.copyOption ]);
+                                                    }
 						                        } else {
 						                        	p_aArgs.addItems([ menuItems.viewOption ]);
                                                     if (isCreateContentAllowed) {
@@ -2449,7 +2451,7 @@
                                             Self.copiedItem = Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"));
                                         }
                                         
-                                        if(isWrite && ("/site/website/index.xml" != oCurrentTextNode.data.uri) && ("folder" != oCurrentTextNode.data.contentType)){
+                                        if(isWrite && isCreateContentAllowed && ("/site/website/index.xml" != oCurrentTextNode.data.uri) && ("folder" != oCurrentTextNode.data.contentType)){
                                             p_aArgs.addItems([ menuItems.duplicateOption ]);
                                         }
 
@@ -2461,7 +2463,10 @@
                                         }
 
                                         if(oCurrentTextNode.data.contentType != "folder") {
-                                            p_aArgs.addItems([ menuItems.separator ]);
+                                            if(isCreateContentAllowed){
+                                                p_aArgs.addItems([ menuItems.separator ]);
+                                            }
+                                            
                                             publishAllowed();
                                             dependenciesAllowed();
                                         }
