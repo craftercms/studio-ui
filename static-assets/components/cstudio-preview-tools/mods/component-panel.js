@@ -392,12 +392,35 @@
                 },
 
                 expand: function (containerEl, config) {
+                    var self = this,
+                        componentPanelElem = document.getElementById('component-panel-elem');
+
                     CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/components-config.xml', {
                         failure: CStudioAuthoring.Utils.noop,
                         success: function (config) {
-                            amplify.publish(cstopic('START_DRAG_AND_DROP'), {
-                                components: config
-                            });
+                            if(config && config.category){
+                                amplify.publish(cstopic('START_DRAG_AND_DROP'), {
+                                    components: config
+                                });
+                            }else{
+                                var validationDialog = document.getElementById('expandComponentError');
+                                if(YDom.hasClass(componentPanelElem, 'expanded')) {
+                                    YDom.replaceClass(componentPanelElem, 'expanded', 'contracted');
+                                    self.collapse(containerEl, config);
+                                }
+                                if(!validationDialog){
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "expandComponentError",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(formsLangBundle, "notification"),
+                                        CMgs.format(formsLangBundle, "componentCategoriesError"),
+                                        null,
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog expandComponentError"
+                                    );
+                                }
+                            }
+
                         }
                     });
                 },
@@ -1249,6 +1272,7 @@
                                             components: categories,
                                             contentModel: initialContentModel
                                         });
+
                                     });
                                 }
                             });
