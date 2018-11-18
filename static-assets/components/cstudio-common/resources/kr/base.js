@@ -461,7 +461,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     numberPerPage: "페이지 당 표시 항목에 숫자를 입력하십시오.",
     revertError: "되돌리기에 실패했습니다.",
     legacyError: "레거시 양식 서버는 더 이상 지원되지 않습니다.",
-    contentTypesEmpty: "구성된 경로에서 사용할 수있는 콘텐츠 형식이 없습니다"
+    contentTypesEmpty: "구성된 경로에서 사용할 수있는 콘텐츠 형식이 없습니다",
+    componentCategoriesError: "사용할 수있는 카테고리가 없습니다"
 
 
 });

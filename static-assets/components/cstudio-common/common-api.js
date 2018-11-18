@@ -578,7 +578,9 @@ var nodeOpen = false,
                 var dialogId = id;
 
                 if(!buttonsArray) {
-                    buttonsArray = [{ text: "OK",  handler:function(){this.hide();}, isDefault:false }];
+                    buttonsArray = [{ text: "OK",  handler:function(){
+                        this.destroy();
+                    },isDefault:false }];
                 };
 
                 var dialog = new YAHOO.widget.SimpleDialog(dialogId,

@@ -502,7 +502,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     numberPerPage: "Enter a number in show item per page.",
     revertError: "Revert failed.",
     legacyError: "legacy form server is no longer supported",
-    contentTypesEmpty: "There are no content types available that can be created at the configured path."
+    contentTypesEmpty: "There are no content types available that can be created at the configured path.",
+    componentCategoriesError: "There are no categories available that can be created."
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "en", {
