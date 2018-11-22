@@ -787,6 +787,7 @@ WcmDashboardWidgetCommon.editItem = function (matchedElement, isChecked) {
 
     var editCallback = {
         success: function (contentTO, editorId, name, value, draft) {
+            matchedElement.style.pointerEvents = "auto";
             if(CStudioAuthoringContext.isPreview){
                 try{
                     CStudioAuthoring.Operations.refreshPreview();
