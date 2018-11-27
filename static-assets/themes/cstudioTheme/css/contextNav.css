@@ -149,6 +149,11 @@ div[id*="expandComponentError"].yui-dialog {
     z-index: 104!important;
 }
 
+.cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"],
+.cstudio-dialogue[id^="viewcontroller-approve"], .cstudio-dialogue[id^="viewcontroller-delete"]{
+    z-index: 102000 !important;
+}
+
 .yui-dialog .yui-overlay.yui-panel{
   border-radius: 6px;
 }
