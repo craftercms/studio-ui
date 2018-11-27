@@ -104,9 +104,9 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function disableDnD() {
 
-        var ptoOn = !!(sessionStorage.getItem('pto-on'));
+        var ptoOn = !!(window.parent.sessionStorage.getItem('pto-on'));
         if(ptoOn) {
-            sessionStorage.setItem('components-on', '');
+            window.parent.sessionStorage.setItem('components-on', '');
         }
 
         if (!this.active()) return;
@@ -133,8 +133,8 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     function done() {
         amplify.publish(Topics.ICE_TOOLS_OFF);
         this.stop();
-        var iceOn = !!(sessionStorage.getItem('ice-on')),
-            ptoOn = !!(sessionStorage.getItem('pto-on'));
+        var iceOn = !!(window.parent.sessionStorage.getItem('ice-on')),
+            ptoOn = !!(window.parent.sessionStorage.getItem('pto-on'));
         if(ptoOn) {
             publish.call(this, Topics.STOP_DRAG_AND_DROP);
         }
@@ -145,7 +145,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function enableDnD(components, initialComponentModel, browse) {
         amplify.publish(Topics.ICE_TOOLS_OFF);
-        sessionStorage.setItem('components-on', 'true');
+        window.parent.sessionStorage.setItem('components-on', 'true');
         publish.call(this, Topics.ICE_CHANGE_PENCIL_OFF);
         currentModel = initialComponentModel;
 
@@ -315,7 +315,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function componentDropped($dropZone, $component) {
 
-        var iceOn = !!(sessionStorage.getItem('ice-on'));
+        var iceOn = !!(window.parent.sessionStorage.getItem('ice-on'));
         var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
         var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
         var objectId = $dropZone.attr('data-studio-components-objectid');
