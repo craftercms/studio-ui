@@ -2661,6 +2661,7 @@
                     success: function(contentTO, editorId, name, value, draft) {
                         var page =  CStudioAuthoring.Utils.getQueryParameterURL("page");
                         var currentPage = page.split("/")[page.split("/").length - 1];
+                        var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
                         eventYS.data = oCurrentTextNode;
                         eventYS.typeAction = "createContent";
                         eventYS.oldPath = null;
@@ -2669,6 +2670,9 @@
 
                         if(contentTO.item.isPage){
                             CStudioAuthoring.Operations.refreshPreview(contentTO.item);
+                            if(CStudioAuthoring.Utils.getQueryParameterURL("page") == contentTO.item.browserUri && acnDraftContent){
+                                CStudioAuthoring.SelectedContent.setContent(contentTO.item);
+                            }
                         }else{
                             CStudioAuthoring.Operations.refreshPreview();
                         }
