@@ -7,7 +7,8 @@
 
     var cstopic = crafter.studio.preview.cstopic;
     var Topics = crafter.studio.preview.Topics;
-    var origin = CStudioAuthoringContext.previewAppBaseUri; // 'http://127.0.0.1:8080';
+    var previewAppBaseUri = CStudioAuthoringContext.previewAppBaseUri || "";
+    var origin = previewAppBaseUri; // 'http://127.0.0.1:8080';
     var communicator = new crafter.studio.Communicator(origin);
     var previewWidth;
     // CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
@@ -497,77 +498,65 @@
         var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
         var siteChanged = false;
 
-        var callback = {
-          success: function(config) {
-            var previewServer = config.previewServer || "";
-            
-            if (hash.site) {
-                CStudioAuthoring.Utils.Cookies.createCookie('crafterSite', hash.site);
-                siteChanged = (site !== hash.site);
-            }
+        if (hash.site) {
+            CStudioAuthoring.Utils.Cookies.createCookie('crafterSite', hash.site);
+            siteChanged = (site !== hash.site);
+        }
 
-            setTimeout(function () {
-                // TODO this thing doesn't work well if document domain is not set on both windows. Problem?
-                try{
-                    if (siteChanged ||
-                        win.contentWindow.location.href.replace(origin, '') !== hash.page) {
-                        win.src = previewServer + hash.page;
-                    }
-                }catch (err){
-                    if (siteChanged ||
-                        win.src.replace(origin, '') !== hash.page) {
-                        win.src = previewServer + hash.page;
-                    }
+        setTimeout(function () {
+            // TODO this thing doesn't work well if document domain is not set on both windows. Problem?
+            try {
+                if (siteChanged ||
+                    win.contentWindow.location.href.replace(origin, '') !== hash.page) {
+                    win.src = previewAppBaseUri + hash.page;
                 }
-
-            });
-
-            var path = hash.page,
-                hashPage = hash.page;
-
-            if(path && path.indexOf(".") != -1) {
-                if(path.indexOf(".html") != -1 || path.indexOf(".xml") != -1 ) {
-                    path = ('/site/website/'+ hashPage).replace('//','/');
-                    path = path.replace('.html', '.xml')
+            } catch (err) {
+                if (siteChanged ||
+                    win.src.replace(origin, '') !== hash.page) {
+                    win.src = previewAppBaseUri + hash.page;
                 }
             }
-            else {
-                if (hash.page && hash.page.indexOf('?') != -1) {
-                    hashPage = hash.page.substring(0, hash.page.indexOf('?'));
-                }
-                if (hash.page && hash.page.indexOf('#') != -1) {
-                    hashPage = hash.page.substring(0, hash.page.indexOf('#'));
-                }
-                if (hash.page && hash.page.indexOf(';') != -1) {
-                    hashPage = hash.page.substring(0, hash.page.indexOf(';'));
-                }
 
-                path = ('/site/website/'+ hashPage+'/index.xml').replace('//','/');
+        });
+
+        var path = hash.page,
+            hashPage = hash.page;
+
+        if (path && path.indexOf(".") != -1) {
+            if (path.indexOf(".html") != -1 || path.indexOf(".xml") != -1) {
+                path = ('/site/website/' + hashPage).replace('//', '/');
+                path = path.replace('.html', '.xml')
+            }
+        }
+        else {
+            if (hash.page && hash.page.indexOf('?') != -1) {
+                hashPage = hash.page.substring(0, hash.page.indexOf('?'));
+            }
+            if (hash.page && hash.page.indexOf('#') != -1) {
+                hashPage = hash.page.substring(0, hash.page.indexOf('#'));
+            }
+            if (hash.page && hash.page.indexOf(';') != -1) {
+                hashPage = hash.page.substring(0, hash.page.indexOf(';'));
             }
 
-            path =  path.replace('//','/');
+            path = ('/site/website/' + hashPage + '/index.xml').replace('//', '/');
+        }
 
-            CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
-                success: function(content) {
-                    CStudioAuthoring.SelectedContent.setContent(content.item);
-                }
-            });
+        path = path.replace('//', '/');
 
-              new ResizeSensor($('.navbar-default'), function(){
-                  if($('.navbar-default').height() > 55){
-                      $('.studio-preview').css('top', 100 + "px");
-                  }else{
-                      $('.studio-preview').css('top', 50 + "px");
-                  }
-              });
+        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
+            success: function (content) {
+                CStudioAuthoring.SelectedContent.setContent(content.item);
+            }
+        });
 
-          },
-          failure: function(response) {
-            console.error("Can't load site-config.xml file:", response);
-          }
-        };
-
-        CStudioAuthoring.Service.getConfiguration(site, "/site-config.xml", callback);
+        new ResizeSensor($('.navbar-default'), function () {
+            if ($('.navbar-default').height() > 55) {
+                $('.studio-preview').css('top', 100 + "px");
+            } else {
+                $('.studio-preview').css('top', 50 + "px");
+            }
+        });
 
     }
 
