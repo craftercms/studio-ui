@@ -662,6 +662,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     videoWebDavRepository:"Video From WebDav Repository",
     fileWebDavRepository:"File From WebDav Repository",
     fileUploadedWebDavRepository:"File Uploaded to WebDav Repository",
+    S3UploadImage: "Image Uploaded to S3 Repository",
+    S3UploadVideo: "Video Uploaded to S3 Repository",
+    imageS3Repository:"Image From S3 Repository",
+    videoS3Repository:"Video From S3 Repository",
+    fileS3Repository:"File From S3 Repository",
+    fileUploadedS3Repository:"File Uploaded to S3 Repository",
     DAMImage: "DAM Image Flickr",
     fileUploadedDesktop: "File Uploaded From Desktop",
     flashUploadedDesktop: "Flash Uploaded from Desktop",
@@ -739,6 +745,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     mergeStrategy: "Merge Strategy",
     componentPath: "Component Path",
     dependsOn: "Depends On",
+    profileId: "Profile Id",
+    path: "Path",
+    type: "Type",
 
     /*Restrictions*/
     required: "Required",

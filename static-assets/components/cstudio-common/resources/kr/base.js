@@ -612,6 +612,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     videoWebDavRepository:"WebDav 저장소의 비디오",
     fileWebDavRepository:"WebDav 저장소의 파일",
     fileUploadedWebDavRepository:"WebDav 저장소에 업로드 된 파일",
+    S3UploadImage: "S3 저장소에 업로드 된 이미지",
+    S3UploadVideo: "S3 저장소에 업로드 된 비디오",
+    imageS3Repository:"S3 저장소의 이미지",
+    videoS3Repository:"S3 저장소의 비디오",
+    fileS3Repository:"S3 저장소의 파일",
+    fileUploadedS3Repository:"S3 저장소에 업로드 된 파일",
     DAMImage: "DAM 이미지 플리커 (Flickr)",
     fileUploadedDesktop: "파일 바탕 화면에서 업로드",
     flashUploadedDesktop: "플래시 바탕 화면에서 업로드",
@@ -686,6 +692,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     defaultType: "기본 유형",
     displayTemplate: "디스플레이 템플릿",
     mergeStrategy: "전략을 병합",
+    profileId: "프로필 ID",
+    path: "통로",
+    type: "유형",
 
     /*Restrictions*/
     required: "필요",
