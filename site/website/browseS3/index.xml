@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+  <internal-name>Browse S3</internal-name>
+  <content-type>/page/browseS3</content-type>
+  <display-template>/templates/web/browseS3.ftl</display-template>
+  <merge-strategy>inherit-levels</merge-strategy>
+</page>

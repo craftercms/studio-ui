@@ -1398,6 +1398,82 @@ var nodeOpen = false,
 
             },
 
+            /**
+             * open a browse page for S3 repo
+             */
+            openS3Browse: function(profileId, path, type,  mode, newWindow, callback, filter = 'none') {
+
+                var searchId = null;
+
+                var searchContext = CStudioAuthoring.Service.createSearchContext();
+
+                var openInSameWindow = (newWindow) ? false : true;
+
+                var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
+                    "/browseS3?site=" +
+                    CStudioAuthoringContext.site;
+
+                if(profileId){
+                    browseUrl += "&profileId=" + profileId;
+                }
+
+                if(path){
+                    browseUrl += "&path=" + path;
+                }
+
+                if(type){
+                    browseUrl += "&type=" + type;
+                }
+
+                if(filter !== 'none'){
+                    browseUrl += "&filter=" + filter;
+                }
+
+                if (!CStudioAuthoring.Utils.isEmpty(mode)) {
+                    browseUrl += "&mode=" + mode;
+                }
+
+                var childSearch = null;
+
+                if (!searchId || searchId == null || searchId == "undefined"
+                    || !CStudioAuthoring.ChildSearchManager.searches[searchId]) {
+                    childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
+                    childSearch.openInSameWindow = openInSameWindow;
+                    searchId = CStudioAuthoring.Utils.generateUUID();
+
+                    childSearch.searchId = searchId;
+                    childSearch.searchUrl = browseUrl + "&searchId=" + searchId;
+                    childSearch.saveCallback = callback;
+
+                    CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
+
+                }
+                else {
+                    if (window.opener) {
+
+                        if (window.opener.CStudioAuthoring) {
+
+                            var openerChildSearchMgr = window.opener.CStudioAuthoring.ChildSearchManager;
+
+                            if (openerChildSearchMgr) {
+
+                                childSearch = openerChildSearchMgr.searches[searchId];
+                                childSearch.searchUrl = browseUrl;
+
+                                openerChildSearchMgr.openChildSearch(childSearch);
+                            }
+                        }
+                    }
+                    else {
+                        childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
+                        childSearch.searchUrl = browseUrl;
+
+                        CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
+                    }
+                }
+
+            },
+
             refreshPreviewParent: function() {
                 var previewFrameEl = window.parent.document.getElementById("engineWindow");
                 if(previewFrameEl){previewFrameEl.contentWindow.location.reload();}
@@ -2783,7 +2859,7 @@ var nodeOpen = false,
             },
 
             uploadWebDAVAsset: function(site, path, profileId, uploadCb) {
-                CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb);                  
+                CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb);
             },
 
             /**
@@ -2815,6 +2891,39 @@ var nodeOpen = false,
                 CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
                 CStudioAuthoring.Module.requireModule("upload-webdav-dialog", "/static-assets/components/cstudio-dialogs/uploadWebDAV-dialog.js", moduleConfig, openUploadDialogCb);
+            },
+
+            uploadS3Asset: function(site, profileId, uploadCb) {
+                CStudioAuthoring.Operations.openS3UploadDialog(site, profileId, uploadCb);
+            },
+
+            /**
+             *  opens a dialog to upload an asset
+             */
+            openS3UploadDialog: function(site, profileId, callback) {
+
+                var serviceUri = CStudioAuthoring.Service.writeS3ContentUri;
+
+                var openUploadDialogCb = {
+                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                        dialogClass.showDialog(
+                            moduleConfig.site,
+                            moduleConfig.profile,
+                            moduleConfig.serviceUri,
+                            moduleConfig.callback);
+                    }
+                };
+
+                var moduleConfig = {
+                    site: site,
+                    profile: profileId,
+                    serviceUri: serviceUri,
+                    callback: callback
+                }
+
+                CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
+
+                CStudioAuthoring.Module.requireModule("upload-S3-dialog", "/static-assets/components/cstudio-dialogs/uploadS3-dialog.js", moduleConfig, openUploadDialogCb);
             },
 
             /**
@@ -3092,6 +3201,10 @@ var nodeOpen = false,
             //WEBDAV
             getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
             writeWebDAVContentUri: "/api/1/services/api/1/webdav/upload.json",
+
+            //S3
+            getS3ContentByBrowseUri: "/api/2/aws/s3/list",
+            writeS3ContentUri: "/api/2/aws/s3/upload.json",
 
             // WRITE OPS
             getRevertContentServiceUrl: "/api/1/services/api/1/content/revert-content.json",
@@ -5657,6 +5770,36 @@ var nodeOpen = false,
 
             getWebDAVContentByBrowser: function(site, profileId, path, callback, filter) {
                 var serviceUri = this.getWebDAVContentByBrowseUri + "?site_id=" + site + "&profile=" + profileId + "&path=" + path;
+
+                if(filter){
+                    serviceUri += "&type=" + filter;
+                }
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var contentResults = eval("(" + response.responseText + ")");
+                        callback.success(contentResults);
+                    },
+
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+
+
+                YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            getS3ContentByBrowser: function(site, profileId, path, type, callback, filter) {
+                var serviceUri = this.getS3ContentByBrowseUri + "?siteId=" + site + "&profileId=" + profileId;
+
+                if(path){
+                    serviceUri += "&path=" + path;
+                }
+
+                if(type){
+                    serviceUri += "&type=" + type;
+                }
 
                 if(filter){
                     serviceUri += "&type=" + filter;
