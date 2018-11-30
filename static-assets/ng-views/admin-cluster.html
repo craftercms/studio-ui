@@ -8,36 +8,28 @@
                         <h1>{{ 'admin.clustering.HEADER_LABEL' | translate }}</h1>
                     </header>
 
-                    <a id="new-cluster-btn" class="btn btn-default" ng-click="clusters.createClusterMemberDialog()" style="float: right; role="button">{{ 'admin.clustering.NEW_CLUSTER' | translate }}</a>
-
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>{{ 'admin.clustering.GIT_NAME' | translate }}</th>
+                            <th>{{ 'admin.clustering.ID' | translate }}</th>
+                            <th>{{ 'admin.clustering.LOCAL_IP' | translate }}</th>
+                            <th>{{ 'admin.clustering.STATE' | translate }}</th>
                             <th>{{ 'admin.clustering.GIT_URL' | translate }}</th>
+                            <th>{{ 'admin.clustering.GIT_NAME' | translate }}</th>
                             <th>{{ 'admin.clustering.GIT_AUTH_TYPE' | translate }}</th>
                             <th></th>
-                            <th></th>
                         </tr>
-                        <!--<tr>
-                            <th colspan="12">
-                                <input id="clusters-search-input" data-ng-change="clusters.searchCluster(q)" ng-model="q" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
-                            </th>
-                        </tr>-->
                         </thead>
                         <tbody>
 
                         <tr ng-repeat="clusterMember in membersCollection track by $index">
-                            <td class="gitName"><a ng-click="clusters.viewClusterMember(clusterMember)">{{clusterMember.gitRemoteName}}</a></td>
+                            <td class="gitName"><a ng-click="clusters.viewClusterMember(clusterMember)">{{clusterMember.id}}</a></td>
+                            <td class="localIp">{{clusterMember.localIp}}</td>
+                            <td class="state">{{clusterMember.state}}</td>
                             <td class="gitUrl">{{clusterMember.gitUrl}}</td>
+                            <td class="gitUrl">{{clusterMember.gitRemoteName}}</td>
                             <td class="gitAuthType">{{clusterMember.gitAuthType}}</td>
 
-                            <td class="edit">
-                                <a ng-click="clusters.editClusterMemberDialog(clusterMember)" class="btn btn-sm">
-                                    <i class="fa fa-pencil">
-                                    </i>
-                                </a>
-                            </td>
                             <td class="remove">
                                 <a ng-click="clusters.removeClusterMember(clusterMember)" class="btn btn-sm">
                                     <i class="fa fa-trash-o">
@@ -88,6 +80,34 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="localIp">{{ 'admin.clustering.LOCAL_IP' | translate }}</label>
+                        <input type="text" class="form-control" id="localIp" name="localIp" ng-model="clusterMember.localIp" required />
+
+                        <div class="error-container"
+                             ng-show="(createNameForm.localIp.$dirty && createNameForm.localIp.$invalid) || (createNameForm.localIp.$touched && createNameForm.localIp.$invalid)">
+                            <small class="error"
+                                   ng-show="createNameForm.localIp.$error.required">
+                                {{ 'admin.clustering.LOCAL_IP' | translate }} is required.
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="state">{{ 'admin.clustering.STATE' | translate }}</label>
+                        <input type="text" class="form-control" id="state" name="state" ng-model="clusterMember.state" required />
+
+                        <div class="error-container"
+                             ng-show="(createNameForm.state.$dirty && createNameForm.state.$invalid) || (createNameForm.state.$touched && createNameForm.state.$invalid)">
+                            <small class="error"
+                                   ng-show="createNameForm.state.$error.required">
+                                {{ 'admin.clustering.STATE' | translate }} is required.
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
                         <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
                         <input type="radio" id="none" name="authentication" value="none" ng-model="clusterMember.gitAuthType" ng-checked="true">
                         <label for="none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
@@ -97,62 +117,6 @@
                         <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
                         <input type="radio" id="key" name="authentication" value="key" ng-model="clusterMember.gitAuthType">
                         <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
-                    </div>
-
-                    <div class="form-group" ng-show="clusterMember.gitAuthType == 'basic'">
-                        <label for="username">{{ 'dashboard.sites.create.USERNAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.IFREQUIRED' | translate }}</span>
-                        <input type="text" class="form-control" id="username" name="username" ng-model="clusterMember.gitUsername" ng-required="clusterMember.gitAuthType == 'basic'" />
-
-                        <div class="error-container"
-                             ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
-                            <small class="error"
-                                   ng-show="createNameForm.username.$error.required">
-                                {{ 'dashboard.sites.create.USERNAME' | translate }} is required.
-                            </small>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group" ng-show="clusterMember.gitAuthType == 'basic'">
-                        <label for="password">{{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
-                        <input type="password" class="form-control" id="password" name="password" ng-model="clusterMember.gitPassword" autocomplete="new-password" ng-required="clusterMember.gitAuthType == 'basic'" />
-
-                        <div class="error-container"
-                             ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
-                            <small class="error"
-                                   ng-show="createNameForm.password.$error.required">
-                                {{ 'dashboard.sites.create.PASSWORD' | translate }} is required.
-                            </small>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group" ng-show="clusterMember.gitAuthType == 'token'">
-                        <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label>
-                        <input type="password" class="form-control" id="tokenNum" name="tokenNum" ng-model="clusterMember.gitToken" ng-required="clusterMember.gitAuthType == 'token'" />
-
-                        <div class="error-container"
-                             ng-show="(createNameForm.tokenNum.$dirty && createNameForm.password.$invalid) || (createNameForm.tokenNum.$touched && createNameForm.tokenNum.$invalid)">
-                            <small class="error"
-                                   ng-show="createNameForm.tokenNum.$error.required">
-                                {{ 'dashboard.sites.create.TOKEN' | translate }} is required.
-                            </small>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group" ng-show="clusterMember.gitAuthType == 'key'">
-                        <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
-                        <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
-                        <textarea rows="4" cols="50" class="form-control" id="keyNum" name="keyNum" ng-model="clusterMember.gitPrivateKey" ng-required="clusterMember.gitAuthType == 'key'" ></textarea>
-
-                        <div class="error-container"
-                             ng-show="(createNameForm.keyNum.$dirty && createNameForm.password.$invalid) || (createNameForm.keyNum.$touched && createNameForm.keyNum.$invalid)">
-                            <small class="error"
-                                   ng-show="createNameForm.keyNum.$error.required">
-                                {{ 'dashboard.sites.create.KEY' | translate }} is required.
-                            </small>
-                        </div>
                     </div>
 
                 </fieldset>
