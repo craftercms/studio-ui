@@ -55,33 +55,56 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     return "box-file-upload";
   },
 
-  setValue: function(value) {
-    var validationResult = true,
-        self=this;
-    if(value) {
-      this.value = value;
-      this.form.updateModel(this.id, this.value);
-      this.fileEl.innerHTML = value.map(function(f){ return "<span id='"+f.name+"'>box://" + f.name + "*" + "<a class='removeItemBox' data-id='"+f.id+"' ><i class='fa fa-trash'></i></a></span>"; }).join("<br/>")
-      this.clearError("required");
-        var _self;
-        var removeItems = document.getElementsByClassName("removeItemBox");
-        for (var i = 0; i < removeItems.length; i++) {
-            removeItems[i].addEventListener('click', function(){
-                _self = this;
-                self.value = self.value.filter(function(el) {
-                    return el.id !== _self.getAttribute("data-id");
-                });
-                self.setValue(self.value);
-            });
-        }
+    setValue: function (value) {
+        var validationResult = true,
+            self = this;
+        if (value && value.length > 0) {
+            value.forEach(function (element, index, array) {
+                var callbackContent = {
+                    success: function (response) {
+                        value[index].url = response.url;
 
-    } else if(this.required) {
-      validationResult = false;
-      this.setError("required", "Field is Required");
-    }
-    this.renderValidation(true, validationResult);
-    this.owner.notifyValidation();
-  },
+                        if (index === (value.length) - 1) {
+                            self.value = value;
+                            self.form.updateModel(self.id, self.value);
+                            self.fileEl.innerHTML = value.map(function (f) {
+                                return "<span id='" + f.name + "'>" + f.url + "*" + "<a class='removeItemBox' data-id='" + f.id + "' ><i class='fa fa-trash'></i></a></span>";
+                            }).join("<br/>")
+                            self.clearError("required");
+                            var _self;
+                            var removeItems = document.getElementsByClassName("removeItemBox");
+                            for (var i = 0; i < removeItems.length; i++) {
+                                removeItems[i].addEventListener('click', function () {
+                                    _self = this;
+                                    self.value = self.value.filter(function (el) {
+                                        return el.id !== _self.getAttribute("data-id");
+                                    });
+                                    self.setValue(self.value);
+                                });
+                            }
+                        }
+                        self.renderValidation(true, validationResult);
+                        self.owner.notifyValidation();
+                    },
+                    failure: function (response) {
+                        console.log(response);
+                    }
+                }
+                CStudioAuthoring.Service.getboxURL(CStudioAuthoringContext.site, self.profile_id, value[index].id, callbackContent);
+            });
+        } else {
+            self.value = value;
+            self.form.updateModel(self.id, self.value);
+            self.fileEl.innerHTML = '';
+            self.clearError("required");
+            if (this.required) {
+                validationResult = false;
+                this.setError("required", "Field is Required");
+                this.renderValidation(true, validationResult);
+                this.owner.notifyValidation();
+            }
+        }
+    },
   
   getValue: function() {
     return this.value;
