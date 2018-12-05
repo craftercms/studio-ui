@@ -9,9 +9,6 @@ CStudioForms.Datasources.ImgWebS3Repo = CStudioForms.Datasources.ImgWebS3Repo ||
             if(properties[i].name === "path") {
                 this.path = properties[i].value;
             }
-            if(properties[i].name === "type") {
-                this.type = properties[i].value;
-            }
             if(properties[i].name === "profileId") {
                 this.profileId = properties[i].value;
             }
@@ -46,7 +43,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebS3Repo, CStudioForms.CStudioFormData
             }
         };
 
-        CStudioAuthoring.Operations.openS3Browse(_self.profileId, _self.processPathsForMacros(_self.path), _self.type, "select", true, browseCb, 'image');
+        CStudioAuthoring.Operations.openS3Browse(_self.profileId, _self.processPathsForMacros(_self.path), "select", true, browseCb, 'image');
 
     },
 
@@ -65,8 +62,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebS3Repo, CStudioForms.CStudioFormData
     getSupportedProperties: function() {
         return [
             { label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" },
-            { label: CMgs.format(langBundle, "path"), name: "path", type: "string" },
-            { label: CMgs.format(langBundle, "type"), name: "type", type: "string" }
+            { label: CMgs.format(langBundle, "path"), name: "path", type: "string" }
         ];
     },
 

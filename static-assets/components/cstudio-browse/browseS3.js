@@ -412,7 +412,6 @@
 
     CStudioBrowseS3.getContent = function(type, cb, cPath) {
         var pathURL = CStudioAuthoring.Utils.getQueryParameterByName("path"),
-            type = CStudioAuthoring.Utils.getQueryParameterByName("type"),
             path = cPath ? cPath : pathURL.slice(-1)=="/" ? pathURL.substring(0, pathURL.length - 1) : pathURL,
             profileId = CStudioAuthoring.Utils.getQueryParameterByName("profileId"),
             site = CStudioAuthoring.Utils.getQueryParameterByName("site"),
@@ -462,7 +461,7 @@
             }
         }
             
-        CStudioAuthoring.Service.getS3ContentByBrowser(site, profileId, path, type, callbackContent, filter);
+        CStudioAuthoring.Service.getS3ContentByBrowser(site, profileId, path, callbackContent, filter);
 
     };
 
