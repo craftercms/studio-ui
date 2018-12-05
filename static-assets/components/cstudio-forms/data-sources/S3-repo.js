@@ -9,9 +9,6 @@ CStudioForms.Datasources.S3Repo = CStudioForms.Datasources.S3Repo ||
             if(properties[i].name === "path") {
                 this.path = properties[i].value;
             }
-            if(properties[i].name === "type") {
-                this.type = properties[i].value;
-            }
             if(properties[i].name === "profileId") {
                 this.profileId = properties[i].value;
             }
@@ -76,10 +73,10 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
             YAHOO.util.Event.on(createEl, 'click', function () {
                 control.addContainerEl = null;
                 control.containerEl.removeChild(addContainerEl);
-                CStudioAuthoring.Operations.openS3Browse(_self.profileId,_self.processPathsForMacros( _self.path), _self.type, "select", true, browseCb);
+                CStudioAuthoring.Operations.openS3Browse(_self.profileId,_self.processPathsForMacros( _self.path), "select", true, browseCb);
             }, createEl);
         } else {
-            CStudioAuthoring.Operations.openS3Browse(_self.profileId, _self.processPathsForMacros(_self.path), _self.type, "select", true, browseCb);
+            CStudioAuthoring.Operations.openS3Browse(_self.profileId, _self.processPathsForMacros(_self.path), "select", true, browseCb);
         }
 
     },
@@ -99,8 +96,7 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
     getSupportedProperties: function() {
         return [
             { label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" },
-            { label: CMgs.format(langBundle, "path"), name: "path", type: "string" },
-            { label: CMgs.format(langBundle, "type"), name: "type", type: "string" }
+            { label: CMgs.format(langBundle, "path"), name: "path", type: "string" }
         ];
     },
 

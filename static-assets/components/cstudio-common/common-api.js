@@ -1401,7 +1401,7 @@ var nodeOpen = false,
             /**
              * open a browse page for S3 repo
              */
-            openS3Browse: function(profileId, path, type,  mode, newWindow, callback, filter = 'none') {
+            openS3Browse: function(profileId, path,  mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
 
@@ -1419,10 +1419,6 @@ var nodeOpen = false,
 
                 if(path){
                     browseUrl += "&path=" + path;
-                }
-
-                if(type){
-                    browseUrl += "&type=" + type;
                 }
 
                 if(filter !== 'none'){
@@ -5790,15 +5786,11 @@ var nodeOpen = false,
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
 
-            getS3ContentByBrowser: function(site, profileId, path, type, callback, filter) {
+            getS3ContentByBrowser: function(site, profileId, path, callback, filter) {
                 var serviceUri = this.getS3ContentByBrowseUri + "?siteId=" + site + "&profileId=" + profileId;
 
                 if(path){
                     serviceUri += "&path=" + path;
-                }
-
-                if(type){
-                    serviceUri += "&type=" + type;
                 }
 
                 if(filter){
