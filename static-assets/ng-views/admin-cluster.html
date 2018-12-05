@@ -11,7 +11,6 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>{{ 'admin.clustering.ID' | translate }}</th>
                             <th>{{ 'admin.clustering.LOCAL_IP' | translate }}</th>
                             <th>{{ 'admin.clustering.STATE' | translate }}</th>
                             <th>{{ 'admin.clustering.GIT_URL' | translate }}</th>
@@ -23,7 +22,6 @@
                         <tbody>
 
                         <tr ng-repeat="clusterMember in membersCollection track by $index">
-                            <td class="gitName"><a ng-click="clusters.viewClusterMember(clusterMember)">{{clusterMember.id}}</a></td>
                             <td class="localIp">{{clusterMember.localIp}}</td>
                             <td class="state">{{clusterMember.state}}</td>
                             <td class="gitUrl">{{clusterMember.gitUrl}}</td>
@@ -44,105 +42,6 @@
         </div>
     </div>
 </div>
-
-<script type="text/ng-template" id="modalView.html">
-    <div class="modal-header">
-        <h3 ng-if="dialogMode" class="modal-title">{{ 'common.' + dialogMode + '_LABEL' | translate }} {{ 'admin.clustering.USER_LABEL' | translate }}</h3>
-        <h3 ng-if="!dialogMode" class="modal-title text-capitalize">{{clusterMember.gitUrl}}</h3>
-    </div>
-    <form name="createNameForm" id="cluster-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
-        <div class="modal-body clearfix edit-{{dialogMode}} admin-dialog">
-            <div class="col-md-12">
-                <fieldset>
-                    <div class="form-group">
-                        <div class="form-group">
-                            <label for="name">{{ 'admin.clustering.GIT_NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
-                            <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="clusterMember.gitRemoteName" required />
-                            <div class="error-container"
-                                 ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
-                                <small class="error"
-                                       ng-show="createNameForm.name.$error.required">
-                                    {{ 'dashboard.sites.create.NAME' | translate }} is required.
-                                </small>
-                            </div>
-                        </div>
-                        <label for="url">{{ 'dashboard.sites.create.URL' | translate }}</label>
-                        <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="clusterMember.gitUrl" required />
-
-                        <div class="error-container"
-                             ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
-                            <small class="error"
-                                   ng-show="createNameForm.url.$error.required">
-                                {{ 'dashboard.sites.create.URL' | translate }} is required.
-                            </small>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-                        <label for="localIp">{{ 'admin.clustering.LOCAL_IP' | translate }}</label>
-                        <input type="text" class="form-control" id="localIp" name="localIp" ng-model="clusterMember.localIp" required />
-
-                        <div class="error-container"
-                             ng-show="(createNameForm.localIp.$dirty && createNameForm.localIp.$invalid) || (createNameForm.localIp.$touched && createNameForm.localIp.$invalid)">
-                            <small class="error"
-                                   ng-show="createNameForm.localIp.$error.required">
-                                {{ 'admin.clustering.LOCAL_IP' | translate }} is required.
-                            </small>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-                        <label for="state">{{ 'admin.clustering.STATE' | translate }}</label>
-                        <input type="text" class="form-control" id="state" name="state" ng-model="clusterMember.state" required />
-
-                        <div class="error-container"
-                             ng-show="(createNameForm.state.$dirty && createNameForm.state.$invalid) || (createNameForm.state.$touched && createNameForm.state.$invalid)">
-                            <small class="error"
-                                   ng-show="createNameForm.state.$error.required">
-                                {{ 'admin.clustering.STATE' | translate }} is required.
-                            </small>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-                        <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
-                        <input type="radio" id="none" name="authentication" value="none" ng-model="clusterMember.gitAuthType" ng-checked="true">
-                        <label for="none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
-                        <input type="radio" id="basic" name="authentication" value="basic" ng-model="clusterMember.gitAuthType">
-                        <label for="basic">{{ 'dashboard.sites.create.BASIC' | translate }}</label><br/>
-                        <input type="radio" id="token" name="authentication" value="token" ng-model="clusterMember.gitAuthType">
-                        <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
-                        <input type="radio" id="key" name="authentication" value="key" ng-model="clusterMember.gitAuthType">
-                        <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
-                    </div>
-
-                </fieldset>
-                <div class="alert alert-danger" ng-if="clustersError">
-                    {{clustersError.message}}. {{clustersError.remedialAction}}
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer" id="new-cluster-dialog-footer">
-            <button class="btn btn-primary text-capitalize save-new-cluster" ng-if="dialogMode"
-                    ng-click="okModalFunction(clusterMember)" ng-disabled="createNameForm.$invalid">{{ 'admin.clustering.SAVE' | translate }}</button>
-            <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
-            <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
-        </div>
-    </form>
-</script>
-
-<script type="text/ng-template" id="creatingUserConfirmation.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Creating Cluster</h3>  <!-- TODO: pending display current action & translate -->
-    </div>
-    <div class="modal-body">
-        <img class="creatingSpinner" src="/studio/static-assets/img/spinner_tra.gif" />
-    </div>
-</script>
 
 <script type="text/ng-template" id="confirmationModal.html">
     <div class="modal-header">
