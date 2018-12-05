@@ -5823,7 +5823,7 @@ var nodeOpen = false,
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
 
-            getboxURL: function(site, profileId, fileId, callback) {
+            getBoxURL: function(site, profileId, fileId, callback) {
                 var serviceUri = this.getBoxUrlUri + "?site=" + site + "&profileId=" + profileId + "&fileId=" + fileId;
 
                 var serviceCallback = {
@@ -5831,13 +5831,10 @@ var nodeOpen = false,
                         var contentResults = eval("(" + response.responseText + ")");
                         callback.success(contentResults);
                     },
-
                     failure: function(response) {
                         callback.failure(response);
                     }
                 };
-
-
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
 

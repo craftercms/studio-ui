@@ -90,7 +90,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
                         console.log(response);
                     }
                 }
-                CStudioAuthoring.Service.getboxURL(CStudioAuthoringContext.site, self.profile_id, value[index].id, callbackContent);
+                CStudioAuthoring.Service.getBoxURL(CStudioAuthoringContext.site, self.profile_id, value[index].id, callbackContent);
             });
         } else {
             self.value = value;
