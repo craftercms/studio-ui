@@ -5815,8 +5815,8 @@ var nodeOpen = false,
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
 
-            getBoxURL: function(site, profileId, fileId, callback) {
-                var serviceUri = this.getBoxUrlUri + "?site=" + site + "&profileId=" + profileId + "&fileId=" + fileId;
+            getBoxURL: function(site, profileId, fileId, filename, callback) {
+                var serviceUri = this.getBoxUrlUri + "?site=" + site + "&profileId=" + profileId + "&fileId=" + fileId + "&filename=" + filename;
 
                 var serviceCallback = {
                     success: function(response) {
