@@ -1,11 +1,11 @@
 CStudioAuthoring.Utils.addCss('/static-assets/styles/box-file-upload.css');
 CStudioAuthoring.Utils.addJavascript('https://cdn01.boxcdn.net/platform/elements/3.5.1/en-US/picker.js');
 
-CStudioForms.Controls.BoxFileUpload = CStudioForms.Controls.BoxFileUpload ||  
+CStudioForms.Controls.BoxFileUpload = CStudioForms.Controls.BoxFileUpload ||
 function(id, form, owner, properties, constraints, readonly)  {
   this.owner = owner;
   this.owner.registerField(this);
-  this.errors = []; 
+  this.errors = [];
   this.properties = properties;
   this.constraints = constraints;
   this.fileEl = null;
@@ -18,7 +18,7 @@ function(id, form, owner, properties, constraints, readonly)  {
   this.enable_upload = false;
   this.enable_multi = false;
   this.logo = "box";
-  
+
   if(properties) {
     var required = constraints.find(function(property){ return property.name === "required"; });
     if(required) {
@@ -41,16 +41,16 @@ function(id, form, owner, properties, constraints, readonly)  {
       this.logo = logo.value;
     }
   }
-  
+
   return this;
 };
 
 YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField, {
-  
+
   getLabel: function() {
     return "Box File Upload";
   },
-  
+
   getName: function() {
     return "box-file-upload";
   },
@@ -68,7 +68,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
                             self.value = value;
                             self.form.updateModel(self.id, self.value);
                             self.fileEl.innerHTML = value.map(function (f) {
-                                return "<span id='" + f.name + "'>" + f.url + "*" + "<a class='removeItemBox' data-id='" + f.id + "' ><i class='fa fa-trash'></i></a></span>";
+                                return "<span id='" + f.name + "'>" + f.name + "*" + "<a class='removeItemBox' data-id='" + f.id + "' ><i class='fa fa-trash'></i></a></span>";
                             }).join("<br/>")
                             self.clearError("required");
                             var _self;
@@ -90,7 +90,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
                         console.log(response);
                     }
                 }
-                CStudioAuthoring.Service.getBoxURL(CStudioAuthoringContext.site, self.profile_id, value[index].id, callbackContent);
+                CStudioAuthoring.Service.getBoxURL(CStudioAuthoringContext.site, self.profile_id, value[index].id, value[index].name, callbackContent);
             });
         } else {
             self.value = value;
@@ -105,11 +105,11 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
             }
         }
     },
-  
+
   getValue: function() {
     return this.value;
   },
-  
+
   getSupportedProperties: function() {
     return [
       { label: "Profile ID", name: "profile_id", type: "string", defaultValue: "box-default" },
@@ -118,22 +118,22 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
       { label: "Logo", name: "logo", type: "string", defaultValue: "box" }
     ];
   },
-  
+
   getSupportedConstraints: function() {
     return [
       { label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
     ];
   },
-  
-  render: function(config, containerEl, lastTwo) {    
+
+  render: function(config, containerEl, lastTwo) {
     var titleEl = document.createElement("span");
 		YAHOO.util.Dom.addClass(titleEl, "cstudio-form-field-title");
 		titleEl.innerHTML = config.title;
     containerEl.appendChild(titleEl);
-    
+
     var controlWidgetContainerEl = document.createElement("div");
 		YAHOO.util.Dom.addClass(controlWidgetContainerEl, "cstudio-form-control-input-container");
-    
+
     var validEl = document.createElement("span");
 		YAHOO.util.Dom.addClass(validEl, "validation-hint");
 		YAHOO.util.Dom.addClass(validEl, "cstudio-form-control-validation fa fa-check");
@@ -142,19 +142,19 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     this.fileEl = document.createElement("p");
     YAHOO.util.Dom.addClass(this.fileEl, "itemsSelected");
     controlWidgetContainerEl.appendChild(this.fileEl);
-    
+
     var picker = document.createElement("div");
     picker.id = "box-picker-" + this.id;
     picker.className = "box-picker";
     controlWidgetContainerEl.appendChild(picker);
-    
+
     containerEl.appendChild(controlWidgetContainerEl);
-    
+
     var self = this;
     var tokenUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/box/token.json");
     tokenUri += "&site=" + CStudioAuthoringContext.site;
     tokenUri += "&profileId=" + this.profile_id;
-    tokenUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;    
+    tokenUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;
     YAHOO.util.Connect.asyncRequest("GET", tokenUri, {
         success: function(o) {
             var data = JSON.parse(o.responseText);
@@ -197,7 +197,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
         }
     });
   }
-  
+
 });
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-box-file-upload", CStudioForms.Controls.BoxFileUpload);
