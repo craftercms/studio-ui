@@ -150,7 +150,8 @@ div[id*="expandComponentError"].yui-dialog {
 }
 
 .cstudio-dialogue[id^="viewcontroller-history"], .cstudio-dialogue[id^="viewcontroller-dependencies"],
-.cstudio-dialogue[id^="viewcontroller-approve"], .cstudio-dialogue[id^="viewcontroller-delete"]{
+.cstudio-dialogue[id^="viewcontroller-approve"], .cstudio-dialogue[id^="viewcontroller-delete"],
+.cstudio-dialogue[id^="viewcontroller-requestpublish"]{
     z-index: 102000 !important;
 }
 
