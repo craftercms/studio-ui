@@ -3202,6 +3202,9 @@ var nodeOpen = false,
             getS3ContentByBrowseUri: "/api/2/aws/s3/list",
             writeS3ContentUri: "/api/2/aws/s3/upload.json",
 
+            //Box File
+            getBoxUrlUri: "/api/1/services/api/1/box/url.json",
+
             // WRITE OPS
             getRevertContentServiceUrl: "/api/1/services/api/1/content/revert-content.json",
             unlockContentItemUrl: "/api/1/services/api/1/content/unlock-content.json",
@@ -5809,6 +5812,21 @@ var nodeOpen = false,
                 };
 
 
+                YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
+            },
+
+            getBoxURL: function(site, profileId, fileId, callback) {
+                var serviceUri = this.getBoxUrlUri + "?site=" + site + "&profileId=" + profileId + "&fileId=" + fileId;
+
+                var serviceCallback = {
+                    success: function(response) {
+                        var contentResults = eval("(" + response.responseText + ")");
+                        callback.success(contentResults);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
                 YConnect.asyncRequest("GET", this.createServiceUri(serviceUri), serviceCallback);
             },
 
