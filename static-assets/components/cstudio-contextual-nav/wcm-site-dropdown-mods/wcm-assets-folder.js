@@ -1532,6 +1532,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 else {
                     this.callingWindow.location.reload(true);
                 }
+
+                eventNS.data = oCurrentTextNode;
+                eventNS.typeAction = "";
+                document.dispatchEvent(eventNS);
+
             },
 
             failure: function() {
