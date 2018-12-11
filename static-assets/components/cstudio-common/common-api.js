@@ -3243,6 +3243,8 @@ var nodeOpen = false,
             validateSessionUrl: "/api/1/services/api/1/security/validate-session.json",
             logoutUrl: "/api/1/services/api/1/security/logout.json",
             getLogoutInfoURL: "/api/2/users/me/logout/sso/url",
+            getActiveEnvironmentURL: "/api/2/ui/system/active_environment",
+
 
             // Configuration Services
             getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
@@ -4451,6 +4453,23 @@ var nodeOpen = false,
                         }
                         callback.success(results);
                         results = results.result;
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * get Active Environment
+             */
+            getActiveEnvironment: function(callback) {
+                var serviceUrl = this.getActiveEnvironmentURL;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        callback.success(jsonResponse);
                     },
                     failure: function(response) {
                         callback.failure(response);
