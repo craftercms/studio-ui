@@ -33,8 +33,8 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 
         if(window.frameElement){
             var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-			var getFormSizeVal = getFormSize ? getFormSize : parent.getFormSize;
-			var setFormSizeVal = setFormSize ? setFormSize : parent.setFormSize;
+			var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
+			var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
             var formSize = getFormSizeVal(id);
             if(formSize < 320){
 				setFormSizeVal(320, id);
