@@ -383,7 +383,7 @@
                             failure: function (err) {
                                 var message = eval("(" + err.responseText + ")");
                                 if (message.message.indexOf('is in system processing') > 0) {
-                                    ComponentsPanel.save(isNew, zones, compPath, conComp);
+                                    ComponentsPanel.save(isNew, zones, pagePath, conComp);
                                 }
                                 amplify.publish('/operation/failed');
                             }
