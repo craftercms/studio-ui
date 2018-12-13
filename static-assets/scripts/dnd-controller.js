@@ -181,6 +181,25 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
             zIndex: 1030
         });
 
+        function updateDop(self, me, ui){
+            var $dropZone = $(self),
+                $component = ui.item,
+                compPath = $component.attr('data-studio-component-path'),
+                zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
+                orgZoneComp = ui.item.parents('[data-studio-components-target]').parents('[data-studio-component-path]'),
+                destZoneComp = $dropZone.parents('[data-studio-component-path]');
+            if (compPath != zonePath && ((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
+                (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
+                    $dropZone.attr('data-studio-components-objectid') != ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid')) ||
+                (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
+                    orgZoneComp.attr('data-studio-tracking-number') == destZoneComp.attr('data-studio-tracking-number') &&
+                    $dropZone.attr('data-studio-components-objectid') == ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid'))))) {
+                componentDropped.call(me, $dropZone, $component);
+            } else {
+                $(DROPPABLE_SELECTION).sortable("cancel");
+            }
+        }
+
         $(DROPPABLE_SELECTION).sortable({
             me: this,
             items: '[data-studio-component]',
@@ -203,21 +222,11 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
                 ui.item.removeClass('studio-component-over');
             },
             update: function (e, ui) {
-                var $dropZone = $(this),
-                    $component = ui.item,
-                    compPath = $component.attr('data-studio-component-path'),
-                    zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
-                    orgZoneComp = ui.item.parents('[data-studio-components-target]').parents('[data-studio-component-path]'),
-                    destZoneComp = $dropZone.parents('[data-studio-component-path]');
-                if (compPath != zonePath && ((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
-                    (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
-                        $dropZone.attr('data-studio-components-objectid') != ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid')) ||
-                    (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
-                        orgZoneComp.attr('data-studio-tracking-number') == destZoneComp.attr('data-studio-tracking-number') &&
-                        $dropZone.attr('data-studio-components-objectid') == ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid'))))) {
-                    componentDropped.call(me, $dropZone, $component);
-                } else {
-                    $(DROPPABLE_SELECTION).sortable("cancel");
+                var self = this;
+                if(!ui.sender){
+                    updateDop(self, me, ui);
+                }else{
+                    setTimeout(function(){ updateDop(self, me, ui); }, 300);
                 }
 
             }
