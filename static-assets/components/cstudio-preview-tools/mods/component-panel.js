@@ -84,6 +84,7 @@
                                         CStudioForms.Util.loadFormDefinition(contentMap['content-type'], {
                                             success: function (formDefinition) {
                                                 $.extend(contentMap, data.zones ? data.zones : self.zones);
+                                                //console.log(contentMap, data.zones);
                                                 amplify.publish('components/form-def/loaded', {
                                                     contentMap: contentMap,
                                                     pagePath: data.pagePath,
@@ -253,6 +254,12 @@
                     if(previewPath.indexOf("?") > 0){
                         previewPath = previewPath.split("?")[0];
                     }
+                    if(previewPath.indexOf('#') > 0){
+                        previewPath = previewPath.split("#")[0];
+                    }
+                    if(previewPath.indexOf(';') > 0){
+                        previewPath = previewPath.split(";")[0];
+                    }
                     var pagePath = previewPath.replace(".html", ".xml");
                     if (pagePath.indexOf(".xml") == -1) {
                         if (pagePath.substring(pagePath.length - 1) != "/") {
@@ -377,7 +384,7 @@
                             failure: function (err) {
                                 var message = eval("(" + err.responseText + ")");
                                 if (message.message.indexOf('is in system processing') > 0) {
-                                    ComponentsPanel.save(isNew, zones, pagePath, conComp);
+                                    ComponentsPanel.save(isNew, zones, compPath?compPath:pagePath, conComp);
                                 }
                                 amplify.publish('/operation/failed');
                             }
