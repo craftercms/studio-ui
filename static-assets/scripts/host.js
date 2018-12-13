@@ -361,6 +361,13 @@
 
     });
 
+    communicator.subscribe(Topics.LOAD_MODEL_REQUEST, function (message) {
+        amplify.publish(cstopic('LOAD_MODEL_REQUEST'),
+            message.aNotFound
+        );
+
+    });
+
     amplify.subscribe(cstopic('REFRESH_PREVIEW'), function () {
         communicator.publish(Topics.REFRESH_PREVIEW);
     });
