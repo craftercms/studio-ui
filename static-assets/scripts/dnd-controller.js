@@ -24,7 +24,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     var $document   = $(document);
     var $window     = $(window);
     var found = {};
-    var looked = [];
+    var pathSearched = [];
     var currentModel = {};
 
     function DnDController(config) {
@@ -457,16 +457,16 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
         });
 
-        var isLooked = false;
+        var isSearched = false;
         if(aNotFound.length && aNotFound.length > 0){
             if (aNotFound[0].path){
-                for(var i=0; i < looked.length; i++){
-                    if(aNotFound[0].path === looked[i]){
-                        isLooked = true;
+                for(var i=0; i < pathSearched.length; i++){
+                    if(aNotFound[0].path === pathSearched[i]){
+                        isSearched = true;
                     }
                 }
-                if(!isLooked) {
-                    looked.push(aNotFound[0].path);
+                if(!isSearched) {
+                    pathSearched.push(aNotFound[0].path);
                     publish.call(this, Topics.LOAD_MODEL_REQUEST, {
                         aNotFound: aNotFound[0]
                     });
