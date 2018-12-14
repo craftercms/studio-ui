@@ -66,6 +66,7 @@ var nodeOpen = false,
     if (typeof CStudioAuthoring == "undefined" || !CStudioAuthoring) CStudioAuthoring = {
 
         processing: false,
+        compConfProcessing: false,
 
         UIBuildId: window.UIBuildId,
 
@@ -200,6 +201,7 @@ var nodeOpen = false,
             CONFIG_FILES_PATH_ADMIN: '/config',
             IMAGE_VALID_EXTENSIONS: ["jpg", "jpeg", "gif", "png", "tiff", "tif", "bmp", "svg", "JPG", "JPEG", "GIF", "PNG", "TIFF", "TIF", "BMP", "SVG"],
             MAX_INT_VALUE: 2147483647,
+            CACHE_TIME_CONFIGURATION: 900000,
             CACHE_TIME_PERMISSION: 900000,
             CACHE_TIME_GET_CONTENT_ITEM: 0,
             CACHE_TIME_GET_ROLES: 900000 ,

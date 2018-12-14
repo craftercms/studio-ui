@@ -79,12 +79,20 @@
 
                                         return;
 
+                                    case "load-components":
+                                        self.rollbackContentMap = CStudioForms.Util.xmlModelToMap(dom);
+                                        // TODO is it requried to send component model to host > guest?
+                                        // self.linkComponentsToModel(contentMap);
+                                        amplify.publish(cstopic('DND_COMPONENTS_MODEL_LOAD'), contentMap);
+                                        amplify.publish('/operation/completed');
+
+                                        return;
+
                                     case "save-components":
                                     case "save-components-new":
                                         CStudioForms.Util.loadFormDefinition(contentMap['content-type'], {
                                             success: function (formDefinition) {
                                                 $.extend(contentMap, data.zones ? data.zones : self.zones);
-                                                //console.log(contentMap, data.zones);
                                                 amplify.publish('components/form-def/loaded', {
                                                     contentMap: contentMap,
                                                     pagePath: data.pagePath,
@@ -152,6 +160,10 @@
 
                         amplify.subscribe(cstopic('DND_ZONES_MODEL_REQUEST'), function (item) {
                             self.getPageModel(item.path, 'init-components', true, false);
+                        });
+
+                        amplify.subscribe(cstopic('LOAD_MODEL_REQUEST'), function (item) {
+                            self.getPageModel(item.path, 'load-components', true, false);
                         });
 
                         var interval = setInterval(function () {
@@ -396,34 +408,61 @@
                     var self = this,
                         componentPanelElem = document.getElementById('component-panel-elem');
 
-                    CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/components-config.xml', {
-                        failure: CStudioAuthoring.Utils.noop,
-                        success: function (config) {
-                            if(config && config.category){
-                                amplify.publish(cstopic('START_DRAG_AND_DROP'), {
-                                    components: config
-                                });
-                            }else{
-                                var validationDialog = document.getElementById('expandComponentError');
-                                if(YDom.hasClass(componentPanelElem, 'expanded')) {
-                                    YDom.replaceClass(componentPanelElem, 'expanded', 'contracted');
-                                    self.collapse(containerEl, config);
-                                }
-                                if(!validationDialog){
-                                    CStudioAuthoring.Operations.showSimpleDialog(
-                                        "expandComponentError",
-                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                        CMgs.format(formsLangBundle, "notification"),
-                                        CMgs.format(formsLangBundle, "componentCategoriesError"),
-                                        null,
-                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                        "studioDialog expandComponentError"
-                                    );
-                                }
-                            }
+                    var cacheCompConfKey = CStudioAuthoringContext.site+'_cacheCompConfKey_'+CStudioAuthoringContext.user,
+                        compConfCached;
 
+
+                        var serviceCallback = {
+                            failure: CStudioAuthoring.Utils.noop,
+                            success: function (config) {
+
+                                if(!compConfCached){
+                                   cache.set(cacheCompConfKey, config, CStudioAuthoring.Constants.CACHE_TIME_CONFIGURATION);
+                                   CStudioAuthoring.compConfProcessing = false;
+                                }
+
+                                if (config && config.category) {
+                                    amplify.publish(cstopic('START_DRAG_AND_DROP'), {
+                                        components: config
+                                    });
+                                } else {
+                                    var validationDialog = document.getElementById('expandComponentError');
+                                    if (YDom.hasClass(componentPanelElem, 'expanded')) {
+                                        YDom.replaceClass(componentPanelElem, 'expanded', 'contracted');
+                                        self.collapse(containerEl, config);
+                                    }
+                                    if (!validationDialog) {
+                                        CStudioAuthoring.Operations.showSimpleDialog(
+                                            "expandComponentError",
+                                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                            CMgs.format(formsLangBundle, "notification"),
+                                            CMgs.format(formsLangBundle, "componentCategoriesError"),
+                                            null,
+                                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                            "studioDialog expandComponentError"
+                                        );
+                                    }
+                                }
+
+                            }
                         }
-                    });
+
+                    var getInfo = function(){
+                        if (!CStudioAuthoring.compConfProcessing) {
+                            compConfCached = cache.get(cacheCompConfKey);
+
+                            if (compConfCached) {
+                                var results = compConfCached;
+                                serviceCallback.success(results);
+                            } else {
+                                CStudioAuthoring.compConfProcessing = true;
+                                CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/components-config.xml', serviceCallback);
+                            }
+                        }else{
+                            setTimeout(function(){ getInfo(); }, 100);
+                        }
+                    }
+                    getInfo();
                 },
 
                 collapse: function (containerEl, config) {
