@@ -485,7 +485,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     numberPerPage: "Introduzca un número en el elemento de muestra por página.",
     revertError: "Error al revertir.",
     legacyError: "El servidor de formulario heredado ya no es compatible.",
-    contentTypesEmpty: "No hay tipos de contenido disponibles que se pueden crear en la ruta de configuración."
+    contentTypesEmpty: "No hay tipos de contenido disponibles que se pueden crear en la ruta de configuración.",
+    componentCategoriesError: "No hay categorías disponibles que puedan ser creadas."
 
 });
 
@@ -630,6 +631,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     /*Datasources */
     childContent: "Contenido Hijos",
     imageUploadedDesktop: "Imagen Subida Desde El Escritorio",
+    WebDAVUploadImage: "Imagen cargada en el repositorio de WebDav",
+    WebDAVUploadVideo: "Video cargado en el repositorio de WebDav",
+    imageWebDavRepository:"Imagen del repositorio de WebDav",
+    videoWebDavRepository:"Video del repositorio de WebDav",
+    fileWebDavRepository:"Archivo del repositorio de WebDav",
+    fileUploadedWebDavRepository:"Archivo cargado en el repositorio de WebDav",
     DAMImage: "Imagen DAM (Flickr)",
     fileUploadedDesktop: "Archivo Subido Desde El Escritorio",
     flashUploadedDesktop: "Flash Subido Desde El Escritorio",

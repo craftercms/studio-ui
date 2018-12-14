@@ -26,12 +26,15 @@
     <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!.now?string('Mddyyyy')}" ></script>
+    <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script>
         CMgs = CStudioAuthoring.Messages;
         langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
         formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
     </script>
+
+    <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 
 </head>
 

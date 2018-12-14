@@ -164,7 +164,7 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 
                     var configValue = _self.getValue();
                     for(var x = 0; x < _self.inputEl.options.length; x++) {
-                        if(_self.inputEl.options[x].label.toLowerCase() === configValue.toLowerCase()) {
+                        if(_self.inputEl.options[x].value.toLowerCase() === configValue.toLowerCase()) {
                             _self.inputEl.value = configValue; // set value after loading data source
                             _self.validate(_self);
                         }

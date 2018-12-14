@@ -3155,10 +3155,19 @@ a.acn-parent-folder:before {
   background: transparent url("/studio/static-assets/themes/cstudioTheme/images/treeview-loading.gif") no-repeat scroll 0 center;
   font-style: italic; }
 
+.acn-dropdown-menu-inner {
+  min-height: calc(100% - 131px); }
+
 .acn-dropdown-wrapper .acn-dropdown-footer {
   position: relative;
-  text-align: right;
-  width: inherit; }
+  text-align: center;
+  width: inherit;
+  border-top: 1px solid #ccc;
+  margin-top: 28px;
+  height: 103px; }
+
+.acn-dropdown-wrapper .acn-dropdown-footer a {
+  display: inline-block; }
 
 .acn-dropdown-wrapper .acn-dropdown-footer-resize {
   background: url("/studio/static-assets/themes/cstudioTheme/images/icons/icon_strip_vertical.gif") no-repeat right #CDCDCD;
@@ -15083,7 +15092,6 @@ margin-left: -3px; */
 #checkAll-GoLiveQueue {
   padding-left: 23px;
   position: relative;
-  bottom: 3px;
   padding-right: 2px;
   width: 50px; }
 

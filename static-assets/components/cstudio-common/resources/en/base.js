@@ -501,7 +501,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     numberPerPage: "Enter a number in show item per page.",
     revertError: "Revert failed.",
     legacyError: "legacy form server is no longer supported",
-    contentTypesEmpty: "There are no content types available that can be created at the configured path."
+    contentTypesEmpty: "There are no content types available that can be created at the configured path.",
+    componentCategoriesError: "There are no categories available that can be created."
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "en", {
@@ -653,6 +654,12 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     /*Datasources */
     childContent: "Child Content",
     imageUploadedDesktop: "Image Uploaded From Desktop",
+    WebDAVUploadImage: "Image Uploaded to WebDav Repository",
+    WebDAVUploadVideo: "Video Uploaded to WebDav Repository",
+    imageWebDavRepository:"Image From WebDav Repository",
+    videoWebDavRepository:"Video From WebDav Repository",
+    fileWebDavRepository:"File From WebDav Repository",
+    fileUploadedWebDavRepository:"File Uploaded to WebDav Repository",
     DAMImage: "DAM Image Flickr",
     fileUploadedDesktop: "File Uploaded From Desktop",
     flashUploadedDesktop: "Flash Uploaded from Desktop",

@@ -561,8 +561,13 @@
             $scope.langSelected = '';
             $scope.modalInstance = '';
             $scope.authenticated = authService.isAuthenticated();
-            $scope.helpUrl = 'http://docs.craftercms.org/en/3.0/';
+            $scope.helpUrl = 'https://docs.craftercms.org/en/3.0/index.html';
             $scope.isIframeClass = $location.search().iframe ? 'iframe' : '';
+            $rootScope.isFooter = true;
+
+            if($location.$$search.iframe){
+                $rootScope.isFooter = false;
+            }
 
             function logout() {
                 authService.logout();
@@ -1252,11 +1257,12 @@
     ]);
 
     app.controller('LoginCtrl', [
-        '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate',
-        function ($scope, $state, authService, $timeout, $cookies, sitesService, $translate) {
+        '$rootScope', '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate',
+        function ($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate) {
 
             var credentials = {};
             $scope.langSelected = '';
+            $rootScope.isFooter = false;
 
             function login() {
 

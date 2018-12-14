@@ -141,6 +141,14 @@ body .mask.login-dialog-mask{
     z-index:104009!important;
 }
 
+body .mask#expandComponentError_mask{
+    z-index: 103!important;
+}
+
+div[id*="expandComponentError"].yui-dialog {
+    z-index: 104!important;
+}
+
 .yui-dialog .yui-overlay.yui-panel{
   border-radius: 6px;
 }

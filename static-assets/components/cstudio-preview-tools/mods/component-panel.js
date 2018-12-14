@@ -84,6 +84,7 @@
                                         CStudioForms.Util.loadFormDefinition(contentMap['content-type'], {
                                             success: function (formDefinition) {
                                                 $.extend(contentMap, data.zones ? data.zones : self.zones);
+                                                //console.log(contentMap, data.zones);
                                                 amplify.publish('components/form-def/loaded', {
                                                     contentMap: contentMap,
                                                     pagePath: data.pagePath,
@@ -163,7 +164,7 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP) {
 
                     if (isNew) {
                         function isNewEvent(value, modelPath){
@@ -188,7 +189,7 @@
                         }
                         if(isNew == true){
                             CStudioAuthoring.Operations.performSimpleIceEdit({
-                                uri: path,
+                                uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
                                 contentType: type
                             }, null, false, {
                                 failure: CStudioAuthoring.Utils.noop,
@@ -252,6 +253,12 @@
                 getPreviewPagePath: function (previewPath) {
                     if(previewPath.indexOf("?") > 0){
                         previewPath = previewPath.split("?")[0];
+                    }
+                    if(previewPath.indexOf('#') > 0){
+                        previewPath = previewPath.split("#")[0];
+                    }
+                    if(previewPath.indexOf(';') > 0){
+                        previewPath = previewPath.split(";")[0];
                     }
                     var pagePath = previewPath.replace(".html", ".xml");
                     if (pagePath.indexOf(".xml") == -1) {
@@ -377,7 +384,7 @@
                             failure: function (err) {
                                 var message = eval("(" + err.responseText + ")");
                                 if (message.message.indexOf('is in system processing') > 0) {
-                                    ComponentsPanel.save(isNew, zones, compPath, conComp);
+                                    ComponentsPanel.save(isNew, zones, compPath?compPath:pagePath, conComp);
                                 }
                                 amplify.publish('/operation/failed');
                             }
@@ -386,12 +393,35 @@
                 },
 
                 expand: function (containerEl, config) {
+                    var self = this,
+                        componentPanelElem = document.getElementById('component-panel-elem');
+
                     CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/preview-tools/components-config.xml', {
                         failure: CStudioAuthoring.Utils.noop,
                         success: function (config) {
-                            amplify.publish(cstopic('START_DRAG_AND_DROP'), {
-                                components: config
-                            });
+                            if(config && config.category){
+                                amplify.publish(cstopic('START_DRAG_AND_DROP'), {
+                                    components: config
+                                });
+                            }else{
+                                var validationDialog = document.getElementById('expandComponentError');
+                                if(YDom.hasClass(componentPanelElem, 'expanded')) {
+                                    YDom.replaceClass(componentPanelElem, 'expanded', 'contracted');
+                                    self.collapse(containerEl, config);
+                                }
+                                if(!validationDialog){
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "expandComponentError",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        CMgs.format(formsLangBundle, "notification"),
+                                        CMgs.format(formsLangBundle, "componentCategoriesError"),
+                                        null,
+                                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                        "studioDialog expandComponentError"
+                                    );
+                                }
+                            }
+
                         }
                     });
                 },
@@ -1243,6 +1273,7 @@
                                             components: categories,
                                             contentModel: initialContentModel
                                         });
+
                                     });
                                 }
                             });

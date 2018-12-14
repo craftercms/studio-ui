@@ -36,31 +36,37 @@ CStudioForms.Controls.RTE.ImageInsert = CStudioForms.Controls.RTE.ImageInsert ||
                         ed.addCommand('mceInsertManagedImage', function(param, datasource) {
                             var CMgs = CStudioAuthoring.Messages;
                             var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-                            var actualCaretPositionBookmark = ed.selection.getBookmark();
-                        	if(datasource) {
-                        		if(datasource.insertImageAction) {
-	                        		datasource.insertImageAction({
-	                        			success: function(imageData) {
-                                            var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
-
+                            
+                            if(datasource) {
+                                if(datasource.insertImageAction) {
+                                    datasource.insertImageAction({
+                                        success: function(imageData) {
+                                            var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
+                                            var actualCaretPositionBookmark = { id: ed.id };
+                            
                                             ed.selection.moveToBookmark(actualCaretPositionBookmark);
 
-                                            CStudioAuthoring.Service.contentExists(imageData.relativeUrl, {
-                                                exists: function(result) {
-                                                    if(result) {
-                                                        ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
-                                                        ed.contextControl.save();
-                                                    }else {
-                                                        setTimeout(function(){
+                                            if(!(cleanUrl.indexOf("?crafterCMIS=true") !== -1 || cleanUrl.indexOf('http')  !== -1 || cleanUrl.indexOf('remote-assets')  !== -1)) {
+                                                CStudioAuthoring.Service.contentExists(imageData.relativeUrl, {
+                                                    exists: function (result) {
+                                                        if (result) {
                                                             ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
                                                             ed.contextControl.save();
-                                                        },500);
+                                                        } else {
+                                                            setTimeout(function () {
+                                                                ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
+                                                                ed.contextControl.save();
+                                                            }, 500);
+                                                        }
+                                                    },
+                                                    failure: function (message) {
+                                                        console.log(message);
                                                     }
-                                                },
-                                                failure: function(message) {
-                                                    console.log(message);
-                                                }
-                                            });
+                                                });
+                                            }else{
+                                                ed.execCommand('mceInsertContent', true, '<img src="' + cleanUrl + '" />');
+                                                ed.contextControl.save();
+                                            }
 
 	                        			},
 	                        			failure: function(message) {

@@ -104,9 +104,9 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function disableDnD() {
 
-        var ptoOn = !!(sessionStorage.getItem('pto-on'));
+        var ptoOn = !!(window.parent.sessionStorage.getItem('pto-on'));
         if(ptoOn) {
-            sessionStorage.setItem('components-on', '');
+            window.parent.sessionStorage.setItem('components-on', '');
         }
 
         if (!this.active()) return;
@@ -132,8 +132,8 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     function done() {
         amplify.publish(Topics.ICE_TOOLS_OFF);
         this.stop();
-        var iceOn = !!(sessionStorage.getItem('ice-on')),
-            ptoOn = !!(sessionStorage.getItem('pto-on'));
+        var iceOn = !!(window.parent.sessionStorage.getItem('ice-on')),
+            ptoOn = !!(window.parent.sessionStorage.getItem('pto-on'));
         if(ptoOn) {
             publish.call(this, Topics.STOP_DRAG_AND_DROP);
         }
@@ -144,7 +144,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function enableDnD(components, initialComponentModel, browse) {
         amplify.publish(Topics.ICE_TOOLS_OFF);
-        sessionStorage.setItem('components-on', 'true');
+        window.parent.sessionStorage.setItem('components-on', 'true');
         publish.call(this, Topics.ICE_CHANGE_PENCIL_OFF);
         currentModel = initialComponentModel;
 
@@ -178,6 +178,25 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
             zIndex: 1030
         });
 
+        function updateDop(self, me, ui){
+            var $dropZone = $(self),
+                $component = ui.item,
+                compPath = $component.attr('data-studio-component-path'),
+                zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
+                orgZoneComp = ui.item.parents('[data-studio-components-target]').parents('[data-studio-component-path]'),
+                destZoneComp = $dropZone.parents('[data-studio-component-path]');
+            if (compPath != zonePath && ((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
+                (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
+                    $dropZone.attr('data-studio-components-objectid') != ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid')) ||
+                (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
+                    orgZoneComp.attr('data-studio-tracking-number') == destZoneComp.attr('data-studio-tracking-number') &&
+                    $dropZone.attr('data-studio-components-objectid') == ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid'))))) {
+                componentDropped.call(me, $dropZone, $component);
+            } else {
+                $(DROPPABLE_SELECTION).sortable("cancel");
+            }
+        }
+
         $(DROPPABLE_SELECTION).sortable({
             me: this,
             items: '[data-studio-component]',
@@ -200,21 +219,11 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
                 ui.item.removeClass('studio-component-over');
             },
             update: function (e, ui) {
-                var $dropZone = $(this),
-                    $component = ui.item,
-                    compPath = $component.attr('data-studio-component-path'),
-                    zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
-                    orgZoneComp = ui.item.parents('[data-studio-components-target]').parents('[data-studio-component-path]'),
-                    destZoneComp = $dropZone.parents('[data-studio-component-path]');
-                if (compPath != zonePath && ((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
-                    (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
-                        $dropZone.attr('data-studio-components-objectid') != ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid')) ||
-                    (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
-                        orgZoneComp.attr('data-studio-tracking-number') == destZoneComp.attr('data-studio-tracking-number') &&
-                        $dropZone.attr('data-studio-components-objectid') == ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid'))))) {
-                    componentDropped.call(me, $dropZone, $component);
-                } else {
-                    $(DROPPABLE_SELECTION).sortable("cancel");
+                var self = this;
+                if(!ui.sender){
+                    updateDop(self, me, ui);
+                }else{
+                    setTimeout(function(){ updateDop(self, me, ui); }, 300);
                 }
 
             }
@@ -297,7 +306,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     function componentDropped($dropZone, $component) {
 
-        var iceOn = !!(sessionStorage.getItem('ice-on'));
+        var iceOn = !!(window.parent.sessionStorage.getItem('ice-on'));
         var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
         var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
         var objectId = $dropZone.attr('data-studio-components-objectid');
@@ -487,14 +496,16 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
             html.push('<sdiv class="studio-category">');
             html.push('<sh2 class="studio-category-name studio-category-name-collapse">'+category.label+'</sh2>');
             html.push('<sul>');
-            if(category.components.length){
-                $.each(category.components, function (j, component) {
+            if(category.components){
+                if(category.components.length){
+                    $.each(category.components, function (j, component) {
+                        html.push(crafter.String(COMPONENT_TPL)
+                            .fmt(component.path, component.type, component.label));
+                    });
+                }else{
                     html.push(crafter.String(COMPONENT_TPL)
-                        .fmt(component.path, component.type, component.label));
-                });
-            }else{
-                html.push(crafter.String(COMPONENT_TPL)
-                    .fmt(category.components.path, category.components.type, category.components.label));
+                        .fmt(category.components.path, category.components.type, category.components.label));
+                }
             }
             html.push('</sul>');
             html.push('</sdiv>');
