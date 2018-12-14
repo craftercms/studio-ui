@@ -24,6 +24,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     var $document   = $(document);
     var $window     = $(window);
     var found = {};
+    var pathSearched = [];
     var currentModel = {};
 
     function DnDController(config) {
@@ -456,11 +457,20 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
         });
 
+        var isSearched = false;
         if(aNotFound.length && aNotFound.length > 0){
             if (aNotFound[0].path){
-                publish.call(this, Topics.DND_ZONES_MODEL_REQUEST, {
-                    aNotFound: aNotFound[0]
-                });
+                for(var i=0; i < pathSearched.length; i++){
+                    if(aNotFound[0].path === pathSearched[i]){
+                        isSearched = true;
+                    }
+                }
+                if(!isSearched) {
+                    pathSearched.push(aNotFound[0].path);
+                    publish.call(this, Topics.LOAD_MODEL_REQUEST, {
+                        aNotFound: aNotFound[0]
+                    });
+                }
             }else{
                 publish.call(me, Topics.START_DIALOG, {
                     message: 'Model is incomplete. Drag and Drop is not going to work properly.'
