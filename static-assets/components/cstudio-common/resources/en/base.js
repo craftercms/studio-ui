@@ -713,6 +713,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     showSelectAll: 'Show "Select All"',
     allowEmptyValue: "Allow Empty Value",
     thumbnailWidth: "Thumbnail Width",
+    thumbnailHeight: "Thumbnail Height",
     displaySize: "Display Size",
     text: "Text",
     minSize: "Min Size",
