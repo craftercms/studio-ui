@@ -4,15 +4,15 @@ function(id, form, properties, constraints)  {
    	this.form = form;
    	this.properties = properties;
    	this.constraints = constraints;
-   	
-   	for(var i=0; i<properties.length; i++) {
+
+    for(var i = 0; i < properties.length; i++) {
         if(properties[i].name == "repoPath") {
             this.repoPath = properties[i].value;
         }
-		if(properties[i].name === "profileId") {
-			this.profileId = properties[i].value;
-		}
-   	} 
+        if(properties[i].name === "profileId") {
+            this.profileId = properties[i].value;
+        }
+    }
 	
 	return this;
 }
@@ -82,12 +82,12 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
 		return "video-S3-upload";
 	},
 
-	getSupportedProperties: function() {
-		return [
+    getSupportedProperties: function () {
+        return [
             { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
             { label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" }
-		];
-	},
+        ];
+    },
 
 	getSupportedConstraints: function() {
 		return [
