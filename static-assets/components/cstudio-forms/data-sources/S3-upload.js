@@ -6,6 +6,9 @@ function(id, form, properties, constraints)  {
    	this.constraints = constraints;
    	
    	for(var i=0; i<properties.length; i++) {
+        if(properties[i].name == "repoPath") {
+            this.repoPath = properties[i].value;
+        }
 		if(properties[i].name === "profileId") {
 			this.profileId = properties[i].value;
 		}
@@ -31,8 +34,17 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
 		this._self = this,
 			me = this;
 
+        var path = this._self.repoPath;
 		var site = CStudioAuthoringContext.site;
 		var isUploadOverwrite = true;
+
+        for(var i=0; i<this.properties.length; i++) {
+            if(this.properties[i].name == "repoPath") {
+                path = this.properties[i].value;
+
+                path = this.processPathsForMacros(path);
+            }
+        }
 
 		var callback = {
 			success: function(fileData) {
@@ -96,10 +108,10 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
 			YAHOO.util.Event.on(createEl, 'click', function() {
 				control.addContainerEl = null;
 				control.containerEl.removeChild(addContainerEl);
-				CStudioAuthoring.Operations.uploadS3Asset(site, me.profileId, callback);
+				CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback);
 			}, createEl);
 		}else{
-			CStudioAuthoring.Operations.uploadS3Asset(site, me.profileId, callback);
+			CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback);
 		}
 	},
 
@@ -117,6 +129,7 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
 
 	getSupportedProperties: function() {
 		return [
+            { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
 			{ label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" },
 		];
 	},

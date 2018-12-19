@@ -17,13 +17,14 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 	/**
 	 * show dialog
 	 */
-	showDialog: function(site, profileId, serviceUri, callback) {
+	showDialog: function(site, path, profileId, serviceUri, callback) {
         this._self = this;
         console.log('dialog');
 
-		this.dialog = this.createDialog(site, profileId, serviceUri);
+		this.dialog = this.createDialog(path, site, profileId, serviceUri);
 
 		this.site = site;
+        this.path = path;
         this.profile = profileId;
 		this.asPopup = true;			
 		this.serviceUri = serviceUri;
@@ -53,7 +54,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     /**
 	 * create dialog
 	 */
-	createDialog: function(site, profileId, serviceUri) {
+	createDialog: function(path, site, profileId, serviceUri) {
 		var me = this;
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
@@ -64,7 +65,6 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 		}
 
 		var divIdName = "cstudio-wcm-popup-div";
-        var path ='test';
 		newdiv.setAttribute("id",divIdName);
 		newdiv.className= "yui-pe-content";
         newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
@@ -74,7 +74,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
                                 '<div class="contentTypeOuter">'+
                                     '<div class="formDesc">Please select a file to upload</div> ' +
                                     '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
-                                     /*'<td><input type="hidden" name="path" value="' + path + '"/></td></tr>' +*/
+                                    '<td><input type="hidden" name="path" value="' + path + '"/></td></tr>' +
                                     '<td><input type="hidden" name="profileId" value="' + profileId + '"/></td></tr>' +
 						            '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
 						            '</table></div>' +
@@ -153,7 +153,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
             filename = filename.split("\\")[filename.split("\\").length-1];
         }
 		var basePath = path;
-            path=filename;
+            path= basePath ? basePath+"/"+filename : filename;
             
         CStudioAuthoring.Dialogs.UploadS3Dialog.uploadFile(args);
 

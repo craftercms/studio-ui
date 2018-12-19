@@ -1403,7 +1403,7 @@ var nodeOpen = false,
             /**
              * open a browse page for S3 repo
              */
-            openS3Browse: function(profileId, path,  mode, newWindow, callback, filter = 'none') {
+            openS3Browse: function(profileId, path, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
 
@@ -2891,14 +2891,14 @@ var nodeOpen = false,
                 CStudioAuthoring.Module.requireModule("upload-webdav-dialog", "/static-assets/components/cstudio-dialogs/uploadWebDAV-dialog.js", moduleConfig, openUploadDialogCb);
             },
 
-            uploadS3Asset: function(site, profileId, uploadCb) {
-                CStudioAuthoring.Operations.openS3UploadDialog(site, profileId, uploadCb);
+            uploadS3Asset: function(site, path, profileId, uploadCb) {
+                CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb);
             },
 
             /**
              *  opens a dialog to upload an asset
              */
-            openS3UploadDialog: function(site, profileId, callback) {
+            openS3UploadDialog: function(site, path, profileId, callback) {
 
                 var serviceUri = CStudioAuthoring.Service.writeS3ContentUri;
 
@@ -2906,6 +2906,7 @@ var nodeOpen = false,
                     moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
                         dialogClass.showDialog(
                             moduleConfig.site,
+                            moduleConfig.path,
                             moduleConfig.profile,
                             moduleConfig.serviceUri,
                             moduleConfig.callback);
@@ -2913,6 +2914,7 @@ var nodeOpen = false,
                 };
 
                 var moduleConfig = {
+                    path: path ? encodeURI(path) : '',
                     site: site,
                     profile: profileId,
                     serviceUri: serviceUri,
