@@ -31,6 +31,7 @@
           href="/studio/static-assets/yui/assets/skins/sam/calendar.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
     <link rel="stylesheet" type="text/css"
           href="/studio/static-assets/themes/cstudioTheme/css/search.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
+    <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <!-- filter templates -->
     <script type="text/javascript"
