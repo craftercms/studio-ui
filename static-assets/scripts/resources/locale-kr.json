@@ -35,6 +35,7 @@
       "REMOVE_SITE_CONFIRMATION_MSG": "제거 하시겠습니까 ",
       "TOGGLE_NAV": "내비게이션 토글",
       "ACCOUNT": "계정",
+      "SITE_ERROR" : "잘못된 사이트입니다",
       "SITES_PER_PAGE": "페이지 당 사이트",
 
       "create": {
@@ -55,6 +56,7 @@
         "PUSH": "청사진을 기반으로 사이트를 만든 다음 원격 베어 리치 저장소로 이동",
         "BLUEPRINT": "청사진",
         "CREATING_SITE": "사이트 만들기",
+        "CREATE_ERROR": "사이트를 만들 수 없습니다. 시스템 관리자에게 문의하십시오",
         "SITE_ID_VALIDATION": "(최대 길이 : 소문자, 숫자, 대시 (-) 및 밑줄 (_)로 구성된 50 자.)",
         "LENGTH_VALIDATION_4000": "(최대 길이 : 4000 자)",
         "BRANCH_DEFAULTS": "(비어있을 때 브랜치는 기본적으로 마스터가됩니다)",
@@ -185,6 +187,7 @@
       "repositories": {
           "REPOSITORIES": "저장소",
           "NEW_REPOSITORY":"새 저장소",
+          "REPOSITORIES_PER_PAGE": "페이지 당 저장소",
           "NAME": "이름",
           "URL": "URL",
           "FETCH": "술책",
