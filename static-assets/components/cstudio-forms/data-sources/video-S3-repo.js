@@ -63,7 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Repo, CStudioForms.CStudioFormDatas
         return [
             { label: CMgs.format(langBundle, "repositoryPath"), name: "path", type: "string" },
             { label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" }
-        ];s
+        ];
     },
 
     getSupportedConstraints: function() {
