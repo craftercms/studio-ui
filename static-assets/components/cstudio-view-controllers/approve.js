@@ -11,7 +11,9 @@
         Event = YAHOO.util.Event,
         agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(CStudioAuthoring.TemplateHolder.Approve),
         each = CStudioAuthoring.Utils.each;
-        $ = jQuery;
+        $ = jQuery,
+        isItemsLoaded = false,
+        isChannelsLoaded = false;
 
     Base.extend('Approve', {
 
@@ -45,6 +47,9 @@
 
     function closeButtonClicked() {
         this.end();
+        isItemsLoaded = false
+        isChannelsLoaded = false;
+
     }
 
     function itemsClickedDelegation() {
@@ -128,6 +133,9 @@
 
         CStudioAuthoring.Service.getGoLive(callback, data);
 
+        isItemsLoaded = false
+        isChannelsLoaded = false;
+
     }
 
     function loadItems(data) {
@@ -140,7 +148,11 @@
         // loadSpinner.classList.add("hidden");
         me.submitItems = items;
         me.renderItems(items);
-        $("#approveSubmit").prop('disabled', false);
+        isItemsLoaded = true;
+        if(isItemsLoaded && isChannelsLoaded){
+            $("#approveSubmit").prop('disabled', false);
+        }
+
         verifyMixedSchedules(items);
     }
 
@@ -203,6 +215,10 @@
                     var allChannels = eval("(" + respJson + ")");
                     var channels = allChannels.availablePublishChannels;
                     populatePublishingOptions.call(me, channels);
+                    isChannelsLoaded = true;
+                    if(isItemsLoaded && isChannelsLoaded){
+                        $("#approveSubmit").prop('disabled', false);
+                    }
                 },
                 failure: function (oResponse) {
 
