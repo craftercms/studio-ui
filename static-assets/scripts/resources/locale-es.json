@@ -35,6 +35,7 @@
       "REMOVE_SITE_CONFIRMATION_MSG": "Quiere eliminar ",
       "TOGGLE_NAV": "Toggle navigation",
       "ACCOUNT": "Cuenta",
+      "SITE_ERROR" : "es un sitio inválido",
       "SITES_PER_PAGE": "Sitios por página",
 
       "create": {
@@ -55,6 +56,7 @@
         "PUSH": "Crea un sitio basado en una plantilla y luego subirlo en el repositorio remoto de GIT",
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Creando Sitio",
+        "CREATE_ERROR": "No se puede crear el sitio. Por favor, póngase en contacto con el administrador del sistema.",
         "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, que consta de: letras minúsculas, números, guión (-) y guión bajo (_) )",
         "LENGTH_VALIDATION_4000": "(Longitud máxima: 4000 caracteres)",
         "BRANCH_DEFAULTS": "(El branch por defecto es 'master' si el espacio esta en blanco)",
@@ -185,6 +187,7 @@
       "repositories": {
           "REPOSITORIES": "Repositorios",
           "NEW_REPOSITORY":"Repositorios Nuevos",
+          "REPOSITORIES_PER_PAGE": "Repositorios por página",
           "NAME": "Nombre",
           "URL": "URL",
           "FETCH": "Recuperar",
