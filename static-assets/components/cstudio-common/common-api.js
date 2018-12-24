@@ -2439,7 +2439,9 @@ var nodeOpen = false,
                                     CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
                                 }
             
-                                CStudioAuthoring.Operations.refreshPreview(newTo);
+                                if(newTo) {
+                                    CStudioAuthoring.Operations.refreshPreview(newTo);
+                                }
                                 
                                 eventYS.data = to;
                                 eventYS.typeAction = "";
@@ -2458,6 +2460,9 @@ var nodeOpen = false,
             
                                                 var pasteCb = {
                                                     success: function(pasteResponse) {
+
+                                                        var filePath = pasteResponse.status[0];
+                                                        var extension = filePath.split('.')[filePath.split('.').length - 1];
             
                                                         var editCb = {
                                                             success: function(newItem) {
@@ -2472,16 +2477,20 @@ var nodeOpen = false,
                                                                 refreshFn(parentItemTo.item, null);
                                                             },
                                                         };
-                             
-                                                        CStudioAuthoring.Operations.editContent(
-                                                            contentTO.contentType,
-                                                            CStudioAuthoringContext.site,
-                                                            pasteResponse.status[0], 
-                                                            "", 
-                                                            pasteResponse.status[0], 
-                                                            false,
-                                                            editCb,
-                                                            new Array());
+
+                                                        if (CStudioAuthoring.Constants.IMAGE_VALID_EXTENSIONS.indexOf(extension) != -1) {
+                                                            refreshFn(parentItemTo.item, null);
+                                                        } else {
+                                                            CStudioAuthoring.Operations.editContent(
+                                                                contentTO.contentType,
+                                                                CStudioAuthoringContext.site,
+                                                                filePath,
+                                                                "",
+                                                                filePath,
+                                                                false,
+                                                                editCb,
+                                                                new Array());
+                                                        }
                                                     },
                                                     failure: function(errorResponse) {
                                                         opCallBack.failure(errorResponse);
