@@ -1314,10 +1314,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
                     }
 
-                    this.aMenuItems.push({
-                        text: CMgs.format(siteDropdownLangBundle, "history"),
-                        onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.revertContent, obj:tree}
-                    });
+                    if (!this.isContainer) {
+                        this.aMenuItems.push({
+                            text: CMgs.format(siteDropdownLangBundle, "history"),
+                            onclick: { fn: CStudioAuthoring.ContextualNav.WcmAssetsFolder.revertContent, obj: tree}
+                        });
+                    }
 
                     this.aMenuItems.push({
                         text: CMgs.format(siteDropdownLangBundle, "wcmContentDependencies"),

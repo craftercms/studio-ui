@@ -2464,7 +2464,7 @@
                                             dependenciesAllowed();
                                         }
 
-			                            if(isUserAllowed) {
+			                            if(isUserAllowed && !isFolder) {
 			                            	this.args.addItems([ menuItems.separator ]);
 			                            	this.args.addItems([ menuItems.revertOption ]);
 		                   	            }
