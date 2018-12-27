@@ -20,7 +20,7 @@
             <div ng-if="authenticated" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li ui-sref-active="active">
-                        <a id="homeSites" class="nav-link" ui-sref="home.globalMenu" ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
+                        <a id="homeSites" class="nav-link" ng-click='loadHomeState()' ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
                             <span class="nav-icon fa fa-bars"></span>
                             <span class="nav-label">{{ 'common.MAIN_MENU' | translate }}</span>
                         </a>
