@@ -6133,6 +6133,8 @@ table td {
   table td .user-image {
     width: 50px;
     height: 50px; }
+  table td.break {
+    word-break: break-all; }
 
 @media (min-width: 768px) {
   #admin-sidebar {
