@@ -20,6 +20,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "en", {
     dashletGoLiveHideInProgress: "Hide \"In-Progress\" Items",
     dashletGoLiveColPageName: "Item Name",
     dashletGoLiveColEdit: "Edit",
+    dashletGoLiveColView: "View",
     dashletGoLiveColURL: "URL",
     dashletGoLiveColEnvironment: "Environment",
     dashletGoLiveColPublishDate: "Publish Date",
