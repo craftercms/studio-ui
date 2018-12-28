@@ -720,7 +720,7 @@ CStudioAuthoring.Module.requireModule(
 				var divPropertiesEl = document.createElement("div");
 				YDom.addClass(divPropertiesEl, "content-form-link");
 				var linkPropertiesEl = document.createElement("a");
-				linkPropertiesEl.innerHTML = "Basic Content Type Properties";
+				linkPropertiesEl.innerHTML = CMgs.format(langBundle, "basicContentTypeProp");
 				divPropertiesEl.appendChild(linkPropertiesEl);
 				formVisualContainerEl.appendChild(divPropertiesEl);
 
