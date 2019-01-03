@@ -3009,7 +3009,7 @@ li.list2 {
 
 
 .contentTypePopupBtn .ok, .contentTypePopupBtn .cancel{
-  width: 72px; }
+  min-width: 72px; }
 
 /* yui calendar/datepicker global styles*/
 
