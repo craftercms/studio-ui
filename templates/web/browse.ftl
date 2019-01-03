@@ -31,6 +31,7 @@
     <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script>
         var CMgs = CStudioAuthoring.Messages,

@@ -11,6 +11,7 @@
     <script src="${path}en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="${path}kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="${path}es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <#assign path="/studio/static-assets/components/cstudio-dashboard-widgets/" />
     <script src="${path}lib/wcm-dashboardwidget-common.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>

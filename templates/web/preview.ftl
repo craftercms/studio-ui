@@ -8,6 +8,8 @@
     <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/components/cstudio-common/resources/de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
     <script>CStudioAuthoringContext.isPreview = true</script>
     <#include "/templates/web/common/page-fragments/context-nav.ftl" />
