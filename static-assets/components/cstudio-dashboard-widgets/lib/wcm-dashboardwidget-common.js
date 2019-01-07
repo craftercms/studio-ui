@@ -503,7 +503,7 @@ WcmDashboardWidgetCommon.init = function (instance) {
                             var searchNumber = searchLimitInput.value;
 
                             //added to protect non numeric input.
-                            if (event.keyCode == "13") {
+                            if (event.keyCode == "13" || event.type === "blur") {
                                 if (!isInt(searchNumber)) { //execute the ajax only if its a number
                                     searchLimitInput.value = instance.defaultSearchNumber;
                                     searchNumber = searchLimitInput.value;
@@ -538,6 +538,8 @@ WcmDashboardWidgetCommon.init = function (instance) {
                             //insert default value if invalid
                             if (!isInt(searchNum)) {
                                 searchLimitInput.value = instance.defaultSearchNumber;
+                            }else{
+                                searchLimitInputEvent(event);
                             }
                         };
 
