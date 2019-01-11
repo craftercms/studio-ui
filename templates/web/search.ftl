@@ -26,6 +26,7 @@
     <title>Crafter Studio</title>
 
 
+<script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
 <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 <#include "/templates/web/common/page-fragments/head.ftl" />
 
@@ -57,26 +58,10 @@
             src="/studio/static-assets/components/cstudio-search/filters/common.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script type="text/javascript"
             src="/studio/static-assets/components/cstudio-search/filters/default.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/filters/javascript.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/filters/css.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/filters/image.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/filters/xhtml.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/filters/flash.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/filters/content-type.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <!-- result templates -->
     <script type="text/javascript"
             src="/studio/static-assets/components/cstudio-search/results/default.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/results/image.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript"
-            src="/studio/static-assets/components/cstudio-search/results/flash.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <link href="/studio/static-assets/themes/cstudioTheme/css/icons.css?version=${UIBuildId!.now?string('Mddyyyy')}"
           type="text/css" rel="stylesheet">
     <link href="/studio/static-assets/yui/container/assets/container.css?version=${UIBuildId!.now?string('Mddyyyy')}"
