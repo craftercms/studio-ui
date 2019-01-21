@@ -84,7 +84,8 @@ YAHOO.extend(CStudioForms.Datasources.VideoCMISRepo, CStudioForms.CStudioFormDat
                     var videoData = {
                         previewUrl: previewUrl,
                         relativeUrl: relativeUrl,
-                        fileExtension: fileExtension
+                        fileExtension: fileExtension,
+                        remote : true
                     };
 
                     callback.success(videoData);

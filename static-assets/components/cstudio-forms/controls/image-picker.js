@@ -66,7 +66,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         }
 
         obj.owner.notifyValidation();
-        obj.form.updateModel(obj.id, obj.getValue());
+        obj.form.updateModel(obj.id, obj.getValue(), obj.remote);
     },
 
     _onChangeVal: function(evt, obj) {
@@ -182,6 +182,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         imagePicker.previewEl.src = imageData.previewUrl.replace(/ /g, "%20")+ "?" +new Date().getTime();
         imagePicker.urlEl.innerHTML = imageData.relativeUrl.replace("?crafterCMIS=true","");
         imagePicker.downloadEl.href = imageData.previewUrl;
+        imagePicker.remote = imageData.remote && imageData.remote === true ? true : false;
 
         imagePicker.addEl.value = "Replace";
 
@@ -407,6 +408,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             this.previewEl.src = "";
             this.noPreviewEl.style.display = "inline";
             this.addEl.value = CMgs.format(langBundle, "add");
+            this.remote = false;
 
             this.downloadEl.style.display = "none";
             this.zoomEl.style.display = "none";
@@ -733,9 +735,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         }
     },
 
-    setValue: function(value) {
+    setValue: function(value, attribute) {
         var _self = this;
         this.value = value;
+        this.remote = attribute == true ? true : false;
         this.inputEl.value = value;
 
         var CMgs = CStudioAuthoring.Messages;

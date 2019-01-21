@@ -50,7 +50,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebS3Repo, CStudioForms.CStudioFormData
                     var imageData = {
                         previewUrl : uri,
                         relativeUrl : uri,
-                        fileExtension : fileExtension
+                        fileExtension : fileExtension,
+                        remote : true
                     };
 
                     insertCb.success(imageData, true);

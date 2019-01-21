@@ -64,7 +64,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         if(obj.videoData){
             obj.form.updateModel(obj.id, obj.videoData);
         }else{
-            obj.form.updateModel(obj.id, obj.getValue());
+            obj.form.updateModel(obj.id, obj.getValue(), obj.remote);
         }
     },
 
@@ -259,6 +259,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
                             this.videoPicker.previewEl.setAttribute("controls", "true");
                             this.videoPicker.urlEl.innerHTML = videoData.relativeUrl.replace("?crafterCMIS=true","");
                             this.videoPicker.downloadEl.href = videoData.previewUrl;
+                            this.videoPicker.remote = videoData.remote && videoData.remote === true ? true : false;
 
                             this.videoPicker.addEl.value = CMgs.format(langBundle, "replace");
 
@@ -297,6 +298,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
             this.previewEl.style.display = "none";
             this.noPreviewEl.style.display = "inline";
             this.addEl.value = CMgs.format(langBundle, "add");
+            this.remote = false;
 
             this.downloadEl.style.display = "none";
             this.zoomEl.style.display = "none";
@@ -485,12 +487,13 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
         return this.value;
     },
 
-    setValue: function(value) {
+    setValue: function(value, attribute) {
         var CMgs = CStudioAuthoring.Messages;
         var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
         this.value = value;
         this.inputEl.value = value;
+        this.remote = attribute == true ? true : false;
 
         this.external = value.indexOf("?crafterCMIS=true") !== -1 || value.indexOf('http') <= 0;
 
