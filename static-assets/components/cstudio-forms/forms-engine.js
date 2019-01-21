@@ -2394,12 +2394,12 @@ var CStudioForms = CStudioForms || function() {
              */
             initAttributeObject: function(contentDom, attribute){
                 var children = (contentDom.children) ? contentDom.children : contentDom.childNodes;
-
+                var child, attributes;
                 for(var i=0; i<children.length; i++) {
                     try {
-                        var child = children[i];
+                        child = children[i];
                         if(child.nodeName != "#text") {
-                            var attributes = child.attributes;
+                            attributes = child.attributes;
                             for(var j=0; j<attributes.length; j++) {
                                 if(child.attributes[j].nodeName == attribute){
                                     CStudioRemote[child.nodeName] = true;
