@@ -2403,12 +2403,12 @@ var CStudioForms = CStudioForms || function() {
                             for(var j=0; j<attributes.length; j++) {
                                 if(child.attributes[j].nodeName == attribute){
                                     CStudioRemote[child.nodeName] = true;
-                                }else{
                                 }
                             }
                         }
                     }
                     catch(err) {
+                        console.log(err);
                     }
                 }
             },
