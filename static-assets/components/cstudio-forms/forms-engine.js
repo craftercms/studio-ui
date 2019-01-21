@@ -17,6 +17,7 @@
 
 var openerChildformMgr;
 var parentWindowLocation;
+var CStudioRemote = {};
 
 try {
     if(window.opener) {
@@ -614,7 +615,7 @@ var CStudioForms = CStudioForms || function() {
                 return value;
             },
 
-            updateModel: function(id, value) {
+            updateModel: function(id, value, remote) {
                 if(id.indexOf("|") != -1) {
                     var parts = id.split("|");
                     var repeatGroup = parts[0];
@@ -630,6 +631,14 @@ var CStudioForms = CStudioForms || function() {
                 }
                 else {
                     this.model[id] = value;
+                }
+
+                if(remote){
+                    CStudioRemote[id] = remote;
+                }else{
+                    if(CStudioRemote[id]){
+                        delete CStudioRemote[id];
+                    }
                 }
 
                 CStudioForms.updatedModel = this.model;
@@ -878,6 +887,7 @@ var CStudioForms = CStudioForms || function() {
 
                 var contentDom = content;
                 var contentMap = CStudioForms.Util.xmlModelToMap(contentDom);
+                CStudioForms.Util.initAttributeObject(contentDom, "remote");
 
                 var customController = null;
 
@@ -1970,7 +1980,7 @@ var CStudioForms = CStudioForms || function() {
                             }
 
                             if(value) {
-                                formField.setValue(value);
+                                formField.setValue(value, CStudioRemote[formField.id]);
                             }
                             else {
                                 formField.setValue("");
@@ -2380,6 +2390,30 @@ var CStudioForms = CStudioForms || function() {
             },
 
             /**
+             * Initialize Attribute Object
+             */
+            initAttributeObject: function(contentDom, attribute){
+                var children = (contentDom.children) ? contentDom.children : contentDom.childNodes;
+                var child, attributes;
+                for(var i=0; i<children.length; i++) {
+                    try {
+                        child = children[i];
+                        if(child.nodeName != "#text") {
+                            attributes = child.attributes;
+                            for(var j=0; j<attributes.length; j++) {
+                                if(child.attributes[j].nodeName == attribute){
+                                    CStudioRemote[child.nodeName] = true;
+                                }
+                            }
+                        }
+                    }
+                    catch(err) {
+                        console.log(err);
+                    }
+                }
+            },
+
+            /**
              * take an xml content item and turn it in to a property map
              */
             xmlModelToMap: function(dom) {
@@ -2580,6 +2614,9 @@ var CStudioForms = CStudioForms || function() {
                         }
                         if(fieldList && fieldList.list == true) {
                             attributes += " item-list=\"true\" ";
+                        }
+                        if(CStudioRemote[key]){
+                            attributes += " remote=\"true\" ";
                         }
                     }
                     catch(err) {

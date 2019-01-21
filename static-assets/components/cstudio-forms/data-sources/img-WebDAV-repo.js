@@ -62,7 +62,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVRepo, CStudioForms.CStudioFormDat
                         var imageData = {
                             previewUrl : uri,
                             relativeUrl : uri,
-                            fileExtension : fileExtension
+                            fileExtension : fileExtension,
+                            remote : true
                         };
 
                         insertCb.success(imageData, true);

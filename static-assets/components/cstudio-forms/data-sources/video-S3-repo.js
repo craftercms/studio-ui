@@ -50,7 +50,8 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Repo, CStudioForms.CStudioFormDatas
                     var videoData = {
                         previewUrl : uri,
                         relativeUrl : uri,
-                        fileExtension : fileExtension
+                        fileExtension : fileExtension,
+                        remote : true
                     };
 
                     insertCb.success(videoData);

@@ -86,7 +86,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISRepo, CStudioForms.CStudioFormDatas
                         var imageData = {
                             previewUrl : uri,
                             relativeUrl : uri,
-                            fileExtension : fileExtension
+                            fileExtension : fileExtension,
+                            remote : true
                         };
 
                         insertCb.success(imageData, true);

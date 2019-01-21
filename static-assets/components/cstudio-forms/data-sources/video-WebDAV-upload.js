@@ -70,7 +70,8 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVUpload, CStudioForms.CStudioFor
                 var videoData = {
                     previewUrl : uri,
                     relativeUrl : uri,
-                    fileExtension : fileExtension
+                    fileExtension : fileExtension,
+                    remote : true
                 };
 
                 insertCb.success(videoData);
