@@ -152,7 +152,7 @@ YAHOO.extend(CStudioForms.Controls.RTETINYMCE4, CStudioForms.CStudioFormField, {
 			toolbarConfig2,
 			toolbarConfig3,
 			toolbarConfig4,
-			templates = rteConfig.templates.template;
+			templates;
 
 		containerEl.id = this.id;
 		this.containerEl = containerEl;
@@ -191,6 +191,8 @@ YAHOO.extend(CStudioForms.Controls.RTETINYMCE4, CStudioForms.CStudioFormField, {
 			}
 		}
 
+		templates = rteConfig.templates && rteConfig.templates.template ? rteConfig.templates.template : null;
+
 		// https://www.tiny.cloud/docs/plugins/
 	 	pluginList = rteConfig.plugins;
 
@@ -200,14 +202,17 @@ YAHOO.extend(CStudioForms.Controls.RTETINYMCE4, CStudioForms.CStudioFormField, {
 		toolbarConfig3 = (rteConfig.toolbarItems3 && rteConfig.toolbarItems3.length !=0) ? rteConfig.toolbarItems3 : "";
 		toolbarConfig4 = (rteConfig.toolbarItems4 && rteConfig.toolbarItems4.length !=0) ? rteConfig.toolbarItems4 : "";
 
-		rteStylesheets = rteConfig.rteStylesheets.link;
+		rteStylesheets = ( rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object' ) 
+			? rteConfig.rteStylesheets.link : null;
 
-		rteStyleOverride = rteConfig.rteStyleOverride ? rteConfig.rteStyleOverride : '';
+		rteStyleOverride = ( rteConfig.rteStyleOverride && typeof rteConfig.rteStylesheets === 'object' ) 
+			? rteConfig.rteStyleOverride : null;
 
 		/* 
 			Using aceEditor as codeView plugin
 				-https://github.com/plasmadancom/tinymce-ace-plugin
 		*/
+		
 		editor = tinymce.init({
 			selector: '#' + rteId,
 			height: _thisControl.rteHeight,
