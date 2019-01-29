@@ -626,8 +626,10 @@ YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
 	   				ed.onPostRender.add(function(ed, cm) {
 
 	   					ed.contextControl.resizeEditor(ed, true);
-						_thisControl.containerEl.querySelector('.mceLayout').style.maxWidth = width + 'px'; // Why? Field width should be flexible, because of responsiveness, should resize based on the screen size
-
+						
+						if(_thisControl.containerEl.querySelector('.mceLayout')) {
+							_thisControl.containerEl.querySelector('.mceLayout').style.maxWidth = width + 'px'; // Why? Field width should be flexible, because of responsiveness, should resize based on the screen size
+						}
 
 	   					// Add counter element
 	   					var refEl = YSelector.query("table.mceLayout tbody", _thisControl.containerEl, true),

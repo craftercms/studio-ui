@@ -796,6 +796,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabTargetsConfDesc: "Define una lista de objetivos para la forma de fuente de datos utilizada",
     confTabRTEConf: "Configuración RTE",
     confTabRTEConfDesc: "Define la configuraciones de editores de texto enriquecido en formularios",
+    confTabRTEtMCE4Conf: "Configuración RTE (TinyMCE 4)",
+    confTabRTEtMCE4Desc: "Define la configuraciones de editores de texto enriquecido en formularios",
     confTabPreviewAssetConf: "Configuración de Vista Previa de Activos",
     confTabPreviewAssetConfDesc: "Define una lista de activos editables asociados con contenido XML",
     confTabPreviewComponentsConf: "Configuración de los Componentes de Vista Previa",
