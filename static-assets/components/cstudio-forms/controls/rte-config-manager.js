@@ -30,12 +30,12 @@ CStudioForms.Controls.RTEManager = CStudioForms.Controls.RTEManager || {
 	/**
 	 * get cached configuration
 	 */
-	getRteConfiguration: function(setupId, context, callback) {
+	getRteConfiguration: function(setupId, context, callback, configUrl) {
 		var style = (setupId==null) ? "generic" : setupId;
-		var cacheKey = "all";
-		
+		var configPath = configUrl ? configUrl : '/form-control-config/rte/rte-setup.xml';
+		var cacheKey = configPath;
 		var cachedResponse = this.cachedConfig[cacheKey];
-		
+
 		if(!cachedResponse) {
 			
 			if(!this.inProcessCacheReqs[cacheKey]) {
@@ -102,7 +102,7 @@ CStudioForms.Controls.RTEManager = CStudioForms.Controls.RTEManager || {
 			
 				CStudioAuthoring.Service.lookupConfigurtion(
 					CStudioAuthoringContext.site, 
-					"/form-control-config/rte/rte-setup.xml",
+					configPath,
 					cacheCb); 
 			}
 			else {
