@@ -27,7 +27,8 @@
         'angularMoment',
         'angularUtils.directives.dirPagination',
         'ngTagsInput',
-        'ngPatternRestrict'
+        'ngPatternRestrict',
+        'ngAnimate'
     ]);
 
     app.run([
@@ -571,7 +572,7 @@
             };
 
             this.getAvailableBlueprints = function() {
-                return $http.get(api('get-available-blueprints'));
+                return $http.get(sitesApi('available_blueprints'));
             };
 
             this.getPermissions = function(siteId, path, user){
@@ -656,6 +657,10 @@
 
             function uiApi(action) {
                 return Constants.SERVICE2+ 'ui/views/' + action + '.json';
+            }
+
+            function sitesApi(action) {
+                return Constants.SERVICE2+ 'sites/' + action + '.json';
             }
 
             function userActions(action, params) {
@@ -1170,7 +1175,8 @@
                     backdrop: 'static',
                     keyboard: true,
                     controller: 'SiteCtrl',
-                    scope: $scope
+                    scope: $scope,
+                    size: 'lg'
                 });
 
                 $scope.bpSelectorOpen = false;
@@ -1284,16 +1290,17 @@
         function ($scope, $state, sitesService,$timeout, $window, $uibModal) {
 
             // View models
-            $scope.site = null;
+            $scope.site = {};
             $scope.blueprints = [];
             $scope.isValid = false;
             $scope.isCollapsed = true;
-            $scope.isBluePrint = false;
+            $scope.isPushChecked = true;
+            $scope.isRemoteGit = false;
 
             function getBlueprints() {
                 sitesService.getAvailableBlueprints().success(function (data) {
                     $scope.blueprints = data;
-                    $scope.site = { siteId: '', siteName: '', description: '', blueprint: $scope.blueprints[0] };
+                    $scope.site = { siteId: '', siteName: '', description: '', blueprint: $scope.blueprints[0], search : "ElasticSearch"};
                 }).error(function () {
                     $scope.blueprints = [];
                 });
@@ -1376,11 +1383,13 @@
                 });
 
                 var params = {site_id: $scope.site.siteId, description: $scope.site.description};
-                if($scope.site.sandbox_branch){
-                    params.sandbox_branch = $scope.site.sandbox_branch;
-                }
-                if (!$scope.isCollapsed){
-                    params.use_remote = !$scope.isCollapsed;
+
+                //$scope.site.isRemoteGit
+                if($scope.site.isRemoteGit){
+                    if($scope.site.sandbox_branch){
+                        params.sandbox_branch = $scope.site.sandbox_branch;
+                    }
+                    params.use_remote = $scope.site.isRemoteGit;
                     params.remote_name = $scope.site.name;
                     params.remote_url = $scope.site.url;
                     if($scope.site.remote_branch){
@@ -1401,13 +1410,37 @@
                     if($scope.site.authentication == "key"){
                         params.remote_private_key = $scope.site.key;
                     }
-                    params.create_option = $scope.site.options ? $scope.site.options : "clone";
-                    if($scope.site.options == "push"){
-                        params.blueprint = $scope.site.blueprint.id;
-                    }
                 }else{
-                    params.blueprint = $scope.site.blueprint.id;
+                    params.blueprint = $scope.site.blueprint;
+                    if($scope.site.push_site){
+                        params.use_remote = $scope.site.push_site;
+                        params.remote_name = $scope.site.push_name;
+                        params.remote_url = $scope.site.push_url;
+                        if($scope.site.push_remote_branch){
+                            params.remote_branch = $scope.site.push_remote_branch;
+                        }
+                        params.single_branch = false;
+                        params.authentication_type = !$scope.site.push_authentication ? "none" : $scope.site.push_authentication;
+                        if($scope.site.push_authentication == "basic"){
+                            params.remote_username = $scope.site.push_username;
+                            params.remote_password = $scope.site.push_password;
+                        }
+                        if($scope.site.push_authentication == "token"){
+                            if($scope.site.username){
+                                params.remote_username = $scope.site.push_username;
+                            }
+                            params.remote_token = $scope.site.push_token;
+                        }
+                        if($scope.site.push_authentication == "key"){
+                            params.remote_private_key = $scope.site.push_key;
+                        }
+                    }
+
                 }
+                params.search_engine = $scope.site.search;
+                params.create_option = $scope.site.push_site ? "push" : "clone";
+
+                console.log(params);
 
                 sitesService.create(params)
                     .success(function (data) {
@@ -1439,6 +1472,71 @@
                         }
                     });
             }
+
+            //New Create Site
+
+            //Model
+            $scope.currentStep = 1;
+            $scope.steps = [
+                {
+                    step: 1,
+                    name: "Choose Blueprint",
+                    template: "createSitesBlueprint"
+                },
+                {
+                    step: 2,
+                    name: "Basic Information",
+                    template: "createSitesBasicInfo"
+                },
+                {
+                    step: 3,
+                    name: "Basic Developer Information",
+                    template: "createSitesBasicDevInfo"
+                },
+                {
+                    step: 4,
+                    name: "Aditional Developer Options",
+                    template: "createSitesAditionalDevOptions"
+                },
+                {
+                    step: 5,
+                    name: "Review and Create",
+                    template: "createSitesReviewCreate"
+                }
+            ];
+
+            //Functions
+            $scope.gotoStep = function(newStep) {
+                $scope.currentStep = newStep;
+            }
+
+            $scope.getStepTemplate = function(){
+                for (var i = 0; i < $scope.steps.length; i++) {
+                    if ($scope.currentStep == $scope.steps[i].step) {
+                        return $scope.steps[i].template;
+                    }
+                }
+            }
+
+            $scope.removeHide = function() {
+
+                $timeout(function () {
+                    $('#wizard-content-container').removeClass('hide');
+                }, 300, false);
+
+            }
+
+            $scope.flexSilderInit = function(ele) {
+                $timeout(function () {
+                    $('.flexslider').flexslider({
+                        animation: "slide",
+                        controlNav: "thumbnails"
+                    });
+                });
+            }
+
+            // END NEW Create Site
+
         }
     ]);
 
