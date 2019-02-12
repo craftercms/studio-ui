@@ -7450,6 +7450,9 @@ var nodeOpen = false,
 
                     status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusSubmitted");
                     status.key = status.key + "statusSubmitted";
+                    if(contentTO.submittedToEnvironment) {
+                        status.string += " - "+contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
+                    }
                 }
 
                 if (contentTO.scheduled == true) {
@@ -7465,10 +7468,16 @@ var nodeOpen = false,
 
                     status.string = status.string + CMgs.format(siteDropdownLangBundle, "statusScheduled");
                     status.key = status.key + "statusScheduled";
+                    if(contentTO.submittedToEnvironment) {
+                        status.string += " - "+contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
+                    }
 
                     if(contentTO.submitted && contentTO.scheduled){
                         status.string = CMgs.format(siteDropdownLangBundle, "statusSubmitted");
                         status.key = "statusSubmitted";
+                        if(contentTO.submittedToEnvironment) {
+                            status.string += " - "+contentTO.submittedToEnvironment.replace(/\b\w/g, l => l.toUpperCase());
+                        }
                     }
                 }
 
