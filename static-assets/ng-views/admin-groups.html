@@ -260,3 +260,16 @@
         </div>
     </div>
 </script>
+
+<script type="text/ng-template" id="deleteUserError.html">
+    <div class="modal-header">
+        <h3 class="modal-title">{{ 'common.NOTIFICATION' | translate }}</h3>
+    </div>
+    <div id="delete-user-error" class="modal-body">
+        <p class="errorTitle">{{ errorTitle }}</p>
+        <p class="word-wrap errorMessage">{{ 'admin.users.ERROR' | translate }} {{error}}</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+    </div>
+</script>
