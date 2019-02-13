@@ -86,7 +86,10 @@
         "SIMPLE_USERNAME":"Username",
         "RECOMMENDED":"(Recommended)",
         "IS_REQUIRED":"is required.",
-        "ALREADY_EXIST":"already exist."
+        "ALREADY_EXIST":"already exist.",
+        "ELASTIC_SEARCH":"Elastic Search",
+        "CRAFTER_SEARCH_SOLR":"Crafter Search with Solr",
+        "CHOOSE_BLUEPRINT":"Choose Blueprint"
       }
     }
   },

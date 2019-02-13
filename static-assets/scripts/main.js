@@ -1286,8 +1286,8 @@
     ]);
 
     app.controller('SiteCtrl', [
-        '$scope', '$state', 'sitesService', '$timeout', '$window', '$uibModal',
-        function ($scope, $state, sitesService,$timeout, $window, $uibModal) {
+        '$scope', '$state', 'sitesService', '$timeout', '$window', '$uibModal', '$translate',
+        function ($scope, $state, sitesService,$timeout, $window, $uibModal, $translate) {
 
             // View models
             $scope.site = {};
@@ -1480,27 +1480,27 @@
             $scope.steps = [
                 {
                     step: 1,
-                    name: "Choose Blueprint",
+                    name: $translate.instant('dashboard.sites.create.CHOOSE_BLUEPRINT'),
                     template: "createSitesBlueprint"
                 },
                 {
                     step: 2,
-                    name: "Basic Information",
+                    name: $translate.instant('dashboard.sites.create.BASIC_INFORMATION') ,
                     template: "createSitesBasicInfo"
                 },
                 {
                     step: 3,
-                    name: "Basic Developer Information",
+                    name: $translate.instant('dashboard.sites.create.BASIC_DEVELOPER_INFORMATION'),
                     template: "createSitesBasicDevInfo"
                 },
                 {
                     step: 4,
-                    name: "Aditional Developer Options",
+                    name: $translate.instant('dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS'),
                     template: "createSitesAditionalDevOptions"
                 },
                 {
                     step: 5,
-                    name: "Review and Create",
+                    name: $translate.instant('dashboard.sites.create.REVIEW_CREATE'),
                     template: "createSitesReviewCreate"
                 }
             ];

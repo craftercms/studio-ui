@@ -344,9 +344,9 @@
         <label>{{ 'dashboard.sites.create.SEARCH_ENGINE' | translate }}:</label><br/>
         <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
         <input type="radio" id="push_elasticsearch" name="push_search" value="ElasticSearch" ng-model="site.search">
-        <label for="push_elasticsearch">Elasticsearch {{ 'dashboard.sites.create.RECOMMENDED' | translate }}</label><br/>
+        <label for="push_elasticsearch">{{ 'dashboard.sites.create.ELASTIC_SEARCH' | translate }} {{ 'dashboard.sites.create.RECOMMENDED' | translate }}</label><br/>
         <input type="radio" id="push_apache_solr" name="push_search" value="CrafterSearch" ng-model="site.search" ng-init="selectSerachInit()">
-        <label for="push_apache_solr">Apache Solr</label><br/>
+        <label for="push_apache_solr">{{ 'dashboard.sites.create.CRAFTER_SEARCH_SOLR' | translate }}</label><br/>
     </div>
 
 </div>
@@ -390,10 +390,13 @@
                 <p ng-show="site.push_site && !isRemoteGit">{{ 'dashboard.sites.create.PUSH_SITE_TO_REMOTE_GIT' | translate }}</p>
                 <p ng-show="site.push_name && !isRemoteGit"><strong>{{ 'dashboard.sites.create.NAME' | translate }}:</strong> {{site.push_name}}</p>
                 <p ng-show="site.push_url && !isRemoteGit"><strong>{{ 'dashboard.sites.create.URL' | translate }}:</strong> {{site.push_url}}</p>
-                <p ng-show="site.push_remote_branch && !isRemoteGit"><strong>{{ 'dashboard.sites.create.REMOTE_BRANCH' | translate }}:</strong> {{site.push_remote_branch}}</p>
+                <p ng-show="site.push_remote_branch && !isRemoteGit"><strong>{{ 'admin.repositories.REMOTE_BRANCH' | translate }}:</strong> {{site.push_remote_branch}}</p>
                 <p ng-show="site.push_authentication && !isRemoteGit"><strong>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</strong> {{site.push_authentication}}</p>
                 <p ng-show="site.push_username && !isRemoteGit"><strong>{{ 'dashboard.sites.create.SIMPLE_USERNAME' | translate }}:</strong> {{site.push_username}}</p>
-                <p><strong>{{ 'dashboard.sites.create.SEARCH_ENGINE' | translate }}:</strong> {{site.search}}</p>
+                <p><strong>{{ 'dashboard.sites.create.SEARCH_ENGINE' | translate }}:</strong>
+                    <span ng-show="site.search == 'ElasticSearch'">{{ 'dashboard.sites.create.ELASTIC_SEARCH' | translate }}</span>
+                    <span ng-show="site.search == 'CrafterSearch'">{{ 'dashboard.sites.create.CRAFTER_SEARCH_SOLR' | translate }}</span>
+                </p>
             </div>
         </fieldset>
     </div>

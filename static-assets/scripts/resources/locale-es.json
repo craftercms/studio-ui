@@ -86,7 +86,10 @@
         "SIMPLE_USERNAME":"Nombre de usuario",
         "RECOMMENDED":"(Recomendada)",
         "IS_REQUIRED":"es requerido.",
-        "ALREADY_EXIST":"ya existe."
+        "ALREADY_EXIST":"ya existe.",
+        "ELASTIC_SEARCH":"Busqueda elástica",
+        "CRAFTER_SEARCH_SOLR":"Buúsqueda con Solr de Crafter",
+        "CHOOSE_BLUEPRINT":"Elegir plano"
       }
     }
   },
