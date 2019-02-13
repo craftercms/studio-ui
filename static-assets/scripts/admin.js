@@ -748,7 +748,7 @@
                         adminService.getUsers().success(function(data){
                             users.usersCollectionBackup = $scope.usersCollection;
                             users.itemsPerPageBackup = users.itemsPerPage;
-                            $scope.usersCollection = data.user;
+                            $scope.usersCollection = data.users;
                             users.itemsPerPage = adminService.maxInt;
                         });
                     }
