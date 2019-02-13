@@ -1236,7 +1236,10 @@
                     adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
                         $scope.getUsersFromGroup(group);
                         $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, "studioMedium");
-                    }).error(function () {
+                    }).error(function (error) {
+                        $scope.errorTitle = $translate.instant('admin.users.DELETE_ERROR');
+                        $scope.error = error.response.message;
+                        $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
                     });
                 };
 
