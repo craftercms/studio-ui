@@ -231,7 +231,7 @@
           "USER_LABEL": "Agrupar",
           "NEW_CLUSTER": "Miembro Nuevo",
           "ID": "Id",
-          "LOCAL_IP": "Ip Local",
+          "LOCAL_ADDRESS": "Dirección local",
           "STATE": "Estado",
           "GIT_NAME": "Nombre del Repositorio",
           "GIT_URL": "URL",
