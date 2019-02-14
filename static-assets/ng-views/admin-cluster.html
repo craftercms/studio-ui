@@ -39,7 +39,7 @@
                         <tbody>
 
                         <tr ng-repeat="clusterMember in membersCollection track by $index">
-                            <td class="localIp">{{clusterMember.localIp}}</td>
+                            <td class="localIp">{{clusterMember.localAddress}}</td>
                             <td class="state">{{clusterMember.state}}</td>
                             <td class="gitUrl break">{{clusterMember.gitUrl}}</td>
                             <td class="gitRemoteName">{{clusterMember.gitRemoteName}}</td>
