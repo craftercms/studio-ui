@@ -231,7 +231,7 @@
           "USER_LABEL": "클러스터",
           "NEW_CLUSTER": "New Member",
           "ID": "신분증",
-          "LOCAL_IP": "IP 로컬",
+          "LOCAL_ADDRESS": "지역 주소",
           "STATE": "에 스타도",
           "GIT_NAME": "새로운 회원",
           "GIT_URL": "URL",

@@ -231,7 +231,7 @@
           "USER_LABEL": "Cluster",
           "NEW_CLUSTER": "New Member",
           "ID": "Id",
-          "LOCAL_IP": "Local Ip",
+          "LOCAL_ADDRESS": "Local Address",
           "STATE": "State",
           "GIT_NAME": "Remote Name",
           "GIT_URL": "URL",
