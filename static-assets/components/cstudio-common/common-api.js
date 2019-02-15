@@ -626,8 +626,10 @@ var nodeOpen = false,
                     bdHeight = element.clientHeight;  // height with padding
                     bdHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
 
-                    if(bdHeight > bdIcon.offsetHeight){
-                        bdIcon.style.marginBottom = (bdHeight - 16) + "px";
+                    if(dialogType) {
+                        if (bdHeight > bdIcon.offsetHeight) {
+                            bdIcon.style.marginBottom = (bdHeight - 16) + "px";
+                        }
                     }
 
                     if(className){
