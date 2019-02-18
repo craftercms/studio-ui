@@ -1318,6 +1318,36 @@ var CStudioForms = CStudioForms || function() {
                             }
                         }
                     };
+
+                    var unlockBeforeCancel= function(path){
+                        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
+                            success: function (itemTO) {
+                                //Unlock if the item is locked by the user
+                                if (itemTO.item.lockOwner == CStudioAuthoringContext.user) {
+                                    CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, path, {
+                                        success: function() {
+                                            _notifyServer = false;
+                                            eventNS.data = itemTO.item;
+                                            eventNS.typeAction = "";
+                                            eventNS.oldPath = null;
+                                            window.top.document.dispatchEvent(eventNS);
+                                            var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                                            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                        },
+                                        failure: function() {
+                                        }
+                                    });
+                                } else {
+                                    _notifyServer = false;
+                                    var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                }
+                            },
+                            failure: function() {
+
+                            }
+                        });
+                    }
                     
                     var cancelFn = function() {
                     
@@ -1358,29 +1388,7 @@ var CStudioForms = CStudioForms || function() {
                     
                                             var path = CStudioAuthoring.Utils.getQueryVariable(location.search, "path");
                                             if( path && path.indexOf(".xml") != -1) {
-                                                CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
-                                                    success: function (itemTO) {
-                                                        //Unlock if the item is locked by the user
-                                                        if (itemTO.item.lockOwner == CStudioAuthoringContext.user) {
-                                                            CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, path, {
-                                                                success: function() {
-                                                                    _notifyServer = false;
-                                                                    var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                                                                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                                                                },
-                                                                failure: function() {
-                                                                }
-                                                            });
-                                                        } else {
-                                                            _notifyServer = false;
-                                                            var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                                                            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                                                        }
-                                                    },
-                                                    failure: function() {
-                    
-                                                    }
-                                                });
+                                                unlockBeforeCancel(path);
                                             } else {
                                                 _notifyServer = false;
                                                 var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
@@ -1400,21 +1408,27 @@ var CStudioForms = CStudioForms || function() {
                             }
                             dialogEl.dialog.show();
                         }else{
-                            if( path && path.indexOf(".xml") != -1) {
-                                var entityId = buildEntityIdFn(null);
-                                CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
-                            }
-                            if((iceId && iceId !="") || (iceComponent && iceComponent != "")) {
-                                var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                                CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                                var componentsOn = !!(sessionStorage.getItem('components-on'));
-                                if(componentsOn){
-                                    CStudioAuthoring.Operations.refreshPreviewParent();
+
+                            var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
+                            if(acnDraftContent) {
+                                unlockBeforeCancel(path);
+                            }else{
+                                if( path && path.indexOf(".xml") != -1) {
+                                    var entityId = buildEntityIdFn(null);
+                                    CStudioAuthoring.Service.unlockContentItemSync(CStudioAuthoringContext.site, entityId);
                                 }
-                            } else {
-                                window.close();
-                                if(componentsOn){
-                                    CStudioAuthoring.Operations.refreshPreviewParent();
+                                if((iceId && iceId !="") || (iceComponent && iceComponent != "")) {
+                                    var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                                    var componentsOn = !!(sessionStorage.getItem('components-on'));
+                                    if(componentsOn){
+                                        CStudioAuthoring.Operations.refreshPreviewParent();
+                                    }
+                                } else {
+                                    window.close();
+                                    if(componentsOn){
+                                        CStudioAuthoring.Operations.refreshPreviewParent();
+                                    }
                                 }
                             }
                         }
