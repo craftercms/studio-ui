@@ -37,6 +37,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "kr", {
     dashletGoLiveHideInProgress: "숨기기 \"진행중인 \" 항목",
     dashletGoLiveColPageName: "항목 이름",
     dashletGoLiveColEdit: "편집",
+    dashletGoLiveColView: "전망",
     dashletGoLiveColURL: "URL",
     dashletGoLiveColEnvironment: "환경",
     dashletGoLiveColPublishDate: "날짜 게시",
