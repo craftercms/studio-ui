@@ -16,197 +16,433 @@
   -->
 
 <div id="create-site-dialog">
-    <div class="modal-header">
-        <h2 class="">{{ 'dashboard.sites.create.HEADER_LABEL' | translate }}</h2>
+<div class="mb20">
+<div id="wizard-container">
+<div class="wizard-header pl20 pt30 pr20 pb30">
+    <div id="wizard-step-container">
+        <ul class="nav nav-wizard">
+            <li class="col-xs-11 col-sm-2"  ng-repeat="step in steps" ng-class="{'active':step.step == currentStep}"><a ng-click="gotoStep(step.step)" href="">{{step.name}}</a></li>
+        </ul>
+    </div>
+</div>
+
+<form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+
+<div class="tab-content m20" id="wizard-content-container">
+
+<div class="wizard-item moveToRight" ng-show="getStepTemplate() == 'createSitesBlueprint' " id="createSitesBlueprint">
+    <h2 class="">{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</h2>
+    <div class="form-group">
+        <input type="checkbox" ng-click="isRemoteGit = !isRemoteGit" id="isRemoteGit" name="isRemoteGit" value="none" ng-model="site.isRemoteGit" >
+        <label for="isRemoteGit">{{ 'dashboard.sites.create.USE_REMOTE_GIT' | translate }}</label><br/>
+    </div>
+    <section role=”main” class="grid">
+        <article ng-repeat="siteBP in blueprints.blueprints">
+            <div class="col-xs-12 col-sm-7 col-md-6">
+                <div id="flexslider1" class="flexslider" ng-init="flexSilderInit()">
+                    <ul class="slides">
+                        <li ng-repeat="media in siteBP.blueprint.media.screenshots" data-thumb="{{media.screenshot.url}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'" >
+                        <img src="{{media.screenshot.url}}" alt="{{media.screenshot.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text col-xs-12 col-sm-5 col-md-6">
+                <h3>{{siteBP.blueprint.name}}</h3>
+                <p ng-show="siteBP.blueprint.description"><strong>{{ 'dashboard.sites.create.DESCRIPTION' | translate }}: </strong>{{siteBP.blueprint.description}}</p>
+                <p ng-show="siteBP.blueprint.version"><strong>{{ 'dashboard.sites.create.VERSION' | translate }}: </strong>{{siteBP.blueprint.version.major}}.{{siteBP.blueprint.version.minor}}.{{siteBP.blueprint.version.patch}}</p>
+                <p ng-show="siteBP.blueprint.license.name"><strong>{{ 'dashboard.sites.create.LICENSE' | translate }}: </strong>{{siteBP.blueprint.license.name}}</p>
+                <p ng-show="siteBP.blueprint.craftercmsVersionsSupported"><strong>{{ 'dashboard.sites.create.CRAFTERVERSIONSSUPPORTED' | translate }}: </strong></p>
+                <ul ng-show="siteBP.blueprint.craftercmsVersionsSupported">
+                    <li ng-repeat="versioSupported in siteBP.blueprint.craftercmsVersionsSupported">{{versioSupported.version}}</li>
+                </ul>
+                <p ng-show="siteBP.blueprint.website.url"><strong>{{ 'dashboard.sites.create.WEBSITE' | translate }}: </strong><a target="_blank" href="{{siteBP.blueprint.website.url}}">{{siteBP.blueprint.website.url}}</a></p>
+                <button ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.folderName; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
+            </div>
+        </article>
+    </section>
+</div>
+<div class="wizard-item moveToRight" ng-show="getStepTemplate() == 'createSitesBasicInfo' " id="createSitesBasicInfo">
+    <h2 class="">{{ 'dashboard.sites.create.BASIC_INFORMATION' | translate }}</h2>
+
+    <div class="form-group">
+        <label for="siteId">* {{ 'dashboard.sites.create.SITE_ID' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SITE_ID_VALIDATION' | translate }}</span>
+        <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" maxlength="50" ng-change="isValidSite()" autofocus focus-me="true" required/>
+
+        <div class="error-container"
+             ng-show="(createNameForm.siteId.$dirty && createNameForm.siteId.$invalid) || (createNameForm.siteId.$touched && createNameForm.siteId.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.siteId.$error.required">
+                {{ 'dashboard.sites.create.SITE_ID' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+            </small>
+        </div>
+        <div class="error-container" ng-show="isValid">
+            <small class="error">
+                {{ 'dashboard.sites.create.SITE_ID' | translate }} {{ 'dashboard.sites.create.ALREADY_EXIST' | translate }}
+            </small>
+        </div>
     </div>
 
-    <div class="modal-body">
-        <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+    <div class="form-group">
+        <label for="description">{{ 'dashboard.sites.create.DESCRIPTION' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.LENGTH_VALIDATION_4000' | translate }}</span>
+        <textarea class="form-control" id="description" name="desc" maxlength="4000" ng-model="site.description"></textarea>
+    </div>
+
+</div>
+<div class="wizard-item moveToRight" ng-show="getStepTemplate() == 'createSitesBasicDevInfo' " id="createSitesBasicDevInfo">
+    <h2 class="">{{ 'dashboard.sites.create.BASIC_DEVELOPER_INFORMATION' | translate }}</h2>
+    <h4>{{ 'dashboard.sites.create.CLONE_REMOTE_GIT' | translate }}</h4>
+
+    <div class="form-group">
+        <label for="sandboxBranch">{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SANDBOX_BRANCH_MSG' | translate }}</span>
+        <input type="text" class="form-control" id="sandboxBranch" name="sandboxBranch" ng-model="site.sandbox_branch" autofocus focus-me="true" />
+    </div>
+
+    <div id="remoteGitRepository">
+
+        <div class="form-group">
+            <label for="name">* {{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
+            <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="site.name" ng-required="isRemoteGit"/>
+
+            <div class="error-container"
+                 ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.name.$error.required">
+                    {{ 'dashboard.sites.create.NAME' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                </small>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="url">* {{ 'dashboard.sites.create.URL' | translate }}</label>
+            <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="site.url" ng-required="isRemoteGit"/>
+
+            <div class="error-container"
+                 ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.url.$error.required">
+                    {{ 'dashboard.sites.create.URL' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                </small>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label for="url">{{ 'admin.repositories.REMOTE_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.BRANCH_DEFAULTS' | translate }}</span>
+            <input type="text" class="form-control" id="remoteBranch" name="remoteBranch" maxlength="4000" ng-model="site.remote_branch" />
+
+            <div class="error-container"
+                 ng-show="(createNameForm.remoteBranch.$dirty && createNameForm.remoteBranch.$invalid) || (createNameForm.remoteBranch.$touched && createNameForm.remoteBranch.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.remoteBranch.$error.required">
+                    {{ 'admin.repositories.REMOTE_BRANCH' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                </small>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
+            <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
+            <input type="radio" id="none" name="authentication" value="none" ng-model="site.authentication" ng-checked="true">
+            <label for="none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
+            <input type="radio" id="basic" name="authentication" value="basic" ng-model="site.authentication">
+            <label for="basic">{{ 'dashboard.sites.create.BASIC' | translate }}</label><br/>
+            <input type="radio" id="token" name="authentication" value="token" ng-model="site.authentication">
+            <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
+            <input type="radio" id="key" name="authentication" value="key" ng-model="site.authentication">
+            <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
+        </div>
+
+        <div class="form-group" ng-show="site.authentication == 'basic' || site.authentication == 'token'">
+            <label for="username">* {{ 'dashboard.sites.create.USERNAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.IFREQUIRED' | translate }}</span>
+            <input type="text" class="form-control" id="username" name="username" ng-model="site.username" ng-required="site.authentication == 'basic'" />
+
+            <div class="error-container"
+                 ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.username.$error.required">
+                    {{ 'dashboard.sites.create.USERNAME' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                </small>
+            </div>
+
+        </div>
+
+        <div class="form-group" ng-show="site.authentication == 'basic'">
+            <label for="password">* {{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
+            <input type="password" class="form-control" id="password" name="password" ng-model="site.password" autocomplete="new-password" ng-required="site.authentication == 'basic'" />
+
+            <div class="error-container"
+                 ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.password.$error.required">
+                    {{ 'dashboard.sites.create.PASSWORD' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                </small>
+            </div>
+
+        </div>
+
+        <div class="form-group" ng-show="site.authentication == 'token'">
+            <label for="token">* {{ 'dashboard.sites.create.TOKEN' | translate }}</label>
+            <input type="password" class="form-control" id="tokenNum" name="tokenNum" ng-model="site.token" ng-required="site.authentication == 'token'" />
+
+            <div class="error-container"
+                 ng-show="(createNameForm.tokenNum.$dirty && createNameForm.password.$invalid) || (createNameForm.tokenNum.$touched && createNameForm.tokenNum.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.tokenNum.$error.required">
+                    {{ 'dashboard.sites.create.TOKEN' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                </small>
+            </div>
+
+        </div>
+
+        <div class="form-group" ng-show="site.authentication == 'key'">
+            <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
+            <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
+            <textarea rows="4" cols="50" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" ></textarea>
+
+            <div class="error-container"
+                 ng-show="(createNameForm.keyNum.$dirty && createNameForm.password.$invalid) || (createNameForm.keyNum.$touched && createNameForm.keyNum.$invalid)">
+                <small class="error"
+                       ng-show="createNameForm.keyNum.$error.required">
+                    {{ 'dashboard.sites.create.KEY' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                </small>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="wizard-item moveToRight" ng-show="getStepTemplate() == 'createSitesAditionalDevOptions' " id="createSitesAditionalDevOptions">
+    <h2 class="">{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }}</h2>
+
+    <div id="pushRemoteGitRepositoryContainer" ng-show="!isRemoteGit">
+        <h4>{{ 'dashboard.sites.create.PUSH_REMOTE_GIT' | translate }}</h4>
+
+        <div class="form-group">
+            <input type="checkbox" ng-click="isPushChecked = !isPushChecked" id="push_site" name="push_site" value="none" ng-model="site.push_site" >
+            <label for="push_site">{{ 'dashboard.sites.create.PUSH_SITE_TO_REMOTE_GIT' | translate }}</label><br/>
+        </div>
+
+        <div id="pushRemoteGitRepository" uib-collapse="isPushChecked" ng-hide="isPushChecked">
 
             <div class="form-group">
-                <label for="siteId">{{ 'dashboard.sites.create.SITE_ID' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SITE_ID_VALIDATION' | translate }}</span>
-                <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" maxlength="50" ng-change="isValidSite()" autofocus focus-me="true" required/>
+                <label for="push_name">* {{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
+                <input type="text" class="form-control" id="push_name" name="push_name" maxlength="4000" ng-model="site.push_name" ng-required="!isCollapsed && !isRemoteGit"/>
 
                 <div class="error-container"
-                    ng-show="(createNameForm.siteId.$dirty && createNameForm.siteId.$invalid) || (createNameForm.siteId.$touched && createNameForm.siteId.$invalid)">
+                     ng-show="(createNameForm.push_name.$dirty && createNameForm.push_name.$invalid) || (createNameForm.push_name.$touched && createNameForm.push_name.$invalid)">
                     <small class="error"
-                        ng-show="createNameForm.siteId.$error.required">
-                        {{ 'dashboard.sites.create.SITE_ID' | translate }} is required.
+                           ng-show="createNameForm.push_name.$error.required">
+                        {{ 'dashboard.sites.create.NAME' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
                     </small>
                 </div>
-                <div class="error-container" ng-show="isValid">
-                    <small class="error">
-                        {{ 'dashboard.sites.create.SITE_ID' | translate }} already exist.
+
+            </div>
+
+            <div class="form-group">
+                <label for="push_url">* {{ 'dashboard.sites.create.URL' | translate }}</label>
+                <input type="text" class="form-control" id="push_url" name="push_url" maxlength="4000" ng-model="site.push_url" ng-required="!isCollapsed && !isRemoteGit"/>
+
+                <div class="error-container"
+                     ng-show="(createNameForm.push_url.$dirty && createNameForm.push_url.$invalid) || (createNameForm.push_url.$touched && createNameForm.push_url.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.push_url.$error.required">
+                        {{ 'dashboard.sites.create.URL' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label for="push_remoteBranch">{{ 'admin.repositories.REMOTE_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.BRANCH_DEFAULTS' | translate }}</span>
+                <input type="text" class="form-control" id="push_remoteBranch" name="push_remoteBranch" maxlength="4000" ng-model="site.push_remote_branch" />
+
+                <div class="error-container"
+                     ng-show="(createNameForm.push_remoteBranch.$dirty && createNameForm.push_remoteBranch.$invalid) || (createNameForm.push_remoteBranch.$touched && createNameForm.push_remoteBranch.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.push_remoteBranch.$error.required">
+                        {{ 'admin.repositories.REMOTE_BRANCH' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
+                <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
+                <input type="radio" id="push_none" name="push_authentication" value="none" ng-model="site.push_authentication" ng-checked="true">
+                <label for="push_none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
+                <input type="radio" id="push_basic" name="push_authentication" value="basic" ng-model="site.push_authentication">
+                <label for="push_basic">{{ 'dashboard.sites.create.BASIC' | translate }}</label><br/>
+                <input type="radio" id="push_token" name="push_authentication" value="token" ng-model="site.push_authentication">
+                <label for="push_token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
+                <input type="radio" id="push_key" name="push_authentication" value="key" ng-model="site.push_authentication">
+                <label for="push_key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
+            </div>
+
+            <div class="form-group" ng-show="site.push_authentication == 'basic' || site.push_authentication == 'token'">
+                <label for="push_username">* {{ 'dashboard.sites.create.USERNAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.IFREQUIRED' | translate }}</span>
+                <input type="text" class="form-control" id="push_username" name="push_username" ng-model="site.push_username" ng-required="(site.push_authentication == 'basic') && !isRemoteGit" />
+
+                <div class="error-container"
+                     ng-show="(createNameForm.push_username.$dirty && createNameForm.push_username.$invalid) || (createNameForm.push_username.$touched && createNameForm.push_username.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.push_username.$error.required">
+                        {{ 'dashboard.sites.create.USERNAME' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="form-group" ng-show="site.push_authentication == 'basic'">
+                <label for="push_password">* {{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
+                <input type="password" class="form-control" id="push_password" name="push_password" ng-model="site.push_password" autocomplete="push_new-password" ng-required="(site.push_authentication == 'basic') && !isRemoteGit" />
+
+                <div class="error-container"
+                     ng-show="(createNameForm.push_password.$dirty && createNameForm.push_password.$invalid) || (createNameForm.push_password.$touched && createNameForm.push_password.$invalid && !isRemoteGit)">
+                    <small class="error"
+                           ng-show="createNameForm.push_password.$error.required">
+                        {{ 'dashboard.sites.create.PASSWORD' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="form-group" ng-show="site.push_authentication == 'token'">
+                <label for="push_token">* {{ 'dashboard.sites.create.TOKEN' | translate }}</label>
+                <input type="password" class="form-control" id="push_tokenNum" name="push_tokenNum" ng-model="site.push_token" ng-required="(site.push_authentication == 'token') && !isRemoteGit" />
+
+                <div class="error-container"
+                     ng-show="(createNameForm.push_tokenNum.$dirty && createNameForm.push_password.$invalid) || (createNameForm.push_tokenNum.$touched && createNameForm.push_tokenNum.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.push_tokenNum.$error.required">
+                        {{ 'dashboard.sites.create.TOKEN' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="form-group" ng-show="site.push_authentication == 'key'">
+                <label for="push_key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
+                <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
+                <textarea rows="4" cols="50" class="form-control" id="push_keyNum" name="push_keyNum" ng-model="site.push_key" ng-required="(site.push_authentication == 'key') && !isRemoteGit" ></textarea>
+
+                <div class="error-container"
+                     ng-show="(createNameForm.push_keyNum.$dirty && createNameForm.push_password.$invalid) || (createNameForm.push_keyNum.$touched && createNameForm.push_keyNum.$invalid)">
+                    <small class="error"
+                           ng-show="createNameForm.push_keyNum.$error.required">
+                        {{ 'dashboard.sites.create.KEY' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
                     </small>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="description">{{ 'dashboard.sites.create.DESCRIPTION' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.LENGTH_VALIDATION_4000' | translate }}</span>
-                <textarea class="form-control" id="description" name="desc" maxlength="4000" ng-model="site.description"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="sandboxBranch">{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SANDBOX_BRANCH_MSG' | translate }}</span>
-                <input type="text" class="form-control" id="sandboxBranch" name="sandboxBranch" ng-model="site.sandbox_branch" />
-            </div>
-
-            <div class="form-group">
-                <a ng-click="isCollapsed = !isCollapsed; isBluePrint = !isBluePrint">
-                    <span ng-hide="!isCollapsed" class="fa fa-plus-square-o"></span>
-                    <span ng-hide="isCollapsed" class="fa fa-minus-square-o"></span>
-                    Link to upstream remote Git repository</a>
-            </div>
-
-            <div id="remoteGitRepository" uib-collapse="isCollapsed" ng-hide="isCollapsed">
-
-                <div class="form-group">
-                    <label for="url">{{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
-                    <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="site.name" ng-required="!isCollapsed"/>
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.name.$error.required">
-                            {{ 'dashboard.sites.create.NAME' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-                    <label for="url">{{ 'dashboard.sites.create.URL' | translate }}</label>
-                    <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="site.url" ng-required="!isCollapsed"/>
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.url.$error.required">
-                            {{ 'dashboard.sites.create.URL' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-                    <label for="url">{{ 'admin.repositories.REMOTE_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.BRANCH_DEFAULTS' | translate }}</span>
-                    <input type="text" class="form-control" id="remoteBranch" name="remoteBranch" maxlength="4000" ng-model="site.remote_branch" />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.remoteBranch.$dirty && createNameForm.remoteBranch.$invalid) || (createNameForm.remoteBranch.$touched && createNameForm.remoteBranch.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.remoteBranch.$error.required">
-                            {{ 'admin.repositories.REMOTE_BRANCH' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-                    <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
-                    <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
-                    <input type="radio" id="none" name="authentication" value="none" ng-model="site.authentication" ng-checked="true">
-                    <label for="none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
-                    <input type="radio" id="basic" name="authentication" value="basic" ng-model="site.authentication">
-                    <label for="basic">{{ 'dashboard.sites.create.BASIC' | translate }}</label><br/>
-                    <input type="radio" id="token" name="authentication" value="token" ng-model="site.authentication">
-                    <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
-                    <input type="radio" id="key" name="authentication" value="key" ng-model="site.authentication">
-                    <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
-                </div>
-
-                <div class="form-group" ng-show="site.authentication == 'basic' || site.authentication == 'token'">
-                    <label for="username">{{ 'dashboard.sites.create.USERNAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.IFREQUIRED' | translate }}</span>
-                    <input type="text" class="form-control" id="username" name="username" ng-model="site.username" ng-required="site.authentication == 'basic'" />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.username.$error.required">
-                            {{ 'dashboard.sites.create.USERNAME' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group" ng-show="site.authentication == 'basic'">
-                    <label for="password">{{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
-                    <input type="password" class="form-control" id="password" name="password" ng-model="site.password" autocomplete="new-password" ng-required="site.authentication == 'basic'" />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.password.$error.required">
-                            {{ 'dashboard.sites.create.PASSWORD' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group" ng-show="site.authentication == 'token'">
-                    <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label>
-                    <input type="password" class="form-control" id="tokenNum" name="tokenNum" ng-model="site.token" ng-required="site.authentication == 'token'" />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.tokenNum.$dirty && createNameForm.password.$invalid) || (createNameForm.tokenNum.$touched && createNameForm.tokenNum.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.tokenNum.$error.required">
-                            {{ 'dashboard.sites.create.TOKEN' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group" ng-show="site.authentication == 'key'">
-                    <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
-                    <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
-                    <textarea rows="4" cols="50" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" ></textarea>
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.keyNum.$dirty && createNameForm.password.$invalid) || (createNameForm.keyNum.$touched && createNameForm.keyNum.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.keyNum.$error.required">
-                            {{ 'dashboard.sites.create.KEY' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-                    <label>{{ 'dashboard.sites.create.OPTIONS' | translate }}:</label><br/>
-                    <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
-                    <input type="radio" id="clone" name="options" value="clone" ng-model="site.options" ng-checked="true">
-                    <label for="clone">{{ 'dashboard.sites.create.CLONE' | translate }}</label><br/>
-                    <input type="radio" id="push" name="options" value="push" ng-model="site.options">
-                    <label for="push">{{ 'dashboard.sites.create.PUSH' | translate }}</label><br/>
-                </div>
-
-            </div>
-
-            <div class="form-group" ng-show="!isBluePrint || site.options == 'push'">
-                <label for="blueprint">{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</label>
-                <select id="blueprint"
-                        name="blueprint"
-                        class="form-control"
-                        ng-model="site.blueprint"
-                        ng-options="opt as opt.label for opt in blueprints"
-                        ng-keypress="trySubmit($event)"
-                        ng-click="toggleOpen()">
-                </select>
-            </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary create"
-                        ng-click="create()" ng-disabled="createNameForm.$invalid || isValid">
-                    {{ 'common.create_LABEL' | translate }}
-                </button>
-                <button ng-click="adminModal.close()" class="btn btn-default cancel">
-                    {{ 'common.CANCEL_LABEL' | translate }}
-                </button>
-            </div>
-
-        </form>
+        </div>
     </div>
+
+    <div ng-init="push_search=push_elasticsearch" class="form-group">
+        <label>{{ 'dashboard.sites.create.SEARCH_ENGINE' | translate }}:</label><br/>
+        <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
+        <input type="radio" id="push_elasticsearch" name="push_search" value="ElasticSearch" ng-model="site.search">
+        <label for="push_elasticsearch">{{ 'dashboard.sites.create.ELASTIC_SEARCH' | translate }} {{ 'dashboard.sites.create.RECOMMENDED' | translate }}</label><br/>
+        <input type="radio" id="push_apache_solr" name="push_search" value="CrafterSearch" ng-model="site.search" ng-init="selectSerachInit()">
+        <label for="push_apache_solr">{{ 'dashboard.sites.create.CRAFTER_SEARCH_SOLR' | translate }}</label><br/>
+    </div>
+
+</div>
+<div class="wizard-item moveToRight" ng-show="getStepTemplate() == 'createSitesReviewCreate'  " id="createSitesReviewCreate">
+    <h2 class="">{{ 'dashboard.sites.create.REVIEW_CREATE' | translate }}</h2>
+    <div class="viewSection">
+        <fieldset>
+            <legend><strong>{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</strong></legend>
+            <div class="reviewContainer">
+                <p ng-show="!isRemoteGit"><strong>{{ 'dashboard.sites.create.BLUEPRINTNAME' | translate }}:</strong> {{site.blueprint}}</p>
+                <p ng-show="isRemoteGit">{{ 'dashboard.sites.create.NOPUSH' | translate }}</p>
+            </div>
+        </fieldset>
+    </div>
+    <div class="viewSection">
+        <fieldset>
+            <legend><strong>{{ 'dashboard.sites.create.BASIC_INFORMATION' | translate }}</strong></legend>
+            <div class="reviewContainer">
+                <p ng-show="site.siteId"><strong>{{ 'dashboard.sites.create.SITE_ID' | translate }}:</strong> {{site.siteId}}</p>
+                <p ng-show="site.description"><strong>{{ 'dashboard.sites.create.DESCRIPTION' | translate }}:</strong> {{site.description}}</p>
+            </div>
+        </fieldset>
+    </div>
+    <div ng-show="isRemoteGit" class="viewSection">
+        <fieldset>
+            <legend><strong>{{ 'dashboard.sites.create.BASIC_DEVELOPER_INFORMATION' | translate }}</strong></legend>
+            <div class="reviewContainer">
+                <p ng-show="site.sandbox_branch"><strong>{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}:</strong> {{site.sandbox_branch}}</p>
+                <p ng-show="site.name"><strong>{{ 'dashboard.sites.create.NAME' | translate }}:</strong> {{site.name}}</p>
+                <p ng-show="site.url"><strong>{{ 'dashboard.sites.create.URL' | translate }}:</strong> {{site.url}}</p>
+                <p ng-show="site.remote_branch"><strong>{{ 'admin.repositories.REMOTE_BRANCH' | translate }}:</strong> {{site.remote_branch}}</p>
+                <p ng-show="site.authentication"><strong>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</strong> {{site.authentication}}</p>
+                <p ng-show="site.username"><strong>{{ 'dashboard.sites.create.SIMPLE_USERNAME' | translate }}:</strong> {{site.username}}</p>
+            </div>
+        </fieldset>
+    </div>
+    <div class="viewSection">
+        <fieldset>
+            <legend><strong>{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }}</strong></legend>
+            <div class="reviewContainer">
+                <p ng-show="site.push_site && !isRemoteGit">{{ 'dashboard.sites.create.PUSH_SITE_TO_REMOTE_GIT' | translate }}</p>
+                <p ng-show="site.push_name && !isRemoteGit"><strong>{{ 'dashboard.sites.create.NAME' | translate }}:</strong> {{site.push_name}}</p>
+                <p ng-show="site.push_url && !isRemoteGit"><strong>{{ 'dashboard.sites.create.URL' | translate }}:</strong> {{site.push_url}}</p>
+                <p ng-show="site.push_remote_branch && !isRemoteGit"><strong>{{ 'admin.repositories.REMOTE_BRANCH' | translate }}:</strong> {{site.push_remote_branch}}</p>
+                <p ng-show="site.push_authentication && !isRemoteGit"><strong>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</strong> {{site.push_authentication}}</p>
+                <p ng-show="site.push_username && !isRemoteGit"><strong>{{ 'dashboard.sites.create.SIMPLE_USERNAME' | translate }}:</strong> {{site.push_username}}</p>
+                <p><strong>{{ 'dashboard.sites.create.SEARCH_ENGINE' | translate }}:</strong>
+                    <span ng-show="site.search == 'ElasticSearch'">{{ 'dashboard.sites.create.ELASTIC_SEARCH' | translate }}</span>
+                    <span ng-show="site.search == 'CrafterSearch'">{{ 'dashboard.sites.create.CRAFTER_SEARCH_SOLR' | translate }}</span>
+                </p>
+            </div>
+        </fieldset>
+    </div>
+</div>
+</div>
+
+<div id="wizard-navigation-container" class="m20">
+
+    <div class="form-group">
+        <!--<button type="submit" class="btn btn-primary create"
+                ng-click="create()" ng-disabled="createNameForm.$invalid || isValid">
+            {{ 'common.create_LABEL' | translate }}
+        </button>-->
+        <button ng-click="adminModal.close()" class="btn btn-default cancel">
+            {{ 'common.CANCEL_LABEL' | translate }}
+        </button>
+        <button ng-show="((currentStep == 2 && !isRemoteGit) || currentStep == 3 || currentStep == 4 )" class="btn btn-primary" name="previous" type="button"
+                ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
+                                (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid)) ||
+                                (currentStep == 4 && (createNameForm.push_name.$invalid || createNameForm.push_url.$invalid || createNameForm.push_username.$invalid || createNameForm.push_password.$invalid || createNameForm.push_tokenNum.$invalid || createNameForm.push_keyNum.$invalid))"
+                ng-click="gotoStep(5)">{{ 'dashboard.sites.create.REVIEW_CREATE' | translate }} <i class="fa fa-arrow-right"></i>
+        </button>
+        <button ng-show="currentStep == 1 " class="btn btn-default" name="previous" type="button"
+                ng-disabled="(currentStep == 1 && !isRemoteGit) ||
+                                (currentStep == 2 && createNameForm.siteId.$invalid )"
+                ng-click="gotoStep(2)">{{ 'dashboard.sites.create.BASIC_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
+        </button>
+        <button ng-show="currentStep == 2 && isRemoteGit" class="btn btn-default" name="previous" type="button"
+                ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid )"
+                ng-click="gotoStep(3)">{{ 'dashboard.sites.create.BASIC_DEVELOPER_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
+        </button>
+        <button ng-show="(currentStep == 2 && !isRemoteGit) || currentStep == 3" class="btn btn-default" name="previous" type="button"
+                ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
+                                (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid))"
+                ng-click="gotoStep(4)">{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }} <i class="fa fa-arrow-right"></i>
+        </button>
+        <button id="saveBtn" type="submit" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary pull-right" name="create"
+                type="button" ng-click="create()"><i class="fa fa-floppy-o"></i> {{ 'common.create_LABEL' | translate }}
+        </button>
+    </div>
+</div>
+
+</form>
+
+</div>
+</div>
 </div>
 
 <script type="text/ng-template" id="creatingSiteConfirmation.html">

@@ -748,7 +748,7 @@
                         adminService.getUsers().success(function(data){
                             users.usersCollectionBackup = $scope.usersCollection;
                             users.itemsPerPageBackup = users.itemsPerPage;
-                            $scope.usersCollection = data.user;
+                            $scope.usersCollection = data.users;
                             users.itemsPerPage = adminService.maxInt;
                         });
                     }
@@ -1236,7 +1236,10 @@
                     adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
                         $scope.getUsersFromGroup(group);
                         $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, "studioMedium");
-                    }).error(function () {
+                    }).error(function (error) {
+                        $scope.errorTitle = $translate.instant('admin.users.DELETE_ERROR');
+                        $scope.error = error.response.message;
+                        $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
                     });
                 };
 

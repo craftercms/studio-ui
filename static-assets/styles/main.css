@@ -1,4 +1,36 @@
 @charset "UTF-8";
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* Bootstrap Config */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 html {
@@ -5366,6 +5398,22 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important; } }
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .no-margin {
   margin: 0; }
 
@@ -5854,6 +5902,22 @@ a.no-decoration,
 .cb {
   clear: both; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 body, html {
   height: 100%; }
 
@@ -5868,6 +5932,22 @@ a[ng-click] {
 .btn-pill {
   border-radius: 50px; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #container {
   left: 0;
   right: 0;
@@ -5950,6 +6030,22 @@ a[ng-click] {
     .footer-general section.footer-body p {
       min-height: 32px; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .navbar {
   margin-bottom: 0; }
   .navbar .navbar-brand {
@@ -5957,6 +6053,38 @@ a[ng-click] {
     .navbar .navbar-brand > img {
       width: 75px; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .studio-preview {
   width: 100%;
   height: 100%; }
@@ -6000,6 +6128,22 @@ a[ng-click] {
     text-align: left;
     vertical-align: middle; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .screen-title {
   margin: 0;
   color: #555555;
@@ -6123,6 +6267,22 @@ a[ng-click] {
   color: #7e9dbb;
   font-size: 3em; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .iframe .cstudio-navbar {
   display: none; }
 .iframe + #container {
@@ -6354,6 +6514,234 @@ table td {
   border-bottom: none; }
 .admin-console-view .nav-icon {
   min-width: 20px; }
+
+#create-site-dialog {
+  /* ANIMATION STYLINGS
+============================================================================= */
+  /* basic styling for entering and leaving
+  left and right added to ensure full width */
+  /* enter animation */
+  /* leave animation */
+  /* ANIMATIONS
+  ============================================================================= */
+  /**/
+                                                                                    /*
+/* slide out to the left */
+  /* slide in from the right */ }
+  #create-site-dialog .wizard-header {
+    background-color: #e2e2e2;
+    border-bottom: 1px solid #c9c9c9;
+    border-radius: 6px; }
+    #create-site-dialog .wizard-header #wizard-content-container {
+      min-height: 100px; }
+  #create-site-dialog #wizard-container legend {
+    color: #5d84a9; }
+  #create-site-dialog ul.nav-wizard > li > a {
+    z-index: 20;
+    display: inline; }
+  #create-site-dialog ul.nav-wizard {
+    position: relative;
+    overflow: hidden; }
+  #create-site-dialog ul.nav-wizard:before {
+    display: block;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 46px;
+    height: 47px;
+    z-index: 11;
+    content: " "; }
+  #create-site-dialog ul.nav-wizard:after {
+    display: block;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 138px;
+    height: 47px;
+    z-index: 11;
+    content: " "; }
+  #create-site-dialog ul.nav-wizard li {
+    background-color: #ededed;
+    position: relative;
+    float: left;
+    height: 47px;
+    display: inline-block;
+    text-align: middle;
+    padding: 0 16px 0 30px;
+    margin: 0;
+    font-size: 12px;
+    /*line-height: 46px;*/
+    border-bottom: 1px solid #d4d4d4;
+    line-height: 14px;
+    text-align: center;
+    display: table; }
+  #create-site-dialog ul.nav-wizard li a {
+    color: #999999;
+    padding: 0;
+    display: table-cell;
+    vertical-align: middle; }
+  #create-site-dialog ul.nav-wizard li a:hover {
+    background-color: transparent; }
+  #create-site-dialog ul.nav-wizard li:before {
+    position: absolute;
+    display: block;
+    border: 24px solid transparent;
+    border-left: 16px solid #d4d4d4;
+    border-right: 0;
+    top: -1px;
+    z-index: 10;
+    content: '';
+    right: -16px; }
+  #create-site-dialog ul.nav-wizard li:after {
+    position: absolute;
+    display: block;
+    border: 24px solid transparent;
+    border-left: 16px solid #ededed;
+    border-right: 0;
+    top: -1px;
+    z-index: 10;
+    content: '';
+    right: -15px; }
+  #create-site-dialog ul.nav-wizard li.active {
+    color: #3a87ad;
+    background: #d9edf7; }
+  #create-site-dialog ul.nav-wizard li.active:after {
+    border-left: 16px solid #d9edf7; }
+  #create-site-dialog ul.nav-wizard li.active a,
+  #create-site-dialog ul.nav-wizard li.active a:active,
+  #create-site-dialog ul.nav-wizard li.active a:visited,
+  #create-site-dialog ul.nav-wizard li.active a:focus {
+    color: #3a87ad;
+    background: #d9edf7; }
+  #create-site-dialog ul.nav-wizard .active ~ li {
+    color: #999999;
+    background: #fffdfd; }
+  #create-site-dialog ul.nav-wizard .active ~ li:after {
+    border-left: 16px solid #fffdfd; }
+  #create-site-dialog ul.nav-wizard .active ~ li a,
+  #create-site-dialog ul.nav-wizard .active ~ li a:active,
+  #create-site-dialog ul.nav-wizard .active ~ li a:visited,
+  #create-site-dialog ul.nav-wizard .active ~ li a:focus {
+    color: #999999;
+    background: #fffdfd;
+    pointer-events: none;
+    cursor: default; }
+  #create-site-dialog #wizard-navigation-container .form-group {
+    overflow: hidden; }
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav li:hover {
+    color: #468847;
+    background: #f6fbfd; }
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav li:hover:after {
+    border-left: 16px solid #f6fbfd; }
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav li:hover a,
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav li:hover a:active,
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav li:hover a:visited,
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav li:hover a:focus {
+    color: #468847;
+    background: #f6fbfd; }
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav .active ~ li {
+    color: #999999;
+    background: #f9f9f9; }
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav .active ~ li:after {
+    border-left: 16px solid #f9f9f9; }
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav .active ~ li a,
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav .active ~ li a:active,
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav .active ~ li a:visited,
+  #create-site-dialog ul.nav-wizard.nav-wizard-backnav .active ~ li a:focus {
+    color: #999999;
+    background: #f9f9f9; }
+  @media (max-width: 440px) {
+    #create-site-dialog #saveBtn {
+      float: left !important;
+      margin-top: 20px; } }
+  #create-site-dialog #wizard-content-container {
+    position: relative;
+    min-height: 250px;
+    overflow: hidden; }
+  #create-site-dialog .wizard-item.ng-hide-add.ng-hide-add-active,
+  #create-site-dialog .wizard-item.ng-hide-remove.ng-hide-remove-active {
+    position: absolute;
+    left: 30px;
+    right: 30px;
+    transition: 0.3s all ease;
+    -moz-transition: 0.3s all ease;
+    -webkit-transition: 0.3s all ease; }
+  #create-site-dialog .wizard-item.ng-hide-remove.ng-hide-remove-active {
+    -webkit-animation: slideInRight 0.3s both ease;
+    -moz-animation: slideInRight 0.3s both ease;
+    animation: slideInRight 0.3s both ease; }
+  #create-site-dialog .wizard-item.ng-hide-add.ng-hide-add-active {
+    -webkit-animation: slideOutLeft 0.3s both ease;
+    -moz-animation: slideOutLeft 0.3s both ease;
+    animation: slideOutLeft 0.3s both ease; }
+  #create-site-dialog .wizard-item.ng-hide {
+    opacity: 0 !important; }
+  #create-site-dialog #createSitesBlueprint {
+    z-index: 15000;
+    background-color: fff;
+    min-height: 200px; }
+@keyframes slideOutLeft {
+  to {
+    transform: translateX(-200%); } }
+@-moz-keyframes slideOutLeft {
+  to {
+    -moz-transform: translateX(-200%); } }
+@-webkit-keyframes slideOutLeft {
+  to {
+    -webkit-transform: translateX(-200%); } }
+@keyframes slideInRight {
+  from {
+    transform: translateX(200%); }
+  to {
+    transform: translateX(0); } }
+@-moz-keyframes slideInRight {
+  from {
+    -moz-transform: translateX(200%); }
+  to {
+    -moz-transform: translateX(0); } }
+@-webkit-keyframes slideInRight {
+  from {
+    -webkit-transform: translateX(200%); }
+  to {
+    -webkit-transform: translateX(0); } }
+  #create-site-dialog .grid {
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; }
+  #create-site-dialog .grid > article {
+    border: 1px solid #ccc;
+    -webkit-box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.3);
+    /*flex: 0 1 31%;*/
+    flex: 0 1 100%;
+    margin-bottom: 30px; }
+  @media (max-width: 992px) {
+    #create-site-dialog .grid > article {
+      /*flex: 0 1 47%;*/
+      flex: 0 1 100%; } }
+  @media (max-width: 456px) {
+    #create-site-dialog .grid > article {
+      flex: 0 1 100%; } }
+  #create-site-dialog .grid > article img {
+    max-width: 100%;
+    border-radius: 6px; }
+  #create-site-dialog .text {
+    padding: 0 20px 20px; }
+  #create-site-dialog .text > button {
+    border: 0;
+    padding: 10px;
+    width: 100%; }
+  #create-site-dialog * {
+    min-height: 0;
+    min-width: 0; }
+  #create-site-dialog .viewSection {
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    padding: 20px;
+    margin-top: 10px; }
 
 /* open-sans-300 - latin */
 @font-face {

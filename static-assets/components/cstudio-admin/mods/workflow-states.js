@@ -102,18 +102,6 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 				list[list.length] = wfStates[i]; 
 			}
 		}
-
-		var mySimpleDialog = new YAHOO.widget.SimpleDialog("dlg", { 
-		    width: "20em", 
-		    effect:{
-		        effect: YAHOO.widget.ContainerEffect.FADE,
-		        duration: 0.25
-		    }, 
-		    fixedcenter: true,
-		    modal: true,
-		    visible: false,
-		    draggable: false
-		});
 		 
 		var html = "";
 		html = "<div width='300px'>"+
@@ -165,12 +153,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 				YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
 				YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
 			}
-			
-			this.hide();
+
+            this.destroy();
 		};
 		
 		var handleCancel = function() {
-		    this.hide();
+            this.destroy();
 		};
 
 		var myButtons = [
@@ -178,11 +166,15 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
     		{ text: CMgs.format(formsLangBundle, "cancel"), handler: handleCancel, isDefault:true}
 		];
 
-		mySimpleDialog.cfg.queueProperty("buttons", myButtons);
-		mySimpleDialog.setHeader(CMgs.format(formsLangBundle, "setStatedDialogTitle"));
-		mySimpleDialog.setBody(html);
-		mySimpleDialog.render(document.body);
-		mySimpleDialog.show();
+        CStudioAuthoring.Operations.showSimpleDialog(
+            "setState-dialog",
+            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+            CMgs.format(formsLangBundle, "setStatedDialogTitle"),
+            html,
+            myButtons,
+            null,
+            "studioDialog"
+        );
 		
 	}
 	

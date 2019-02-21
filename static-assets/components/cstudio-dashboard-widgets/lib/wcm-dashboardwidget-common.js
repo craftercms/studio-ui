@@ -101,7 +101,7 @@ WcmDashboardWidgetCommon.insertViewLink = function (item, viewLinkId) {
                 var viewLink = document.getElementById(viewLinkId);
 
                 if (viewLink) {
-                    viewLink.innerHTML = ''.concat('<a href="javascript:" class="viewLink', ((item.deleted || item.inFlight ) ? ' non-previewable-edit' : ''), '">View</a>');
+                    viewLink.innerHTML = ''.concat('<a href="javascript:" class="viewLink', ((item.deleted || item.inFlight ) ? ' non-previewable-edit' : ''), '">' + CMgs.format(langBundle, "dashletGoLiveColView") + '</a>');
                 } else {
                     // We cannot assume the DOM will be ready to insert the edit link
                     // that's why we'll poll until the element is available in the DOM

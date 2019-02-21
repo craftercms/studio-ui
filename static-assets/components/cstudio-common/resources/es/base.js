@@ -37,6 +37,7 @@ CStudioAuthoring.Messages.registerBundle("siteDashboard", "es", {
     dashletGoLiveHideInProgress: "Esconder Artículos \"En-Progreso \" ",
     dashletGoLiveColPageName: "Nombre del Artículo",
     dashletGoLiveColEdit: "Editar",
+    dashletGoLiveColView: "Ver",
     dashletGoLiveColURL: "URL",
     dashletGoLiveColEnvironment: "Ambiente",
     dashletGoLiveColPublishDate: "Fecha de Publicación",

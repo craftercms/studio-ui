@@ -28,7 +28,7 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>{{ 'admin.clustering.LOCAL_IP' | translate }}</th>
+                            <th>{{ 'admin.clustering.LOCAL_ADDRESS' | translate }}</th>
                             <th>{{ 'admin.clustering.STATE' | translate }}</th>
                             <th>{{ 'admin.clustering.GIT_URL' | translate }}</th>
                             <th>{{ 'admin.clustering.GIT_NAME' | translate }}</th>
@@ -39,7 +39,7 @@
                         <tbody>
 
                         <tr ng-repeat="clusterMember in membersCollection track by $index">
-                            <td class="localIp">{{clusterMember.localIp}}</td>
+                            <td class="localIp">{{clusterMember.localAddress}}</td>
                             <td class="state">{{clusterMember.state}}</td>
                             <td class="gitUrl break">{{clusterMember.gitUrl}}</td>
                             <td class="gitRemoteName">{{clusterMember.gitRemoteName}}</td>
