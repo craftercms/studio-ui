@@ -2363,15 +2363,7 @@ var nodeOpen = false,
                             CSA.Operations.openContentWebForm(
                                 formId, id, noderef, path, true, asPopup, callback, auxParams);
                         }
-                        else if(uri.indexOf(".ftl") != -1
-                        || uri.indexOf(".css")  != -1
-                        || uri.indexOf(".js") != -1
-                        || uri.indexOf(".groovy") != -1
-                        || uri.indexOf(".txt") != -1
-                        || uri.indexOf(".html") != -1
-                        || uri.indexOf(".hbs") != -1
-                        || uri.indexOf(".xml") != -1
-                        ) {
+                        else if(CStudioAuthoring.Utils.isEditableFormAsset(uri)) {
                             var editCb = {
                                 success: function () {
                                     if(CStudioAuthoringContext.isPreview) {
@@ -2497,9 +2489,7 @@ var nodeOpen = false,
                                                             },
                                                         };
 
-                                                        if (CStudioAuthoring.Constants.IMAGE_VALID_EXTENSIONS.indexOf(extension) != -1) {
-                                                            refreshFn(parentItemTo.item, null);
-                                                        } else {
+                                                        if(CStudioAuthoring.Utils.isEditableFormAsset(parentItemTo.item.uri)){
                                                             CStudioAuthoring.Operations.editContent(
                                                                 contentTO.contentType,
                                                                 CStudioAuthoringContext.site,
@@ -2509,6 +2499,9 @@ var nodeOpen = false,
                                                                 false,
                                                                 editCb,
                                                                 new Array());
+
+                                                        } else {
+                                                            refreshFn(parentItemTo.item, null);
                                                         }
                                                     },
                                                     failure: function(errorResponse) {
@@ -8130,7 +8123,25 @@ var nodeOpen = false,
                 }
                 iconContainer.appendChild(iconElt);
                 return iconContainer;
+            },
+
+        /**
+         * Is Editable Form Asset
+         */
+        isEditableFormAsset: function(uri){
+            if(uri.indexOf(".ftl") != -1
+                || uri.indexOf(".css")  != -1
+                || uri.indexOf(".js") != -1
+                || uri.indexOf(".groovy") != -1
+                || uri.indexOf(".txt") != -1
+                || uri.indexOf(".html") != -1
+                || uri.indexOf(".hbs") != -1
+                || uri.indexOf(".xml") != -1) {
+                return true;
+            }else{
+                return false;
             }
+        }
 
         },
         "Utils.Doc": {
