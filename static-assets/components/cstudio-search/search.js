@@ -34,7 +34,8 @@
         numFilters: 1,
         currentPage: 1,	
         searchInProgress: false,
-        view: 'grid'
+        view: 'grid',
+        lastSelectedFilterSelector: '' 
     };
 
     CStudioSearch.typesMap = {
@@ -64,9 +65,7 @@
         var searchContext = this.determineSearchContextFromUrl();
         this.searchContext = searchContext;
 
-        // var CMgs = CStudioAuthoring.Messages,
-        //     browseLangBundle = CMgs.getBundle("browse", CStudioAuthoringContext.lang);
-
+        CStudioAuthoring.Operations.translateContent(langBundle, null, 'data-trans');
         this.performSearch();
         this.bindEvents();
     };
@@ -91,6 +90,10 @@
                 selected = $(this).is(":checked"),
                 allSelected = $('input[type="checkbox"].search-select-item:checked').length == $('input[type="checkbox"].search-select-item').length;
             
+            // synchronize checkbox (grid and list view)
+            $('input[type="checkbox"][data-url="' + path + '"]').prop('checked', selected);
+
+            // if all checkboxes are selected/unselected -> update select all checkbox
             $('#searchSelectAll').prop('checked', allSelected);
                 
             CStudioSearch.changeSelectStatus(path, selected);
@@ -130,18 +133,21 @@
             }else{
                 CStudioSearch.searchContext[filterName] = filterValue;
             }
+
+            CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
             
             CStudioSearch.updateNumFilters();
             CStudioSearch.performSearch(true);
             CStudioSearch.updateUrl();
         });
 
+        // Clear filter
         $('.cstudio-search').on('click', '.filters .clear-filter', function(){
-            var filterId = $(this).parent().attr('id');
+            var filterId = $(this).parent().find('[data-toggle="collapse"]').attr('aria-controls');
             $('input[name="' + filterId + '"]').prop('checked', false);
 
             delete CStudioSearch.searchContext.filters[filterId];
-            
+
             CStudioSearch.performSearch(true);
             CStudioSearch.updateUrl();
         });
@@ -220,13 +226,14 @@
                 maxButtonsVisible: 5,
                 currentPage: parseInt(this.searchContext.currentPage),
                 clickCurrentPage: false,
-                nextLabel: 'Next',
-                prevLabel: 'Prev',
-                firstLabel: 'First',
-                lastLabel: 'Last',
+                nextLabel: CMgs.format(langBundle, 'paginationNext'),
+                prevLabel: CMgs.format(langBundle, 'paginationPrev'),
+                firstLabel: CMgs.format(langBundle, 'paginationFirst'),
+                lastLabel: CMgs.format(langBundle, 'paginationLast'),
                 pageChange: function(page){
                     CStudioSearch.searchContext.currentPage = page;
                     CStudioSearch.performSearch();
+                    CStudioSearch.updateUrl();
                 }
             });
         }else{
@@ -274,12 +281,9 @@
         var source = $("#hb-filter-item").html(),
             template = Handlebars.compile(source),
             html,
-            separatorSrc = $("#hb-filter-separator").html(),
-            separatorTemplate = Handlebars.compile(separatorSrc),
-            separatorHtml = separatorTemplate(),
-            headerSrc = $('#hb-filter-section').html(),
-            headerTemplate = Handlebars.compile(headerSrc),
-            headerHtml;
+            headerHtml,
+            headerAccSrc = $('#hb-acc-filter-section').html(),
+            headerAccTemplate = Handlebars.compile(headerAccSrc);
 
         // Update searchInput value from searchContext
         $('#searchInput').val(searchContext.keywords);
@@ -307,65 +311,84 @@
             html = template(filterItem);
             $(html).appendTo($sortFilters);
         });
-        $('#' + sortByValue).prop("checked", true);
+        $('#sortBy' + sortByValue).prop("checked", true);
 
         // add filters
         $.each(searchContext.facets, function(index, facet){
             var groupedFacetsName = CStudioSearch.facetsMap[facet.name] ? CStudioSearch.facetsMap[facet.name] : null,
-                containerClass = groupedFacetsName ? groupedFacetsName : 'other',
-                $container = $('#searchFilters .dropdown-menu .' + containerClass),
-                headerExists = $container.find('.dropdown-header').length > 0;
+                $container = $('#searchFilters .dropdown-menu .panel-group'),
+                headerExists = $container.find('.dropdown-header').length > 0,
+                headerLabel = '';
 
             // Filters for images and videos, for example, are grouped
             if(groupedFacetsName && !headerExists){
-                headerHtml = headerTemplate({ 
-                    value: groupedFacetsName,
-                    label: groupedFacetsName,
-                    main: groupedFacetsName
-                })
-                $(headerHtml).appendTo($container);  
-            }else{
-                $(separatorHtml).appendTo($container);
+                groupedFacetsName = CMgs.format(langBundle, groupedFacetsName) ? CMgs.format(langBundle, groupedFacetsName) : groupedFacetsName;
+                headerLabel =  groupedFacetsName + ' - ';
             }
 
-            headerHtml = headerTemplate({ 
+            headerLabel = CMgs.format(langBundle, facet.name) ? headerLabel + CMgs.format(langBundle, facet.name) : headerLabel + facet.name;
+            headerHtml = headerAccTemplate({ 
                 value: facet.name,
-                label: facet.name,
+                label: headerLabel,
                 main: !groupedFacetsName,
+                grouped: groupedFacetsName,
                 clear: true
-            })
-            $(headerHtml).appendTo($container);
+            });
+
+            //check if it's grouped, if it is, place it together
+            if(groupedFacetsName){
+                var $groupElems = $('[data-group="'+ groupedFacetsName +'"]');
+                if($groupElems.length > 0){
+                    $groupElems.last().after($(headerHtml));
+                }else{
+                    $(headerHtml).appendTo($container);    
+                }
+            }else{
+                $(headerHtml).appendTo($container);
+            }
 
             $.each(facet.values, function(key, value){
-                var escapedKey = key.replace(/\//g, "_");
+                var escapedKey = key.replace(/\//g, "_"),
+                label;
+
+                if(facet.name === 'contentLength'){
+                    label = CStudioAuthoring.Utils.formatFileSize(parseInt(key));
+                }else{
+                    label = isNaN(parseInt(key)) ? key : parseInt(key);
+                }
 
                 filterItem = {
                     name: facet.name,
                     value: isNaN(parseInt(key)) ? key : parseInt(key),
                     id: isNaN(parseInt(escapedKey)) ? escapedKey : parseInt(escapedKey),
-                    label: key,
+                    label: label + ' (' + value + ')',
                     filter: true
                 }
 
                 html = template(filterItem);
-                $(html).appendTo($container);
+
+
+                $(html).appendTo($('#' + facet.name + ' .panel-body'));
             });
 
         });
 
         $.each(CStudioSearch.searchContext.filters, function(key, value){
             var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
-            $('input[type="radio"][name="' + key + '"]#' + escapedValue).prop("checked", true);
+            $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
         });
+
+        // Open accordion panel from last selected filter
+        if($(CStudioSearch.searchContext.lastSelectedFilterSelector).length > 0){
+            $(CStudioSearch.searchContext.lastSelectedFilterSelector).click();
+        }
 
         this.updateNumFilters();
     }
 
     CStudioSearch.cleanFilters = function(){
-        $('#searchFilters .dropdown-menu .sort-dinam').empty();
-        $('#searchFilters .dropdown-menu .images').empty();
-        $('#searchFilters .dropdown-menu .videos').empty();
-        $('#searchFilters .dropdown-menu .other').empty();
+        $('#searchFilters .dropdown-menu .panel-default.tmpl').remove();
+        $('#searchFilters .dropdown-menu .panel-default .filter-item.tmpl').remove();
     }
 
     CStudioSearch.updateNumFilters = function(){
@@ -398,7 +421,7 @@
             source = $("#hb-search-result").html(),
             template = Handlebars.compile(source),
             html,
-            editPermission = true;
+            editable = true;
 
         if(
             result.type === "Page"
@@ -416,7 +439,7 @@
             && result.path.indexOf(".html") == -1
             && result.path.indexOf(".hbs") == -1
             && result.path.indexOf(".xml") == -1) {
-            editPermission = false;
+            editable = false;
         }
 
         if(result.type !== 'Page' && result.type !== 'Component' && result.type !== 'Taxonomy' && result.type !== 'Image') {
@@ -424,11 +447,33 @@
         }
         result.icon = CStudioSearch.typesMap[result.type];
 
-        // result.name = result.path.split(/[\\\/]/).pop();
-        result.editable = editPermission;
-        html = template(result);
         
-        $(html).appendTo($resultsContainer);
+        // if editable by ace-editor -> ask for permissions
+        if(editable){
+            CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, result.path, {
+                success: function (results) {
+                    var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "write"),
+                        isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "delete");
+                    result.editable = isWriteAllowed;
+
+                    // set permissions for edit/delete actions to be (or not) rendered
+                    result.permissions = {
+                        edit: isWriteAllowed,
+                        delete: isDeleteAllowed
+                    };
+
+                    html = template(result);
+                    $(html).appendTo($resultsContainer);
+                },
+                failure: function () {
+                    throw new Error('Unable to retrieve user permissions');
+                }
+            });
+        }else{
+            result.editable = editable;
+            html = template(result);
+            $(html).appendTo($resultsContainer);
+        }
     }
 
     CStudioSearch.changeSelectStatus = function(path, selected){

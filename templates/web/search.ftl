@@ -82,7 +82,7 @@
 
         <div class="options row">
             <div class="col-md-12">
-                <span class="bold">Number of Results:</span> <span id="searchNumResults" class="num-results bold"></span>
+                <span class="bold" data-trans="numResults">Number of Results</span>: <span id="searchNumResults" class="num-results bold"></span>
 
                 <div class="pull-right">
                     <div class="view-selector btn-group" role="group" aria-label="...">
@@ -92,39 +92,61 @@
 
                     <div id="searchFilters" class="filters dropdown">
                         <button class="btn btn-default dropdown-toggle" type="button" id="searchDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Filters <span id="numFilters"></span>
+                            <span data-trans="filters">Filters</span> <span id="numFilters"></span>
                             <span class="caret"></span>
                         </button>
 
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="searchDropdown">
-                            <div class="sort">
-                                <li class="dropdown-header main-header" id="sortOrder">Sort Order</li>
-                                <li class="filter-item">
-                                    <a href="#">
-                                        <input type="radio" name="sortOrder" value="asc" id="asc">
-                                        <label for="asc">Asc</label>
-                                    </a>
-                                </li>
-                                <li class="filter-item">
-                                    <a href="#">
-                                        <input type="radio" name="sortOrder" value="desc" id="desc">
-                                        <label for="desc">Desc</label>
-                                    </a>
-                                </li>
-
-                                <li class="dropdown-header main-header" id="sortBy">Sort By</li>
-                                <li class="filter-item">
-                                    <a href="#">
-                                        <input type="radio" name="sortBy" value="internalName" id="internalName">
-                                        <label for="internalName">Name</label>
-                                    </a>
-                                </li>
+                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingOne">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                Sort Order
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                        <div class="panel-body">
+                                            <li class="filter-item">
+                                                <a href="#">
+                                                    <input type="radio" name="sortOrder" value="asc" id="asc">
+                                                    <label for="asc" data-trans="asc">Asc</label>
+                                                </a>
+                                            </li>
+                                            <li class="filter-item">
+                                                <a href="#">
+                                                    <input type="radio" name="sortOrder" value="desc" id="desc">
+                                                    <label for="desc" data-trans="desc">Desc</label>
+                                                </a>
+                                            </li>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingTwo">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" 
+                                               aria-expanded="true" aria-controls="collapseTwo"
+                                               data-trans="sortBy">
+                                                Sort By
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                    <div class="panel-body">
+                                        <li class="filter-item">
+                                            <a href="#">
+                                                <input type="radio" name="sortBy" value="internalName" id="sortByinternalName">
+                                                <label for="sortByinternalName" data-trans="name">Name</label>
+                                            </a>
+                                        </li>
+                                        <div class="sort-dinam"></div>
+                                    </div>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="sort-dinam"></div>
-                            <div class="images"></div>
-                            <div class="videos"></div>
-                            <div class="other"></div>
+
                         </ul>
                     </div>
                 </div>
@@ -134,7 +156,7 @@
                     <input type="checkbox" class="search-select-all" id="searchSelectAll" />
                     <span class="checkmark"></span>
                 </label> 
-                <label for="searchSelectAll" style="cursor: pointer;">Select All</label>
+                <label for="searchSelectAll" style="cursor: pointer;" data-trans="selectAll">Select All</label>
             </div>
         </div>
 
@@ -151,6 +173,11 @@
     <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="result-container">
             <div class="result card clearfix">
+                <label class="checkbox-container list-select">
+                    <input type="checkbox" class="search-select-item" data-url="{{ path }}" value="None" name="check" />
+                    <span class="checkmark"></span>
+                </label>
+
                 <div class="result-preview {{#if asset}}result-asset{{/if}} {{#if previewable}}previewable{{/if}}" data-url="{{ path }}">
                     {{#equal type "Page"}}
                         <img class="preview-img" src="http://localhost:8080/studio/api/1/services/api/1/content/get-content-at-path.bin?site=editorial&path=/config/studio/content-types/page/home/page-home.png"/>
@@ -176,15 +203,20 @@
                     </div>
                 </div>
                 <div class="actions">
-                    {{#if editable}}
-                    <a class="action search-edit" href="#" data-url="{{ path }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                    {{/if}}
-                    <a class="action search-delete" href="#" data-url="{{ path }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-
-                    <label class="checkbox-container">
+                    <label class="checkbox-container grid-select">
                         <input type="checkbox" class="search-select-item" data-url="{{ path }}" value="None" id="squaredFour" name="check" />
                         <span class="checkmark"></span>
                     </label>
+
+                    <span class="studio-actions">
+                        {{#if permissions.edit }}
+                        <a class="action search-edit" href="#" data-url="{{ path }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                        {{/if}}
+                        {{#if permissions.delete }}
+                        <a class="action search-delete" href="#" data-url="{{ path }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        {{/if}}
+                    </span>
+                    
                 </div>
             </div>
         </div>
@@ -202,12 +234,30 @@
     </script>
 
     <script id="hb-filter-item" type="text/x-handlebars-template">
-        <li class="filter-item">
+        <li class="filter-item tmpl">
             <a href="#">
-                <input type="radio" name="{{ name }}" value="{{ value }}" id="{{ id }}" class="{{#if filter}}filter{{/if}}">
-                <label for="{{ id }}">{{ label }}</label>
+                <input type="radio" name="{{ name }}" value="{{ value }}" id="{{ name }}{{ id }}" class="{{#if filter}}filter{{/if}}">
+                <label for="{{ name }}{{ id }}">{{ label }}</label>
             </a>
         </li>
+    </script>
+
+    <script id="hb-acc-filter-section" type="text/x-handlebars-template">
+        <div class="panel panel-default tmpl" {{#if grouped}}data-group="{{grouped}}"{{/if}}>
+            <div class="panel-heading" role="tab" id="heading{{ value }}">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="&#x23;{{ value }}" aria-expanded="false" aria-controls="{{ value }}">
+                        {{ label }}
+                    </a>
+                    {{#if clear}}<a class="clear-filter">Clear</a>{{/if}}    
+                </h4>
+            </div>
+            <div id="{{ value }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ value }}">
+                <div class="panel-body">
+                    
+                </div>
+            </div>
+        </div>
     </script>
 
     <script type="text/javascript">

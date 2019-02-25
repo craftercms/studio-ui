@@ -675,16 +675,17 @@ var nodeOpen = false,
                 };
             },
 
-            translateContent: function(langBundle, specificSelector){
-                var elements;
+            translateContent: function(langBundle, specificSelector, dataAtt){
+                var elements,
+                    dataAtt = dataAtt ? dataAtt : 'data-translation';
                 if(specificSelector){
-                    elements = document.querySelectorAll(specificSelector+" [data-translation");
+                    elements = document.querySelectorAll(specificSelector + "[" + dataAtt + "]");
                 }else{
-                    elements = document.querySelectorAll("[data-translation]");
+                    elements = document.querySelectorAll("[" + dataAtt + "]");
                 }
 
                 for(var i=0; i<elements.length; i++){
-                    elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute('data-translation'));
+                    elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute(dataAtt));
                 }
             },
 
@@ -4237,6 +4238,16 @@ var nodeOpen = false,
                 return false;
             },
 
+            validatePermission: function(permissions, permission){
+                for (var i = 0; i < permissions.length; i++) {
+                    if(permissions[i] == permission) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+
             createFlatMap:function(itemArray) {
                 var _pupulateMap = function(itemArray, map) {
                     for (var i = 0; i < itemArray.length; i++) {
@@ -6438,6 +6449,11 @@ var nodeOpen = false,
                 var date = moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
                         moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") : dateTime;
                 return date;
+            },
+
+            formatFileSize: function(size){
+                var i = size == 0 ? 0 : Math.floor( Math.log(size) / Math.log(1024) );
+                return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
             },
 
             /**

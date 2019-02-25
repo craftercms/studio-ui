@@ -123,11 +123,26 @@
                         background-color: #eaeaea;
                         font-size: 14px;
                     }
+                }
 
-                    .clear-filter {
-                        float: right;
-                        cursor: pointer;
+                .panel {
+                    .panel-title {
+                        width: 100%;
+                        position: relative;
+
+                        [data-toggle="collapse"] {
+                            width: 100%;
+                            display: inline-block;
+                        }
                     }
+                }
+
+                .clear-filter {
+                    color: #a5a5a5;
+                    cursor: pointer;
+                    position: absolute;
+                    right: 0;
+                    top: 0;
                 }
 
                 .divider {
@@ -191,6 +206,10 @@
                     background-color: #7e9dbb;
                 }
 
+                .list-select {
+                    display: none;
+                }
+
                 .result-preview {
                     height: calc(100% - 60px);
                     overflow: hidden;
@@ -240,7 +259,7 @@
                     font-size: 16px;
 
                     .action {
-                        margin-right: 10px;
+                        
 
                         .fa {
                             &:hover { 
@@ -249,7 +268,12 @@
                         }
                     }
 
-                    .checkbox-container {
+                    .checkbox-container.grid-select {
+                        // float: right;
+                        margin-right: 10px;
+                    }
+
+                    .studio-actions {
                         float: right;
                     }
                 }
@@ -272,39 +296,56 @@
                 width: 100%;
                 height: auto;
 
-                .result-preview {
-                    height: auto;
-                    float: left;
-                    background: none;
+                .result {
+                    padding-left: 60px;
+                    position: relative;
 
-                    .preview-img {
-                        display: none;
+                    .list-select {
+                        display: block;
+                        position: absolute;
+                        left: 10px;
+                        top: 30px;
                     }
-                    .result-icon {
-                        display: inline-block;
-                        position: relative;
-                        padding: 20px;
-                        top: unset;
-                        left: unset;
-                        background-color: #7e9dbb;
-                    }
-                    .result-info {
-                        display: inline-block;
-                        position: relative;
 
-                        padding: 20px;
-                        width: auto;
+                    .result-preview {
+                        height: auto;
+                        float: left;
                         background: none;
+    
+                        .preview-img {
+                            // display: none;
+                            max-width: 74.28px;
+                            height: 80px;
+                            width: auto;
+                            vertical-align: bottom;
+                        }
+                        .result-icon {
+                            // display: inline-block;
+                            position: relative;
+                            padding: 20px;
+                            top: unset;
+                            left: unset;
+                            background-color: #7e9dbb;
+                        }
+                        .result-info {
+                            display: inline-block;
+                            position: relative;
+    
+                            padding: 20px;
+                            width: auto;
+                            background: none;
+                        }
                     }
-                }
-                .actions {
-                    float: right;
-                    padding: 26px 20px;
-                    font-size: 18px;
-                    height: unset;
-                    
-                    .checkbox-container {
-                        margin-left: 10px;    
+                    .actions {
+                        float: right;
+                        padding: 26px 20px;
+                        font-size: 18px;
+                        height: unset;
+                        
+                        .checkbox-container {
+                            // margin-left: 10px;    
+                            display: none;
+                        }
                     }
                 }
             }
