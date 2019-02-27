@@ -8129,6 +8129,7 @@ var nodeOpen = false,
          * Is Editable Form Asset
          */
         isEditableFormAsset: function(uri){
+            //TODO: We should make this a MIME type and make the MIME types a constant
             if(uri.indexOf(".ftl") != -1
                 || uri.indexOf(".css")  != -1
                 || uri.indexOf(".js") != -1
