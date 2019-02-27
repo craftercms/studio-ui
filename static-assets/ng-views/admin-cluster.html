@@ -46,7 +46,7 @@
                             <td class="gitAuthType">{{clusterMember.gitAuthType}}</td>
 
                             <td class="remove">
-                                <a ng-click="clusters.removeClusterMember(clusterMember)" class="btn btn-sm">
+                                <a ng-click="clusters.removeClusterMember(clusterMember)" class="btn btn-sm" ng-show="clusterMember.state == 'INACTIVE'">
                                     <i class="fa fa-trash-o">
                                     </i>
                                 </a>

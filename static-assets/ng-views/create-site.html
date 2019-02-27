@@ -33,7 +33,7 @@
 <div class="wizard-item moveToRight" ng-show="getStepTemplate() == 'createSitesBlueprint' " id="createSitesBlueprint">
     <h2 class="">{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</h2>
     <div class="form-group">
-        <input type="checkbox" ng-click="isRemoteGit = !isRemoteGit" id="isRemoteGit" name="isRemoteGit" value="none" ng-model="site.isRemoteGit" >
+        <input type="checkbox" ng-click="isRemoteGit = !isRemoteGit" id="isRemoteGit" name="isRemoteGit" value="none" ng-model="site.isRemoteGit" autofocus focus-me="true" >
         <label for="isRemoteGit">{{ 'dashboard.sites.create.USE_REMOTE_GIT' | translate }}</label><br/>
     </div>
     <section role=”main” class="grid">
@@ -67,7 +67,7 @@
 
     <div class="form-group">
         <label for="siteId">* {{ 'dashboard.sites.create.SITE_ID' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SITE_ID_VALIDATION' | translate }}</span>
-        <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" maxlength="50" ng-change="isValidSite()" autofocus focus-me="true" required/>
+        <input id="siteId" name="siteId" type="text" class="form-control" ng-model="site.siteId" maxlength="50" ng-change="isValidSite()" required/>
 
         <div class="error-container"
              ng-show="(createNameForm.siteId.$dirty && createNameForm.siteId.$invalid) || (createNameForm.siteId.$touched && createNameForm.siteId.$invalid)">
@@ -95,7 +95,7 @@
 
     <div class="form-group">
         <label for="sandboxBranch">{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SANDBOX_BRANCH_MSG' | translate }}</span>
-        <input type="text" class="form-control" id="sandboxBranch" name="sandboxBranch" ng-model="site.sandbox_branch" autofocus focus-me="true" />
+        <input type="text" class="form-control" id="sandboxBranch" name="sandboxBranch" ng-model="site.sandbox_branch" />
     </div>
 
     <div id="remoteGitRepository">

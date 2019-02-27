@@ -111,8 +111,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.LogView, CStudioAdminConsole.Tool, {
 
                         CStudioAdminConsole.Tool.LogView.history += "<tr class='entry "+entry.level+"' >"+
                             "<td class='timestamp'>"+entry.timestamp+"</td>"+
-                            "<td class='message'>"+entry.message+"</td>"+
-                            "<td class='exception'>"+entry.exception+"</td>"+
+                            "<td class='message'>"+YAHOO.lang.escapeHTML(entry.message)+"</td>"+
+                            "<td class='exception'>"+YAHOO.lang.escapeHTML(entry.exception)+"</td>"+
                             "</tr>";
                     }
 
