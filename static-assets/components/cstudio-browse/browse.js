@@ -131,7 +131,7 @@
         $resultsContainer.on('click', '.magnify-icon', function(){
             var path = $(this).attr('data-source');
             var type = $(this).attr('data-type');
-            me.magnify(path, type);
+            CStudioAuthoring.Utils.previewAssetDialog(path, type);
         });
     };
 
@@ -427,39 +427,6 @@
             window.close();
             $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
         }
-    };
-
-    CStudioBrowse.magnify = function(source, type) {
-        var $container = $('.cstudio-browse-image-popup-overlay'),
-            $img = $container.find('img'),
-            $video = $container.find('video');
-            $img.hide(); $video.hide();
-            $container.removeClass('cstudio-browse-video-popup-overlay');
-
-        if(type.match(/\bvideo\b/)) {
-            $container.addClass('cstudio-browse-video-popup-overlay');
-            $video.show();
-            $video.find('source').attr('src', source);
-            $video.find('source').attr('type', type);
-            $video.load();
-        }else{
-            $img.show();
-            $img.attr('src', source);
-        }
-
-        $container.show();
-
-        $container.one('click', '.close', function(){
-            $container.hide();
-        });
-
-        $container.on('click', function(e) {
-            if (e.target !== this)
-                return;
-
-            $container.hide();
-        });
-
     };
 
     CStudioBrowse.renderContextMenu = function() {

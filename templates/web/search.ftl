@@ -99,31 +99,6 @@
                         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="searchDropdown">
                             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                 <div class="panel panel-default">
-                                    <div class="panel-heading" role="tab" id="headingOne">
-                                        <h4 class="panel-title">
-                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                Sort Order
-                                            </a>
-                                        </h4>
-                                    </div>
-                                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                                        <div class="panel-body">
-                                            <li class="filter-item">
-                                                <a href="#">
-                                                    <input type="radio" name="sortOrder" value="asc" id="asc">
-                                                    <label for="asc" data-trans="asc">Asc</label>
-                                                </a>
-                                            </li>
-                                            <li class="filter-item">
-                                                <a href="#">
-                                                    <input type="radio" name="sortOrder" value="desc" id="desc">
-                                                    <label for="desc" data-trans="desc">Desc</label>
-                                                </a>
-                                            </li>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingTwo">
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" 
@@ -133,7 +108,7 @@
                                             </a>
                                         </h4>
                                     </div>
-                                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                    <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
                                     <div class="panel-body">
                                         <li class="filter-item">
                                             <a href="#">
@@ -143,6 +118,24 @@
                                         </li>
                                         <div class="sort-dinam"></div>
                                     </div>
+                                    <#--  Sort order  -->
+                                    <div class="panel-footer subfilter"> 
+                                        <h4 class="panel-title" data-trans="sortOrder">
+                                            Sort Order
+                                        </h4>
+
+                                        <li class="filter-item">
+                                            <a href="#">
+                                                <input type="radio" name="sortOrder" value="asc" id="asc">
+                                                <label for="asc" data-trans="asc">Asc</label>
+                                            </a>
+                                        </li>
+                                        <li class="filter-item">
+                                            <a href="#">
+                                                <input type="radio" name="sortOrder" value="desc" id="desc">
+                                                <label for="desc" data-trans="desc">Desc</label>
+                                            </a>
+                                        </li>
                                     </div>
                                 </div>
                             </div>
@@ -170,6 +163,18 @@
 
     </section>
 
+    <div class="cstudio-image-popup-overlay" id="searchPreviewPopup" style="display: none;">
+        <div class="cstudio-image-pop-up">
+            <div>
+                <input type="button" class="close btn btn-default" value="x">
+            </div>
+            <img src="">
+            <video id="videoOverlay" controls="true" >
+                <source src="" type="">
+            </video>
+        </div>
+    </div>
+
     <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="result-container">
             <div class="result card clearfix">
@@ -178,7 +183,7 @@
                     <span class="checkmark"></span>
                 </label>
 
-                <div class="result-preview {{#if asset}}result-asset{{/if}} {{#if previewable}}previewable{{/if}}" data-url="{{ path }}">
+                <div class="result-preview {{#if asset}}result-asset{{/if}} {{#if previewable}}previewable{{/if}}" data-url="{{ path }}" data-type="{{ type }}">
                     {{#equal type "Page"}}
                         <img class="preview-img" src="http://localhost:8080/studio/api/1/services/api/1/content/get-content-at-path.bin?site=editorial&path=/config/studio/content-types/page/home/page-home.png"/>
                     {{/equal}}
@@ -209,6 +214,19 @@
                     </label>
 
                     <span class="studio-actions">
+                        <#--  TODO: change data-type to mimetype  -->
+                        {{#equal type "Image"}}
+                        <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                        </a>
+                        {{/equal}}
+                        {{#equal type "Video"}}
+                        <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                        </a>
+                        {{/equal}}
+
+
                         {{#if permissions.edit }}
                         <a class="action search-edit" href="#" data-url="{{ path }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                         {{/if}}
@@ -239,6 +257,14 @@
                 <input type="radio" name="{{ name }}" value="{{ value }}" id="{{ name }}{{ id }}" class="{{#if filter}}filter{{/if}}">
                 <label for="{{ name }}{{ id }}">{{ label }}</label>
             </a>
+        </li>
+    </script>
+
+    <script id="hb-filter-range" type="text/x-handlebars-template">
+        <li class="filter-item filter-range tmpl" filter-name="{{ name }}">
+            <input class="range-min" type="text" name="min" placeholder="Min"> -
+            <input class="range-max" type="text" name="max" placeholder="Max">
+            <button type="button" class="btn btn-primary apply-range">Go</button>
         </li>
     </script>
 

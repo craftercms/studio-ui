@@ -18,6 +18,7 @@
 (function (window, $, Handlebars) {
     'use strict';
 
+    var storage = CStudioAuthoring.Storage;
     if (typeof window.CStudioSearch == "undefined" || !window.CStudioSearch) {
         var CStudioSearch = {};
         window.CStudioSearch = CStudioSearch;
@@ -39,20 +40,29 @@
     };
 
     CStudioSearch.typesMap = {
-        Page: 'fa-file',
-        Component: 'fa-puzzle-piece',
-        Template: 'fa-file-code-o',
-        Taxonomy: 'fa-tag',
-        Other: 'fa-file-text',
-        Image: 'fa-file-image-o',
-        Video: 'fa-file-video-o',
-        CSS: 'fa-css3',
-        JavaScript: 'fa-file-code-o',
-        Groovy: 'fa-file-code-o',
-        PDF: 'fa-file-pdf-o',
-        "MS WORD": 'fa-file-word-o',
-        "MS EXCEL": 'fa-file-excel-o',
-        "MS PowerPoint": 'fa-file-powerpoint-o'
+        Page: {
+            icon: 'fa-file',
+            tree: 'pages'
+        },
+        Image: {
+            icon: 'fa-file-image-o',
+            tree: 'staticassets'
+        },
+        Video: {
+            icon: 'fa-file-video-o',
+            tree: 'staticassets'
+        },
+        Component: { icon: 'fa-puzzle-piece' },
+        Template: { icon: 'fa-file-code-o' },
+        Taxonomy: { icon: 'fa-tag' },
+        Other: { icon: 'fa-file-text' },
+        CSS: { icon: 'fa-css3' },
+        JavaScript: { icon: 'fa-file-code-o' },
+        Groovy: { icon: 'fa-file-code-o' },
+        PDF: { icon: 'fa-file-pdf-o' },
+        "MS WORD": { icon: 'fa-file-word-o' },
+        "MS EXCEL": { icon: 'fa-file-excel-o' },
+        "MS PowerPoint": { icon: 'fa-file-powerpoint-o' }
     }
 
     // TODO: validate if needed (videos filters are pending)
@@ -88,12 +98,13 @@
         $('.cstudio-search').on('change', '.search-select-item', function(){
             var path = $(this).attr('data-url'),
                 selected = $(this).is(":checked"),
-                allSelected = $('input[type="checkbox"].search-select-item:checked').length == $('input[type="checkbox"].search-select-item').length;
+                allSelected;
             
             // synchronize checkbox (grid and list view)
             $('input[type="checkbox"][data-url="' + path + '"]').prop('checked', selected);
 
             // if all checkboxes are selected/unselected -> update select all checkbox
+            allSelected = $('input[type="checkbox"].search-select-item:checked').length == $('input[type="checkbox"].search-select-item').length;
             $('#searchSelectAll').prop('checked', allSelected);
                 
             CStudioSearch.changeSelectStatus(path, selected);
@@ -106,6 +117,15 @@
 
             $elements.prop('checked', selected).trigger("change");
             
+        });
+
+        // Clicking on view icon from the results
+        $('.cstudio-search').on('click', '.search-preview', function(e) {
+            var path = $(this).attr('data-url'),
+                type = $(this).attr('data-type').toLowerCase();
+            e.preventDefault();
+
+            CStudioAuthoring.Utils.previewAssetDialog(path, type, $('#searchPreviewPopup'));
         });
 
         // Clicking on edit icon from the results
@@ -141,6 +161,25 @@
             CStudioSearch.updateUrl();
         });
 
+        // Applying range to a filter
+        $('.cstudio-search').on('click', '.filter-range .apply-range', function(){ 
+            var $parent = $(this).parent(),
+                filterName = $parent.attr('filter-name'),
+                rangeMin = parseInt($parent.find('.range-min').val()),
+                rangeMax = parseInt($parent.find('.range-max').val());
+
+            CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
+            CStudioSearch.searchContext.filters[filterName] = {
+                min: rangeMin,
+                max: rangeMax
+            }; 
+
+            CStudioSearch.updateNumFilters();
+            CStudioSearch.performSearch(true);
+            CStudioSearch.updateUrl();
+
+        });
+
         // Clear filter
         $('.cstudio-search').on('click', '.filters .clear-filter', function(){
             var filterId = $(this).parent().find('[data-toggle="collapse"]').attr('aria-controls');
@@ -167,6 +206,38 @@
 
         // Clicking on result to preview
         $('.cstudio-search').on('click', '.result-preview.previewable', function() {
+            var type = $(this).attr("data-type"),
+                treeVal = CStudioSearch.typesMap[type].tree,
+                treeCookieName,
+                treeCookie,
+                url = $(this).attr("data-url"),
+                parsedUrl,
+                cookieKey = type === 'Page' ? 'sitewebsite' : 'static-assets';
+
+            if(treeVal){
+                treeCookieName = CStudioAuthoringContext.site + '-' + treeVal + '-opened';
+                treeCookie = JSON.parse(CStudioAuthoring.Storage.read(treeCookieName));
+
+                // validate if is page and if has folder (ends with index.xml)
+                if(type === "Page" && (url.indexOf("index.xml") !== -1)){
+                    //remove everything after last-1 '/'
+                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                    parsedUrl = parsedUrl.substr(0, parsedUrl.lastIndexOf('/'));
+                }else{
+                    //remove everything after last '/'
+                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                }
+
+                // key doesn't exist in cookie
+                if(!treeCookie[cookieKey] && parsedUrl != '/site'){
+                    treeCookie[cookieKey] = [];
+                }
+                // in entry doesn't exist in key
+                if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
+                    treeCookie[cookieKey].push(parsedUrl);
+                }
+                storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
+            }
             CStudioSearch.previewElement($(this).attr('data-url'));
         });
 
@@ -281,9 +352,12 @@
         var source = $("#hb-filter-item").html(),
             template = Handlebars.compile(source),
             html,
+            headerSrc = $('#hb-acc-filter-section').html(),
+            headerTemplate = Handlebars.compile(headerSrc),
             headerHtml,
-            headerAccSrc = $('#hb-acc-filter-section').html(),
-            headerAccTemplate = Handlebars.compile(headerAccSrc);
+            rangeSrc = $('#hb-filter-range').html(),
+            rangeTemplate = Handlebars.compile(rangeSrc),
+            rangeHtml;
 
         // Update searchInput value from searchContext
         $('#searchInput').val(searchContext.keywords);
@@ -295,11 +369,7 @@
         // sortBy
         var sortByValue = searchContext.sortBy;
         $.each(searchContext.facets, function(index, facet){
-            var label = (facet.name).replace(/-/g, " ");
-            label = label.replace(/([A-Z])/g, ' $1').trim();
-            label = label.replace(/\b[a-z]/g, function(letter) {
-                return letter.toUpperCase();
-            });
+            var label = CMgs.format(langBundle, facet.name);
 
             filterItem = {
                 name: 'sortBy',
@@ -327,7 +397,7 @@
             }
 
             headerLabel = CMgs.format(langBundle, facet.name) ? headerLabel + CMgs.format(langBundle, facet.name) : headerLabel + facet.name;
-            headerHtml = headerAccTemplate({ 
+            headerHtml = headerTemplate({ 
                 value: facet.name,
                 label: headerLabel,
                 main: !groupedFacetsName,
@@ -349,9 +419,9 @@
 
             $.each(facet.values, function(key, value){
                 var escapedKey = key.replace(/\//g, "_"),
-                label;
+                    label;
 
-                if(facet.name === 'contentLength'){
+                if(facet.name === 'Size'){
                     label = CStudioAuthoring.Utils.formatFileSize(parseInt(key));
                 }else{
                     label = isNaN(parseInt(key)) ? key : parseInt(key);
@@ -371,11 +441,23 @@
                 $(html).appendTo($('#' + facet.name + ' .panel-body'));
             });
 
+            // If facet is a range, add inputs for a custom range
+            if(facet.range){    
+                rangeHtml = rangeTemplate({ name: facet.name });
+                $(rangeHtml).appendTo($('#' + facet.name + ' .panel-body'));
+            }
+
         });
 
         $.each(CStudioSearch.searchContext.filters, function(key, value){
-            var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
-            $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
+            if( typeof value === 'object' ){
+                var $filterContainer = $('.filter-range[filter-name="' + key + '"]');
+                $filterContainer.find('input[name="min"]').val(value.min);
+                $filterContainer.find('input[name="max"]').val(value.max);
+            }else{
+                var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
+                $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
+            }
         });
 
         // Open accordion panel from last selected filter
@@ -431,23 +513,13 @@
             result.previewable = true;
         }
 
-        if (result.path.indexOf(".ftl") == -1
-            && result.path.indexOf(".css") == -1
-            && result.path.indexOf(".js") == -1
-            && result.path.indexOf(".groovy") == -1
-            && result.path.indexOf(".txt") == -1
-            && result.path.indexOf(".html") == -1
-            && result.path.indexOf(".hbs") == -1
-            && result.path.indexOf(".xml") == -1) {
-            editable = false;
-        }
+        editable = CStudioAuthoring.Utils.isEditableFormAsset(result.path);
 
         if(result.type !== 'Page' && result.type !== 'Component' && result.type !== 'Taxonomy' && result.type !== 'Image') {
             result.asset = true;
         }
-        result.icon = CStudioSearch.typesMap[result.type];
+        result.icon = CStudioSearch.typesMap[result.type].icon;
 
-        
         // if editable by ace-editor -> ask for permissions
         if(editable){
             CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, result.path, {

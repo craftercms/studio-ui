@@ -260,7 +260,7 @@ body {
 
 	}
 
-	.cstudio-browse-image-popup-overlay{
+	.cstudio-image-popup-overlay{
 		position: fixed;
 		display: none;
 		top: 0px;
@@ -272,7 +272,7 @@ body {
 		background: rgba(0, 0, 0, 0.6);
 		text-align: center;
 
-		#cstudio-browse-image-pop-up {
+		.cstudio-image-pop-up {
 			display: inline-block;
 			box-sizing: content-box;
     		background-color: #928f8f;

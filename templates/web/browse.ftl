@@ -101,8 +101,8 @@
       </div>
     </div>
 
-    <div class="cstudio-browse-image-popup-overlay">
-        <div id="cstudio-browse-image-pop-up">
+    <div class="cstudio-image-popup-overlay">
+        <div class="cstudio-image-pop-up">
             <div>
                 <input type="button" class="close btn btn-default" value="x">
             </div>

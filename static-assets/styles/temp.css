@@ -1,4 +1,36 @@
 @charset "UTF-8";
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* Bootstrap Config */
 /*!
 Animate.css - http://daneden.me/animate
@@ -5344,6 +5376,50 @@ span.acn-canned-search {
     .studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper {
       width: 506px; } }
 
+.cstudio-image-popup-overlay {
+  position: fixed;
+  display: none;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  margin: auto;
+  z-index: 32;
+  background: rgba(0, 0, 0, 0.6);
+  text-align: center; }
+  .cstudio-image-popup-overlay .cstudio-image-pop-up {
+    display: inline-block;
+    box-sizing: content-box;
+    background-color: #928f8f;
+    border-radius: 6px;
+    padding: 5px 10px 10px; }
+    .cstudio-image-popup-overlay .cstudio-image-pop-up > div {
+      text-align: right; }
+      .cstudio-image-popup-overlay .cstudio-image-pop-up > div input.close {
+        float: none;
+        border: none;
+        background: transparent;
+        box-shadow: none;
+        font-size: 20px;
+        padding: 0;
+        line-height: 12px;
+        padding-bottom: 7px;
+        margin-bottom: 5px;
+        opacity: 1;
+        margin-right: -5px;
+        border-radius: 0; }
+    .cstudio-image-popup-overlay .cstudio-image-pop-up img, .cstudio-image-popup-overlay .cstudio-image-pop-up video {
+      border-radius: 6px;
+      max-width: 700px;
+      background-color: #fff; }
+    .cstudio-image-popup-overlay .cstudio-image-pop-up video {
+      max-width: 600px; }
+  .cstudio-image-popup-overlay:before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%; }
+
 .site-dashboard .panel .ttTbody td .anchorRow {
   display: inline-block;
   max-width: calc(100% - 45px);
@@ -5352,6 +5428,22 @@ span.acn-canned-search {
   white-space: nowrap;
   margin-bottom: -3px; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .no-margin {
   margin: 0; }
 
@@ -5840,6 +5932,38 @@ a.no-decoration,
 .cb {
   clear: both; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /* Bootstrap Config */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 html {
@@ -15105,6 +15229,22 @@ margin-left: -3px; */
 .studio-view .navbar-fixed-top {
   z-index: 100; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .cstudio-view {
   font-size: 12px; }
   .cstudio-view .view-square-wrp {
@@ -15285,6 +15425,22 @@ body.masked {
   margin: 6px 0 0 10px;
   color: #000; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .studio-preview.disabled-wcm-dropdown,
 .site-dashboard.disabled-wcm-dropdown {
   left: 0 !important; }
@@ -15327,6 +15483,22 @@ body.masked {
 .studio-device-preview-portrait #engineWindow {
   border-width: 50px 10px; }
 
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 .navbar .navbar-brand {
   padding: 2px 15px; }
   .navbar .navbar-brand > img {
@@ -15407,5 +15579,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */

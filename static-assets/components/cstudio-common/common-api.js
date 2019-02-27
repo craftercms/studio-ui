@@ -8010,6 +8010,46 @@ var nodeOpen = false,
             }else{
                 return false;
             }
+        },
+
+        /**
+         * Previewing an image/video on a popup dialog, needs a container with corresponding markup
+         * TODO: document needed markup
+         * @param source {string} Asset path.
+         * @param type {string} Asset Mime type.
+         * @param container {jQuery} The popup element
+         */
+        previewAssetDialog: function(source, type, container) {
+            var $container = container ? container : $('.cstudio-image-popup-overlay'),
+                $img = $container.find('img'),
+                $video = $container.find('video');
+                $img.hide(); $video.hide();
+                $container.removeClass('cstudio-video-popup-overlay');
+    
+            if(type.match(/\bvideo\b/)) {
+                $container.addClass('cstudio-video-popup-overlay');
+                $video.show();
+                $video.find('source').attr('src', source);
+                $video.find('source').attr('type', type);
+                $video.load();
+            }else{
+                $img.show();
+                $img.attr('src', source);
+            }
+    
+            $container.show();
+    
+            $container.one('click', '.close', function(){
+                $container.hide();
+            });
+    
+            $container.on('click', function(e) {
+                if (e.target !== this)
+                    return;
+    
+                $container.hide();
+            });
+    
         }
 
         },
