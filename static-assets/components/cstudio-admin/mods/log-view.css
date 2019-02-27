@@ -15,14 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+#logTable{
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    transition: 0.5s;
+    background-color: #fff;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    border-collapse: separate;
+}
+
+#logTable tbody > tr:first-child {
+    border-radius: 6px;
+    background-color: #f5f5f5;
+    color: #333333;
+    height: 55px;
+}
+
 .cs-loglist-heading {
-    background: none repeat scroll 0 0 black;
-    border: 1px solid black;
-    color: white;
     font-size: 14px;
     font-weight: bold;
-    border-color: black white black black;
     padding: 5px;
+    border-bottom: 1px solid #ddd;
 }
 
 .cs-loglist {
@@ -37,7 +52,8 @@
  text-align:top;
  max-width: 100px;
  overflow-x: scroll !important;
- 
+ padding-left: 6px;
+
 }
 
 .message {
@@ -45,24 +61,21 @@
   height: 30px;
   max-width: 150px;
   overflow-x: scroll !important;
+  word-break: break-word;
 }
 
 .exception {
   padding-top:15px;
   padding-left:40px;
   max-width: 150px;
-  overflow-x: scroll !important;
+  word-break: break-word;
 }
 
 #log-view {
    left: 50px;
    position: relative;
    top: 85px;
-    height:500px;
-    min-height:500px;
     width: 80%;
-    border: 1px solid black;
-    overflow:scroll;
 }
 
 .cs-loglist-detail {
