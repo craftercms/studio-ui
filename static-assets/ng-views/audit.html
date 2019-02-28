@@ -15,10 +15,23 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="audit-view">
-    <h2 class="page-header">{{ 'admin.audit.AUDIT' | translate }}</h2>
+<div class="audit-view col-lg-10 col-lg-offset-1">
+    <header class="screen-title mb25">
+        <h1>{{ 'admin.audit.AUDIT' | translate }}</h1>
+    </header>
 
-    <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label><span class="pr20">{{ audit.site }}</span>
+    <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
+
+    <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 20px;">
+        <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle >
+            {{audit.site || 'admin.audit.SITE' | translate }}  <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="site in audit.sites">
+                <a class="text-capitalize" ng-click="audit.updateSite(site)">{{site.siteId}}</a>
+            </li>
+        </ul>
+    </div>
 
     <label>{{ 'admin.audit.USER' | translate }}: </label>
 

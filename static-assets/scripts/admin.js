@@ -316,15 +316,15 @@
 
     app.controller('AuditCtrl', [
         '$scope', '$state', '$window', '$sce', 'adminService', '$timeout',
-        '$stateParams', '$translate', '$location', 'moment',
+        '$stateParams', '$translate', '$location', 'moment', 'sitesService',
         function ($scope, $state, $window, $sce, adminService, $timeout,
-                  $stateParams, $translate, $location, moment) {
+                  $stateParams, $translate, $location, moment, sitesService) {
 
             $scope.audit = {};
             var audit = $scope.audit;
             audit.logsPerPage = 15;
             audit.defaultDelay = 500;
-            audit.site = $location.search().site;
+            audit.site = '';
             audit.timeZone;
 
             adminService.getTimeZone({
@@ -346,6 +346,19 @@
                         audit.users = null;
                     });
             };
+
+            function getSites () {
+                sitesService.getSitesPerUser('me')
+                    .success(function (data) {
+                        audit.sites = data.sites;
+                        audit.site = data.sites[0].siteId;
+                        getAudit(audit.site);
+                        getUsers(audit.site);
+                    })
+                    .error(function () {
+                        $scope.sites = null;
+                    });
+            }
 
             var getAudit = function(site) {
                 audit.totalLogs = 0;
@@ -399,6 +412,19 @@
                 }, audit.defaultDelay);
             };
 
+            audit.updateSite = function(site){
+                if(site){
+                    audit.site = site.siteId;
+                }else{
+                    audit.site = '';
+                }
+
+                $timeout.cancel(delayTimer)
+                delayTimer = $timeout(function() {
+                    getAudit(audit.site);
+                }, audit.defaultDelay);
+            };
+
             audit.actions = [];
             audit.updateActions = function(action) {
                 if(action === "all"){
@@ -425,8 +451,7 @@
 
             };
 
-            getAudit(audit.site);
-            getUsers(audit.site);
+            getSites();
 
         }
     ]);

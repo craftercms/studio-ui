@@ -159,6 +159,15 @@
                         }
                     }
                 })
+                .state('home.globalMenu.audit', {
+                    url: '/audit',
+                    views: {
+                        contentTab: {
+                            templateUrl: '/studio/static-assets/ng-views/audit.html',
+                            controller: 'AuditCtrl'
+                        }
+                    }
+                })
                 .state('home.sites', {
                     url: 'sites',
                     views: {
