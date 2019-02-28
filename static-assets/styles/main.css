@@ -6421,7 +6421,8 @@ table td {
       visibility: hidden; }
 
 .audit-view {
-  padding: 0 20px; }
+  padding: 0 20px;
+  min-height: 435px; }
   .audit-view .audit-actions .dropdown-menu a.active {
     background-color: #7e9dbb;
     border-bottom: 1px solid #bfbfbf;
