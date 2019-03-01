@@ -324,7 +324,7 @@
             var audit = $scope.audit;
             audit.logsPerPage = 15;
             audit.defaultDelay = 500;
-            audit.site = '';
+            audit.site = $location.search().site ? $location.search().site : '';
             audit.timeZone;
 
             adminService.getTimeZone({
@@ -451,7 +451,12 @@
 
             };
 
-            getSites();
+            if(audit.site) {
+                getAudit(audit.site);
+                getUsers(audit.site);
+            }else{
+                getSites();
+            }
 
         }
     ]);

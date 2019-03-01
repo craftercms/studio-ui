@@ -21,8 +21,9 @@
     </header>
 
     <label class="pr5">{{ 'admin.audit.SITE' | translate }}: </label>
+    <span class="pr20" ng-show="!audit.sites">{{ audit.site }}</span>
 
-    <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 20px;">
+    <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 20px;" ng-show="audit.sites">
         <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle >
             {{audit.site || 'admin.audit.SITE' | translate }}  <span class="caret"></span>
         </button>
