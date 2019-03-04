@@ -21,7 +21,7 @@
 <div class="wizard-header pl20 pt30 pr20 pb30">
     <div id="wizard-step-container">
         <ul class="nav nav-wizard">
-            <li class="col-xs-11 col-sm-2"  ng-repeat="step in steps" ng-class="{'active':step.step == currentStep}"><a ng-click="gotoStep(step.step)" href="">{{step.name}}</a></li>
+            <li class="col-xs-11 col-sm-2"  ng-repeat="step in steps" ng-class="{'active':step.step == currentStep, 'disabledNavBtn':step.step == '3' && !isRemoteGit}"><a ng-click="gotoStep(step.step, true)" href="">{{step.name}}</a></li>
         </ul>
     </div>
 </div>
@@ -410,32 +410,37 @@
                 ng-click="create()" ng-disabled="createNameForm.$invalid || isValid">
             {{ 'common.create_LABEL' | translate }}
         </button>-->
-        <button ng-click="adminModal.close()" class="btn btn-default cancel">
-            {{ 'common.CANCEL_LABEL' | translate }}
-        </button>
-        <button ng-show="((currentStep == 2 && !isRemoteGit) || currentStep == 3 || currentStep == 4 )" class="btn btn-primary" name="previous" type="button"
-                ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
-                                (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid)) ||
-                                (currentStep == 4 && (createNameForm.push_name.$invalid || createNameForm.push_url.$invalid || createNameForm.push_username.$invalid || createNameForm.push_password.$invalid || createNameForm.push_tokenNum.$invalid || createNameForm.push_keyNum.$invalid))"
-                ng-click="gotoStep(5)">{{ 'dashboard.sites.create.REVIEW_CREATE' | translate }} <i class="fa fa-arrow-right"></i>
-        </button>
-        <button ng-show="currentStep == 1 " class="btn btn-default" name="previous" type="button"
-                ng-disabled="(currentStep == 1 && !isRemoteGit) ||
-                                (currentStep == 2 && createNameForm.siteId.$invalid )"
-                ng-click="gotoStep(2)">{{ 'dashboard.sites.create.BASIC_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
-        </button>
-        <button ng-show="currentStep == 2 && isRemoteGit" class="btn btn-default" name="previous" type="button"
-                ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid )"
-                ng-click="gotoStep(3)">{{ 'dashboard.sites.create.BASIC_DEVELOPER_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
-        </button>
-        <button ng-show="(currentStep == 2 && !isRemoteGit) || currentStep == 3" class="btn btn-default" name="previous" type="button"
-                ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
-                                (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid))"
-                ng-click="gotoStep(4)">{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }} <i class="fa fa-arrow-right"></i>
-        </button>
-        <button id="saveBtn" type="submit" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary pull-right" name="create"
-                type="button" ng-click="create()"><i class="fa fa-floppy-o"></i> {{ 'common.create_LABEL' | translate }}
-        </button>
+        <div class="left-btns pull-left">
+            <button ng-click="adminModal.close()" class="btn btn-default cancel">
+                {{ 'common.CANCEL_LABEL' | translate }}
+            </button>
+            <button ng-disabled="currentStep <= 1" class="btn btn-default" name="previous" type="button" ng-click="gotoPreviousStep()"><i class="fa fa-arrow-left"></i> {{ 'dashboard.sites.create.PREVIOUS_STEP' | translate }}</button>
+            <button ng-show="((currentStep == 2 && !isRemoteGit) || currentStep == 3 || currentStep == 4 )" class="btn btn-primary" name="previous" type="button"
+                    ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
+                                    (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid)) ||
+                                    (currentStep == 4 && (createNameForm.push_name.$invalid || createNameForm.push_url.$invalid || createNameForm.push_username.$invalid || createNameForm.push_password.$invalid || createNameForm.push_tokenNum.$invalid || createNameForm.push_keyNum.$invalid))"
+                    ng-click="gotoStep(5)">{{ 'dashboard.sites.create.REVIEW_CREATE' | translate }} <i class="fa fa-arrow-right"></i>
+            </button>
+            <button ng-show="currentStep == 1 " class="btn btn-default" name="previous" type="button"
+                    ng-disabled="(currentStep == 1 && !isRemoteGit) ||
+                                    (currentStep == 2 && createNameForm.siteId.$invalid )"
+                    ng-click="gotoStep(2)">{{ 'dashboard.sites.create.BASIC_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
+            </button>
+            <button ng-show="currentStep == 2 && isRemoteGit" class="btn btn-default" name="previous" type="button"
+                    ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid )"
+                    ng-click="gotoStep(3)">{{ 'dashboard.sites.create.BASIC_DEVELOPER_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
+            </button>
+            <button ng-show="(currentStep == 2 && !isRemoteGit) || currentStep == 3" class="btn btn-default" name="previous" type="button"
+                    ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
+                                    (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid))"
+                    ng-click="gotoStep(4)">{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }} <i class="fa fa-arrow-right"></i>
+            </button>
+        </div>
+        <div class="right-btns pull-right">
+            <button id="saveBtn" type="submit" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary" name="create"
+                    type="button" ng-click="create()"><i class="fa fa-floppy-o"></i> {{ 'common.create_LABEL' | translate }}
+            </button>
+        </div>
     </div>
 </div>
 

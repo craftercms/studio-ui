@@ -467,6 +467,14 @@ table {
     text-align: center;
     display: table;
   }
+  ul.nav-wizard li:first-child {
+    border-radius: 10px 0px 0px 10px;
+
+  }
+  ul.nav-wizard li:last-child {
+    border-radius: 0px 10px 10px 0px;
+
+  }
   ul.nav-wizard li a {
     color: #999999;
     padding: 0;
@@ -487,6 +495,11 @@ table {
     content: '';
     right: -16px;
   }
+
+  ul.nav-wizard li:last-child:before {
+    border: 0;
+  }
+
   ul.nav-wizard li:after {
     position: absolute;
     display: block;
@@ -498,6 +511,11 @@ table {
     content: '';
     right: -15px;
   }
+
+  ul.nav-wizard li:last-child:after {
+    border: 0;
+  }
+
   ul.nav-wizard li.active {
     color: #3a87ad;
     background: #d9edf7;
@@ -522,7 +540,7 @@ table {
   ul.nav-wizard .active ~ li a,
   ul.nav-wizard .active ~ li a:active,
   ul.nav-wizard .active ~ li a:visited,
-  ul.nav-wizard .active ~ li a:focus {
+  ul.nav-wizard .active ~ li a:focus, .disabledNavBtn {
     color: #999999;
     background: #fffdfd;
     pointer-events: none;
@@ -573,12 +591,16 @@ table {
 ============================================================================= */
   #wizard-content-container{
     position:relative;
-    min-height:250px;
-    overflow:hidden;
+    height: 350px;
+    overflow-y: auto;
   }
 
   /* basic styling for entering and leaving
   left and right added to ensure full width */
+  .wizard-item{
+    margin-right: 10px;
+  }
+  
  .wizard-item.ng-hide-add.ng-hide-add-active,
  .wizard-item.ng-hide-remove.ng-hide-remove-active{
    position:absolute; left:30px; right:30px;
@@ -698,6 +720,40 @@ table {
     padding: 20px;
     margin-top: 10px;
   }
+
+  .left-btns{
+    width: 600px;
+  }
+  .right-btns{
+    width: 100px;
+  }
+
+  @media (max-width: $screen-xs-max) {
+    .left-btns{
+      width: 100%;
+      button{
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+    .right-btns{
+      margin-top: 20px;
+      width: 100%;
+      button{
+        width: 100%;
+      }
+    }
+  }
+
+  @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    .left-btns{
+      width: 100%;
+    }
+    .right-btns{
+      margin-top: 20px;
+    }
+  }
+
 }
 
 
