@@ -1520,7 +1520,7 @@
                 for(var i=0; i <= $scope.previousStep.length ; i++ ){
                     if($scope.previousStep[i] >= newStep){
                         $scope.previousStep.splice(i, 1);
-                        i = -1; //here
+                        i = -1;
                     }
                 }
                 if(!isPreviosBtn){
