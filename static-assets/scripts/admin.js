@@ -306,7 +306,7 @@
             }
 
             function audit(action, data) {
-                return Constants.SERVICE + 'audit/' + action + '.json?';
+                return Constants.SERVICE2 + 'audit?';
             }
 
             return this;
@@ -351,7 +351,7 @@
                 sitesService.getSitesPerUser('me')
                     .success(function (data) {
                         audit.sites = data.sites;
-                        audit.site = data.sites[0].siteId;
+                        audit.site = '';
                         getAudit(audit.site);
                         getUsers(audit.site);
                     })
@@ -375,7 +375,9 @@
                 function getResultsPage(pageNumber) {
 
                     var params = {};
-                    params.site_id = site;
+                    if(site){
+                        params.site_id = site
+                    }
                     if(audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
 
                     if(audit.actions.length > 0){
@@ -385,16 +387,19 @@
                     if(audit.totalLogs && audit.totalLogs > 0) {
                         var start = (pageNumber - 1) * audit.logsPerPage,
                             end = start + audit.logsPerPage;
-                        params.start = start;
-                        params.number = audit.logsPerPage;
+                        params.offset = start;
+                        params.limit = audit.logsPerPage;
                     }else{
-                        params.start = 0;
-                        params.number = audit.logsPerPage;
+                        params.offset = 0;
+                        params.limit = audit.logsPerPage;
                     }
 
                     adminService.getAudit(params).success(function (data) {
                         audit.totalLogs = data.total;
-                        audit.logs = data.items;
+                        audit.logs = data.auditLog;
+                    }).error(function (err) {
+                        audit.totalLogs = 0;
+                        audit.logs = '';
                     });
                 }
             };

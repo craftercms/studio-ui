@@ -25,9 +25,12 @@
 
     <div class="btn-group" uib-dropdown is-open="sitesDropdown.isopen" style="margin-right: 20px;" ng-show="audit.sites">
         <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle >
-            {{audit.site || 'admin.audit.SITE' | translate }}  <span class="caret"></span>
+            {{audit.site || 'admin.audit.ALL_SITES' | translate }}  <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu">
+            <li>
+                <a ng-click="audit.updateSite()">{{ 'admin.audit.ALL_SITES' | translate }}</a>
+            </li>
             <li ng-repeat="site in audit.sites">
                 <a class="text-capitalize" ng-click="audit.updateSite(site)">{{site.siteId}}</a>
             </li>
