@@ -140,57 +140,24 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.RichText, CStudi
 
         inputEl.value = CStudioForms.Util.unEscapeXml(value);
 
-
-        var editor = tinyMCE.init({
-            // General options
-            autoresize_min_height: 200,
-            autoresize_max_height: 500,
-            mode : "textareas",
-            editor_selector : rteUniqueInitClass,
-            theme : "advanced",
-            width : "100%",
-            focusHeight : "90%",
-            height: "100%",
+        tinymce.init({
+            selector: '.' + rteUniqueInitClass,
+            height: 200,
             encoding : "xml",
-            paste_auto_cleanup_on_paste : true,
-            relative_urls : true,
-            readonly: false,
-            // autoresize_on_init: true,
             force_p_newlines: true,
             force_br_newlines: false,
             forced_root_block: false,
-            document_base_url: CStudioAuthoringContext.previewAppBaseUri,
-            theme_advanced_resizing : false,
-            theme_advanced_resize_horizontal : false,
-            theme_advanced_toolbar_location : "top",
-            theme_advanced_toolbar_align : "left",
-            theme_advanced_statusbar_location : "bottom",
-
-            theme_advanced_buttons1 : "bold,italic,underline,|,forecolor,backcolor,|,bullist,numlist,|,link,unlink,anchor,|,undo,redo",
-            theme_advanced_buttons2 : "formatselect,fontselect,fontsizeselect,|,justifyleft,justifycenter,justifyright,justifyfull",
-            theme_advanced_buttons3 : "",
-            theme_advanced_buttons4 : "",
-            content_css : "",
-
-            // Drop lists for link/image/media/template dialogs
-            template_external_list_url : "js/template_list.js",
-            external_link_list_url : "js/link_list.js",
-            external_image_list_url : "js/image_list.js",
-            media_external_list_url : "js/media_list.js",
-            plugins : "paste, noneditable, ",
-
-            setup: function(ed) {
-
-                try {
-                    ed.contextControl = richTextDialogEl;
-                    richTextDialogEl.editor = ed;
-
-                }catch(err){
-                    //log failure
-                }
+            resize: false,
+            plugins: [
+              'paste noneditable'
+            ],
+            toolbar1: 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat',
+            setup: function (editor) {
+                editor.on('init', function (e) {
+                    _self.editor = editor;
+                });
             }
         });
-
 
     },
 
@@ -204,9 +171,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.RichText, CStudi
     save: function() {
         var richTextDialogEl = document.getElementById("richTextDialog");
         var keyValueDialogMaskEl = document.getElementById("keyValueDialogMask");
-        if(richTextDialogEl.editor) {
-            richTextDialogEl.editor.save();
-            richTextDialogEl.value = richTextDialogEl.inputEl.value;
+        if(this.editor) {
+            richTextDialogEl.value = this.editor.getContent();
         }
 
         this.value = richTextDialogEl.value;

@@ -760,6 +760,10 @@ background-image: url("/proxy/authoring/themes/cstudioTheme/images/overlay-green
     box-shadow: none;
 }
 
+#richTextDialog.seethrough{
+    z-index: 1234;
+}
+
 #keyValueDialog.seethrough.channels{
     left: 45%;
 }
