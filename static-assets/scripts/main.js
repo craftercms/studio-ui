@@ -1485,6 +1485,7 @@
             //New Create Site
 
             //Model
+            $scope.previousStep = [];
             $scope.currentStep = 1;
             $scope.steps = [
                 {
@@ -1515,7 +1516,16 @@
             ];
 
             //Functions
-            $scope.gotoStep = function(newStep) {
+            $scope.gotoStep = function(newStep, isPreviosBtn) {
+                for(var i=0; i <= $scope.previousStep.length ; i++ ){
+                    if($scope.previousStep[i] >= newStep){
+                        $scope.previousStep.splice(i, 1);
+                        i = -1;
+                    }
+                }
+                if(!isPreviosBtn){
+                    $scope.previousStep.push($scope.currentStep);
+                }
                 $scope.currentStep = newStep;
             }
 
@@ -1525,6 +1535,12 @@
                         return $scope.steps[i].template;
                     }
                 }
+            }
+
+            $scope.gotoPreviousStep = function(){
+                var previousStep = $scope.previousStep.slice(-1);
+                $scope.previousStep.pop();
+                $scope.gotoStep(previousStep, true);
             }
 
             $scope.removeHide = function() {

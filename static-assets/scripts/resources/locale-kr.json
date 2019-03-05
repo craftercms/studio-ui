@@ -89,7 +89,8 @@
         "ALREADY_EXIST":"이미 존재합니다.",
         "ELASTIC_SEARCH":"탄성 검색",
         "CRAFTER_SEARCH_SOLR":"Solr와 함께 Crafter 검색",
-        "CHOOSE_BLUEPRINT":"청사진 선택"
+        "CHOOSE_BLUEPRINT":"청사진 선택",
+        "PREVIOUS_STEP":"이전 단계"
       }
     }
   },
