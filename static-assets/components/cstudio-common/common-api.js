@@ -1049,7 +1049,7 @@ var nodeOpen = false,
             /**
              * open a search page
              */
-            openSearch: function(searchType, searchContext, select, mode, newWindow, callback, searchId, firstTime) {
+            openSearch: function(searchContext, newWindow, callback, searchId) {
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -1071,32 +1071,6 @@ var nodeOpen = false,
                     searchUrl += "&page=1";
                 }
 
-                if (searchContext.filters && searchContext.filters.length && searchContext.filters.length > 0) {
-                    for (var i = 0; i < searchContext.filters.length; i++) {
-                        var startDate = searchContext.filters[i].startDate;
-                        var endDate = searchContext.filters[i].endDate;
-
-                        if ( (startDate != null && startDate != undefined && startDate != "")
-                            || (endDate != null && endDate != undefined && endDate != "") ) {
-                            searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value
-                            + "|" + searchContext.filters[i].startDate + "|" + searchContext.filters[i].endDate;
-                        } else {
-                            searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value;
-                        }
-                    }
-                }
-
-                // non filter URL data
-                // if (searchContext.nonFilters && searchContext.nonFilters.length && searchContext.nonFilters.length > 0) {
-                //     for (var i = 0; i < searchContext.nonFilters.length; i++) {
-                //         searchUrl += "&" + searchContext.nonFilters[i].qname + "=" + searchContext.nonFilters[i].value;
-                //     }
-                // }
-
-                if (!CStudioAuthoring.Utils.isEmpty(searchId) && searchId != "undefined") {
-                    searchUrl += "&searchId=" + searchId;
-                }
-
                 var childSearch = null;
 
                 if (!searchId || searchId == null || searchId == "undefined"
@@ -1106,7 +1080,7 @@ var nodeOpen = false,
                     searchId = CStudioAuthoring.Utils.generateUUID();
 
                     childSearch.searchId = searchId;
-                    childSearch.searchUrl = searchUrl + "&searchId=" + searchId;
+                    childSearch.searchUrl = searchUrl;
                     childSearch.saveCallback = callback;
 
                     CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
@@ -1225,8 +1199,6 @@ var nodeOpen = false,
 
                 var searchId = null;
 
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
-
                 var openInSameWindow = (newWindow) ? false : true;
 
                 var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
@@ -1299,8 +1271,6 @@ var nodeOpen = false,
             openWebDAVBrowse: function(path, profileId, baseUrl, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
-
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -1375,8 +1345,6 @@ var nodeOpen = false,
             openS3Browse: function(profileId, path, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
-
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -5597,8 +5565,6 @@ var nodeOpen = false,
             createSearchContext: function() {
                 return {
                     searchTypes: [],
-                    includeAspects: [],
-                    excludeAspects: [],
                     keywords: "",
                     filters: [],
                     nonFilters: [],
@@ -6184,6 +6150,24 @@ var nodeOpen = false,
                 }
 
                 return parentPath;
+            },
+
+            /**
+             * get parameters from url - returns map
+             */
+            getUrlParams: function(){
+                var urlParams,
+                    match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+
+                urlParams = {};
+                while (match = search.exec(query)){
+                    urlParams[decode(match[1])] = decode(match[2]);
+                }
+                return urlParams;
             },
 
             /**
@@ -8040,15 +8024,24 @@ var nodeOpen = false,
     
             $container.show();
     
+            // Close - on button click
             $container.one('click', '.close', function(){
                 $container.hide();
             });
-    
+
+            // Close - on click outside dialog
             $container.on('click', function(e) {
                 if (e.target !== this)
                     return;
     
                 $container.hide();
+            });
+
+            // Close - on escape
+            $(document).on('keyup', function(e){
+                if(e.keyCode === 27){
+                    $container.hide();
+                }
             });
     
         }

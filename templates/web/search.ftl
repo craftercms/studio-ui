@@ -166,7 +166,7 @@
     <div class="cstudio-image-popup-overlay" id="searchPreviewPopup" style="display: none;">
         <div class="cstudio-image-pop-up">
             <div>
-                <input type="button" class="close btn btn-default" value="x">
+                <span class="close fa fa-close"></span>
             </div>
             <img src="">
             <video id="videoOverlay" controls="true" >
@@ -183,24 +183,21 @@
                     <span class="checkmark"></span>
                 </label>
 
-                <div class="result-preview {{#if asset}}result-asset{{/if}} {{#if previewable}}previewable{{/if}}" data-url="{{ path }}" data-type="{{ type }}">
-                    {{#equal type "Page"}}
-                        <img class="preview-img" src="http://localhost:8080/studio/api/1/services/api/1/content/get-content-at-path.bin?site=editorial&path=/config/studio/content-types/page/home/page-home.png"/>
-                    {{/equal}}
-
-                    {{#equal type "Component"}}
-                        <img class="preview-img" src="http://localhost:8080/studio/api/1/services/api/1/content/get-content-at-path.bin?site=editorial&path=/config/studio/content-types/component/feature/component-feature.png"/>
-                    {{/equal}}
-
-                    {{#equal type "Taxonomy"}}
-                        <img class="preview-img" src="http://localhost:8080/studio/api/1/services/api/1/content/get-content-at-path.bin?site=editorial&path=/config/studio/content-types/taxonomy/taxonomy.png"/>
-                    {{/equal}}
-
+                <div class="result-preview {{#if previewUrl}}{{else}}result-asset{{/if}} {{#if previewable}}previewable{{/if}} {{#equal type 'Image'}}no-preview-background{{/equal}}" 
+                     data-url="{{ path }}" data-type="{{ type }}">
                     {{#equal type "Image"}}
-                        <img class="preview-img" src="{{ path }}"/>
+                        <div class="img-container">
+                            <img class="preview-img" src="{{ path }}"/>
+                        </div>
                     {{/equal}}
 
-                    <i class="result-icon fa {{ icon }} {{#if asset}}result-asset{{/if}}" aria-hidden="true"></i>
+                    {{#if previewUrl}}
+                        <div class="img-container">
+                            <img class="preview-img" src="{{ previewUrl }}"/>
+                        </div>
+                    {{/if}}
+
+                    <i class="result-icon fa {{ icon }} {{#if previewUrl}}{{else}}result-asset{{/if}}" aria-hidden="true"></i>
 
                     <div class="result-info">
                         <div class="bold">{{ name }}</div>
@@ -240,21 +237,21 @@
         </div>
     </script>
 
-    <script id="hb-filter-section" type="text/x-handlebars-template">
-        <li class="dropdown-header {{#if main}}main-header{{/if}}" id="{{ value }}">
-            {{ label }}
-            {{#if clear}}<a class="clear-filter">Clear</a>{{/if}}    
-        </li>
-    </script>
-
     <script id="hb-filter-separator" type="text/x-handlebars-template">
         <li role="separator" class="divider"></li>
     </script>
 
     <script id="hb-filter-item" type="text/x-handlebars-template">
-        <li class="filter-item tmpl">
+        <li class="filter-item tmpl" style="display: none">
             <a href="#">
-                <input type="radio" name="{{ name }}" value="{{ value }}" id="{{ name }}{{ id }}" class="{{#if filter}}filter{{/if}}">
+                <input type="radio" name="{{ name }}" id="{{ name }}{{ id }}" class="{{#if filter}}filter{{/if}}" 
+                        {{#if range}}
+                            data-range="{{ range }}"
+                            from="{{ from }}" to="{{ to }}"
+                        {{else}}
+                            value="{{value}}"
+                        {{/if}}
+                >                
                 <label for="{{ name }}{{ id }}">{{ label }}</label>
             </a>
         </li>
@@ -272,8 +269,8 @@
         <div class="panel panel-default tmpl" {{#if grouped}}data-group="{{grouped}}"{{/if}}>
             <div class="panel-heading" role="tab" id="heading{{ value }}">
                 <h4 class="panel-title">
-                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="&#x23;{{ value }}" aria-expanded="false" aria-controls="{{ value }}">
-                        {{ label }}
+                    <a class="collapsed filter-header" role="button" data-toggle="collapse" data-parent="#accordion" href="&#x23;{{ value }}" aria-expanded="false" aria-controls="{{ value }}">
+                        {{ label }} <i class="fa fa-check-circle selected hide ml5" aria-hidden="true"></i>
                     </a>
                     {{#if clear}}<a class="clear-filter">Clear</a>{{/if}}    
                 </h4>

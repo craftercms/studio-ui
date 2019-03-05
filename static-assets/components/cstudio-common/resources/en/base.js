@@ -536,15 +536,19 @@ CStudioAuthoring.Messages.registerBundle("search", "en", {
     name: "Name",
     images: "Images",
     videos: "Videos",
-    Width: "Width",
-    Height: "Height",
-    "Content-Type": "Content Type",
-    "MIME-Type": "Mime Type",
-    Size: "Content Size",
+    width: "Width",
+    height: "Height",
+    "content-type": "Content Type",
+    "mime-type": "MIME Type",
+    size: "Content Size",
     paginationFirst: "First",
     paginationPrev: "Prev",
     paginationNext: "Next",
     paginationLast: "Last",
+    seeMore: 'See More',
+    seeLess: 'See Less',
+    under: 'Under',
+    above: 'and Above'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "en", {

@@ -130,6 +130,11 @@
             vertical-align: bottom;
             padding: 6px 15px;
             margin-left: 10px; }
+        .cstudio-search .options .filters .dropdown-menu .filters-toggle {
+          font-size: 13px;
+          color: #7e9dbb;
+          cursor: pointer;
+          padding: 3px 10px; }
         .cstudio-search .options .filters .dropdown-menu .subfilter {
           background: none;
           border-top: 1px solid #ddd; }
@@ -162,9 +167,14 @@
           position: relative; }
           .cstudio-search .results .result-container .result .result-preview.previewable {
             cursor: pointer; }
-          .cstudio-search .results .result-container .result .result-preview .preview-img {
+          .cstudio-search .results .result-container .result .result-preview .img-container {
             width: 100%;
             height: 100%; }
+            .cstudio-search .results .result-container .result .result-preview .img-container .preview-img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              overflow: hidden; }
           .cstudio-search .results .result-container .result .result-preview .result-icon {
             position: absolute;
             color: #fff;
@@ -174,6 +184,10 @@
             display: none; }
             .cstudio-search .results .result-container .result .result-preview .result-icon.result-asset {
               display: inline; }
+          .cstudio-search .results .result-container .result .result-preview.no-preview-background {
+            background: none; }
+            .cstudio-search .results .result-container .result .result-preview.no-preview-background .result-icon {
+              display: none; }
           .cstudio-search .results .result-container .result .result-preview .result-info {
             position: absolute;
             bottom: 0px;
@@ -209,11 +223,11 @@
           height: auto;
           float: left;
           background: none; }
-          .cstudio-search .results.list .result-container .result .result-preview .preview-img {
-            max-width: 74.28px;
+          .cstudio-search .results.list .result-container .result .result-preview .img-container {
+            width: 80px;
             height: 80px;
-            width: auto;
-            vertical-align: bottom; }
+            vertical-align: bottom;
+            display: inline-block; }
           .cstudio-search .results.list .result-container .result .result-preview .result-icon {
             position: relative;
             padding: 20px;

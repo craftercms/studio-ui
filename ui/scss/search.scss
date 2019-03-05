@@ -150,7 +150,6 @@
                 }
                 
                 .filter-item {
-
                     > a {
                         display: block;
                         padding: 3px 10px;
@@ -193,6 +192,13 @@
                             margin-left: 10px;                    
                         }
                     }
+                }
+
+                .filters-toggle {
+                    font-size: 13px;
+                    color: #7e9dbb;
+                    cursor: pointer;
+                    padding: 3px 10px;
                 }
 
                 .subfilter {
@@ -246,9 +252,16 @@
                         cursor: pointer;
                     }
 
-                    .preview-img {
+                    .img-container {
                         width: 100%;
                         height: 100%;
+                        
+                        .preview-img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            overflow: hidden;
+                        }
                     }
 
                     .result-icon {
@@ -261,6 +274,14 @@
 
                         &.result-asset{
                             display: inline;
+                        }
+                    }
+
+                    &.no-preview-background {
+                        background: none;
+
+                        .result-icon {
+                            display: none;
                         }
                     }
 
@@ -334,12 +355,11 @@
                         float: left;
                         background: none;
     
-                        .preview-img {
-                            // display: none;
-                            max-width: 74.28px;
+                        .img-container {
+                            width: 80px;
                             height: 80px;
-                            width: auto;
                             vertical-align: bottom;
+                            display: inline-block;
                         }
                         .result-icon {
                             // display: inline-block;

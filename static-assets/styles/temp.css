@@ -5390,24 +5390,26 @@ span.acn-canned-search {
   .cstudio-image-popup-overlay .cstudio-image-pop-up {
     display: inline-block;
     box-sizing: content-box;
-    background-color: #928f8f;
-    border-radius: 6px;
+    background: #f2f2f2;
+    border-radius: 4px;
     padding: 5px 10px 10px; }
     .cstudio-image-popup-overlay .cstudio-image-pop-up > div {
       text-align: right; }
-      .cstudio-image-popup-overlay .cstudio-image-pop-up > div input.close {
+      .cstudio-image-popup-overlay .cstudio-image-pop-up > div .close {
         float: none;
         border: none;
         background: transparent;
         box-shadow: none;
         font-size: 20px;
+        font-weight: normal;
         padding: 0;
         line-height: 12px;
         padding-bottom: 7px;
-        margin-bottom: 5px;
+        margin-right: -4px;
+        margin-top: 1px;
         opacity: 1;
-        margin-right: -5px;
-        border-radius: 0; }
+        border-radius: 0;
+        color: #5d5d5d; }
     .cstudio-image-popup-overlay .cstudio-image-pop-up img, .cstudio-image-popup-overlay .cstudio-image-pop-up video {
       border-radius: 6px;
       max-width: 700px;
