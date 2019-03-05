@@ -675,16 +675,17 @@ var nodeOpen = false,
                 };
             },
 
-            translateContent: function(langBundle, specificSelector){
-                var elements;
+            translateContent: function(langBundle, specificSelector, dataAtt){
+                var elements,
+                    dataAtt = dataAtt ? dataAtt : 'data-translation';
                 if(specificSelector){
-                    elements = document.querySelectorAll(specificSelector+" [data-translation");
+                    elements = document.querySelectorAll(specificSelector + "[" + dataAtt + "]");
                 }else{
-                    elements = document.querySelectorAll("[data-translation]");
+                    elements = document.querySelectorAll("[" + dataAtt + "]");
                 }
 
                 for(var i=0; i<elements.length; i++){
-                    elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute('data-translation'));
+                    elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute(dataAtt));
                 }
             },
 
@@ -1048,39 +1049,13 @@ var nodeOpen = false,
             /**
              * open a search page
              */
-            openSearch: function(searchType, searchContext, select, mode, newWindow, callback, searchId, firstTime) {
+            openSearch: function(searchContext, newWindow, callback, searchId) {
 
                 var openInSameWindow = (newWindow) ? false : true;
 
                 var searchUrl = CStudioAuthoringContext.authoringAppBaseUri +
                     "/search?site=" +
-                    CStudioAuthoringContext.site +
-                    "&s="+searchContext.keywords;
-
-                if (searchContext.includeAspects && searchContext.includeAspects.length > 0) {
-                    searchUrl += "&includeAspects=";
-
-                    for (var i = 0; i < searchContext.includeAspects.length; i++) {
-                        searchUrl += searchContext.includeAspects[i];
-
-                        if (i < (searchContext.includeAspects.length - 1)) {
-                            searchUrl += "|";
-                        }
-                    }
-                }
-
-                if (searchContext.excludeAspects && searchContext.excludeAspects.length > 0) {
-                    searchUrl += "&includeAspects=";
-
-                    for (var j = 0; i < searchContext.excludeAspects.length; j++) {
-                        searchUrl += searchContext.excludeAspects[j];
-
-                        if (j < (searchContext.excludeAspects.length - 1)) {
-                            searchUrl += "|";
-                        }
-                    }
-                }
-
+                    CStudioAuthoringContext.site;
 
                 if (!CStudioAuthoring.Utils.isEmpty(searchContext.keywords)) {
                     searchUrl += "&keywords=" + searchContext.keywords;
@@ -1090,61 +1065,10 @@ var nodeOpen = false,
                     searchUrl += "&sortBy=" + searchContext.sortBy;
                 }
 
-                if (!CStudioAuthoring.Utils.isEmpty(select)) {
-                    searchUrl += "&selection=" + select;
-                }
-
-                if (!CStudioAuthoring.Utils.isEmpty(mode)) {
-                    searchUrl += "&mode=" + mode;
-                }
-
-                if (!CStudioAuthoring.Utils.isEmpty(searchContext.itemsPerPage)) {
-                    searchUrl += "&ipp=" + searchContext.itemsPerPage;
-                }
-                else {
-                    searchUrl += "&ipp=20";
-                }
-
                 if (!CStudioAuthoring.Utils.isEmpty(searchContext.page)) {
                     searchUrl += "&page=" + searchContext.page;
-                }
-                else {
-                    searchUrl += "&page=1";
-                }
-
-                if (searchContext.filters && searchContext.filters.length && searchContext.filters.length > 0) {
-                    for (var i = 0; i < searchContext.filters.length; i++) {
-                        var startDate = searchContext.filters[i].startDate;
-                        var endDate = searchContext.filters[i].endDate;
-
-                        if ( (startDate != null && startDate != undefined && startDate != "")
-                            || (endDate != null && endDate != undefined && endDate != "") ) {
-                            searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value
-                            + "|" + searchContext.filters[i].startDate + "|" + searchContext.filters[i].endDate;
-                        } else {
-                            searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value;
-                        }
-                    }
-                }
-
-                // non filter URL data
-                if (searchContext.nonFilters && searchContext.nonFilters.length && searchContext.nonFilters.length > 0) {
-                    for (var i = 0; i < searchContext.nonFilters.length; i++) {
-                        searchUrl += "&" + searchContext.nonFilters[i].qname + "=" + searchContext.nonFilters[i].value;
-                    }
-                }
-
-                if (!CStudioAuthoring.Utils.isEmpty(searchId) && searchId != "undefined") {
-                    searchUrl += "&searchId=" + searchId;
                 } else {
-                    /* first time search called from other page : show empty result */
-                    if (!searchContext.filters || !searchContext.filters.length || searchContext.filters.length == 0)
-                        if (!searchContext.contextName || searchContext.contextName == "undefined")
-                            searchUrl += "&presearch=false";
-                }
-
-                if(firstTime){
-                    searchUrl += "&firstTime=true";
+                    searchUrl += "&page=1";
                 }
 
                 var childSearch = null;
@@ -1156,7 +1080,7 @@ var nodeOpen = false,
                     searchId = CStudioAuthoring.Utils.generateUUID();
 
                     childSearch.searchId = searchId;
-                    childSearch.searchUrl = searchUrl + "&searchId=" + searchId;
+                    childSearch.searchUrl = searchUrl;
                     childSearch.saveCallback = callback;
 
                     CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
@@ -1275,8 +1199,6 @@ var nodeOpen = false,
 
                 var searchId = null;
 
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
-
                 var openInSameWindow = (newWindow) ? false : true;
 
                 var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
@@ -1349,8 +1271,6 @@ var nodeOpen = false,
             openWebDAVBrowse: function(path, profileId, baseUrl, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
-
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -1425,8 +1345,6 @@ var nodeOpen = false,
             openS3Browse: function(profileId, path, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
-
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -3198,7 +3116,7 @@ var nodeOpen = false,
             lookupContentItemServiceUri: "/api/1/services/api/1/content/get-item.json",
             getVersionHistoryServiceUrl: "/api/1/services/api/1/content/get-item-versions.json",
             lookupContentServiceUri: "/api/1/services/api/1/content/get-items-tree.json",
-            searchServiceUrl: "/api/1/services/api/1/content/search.json",
+            searchServiceUrl: "/api/2/search/search.json",
             writeContentServiceUrl: "/api/1/services/api/1/content/write-content.json",
             lookupContentTypeServiceUri: "/api/1/services/api/1/content/get-content-type.json",
             allContentTypesForSite: "/api/1/services/api/1/content/get-content-types.json",
@@ -4274,6 +4192,16 @@ var nodeOpen = false,
             isWrite:function(permissions) {
                 for (var i = 0; i < permissions.length; i++) {
                     if(permissions[i] == "write") {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+
+            validatePermission: function(permissions, permission){
+                for (var i = 0; i < permissions.length; i++) {
+                    if(permissions[i] == permission) {
                         return true;
                     }
                 }
@@ -5637,8 +5565,6 @@ var nodeOpen = false,
             createSearchContext: function() {
                 return {
                     searchTypes: [],
-                    includeAspects: [],
-                    excludeAspects: [],
                     keywords: "",
                     filters: [],
                     nonFilters: [],
@@ -5652,123 +5578,27 @@ var nodeOpen = false,
             /**
              * execute a search
              */
-            search: function(site, searchContext, callback) {
+            search: function(site, searchQuery, callback) {
 
-                if (!searchContext.firstTime) {
+                var serviceUrl = this.searchServiceUrl;
+                    serviceUrl += "?siteId=" + site,
+                    data = JSON.stringify(searchQuery);
 
-                    var serviceUrl = this.searchServiceUrl;
-
-                    serviceUrl += "?site=" + site;
-
-                    searchContext.searchType = (searchContext.searchType) ? searchContext.searchType : "";
-                    searchContext.sortBy = (!searchContext.sortBy || searchContext.sortBy == "relevance") ? "" : searchContext.sortBy;
-                    searchContext.page = (searchContext.currentPage) ? searchContext.currentPage : 1;
-                    searchContext.sortAscending = (searchContext.sortAscending) ? searchContext.sortAscending : true;
-                    searchContext.pageSize = (searchContext.itemsPerPage) ? searchContext.itemsPerPage : 20;
-                    searchContext.includeAspects = (searchContext.includeAspects) ? searchContext.includeAspects : new Array();
-
-                    var searchCb = {
-                        success: function (response) {
-
-                            var results = eval("(" + response.responseText + ")");
-
-                            callback.success(results);
-                        },
-                        failure: function (response) {
-                            callback.failure(response);
-                        }
-                    };
-
-                    var searchConfig = '{';
-
-                    searchConfig += '"contentTypes": [ ';
-                    for (var j = 0; j < searchContext.contentTypes.length; j++) {
-                        if (searchContext.contentTypes[j] != "") {
-                            searchConfig += "'" + searchContext.contentTypes[j] + "'";
-                            if (j < searchContext.contentTypes.length - 1) {
-                                searchConfig += ",";
-                            }
-                        }
+                var searchCb = {
+                    success: function (response) {
+                        var results = eval("(" + response.responseText + ")");
+                        callback.success(results);
+                    },
+                    failure: function (response) {
+                        callback.failure(response);
                     }
-                    searchConfig += ']';
+                };
 
-                    searchConfig += ',"includeAspects": [ ';
-                    for (var k = 0; k < searchContext.includeAspects.length; k++) {
-                        if (searchContext.includeAspects[k] != "") {
-                            searchConfig += "'" + searchContext.includeAspects[k] + "'";
-                            if (k < searchContext.includeAspects.length - 1) {
-                                searchConfig += ",";
-                            }
-                        }
-                    }
-                    searchConfig += ']';
+                YConnect.setDefaultPostHeader(false);
+                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, data);
 
-                    searchConfig += ',"excludeAspects": [ ';
-                    for (var l = 0; l < searchContext.excludeAspects.length; l++) {
-                        if (searchContext.excludeAspects[l] != "") {
-                            searchConfig += "'" + searchContext.excludeAspects[l] + "'";
-                            if (l < searchContext.excludeAspects.length - 1) {
-                                searchConfig += ",";
-                            }
-                        }
-                    }
-                    searchConfig += ']';
-
-                    // prepare keyword for JSON.
-                    var dkeywords = "";
-                    if (!CStudioAuthoring.Utils.isEmpty(searchContext.keywords)) {
-                        dkeywords = decodeURIComponent(searchContext.keywords);
-                        dkeywords = CStudioAuthoring.Utils.escapeJSONSensitiveCharacter(dkeywords);
-                    }
-
-                    searchConfig +=
-                        ',"keyword": "' + dkeywords + '",   ' +
-                        '"page": "' + searchContext.page + '",' +
-                        '"pageSize": "' + searchContext.pageSize + '",' +
-                        '"sortBy": "' + searchContext.sortBy + '",' +
-                        '"sortAscending": "' + searchContext.sortAscending + '",' +
-
-                        '"filters": [';
-                    if (searchContext.filters != null) {
-                        var lastElementIdx = searchContext.filters.length - 1;
-
-                        var seperatorFlag = false;
-                        for (var i = 0; i < searchContext.filters.length; i++) {
-                            name = searchContext.filters[i].qname;
-                            value = searchContext.filters[i].value;
-                            var startDate = searchContext.filters[i].startDate;
-                            var endDate = searchContext.filters[i].endDate;
-                            var useWildCard = searchContext.filters[i].useWildCard;
-                            if (!useWildCard || (useWildCard == null) || !(useWildCard == "true" || useWildCard == "false"))
-                                useWildCard = "true";
-
-                            seperatorFlag = false;
-                            if (value != null && value != "" && value != 'all') {
-                                searchConfig += '{"qname" : "' + name + '" , "value" : "' + value + '", "useWildCard" : "' + useWildCard + '"}';
-                                seperatorFlag = true;
-                            } else if ((startDate != null && startDate != "") || (endDate != null && endDate != "")) {
-                                // date filter with Range
-                                startDate = (startDate != null && startDate != "") ? startDate : "";
-                                endDate = (endDate != null && endDate != "") ? endDate : "";
-                                searchConfig += '{"qname" : "' + name + '" , "value" : "' + value + '", "startDate" : "' + startDate + '", "endDate" : "' + endDate + '"}';
-                                seperatorFlag = true;
-                            }
-
-                            if (seperatorFlag && i < lastElementIdx) {
-                                searchConfig += ',';
-                            }
-                        }
-                    }
-                    searchConfig += '], "columns":[] }';
-
-                    YConnect.setDefaultPostHeader(false);
-                    YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
-                    YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, searchConfig);
-
-                }else{
-                    callback.success();
-                }
             },
 
             getCMISContentBySearch: function(site, repoId, path, searchTerm, callback) {
@@ -6323,6 +6153,24 @@ var nodeOpen = false,
             },
 
             /**
+             * get parameters from url - returns map
+             */
+            getUrlParams: function(){
+                var urlParams,
+                    match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+
+                urlParams = {};
+                while (match = search.exec(query)){
+                    urlParams[decode(match[1])] = decode(match[2]);
+                }
+                return urlParams;
+            },
+
+            /**
              * get query variable
              */
             getQueryVariable: function(query, variable) {
@@ -6578,6 +6426,11 @@ var nodeOpen = false,
                 var date = moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
                         moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") : dateTime;
                 return date;
+            },
+
+            formatFileSize: function(size){
+                var i = size == 0 ? 0 : Math.floor( Math.log(size) / Math.log(1024) );
+                return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
             },
 
             /**
@@ -8142,6 +7995,55 @@ var nodeOpen = false,
             }else{
                 return false;
             }
+        },
+
+        /**
+         * Previewing an image/video on a popup dialog, needs a container with corresponding markup
+         * TODO: document needed markup
+         * @param source {string} Asset path.
+         * @param type {string} Asset Mime type.
+         * @param container {jQuery} The popup element
+         */
+        previewAssetDialog: function(source, type, container) {
+            var $container = container ? container : $('.cstudio-image-popup-overlay'),
+                $img = $container.find('img'),
+                $video = $container.find('video');
+                $img.hide(); $video.hide();
+                $container.removeClass('cstudio-video-popup-overlay');
+    
+            if(type.match(/\bvideo\b/)) {
+                $container.addClass('cstudio-video-popup-overlay');
+                $video.show();
+                $video.find('source').attr('src', source);
+                $video.find('source').attr('type', type);
+                $video.load();
+            }else{
+                $img.show();
+                $img.attr('src', source);
+            }
+    
+            $container.show();
+    
+            // Close - on button click
+            $container.one('click', '.close', function(){
+                $container.hide();
+            });
+
+            // Close - on click outside dialog
+            $container.on('click', function(e) {
+                if (e.target !== this)
+                    return;
+    
+                $container.hide();
+            });
+
+            // Close - on escape
+            $(document).on('keyup', function(e){
+                if(e.keyCode === 27){
+                    $container.hide();
+                }
+            });
+    
         }
 
         },

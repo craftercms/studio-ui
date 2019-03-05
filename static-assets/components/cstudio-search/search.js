@@ -15,1314 +15,745 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * CStudio Search root namespace.
- * 
- * @namespace CStudio
- */
-if (typeof CStudioSearch == "undefined" || !CStudioSearch) {
-   var CStudioSearch= {};
-}
+(function (window, $, Handlebars) {
+    'use strict';
 
-CStudioSearch.DETAIL_OPEN = "open";
-CStudioSearch.DETAIL_CLOSED = "closed";
-CStudioSearch.DETAIL_TOGGLE = "toggle";
+    var storage = CStudioAuthoring.Storage;
+    if (typeof window.CStudioSearch == "undefined" || !window.CStudioSearch) {
+        var CStudioSearch = {};
+        window.CStudioSearch = CStudioSearch;
+    }
 
-CStudioSearch.searchInProgress = false;
+    /* default search context */
+    CStudioSearch.searchContext = {
+        searchId: null,
+        itemsPerPage: 20,
+        keywords: "",
+        filters: {},
+        sortBy: "internalName",      // sortBy has value by default, so numFilters starts at 1
+        sortOrder: "asc",
+        numFilters: 1,
+        filtersShowing: 10,
+        currentPage: 1,	
+        searchInProgress: false,
+        view: 'grid',
+        lastSelectedFilterSelector: '' 
+    };
 
-/* availabe search filters */
-CStudioSearch.filterRenderers = new Array();
+    CStudioSearch.typesMap = {
+        Page: {
+            icon: 'fa-file',
+            tree: 'pages'
+        },
+        Image: {
+            icon: 'fa-file-image-o',
+            tree: 'staticassets'
+        },
+        Video: {
+            icon: 'fa-file-video-o',
+            tree: 'staticassets'
+        },
+        Component: { icon: 'fa-puzzle-piece' },
+        Template: { icon: 'fa-file-code-o' },
+        Taxonomy: { icon: 'fa-tag' },
+        Other: { icon: 'fa-file-text' },
+        CSS: { icon: 'fa-css3' },
+        JavaScript: { icon: 'fa-file-code-o' },
+        Groovy: { icon: 'fa-file-code-o' },
+        PDF: { icon: 'fa-file-pdf-o' },
+        "MS WORD": { icon: 'fa-file-word-o' },
+        "MS EXCEL": { icon: 'fa-file-excel-o' },
+        "MS PowerPoint": { icon: 'fa-file-powerpoint-o' }
+    }
 
-/* search renderers */
-CStudioSearch.resultRenderers = new Array();
+    // TODO: validate if needed (videos filters are pending)
+    CStudioSearch.facetsMap = {
+        width: 'images',
+        height: 'images'
+    }
 
-/* active search filter */
-CStudioSearch.activeFilter = null;
+    CStudioSearch.init = function() {
+        var searchContext = this.determineSearchContextFromUrl();
+        this.searchContext = searchContext;
 
-/* default search context */
-CStudioSearch.searchContext = {
-	searchId: null,
-	contextName: "default",
-	contentTypes: new Array(),
-	selectMode: "none",
-	interactMode: "none",
-	selectLimit: 0,
-	itemsPerPage: 20,
-	keywords: "",
-	contentType: "all",
-    filters: null,
-	nonFilters: null, 
-    sortBy: "relevance",
-    sortAsc: true,
-    currentPage: 1,	
-    searchInProgress: false, 
-	presearch: false
-};
+        CStudioAuthoring.Operations.translateContent(langBundle, null, 'data-trans');
+        this.performSearch();
+        this.bindEvents();
+    };
 
-/**
- * determin the search context
- * (encapsulates looking at the query string)
- */
-CStudioSearch.determineSearchContextFromUrl = function() {
-	var searchContext = CStudioSearch.searchContext;
-	
-	var queryString = document.location.search;
-	
-	var paramMode = CStudioAuthoring.Utils.getQueryVariable(queryString, "mode");
-	var paramContext = "default";
-	var paramSelection = CStudioAuthoring.Utils.getQueryVariable(queryString, "selection");
-	var searchId = CStudioAuthoring.Utils.getQueryVariable(queryString, "searchId");
-	var itemsPerPage = CStudioAuthoring.Utils.getQueryVariable(queryString, "ipp");
-	var page = CStudioAuthoring.Utils.getQueryVariable(queryString, "page");
-	var sortBy = CStudioAuthoring.Utils.getQueryVariable(queryString, "sortBy");
-	var presearch = CStudioAuthoring.Utils.getQueryVariable(queryString, "presearch");
-    var firstTime = CStudioAuthoring.Utils.getQueryVariable(queryString, "firstTime");
+    CStudioSearch.bindEvents = function() {
+        var searchTimeout;
 
-	/* configure search context */
-	searchContext.contextName = (paramContext) ? paramContext : "default";
-	searchContext.searchId = (searchId) ? searchId : null;
-	searchContext.interactMode = paramMode;
-	searchContext.currentPage = (page) ? page : 1;
-	searchContext.sortBy = (sortBy) ? sortBy : '';
-	searchContext.presearch = (presearch == 'true' || presearch == 'false') ? presearch : 'false';
-    searchContext.firstTime = firstTime ? firstTime : false;
-		
-	if(!CStudioAuthoring.Utils.isEmpty(itemsPerPage)) {
-		searchContext.itemsPerPage = itemsPerPage;
-		YDom.get("cstudio-wcm-search-item-per-page-textbox").value = itemsPerPage;		
-	}
-	else {		
-		searchContext.itemsPerPage = 20;
-		YDom.get("cstudio-wcm-search-item-per-page-textbox").value = 20;		
-	}
-	
-	/* configure selection control settings */	
-	if(paramSelection) {
-		if(paramSelection < -1) {
-			searchContext.selectMode = "none";
-			searchContext.selectLimit = 0;
-		}
-		else if(paramSelection == -1) {
-			searchContext.selectMode = "many";
-			searchContext.selectLimit = -1;
-		}
-		else if(paramSelection == 0) {
-			searchContext.selectMode = "none";
-			searchContext.selectLimit = 0;
-		}
-		else if(paramSelection == 1) {
-			searchContext.selectMode = "one";
-			searchContext.selectLimit = 1;
-		}
-		else {
-			searchContext.selectMode = "many";
-			searchContext.selectLimit = paramSelection;
-		}
-	}
-	else {
-		searchContext.selectMode = "none";
-		searchContext.selectLimit = 0;
-	}
-	
-	return searchContext;
-},
-
-CStudioSearch.init = function() {
-
-	CStudioSearch.loadFiltersAndResultTemplates({
-		success: function() {
-			
-			// initialize seach context	
-			CStudioSearch.searchContext = CStudioSearch.determineSearchContextFromUrl();
-
-			// initialize filter
-			CStudioSearch.initializeSearchFilter(); // moved to content-type-map-load
-			//CStudioSearch.loadContentTypeMap();
-
-		    var searchCallback = function() {
-				
-				CStudioSearch.updateSearchContextWithBaseOptions();
-				CStudioSearch.searchContext = CStudioSearch.augmentContextWithActiveFilter(CStudioSearch.searchContext);
-				CStudioSearch.searchContext.page = null;
-				
-		 		CStudioAuthoring.Operations.openSearch(
-		 			CStudioSearch.searchContext.contextName,
-		 			CStudioSearch.searchContext, 
-		 			CStudioSearch.searchContext.selectLimit, 
-		 			CStudioSearch.searchContext.interactMode,
-		 			false,
-					null,
-					CStudioSearch.searchContext.searchId);
-		    };
-
-		    var keywordTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-keyword-textbox");
-		    var keywordEnterKeyListener = new YAHOO.util.KeyListener(keywordTextBox , { keys:13 }, searchCallback , "keydown"  ); 
-		    keywordEnterKeyListener.enable();
-		    
-		    var paginationTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-item-per-page-textbox");    
-		    var paginationEnterKeyListener = new YAHOO.util.KeyListener(paginationTextBox , { keys:13 }, searchCallback , "keydown"  ); 
-		    paginationEnterKeyListener.enable();
-		    paginationTextBox.onkeyup = function() {
-		    	CStudioSearch.checkIfNumeric();
-			};
-			
-		    YAHOO.util.Event.addListener("cstudio-wcm-search-button", "click", searchCallback);
-		    YAHOO.util.Event.addListener("cstudio-wcm-search-sort-dropdown", "change", searchCallback);
-		}
-	});
-
-	setTimeout(function() {
-        var keywordTextbox = $('#cstudio-wcm-search-keyword-textbox');
-        keywordTextbox.focus();
-        if(keywordTextbox[0].value!==""){
-            keywordTextbox[0].value+="";
-        }
-	}, 500)
-
-}
-
-CStudioSearch.checkIfNumeric = function() {
-	var paginationTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-item-per-page-textbox");
-	var ipp = paginationTextBox.value;
-	if (ipp && ipp != '') { 
-		if(isNaN(parseInt(ipp))) {
-			paginationTextBox.value = "";
-		} else {
-			paginationTextBox.value = parseInt(ipp);
-		} 
-	}
-}
-
-/**
- * determine the search filter based on the url
- */
-CStudioSearch.determineFilterRendererFromUrl = function() {
-	var queryString = document.location.search;
-	
-	var paramContext = unescape(CStudioAuthoring.Utils.getQueryVariable(queryString, "context"));
-	var paramSearchId = unescape(CStudioAuthoring.Utils.getQueryVariable(queryString, "searchId"));
-
-	CStudioSearch.searchContext.contextName = (paramContext=="") ? "default" :  paramContext;
-
-	var filterRenderer = CStudioSearch.filterRenderers[CStudioSearch.searchContext.contextName];
-	
-	if(!filterRenderer) {
-		//CStudioSearch.searchContext.contextName = "default";
-		//filterRenderer = CStudioSearch.filterRenderers["default"];
-
-		var moduleCb = {
-        	moduleLoaded: function(moduleName, clazz, config) {
-        		CStudioSearch.initializeSearchFilter(clazz);
-            	//var controller = clazz.getController(config.controller);
-        	}
-        };
-
-        var moduleConfig = { };
-		var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
-
-		var modulePath = "/api/1/services/api/1/content/get-content-at-path.bin?site=" + CStudioAuthoringContext.site +
-            "&path=" + configFilesPath + "/search/filters/" + paramContext + ".js";
+        // Search input changes
+        $('#searchInput').on('keyup', function(e){
             
-		CStudioAuthoring.Module.requireModule(
-        	paramContext,
-            modulePath,
-            moduleConfig, 
-            moduleCb);
-	}
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function(){
+                CStudioSearch.searchContext.keywords = e.target.value;
+                CStudioSearch.performSearch();
+                CStudioSearch.updateUrl();
+            }, 700);
+        });
 
-	return filterRenderer;
-}
+        // Selecting an item from the results
+        $('.cstudio-search').on('change', '.search-select-item', function(){
+            var path = $(this).attr('data-url'),
+                selected = $(this).is(":checked"),
+                allSelected;
+            
+            // synchronize checkbox (grid and list view)
+            $('input[type="checkbox"][data-url="' + path + '"]').prop('checked', selected);
 
-/**
- * build the appropriate search filter
- */
-CStudioSearch.initializeSearchFilter = function(filter) {
-	
-	// determine active filter
-	if(!filter) {
-		CStudioSearch.activeFilter = CStudioSearch.determineFilterRendererFromUrl();
-	}
-	else {
-		CStudioSearch.activeFilter = filter;
-	}
-	
-	if(!CStudioSearch.activeFilter ) return;
-	
-	// render filter sort options
-	var sortOptions = CStudioSearch.activeFilter.getSortOptions();
-	var sortBySelectEl = YAHOO.util.Dom.get('cstudio-wcm-search-sort-dropdown');
-	if(sortOptions.length > 0) {
-		for(var i=0; i<sortOptions.length; i++) {
-			var curOption = sortOptions[i];
-			sortBySelectEl.options[i] = new Option(curOption.label, curOption.value);
-			if(curOption.value == CStudioSearch.searchContext.sortBy)
-				sortBySelectEl.options[i].selected = true;
-		}
-	}
-	else {
-		sortBySelectEl.options[0] = new Option(CMgs.format(langBundle, "sortRelevance"), "relevance");
-	}
-	
-	// render filter body 
-	var FilterControlsEl = YDom.get('cstudio-wcm-search-filter-controls');
+            // if all checkboxes are selected/unselected -> update select all checkbox
+            allSelected = $('input[type="checkbox"].search-select-item:checked').length == $('input[type="checkbox"].search-select-item').length;
+            $('#searchSelectAll').prop('checked', allSelected);
+                
+            CStudioSearch.changeSelectStatus(path, selected);
+        });
 
-	FilterControlsEl.innerHTML = "";
+        // Select all results
+        $('.cstudio-search').on('change', '#searchSelectAll', function(){
+            var selected = $(this).is(":checked"),
+                $elements = $('input[type="checkbox"].search-select-item');
 
-	var renderCb = {
-		success: function() {
+            $elements.prop('checked', selected).trigger("change");
+            
+        });
 
-			YDom.get('cstudio-wcm-search-search-title').innerHTML = CStudioSearch.activeFilter.getFilterTitle();
+        // Clicking on view icon from the results
+        $('.cstudio-search').on('click', '.search-preview', function(e) {
+            var path = $(this).attr('data-url'),
+                type = $(this).attr('data-type').toLowerCase();
+            e.preventDefault();
 
-			CStudioSearch.activeFilter.prepareSearchFilterFromUrl();
-			
-			var presearchElement = new YAHOO.util.Element('cstudio-wcm-search-presearch');  
-		    var	presearch = presearchElement.get('value');    
-		
-		    /* following two methods are called only to check if any pre-filled value is there in the (form/filter) */
-		    CStudioSearch.updateSearchContextWithBaseOptions();
-			CStudioSearch.searchContext = CStudioSearch.augmentContextWithActiveFilter(CStudioSearch.searchContext);
-		   
-		    if(CStudioSearch.searchContext.filters != null && CStudioSearch.searchContext.filters.length > 0) {
-				for(var i=0; i < CStudioSearch.searchContext.filters.length; i++) { 
-					var filterArgs = CStudioSearch.searchContext.filters[0];
-					if(filterArgs && filterArgs.value && filterArgs.value != "all") {
-						presearch = "true";
-						break;
-					}
-				}
-			}
-		    
-		    if ((presearch == 'true') || (CStudioSearch.searchContext.presearch == 'true')) {    	
-		    	CStudioSearch.executeSearch();
-		    }
-		    
-		},
-		failure: function() {
-		}
-	}
-		
-	CStudioSearch.activeFilter.renderFilterBody(FilterControlsEl, renderCb);
-}
+            CStudioAuthoring.Utils.previewAssetDialog(path, type, $('#searchPreviewPopup'));
+        });
 
-/** 
- * call active filter back and allow it to augment the search context prior
- * to executing the search
- */
-CStudioSearch.augmentContextWithActiveFilter = function(context) {
-	context.contentTypes = CStudioSearch.activeFilter.getAppliesToContentTypes();
-	return CStudioSearch.activeFilter.augmentContextWithActiveFilter(context)
-}
+        // Clicking on edit icon from the results
+        $('.cstudio-search').on('click', '.search-edit', function(e){
+            var path = $(this).attr('data-url');
+            e.preventDefault();
+            CStudioSearch.editElement(path);
+        });
 
-/**
- * get the basic search values
- */
-CStudioSearch.updateSearchContextWithBaseOptions = function() {
+        // Clicking on delete icon from the results
+        $('.cstudio-search').on('click', '.search-delete', function(e){
+            var path = $(this).attr('data-url');
+            e.preventDefault();
+            CStudioSearch.deleteElement(path);
+        });
 
-	CStudioSearch.searchContext.contentTypes = new Array();
-	CStudioSearch.searchContext.includeAspects = new Array();
-	CStudioSearch.searchContext.excludeAspects = new Array();
-	CStudioSearch.searchContext.filters = new Array();
-	CStudioSearch.searchContext.nonFilters = new Array();
-	CStudioSearch.searchContext.keywords = encodeURIComponent(document.getElementById('cstudio-wcm-search-keyword-textbox').value);
-	CStudioSearch.searchContext.sortBy = document.getElementById('cstudio-wcm-search-sort-dropdown').value;
-	CStudioSearch.searchContext.itemsPerPage = document.getElementById('cstudio-wcm-search-item-per-page-textbox').value;
-}
+        // Selecting a filter
+        $('.cstudio-search').on('change', '.filter-item input[type="radio"]', function(){
+            var filterName = $(this).attr('name'),
+                isRange = $(this).attr('data-range') === 'true',
+                filterValue,
+                from,
+                to,
+                isAdditional = $(this).hasClass('filter');
 
-/**
- * This method is called when the search button is pressed
- * Does some initial cleaning like restarting the patination and then calls submitcallback
- */
-CStudioSearch.executeSearch = function() {	
-	
-	var ipp = document.getElementById('cstudio-wcm-search-item-per-page-textbox').value;
-	if (ipp && ipp != '' && isNaN(parseInt(ipp))) {
-        var CMgs = CStudioAuthoring.Messages;
-        var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-        CStudioAuthoring.Operations.showSimpleDialog(
-            "numberPerPage-dialog",
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(langBundle, "notification"),
-            CMgs.format(langBundle, "numberPerPage"),
-            [{ text: "OK",  handler:function(){
-                this.hide();
-                return;
-            }, isDefault:false }],
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            "studioDialog"
-        );
-	}
-	
-	CStudioSearch.updateSearchContextWithBaseOptions();
-	CStudioSearch.searchContext = CStudioSearch.augmentContextWithActiveFilter(CStudioSearch.searchContext);
+            if(isRange){
+                from = $(this).attr('from');
+                to = $(this).attr('to');
+            }else{
+                filterValue = $(this).val()
+            }
+            
+            if(isAdditional){
+                if(isRange){
+                    CStudioSearch.searchContext.filters[filterName] = {
+                        min: isNaN(parseInt(from)) ? null : from,
+                        max: isNaN(parseInt(to)) ? null : to
+                    }; 
+                }else{
+                    CStudioSearch.searchContext.filters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue); 
+                }
+            }else{
+                CStudioSearch.searchContext[filterName] = filterValue;
+            }
 
-	CStudioSearch.fireSearchRequest(CStudioSearch.searchContext);
-	//CStudioSearch.toggleResultDetail(CStudioSearch.DETAIL_OPEN);
-}
+            CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
+            
+            CStudioSearch.updateNumFilters(filterName);
+            CStudioSearch.performSearch(true);
+            CStudioSearch.updateUrl();
+        });
 
-/**
- * convert a path in to an ID
- */
-CStudioSearch.pathToId = function(path) {
-	var id = "";
-	
-	if(path) {
-		id = path.replace(/\//g, "-");
-		id = id.replace(/\./g, "-");
-	}
-	
-	return id;
-},
+        // Applying range to a filter
+        $('.cstudio-search').on('click', '.filter-range .apply-range', function(){ 
+            var $parent = $(this).parent(),
+                filterName = $parent.attr('filter-name'),
+                rangeMin = parseInt($parent.find('.range-min').val()),
+                rangeMax = parseInt($parent.find('.range-max').val());
 
- /**
- * render stock result wrapper
- */
-CStudioSearch.renderCommonResultWrapper = function(contentTO, resultBody) {
+            CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
+            CStudioSearch.searchContext.filters[filterName] = {
+                min: rangeMin,
+                max: rangeMax
+            }; 
 
-	return "<div class='cstudio-search-result'>" +
-				"<div id='result-select-" + contentTO.resultId + "' class='cstudio-search-select-container'></div>" +
-				"<div class='result-status' id='result-status" + contentTO.resultId + "' style='float: left !important; margin-left: 15px;'></div>" +
-				"<div style='margin-top: -16px'>"+
-					"<div class='cstudio-search-result-body'>" +
-						resultBody +
-					"</div>" +
-				"</div>" +
-				"<div style='clear:both;'></div>" +
-				"<div class='cstudio-wcm-search-vertical-spacer'></div>" +
-			"</div>";
-}
+            CStudioSearch.updateNumFilters();
+            CStudioSearch.performSearch(true);
+            CStudioSearch.updateUrl();
 
-/**
- * empty message from search context.  used when result set is empty
- */
-CStudioSearch.emptyResultMessage = function(searchContext, searchFailed, failCause) {
-	var msg = "<br />";
-	
-	if (searchFailed) {
-		msg += CMgs.format(langBundle, "errSearchFailed", failCause);
-	} else {
-		msg += "<p align='center'><strong>"+CMgs.format(langBundle, "errNoResults")+"</strong></p>";
-	}
-	return msg;
-}
+        });
 
-/**
- * render the pagination 
- */
-CStudioSearch.renderPagination = function(resultCount, pageCount, searchContext, searchFailed, failCause) {
-	var paginationControlsEl = YDom.get("cstudio-wcm-search-pagination-controls");
-	var currentPage = CStudioSearch.searchContext.currentPage;
-	var previousDisabled = (pageCount <= 1 || currentPage == 1);
-	var nextDisabled = (pageCount <= 1 || currentPage == pageCount);
-	
-	// clear current controls
-	paginationControlsEl.innerHTML = "";
-	
-	if(resultCount == 0) {
-		var emptyMsg = document.createElement("div");
-		emptyMsg.innerHTML = CStudioSearch.emptyResultMessage(searchContext, searchFailed, failCause)+ "";
-		YDom.get('cstudio-wcm-search-result').appendChild(emptyMsg);
-		//paginationControlsEl.appendChild(emptyMsg);
-		YDom.get("cstudio-wcm-search-result-header-count").innerHTML = CMgs.format(langBundle, "zeroResults");
-		YDom.get('cstudio-wcm-search-description-toggle-link').style.display = "none";
-		return;
-	} else {
-		var resultHeaderCount = YDom.get("cstudio-wcm-search-result-header-count");
-		var startItem = ((searchContext.currentPage-1)*(searchContext.itemsPerPage))+1;
-		var endItem   = (parseInt(startItem) + parseInt(searchContext.itemsPerPage) -1);
-		if( endItem > resultCount) 
-			endItem  = resultCount;  
-		resultHeaderCount.innerHTML = CMgs.format(langBundle, "showing", startItem, endItem, resultCount);
-	}
-	
-	// construct previous control
-	var previousEl = null;
+        // Clear filter
+        $('.cstudio-search').on('click', '.filters .clear-filter', function(){
+            var filterId = $(this).parent().find('[data-toggle="collapse"]').attr('aria-controls');
+            $('input[name="' + filterId + '"]').prop('checked', false);
 
-	if(previousDisabled) { // this can be done by disbaling the link+ccs right?
-		previousEl = document.createElement("span");
-  	    previousEl.innerHTML = "&laquo; "+CMgs.format(langBundle, "pagePrevious")+" &nbsp;";
-		YDom.addClass(previousEl, "disabled");
-	}
-	else {
-	    previousEl = document.createElement("a");
-		previousEl.innerHTML = "&laquo; "+CMgs.format(langBundle, "pagePrevious")+" &nbsp;";
-		previousEl.className = "cstudio-wcm-search-pagination-number";
+            delete CStudioSearch.searchContext.filters[filterId];
 
-		previousEl.onclick = function() {
-			CStudioSearch.searchContext.page = parseInt(CStudioSearch.searchContext.currentPage) - 1;
+            CStudioSearch.performSearch(true);
+            CStudioSearch.updateUrl();
+        });
 
-	 		CStudioAuthoring.Operations.openSearch(
-	 		 	CStudioSearch.searchContext.contextName,
-	 			CStudioSearch.searchContext, 
-	 			CStudioSearch.searchContext.selectLimit, 
-	 			CStudioSearch.searchContext.interactMode,
-	 			false,
-				null,
-				CStudioSearch.searchContext.searchId);
-		};
-	}
+        // Changing results view (grid, list)
+        $('.view-selector').on('click',  'button', function(){
+            var $resultsContainer = $('.results'),
+                newView = $(this).attr('data-view'),
+                oldView = newView === 'grid' ? 'list' : 'grid';
+            
+            CStudioSearch.searchContext.view = newView;
+            $('.view-selector button').removeClass('active');
+            $(this).addClass('active');
 
-	// construct next control
-	var nextEl =  null;
-		
-	if(nextDisabled) { 
-		nextEl = document.createElement("span");
-		nextEl.innerHTML = "&nbsp; "+CMgs.format(langBundle, "pageNext")+" &raquo;";
-		YDom.addClass(nextEl, "disabled");
-	}
-	else {
-		nextEl = document.createElement("a");
-		nextEl.innerHTML = "&nbsp;&nbsp;&nbsp;" +CMgs.format(langBundle, "pageNext")+" &raquo;";
-		nextEl.className = "cstudio-wcm-search-pagination-number";
+            $resultsContainer.switchClass(oldView, newView);    
+            CStudioSearch.updateUrl();
+        });
 
-		nextEl.onclick = function() {
-			CStudioSearch.searchContext.page = parseInt(CStudioSearch.searchContext.currentPage) + 1;
+        // Clicking on result to preview
+        $('.cstudio-search').on('click', '.result-preview.previewable', function() {
+            var type = $(this).attr("data-type"),
+                treeVal = CStudioSearch.typesMap[type].tree,
+                treeCookieName,
+                treeCookie,
+                url = $(this).attr("data-url"),
+                parsedUrl,
+                cookieKey = type === 'Page' ? 'sitewebsite' : 'static-assets';
 
-	 		CStudioAuthoring.Operations.openSearch(
-	 			CStudioSearch.searchContext.contextName,
-	 			CStudioSearch.searchContext,
-	 			CStudioSearch.searchContext.selectLimit, 
-	 			CStudioSearch.searchContext.interactMode,
-	 			false,
-				null,
-				CStudioSearch.searchContext.searchId);
+            if(treeVal){
+                treeCookieName = CStudioAuthoringContext.site + '-' + treeVal + '-opened';
+                treeCookie = JSON.parse(CStudioAuthoring.Storage.read(treeCookieName));
 
-		};
-	}
-	
-	//add previous link element
-	paginationControlsEl.appendChild(previousEl);
+                // validate if is page and if has folder (ends with index.xml)
+                if(type === "Page" && (url.indexOf("index.xml") !== -1)){
+                    //remove everything after last-1 '/'
+                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                    parsedUrl = parsedUrl.substr(0, parsedUrl.lastIndexOf('/'));
+                }else{
+                    //remove everything after last '/'
+                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                }
 
-	//construct pagination numbers
-	var startPage = parseInt(CStudioSearch.searchContext.currentPage) >= 5 ? (parseInt(CStudioSearch.searchContext.currentPage) - 5) : 0;
-	var endPage   = parseInt(startPage) + 8 > pageCount ? pageCount : (parseInt(startPage) + 8);
-	if(parseInt(pageCount - CStudioSearch.searchContext.currentPage) < 4) {
-		endPage   = pageCount
-		startPage = parseInt(endPage) - 8 > 0 ? parseInt(endPage) - 8 : 0;
-	}
-	for(var i=startPage; i < endPage; i++) {
-		
-		if(parseInt(i+1) == parseInt(CStudioSearch.searchContext.currentPage)) {
-			var pageEl = document.createElement("span");
-			pageEl.innerHTML = "&nbsp;" + (i+1);
-			pageEl.pageNumber = i+1;
-			pageEl.className = "disabled";
-		} else {
-			var pageEl = document.createElement("a");
-			pageEl.innerHTML = "&nbsp;" + (i+1);
-			pageEl.pageNumber = i+1;
-			
-			pageEl.className = "cstudio-wcm-search-pagination-number";
+                // key doesn't exist in cookie
+                if(!treeCookie[cookieKey] && parsedUrl != '/site'){
+                    treeCookie[cookieKey] = [];
+                }
+                // in entry doesn't exist in key
+                if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
+                    treeCookie[cookieKey].push(parsedUrl);
+                }
+                storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
+            }
+            CStudioSearch.previewElement($(this).attr('data-url'));
+        });
 
-			pageEl.onclick = function() {
-				CStudioSearch.searchContext.page = this.pageNumber;
-				
-				CStudioAuthoring.Operations.openSearch(
-						CStudioSearch.searchContext.contextName,
-						CStudioSearch.searchContext, 
-						CStudioSearch.searchContext.selectLimit, 
-						CStudioSearch.searchContext.interactMode,
-						false,
-						null,
-						CStudioSearch.searchContext.searchId);
+        // Avoid closing filters dropdown on selections
+        $(document).on('click', '.filters .dropdown-menu', function (e) {
+            e.stopPropagation();
+        });
+    };
 
-			}
-		}
+    CStudioSearch.determineSearchContextFromUrl = function() {
+        var searchContext = CStudioSearch.searchContext;
 
-		paginationControlsEl.appendChild(pageEl);
-	}
-
-	// add next link element
-	paginationControlsEl.appendChild(nextEl);
-}
-
-/**
- * called right before firing the search request
- * used to get basic values in to search context and clean up previous searches
- */
-CStudioSearch.preFireSearch = function(searchContext) {
-
-	// clear out current results
-	//YDom.get('cstudio-wcm-search-result').innerHTML = "";
-	// disabling the search button until the callback
-	var searchSubmitButton = YDom.get("cstudio-wcm-search-button");
-	var keywordTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-keyword-textbox");
-	var paginationTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-item-per-page-textbox");
-	var sortDropDown = YAHOO.util.Dom.get("cstudio-wcm-search-sort-dropdown");
-	
-	searchSubmitButton.disabled = "disabled";
-	keywordTextBox.disabled = "disabled";
-    paginationTextBox.disabled = "disabled";
-    sortDropDown.disabled = "disabled";
+        var urlParams = CStudioAuthoring.Utils.getUrlParams();
+        
+        var queryString = document.location.search;
+        var keywords = CStudioAuthoring.Utils.getQueryVariable(queryString, "keywords");
+        var searchId = CStudioAuthoring.Utils.getQueryVariable(queryString, "searchId");
+        var itemsPerPage = CStudioAuthoring.Utils.getQueryVariable(queryString, "ipp");
+        var page = CStudioAuthoring.Utils.getQueryVariable(queryString, "page");
+        var sortBy = CStudioAuthoring.Utils.getQueryVariable(queryString, "sortBy");
+        var view = CStudioAuthoring.Utils.getQueryVariable(queryString, "view");
     
-	CStudioSearch.toggleResultDetail("hide-link");
-	
-	var resultHeaderInProgress = YDom.get("cstudio-wcm-search-result-in-progress");
-	var contextPath = document.location.protocol + "//" + document.location.hostname + ":" + document.location.port + CStudioAuthoringContext.baseUri+"/";  
-	var imgEl = document.createElement("img");
-	imgEl.src = contextPath + "static-assets/themes/cstudioTheme/images/treeview-loading.gif";
-	resultHeaderInProgress.appendChild(imgEl);
-	
-	// clear out pagination
-	YDom.get('cstudio-wcm-search-pagination-controls').innerHTML = "";
-}
+        searchContext.keywords = (keywords) ? keywords : searchContext.keywords;
+        searchContext.searchId = (searchId) ? searchId : null;
+        searchContext.currentPage = (page) ? page : searchContext.currentPage;
+        searchContext.sortBy = (sortBy) ? sortBy : searchContext.sortBy;
+        searchContext.view = (view) ? view : searchContext.view;
+        searchContext.itemsPerPage = (itemsPerPage) ? itemsPerPage : searchContext.itemsPerPage;
+            
+        $.each(urlParams, function(key, value){
+            var processedKey,
+                processedValue;
+            // csf = crafter studio filter
+            if(key.indexOf("csf_") === 0){
+                processedKey = key.replace("csf_", "");
 
-/**
- * Method for submitting the the form to the webscript
- * And to return the result and put the result in the result div
- */
-CStudioSearch.fireSearchRequest = function(searchContext) {
-	
-	// call preFire event
-	CStudioSearch.preFireSearch(searchContext);
-	
-	// define callback
-	var callback = {
-			success: function(results)  {
-				var searchSubmitButton = YDom.get("cstudio-wcm-search-button");
-				var keywordTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-keyword-textbox");
-				var paginationTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-item-per-page-textbox");
-				var sortDropDown = YAHOO.util.Dom.get("cstudio-wcm-search-sort-dropdown");
-				var searchResultsLabels = new Array();
-				
-				searchSubmitButton.disabled = "";
-				keywordTextBox.disabled = "";
-			    paginationTextBox.disabled = "";
-			    sortDropDown.disabled = "";
-			    
-				CStudioSearch.toggleResultDetail(CStudioSearch.DETAIL_CLOSED);
-				
-				//var resultHeaderInProgress = YDom.get("cstudio-wcm-search-result-in-progress");  
-				//resultHeaderInProgress.innerHTML = "";
-				
-				var resultTableEl = document.getElementById('cstudio-wcm-search-result');
-				resultTableEl.innerHTML = "";
-				
-				if(resultTableEl && results) {
-					
-					var resultCount = results.resultCount;
-					var pageTotal = results.pageTotal;
-			        
-			        /* render pagination */
-			        CStudioSearch.renderPagination(resultCount, pageTotal, searchContext, results.searchFailed, results.failCause);
-			        
-			        var previousResultIds = [];
-			        var exists = function(elementId) {
-			        	for(var i = 0;i < previousResultIds.length; i++) {
-			        		if(elementId == previousResultIds[i]) return true;
-			        	}
-			        	return false;
-			        }
-                    var formsLangBundle = CMgs.getBundle("search", CStudioAuthoringContext.lang);
-					
-					/* render results */
-			        for(var i=0; i<results.objectList.length; i++) {
-			   			var resultsHTML = "";
-			        	var contentItem = results.objectList[i],
-                            _item = contentItem.item;
+                //csr = crafter studio range
+                if(value.indexOf("csr_") === 0){
+                    var range;
+                    processedValue = value.replace("csr_", "");
+                    range = processedValue.split('-');
 
-                        _item.uri = _item.localId;
-						_item.form = _item.contentType;
+                    searchContext.filters[processedKey] = {};
+                    searchContext.filters[processedKey].min = range[0] === "null" ? null : range[0];
+                    searchContext.filters[processedKey].max = range[1] === "null" ? null : range[1];
+                }else{
+                   processedValue = value;
+                   searchContext.filters[processedKey] = processedValue;
+                }
+            }
+        });
 
-			        	contentItem.resultId = CStudioSearch.pathToId(_item.localId);
-			        	
-			        	/********************************************************************************
-			        	 * handling duplicate item issue due to indexing.
-			        	 * Starts
-			        	 *******************************************************************************/
-			        	if( exists(contentItem.resultId) ) contentItem.resultId += '-----' + i;   
-			        	previousResultIds.push(contentItem.resultId.split("-----")[0]);
-			        	/********************************************************************************
-			        	 * handling duplicate item issue due to indexing.
-			        	 * Ends
-			        	 ********************************************************************************/
-			        	
-				        /* render result */
-			        	var resultEl = document.createElement("div");
-			        	resultTableEl.appendChild(resultEl);
-			        	
-			        	var resultTemplate = CStudioSearch.resultRenderers[_item.contentType];
-			      
-			        	if(resultTemplate) {
-			        	 	resultsHTML = resultTemplate.render(contentItem);
-			        	}
-			        	else {
-			        		var extension = _item.name.substring(_item.name.lastIndexOf(".")+1);
-			        		resultTemplate = CStudioSearch.resultRenderers[extension];
-			        		
-			        		if(resultTemplate) {
-				        	 	resultsHTML = resultTemplate.render(contentItem);			        			
-			        		}
-			        		else {
-				        	 	resultsHTML = CStudioSearch.ResultRenderer.Default.render(contentItem);
-			        		}
-			        	}
-				      	
-				      	resultEl.innerHTML = resultsHTML;
-                        var elements = document.querySelectorAll('[data-translation]');
-                        CStudioAuthoring.Operations.translateContent(langBundle);
-	
-						var resultStatusIconStyle = CStudioAuthoring.Utils.getIconFWClasses(_item),
-                            resultStatusEl = YDom.get("result-status"+contentItem.resultId),
-				      	    nextElement = resultStatusEl.nextElementSibling;
-
-                        //Removing it for the release 2.5.0
-                        //YDom.addClass(resultStatusEl, resultStatusIconStyle);
-                        resultStatusEl.style.padding = "1px";
-
-					//Add Tool tip information for item
-					var searReultItem = resultStatusEl.nextSibling;
-					if (searReultItem) {
-						var itemTitle = CStudioAuthoring.Utils.buildToolTip(contentItem.item.internalName, contentItem.item.internalName, contentItem.item.contentType);
-						var oSpan = document.createElement("div");
-						oSpan.setAttribute("id", "search-item-tt-" + contentItem.resultId);
-                        oSpan.setAttribute("class","cstudio-search-result-cont");
-						oSpan.setAttribute("title", itemTitle);
-						searReultItem.parentNode.insertBefore(oSpan, searReultItem);
-						oSpan.appendChild(resultStatusEl);
-						oSpan.appendChild(searReultItem);
-						searchResultsLabels.push("search-item-tt-" + contentItem.resultId);
-
-						//Adjusting left padding for a long internal title
-						/*
-						if (contentItem.item.internalName.length > 60) {
-							oSpan.setAttribute("class", "search-page-title");
-							var oDiv = document.createElement("div");
-							oDiv.setAttribute("class", "search-item-title");
-							oSpan.parentNode.insertBefore(oDiv, oSpan);
-							oDiv.appendChild(oSpan);
-
-							//add next sibling also inside div so that all will appear in-line.
-							if (oDiv.nextSibling && oDiv.nextSibling.tagName && oDiv.nextSibling.tagName.toLowerCase() == "span") {
-								oDiv.appendChild(oDiv.nextSibling);
-							}
-
-							//remove br tag next to div
-							if (oDiv.nextSibling && oDiv.nextSibling.tagName && oDiv.nextSibling.tagName.toLowerCase() == "br") {
-								oDiv.nextSibling.parentNode.removeChild(oDiv.nextSibling);
-							}
-						}
-						*/
-					}
-
-				      	/* instrument result */
-				      	if(this.searchContext.selectMode == "many") {
-				      		
-				      		var selectResultEl = YDom.get("result-select-"+contentItem.resultId);
-				      		var controlEl = document.createElement("input");
-				      		controlEl.type = "checkbox";
-				      		controlEl.name = "result-select";
-							controlEl.contentTO = contentItem;							
-				      		selectResultEl.appendChild(controlEl);
-				      		controlEl.onchange = function() { 
-				      			
-				      			if(this.checked) {
-				      				if(searchContext.selectLimit != -1){
-				      					if(CStudioAuthoring.SelectedContent.getSelectedContentCount() < searchContext.selectLimit) {
-							      			
-							      			var selectCb = {
-							      				success : function(contentTO) {
-													CStudioAuthoring.SelectedContent.selectContent(contentTO.item);
-							      				},
-							      				failure: function() {
-							      				}
-							      			};
-
-                    						CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, this.contentTO.item.uri, selectCb, false, false);
-				      					}
-				      					else {
-				      						this.checked = false;
-				      					}
-				      				}
-				      				else {
-										var selectCb = {
-						      				success : function(contentTO) {
-												CStudioAuthoring.SelectedContent.selectContent(contentTO.item);
-						      				},
-						      				failure: function() {
-						      				}
-						      			};
-
-                						CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, this.contentTO.item.uri, selectCb, false, false);				      				
-                					}
-				      			}
-				      			else {
-				      				//CStudioAuthoring.SelectedContent.unselectContent(this.contentTO.item);
-                                    var selectCb = {
-                                        success : function(contentTO) {
-                                            CStudioAuthoring.SelectedContent.unselectContent(contentTO.item);
-                                        },
-                                        failure: function() {
-                                        }
-                                    };
-
-                                    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, this.contentTO.item.uri, selectCb, false, false);
-				      			}
-				      			//enable disable Add Item button based on selection
-				      			if(document.getElementById("submission-controls")) {
-					      			if(CStudioAuthoring.SelectedContent.getSelectedContentCount() > 0){
-					      				document.getElementById("submission-controls").firstChild.disabled = "";
-					      			}else {
-					      				document.getElementById("submission-controls").firstChild.disabled = "disabled";
-					      			}
-				      			}
-				      		};
-				      	}
-				      	else if(this.searchContext.selectMode == "one") {
-				      		var selectResultEl = YDom.get("result-select-"+contentItem.resultId);
-				      		var controlEl = document.createElement("input");
-				      		controlEl.type = "radio";
-				      		controlEl.name = "result-select";
-							controlEl.contentTO = contentItem;							
-				      		selectResultEl.appendChild(controlEl);
-				      		
-
-				      		controlEl.onchange = function() {
-				      			
-				      			if(CStudioSearch.selectedContentTO) {
-					      			CStudioAuthoring.SelectedContent.unselectContent(CStudioSearch.selectedContentTO.item);
-				      			}
-				      			
-				      			CStudioSearch.selectedContentTO = this.contentTO;
-				      			CStudioAuthoring.SelectedContent.selectContent(this.contentTO.item);
-				      			
-				      			//enable disable Add Item button based on selection
-				      			if(document.getElementById("submission-controls")){				      				
-					      			if(CStudioAuthoring.SelectedContent.getSelectedContentCount() > 0){
-					      				document.getElementById("submission-controls").firstChild.disabled = "";
-					      			}else {
-					      				document.getElementById("submission-controls").firstChild.disabled = "disabled";
-					      			}
-				      			}
-				      		} 
-				      	}				      	
-			        }
-
-					var toolTipContainer = document.createElement("div");
-					toolTipContainer.setAttribute("id", "acn-context-tooltip-search");
-					toolTipContainer.className = "acn-context-tooltip";
-					toolTipContainer.innerHTML = "<div style=\"z-index: 2; left: 73px; top: 144px; visibility: hidden;\"" +
-									" class=\"yui-module yui-overlay yui-tt\"" +
-								        "id=\"acn-context-tooltipWrapper-search\"><div class=\"bd\"></div>" +
-									"<div class=\"yui-tt-shadow\"></div>" +
-									"<div class=\"yui-tt-shadow\"></div>" +
-									"<div class=\"yui-tt-shadow\"></div>" +	"</div>";
-					
-					resultTableEl.appendChild(toolTipContainer);
-
-
-					new YAHOO.widget.Tooltip("acn-context-tooltipWrapper-search", {
-							context: searchResultsLabels,
-							hidedelay:0,
-							showdelay:500,
-							container: "acn-context-tooltip-search"
-					});
-
-					//disable links for "cstudio-search-no-preview" items.
-					var noPreviewLinks = YDom.getElementsByClassName("cstudio-search-no-preview");
-					if (noPreviewLinks && noPreviewLinks.length >= 1) {
-						for (var linkIdx = 0; linkIdx < noPreviewLinks.length; linkIdx++) {
-							noPreviewLinks[linkIdx].href = "JavaScript:void(0)";
-							noPreviewLinks[linkIdx].removeAttribute("onclick");
-							noPreviewLinks[linkIdx].setAttribute("onclick", "return false")
-						}
-					}
-
-					var searchFinishDiv = document.createElement("div");
-					searchFinishDiv.id = "cstudio-wcm-search-render-finish";
-					resultTableEl.appendChild(searchFinishDiv);
-					
-					// initialize flash view starts
-					var els = document.getElementsByClassName("flash-banner-wrapper");
-					for(var idx = 0; idx < els.length; idx++) {
-						var container = els[idx];
-						var flashSrc = container.lastChild.value; 
-						var flashObject = new FlashObject(flashSrc, "swf-" + idx, "auto", "auto", 6, "");
-						flashObject.addParam("wmode","transparent");
-						flashObject.addParam("border","1px solid");
-						flashObject.write(container);
-					}
-					// initialize flash view ends					
-				} 
-			},
-	        failure: function(o) {
-				var searchSubmitButton = YDom.get("cstudio-wcm-search-button");
-				var keywordTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-keyword-textbox");
-				var paginationTextBox = YAHOO.util.Dom.get("cstudio-wcm-search-item-per-page-textbox");
-				var sortDropDown = YAHOO.util.Dom.get("cstudio-wcm-search-sort-dropdown");
-				
-				searchSubmitButton.disabled = "";
-				keywordTextBox.disabled = "";
-			    paginationTextBox.disabled = "";
-			    sortDropDown.disabled = "";
-
-				//	var searchFailedFlag = ,"searchFailed":false,"failCause":"",		        
-			    YDom.get('cstudio-wcm-search-result').innerHTML =  "<p align='center'><strong>"+CMgs.format(langBundle, "errSearchFailed", "")+"</strong></i></p>";
-			},
-			        
-			searchContext: searchContext		
-	};
-
-	// perform search
-	CStudioAuthoring.Service.search(CStudioAuthoringContext.site, searchContext, callback);
-}	
-
-
-/**
- * result line items that identify detail areas can be collapsed to allow for a tighter
- * search result
- */
-CStudioSearch.toggleResultDetail = function(state){
-	var cssClass = 'cstudio-wcm-search-invisible';
-	var elements = YAHOO.util.Dom.getElementsByClassName('cstudio-search-description');
-	var link = new YAHOO.util.Element('cstudio-wcm-search-description-toggle-link');
-	
-	if(state == "hide-link") {
-		link.set("innerHTML", "");
-		return;
-	}
-	if(state == CStudioSearch.DETAIL_OPEN) {
-		YAHOO.util.Dom.removeClass(elements, cssClass);		
-		link.set("innerHTML", CMgs.format(langBundle, "showDescriptions"));
-	}
-	else if(state == CStudioSearch.DETAIL_CLOSED) {
-		YAHOO.util.Dom.addClass(elements, cssClass);
-		link.set("innerHTML", CMgs.format(langBundle, "hideDescriptions"));		
-	}
-	else {
-		
-		if(YAHOO.util.Dom.hasClass(elements[0], cssClass)){		
-			YAHOO.util.Dom.removeClass(elements, cssClass);		
-			CStudioSearch.toggleDescriptionLink();
-		}
-		else{
-			YAHOO.util.Dom.addClass(elements, cssClass);
-			CStudioSearch.toggleDescriptionLink();
-		}
-	}
-}
-
-/**
- * following method returns a div with a separation bar, if private.  Otherwise, nothing.  
- */
-CStudioSearch.publicPrivateIcon = function(pnpText) {
-	if ((!CStudioAuthoring.Utils.isEmpty(pnpText)) && (pnpText.toLowerCase() == "private")) 
-		return " | <span class='status-icon private new component'></span>";
-	return "";
-}
-
-/**
- * The following method creates a image pop up if the src is given
- * through parameter
- * */
-CStudioSearch.magnifyBannerImage = function(imgSrc) {
-	try {
-		var width = 0;
-		var height = 0;
-		
-		if (document.documentElement && document.documentElement.scrollWidth ) {
-			width = document.documentElement.scrollWidth;
-		} else if (document.body.scrollWidth > document.body.offsetWidth) {
-			width = document.body.scrollWidth;
-		} else {
-			width = document.body.offsetWidth;
-		}
-
-		if (document.documentElement && document.documentElement.scrollHeight ) {
-			height = document.documentElement.scrollHeight;
-		} else if (document.body.scrollHeight > document.body.offsetHeight) {
-			height = document.body.scrollHeight;
-		} else {
-			height = document.body.offsetHeight;
-		}
-
-		var maskingDiv = document.createElement("div");
-		maskingDiv.style.backgroundColor = "#000000";
-		maskingDiv.style.opacity = "0.25";
-		maskingDiv.style.position = "absolute";
-		maskingDiv.style.display = "block";
-		maskingDiv.style.width = width + "px";
-		maskingDiv.style.height = height + "px";
-		maskingDiv.style.top = "0";
-		maskingDiv.style.right = "0";
-		maskingDiv.style.bottom = "0";
-		maskingDiv.style.left = "0";
-		maskingDiv.style.zIndex = "31";
-		
-		var containerDiv = document.createElement("div");
-		containerDiv.id = "cstudio-wcm-search-banner-image-pop-up";
-		containerDiv.style.position = "absolute";
-		containerDiv.style.right = "0";
-		containerDiv.style.bottom = "0";
-		containerDiv.style.zIndex = "32";
-		
-		var imageContent = document.createElement("img");
-		imageContent.src = imgSrc;
-		imageContent.style.borderWidth = "10px 10px 50px";
-		imageContent.style.borderColor = "#DADADA";
-		imageContent.style.borderStyle = "solid";
-		containerDiv.style.width = (imageContent.width + 20) + "px";
-		containerDiv.style.height = (imageContent.height + 60) + "px";
-		containerDiv.style.borderWidth = "5px";
-		containerDiv.style.borderColor = "black";
-		containerDiv.style.borderStyle = "solid";
-		
-		var buttonHolderDiv = document.createElement("div");
-		buttonHolderDiv.style.textAlign = "center";
-		buttonHolderDiv.style.marginTop = "-35px";
-		
-		var closeButton = document.createElement("input");
-		closeButton.setAttribute("type","button");
-		closeButton.value = "Close";
-		closeButton.onclick = function () {
-			document.body.removeChild(containerDiv);
-			document.body.removeChild(maskingDiv);
-			
-			//disable scroll bars for the window.
-			document.getElementsByTagName("body")[0].style.overflow = "auto";
-		};
-		
-		buttonHolderDiv.appendChild(closeButton);
-		
-		containerDiv.appendChild(imageContent);
-		containerDiv.appendChild(buttonHolderDiv);
-		
-		document.body.appendChild(containerDiv);
-		document.body.appendChild(maskingDiv);
-		
-		/**
-		** render pop up in the center of the screen.
-		**/
-		var imagePopUp = new YAHOO.widget.Overlay("cstudio-wcm-search-banner-image-pop-up");
-		imagePopUp.center();
-		imagePopUp.render();
-		
-		//disable scroll bars for the window.
-		document.getElementsByTagName("body")[0].style.overflow = "hidden";
-	} catch (err) {
-		//alert("["+err+"]");
-	}
-}
-
-CStudioSearch.magnifyFlashBanner = function(magnifyer) {
-	try {
-		var width = 0;
-		var height = 0;
-		
-		if (document.documentElement && document.documentElement.scrollWidth ) {
-			width = document.documentElement.scrollWidth;
-		} else if (document.body.scrollWidth > document.body.offsetWidth) {
-			width = document.body.scrollWidth;
-		} else {
-			width = document.body.offsetWidth;
-		}
-
-		if (document.documentElement && document.documentElement.scrollHeight ) {
-			height = document.documentElement.scrollHeight;
-		} else if (document.body.scrollHeight > document.body.offsetHeight) {
-			height = document.body.scrollHeight;
-		} else {
-			height = document.body.offsetHeight;
-		}
-
-		var maskingDiv = document.createElement("div");
-		maskingDiv.style.backgroundColor = "#000000";
-		maskingDiv.style.opacity = "0.25";
-		maskingDiv.style.position = "absolute";
-		maskingDiv.style.display = "block";
-		maskingDiv.style.width = width + "px";
-		maskingDiv.style.height = height + "px";
-		maskingDiv.style.top = "0";
-		maskingDiv.style.right = "0";
-		maskingDiv.style.bottom = "0";
-		maskingDiv.style.left = "0";
-		maskingDiv.style.zIndex = "31";
-		
-		var containerDiv = document.createElement("div");
-		containerDiv.id = "cstudio-wcm-search-banner-image-pop-up";
-		containerDiv.style.position = "absolute";
-		containerDiv.style.right = "0";
-		containerDiv.style.bottom = "0";
-		containerDiv.style.zIndex = "32";
-		
-		var flashContent = magnifyer.previousSibling.firstChild.cloneNode(true);
-		flashContent.id += "-popup"; 
-		flashContent.wmode = "";
-		flashContent.style.background = "white";
-		flashContent.style.borderWidth = "10px 10px 50px";
-		flashContent.style.borderColor = "#DADADA";
-		flashContent.style.borderStyle = "solid";
-		var orgHeightWidth = magnifyer.nextSibling.nextSibling.nextSibling.nextSibling.value.split("|");
-		var orgHeight = orgHeightWidth[0];
-		var orgWidth = orgHeightWidth[1];
-		flashContent.width = parseInt(orgWidth, 10) + 20;
-		containerDiv.style.width = flashContent.width + "px";
-		flashContent.height = parseInt(orgHeight, 10) + 60;
-		containerDiv.style.height = flashContent.height + "px";		
-		containerDiv.style.borderWidth = "5px";
-		containerDiv.style.borderColor = "black";
-		containerDiv.style.borderStyle = "solid";
-		
-		var buttonHolderDiv = document.createElement("div");
-		buttonHolderDiv.style.textAlign = "center";
-		buttonHolderDiv.style.marginTop = "-35px";
-		
-		var closeButton = document.createElement("input");
-		closeButton.setAttribute("type","button");
-		closeButton.value = "Close";
-		closeButton.onclick = function () {
-			document.body.removeChild(containerDiv);
-			document.body.removeChild(maskingDiv);
-			
-			//disable scroll bars for the window.
-			document.getElementsByTagName("body")[0].style.overflow = "auto";
-		};
-		
-		buttonHolderDiv.appendChild(closeButton);
-		
-		containerDiv.appendChild(flashContent);
-		containerDiv.appendChild(buttonHolderDiv);
-		
-		document.body.appendChild(containerDiv);
-		document.body.appendChild(maskingDiv);
-		
-		/**
-		** render pop up in the center of the screen.
-		**/
-		var imagePopUp = new YAHOO.widget.Overlay("cstudio-wcm-search-banner-image-pop-up");
-		imagePopUp.center();
-		imagePopUp.render();
-		
-		//disable scroll bars for the window.
-		document.getElementsByTagName("body")[0].style.overflow = "hidden";
-	} catch (err) {
-		//alert("["+err+"]");
-	}
-}
-
-/**
- * Loads the big content-type map to serve different result-template.   
- */
-CStudioSearch.loadContentTypeMap = function() {
-	// not loaded yet.  Load service is expensive
-	if (!(CStudioSearch.ContentTypeConfigMap.length > 0)) {
-		var contentTypeCallback =  {
-			success: function(typeContainer) {			
-				if(typeContainer && typeContainer.types) {
-					for(var i = 0; i < typeContainer.types.length; i++)  {
-						var ctype = typeContainer.types[i];
-						CStudioSearch.ContentTypeConfigMap[ctype.name] = ctype.label;
-					}
-				}
-				CStudioSearch.initializeSearchFilter();
-			},
-			
-			failure: function() {
-				CStudioSearch.initializeSearchFilter();
-			},
-		};
-		try {
-			CStudioAuthoring.Service.getAllContentTypesForSite(CStudioAuthoringContext.site, contentTypeCallback);
-		} catch (e) {
-			//alert(e);
-		}
-	} else { // already loaded.  
-		CStudioSearch.initializeSearchFilter();
-	}
-}
-
-CStudioSearch.loadFiltersAndResultTemplates = function(callback) {
-	var triggerOnCompleteCb = {
-		onCompleteCb: callback,
-		templatesFlag: false,
-		filtersFlag: false,
-
-		templatesComplete: function() {
-			this.templatesFlag = true;
-			if(this.templatesFlag == true && this.filtersFlag == true) {
-				this.onCompleteCb.success();
-			}
-		},
-
-		filtersComplete: function() {
-			this.filtersFlag = true;
-			if(this.templatesFlag == true && this.filtersFlag == true) {
-				this.onCompleteCb.success();
-			}
-		}
-    },
-    config = {"resultTemplates":{"template":{"name":"default","type":"*"}},"filters":{"filter":{"default":"true","name":"default","label":"Default"}}};  
-
-    if(config){
-        if(config.filters && config.filters.filter) {
-            this.loadFilters(config.filters.filter, triggerOnCompleteCb);
-        }
-        else {
-            this.loadFilters([], triggerOnCompleteCb);
-        }
-
-        if(config.resultTemplates && config.resultTemplates.template) {
-            this.loadResultTemplates(config.resultTemplates.template, triggerOnCompleteCb);
-        }
-        else {
-            this.loadResultTemplates([], triggerOnCompleteCb);
-        }
-    }
-    else {
-        triggerOnCompleteCb.filtersComplete();
-        triggerOnCompleteCb.templatesComplete();
-
-    }
-}
-
-CStudioSearch.loadFilters = function(filters, callback) {
-	var filterWaitList = [];
-	for(var i=0; i<filters.length; i++) {
-		filterWaitList[i] = "search-filter-"+filters[i].name;
-	}
-
-	var cb = {
-		moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-			var i = this.filterWaitList.indexOf(moduleName);
-			if(i != -1) {
-				this.filterWaitList.splice(i, 1);
-			}
-
-			if(this.filterWaitList.length == 0) {
-				this.callback.filtersComplete();
-			}
-		},
-
-		filterWaitList: filterWaitList,
-		callback: callback,
-		context: this
-	};
-
-    var callModule = function(filter) {
-        CStudioAuthoring.Module.requireModule(
-                "search-filter-"+filter.name,
-                '/static-assets/components/cstudio-search/filters/' + filter.name + ".js",
-            { config: filter },
-            cb);
+        return searchContext;
     }
 
-    if(filters.length){
-        for(var j=0; j<filters.length; j++) {
-            callModule(filters[j]);
+    CStudioSearch.renderResults = function(results) {
+        var $resultsContainer = $('.cstudio-search .results'),
+            $resultsPagination = $('#resultsPagination'),
+            $numResultsContainer = $('#searchNumResults'),
+            totalItems = results.total,
+            itemsPerPage = this.searchContext.itemsPerPage,
+            totalPages = Math.ceil(totalItems/itemsPerPage),
+            view = CStudioSearch.searchContext.view;
+        $resultsContainer.empty();
+        $resultsContainer.addClass(view);
+    
+        this.searchContext.facets = results.facets;     // for filters
+        CStudioSearch.cleanFilters();
+        this.initFilters();
+
+        $numResultsContainer.text(results.total);
+
+        //PAGINATION - https://www.jqueryscript.net/other/Simple-Boostrap-Pagination-Plugin-With-jQuery.html
+        if(!this.$pagination){
+            this.$pagination = $resultsPagination.simplePaginator({
+                totalPages: totalPages,
+                maxButtonsVisible: 5,
+                currentPage: parseInt(this.searchContext.currentPage),
+                clickCurrentPage: false,
+                nextLabel: CMgs.format(langBundle, 'paginationNext'),
+                prevLabel: CMgs.format(langBundle, 'paginationPrev'),
+                firstLabel: CMgs.format(langBundle, 'paginationFirst'),
+                lastLabel: CMgs.format(langBundle, 'paginationLast'),
+                pageChange: function(page){
+                    if(CStudioSearch.searchContext.currentPage != page){
+                        CStudioSearch.searchContext.currentPage = page;
+                        CStudioSearch.performSearch();
+                        CStudioSearch.updateUrl();
+                    }
+                }
+            });
+        }else{
+            if(totalPages > 1){
+                $resultsPagination.show();
+                this.$pagination.simplePaginator('changePage', this.searchContext.currentPage);
+                this.$pagination.simplePaginator('setTotalPages', totalPages);
+            }else{
+                $resultsPagination.hide();
+            }
         }
-    }else{
-        callModule(filters);
-    }
-};
+        // END OF PAGINATION
 
-
-CStudioSearch.loadResultTemplates = function(templates, callback) {
-	var templateWaitList = [];
-	for(var i=0; i<templates.length; i++) {
-		templateWaitList[i] = "search-result-"+templates[i].name;
-	}
-
-	var cb = {
-		moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
-			var i = this.templateWaitList.indexOf(moduleName);
-			if(i != -1) {
-				this.templateWaitList.splice(i, 1);
-			}
-
-			if(this.templateWaitList.length == 0) {
-				this.callback.templatesComplete();
-			}
-		},
-
-		templateWaitList: templateWaitList,
-		callback: callback,
-		context: this
-	};
-
-    var callModule = function(template) {
-        CStudioAuthoring.Module.requireModule(
-                "search-result-" + template.name,
-                '/static-assets/components/cstudio-search/results/' + templates.name + ".js",
-            { config: templates },
-            cb);
+        $.each(results.items, function(index, result){
+            CStudioSearch.renderResult(result);
+        });
     }
 
-    if(templates.length){
-        for(var j=0; j<templates.length; j++) {
-            callModule(templates[j]);
+    CStudioSearch.renderResult = function(result) {
+        var $resultsContainer = $('.cstudio-search .results'),
+            source = $("#hb-search-result").html(),
+            template = Handlebars.compile(source),
+            html,
+            editable = true;
+
+        if(
+            result.type === "Page"
+            || result.type === "Image"
+            || result.type === "Video"
+        ){  
+            result.previewable = true;
         }
-    }else{
-        callModule(templates);
+
+        editable = CStudioAuthoring.Utils.isEditableFormAsset(result.path);
+
+        if(result.type !== 'Page' && result.type !== 'Component' && result.type !== 'Taxonomy' && result.type !== 'Image') {
+            result.asset = true;
+        }
+        result.icon = CStudioSearch.typesMap[result.type].icon;
+
+        // if editable by ace-editor -> ask for permissions
+        if(editable){
+            CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, result.path, {
+                success: function (results) {
+                    var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "write"),
+                        isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "delete");
+                    result.editable = isWriteAllowed;
+
+                    // set permissions for edit/delete actions to be (or not) rendered
+                    result.permissions = {
+                        edit: isWriteAllowed,
+                        delete: isDeleteAllowed
+                    };
+
+                    html = template(result);
+                    $(html).appendTo($resultsContainer);
+                },
+                failure: function () {
+                    throw new Error('Unable to retrieve user permissions');
+                }
+            });
+        }else{
+            result.editable = editable;
+            html = template(result);
+            $(html).appendTo($resultsContainer);
+        }
     }
 
-};
+    // creates a search query from searchContext
+    CStudioSearch.createSearchQuery = function() {        
+        var searchContext = this.searchContext;
+        var query = {
+            "keywords": searchContext.keywords,
+            "offset": (searchContext.currentPage - 1) * searchContext.itemsPerPage,
+            "limit": searchContext.itemsPerPage,
+            "sortBy": searchContext.sortBy,
+            "sortOrder": searchContext.sortOrder
+        }
 
+        if(!jQuery.isEmptyObject( searchContext.filters )) {
+            query.filters = {};
+            $.each(searchContext.filters, function(key, value){
+                query.filters[key] = value;
+            })
+        }
 
-CStudioSearch.getContentTypeName = function(ctype) {
-	var type = ""
+        return query;
+    }
 
-	if( ctype.indexOf("/site") !=-1 ) {
-		type = "Item";
- 	}
-	else if( ctype.indexOf("/component") !=-1 ) {
-		type = "Component";
- 	}
- 	else if( ctype.indexOf("/page") !=-1 ) {
-		type = "Page";
- 	}
- 	else if( ctype.indexOf("/templates") !=-1 ) {
-		type = "Template";
- 	}
- 	else if( ctype.indexOf("/scripts") !=-1 ) {
-		type = "Script";
- 	}
+    CStudioSearch.initFilters = function() {
+        var searchContext = this.searchContext,
+            $sortFilters = $('#searchFilters .dropdown-menu .sort-dinam'),
+            filterItem;
 
+        // handlebars vars
+        var source = $("#hb-filter-item").html(),
+            template = Handlebars.compile(source),
+            html,
+            headerSrc = $('#hb-acc-filter-section').html(),
+            headerTemplate = Handlebars.compile(headerSrc),
+            headerHtml,
+            rangeSrc = $('#hb-filter-range').html(),
+            rangeTemplate = Handlebars.compile(rangeSrc),
+            rangeHtml;
 
- 	return type;
-}
+        // Update searchInput value from searchContext
+        $('#searchInput').val(searchContext.keywords);
 
-/**
- * The following line calls init function 
- */
-CStudioSearch.inited = false;
-YAHOO.util.Event.onDOMReady(function() {
-	if(!CStudioSearch.inited) {
-		//TODO this fires twice for some reason?
-		// two includes?
-		CStudioSearch.inited = true;
-		CStudioSearch.init();
-	}
-});
+        // sortOrder
+        var sortOrderValue = searchContext.sortOrder;
+        $('#' + sortOrderValue).prop("checked", true);
 
-//when search form is open Add Item button is set disabled
-YAHOO.util.Event.onAvailable("submission-controls", function() {
-	document.getElementById("submission-controls").firstChild.disabled = "disabled";				
-}, this);
+        // sortBy
+        var sortByValue = searchContext.sortBy;
+        $.each(searchContext.facets, function(index, facet){
+            var label = CMgs.format(langBundle, facet.name);
 
-/**
- * Declare Filter Renderer Namepsce
- */
-CStudioSearch.FilterRenderer = {};
+            filterItem = {
+                name: 'sortBy',
+                value: facet.name,
+                id: facet.name,
+                label: label
+            }
 
-/**
- * Declare Result Renderer Namespace
- */ 
-CStudioSearch.ResultRenderer = {};
+            html = template(filterItem);
+            $(html).appendTo($sortFilters);
+        });
 
-/**
- * Content type name map
- */
-CStudioSearch.ContentTypeConfigMap = [];
+        CStudioSearch.addSeeMore($sortFilters, 'sortBy');
+        $('#sortBy' + sortByValue).prop("checked", true);
 
-/**
- * toggle the show/hide description link
- */ 
-CStudioSearch.toggleDescriptionLink =  function(){	
-	var link = YDom.get('cstudio-wcm-search-description-toggle-link');
-	if(link){
-		if(link.innerHTML == CMgs.format(langBundle, "hideDescriptions")){
-			link.innerHTML =  CMgs.format(langBundle, "showDescriptions");
-		}else{		
-			link.innerHTML = CMgs.format(langBundle, "hideDescriptions");
-		}	
-	}	
-}
+        // add filters
+        $.each(searchContext.facets, function(index, facet){
+            var groupedFacetsName = CStudioSearch.facetsMap[facet.name] ? CStudioSearch.facetsMap[facet.name] : null,
+                $container = $('#searchFilters .dropdown-menu .panel-group'),
+                headerExists = $container.find('.dropdown-header').length > 0,
+                headerLabel = '';
+
+            // Filters for images and videos, for example, are grouped
+            if(groupedFacetsName && !headerExists){
+                groupedFacetsName = CMgs.format(langBundle, groupedFacetsName) ? CMgs.format(langBundle, groupedFacetsName) : groupedFacetsName;
+                headerLabel =  groupedFacetsName + ' - ';
+            }
+
+            headerLabel = CMgs.format(langBundle, facet.name) ? headerLabel + CMgs.format(langBundle, facet.name) : headerLabel + facet.name;
+            headerHtml = headerTemplate({ 
+                value: facet.name,
+                label: headerLabel,
+                main: !groupedFacetsName,
+                grouped: groupedFacetsName,
+                clear: true
+            });
+
+            //check if it's grouped, if it is, place it together
+            if(groupedFacetsName){
+                var $groupElems = $('[data-group="'+ groupedFacetsName +'"]');
+                if($groupElems.length > 0){
+                    $groupElems.last().after($(headerHtml));
+                }else{
+                    $(headerHtml).appendTo($container);    
+                }
+            }else{
+                $(headerHtml).appendTo($container);
+            }
+
+            $.each(facet.values, function(key, value){
+                if(!(facet.range) || value.count > 0){
+                    var escapedKey = key.replace(/\//g, "_"),
+                        label,
+                        count = facet.range ? value.count : value,
+                        underLabel = CMgs.format(langBundle, 'under'),
+                        aboveLabel = CMgs.format(langBundle, 'above');
+
+                    // create label - if number => parseInt, if size => formatFileSize, if range => createRange
+                    if(facet.range){
+                        var from = isNaN(parseInt(value.from)) ? underLabel : value.from, 
+                            to = isNaN(parseInt(value.to)) ? aboveLabel : value.to;
+
+                        if(facet.name === 'size'){
+                            from = from === underLabel ? from : CStudioAuthoring.Utils.formatFileSize(parseInt(from));
+                            to = to === aboveLabel ? to : CStudioAuthoring.Utils.formatFileSize(parseInt(to));
+                        }
+
+                        // if both values are ints, label will have a dash
+                        if(isNaN(parseInt(from)) || isNaN(parseInt(to))){ 
+                            label = from + ' ' + to; 
+                        }else{
+                            label = from + ' - ' + to;
+                        }
+
+                    }else{
+                        if(facet.name === 'size'){
+                            label = CStudioAuthoring.Utils.formatFileSize(parseInt(key));
+                        }else{
+                            label = isNaN(parseInt(key)) ? key : parseInt(key);
+                        }
+                    }
+
+                    filterItem = {
+                        name: facet.name,
+                        id: isNaN(parseInt(escapedKey)) ? escapedKey : parseInt(escapedKey),
+                        label: label + ' (' + count + ')',
+                        filter: true
+                    }
+
+                    if(facet.range){
+                        filterItem.range = true;
+                        filterItem.from = value.from;
+                        filterItem.to = value.to;
+                    }else{
+                        filterItem.value = isNaN(parseInt(key)) ? key : parseInt(key);
+                    }
+
+                    html = template(filterItem);
+                    $(html).appendTo($('#' + facet.name + ' .panel-body'));
+                }
+                
+            });
+
+            CStudioSearch.addSeeMore($('#' + facet.name + ' .panel-body'), facet.name);
+
+            // If facet is a range, add inputs for a custom range
+            if(facet.range){    
+                rangeHtml = rangeTemplate({ name: facet.name });
+                $(rangeHtml).appendTo($('#' + facet.name + ' .panel-body'));
+            }
+
+        });
+
+        // set selected filter values
+        $.each(CStudioSearch.searchContext.filters, function(key, value){
+            if( typeof value === 'object' ){
+                var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
+                    $filterRadio = $('input[type="radio"][name="' + key + '"]#' + key + value.min);
+                $filterContainer.find('input[name="min"]').val(value.min);
+                $filterContainer.find('input[name="max"]').val(value.max);
+
+                if($filterRadio.length > 0){
+                    $filterRadio.prop("checked", true);
+                    $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
+                }
+                
+            }else{
+                var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
+                $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
+                $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
+            }
+        });
+
+        // Open accordion panel from last selected filter
+        if($(CStudioSearch.searchContext.lastSelectedFilterSelector).length > 0){
+            $(CStudioSearch.searchContext.lastSelectedFilterSelector).click();
+        }
+
+        this.updateNumFilters();
+    }
+
+    CStudioSearch.addSeeMore = function($container, id) {
+        var minFiltersShowing = CStudioSearch.searchContext.filtersShowing,
+            seeMoreLabel = CMgs.format(langBundle, 'seeMore'),
+            seeLessLabel = CMgs.format(langBundle, 'seeLess');
+        // show only 'x' amount of filters, rest of them with be shown on clicking 'see more'
+        $container.find('li:not(.filter-range):lt('+ minFiltersShowing +')').show();
+
+        // If more than 10 items -> add see more
+        if($container.children().length > 10){
+            $('<div class="filters-toggle" id="toggleShowItems' + id + '" data-state="see-more">' + seeMoreLabel + '</div>').appendTo($container);
+
+            $('#toggleShowItems' + id).click(function () {
+                var state = $(this).attr('data-state');
+
+                if(state === 'see-more'){
+                    $(this).attr('data-state', 'see-less').text(seeLessLabel);
+                    $container.find('li').show();
+                }else{
+                    $(this).attr('data-state', 'see-more').text(seeMoreLabel);
+                    $container.find('li').not(':lt('+ minFiltersShowing +')').hide();
+                }
+            });
+        }
+    }
+
+    CStudioSearch.cleanFilters = function(){
+        $('#searchFilters .dropdown-menu .panel-default.tmpl').remove();
+        $('#searchFilters .dropdown-menu .panel-default .filter-item.tmpl').remove();
+    }
+
+    CStudioSearch.updateNumFilters = function(filterName){
+        // SortBy will always have a value -> minimum filters = 1
+        this.searchContext.numFilters = 1 + Object.keys(CStudioSearch.searchContext.filters).length;
+        $('#numFilters').text('(' + this.searchContext.numFilters + ')');
+    }
+
+    // Before calling this function the searchContext needs to be updated so 
+    // it can create an updated searchQuery
+    CStudioSearch.performSearch = function(clean) {
+        if(clean){
+            CStudioSearch.searchContext.currentPage = 1;
+        }
+        var searchQuery = this.createSearchQuery();
+
+        var callback = {
+            success: function (response) {
+                CStudioSearch.renderResults(response.result);
+            },
+            failure: function (error) {
+                console.error(error);
+            }
+        }
+        CStudioAuthoring.Service.search(CStudioAuthoringContext.site, searchQuery, callback);
+    }
+
+    CStudioSearch.changeSelectStatus = function(path, selected){
+        var callback = {
+            success: function (contentTO) {
+                if (selected == true) {
+                    CStudioAuthoring.SelectedContent.selectContent(contentTO.item);
+                }
+                else {
+                    CStudioAuthoring.SelectedContent.unselectContent(contentTO.item);
+                }
+            },
+            failure: function (error) {
+                console.error(error);
+            }
+        }
+
+        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
+    }
+
+    CStudioSearch.editElement = function(path){
+        var editCallback = {
+                success: function(){
+                    CStudioSearch.performSearch();      // to re-render with changes
+                }
+            },
+            callback = {
+            success: function (contentTO) {
+                var contentTO = contentTO.item;
+                CStudioAuthoring.Operations.editContent(
+                    contentTO.form,
+                    CStudioAuthoringContext.siteId,
+                    contentTO.uri,
+                    contentTO.nodeRef,
+                    contentTO.uri,
+                    false,
+                    editCallback);
+            },
+            failure: function (error) {
+                console.error(error);
+            }
+        }
+
+        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
+    }
+
+    CStudioSearch.deleteElement = function(path){
+        // TODO: reload items on deletion
+        var callback = {
+            success: function (contentTO) {
+                var contentTO = contentTO.item;
+
+                CStudioAuthoring.Operations.deleteContent(
+                    [contentTO]);
+            },
+            failure: function (error) {
+                console.error(error);
+            }
+        }
+
+        CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
+    }
+
+    CStudioSearch.previewElement = function(url){
+        CStudioAuthoring.Service.lookupContentItem(
+            CStudioAuthoringContext.site, 
+            url, 
+            { success:function(to) { 
+                CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false); 
+            }, 
+            failure: function() {} 
+        }, false);
+    }
+
+    CStudioSearch.updateUrl = function(){
+        var searchContext = this.searchContext,
+            newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?site=' + CStudioAuthoringContext.site;
+
+        newUrl += '&page=' + searchContext.currentPage;
+        newUrl += '&sortBy=' + searchContext.sortBy;
+        newUrl += '&view=' + searchContext.view;
+
+        // Add search filters to url
+        // csf = crafter studio filter
+        // csr = crafter studio range
+        if(!jQuery.isEmptyObject( searchContext.filters )) {
+            $.each(searchContext.filters, function(key, value){
+                if(typeof value === 'string'){
+                    newUrl += '&csf_' + key + '=' + value;
+                }else{
+                    newUrl += '&csf_' + key + '=csr_' + value.min + '-' + value.max;
+                }
+            })
+        }
+
+        newUrl += '&keywords=' + searchContext.keywords;
+        
+        window.history.pushState({path:newUrl},'',newUrl);
+    }
+
+}) (window, jQuery, Handlebars);

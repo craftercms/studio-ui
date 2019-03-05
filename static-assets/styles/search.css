@@ -1,0 +1,249 @@
+.checkbox-container {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 20px !important;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Hide the browser's default checkbox */
+  /* Create a custom checkbox */
+  /* On mouse-over, add a grey background color */
+  /* When the checkbox is checked, add a blue background */
+  /* Create the checkmark/indicator (hidden when not checked) */
+  /* Show the checkmark when checked */
+  /* Style the checkmark/indicator */ }
+  .checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0; }
+  .checkbox-container .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee; }
+  .checkbox-container:hover input ~ .checkmark {
+    background-color: #ccc; }
+  .checkbox-container input:checked ~ .checkmark {
+    background-color: #2196F3; }
+  .checkbox-container .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none; }
+  .checkbox-container input:checked ~ .checkmark:after {
+    display: block; }
+  .checkbox-container .checkmark:after {
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg); }
+
+.cstudio-search {
+  top: 51px;
+  right: 0;
+  left: 265px;
+  bottom: 0;
+  position: absolute;
+  padding-top: 31px;
+  padding: 30px;
+  font-size: 14px; }
+  .cstudio-search .search-bar {
+    margin-bottom: 20px; }
+    .cstudio-search .search-bar input {
+      padding: 20px;
+      font-size: 18px; }
+    .cstudio-search .search-bar button {
+      font-size: 18px;
+      padding: 11px; }
+  .cstudio-search .options {
+    margin-bottom: 20px; }
+    .cstudio-search .options .view-selector {
+      margin-right: 20px; }
+    .cstudio-search .options .filters {
+      display: inline-block; }
+      .cstudio-search .options .filters button {
+        border: none; }
+      .cstudio-search .options .filters .dropdown-menu {
+        min-width: 280px;
+        max-height: calc( 100vh - 200px );
+        overflow-y: scroll; }
+        .cstudio-search .options .filters .dropdown-menu .dropdown-header {
+          padding-top: 10px;
+          padding-bottom: 10px;
+          font-size: 13px;
+          margin-bottom: 5px;
+          border-bottom: 1px solid #e5e5e5; }
+          .cstudio-search .options .filters .dropdown-menu .dropdown-header.main-header {
+            background-color: #eaeaea;
+            font-size: 14px; }
+        .cstudio-search .options .filters .dropdown-menu .panel .panel-title {
+          width: 100%;
+          position: relative; }
+          .cstudio-search .options .filters .dropdown-menu .panel .panel-title [data-toggle="collapse"] {
+            width: 100%;
+            display: inline-block; }
+        .cstudio-search .options .filters .dropdown-menu .clear-filter {
+          color: #a5a5a5;
+          cursor: pointer;
+          position: absolute;
+          right: 0;
+          top: 0; }
+        .cstudio-search .options .filters .dropdown-menu .divider {
+          margin: 0; }
+        .cstudio-search .options .filters .dropdown-menu .filter-item > a {
+          display: block;
+          padding: 3px 10px;
+          clear: both;
+          font-weight: normal;
+          line-height: 1.42857;
+          color: #333333;
+          white-space: nowrap; }
+        .cstudio-search .options .filters .dropdown-menu .filter-item input[type='radio'] {
+          position: absolute;
+          right: 10px; }
+          .cstudio-search .options .filters .dropdown-menu .filter-item input[type='radio']:checked + label {
+            font-weight: bold; }
+        .cstudio-search .options .filters .dropdown-menu .filter-item label {
+          width: 100%;
+          cursor: pointer;
+          font-weight: normal; }
+        .cstudio-search .options .filters .dropdown-menu .filter-item.filter-range {
+          margin-top: 10px; }
+          .cstudio-search .options .filters .dropdown-menu .filter-item.filter-range input {
+            display: inline-block;
+            width: 60px;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #bbb; }
+          .cstudio-search .options .filters .dropdown-menu .filter-item.filter-range button {
+            vertical-align: bottom;
+            padding: 6px 15px;
+            margin-left: 10px; }
+        .cstudio-search .options .filters .dropdown-menu .filters-toggle {
+          font-size: 13px;
+          color: #7e9dbb;
+          cursor: pointer;
+          padding: 3px 10px; }
+        .cstudio-search .options .filters .dropdown-menu .subfilter {
+          background: none;
+          border-top: 1px solid #ddd; }
+          .cstudio-search .options .filters .dropdown-menu .subfilter .panel-title {
+            padding: 5px 0 10px; }
+    .cstudio-search .options .view-selector button, .cstudio-search .options .filters button, .cstudio-search .options .filters .dropdown-menu {
+      font-size: 14px; }
+  .cstudio-search .results {
+    text-align: center; }
+    .cstudio-search .results .result-container {
+      display: inline-block;
+      width: 260px;
+      padding-right: 30px;
+      height: 270px;
+      margin-bottom: 30px;
+      transition: width 0.5s;
+      text-align: left; }
+      .cstudio-search .results .result-container .result {
+        background-color: #fafafa;
+        height: 100%;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+        border-radius: 4px; }
+        .cstudio-search .results .result-container .result > .result-asset {
+          background-color: #7e9dbb; }
+        .cstudio-search .results .result-container .result .list-select {
+          display: none; }
+        .cstudio-search .results .result-container .result .result-preview {
+          height: calc(100% - 60px);
+          overflow: hidden;
+          position: relative; }
+          .cstudio-search .results .result-container .result .result-preview.previewable {
+            cursor: pointer; }
+          .cstudio-search .results .result-container .result .result-preview .img-container {
+            width: 100%;
+            height: 100%; }
+            .cstudio-search .results .result-container .result .result-preview .img-container .preview-img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              overflow: hidden; }
+          .cstudio-search .results .result-container .result .result-preview .result-icon {
+            position: absolute;
+            color: #fff;
+            top: 20px;
+            left: 20px;
+            font-size: 40px;
+            display: none; }
+            .cstudio-search .results .result-container .result .result-preview .result-icon.result-asset {
+              display: inline; }
+          .cstudio-search .results .result-container .result .result-preview.no-preview-background {
+            background: none; }
+            .cstudio-search .results .result-container .result .result-preview.no-preview-background .result-icon {
+              display: none; }
+          .cstudio-search .results .result-container .result .result-preview .result-info {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            width: 100%;
+            background-color: rgba(250, 250, 250, 0.7);
+            padding: 10px; }
+        .cstudio-search .results .result-container .result .actions {
+          height: 60px;
+          padding: 20px;
+          font-size: 16px; }
+          .cstudio-search .results .result-container .result .actions .action .fa:hover {
+            color: #4F81A0; }
+          .cstudio-search .results .result-container .result .actions .checkbox-container.grid-select {
+            margin-right: 10px; }
+          .cstudio-search .results .result-container .result .actions .studio-actions {
+            float: right; }
+        .cstudio-search .results .result-container .result:hover .result-preview.previewable .preview-img {
+          opacity: .65; }
+    .cstudio-search .results.list .result-container {
+      display: block;
+      width: 100%;
+      height: auto; }
+      .cstudio-search .results.list .result-container .result {
+        padding-left: 60px;
+        position: relative; }
+        .cstudio-search .results.list .result-container .result .list-select {
+          display: block;
+          position: absolute;
+          left: 10px;
+          top: 30px; }
+        .cstudio-search .results.list .result-container .result .result-preview {
+          height: auto;
+          float: left;
+          background: none; }
+          .cstudio-search .results.list .result-container .result .result-preview .img-container {
+            width: 80px;
+            height: 80px;
+            vertical-align: bottom;
+            display: inline-block; }
+          .cstudio-search .results.list .result-container .result .result-preview .result-icon {
+            position: relative;
+            padding: 20px;
+            top: unset;
+            left: unset;
+            background-color: #7e9dbb; }
+          .cstudio-search .results.list .result-container .result .result-preview .result-info {
+            display: inline-block;
+            position: relative;
+            padding: 20px;
+            width: auto;
+            background: none; }
+        .cstudio-search .results.list .result-container .result .actions {
+          float: right;
+          padding: 26px 20px;
+          font-size: 18px;
+          height: unset; }
+          .cstudio-search .results.list .result-container .result .actions .checkbox-container {
+            display: none; }

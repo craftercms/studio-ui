@@ -53,7 +53,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
         var navBarSiteNameEl = YDom.get('navbar-site-name');
         navBarSiteNameEl.innerHTML = CStudioAuthoringContext.site;
 
-        if (window.location.pathname.indexOf("search") > -1 || window.location.pathname.indexOf("browse") > -1 || window.location.pathname.indexOf("site-config") > -1) {
+        if (/*window.location.pathname.indexOf("search") > -1 ||*/ window.location.pathname.indexOf("browse") > -1 || window.location.pathname.indexOf("site-config") > -1) {
             mainContainerEl.innerHTML = '';
         } else {
             mainContainerEl.innerHTML =
@@ -203,9 +203,11 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                         if( window.innerWidth >= 768 ){
                             $(".site-dropdown-open .studio-preview").css({ left :  cfg.width});
                             $(".site-dropdown-open .site-dashboard").css({ left :  cfg.width});
+                            $(".site-dropdown-open .cstudio-search").css({ left :  cfg.width});
                         }else{
                             $(".site-dropdown-open .studio-preview").css({ left :  0});
                             $(".site-dropdown-open .site-dashboard").css({ left :  0});
+                            $(".site-dropdown-open .cstudio-search").css({ left :  0});
                         }
 
                     });
@@ -281,6 +283,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                                 ui.size.height = ui.originalSize.height;
                                 $(".site-dropdown-open .studio-preview").css({ left :  ui.size.width});
                                 $(".site-dropdown-open .site-dashboard").css({ left :  ui.size.width});
+                                $(".site-dropdown-open .cstudio-search").css({ left :  ui.size.width});
                             }
                         });
                     });
@@ -304,9 +307,12 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                             if( window.innerWidth >= 768 ){
                                 $(".site-dropdown-open .studio-preview").css({ left :  cfg.width});
                                 $(".site-dropdown-open .site-dashboard").css({ left :  cfg.width});
+                                $(".site-dropdown-open .cstudio-search").css({ left :  cfg.width});
+                                
                             }else{
                                 $(".site-dropdown-open .studio-preview").css({ left :  0});
                                 $(".site-dropdown-open .site-dashboard").css({ left :  0});
+                                $(".site-dropdown-open .cstudio-search").css({ left :  0});
                             }
                             YDom.addClass('acn-dropdown-wrapper', 'site-dropdown-open');
                             animator.slideIn();
@@ -314,6 +320,7 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                             $('html').removeClass('site-dropdown-open');
                             $(".studio-preview").css({ left :  0});
                             $(".site-dashboard").css({ left :  0});
+                            $(".site-dropdown-open .cstudio-search").css({ left :  0});
                             YDom.removeClass('acn-dropdown-wrapper', 'site-dropdown-open');
                             animator.slideOut();
                         }
