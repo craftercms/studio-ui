@@ -675,16 +675,17 @@ var nodeOpen = false,
                 };
             },
 
-            translateContent: function(langBundle, specificSelector){
-                var elements;
+            translateContent: function(langBundle, specificSelector, dataAtt){
+                var elements,
+                    dataAtt = dataAtt ? dataAtt : 'data-translation';
                 if(specificSelector){
-                    elements = document.querySelectorAll(specificSelector+" [data-translation");
+                    elements = document.querySelectorAll(specificSelector + "[" + dataAtt + "]");
                 }else{
-                    elements = document.querySelectorAll("[data-translation]");
+                    elements = document.querySelectorAll("[" + dataAtt + "]");
                 }
 
                 for(var i=0; i<elements.length; i++){
-                    elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute('data-translation'));
+                    elements[i].innerHTML = CMgs.format(langBundle, elements[i].getAttribute(dataAtt));
                 }
             },
 
@@ -1048,7 +1049,7 @@ var nodeOpen = false,
             /**
              * open a search page
              */
-            openSearch: function(searchType, searchContext, select, mode, newWindow, callback, searchId, firstTime) {
+            openSearch: function(searchContext, newWindow, callback, searchId) {
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -1070,32 +1071,6 @@ var nodeOpen = false,
                     searchUrl += "&page=1";
                 }
 
-                if (searchContext.filters && searchContext.filters.length && searchContext.filters.length > 0) {
-                    for (var i = 0; i < searchContext.filters.length; i++) {
-                        var startDate = searchContext.filters[i].startDate;
-                        var endDate = searchContext.filters[i].endDate;
-
-                        if ( (startDate != null && startDate != undefined && startDate != "")
-                            || (endDate != null && endDate != undefined && endDate != "") ) {
-                            searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value
-                            + "|" + searchContext.filters[i].startDate + "|" + searchContext.filters[i].endDate;
-                        } else {
-                            searchUrl += "&" + searchContext.filters[i].qname + "=" + searchContext.filters[i].value;
-                        }
-                    }
-                }
-
-                // non filter URL data
-                // if (searchContext.nonFilters && searchContext.nonFilters.length && searchContext.nonFilters.length > 0) {
-                //     for (var i = 0; i < searchContext.nonFilters.length; i++) {
-                //         searchUrl += "&" + searchContext.nonFilters[i].qname + "=" + searchContext.nonFilters[i].value;
-                //     }
-                // }
-
-                if (!CStudioAuthoring.Utils.isEmpty(searchId) && searchId != "undefined") {
-                    searchUrl += "&searchId=" + searchId;
-                }
-
                 var childSearch = null;
 
                 if (!searchId || searchId == null || searchId == "undefined"
@@ -1105,7 +1080,7 @@ var nodeOpen = false,
                     searchId = CStudioAuthoring.Utils.generateUUID();
 
                     childSearch.searchId = searchId;
-                    childSearch.searchUrl = searchUrl + "&searchId=" + searchId;
+                    childSearch.searchUrl = searchUrl;
                     childSearch.saveCallback = callback;
 
                     CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
@@ -1224,8 +1199,6 @@ var nodeOpen = false,
 
                 var searchId = null;
 
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
-
                 var openInSameWindow = (newWindow) ? false : true;
 
                 var browseUrl = CStudioAuthoringContext.authoringAppBaseUri +
@@ -1298,8 +1271,6 @@ var nodeOpen = false,
             openWebDAVBrowse: function(path, profileId, baseUrl, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
-
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -1374,8 +1345,6 @@ var nodeOpen = false,
             openS3Browse: function(profileId, path, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
-
-                var searchContext = CStudioAuthoring.Service.createSearchContext();
 
                 var openInSameWindow = (newWindow) ? false : true;
 
@@ -4230,6 +4199,16 @@ var nodeOpen = false,
                 return false;
             },
 
+            validatePermission: function(permissions, permission){
+                for (var i = 0; i < permissions.length; i++) {
+                    if(permissions[i] == permission) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+
             createFlatMap:function(itemArray) {
                 var _pupulateMap = function(itemArray, map) {
                     for (var i = 0; i < itemArray.length; i++) {
@@ -5586,8 +5565,6 @@ var nodeOpen = false,
             createSearchContext: function() {
                 return {
                     searchTypes: [],
-                    includeAspects: [],
-                    excludeAspects: [],
                     keywords: "",
                     filters: [],
                     nonFilters: [],
@@ -6176,6 +6153,24 @@ var nodeOpen = false,
             },
 
             /**
+             * get parameters from url - returns map
+             */
+            getUrlParams: function(){
+                var urlParams,
+                    match,
+                    pl     = /\+/g,  // Regex for replacing addition symbol with a space
+                    search = /([^&=]+)=?([^&]*)/g,
+                    decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                    query  = window.location.search.substring(1);
+
+                urlParams = {};
+                while (match = search.exec(query)){
+                    urlParams[decode(match[1])] = decode(match[2]);
+                }
+                return urlParams;
+            },
+
+            /**
              * get query variable
              */
             getQueryVariable: function(query, variable) {
@@ -6431,6 +6426,11 @@ var nodeOpen = false,
                 var date = moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") != "Invalid date" ?
                         moment.parseZone(dateTime).format("MM/DD/YYYY HH:mm:ss") : dateTime;
                 return date;
+            },
+
+            formatFileSize: function(size){
+                var i = size == 0 ? 0 : Math.floor( Math.log(size) / Math.log(1024) );
+                return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
             },
 
             /**
@@ -7995,6 +7995,55 @@ var nodeOpen = false,
             }else{
                 return false;
             }
+        },
+
+        /**
+         * Previewing an image/video on a popup dialog, needs a container with corresponding markup
+         * TODO: document needed markup
+         * @param source {string} Asset path.
+         * @param type {string} Asset Mime type.
+         * @param container {jQuery} The popup element
+         */
+        previewAssetDialog: function(source, type, container) {
+            var $container = container ? container : $('.cstudio-image-popup-overlay'),
+                $img = $container.find('img'),
+                $video = $container.find('video');
+                $img.hide(); $video.hide();
+                $container.removeClass('cstudio-video-popup-overlay');
+    
+            if(type.match(/\bvideo\b/)) {
+                $container.addClass('cstudio-video-popup-overlay');
+                $video.show();
+                $video.find('source').attr('src', source);
+                $video.find('source').attr('type', type);
+                $video.load();
+            }else{
+                $img.show();
+                $img.attr('src', source);
+            }
+    
+            $container.show();
+    
+            // Close - on button click
+            $container.one('click', '.close', function(){
+                $container.hide();
+            });
+
+            // Close - on click outside dialog
+            $container.on('click', function(e) {
+                if (e.target !== this)
+                    return;
+    
+                $container.hide();
+            });
+
+            // Close - on escape
+            $(document).on('keyup', function(e){
+                if(e.keyCode === 27){
+                    $container.hide();
+                }
+            });
+    
         }
 
         },

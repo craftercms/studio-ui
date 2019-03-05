@@ -6421,7 +6421,8 @@ table td {
       visibility: hidden; }
 
 .audit-view {
-  padding: 0 20px; }
+  padding: 0 20px;
+  min-height: 435px; }
   .audit-view .audit-actions .dropdown-menu a.active {
     background-color: #7e9dbb;
     border-bottom: 1px solid #bfbfbf;
@@ -6575,6 +6576,10 @@ table td {
     line-height: 14px;
     text-align: center;
     display: table; }
+  #create-site-dialog ul.nav-wizard li:first-child {
+    border-radius: 10px 0px 0px 10px; }
+  #create-site-dialog ul.nav-wizard li:last-child {
+    border-radius: 0px 10px 10px 0px; }
   #create-site-dialog ul.nav-wizard li a {
     color: #999999;
     padding: 0;
@@ -6592,6 +6597,8 @@ table td {
     z-index: 10;
     content: '';
     right: -16px; }
+  #create-site-dialog ul.nav-wizard li:last-child:before {
+    border: 0; }
   #create-site-dialog ul.nav-wizard li:after {
     position: absolute;
     display: block;
@@ -6602,6 +6609,8 @@ table td {
     z-index: 10;
     content: '';
     right: -15px; }
+  #create-site-dialog ul.nav-wizard li:last-child:after {
+    border: 0; }
   #create-site-dialog ul.nav-wizard li.active {
     color: #3a87ad;
     background: #d9edf7; }
@@ -6621,7 +6630,7 @@ table td {
   #create-site-dialog ul.nav-wizard .active ~ li a,
   #create-site-dialog ul.nav-wizard .active ~ li a:active,
   #create-site-dialog ul.nav-wizard .active ~ li a:visited,
-  #create-site-dialog ul.nav-wizard .active ~ li a:focus {
+  #create-site-dialog ul.nav-wizard .active ~ li a:focus, #create-site-dialog .disabledNavBtn {
     color: #999999;
     background: #fffdfd;
     pointer-events: none;
@@ -6656,8 +6665,10 @@ table td {
       margin-top: 20px; } }
   #create-site-dialog #wizard-content-container {
     position: relative;
-    min-height: 250px;
-    overflow: hidden; }
+    height: 350px;
+    overflow-y: auto; }
+  #create-site-dialog .wizard-item {
+    margin-right: 10px; }
   #create-site-dialog .wizard-item.ng-hide-add.ng-hide-add-active,
   #create-site-dialog .wizard-item.ng-hide-remove.ng-hide-remove-active {
     position: absolute;
@@ -6742,6 +6753,26 @@ table td {
     border-radius: 6px;
     padding: 20px;
     margin-top: 10px; }
+  #create-site-dialog .left-btns {
+    width: 600px; }
+  #create-site-dialog .right-btns {
+    width: 100px; }
+  @media (max-width: 767px) {
+    #create-site-dialog .left-btns {
+      width: 100%; }
+      #create-site-dialog .left-btns button {
+        width: 100%;
+        margin-top: 10px; }
+    #create-site-dialog .right-btns {
+      margin-top: 20px;
+      width: 100%; }
+      #create-site-dialog .right-btns button {
+        width: 100%; } }
+  @media (min-width: 768px) and (max-width: 991px) {
+    #create-site-dialog .left-btns {
+      width: 100%; }
+    #create-site-dialog .right-btns {
+      margin-top: 20px; } }
 
 /* open-sans-300 - latin */
 @font-face {

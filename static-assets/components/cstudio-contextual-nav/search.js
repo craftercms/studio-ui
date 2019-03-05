@@ -75,9 +75,7 @@ CStudioAuthoring.ContextualNav.WcmSearchMod = CStudioAuthoring.ContextualNav.Wcm
 				doSearch: function() {
 					var searchContext = CStudioAuthoring.Service.createSearchContext();
 					searchContext.keywords = encodeURIComponent("");
-					searchContext.includeAspects = new Array();
-					searchContext.includeAspects.push("cstudio-core%3ApageMetadata%7Ccstudio-core%3AdocumentMetadata");
-					CStudioAuthoring.Operations.openSearch("default", searchContext, -1, "act", false, null, null, true);
+					CStudioAuthoring.Operations.openSearch(searchContext, false, null, null);
 				}
 			}
 		});

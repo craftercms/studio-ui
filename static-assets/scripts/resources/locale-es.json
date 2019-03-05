@@ -89,7 +89,8 @@
         "ALREADY_EXIST":"ya existe.",
         "ELASTIC_SEARCH":"Busqueda elástica",
         "CRAFTER_SEARCH_SOLR":"Buúsqueda con Solr de Crafter",
-        "CHOOSE_BLUEPRINT":"Elegir plano"
+        "CHOOSE_BLUEPRINT":"Elegir plano",
+        "PREVIOUS_STEP":"Paso previo"
       }
     }
   },

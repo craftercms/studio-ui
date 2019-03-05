@@ -89,7 +89,8 @@
         "ALREADY_EXIST":"already exist.",
         "ELASTIC_SEARCH":"Elastic Search",
         "CRAFTER_SEARCH_SOLR":"Crafter Search with Solr",
-        "CHOOSE_BLUEPRINT":"Choose Blueprint"
+        "CHOOSE_BLUEPRINT":"Choose Blueprint",
+        "PREVIOUS_STEP":"Previous step"
       }
     }
   },
