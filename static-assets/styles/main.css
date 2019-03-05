@@ -6753,8 +6753,6 @@ table td {
     border-radius: 6px;
     padding: 20px;
     margin-top: 10px; }
-  #create-site-dialog .left-btns {
-    width: 600px; }
   #create-site-dialog .right-btns {
     width: 100px; }
   @media (max-width: 767px) {
