@@ -166,6 +166,7 @@
     "audit": {
       "AUDIT": "심사",
       "ALL_USERS": "모든 사용자들",
+      "ALL_SITES":"모든 사이트",
       "actions": {
         "ACTIONS": "행위",
         "ALL_ACTIONS": "모든 작업",

@@ -166,6 +166,7 @@
     "audit": {
       "AUDIT": "Audit",
       "ALL_USERS": "All Users",
+      "ALL_SITES":"All Sites",
       "actions": {
         "ACTIONS": "Actions",
         "ALL_ACTIONS": "All Actions",
