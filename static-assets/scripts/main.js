@@ -536,12 +536,13 @@
                 });
             }
 
-            this.setCookie = function(cookieGenName, value){
+            this.setCookie = function(cookieGenName, value, maxAge) {
                 //$cookies[cookieName] = site.siteId;
-                var domainVal;
-                domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
-                document.cookie =
-                    [cookieGenName, "=", value, "; path=/; " + domainVal].join("");
+                var domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
+                if (maxAge != null)
+                    document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal, "; max-age=", maxAge].join("");
+                else
+                    document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal].join("");
             }
 
             this.editSite = function (site) {
@@ -801,7 +802,8 @@
 
             $scope.setLangCookie = function() {
                 $translate.use($scope.langSelected);
-                sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
+                // set max-age of language cookie to one year
+                sitesService.setCookie('crafterStudioLanguage', $scope.langSelected, 31536000);
 
                 $rootScope.modalInstance = $uibModal.open({
                     templateUrl: 'settingLanguajeConfirmation.html',
@@ -1583,7 +1585,8 @@
                             $scope.error = data.error;
                         } else {
                             $state.go('home.globalMenu');
-                            sitesService.setCookie('crafterStudioLanguage', $scope.langSelected);
+                            // set max-age of language cookie to one year
+                            sitesService.setCookie('crafterStudioLanguage', $scope.langSelected, 31536000);
                         }
                     }, function error(response){
                         $scope.error = {};
