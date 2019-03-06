@@ -326,15 +326,18 @@
             audit.defaultDelay = 500;
             audit.site = $location.search().site ? $location.search().site : '';
             audit.timeZone;
-
-            adminService.getTimeZone({
-                "site" : audit.site,
-                "path" : "/site-config.xml"
-            }).success(function (data) {
-                audit.timeZone = data["default-timezone"];
-            });
-
             var delayTimer;
+
+            if(audit.site){
+                adminService.getTimeZone({
+                    "site" : audit.site,
+                    "path" : "/site-config.xml"
+                }).success(function (data) {
+                    audit.timeZone = data["default-timezone"];
+                });
+            }else{
+                audit.timeZone = "UTC";
+            }
 
             var getUsers = function(site) {
                 adminService.getUsers(site)
@@ -381,7 +384,7 @@
                     if(audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
 
                     if(audit.actions.length > 0){
-                        params.actions = JSON.stringify(audit.actions);
+                        params.actions = audit.actions.toString();
                     }
 
                     if(audit.totalLogs && audit.totalLogs > 0) {
