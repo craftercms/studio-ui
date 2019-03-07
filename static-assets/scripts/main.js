@@ -539,10 +539,11 @@
             this.setCookie = function(cookieGenName, value, maxAge) {
                 //$cookies[cookieName] = site.siteId;
                 var domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
-                if (maxAge != null)
+                if (maxAge != null) {
                     document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal, "; max-age=", maxAge].join("");
-                else
+                } else {
                     document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal].join("");
+                }
             }
 
             this.editSite = function (site) {
