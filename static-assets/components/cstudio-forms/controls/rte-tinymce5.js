@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Controls.RTETINYMCE4 = CStudioForms.Controls.RTETINYMCE4 ||
+CStudioForms.Controls.RTETINYMCE5 = CStudioForms.Controls.RTETINYMCE5 ||
 function(id, form, owner, properties, constraints, readonly, pencilMode)  {
 	this.owner = owner;
 	this.owner.registerField(this);
@@ -34,7 +34,7 @@ function(id, form, owner, properties, constraints, readonly, pencilMode)  {
 	return this;
 }
 
-CStudioForms.Controls.RTETINYMCE4.plugins =  CStudioForms.Controls.RTETINYMCE4.plugins || {};
+CStudioForms.Controls.RTETINYMCE5.plugins =  CStudioForms.Controls.RTETINYMCE5.plugins || {};
 
 CStudioAuthoring.Module.requireModule(
 	"cstudio-forms-rte-config-manager",
@@ -44,10 +44,10 @@ CStudioAuthoring.Module.requireModule(
 
 	var YDom = YAHOO.util.Dom;
 
-	YAHOO.extend(CStudioForms.Controls.RTETINYMCE4, CStudioForms.CStudioFormField, {
+	YAHOO.extend(CStudioForms.Controls.RTETINYMCE5, CStudioForms.CStudioFormField, {
 
 		getLabel: function() {
-			return CMgs.format(langBundle, "rteTinyMCE4");
+			return CMgs.format(langBundle, "rteTinyMCE5");
 		},
 		
 		/**
@@ -75,7 +75,7 @@ CStudioAuthoring.Module.requireModule(
 				},
 				failure: function() {
 				}
-			}, "/form-control-config/rte/rte-setup-tinymce4.xml");
+			}, "/form-control-config/rte/rte-setup-tinymce5.xml");
 		},
 
 		/**
@@ -108,7 +108,7 @@ CStudioAuthoring.Module.requireModule(
 		 * get the widget name
 		 */
 		getName: function() {
-			return "rte-tinymce4";
+			return "rte-tinymce5";
 		},
 		
 		/**
@@ -121,7 +121,7 @@ CStudioAuthoring.Module.requireModule(
 				{ label: CMgs.format(langBundle, "forcePNewLines"), name: "forcePTags", type: "boolean", defaultValue: "true" },
 				{ label: CMgs.format(langBundle, "forceBRNewLines"), name: "forceBRTags", type: "boolean", defaultValue: "false" },
 				{ label: CMgs.format(langBundle, "supportedChannels"), name: "supportedChannels", type: "supportedChannels" },
-				{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "rteTinyMCE4" },
+				{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "generic" },
 				{ label: CMgs.format(langBundle, "imageManager"), name: "imageManager", type: "datasource:image" },
 				{ label: CMgs.format(langBundle, "videoManager"), name: "videoManager", type: "datasource:video" }
 			];
@@ -207,16 +207,11 @@ CStudioAuthoring.Module.requireModule(
 
 			rteStyleOverride = ( rteConfig.rteStyleOverride && typeof rteConfig.rteStylesheets === 'object' ) 
 				? rteConfig.rteStyleOverride : null;
-
-			/* 
-				Using aceEditor as codeView plugin
-					-https://github.com/plasmadancom/tinymce-ace-plugin
-			*/
 			
 			editor = tinymce.init({
 				selector: '#' + rteId,
 				height: _thisControl.rteHeight,
-				theme: 'modern',
+				theme: 'silver',
 				plugins: pluginList,
 				toolbar1: toolbarConfig1,
 				toolbar2: toolbarConfig2,
@@ -231,11 +226,16 @@ CStudioAuthoring.Module.requireModule(
 				remove_trailing_brs: false,
 				media_live_embeds: true,	
 
+				menu: {
+					tools: {title: 'Tools', items: 'tinymcespellchecker code acecode wordcount'},
+				},
+
 				automatic_uploads: true,
 				file_picker_types: 'image media',
 				file_picker_callback: function(cb, value, meta) {
 					// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
 					_thisControl.createControl(cb, meta);
+
 				},
 
 				templates: templates,
@@ -248,25 +248,19 @@ CStudioAuthoring.Module.requireModule(
 						amplify.publish('/field/init/completed');
 						_thisControl.editor = editor;
 						_thisControl._onChange(null, _thisControl);
-						_thisControl._hideBars(this.contentAreaContainer.parentElement);
+						_thisControl._hideBars(this.editorContainer);
 					});
 
 					editor.on('focus', function (e) {
-						_thisControl._showBars(this.contentAreaContainer.parentElement);
+						_thisControl._showBars(this.editorContainer);
 					});
 
 					editor.on('blur', function (e) {
-						_thisControl._hideBars(this.contentAreaContainer.parentElement);					
+						_thisControl._hideBars(this.editorContainer);					
 					});
 
 					editor.on('keyup paste', function (e){
 						_thisControl._onChangeVal(null, _thisControl);
-					});
-
-					editor.on('ResizeEditor', function(e){
-						// _thisControl.rteHeight = $(editor.getContainer()).height(); 
-						// console.log(_thisControl.rteHeight);
-						// console.log("RESIZING", $(editor.getContainer()).height());
 					});
 				}
 			});
@@ -284,7 +278,7 @@ CStudioAuthoring.Module.requireModule(
 				imageManagerNames = this.imageManagerName,  // List of image datasource IDs, could be an array or a string
 				videoManagerNames = this.videoManagerName,
 				addContainerEl,
-				tinyMCEContainer = $(".mce-container.mce-window"),
+				tinyMCEContainer = $(".tox-dialog"),
 				_self = this,
 				type = meta.filetype == 'media' ? 'video' : meta.filetype;
 
@@ -305,9 +299,6 @@ CStudioAuthoring.Module.requireModule(
 				YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-image-picker-add-container');
 				this.addContainerEl = addContainerEl;
 
-				// var uploadButton = $(".mce-container .mce-filepicker button");
-				// addContainerEl.style.left = uploadButton.offset().left + "px";
-				// addContainerEl.style.top = uploadButton.offset().top + 22 + "px";
 				addContainerEl.style.position = 'absolute';
 				addContainerEl.style.right = '15px';
 				addContainerEl.style.top = '113px';
@@ -339,6 +330,14 @@ CStudioAuthoring.Module.requireModule(
 					}
 				}
 				datasourceDef.forEach(addMenuOption);
+
+				// If no datasources for type
+				if( $(addContainerEl).children().length === 0 ){
+					var itemEl = document.createElement("div");
+					YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
+					itemEl.innerHTML = 'No datasources available';
+					addContainerEl.appendChild(itemEl);
+				}
 			}
 
 		},
@@ -411,8 +410,7 @@ CStudioAuthoring.Module.requireModule(
 			YDom.addClass(controlWidgetContainerEl, 'cstudio-form-control-rte-container rte2-container');
 			
 			//TODO: move to stylesheet
-			// controlWidgetContainerEl.style.paddingTop = '15px';
-			controlWidgetContainerEl.style.paddingLeft = '30%';
+			controlWidgetContainerEl.style.paddingLeft = '28%';
 
 			// Control validation element (its state  is set by control constraints)
 			validEl = document.createElement("span");
@@ -448,11 +446,8 @@ CStudioAuthoring.Module.requireModule(
 				barsHeight = 98,
 				editorHeight = this.rteHeight;
 
-			$container.find(".mce-top-part").hide();
-			$container.find(".mce-statusbar").hide();
-
-			//since we're hiding the editor bars, we need to keep the editor the same height.
-			this.editor.theme.resizeTo(currentWidth, editorHeight + barsHeight);
+			// $container.find(".tox-menubar").hide();
+			// $container.find(".tox-toolbar").hide();
 		},
 
 		_showBars(container){
@@ -460,11 +455,8 @@ CStudioAuthoring.Module.requireModule(
 				currentWidth = this.editor.editorContainer.clientWidth,
 				editorHeight = this.rteHeight;
 
-			$container.find(".mce-top-part").show();
-			$container.find(".mce-statusbar").show();
-
-			//since we're showing the editor bars, we need to keep the editor the same height.
-			this.editor.theme.resizeTo(currentWidth, editorHeight);
+			// $container.find(".tox-menubar").show();
+			// $container.find(".tox-toolbar").show();
 		},
 
 		/** 
@@ -488,7 +480,6 @@ CStudioAuthoring.Module.requireModule(
 			}			
 
 			obj.owner.notifyValidation();
-			// obj.count(evt, obj.countEl, obj.inputEl);
 		},
 
 		_onChangeVal: function(evt, obj) {
@@ -504,6 +495,6 @@ CStudioAuthoring.Module.requireModule(
 		}
 	});
 
-	CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-tinymce4", CStudioForms.Controls.RTETINYMCE4);
+	CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-rte-tinymce5", CStudioForms.Controls.RTETINYMCE5);
 
 }} );

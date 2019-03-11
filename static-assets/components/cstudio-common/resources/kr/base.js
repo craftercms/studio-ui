@@ -603,7 +603,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     /*Controls*/
     textArea: "텍스트 영역",
     richTextEditor: "서식있는 텍스트 편집기s (TinyMCE 2)",
-    rteTinyMCE4: "서식있는 텍스트 편집기s (TinyMCE 4)",
+    rteTinyMCE5: "서식있는 텍스트 편집기s (TinyMCE 5)",
     input: "입력",
     uuid: "UUID",
     dropdown: "쓰러지 다",
