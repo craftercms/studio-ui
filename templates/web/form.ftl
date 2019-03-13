@@ -39,9 +39,10 @@
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/resources/de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script type="text/javascript" src="/studio/static-assets/modules/editors/tinymce/v4/tinymce/tinymce.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script type="text/javascript" src="/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/rte.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
     <script type="text/javascript" src="/studio/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <link rel="stylesheet" type="text/css" href="/studio/static-assets/components/cstudio-common/ace/ace_editor.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-common/amplify-core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-forms/forms-engine.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
