@@ -57,7 +57,7 @@
                     <li ng-repeat="versioSupported in siteBP.blueprint.craftercmsVersionsSupported">{{versioSupported.version}}</li>
                 </ul>
                 <p ng-show="siteBP.blueprint.website.url"><strong>{{ 'dashboard.sites.create.WEBSITE' | translate }}: </strong><a target="_blank" href="{{siteBP.blueprint.website.url}}">{{siteBP.blueprint.website.url}}</a></p>
-                <button ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.folderName; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
+                <button ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.id; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
             </div>
         </article>
     </section>
