@@ -6888,7 +6888,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 .about-us-view .studio-info {
   overflow: hidden;
-  max-width: 530px;
+  max-width: 560px;
   margin: 50px auto 0;
   padding: 30px 2%; }
   .about-us-view .studio-info #studio-logo {

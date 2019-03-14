@@ -361,6 +361,7 @@
         SERVICE: '/studio/api/1/services/api/1/',
         SERVICE2:'/studio/api/2/',
         STUDIO_PATH: '/studio',
+        MONITORING_PATH: 'monitoring/',
         SHOW_LOADER: 'show-loader',
         BULK_ENVIRONMENT: 'Live',
         HEADERS: 'headers',
@@ -438,7 +439,7 @@
             };
 
             this.getStudioInfo = function () {
-                return $http.get(api('version', false, true));
+                return $http.get(api2('version', Constants.MONITORING_PATH));
             };
 
             this.forgotPassword = function (username) {
@@ -491,6 +492,10 @@
                 }
 
                 return Constants.SERVICE + api + action + '.json';
+            }
+
+            function api2(action, path) {
+                return Constants.SERVICE2 + path + action;
             }
 
             function security(action){
@@ -875,8 +880,8 @@
             if(authService.getUser()) {
                 authService.getStudioInfo().then(
                     function successCallback(response) {
-                        $scope.aboutStudio = response.data;
-                        $scope.versionNumber = response.data.packageVersion + "-" + response.data.build.substring(0, 6);
+                        $scope.aboutStudio = response.data.version;
+                        $scope.versionNumber = response.data.version.packageVersion + "-" + response.data.version.packageBuild.substring(0, 6);
                     }, function errorCallback(response) {
                     }
                 );
