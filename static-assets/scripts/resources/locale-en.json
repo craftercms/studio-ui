@@ -190,7 +190,8 @@
       "CREATED": "Created",
       "MODIFIED": "Modified",
       "SITE": "Site",
-      "LOGS_PER_PAGE": "Logs per page"
+      "LOGS_PER_PAGE": "Logs per page",
+      "TIMEZONE": "Timezone"
     },
       "publishing": {
           "PUBLISHING": "Publishing",
