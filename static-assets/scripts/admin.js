@@ -326,6 +326,7 @@
             audit.defaultDelay = 500;
             audit.site = $location.search().site ? $location.search().site : '';
             audit.timeZone;
+            audit.allTimeZones = moment.tz.names();
             var delayTimer;
 
             if(audit.site){
@@ -336,7 +337,7 @@
                     audit.timeZone = data["default-timezone"];
                 });
             }else{
-                audit.timeZone = "UTC";
+                audit.timeZone = moment.tz.guess();
             }
 
             var getUsers = function(site) {

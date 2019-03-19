@@ -182,7 +182,8 @@
         "APPROVE": "Aprobar",
         "APPROVE_SCHEDULED": "Aprobar programado",
         "REJECT": "Rechazar",
-        "PUBLISHED": "Publicado"
+        "PUBLISHED": "Publicado",
+        "TIMEZONE": "Zona horaria"
       },
       "USER": "Usuario",
       "CONTENT": "Contenido",

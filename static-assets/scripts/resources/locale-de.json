@@ -164,7 +164,8 @@
       "CREATED": "Erstellt",
       "MODIFIED": "Zuletzt bearbeitet",
       "SITE": "Projekt",
-      "LOGS_PER_PAGE": "Einträge pro Seite"
+      "LOGS_PER_PAGE": "Einträge pro Seite",
+      "TIMEZONE": "Zeitzone"
     },
       "publishing": {
           "PUBLISHING": "Publizierung",

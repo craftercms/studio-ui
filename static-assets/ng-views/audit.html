@@ -111,6 +111,13 @@
                min="0" max="500" ng-model-options="{debounce: audit.defaultDelay}" only-digits>
     </div>
 
+
+    <div class="mt20 mb20 timezoneContainer">
+        <label>{{ 'admin.audit.TIMEZONE' | translate }}: </label>
+        <select id="auditTimezone" ng-init="audit.timeZone" ng-options="value for value in audit.allTimeZones" ng-model="audit.timeZone"></select>
+    </div>
+
+
     <table class="table table-striped">
         <thead>
         <tr>
@@ -126,7 +133,7 @@
         <tr dir-paginate="log in audit.logs | filter:q | itemsPerPage: audit.logsPerPage"
             current-page="audit.pagination.current" total-items="audit.totalLogs">
             <td>{{log.username}}</td>
-            <td>{{log.contentId}}</td>
+            <td class="wrap-content">{{log.contentId}}</td>
             <td>{{log.type}}</td>
             <td>{{log.createdDate | amTimezone:audit.timeZone | amDateFormat:'MM-DD-YYYY hh:mm:ss a'}} ({{audit.timeZone}})</td>
             <td>{{log.modifiedDate | amTimezone:audit.timeZone | amDateFormat:'MM-DD-YYYY hh:mm:ss a'}} ({{audit.timeZone}})</td>

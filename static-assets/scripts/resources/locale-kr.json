@@ -182,7 +182,8 @@
         "APPROVE": "승인하다",
         "APPROVE_SCHEDULED": "예약 됨",
         "REJECT": "받지 않다",
-        "PUBLISHED": "게시 됨"
+        "PUBLISHED": "게시 됨",
+        "TIMEZONE": "시간대"
       },
       "USER": "사용자",
       "CONTENT": "함유량",

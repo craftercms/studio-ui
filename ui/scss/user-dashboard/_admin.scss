@@ -264,6 +264,27 @@ table {
     margin-bottom: 20px;
     min-width: 50px;
   }
+
+  .timezoneContainer{
+    border-top: 1px solid #ccc;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+    background-color: #f9f9f9;
+    clear: both;
+
+    #auditTimezone{
+      background-color: white;
+      border: 1px solid #ccc;
+      height: 30px;
+      text-align: center;
+    }
+
+  }
+
+  .wrap-content {
+    word-break: break-all;
+  }
+
 }
 
 .publishing-view {
