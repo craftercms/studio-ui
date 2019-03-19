@@ -96,6 +96,13 @@ CStudioAuthoring.Module.requireModule(
 		 */
 		setValue: function(value) {
 			this.value = value;
+
+			try {
+				tinymce.activeEditor.setContent(value, {format: 'raw'});
+			}
+			catch(err) {
+			};
+
 			this.updateModel(value);
 			this.edited = false;
 		},
@@ -219,6 +226,9 @@ CStudioAuthoring.Module.requireModule(
 				toolbar4: toolbarConfig4,
 				image_advtab: true,
 				encoding: 'xml',
+				relative_urls : false,
+				remove_script_host : false,
+				convert_urls : true,
 				readonly: _thisControl.readonly,
 				force_p_newlines: forcePTags,
 				force_br_newlines: forceBRTags,
