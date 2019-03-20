@@ -140,8 +140,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             CStudioAuthoring.SelectedContent.setContent(e.item);
                              _this.drawNav();
                         }else{
-                            YDom.get("activeContentActions").innerHTML = "";
-                            _this.drawNav();
+                            if(YDom.get("activeContentActions").innerHTML) {
+                                YDom.get("activeContentActions").innerHTML = "";
+                                _this.drawNav();
+                            }
                         }
 
                         }, false);
@@ -199,7 +201,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 }
                             }
 
-                            _this.refreshAllDashboards();
+                            if (typeof WcmDashboardWidgetCommon != 'undefined'){
+                                _this.refreshAllDashboards();
+                                _this.drawNav();
+                            }
                             lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
 
                         }, false);
@@ -377,6 +382,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             Self.refreshDashboard("recentlyMadeLive");
                             Self.refreshDashboard("approvedScheduledItems");
                             Self.refreshDashboard("GoLiveQueue");
+                            CStudioAuthoring.SelectedContent.init();
                         }
                     },
 
