@@ -422,6 +422,7 @@
                     Self.refreshDashboard("recentlyMadeLive");
                     Self.refreshDashboard("approvedScheduledItems");
                     Self.refreshDashboard("GoLiveQueue");
+                    CStudioAuthoring.SelectedContent.init();
                 }
             },
 
