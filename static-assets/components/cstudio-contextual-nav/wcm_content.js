@@ -124,10 +124,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             if(CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
                                 CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri, {
                                     success: function (content) {
-                                        CStudioAuthoring.SelectedContent.setContent(content.item);
+                                        if (typeof WcmDashboardWidgetCommon == 'undefined'){
+                                            CStudioAuthoring.SelectedContent.setContent(content.item);
+                                            _this.drawNav();
+                                        }
                                     }
                                 });
-                                _this.drawNav();
                             }
                         }, false);
 
@@ -346,6 +348,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             Self.refreshDashboard("recentlyMadeLive");
                             Self.refreshDashboard("approvedScheduledItems");
                             Self.refreshDashboard("GoLiveQueue");
+                            CStudioAuthoring.SelectedContent.init();
                         }
                     },
 
