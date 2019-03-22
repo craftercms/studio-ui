@@ -86,13 +86,25 @@
 
         // Search input changes
         $('#searchInput').on('keyup', function(e){
-            
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(function(){
+            // If is enter -> immediate search
+            if (event.keyCode === 13) {
                 CStudioSearch.searchContext.keywords = e.target.value;
                 CStudioSearch.performSearch();
                 CStudioSearch.updateUrl();
-            }, 700);
+            }else{ 
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function(){
+                    CStudioSearch.searchContext.keywords = e.target.value;
+                    CStudioSearch.performSearch();
+                    CStudioSearch.updateUrl();
+                }, 700);
+            }
+        });
+
+        $('#searchButton').on('click', function(e){
+            CStudioSearch.searchContext.keywords = $('#searchInput').val();
+            CStudioSearch.performSearch();
+            CStudioSearch.updateUrl();
         });
 
         // Selecting an item from the results
@@ -200,7 +212,7 @@
 
         // Clear filter
         $('.cstudio-search').on('click', '.filters .clear-filter', function(){
-            var filterId = $(this).parent().find('[data-toggle="collapse"]').attr('aria-controls');
+            var filterId = $(this).parent().attr('id');
             $('input[name="' + filterId + '"]').prop('checked', false);
 
             delete CStudioSearch.searchContext.filters[filterId];
@@ -314,6 +326,8 @@
 
     CStudioSearch.renderResults = function(results) {
         var $resultsContainer = $('.cstudio-search .results'),
+            $selectAllContainer = $('.select-all-col'),
+            $filtersSection = $('.view-selector, #searchFilters'),
             $resultsPagination = $('#resultsPagination'),
             $numResultsContainer = $('#searchNumResults'),
             totalItems = results.total,
@@ -328,6 +342,14 @@
         this.initFilters();
 
         $numResultsContainer.text(results.total);
+
+        if(results.total === 0){
+            $selectAllContainer.hide();
+            $filtersSection.hide();
+        }else{
+            $selectAllContainer.show();
+            $filtersSection.show();
+        }
 
         //PAGINATION - https://www.jqueryscript.net/other/Simple-Boostrap-Pagination-Plugin-With-jQuery.html
         if(!this.$pagination){
@@ -580,8 +602,8 @@
             if( typeof value === 'object' ){
                 var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
                     $filterRadio = $('input[type="radio"][name="' + key + '"]#' + key + value.min);
-                $filterContainer.find('input[name="min"]').val(value.min);
-                $filterContainer.find('input[name="max"]').val(value.max);
+                $filterContainer.find('input[name="min"]').val(isNaN(value.min) ? '' : value.min);
+                $filterContainer.find('input[name="max"]').val(isNaN(value.max) ? '' : value.max);
 
                 if($filterRadio.length > 0){
                     $filterRadio.prop("checked", true);
@@ -652,9 +674,12 @@
                 CStudioSearch.renderResults(response.result);
             },
             failure: function (error) {
-                console.error(error);
+                console.error("SEARCH ERROR", error);
+                CStudioSearch.renderError(error);
             }
         }
+
+        CStudioAuthoring.SelectedContent.clear();
         CStudioAuthoring.Service.search(CStudioAuthoringContext.site, searchQuery, callback);
     }
 
@@ -746,7 +771,9 @@
                 if(typeof value === 'string'){
                     newUrl += '&csf_' + key + '=' + value;
                 }else{
-                    newUrl += '&csf_' + key + '=csr_' + value.min + '-' + value.max;
+                    var min = isNaN(value.min) ? 'null' : value.min,
+                        max = isNaN(value.max) ? 'null' : value.max;
+                    newUrl += '&csf_' + key + '=csr_' + min + '-' + max;
                 }
             })
         }
@@ -754,6 +781,20 @@
         newUrl += '&keywords=' + searchContext.keywords;
         
         window.history.pushState({path:newUrl},'',newUrl);
+    }
+
+    CStudioSearch.renderError = function(error){
+        var $resultsContainer = $('.cstudio-search .results'),
+            $selectAllContainer = $('.select-all-col'),
+            $filtersSection = $('.view-selector, #searchFilters'),
+            $resultsPagination = $('#resultsPagination'),
+            errorMessage = JSON.parse(error.responseText).response.message;
+
+        $resultsContainer.html('<p class="bg-danger search-error">' + errorMessage + '</p>');
+
+        $selectAllContainer.hide();
+        $filtersSection.hide();
+        $resultsPagination.hide();
     }
 
 }) (window, jQuery, Handlebars);
