@@ -674,7 +674,6 @@
                 CStudioSearch.renderResults(response.result);
             },
             failure: function (error) {
-                console.error("SEARCH ERROR", error);
                 CStudioSearch.renderError(error);
             }
         }
@@ -787,10 +786,11 @@
         var $resultsContainer = $('.cstudio-search .results'),
             $selectAllContainer = $('.select-all-col'),
             $filtersSection = $('.view-selector, #searchFilters'),
-            $resultsPagination = $('#resultsPagination'),
-            errorMessage = JSON.parse(error.responseText).response.message;
+            $resultsPagination = $('#resultsPagination');
 
-        $resultsContainer.html('<p class="bg-danger search-error">' + errorMessage + '</p>');
+        console.error(error);
+
+        $resultsContainer.html('<p class="bg-danger search-error">' + CMgs.format(langBundle, 'errorMessage') + '</p>');
 
         $selectAllContainer.hide();
         $filtersSection.hide();
