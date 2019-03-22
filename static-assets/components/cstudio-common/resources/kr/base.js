@@ -509,7 +509,8 @@ CStudioAuthoring.Messages.registerBundle("search", "kr", {
     seeMore: '더보기',
     seeLess: '덜보기',
     under: '아래에',
-    above: '위'
+    above: '위',
+    errorMessage: '검색을 완료하는 중에 문제가 발생했습니다. 문제가 지속되면 관리자에게 문의하십시오.'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "kr", {

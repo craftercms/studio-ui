@@ -533,7 +533,8 @@ CStudioAuthoring.Messages.registerBundle("search", "es", {
     seeMore: 'Ver Más',
     seeLess: 'Ver Menos',
     under: 'Menos de ',
-    above: 'y más'
+    above: 'y más',
+    errorMessage: 'Hubo un problema completando su búsqueda, por favor contacte al Administrador si el problema persite.'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "es", {

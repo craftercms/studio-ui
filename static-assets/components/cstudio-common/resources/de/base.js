@@ -545,7 +545,8 @@ CStudioAuthoring.Messages.registerBundle("search", "de", {
     resultsTemplate: "Template",
     errSearchFailed: "Ihre Suche ist leider fehlgeschlagen. Versuchen Sie, die Filter anzupassen. Wenn der Fehler weiterhin besteht, wenden Sie sich bitte an Ihren Administrator mit dem Fehler: {0}",
     errNoResults: "Keine Treffer.",
-    zeroResults: "(0 Treffer)"
+    zeroResults: "(0 Treffer)",
+    errorMessage: 'Bei der Suche ist ein Problem aufgetreten. Wenden Sie sich an den Administrator, falls das Problem weiterhin besteht.'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "de", {

@@ -548,7 +548,8 @@ CStudioAuthoring.Messages.registerBundle("search", "en", {
     seeMore: 'See More',
     seeLess: 'See Less',
     under: 'Under',
-    above: 'and Above'
+    above: 'and Above',
+    errorMessage: 'There was an issue completing your search, please contact the Administrator if this issue persists.'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "en", {
