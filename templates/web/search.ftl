@@ -67,16 +67,16 @@
     <section class="cstudio-search">
         <div class="search-bar row">
             <div class="col-md-12">
-                <form>
+                <#--  <form>  -->
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Search" id="searchInput"/>
                         <div class="input-group-btn">
-                            <button class="btn btn-primary" type="submit">
+                            <button class="btn btn-primary" id="searchButton">
                                 <span class="glyphicon glyphicon-search"></span>
                             </button>
                         </div>
                     </div>
-                </form>
+                <#--  </form>  -->
             </div>
         </div>
 
@@ -144,7 +144,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12 mt10 mb15">
+            <div class="col-md-12 mt10 mb15 select-all-col">
                 <label class="checkbox-container select-all-container mb15 mr10">
                     <input type="checkbox" class="search-select-all" id="searchSelectAll" />
                     <span class="checkmark"></span>
@@ -214,12 +214,12 @@
                         <#--  TODO: change data-type to mimetype  -->
                         {{#equal type "Image"}}
                         <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
-                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            <i class="fa fa-search-plus" aria-hidden="true"></i>
                         </a>
                         {{/equal}}
                         {{#equal type "Video"}}
                         <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
-                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            <i class="fa fa-search-plus" aria-hidden="true"></i>
                         </a>
                         {{/equal}}
 
@@ -271,11 +271,11 @@
                 <h4 class="panel-title">
                     <a class="collapsed filter-header" role="button" data-toggle="collapse" data-parent="#accordion" href="&#x23;{{ value }}" aria-expanded="false" aria-controls="{{ value }}">
                         {{ label }} <i class="fa fa-check-circle selected hide ml5" aria-hidden="true"></i>
-                    </a>
-                    {{#if clear}}<a class="clear-filter">Clear</a>{{/if}}    
+                    </a>  
                 </h4>
             </div>
             <div id="{{ value }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ value }}">
+                {{#if clear}}<a class="clear-filter">Clear</a>{{/if}}  
                 <div class="panel-body">
                     
                 </div>
