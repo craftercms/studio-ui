@@ -394,37 +394,6 @@
 				}
             },
 
-            refreshDashboard: function(inst){
-                var instace = WcmDashboardWidgetCommon.dashboards[inst];
-                var filterByTypeEl = YDom.get('widget-filterBy-'+instace.widgetId);
-                var filterByTypeValue = 'all';
-                if(filterByTypeEl && filterByTypeEl.value != '') {
-                    filterByTypeValue = filterByTypeEl.value;
-                }
-
-                var searchNumberEl = YDom.get('widget-showitems-'+instace.widgetId);
-                var searchNumberValue =  instace.defaultSearchNumber;
-                if(searchNumberEl && searchNumberEl.value != '') {
-                    searchNumberValue = searchNumberEl.value;
-                }
-
-                WcmDashboardWidgetCommon.loadFilterTableData(
-                    instace.defaultSortBy,
-                    YDom.get(instace.widgetId),
-                    instace.widgetId,
-                    searchNumberValue,filterByTypeValue);
-            },
-
-            refreshAllDashboards: function(){
-                if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                    Self.refreshDashboard("MyRecentActivity");
-                    Self.refreshDashboard("recentlyMadeLive");
-                    Self.refreshDashboard("approvedScheduledItems");
-                    Self.refreshDashboard("GoLiveQueue");
-                    CStudioAuthoring.SelectedContent.init();
-                }
-            },
-
             /**
              * to check, if extra ajax call can be reduced
              */
@@ -662,7 +631,7 @@
                                 }
                             }
 
-                            Self.refreshAllDashboards();
+                            WcmDashboardWidgetCommon.refreshAllDashboards();
 
                         }, false);
 
@@ -1672,7 +1641,7 @@
                                                 eventCM.typeAction = typeAction;
                                                 eventCM.item = treeData.item;
                                                 document.dispatchEvent(eventCM);
-                                                Self.refreshAllDashboards();
+                                                WcmDashboardWidgetCommon.refreshAllDashboards();
                                             }
                                             else {
                                                 if (style.indexOf("in-flight") != -1) {
@@ -1701,7 +1670,7 @@
                                                                 eventCM.typeAction = typeAction;
                                                                 eventCM.item = treeData.item;
                                                                 document.dispatchEvent(eventCM);
-                                                                Self.refreshAllDashboards();
+                                                                WcmDashboardWidgetCommon.refreshAllDashboards();
                                                             }
                                                         }, 300);
                                                     }
@@ -1739,7 +1708,7 @@
                                     //console.log(itemStore);
                                     if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
                                     self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
-                                    Self.refreshAllDashboards();
+                                    WcmDashboardWidgetCommon.refreshAllDashboards();
                                 }
 
                             } else {
@@ -1761,7 +1730,7 @@
                                     Self.initializeContentTree(instance.rootFolderEl, null, instance);
                                     Self.toggleFolderState(instance, "open");
                                 }
-                                Self.refreshAllDashboards();
+                                WcmDashboardWidgetCommon.refreshAllDashboards();
                             }
                             if(i >= (node.length - 1)){
                                 eventYS.parent = null;
@@ -3070,7 +3039,7 @@
                                 }
                             }
 
-                            Self.refreshDashboard("MyRecentActivity");
+                            WcmDashboardWidgetCommon.refreshDashboard("MyRecentActivity");
 
                             //code below to alert user if destination node url already exist during cut/paste
                             if (errorMsgExist && errorMsg=='DESTINATION_NODE_EXIST'){

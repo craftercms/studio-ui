@@ -175,7 +175,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                                         lookupSiteContent(curNode, cont);
                                                     }, 3000);
                                                 }else {
-                                                    _this.refreshAllDashboards();
+                                                    WcmDashboardWidgetCommon.refreshAllDashboards();
                                                 }
                                             } else {
                                                 cont++;
@@ -191,7 +191,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                                         document.dispatchEvent(eventCM);
 
                                                     }
-                                                    _this.refreshAllDashboards();
+                                                    WcmDashboardWidgetCommon.refreshAllDashboards();
                                                 }
                                             }
                                         },
@@ -202,7 +202,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             }
 
                             if (typeof WcmDashboardWidgetCommon != 'undefined'){
-                                _this.refreshAllDashboards();
+                                WcmDashboardWidgetCommon.refreshAllDashboards();
                                 _this.drawNav();
                             }
                             lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
@@ -352,37 +352,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         for (var n = 0; n < noticeEls.length; n++) {
                             var curNode = noticeEls[n];
                             curNode.parentNode.removeChild(curNode);
-                        }
-                    },
-
-                    refreshDashboard: function(inst){
-                        var instace = WcmDashboardWidgetCommon.dashboards[inst];
-                        var filterByTypeEl = YDom.get('widget-filterBy-'+instace.widgetId);
-                        var filterByTypeValue = 'all';
-                        if(filterByTypeEl && filterByTypeEl.value != '') {
-                            filterByTypeValue = filterByTypeEl.value;
-                        }
-
-                        var searchNumberEl = YDom.get('widget-showitems-'+instace.widgetId);
-                        var searchNumberValue =  instace.defaultSearchNumber;
-                        if(searchNumberEl && searchNumberEl.value != '') {
-                            searchNumberValue = searchNumberEl.value;
-                        }
-
-                        WcmDashboardWidgetCommon.loadFilterTableData(
-                            instace.defaultSortBy,
-                            YDom.get(instace.widgetId),
-                            instace.widgetId,
-                            searchNumberValue,filterByTypeValue);
-                    },
-
-                    refreshAllDashboards: function(){
-                        if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                            Self.refreshDashboard("MyRecentActivity");
-                            Self.refreshDashboard("recentlyMadeLive");
-                            Self.refreshDashboard("approvedScheduledItems");
-                            Self.refreshDashboard("GoLiveQueue");
-                            CStudioAuthoring.SelectedContent.init();
                         }
                     },
 

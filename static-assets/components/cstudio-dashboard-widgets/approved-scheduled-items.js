@@ -108,12 +108,7 @@ CStudioAuthoringWidgets.ApprovedScheduledItemsDashboard = CStudioAuthoringWidget
 								"widgetFilterBy",
 								newState);
 
-			var sortBy=_self.currentSortBy? _self.currentSortBy:_self.defaultSortBy;
-			var searchNumber=_self.searchNumber? _self.searchNumber:_self.defaultSearchNumber;
-			WcmDashboardWidgetCommon.loadFilterTableData(
-									sortBy,
-									YDom.get(_self.widgetId),
-									_self.widgetId,searchNumber,filterByEl.value);
+            WcmDashboardWidgetCommon.refreshAllDashboards();
 
 		};
 	};
