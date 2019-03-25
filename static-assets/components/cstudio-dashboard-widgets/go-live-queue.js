@@ -89,11 +89,7 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     YDom.get('sort-type-' + _self.widgetId).innerHTML = "true";
                 }
 
-                var sortBy = _self.currentSortBy ? _self.currentSortBy : _self.defaultSortBy;
-                WcmDashboardWidgetCommon.loadTableData(
-                    sortBy,
-                    YDom.get(_self.widgetId),
-                    _self.widgetId);
+                WcmDashboardWidgetCommon.refreshAllDashboards();
             };
         };
 
