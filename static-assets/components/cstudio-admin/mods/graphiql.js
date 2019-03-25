@@ -43,7 +43,8 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 	},
 
 	initializeGraphi: function() {
-		GraphiQL(document.getElementById("graph-container"), CStudioAuthoringContext.previewAppBaseUri + '/api/1/site/graphql');
+		var site = CStudioAuthoringContext.site;
+		GraphiQL(document.getElementById("graph-container"), CStudioAuthoringContext.previewAppBaseUri + '/api/1/site/graphql', site);
 	}
 });
 		
