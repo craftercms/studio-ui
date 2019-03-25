@@ -1535,6 +1535,11 @@
                     $scope.previousStep.push($scope.currentStep);
                 }
                 $scope.currentStep = newStep;
+                if(newStep == 2){
+                    $timeout(function () {
+                        $('#siteId')[0].focus();
+                    });
+                }
             }
 
             $scope.getStepTemplate = function(){
