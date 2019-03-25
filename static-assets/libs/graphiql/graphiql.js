@@ -65,13 +65,6 @@ var GraphiQL =
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// const showChatTemplate = (messages, element, delay = 1, height = 300) => {
-	//   ReactDOM.render(<Conversation delay={delay} height={height} messages={messages} />,
-	//     element);
-	// };
-
-	// module.exports = showChatTemplate;
-
 	function graphQLFetcher(graphQLParams) {
 	  var url = window.graphiQLSettings.url ? window.graphiQLSettings.url : window.location.origin + '/api/1/site/graphql';
 
@@ -88,11 +81,34 @@ var GraphiQL =
 	  });
 	}
 
-	var graphiQLRender = function graphiQLRender(container, url) {
+	var _storages = {};
+
+	function _makeStorage(storageKey) {
+	  return {
+	    setItem: function setItem(key, val) {
+	      return window.localStorage.setItem('' + storageKey + key, val);
+	    },
+	    getItem: function getItem(key) {
+	      return window.localStorage.getItem('' + storageKey + key);
+	    },
+	    removeItem: function removeItem(key) {
+	      return window.localStorage.removeItem('' + storageKey + key);
+	    }
+	  };
+	}
+
+	function getStorage(storageKey) {
+	  if (!_storages[storageKey]) {
+	    _storages[storageKey] = _makeStorage(storageKey);
+	  }
+	  return _storages[storageKey];
+	}
+
+	var graphiQLRender = function graphiQLRender(container, url, storageKey) {
 	  window.graphiQLSettings = {
 	    url: url
 	  };
-	  _reactDom2.default.render(_react2.default.createElement(_graphiql2.default, { fetcher: graphQLFetcher }), container);
+	  _reactDom2.default.render(_react2.default.createElement(_graphiql2.default, { fetcher: graphQLFetcher, storage: getStorage('' + storageKey) }), container);
 	};
 
 	module.exports = graphiQLRender;
