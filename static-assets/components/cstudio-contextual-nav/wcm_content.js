@@ -137,7 +137,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             if(!nodeOpen)
                             {
                                 document.dispatchEvent(eventCM);
-                                _this.refreshAllDashboards();
+                                WcmDashboardWidgetCommon.refreshAllDashboards();
                                 lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
 
                                 function lookupSiteContent(curNode, paramCont) {
@@ -157,7 +157,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                                             lookupSiteContent(curNode, cont);
                                                         }, 300);
                                                     } else {
-                                                        _this.refreshAllDashboards();
+                                                        WcmDashboardWidgetCommon.refreshAllDashboards();
                                                     }
                                                 }
                                             },
@@ -318,37 +318,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         for (var n = 0; n < noticeEls.length; n++) {
                             var curNode = noticeEls[n];
                             curNode.parentNode.removeChild(curNode);
-                        }
-                    },
-
-                    refreshDashboard: function(inst){
-                        var instace = WcmDashboardWidgetCommon.dashboards[inst];
-                        var filterByTypeEl = YDom.get('widget-filterBy-'+instace.widgetId);
-                        var filterByTypeValue = 'all';
-                        if(filterByTypeEl && filterByTypeEl.value != '') {
-                            filterByTypeValue = filterByTypeEl.value;
-                        }
-
-                        var searchNumberEl = YDom.get('widget-showitems-'+instace.widgetId);
-                        var searchNumberValue =  instace.defaultSearchNumber;
-                        if(searchNumberEl && searchNumberEl.value != '') {
-                            searchNumberValue = searchNumberEl.value;
-                        }
-
-                        WcmDashboardWidgetCommon.loadFilterTableData(
-                            instace.defaultSortBy,
-                            YDom.get(instace.widgetId),
-                            instace.widgetId,
-                            searchNumberValue,filterByTypeValue);
-                    },
-
-                    refreshAllDashboards: function(){
-                        if (typeof WcmDashboardWidgetCommon != 'undefined') {
-                            Self.refreshDashboard("MyRecentActivity");
-                            Self.refreshDashboard("recentlyMadeLive");
-                            Self.refreshDashboard("approvedScheduledItems");
-                            Self.refreshDashboard("GoLiveQueue");
-                            CStudioAuthoring.SelectedContent.init();
                         }
                     },
 

@@ -101,15 +101,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 								"widgetFilterBy",
 								newState);
 
-			var sortBy=_self.currentSortBy? _self.currentSortBy:_self.defaultSortBy;
-			var searchNumber=_self.searchNumber? _self.searchNumber:_self.defaultSearchNumber;
-	        
-			WcmDashboardWidgetCommon.loadFilterTableData(
-									sortBy,
-									YDom.get(_self.widgetId),
-									_self.widgetId,searchNumber,filterByEl.value);
+            WcmDashboardWidgetCommon.refreshAllDashboards();
 
-		};
+        };
 
 		
 		itemFilterEl.onclick = function() {
@@ -123,13 +117,7 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			else {
 				this.innerHTML = CMgs.format(langBundle, "dashletMyRecentActivityShowLiveItems");
 			}
-			var sortBy=_self.currentSortBy? _self.currentSortBy:_self.defaultSortBy;
-			var searchNumber=_self.searchNumber? _self.searchNumber:_self.defaultSearchNumber;
-            
-			WcmDashboardWidgetCommon.loadFilterTableData(
-				sortBy,
-				YDom.get(_self.widgetId),
-				_self.widgetId,searchNumber,filterByEl.value);
+            WcmDashboardWidgetCommon.refreshAllDashboards();
 		};
 	};
 
