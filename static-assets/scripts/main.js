@@ -1559,11 +1559,25 @@
 
             }
 
-            $scope.flexSilderInit = function(ele) {
+            $scope.flexSilderInit = function(flexslider, carousel) {
                 $timeout(function () {
-                    $('.flexslider').flexslider({
+                    // The slider being synced must be initialized first
+                    $('#'+carousel).flexslider({
                         animation: "slide",
-                        controlNav: "thumbnails"
+                        controlNav: false,
+                        animationLoop: false,
+                        slideshow: false,
+                        itemWidth: 126,
+                        itemMargin: 5,
+                        asNavFor: '#'+flexslider
+                    });
+
+                    $('#'+flexslider).flexslider({
+                        animation: "slide",
+                        controlNav: true,
+                        animationLoop: false,
+                        slideshow: false,
+                        sync: '#'+carousel
                     });
                 });
             }

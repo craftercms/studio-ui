@@ -55,6 +55,7 @@
         "CLONE": "Neues Projekt von einem Remote Git Repository klonen",
         "PUSH": "Demo-Projekt klonen und in ein leeres Remote Git Repository pushen",
         "BLUEPRINT": "Demo-Projekt",
+        "CHOOSE_A_BLUEPRINT":"Wählen Sie eine Blaupause",
         "CREATING_SITE": "Neues Projekt wird angelegt",
         "CREATE_ERROR": "Das neue Projekt konnte nicht angelegt werden. Bitte wenden Sie sich an Ihren Systemadministator.",
         "SITE_ID_VALIDATION": "(Maximal 50 Zeichen. Nur Kleinbuchstaben, Ziffern, Binde- und Unterstriche sind zulässig.)",
