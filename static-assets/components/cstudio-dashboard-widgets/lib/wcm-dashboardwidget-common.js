@@ -1609,4 +1609,44 @@ WcmDashboardWidgetCommon.clearItem = function (matchedElement, dashBoardData) {
     }
 };
 
+/**
+ * refresh a specific dashboard
+ */
+WcmDashboardWidgetCommon.refreshDashboard = function (inst) {
+    var instace = WcmDashboardWidgetCommon.dashboards[inst];
+    var filterByTypeEl = YDom.get('widget-filterBy-'+instace.widgetId);
+    var filterByTypeValue = 'all';
+    if(filterByTypeEl && filterByTypeEl.value != '') {
+        filterByTypeValue = filterByTypeEl.value;
+    }
+
+    var searchNumberEl = YDom.get('widget-showitems-'+instace.widgetId);
+    var searchNumberValue =  instace.defaultSearchNumber;
+    if(searchNumberEl && searchNumberEl.value != '') {
+        searchNumberValue = searchNumberEl.value;
+    }
+
+    var sortBy=instace.currentSortBy? instace.currentSortBy:instace.defaultSortBy;
+    var searchNumber=instace.searchNumber? instace.searchNumber:instace.defaultSearchNumber;
+
+    WcmDashboardWidgetCommon.loadFilterTableData(
+        sortBy,
+        YDom.get(instace.widgetId),
+        instace.widgetId,
+        searchNumber,filterByTypeValue);
+};
+
+/**
+ * refresh all dashboards
+ */
+WcmDashboardWidgetCommon.refreshAllDashboards = function () {
+    if (typeof WcmDashboardWidgetCommon != 'undefined') {
+        WcmDashboardWidgetCommon.refreshDashboard("MyRecentActivity");
+        WcmDashboardWidgetCommon.refreshDashboard("recentlyMadeLive");
+        WcmDashboardWidgetCommon.refreshDashboard("approvedScheduledItems");
+        WcmDashboardWidgetCommon.refreshDashboard("GoLiveQueue");
+        CStudioAuthoring.SelectedContent.clear();
+    }
+};
+
 
