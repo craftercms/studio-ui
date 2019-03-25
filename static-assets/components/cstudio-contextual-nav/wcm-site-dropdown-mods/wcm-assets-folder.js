@@ -381,7 +381,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         }
                     }
 
-                    Self.refreshAllDashboards();
+                    WcmDashboardWidgetCommon.refreshAllDashboards();
 
                 }, false);
 
