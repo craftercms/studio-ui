@@ -612,7 +612,7 @@ table {
 ============================================================================= */
   #wizard-content-container{
     position:relative;
-    height: 350px;
+    height: 380px;
     overflow-y: auto;
   }
 
@@ -685,7 +685,133 @@ table {
    }
  }
 
-  // Grid
+  //Gallery
+
+  .flexslider{
+    border: 0;
+  }
+
+  .mainslider{
+    margin-bottom: 0px;
+  }
+
+  .flexslider.carousel{
+    margin: 0 0 30px;
+  }
+
+  .flex-viewport {
+    border: 2px solid #e2e2e2;
+
+    li{
+      &.list-gallery{
+        height: 255px;
+      }
+      
+      &.list-image{
+        height: auto;
+      }
+
+      img.gallery-image{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        overflow: hidden;
+      }
+    }
+
+  }
+
+  .carousel{
+
+    .flex-viewport{
+      background-color: #e2e2e2;
+
+      li{
+        height: 86px;
+        margin-right: 5px;
+        img{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          overflow: hidden;
+          display: block;
+          opacity: .5;
+          cursor: pointer;
+
+          &:hover{
+            opacity: 1;
+          }
+
+        }
+      }
+      .flex-active-slide img {
+        opacity: 1;
+        cursor: default;
+      }
+    }
+
+  }
+
+  .flex-control-paging{
+    z-index: 1;
+    top: 241px;
+    bottom: auto;
+
+    li{
+      margin: 0 4px;
+      a{
+        width: 8px;
+        height: 8px;
+      }
+    }
+
+  }
+
+  .flex-control-thumbs{
+    border: 2px solid #e2e2e2;
+    background-color: #e2e2e2;
+    margin: 0px;
+
+    li{
+      border-right: 2px solid #e2e2e2;
+      height: 64px;
+
+      &:last-child{
+        border-right: none;
+      }
+
+      img{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        overflow: hidden;
+      }
+
+    }
+  }
+
+  .flex-direction-nav a {
+    color: #fff;
+    background-color: #000;
+    border-radius: 50%;
+    text-align: center;
+  }
+  .flex-direction-nav a:before {
+    font-size: 20px;
+    color: #FFF;
+    line-height: 40px;
+  }
+  .flex-direction-nav a.flex-next:before {
+    padding-left: 1px;
+  }
+
+  //form
+  input[type="radio"]{
+    margin-left: 2px;
+  }
+
+
+// Grid
   .grid {
     -webkit-box-align: stretch;
     -ms-flex-align: stretch;
@@ -702,6 +828,7 @@ table {
     /*flex: 0 1 31%;*/
     flex: 0 1 100%;
     margin-bottom: 30px;
+    padding-bottom: 20px;
   }
 
   @media (max-width: 992px) {
@@ -719,7 +846,6 @@ table {
 
   .grid  > article img {
     max-width: 100%;
-    border-radius: 6px;
   }
   .text {
     padding: 0 20px 20px;

@@ -81,6 +81,7 @@
         "REVIEW_CREATE":"Review and Create",
         "SEARCH_ENGINE":"Search Engine",
         "BLUEPRINT":"Blueprint",
+        "CHOOSE_A_BLUEPRINT":"Choose a Blueprint",
         "NOPUSH":"None. Clone from a remote repository instead.",
         "BLUEPRINTNAME":"Blueprint Name",
         "SIMPLE_USERNAME":"Username",

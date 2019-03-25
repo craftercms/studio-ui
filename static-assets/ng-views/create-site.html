@@ -31,18 +31,25 @@
 <div class="tab-content m20" id="wizard-content-container">
 
 <div class="wizard-item moveToRight" ng-show="getStepTemplate() == 'createSitesBlueprint' " id="createSitesBlueprint">
-    <h2 class="">{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</h2>
+    <h2 class="">{{ 'dashboard.sites.create.CHOOSE_A_BLUEPRINT' | translate }}</h2>
     <div class="form-group">
         <input type="checkbox" ng-click="isRemoteGit = !isRemoteGit" id="isRemoteGit" name="isRemoteGit" value="none" ng-model="site.isRemoteGit" autofocus focus-me="true" >
         <label for="isRemoteGit">{{ 'dashboard.sites.create.USE_REMOTE_GIT' | translate }}</label><br/>
     </div>
-    <section role=”main” class="grid">
+    <section ng-hide="isRemoteGit" role=”main” class="grid">
         <article ng-repeat="siteBP in blueprints.blueprints">
             <div class="col-xs-12 col-sm-7 col-md-6">
-                <div id="flexslider1" class="flexslider" ng-init="flexSilderInit()">
+                <div ng-attr-id="{{ 'flexslider' + $index }}" class="flexslider mt15 mainslider">
                     <ul class="slides">
-                        <li ng-repeat="media in siteBP.blueprint.media.screenshots" data-thumb="{{media.screenshot.url}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'" >
-                        <img src="{{media.screenshot.url}}" alt="{{media.screenshot.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
+                        <li ng-class="{'list-gallery': siteBP.blueprint.media.screenshots.length > 1, 'list-image': siteBP.blueprint.media.screenshots.length == 1}" ng-repeat="media in siteBP.blueprint.media.screenshots" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'" >
+                            <img ng-class="{'gallery-image': siteBP.blueprint.media.screenshots.length > 1}" src="{{media.screenshot.url}}" alt="{{media.screenshot.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
+                        </li>
+                    </ul>
+                </div>
+                <div ng-show="siteBP.blueprint.media.screenshots.length > 1" ng-attr-id="{{ 'carousel' + $index }}" class="flexslider carousel"  ng-init="flexSilderInit('flexslider' + $index, 'carousel' + $index)">
+                    <ul class="slides">
+                        <li ng-repeat="media in siteBP.blueprint.media.screenshots" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'" >
+                            <img src="{{media.screenshot.url}}" alt="{{media.screenshot.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'" />
                         </li>
                     </ul>
                 </div>
@@ -57,7 +64,7 @@
                     <li ng-repeat="versioSupported in siteBP.blueprint.craftercmsVersionsSupported">{{versioSupported.version}}</li>
                 </ul>
                 <p ng-show="siteBP.blueprint.website.url"><strong>{{ 'dashboard.sites.create.WEBSITE' | translate }}: </strong><a target="_blank" href="{{siteBP.blueprint.website.url}}">{{siteBP.blueprint.website.url}}</a></p>
-                <button ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.id; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
+                <button ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.id; site.blueprintName = siteBP.blueprint.name; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
             </div>
         </article>
     </section>
@@ -356,7 +363,7 @@
         <fieldset>
             <legend><strong>{{ 'dashboard.sites.create.BLUEPRINT' | translate }}</strong></legend>
             <div class="reviewContainer">
-                <p ng-show="!isRemoteGit"><strong>{{ 'dashboard.sites.create.BLUEPRINTNAME' | translate }}:</strong> {{site.blueprint}}</p>
+                <p ng-show="!isRemoteGit"><strong>{{ 'dashboard.sites.create.BLUEPRINTNAME' | translate }}:</strong> {{site.blueprintName}}</p>
                 <p ng-show="isRemoteGit">{{ 'dashboard.sites.create.NOPUSH' | translate }}</p>
             </div>
         </fieldset>
