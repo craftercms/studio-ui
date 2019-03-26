@@ -612,7 +612,7 @@ table {
 ============================================================================= */
   #wizard-content-container{
     position:relative;
-    height: 380px;
+    height: 398px;
     overflow-y: auto;
   }
 
@@ -704,7 +704,7 @@ table {
 
     li{
       &.list-gallery{
-        height: 255px;
+        height: 258px;
       }
       
       &.list-image{
@@ -754,8 +754,7 @@ table {
 
   .flex-control-paging{
     z-index: 1;
-    top: 241px;
-    bottom: auto;
+    bottom: 0;
 
     li{
       margin: 0 4px;
@@ -873,6 +872,10 @@ table {
   }
 
   @media (max-width: $screen-xs-max) {
+    .flex-viewport li.list-gallery{
+      height: auto;
+    }
+
     .left-btns{
       width: 100%;
       button{
@@ -890,6 +893,9 @@ table {
   }
 
   @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    .flex-viewport li.list-gallery{
+      height: 190px;
+    }
     .left-btns{
       width: 100%;
     }
