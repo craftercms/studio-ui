@@ -361,7 +361,7 @@ CStudioAuthoring.Module.requireModule(
 
 		},
 
-		addManagedImage(datasource, cb, test) {
+		addManagedImage(datasource, cb) {
 			if(datasource && datasource.insertImageAction) {
 				datasource.insertImageAction({
 					success: function(imageData) {
