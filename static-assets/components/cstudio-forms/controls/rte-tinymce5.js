@@ -228,7 +228,7 @@ CStudioAuthoring.Module.requireModule(
 				encoding: 'xml',
 				relative_urls : false,
 				remove_script_host : false,
-				convert_urls : true,
+				convert_urls : false,
 				readonly: _thisControl.readonly,
 				force_p_newlines: forcePTags,
 				force_br_newlines: forceBRTags,
@@ -272,6 +272,14 @@ CStudioAuthoring.Module.requireModule(
 					editor.on('keyup paste', function (e){
 						_thisControl.save();
 						_thisControl._onChangeVal(null, _thisControl);
+					});
+
+					// Save model when setting content into editor (images, tables, etc).
+					editor.on('SetContent', function(e){
+						// Don't save model on initial setting of content (initializing editor)
+						if(!e.initial) {
+							_thisControl.save();
+						}
 					});
 				}
 			});
@@ -357,9 +365,8 @@ CStudioAuthoring.Module.requireModule(
 			if(datasource && datasource.insertImageAction) {
 				datasource.insertImageAction({
 					success: function(imageData) {
-						cb(imageData.previewUrl, { title: imageData.fileName });
-
-						// var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
+						var cleanUrl = imageData.relativeUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
+						cb(cleanUrl, { title: imageData.fileName });
 					},
 					failure: function(message) {
 						CStudioAuthoring.Operations.showSimpleDialog(
