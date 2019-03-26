@@ -270,6 +270,7 @@ CStudioAuthoring.Module.requireModule(
 					});
 
 					editor.on('keyup paste', function (e){
+						_thisControl.save();
 						_thisControl._onChangeVal(null, _thisControl);
 					});
 				}
