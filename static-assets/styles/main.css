@@ -6678,7 +6678,7 @@ table td {
       margin-top: 20px; } }
   #create-site-dialog #wizard-content-container {
     position: relative;
-    height: 380px;
+    height: 398px;
     overflow-y: auto; }
   #create-site-dialog .wizard-item {
     margin-right: 10px; }
@@ -6737,7 +6737,7 @@ table td {
   #create-site-dialog .flex-viewport {
     border: 2px solid #e2e2e2; }
     #create-site-dialog .flex-viewport li.list-gallery {
-      height: 255px; }
+      height: 258px; }
     #create-site-dialog .flex-viewport li.list-image {
       height: auto; }
     #create-site-dialog .flex-viewport li img.gallery-image {
@@ -6765,8 +6765,7 @@ table td {
       cursor: default; }
   #create-site-dialog .flex-control-paging {
     z-index: 1;
-    top: 241px;
-    bottom: auto; }
+    bottom: 0; }
     #create-site-dialog .flex-control-paging li {
       margin: 0 4px; }
       #create-site-dialog .flex-control-paging li a {
@@ -6840,6 +6839,8 @@ table td {
   #create-site-dialog .right-btns {
     width: 100px; }
   @media (max-width: 767px) {
+    #create-site-dialog .flex-viewport li.list-gallery {
+      height: auto; }
     #create-site-dialog .left-btns {
       width: 100%; }
       #create-site-dialog .left-btns button {
@@ -6851,6 +6852,8 @@ table td {
       #create-site-dialog .right-btns button {
         width: 100%; } }
   @media (min-width: 768px) and (max-width: 991px) {
+    #create-site-dialog .flex-viewport li.list-gallery {
+      height: 190px; }
     #create-site-dialog .left-btns {
       width: 100%; }
     #create-site-dialog .right-btns {
