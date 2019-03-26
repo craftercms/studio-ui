@@ -1737,6 +1737,7 @@ var CStudioForms = CStudioForms || function() {
 
                     controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
                     controlEl.innerHTML = "";
+                    $(".tox-silver-sink").remove();
                     controlEl.formEngine._renderRepeatBody(controlEl);
                 };
 
