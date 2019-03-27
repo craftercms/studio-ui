@@ -266,6 +266,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 } else {
                                     _this.renderSelectNone();
                                 }
+                            }else {
+                                _this.renderSelectNone();
                             }
                         });
 
