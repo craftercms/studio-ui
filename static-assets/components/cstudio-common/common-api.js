@@ -388,6 +388,7 @@ var nodeOpen = false;
              */
             clear: function() {
                 this.selectedContent = [];
+                CSA.Events.contentUnSelected.fire();
             }
         },
         /**
