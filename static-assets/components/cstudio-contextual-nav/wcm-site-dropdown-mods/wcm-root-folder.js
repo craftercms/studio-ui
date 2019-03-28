@@ -2051,7 +2051,7 @@
                             };
                             var publishAllowed = function (){
                                 //add publish/request
-                                var isRelevant = !(oCurrentTextNode.data.lockOwner != "") && !(oCurrentTextNode.data.status.toLowerCase().indexOf("live") !== -1);
+                                var isRelevant = !(oCurrentTextNode.data.lockOwner != "") && !(oCurrentTextNode.data.statusObj.live);
 
                                 if(isRelevant) {
 

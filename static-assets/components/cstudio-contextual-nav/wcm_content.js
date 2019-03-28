@@ -832,8 +832,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 var content = CStudioAuthoring.SelectedContent.getSelectedContent();
                                 if (isRelevant && content && content.length >= 1) {
                                     for (var conIdx=0; conIdx<content.length; conIdx++) {
-                                        var auxState = CStudioAuthoring.Utils.getContentItemStatus(content[conIdx]).string;
-                                        if (auxState == "Live") {
+                                        if (content[conIdx].live) {
                                             isRelevant = false;
                                             break;
                                         }
@@ -914,8 +913,8 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                             if (CStudioAuthoring.Service.isPublishAllowed(perms)) {
 
-                                var isRelevant = (!(state.toLowerCase().indexOf("live") !== -1)
-                                && !isOneItemLocked);
+                                var isRelevant = !isOneItemLocked;
+                                var items = CStudioAuthoring.SelectedContent.getSelectedContent();
 
                                 option.onclick = function() {
                                     CStudioAuthoring.Utils.createLoadingIcon();
@@ -925,10 +924,18 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         (option.name == "Schedule") ? true : false
                                     );
                                 };
+
+                                if(isRelevant) {
+                                    for (var i = 0; i < items.length; i++) {
+                                        if (items[i].live) {
+                                            isRelevant = false;
+                                            break;
+                                        }
+                                    }
+                                }
                                 
                                 var renderFlag = true;
                                 if(option.name == "Schedule") {
-                                    var items = CStudioAuthoring.SelectedContent.getSelectedContent();
                                     for(var i=0; i<items.length; i++) {
                                         if(items[i].submittedForDeletion==true) {
                                             renderFlag = false;
@@ -951,10 +958,15 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                     renderApprove: {
                         render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
                             if(CStudioAuthoring.Service.isPublishAllowed(perms)) {
-                                var lowerstate = state.toLowerCase(),
-                                    isRelevant = true;
-                                if ( lowerstate.indexOf("live") != -1 || isOneItemLocked ) {
-                                    isRelevant = false;
+                                var isRelevant = !isOneItemLocked;
+                                var items = CStudioAuthoring.SelectedContent.getSelectedContent();
+                                if(isRelevant) {
+                                    for (var i = 0; i < items.length; i++) {
+                                        if (items[i].live) {
+                                            isRelevant = false;
+                                            break;
+                                        }
+                                    }
                                 }
                                 option.onclick = function() {
                                     CStudioAuthoring.Operations.approveContent(
@@ -971,10 +983,15 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                     renderApproveSchedule: {
                         render: function(option, isBulk, isAdmin, state,  isRelevant, isWrite, perms, isOneItemLocked, stateKey) {
                             if(CStudioAuthoring.Service.isPublishAllowed(perms)) {
-                                var lowerstate = state.toLowerCase(),
-                                    isRelevant = true;
-                                if ( lowerstate.indexOf("live") != -1 || isOneItemLocked ) {
-                                    isRelevant = false;
+                                var isRelevant = !isOneItemLocked;
+                                var items = CStudioAuthoring.SelectedContent.getSelectedContent();
+                                if(isRelevant) {
+                                    for (var i = 0; i < items.length; i++) {
+                                        if (items[i].live) {
+                                            isRelevant = false;
+                                            break;
+                                        }
+                                    }
                                 }
                                 option.onclick = function() {
                                     CStudioAuthoring.Operations.approveScheduleContent(
