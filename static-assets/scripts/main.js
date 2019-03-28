@@ -51,10 +51,10 @@
                             }
                         }
 
-                    }, function errorCallback() {
+                    }, function errorCallback(e) {
                         authService.removeUser();
 
-                        if (toState.name.indexOf('login') === -1) {
+                        if (toState.name.indexOf('login') === -1 && e.status !== 500) {
                             if (toState.name.indexOf('reset') === -1) {
                                 event.preventDefault();
                                 $state.go('login');
@@ -940,7 +940,7 @@
             };
 
             function showReLoginModal() {
-                return $uibModal.open({
+                var modal = $uibModal.open({
                     templateUrl: 'reLoginModal.html',
                     backdrop: 'static',
                     keyboard: false,
@@ -948,6 +948,8 @@
                     scope: $scope,
                     windowClass: 'relogin-modal'
                 });
+
+                return modal;
             }
 
             function authLoop() {
@@ -1595,6 +1597,7 @@
                         }  else if (data.error) {
                             $scope.error = data.error;
                         } else {
+                            hideModalForm();
                             $state.go('home.globalMenu');
                             // set max-age of language cookie to one year
                             sitesService.setCookie('crafterStudioLanguage', $scope.langSelected, 31536000);
@@ -1628,6 +1631,11 @@
             function hideModal() {
                 var loginViewEl = getModalEl();
                 angular.element(loginViewEl).removeClass('in');
+            }
+
+            function hideModalForm() {
+                var loginViewEl = getModalEl();
+                angular.element(loginViewEl).css('opacity', 0);
             }
 
             function removeHiddenClass(){
