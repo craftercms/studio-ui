@@ -89,12 +89,14 @@
             // If is enter -> immediate search
             if (event.keyCode === 13) {
                 CStudioSearch.searchContext.keywords = e.target.value;
+                CStudioSearch.clearFilters();
                 CStudioSearch.performSearch();
                 CStudioSearch.updateUrl();
             }else{ 
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(function(){
                     CStudioSearch.searchContext.keywords = e.target.value;
+                    CStudioSearch.clearFilters();
                     CStudioSearch.performSearch();
                     CStudioSearch.updateUrl();
                 }, 700);
@@ -103,6 +105,7 @@
 
         $('#searchButton').on('click', function(e){
             CStudioSearch.searchContext.keywords = $('#searchInput').val();
+            CStudioSearch.clearFilters();
             CStudioSearch.performSearch();
             CStudioSearch.updateUrl();
         });
@@ -624,6 +627,11 @@
 
         this.updateNumFilters();
     }
+    
+    // clear the filters applied into the searchContext
+    CStudioSearch.clearFilters = function() {
+        CStudioSearch.searchContext.filters = {};
+    }
 
     CStudioSearch.addSeeMore = function($container, id) {
         var minFiltersShowing = CStudioSearch.searchContext.filtersShowing,
@@ -650,6 +658,7 @@
         }
     }
 
+    // Clear the filters html 
     CStudioSearch.cleanFilters = function(){
         $('#searchFilters .dropdown-menu .panel-default.tmpl').remove();
         $('#searchFilters .dropdown-menu .panel-default .filter-item.tmpl').remove();
