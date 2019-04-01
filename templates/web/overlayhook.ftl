@@ -1,5 +1,3 @@
-document.domain = '${cookieDomain}';
-
 requirejs.config({
     baseUrl: '${envConfig.authoringServer!''}/${envConfig.studioContext!''}/static-assets/scripts',
     paths: {
