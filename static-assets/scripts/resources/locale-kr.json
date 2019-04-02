@@ -247,6 +247,16 @@
           "SAVE": "구하다",
           "DELETE_ERROR": "회원을 편집 / 삭제할 수 없습니다. 시스템 관리자에게 문의하십시오",
           "ERROR": "Error:"
+      },
+      "logging": {
+        "HEADER_LABEL": "로깅 수준",
+        "LOGGER": "나무꾼",
+        "CURRENT_LEVEL": "현재 레벨",
+        "CHANGE_TO": "로 변경",
+        "LEVEL_DEBUG": "디버그",
+        "LEVEL_WARN": "경고하다",
+        "LEVEL_INFO": "정보",
+        "LEVEL_ERROR": "오류"
       }
   },
   "common": {

@@ -168,6 +168,24 @@
                         }
                     }
                 })
+                .state('home.globalMenu.logging-levels', {
+                    url: '/logging',
+                    views: {
+                        contentTab: {
+                            templateUrl: '/studio/static-assets/ng-views/logging.html',
+                            controller: 'LoggingLevelsCtrl'
+                        }
+                    }
+                })
+                .state('home.globalMenu.log-console', {
+                    url: '/log',
+                    views: {
+                        contentTab: {
+                            templateUrl: '/studio/static-assets/ng-views/log-console.html',
+                            controller: 'LogConsoleCtrl'
+                        }
+                    }
+                })
                 .state('home.sites', {
                     url: 'sites',
                     views: {
