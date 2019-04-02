@@ -105,7 +105,6 @@ var GraphiQL =
 	}
 
 	function onEditQuery(newQuery) {
-	  console.log("SETTING QUERY TO KEY ->", this.storageKey);
 	  window.localStorage.setItem(window.graphiQLSettings.storageKey + 'graphiql:query', newQuery);
 	}
 
