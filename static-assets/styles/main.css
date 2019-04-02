@@ -6317,6 +6317,9 @@ table td {
   #main {
     width: calc(100% - 300px);
     float: right; } }
+.mainContainer {
+  margin: 0 3%; }
+
 .modal-dialog .admin-dialog .image-group {
   padding-left: 0;
   position: relative; }
@@ -6421,8 +6424,12 @@ table td {
       visibility: hidden; }
 
 .audit-view {
-  padding: 0 20px;
   min-height: 435px; }
+  .audit-view .audit-nav {
+    border-bottom: 1px solid #e7e7e7; }
+    .audit-view .audit-nav i.fa {
+      font-size: 13px;
+      margin-top: 3px; }
   .audit-view .audit-actions .dropdown-menu a.active {
     background-color: #7e9dbb;
     border-bottom: 1px solid #bfbfbf;
@@ -6432,12 +6439,46 @@ table td {
       content: 'x';
       margin-right: -10px;
       float: right; }
+  .audit-view .nav-containers {
+    display: inline-block; }
+    .audit-view .nav-containers .dropdown .dropdown-toggle {
+      /*width: 113px;
+      overflow: hidden;*/ }
+  .audit-view .well {
+    overflow: hidden;
+    padding: 15px; }
+    .audit-view .well .btn-group {
+      height: 54px; }
+  .audit-view .date-container span {
+    display: inline-block;
+    position: relative;
+    top: -1px;
+    width: 14%; }
+    .audit-view .date-container span .date-icon {
+      background-color: #f9f9f9;
+      display: inline-block;
+      border: 1px solid #ccc;
+      height: 31px;
+      vertical-align: middle;
+      padding: 7px 0;
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      color: #827e7e;
+      width: 100%;
+      text-align: center; }
+  .audit-view .date-container .form-control.date {
+    display: inline-block;
+    width: 83%;
+    border-top-left-radius: initial;
+    border-bottom-left-radius: initial; }
+    .audit-view .date-container .form-control.date.dateFrom {
+      position: relative;
+      right: 3px; }
   .audit-view .audit-number-logs {
     border: 1px solid #ccc;
     padding: 6px;
     border-radius: 4px;
     text-align: center;
-    margin-bottom: 20px;
     min-width: 50px; }
   .audit-view .timezoneContainer {
     border-top: 1px solid #ccc;
@@ -6450,8 +6491,13 @@ table td {
       border: 1px solid #ccc;
       height: 30px;
       text-align: center; }
-  .audit-view .wrap-content {
-    word-break: break-all; }
+  .audit-view .audit-table-container {
+    width: 100%;
+    overflow-y: scroll; }
+    .audit-view .audit-table-container .wrap-content {
+      word-break: break-all; }
+    .audit-view .audit-table-container .min-cel-width {
+      min-width: 100px; }
 
 .publishing-view {
   padding: 0 20px; }

@@ -67,6 +67,10 @@ table {
   }
 }
 
+.mainContainer{
+  margin: 0 3%;
+}
+
 .modal-dialog {
   .admin-dialog {
 
@@ -240,8 +244,17 @@ table {
 
 .audit-view {
 
-  padding: 0 20px;
   min-height: 435px;
+
+  .audit-nav{
+    border-bottom: 1px solid #e7e7e7;
+
+    i.fa{
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+  }
 
   .audit-actions .dropdown-menu a.active{
     background-color: #7e9dbb;
@@ -256,12 +269,69 @@ table {
     }
   }
 
+  .nav-containers{
+    display: inline-block;
+
+    .dropdown .dropdown-toggle {
+      /*width: 113px;
+      overflow: hidden;*/
+    }
+
+  }
+
+  .well{
+    overflow: hidden;
+    padding: 15px;
+
+    .btn-group{
+      height: 54px;
+    }
+  }
+
+  .date-container{
+
+    span{
+      display: inline-block;
+      position: relative;
+      top: -1px;
+      width: 14%;
+
+      .date-icon{
+        background-color: #f9f9f9;
+        display: inline-block;
+        border: 1px solid #ccc;
+        height: 31px;
+        vertical-align: middle;
+        padding: 7px 0;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        color: #827e7e;
+        width: 100%;
+        text-align: center;
+      }
+
+    }
+
+    .form-control.date{
+      display: inline-block;
+      width: 83%;
+      border-top-left-radius:initial;
+      border-bottom-left-radius:initial;
+      
+      &.dateFrom{
+        position: relative;
+        right: 3px;
+      }
+    }
+
+  }
+
+
   .audit-number-logs {
     border: 1px solid #ccc;
     padding: 6px;
     border-radius: 4px;
     text-align: center;
-    margin-bottom: 20px;
     min-width: 50px;
   }
 
@@ -280,9 +350,16 @@ table {
     }
 
   }
+  .audit-table-container{
+    width: 100%;
+    overflow-y: scroll;
+    .wrap-content {
+      word-break: break-all;
+    }
 
-  .wrap-content {
-    word-break: break-all;
+    .min-cel-width{
+      min-width: 100px;
+    }
   }
 
 }

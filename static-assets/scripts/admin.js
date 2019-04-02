@@ -178,9 +178,13 @@
             //AUDIT
 
             this.getAudit = function(data) {
-                return $http.get(audit('get'), {
+                return $http.get(audit(), {
                     params: data
                 })
+            };
+
+            this.getSpecificAudit = function(auditId) {
+                return $http.get(audit(auditId));
             };
 
             this.getTimeZone = function(data) {
@@ -305,8 +309,12 @@
                 }
             }
 
-            function audit(action, data) {
-                return Constants.SERVICE2 + 'audit?';
+            function audit(id) {
+                if(id){
+                    return Constants.SERVICE2 + 'audit/'+ id;
+                }else {
+                    return Constants.SERVICE2 + 'audit';
+                }
             }
 
             return this;
@@ -321,12 +329,17 @@
                   $stateParams, $translate, $location, moment, sitesService) {
 
             $scope.audit = {};
+            $scope.isCollapsed = true;
+            $scope.isSortAsc = false;
             var audit = $scope.audit;
             audit.logsPerPage = 15;
             audit.defaultDelay = 500;
             audit.site = $location.search().site ? $location.search().site : '';
             audit.timeZone;
             audit.allTimeZones = moment.tz.names();
+            audit.sort = 'date';
+            $scope.originValues = [$translate.instant('admin.audit.ALL_ORIGINS'),'API', 'GIT'];
+
             var delayTimer;
 
             if(audit.site){
@@ -378,15 +391,57 @@
 
                 function getResultsPage(pageNumber) {
 
+                    var dateToUTC, dateFromUTC;
                     var params = {};
                     if(site){
-                        params.site_id = site
+                        params.siteName = site;
                     }
                     if(audit.userSelected && audit.userSelected != '') params.user = audit.userSelected;
 
                     if(audit.actions.length > 0){
-                        params.actions = audit.actions.toString();
+                        params.operations = audit.actions.toString();
                     }
+                    if(audit.dateFrom){
+                        if(audit.timeZone.indexOf('UTC') > -1){
+                            params.dateFrom = audit.dateFrom;
+                        }else{
+                            var m = moment(audit.dateFrom).tz(audit.timeZone);
+                            params.dateFrom = m.utc().format().toString();
+                        }
+
+                    }
+
+                    if(audit.dateTo){
+                        if(audit.timeZone.indexOf('UTC') > -1){
+                            params.dateTo = audit.dateTo;
+                        }else{
+                            var m = moment(audit.dateTo).tz(audit.timeZone);
+                            params.dateTo = m.utc().format().toString();
+                        }
+                    }
+
+                    if(audit.target){
+                        params.target = audit.target;
+                    }
+
+                    if(audit.includeParameters){
+                        params.includeParameters = true;
+                    }
+
+                    if(audit.origin){
+                        if(audit.origin !== $translate.instant('admin.audit.ALL_ORIGINS') ){
+                            params.origin = audit.origin;
+                        }
+                    }
+
+                    if(audit.clusterNodeId){
+                        params.clusterNodeId = audit.clusterNodeId;
+                    }
+
+                    if($scope.isSortAsc){
+                        params.order = 'ASC';
+                    }
+                    params.sort = audit.sort;
 
                     if(audit.totalLogs && audit.totalLogs > 0) {
                         var start = (pageNumber - 1) * audit.logsPerPage,
@@ -406,6 +461,37 @@
                         audit.logs = '';
                     });
                 }
+            };
+
+            var getSpecificAudit = function(id) {
+                var collapseContainer = $('#collapseContainer'+id);
+                var html;
+                adminService.getSpecificAudit(id).success(function (data) {
+                    var parameters = data.auditLog.parameters;
+
+                    if(parameters.length > 0 || parameters.targetId){
+                        html="<div class='mt10 has-children'><span><strong>"+$translate.instant('admin.audit.ID')+": </strong>"+ parameters.targetId+"</span><br/>"+
+                            "<span><strong>"+$translate.instant('admin.audit.TYPE')+": </strong>"+ parameters.targetType+"</span><br/>"+
+                            "<span><strong>"+$translate.instant('admin.audit.SUBTYPE')+": </strong>"+ parameters.targetSubtype+"</span><br/>"+
+                            "<span><strong>"+$translate.instant('admin.audit.VALUE')+": </strong>"+ parameters.targetValue+"</span></div>";
+                    }else{
+                        html="<div class='mt10 has-children'><span>"+$translate.instant('admin.audit.NO_PARAM')+"</span></div>";
+                    }
+
+
+                    collapseContainer.append(html);
+                    collapseMethod(id);
+
+                }).error(function (err) {
+                    html="<div class='mt10 has-children'><span>"+$translate.instant('admin.audit.ERROR_PARAM')+"</span></div>";
+                    collapseContainer.append(html);
+                    collapseMethod(id);
+                });
+            };
+
+            audit.initCalendar = function(){
+                $('#dateTo').datetimepicker();
+                $('#dateFrom').datetimepicker();
             };
 
             audit.updateUser = function(user){
@@ -460,12 +546,44 @@
 
             };
 
+            audit.generalUpdate = function(action){
+                $timeout.cancel(delayTimer)
+                delayTimer = $timeout(function() {
+                    getAudit(audit.site);
+                }, audit.defaultDelay);
+            }
+
             if(audit.site) {
                 getAudit(audit.site);
                 getUsers(audit.site);
             }else{
                 getSites();
             }
+
+            audit.collapseParam = function(id){
+                var collapseContainer = $('#collapseContainer'+id);
+
+                if(collapseContainer.find('.has-children').length > 0) {
+                    collapseMethod(id);
+                }else{
+                    getSpecificAudit(id);
+                }
+            };
+
+            var collapseMethod = function(id){
+                var collapseContainer = $('#collapseContainer'+id),
+                    collapseContainerParent = collapseContainer.parent();
+
+                collapseContainer.collapse();
+                if(collapseContainer.hasClass('collapsing') || !collapseContainer.hasClass('in')){
+                    collapseContainerParent.find('.plus').hide();
+                    collapseContainerParent.find('.minus').show();
+                }else{
+                    collapseContainerParent.find('.plus').show();
+                    collapseContainerParent.find('.minus').hide();
+                }
+            }
+
 
         }
     ]);
