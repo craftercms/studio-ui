@@ -104,11 +104,19 @@ var GraphiQL =
 	  return _storages[storageKey];
 	}
 
+	function onEditQuery(newQuery) {
+	  window.localStorage.setItem(window.graphiQLSettings.storageKey + 'graphiql:query', newQuery);
+	}
+
 	var graphiQLRender = function graphiQLRender(container, url, storageKey) {
 	  window.graphiQLSettings = {
-	    url: url
+	    url: url,
+	    storageKey: storageKey
 	  };
-	  _reactDom2.default.render(_react2.default.createElement(_graphiql2.default, { fetcher: graphQLFetcher, storage: getStorage('' + storageKey) }), container);
+
+	  _reactDom2.default.render(_react2.default.createElement(_graphiql2.default, { fetcher: graphQLFetcher,
+	    storage: getStorage('' + storageKey),
+	    onEditQuery: onEditQuery }), container);
 	};
 
 	module.exports = graphiQLRender;

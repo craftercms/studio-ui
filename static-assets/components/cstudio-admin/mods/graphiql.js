@@ -36,15 +36,16 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 		workareaEl.innerHTML = 
 			"<div id='graph-container'>" +
 			"</div>";
-			
-			var actions = [];
 
 			this.initializeGraphi();
 	},
 
 	initializeGraphi: function() {
-		var site = CStudioAuthoringContext.site;
+		var site = CStudioAuthoringContext.site,
+			actions = [];
 		GraphiQL(document.getElementById("graph-container"), CStudioAuthoringContext.previewAppBaseUri + '/api/1/site/graphql', site);
+
+		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 	}
 });
 		
