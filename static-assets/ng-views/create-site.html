@@ -227,6 +227,11 @@
         <div id="pushRemoteGitRepository" uib-collapse="isPushChecked" ng-hide="isPushChecked">
 
             <div class="form-group">
+                <label for="push_sandboxBranch">{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SANDBOX_BRANCH_MSG' | translate }}</span>
+                <input type="text" class="form-control" id="push_sandboxBranch" name="push_sandboxBranch" ng-model="site.push_sandbox_branch" />
+            </div>
+
+            <div class="form-group">
                 <label for="push_name">* {{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
                 <input type="text" class="form-control" id="push_name" name="push_name" maxlength="4000" ng-model="site.push_name" ng-required="!isPushChecked && !isRemoteGit"/>
 
@@ -388,6 +393,7 @@
             <legend><strong>{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }}</strong></legend>
             <div class="reviewContainer">
                 <p ng-show="site.push_site && !isRemoteGit">{{ 'dashboard.sites.create.PUSH_SITE_TO_REMOTE_GIT' | translate }}</p>
+                <p ng-show="site.push_site && !isRemoteGit"><strong>{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</strong> {{site.push_sandbox_branch}}</p>
                 <p ng-show="site.push_name && !isRemoteGit"><strong>{{ 'dashboard.sites.create.NAME' | translate }}:</strong> {{site.push_name}}</p>
                 <p ng-show="site.push_url && !isRemoteGit"><strong>{{ 'dashboard.sites.create.URL' | translate }}:</strong> {{site.push_url}}</p>
                 <p ng-show="site.push_remote_branch && !isRemoteGit"><strong>{{ 'admin.repositories.REMOTE_BRANCH' | translate }}:</strong> {{site.push_remote_branch}}</p>

@@ -1450,6 +1450,9 @@
                 }else{
                     params.blueprint = $scope.site.blueprint;
                     if($scope.site.push_site){
+                        if($scope.site.push_sandbox_branch){
+                            params.sandbox_branch = $scope.site.push_sandbox_branch;
+                        }
                         params.use_remote = $scope.site.push_site;
                         params.remote_name = $scope.site.push_name;
                         params.remote_url = $scope.site.push_url;
