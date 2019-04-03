@@ -245,6 +245,16 @@
           "SAVE": "Speichern",
           "DELETE_ERROR": "Fehler beim Bearbeiten/Löschen der Instanz. Bitte wenden Sie sich an Ihren Systemadministator.",
           "ERROR": "Fehler:"
+      },
+      "logging": {
+        "HEADER_LABEL": "Protokollierungsstufen",
+        "LOGGER": "Logger",
+        "CURRENT_LEVEL": "Aktuelles Level",
+        "CHANGE_TO": "Neues Level setzen",
+        "LEVEL_DEBUG": "debug",
+        "LEVEL_WARN": "warn",
+        "LEVEL_INFO": "info",
+        "LEVEL_ERROR": "error"
       }
   },
   "common": {

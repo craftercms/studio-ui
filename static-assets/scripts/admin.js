@@ -189,6 +189,26 @@
                 })
             };
 
+            //LOGGING 
+
+            this.getLoggers = function() {
+                return $http.get(Constants.SERVICE + 'server/get-loggers.json');
+            }
+
+            this.setLogger = function(data) {
+                return $http.get(Constants.SERVICE + 'server/set-logger-state.json', {
+                    params: data
+                });
+            }
+
+            // LOG CONSOLE 
+            this.getLog = function(data){
+                // TODO - Pending API url - SERVICE|SERVICE2
+                return $http.get(Constants.SERVICE + '', {
+                    params: data
+                });
+            }
+
             //PUBLISHING
             this.getPublishStatus = function(site) {
                 return $http.get(publish('status', 'site_id=' + site));
@@ -467,6 +487,88 @@
                 getSites();
             }
 
+        }
+    ]);
+
+    app.controller('LoggingLevelsCtrl', [
+        '$scope', '$state', '$window', 'adminService', '$translate',
+        function ($scope, $state, $window, adminService, $translate) {
+
+            $scope.logging = {};
+            var logging = $scope.logging;
+            
+            adminService.getLoggers()
+                .success(function (data) {
+                    logging.levels = data;
+                });
+
+            logging.setLevel = function(log, level) {
+                adminService.setLogger({
+                    logger: log,
+                    level: level
+                }).success(function(){
+                    adminService.getLoggers()
+                        .success(function (data) {
+                            logging.levels = data;
+                        });
+                });
+            }
+        }
+    ]);
+
+    app.controller('LogConsoleCtrl', [
+        '$scope', '$state', '$window', 'adminService', '$translate', '$interval',
+        function ($scope, $state, $window, adminService, $translate, $interval) {
+
+            $scope.logs = {
+                entries: [],
+                running: true,
+                timer: null
+            };
+            var logs = $scope.logs;
+
+            logs.startTimer = function () { 
+                logs.timer = $interval(getLogs, 5000);
+            };
+
+            logs.stopTimer = function () {
+                //Cancel the Timer.
+                if (angular.isDefined(logs.timer)) {
+                    $interval.cancel(logs.timer);
+                }
+            };
+
+            var currMillis = new Date().getTime(),
+                getLogs = function() {
+                    adminService.getLog({ since: currMillis })
+                        .success(function (data) {
+                            logs.entries = data;
+                        });
+                };
+
+            logs.clearLogs = function() {
+                logs.entries = [];
+            }
+
+            logs.togglePlayPause = function() {
+                if(logs.running){
+                    logs.stopTimer();
+                }else{
+                    logs.startTimer();
+                }
+                logs.running = !logs.running;
+            }
+
+            getLogs();
+
+            $scope.$on('$viewContentLoaded', function() {
+                logs.startTimer();
+            });
+
+            $scope.$on('$destroy', function() {
+                logs.stopTimer();
+            });
+            
         }
     ]);
 

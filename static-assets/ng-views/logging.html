@@ -1,0 +1,29 @@
+<div class="logging-levels-view col-lg-10 col-lg-offset-1">
+    <header class="screen-title mb25">
+        <h1>{{ 'admin.logging.HEADER_LABEL' | translate }}</h1>
+    </header>
+
+    <div class="logs">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>{{ 'admin.logging.LOGGER' | translate }}</th>
+                    <th>{{ 'admin.logging.CURRENT_LEVEL' | translate }}</th>
+                    <th>{{ 'admin.logging.CHANGE_TO' | translate }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="log in logging.levels">
+                    <td>{{log.name}}</td>
+                    <td class="wrap-content">{{log.level}}</td>
+                    <td>
+                        <a ng-click="logging.setLevel(log.name, 'debug')">{{ 'admin.logging.LEVEL_DEBUG' | translate }}</a> | 
+                        <a ng-click="logging.setLevel(log.name, 'warn')">{{ 'admin.logging.LEVEL_WARN' | translate }}</a> | 
+                        <a ng-click="logging.setLevel(log.name, 'info')">{{ 'admin.logging.LEVEL_INFO' | translate }}</a> | 
+                        <a ng-click="logging.setLevel(log.name, 'error')">{{ 'admin.logging.LEVEL_ERROR' | translate }}</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

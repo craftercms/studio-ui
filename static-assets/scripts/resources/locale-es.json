@@ -247,6 +247,16 @@
           "SAVE": "Salvar",
           "DELETE_ERROR": "No se puede editar / eliminar miembro. Por favor, póngase en contacto con el administrador del sistema.",
           "ERROR": "Error:"
+      },
+      "logging": {
+        "HEADER_LABEL": "Niveles de Registro",
+        "LOGGER": "Logger",
+        "CURRENT_LEVEL": "Nivel Actual",
+        "CHANGE_TO": "Cambiar Nivel a",
+        "LEVEL_DEBUG": "depurar",
+        "LEVEL_WARN": "advertir",
+        "LEVEL_INFO": "info",
+        "LEVEL_ERROR": "error"
       }
   },
   "common": {

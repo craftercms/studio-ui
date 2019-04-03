@@ -287,6 +287,19 @@ table {
 
 }
 
+.logging-levels-view, .log-console-view {
+  .actions {
+    button {
+      height: 30px;
+    }
+  }
+
+  .logs {
+    max-height: calc( 100vh - 327px );
+    overflow-y: scroll;
+  }
+}
+
 .publishing-view {
 
   padding: 0 20px;
