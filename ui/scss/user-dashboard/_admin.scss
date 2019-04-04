@@ -246,6 +246,10 @@ table {
 
   min-height: 435px;
 
+  &.operations-open{
+    min-height: 662px;
+  }
+
   .audit-nav{
     border-bottom: 1px solid #e7e7e7;
 
@@ -353,6 +357,18 @@ table {
   .audit-table-container{
     width: 100%;
     overflow-y: scroll;
+
+    .each-param{
+      background-color: #efeeee;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    hr{
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
     .wrap-content {
       word-break: break-all;
     }
