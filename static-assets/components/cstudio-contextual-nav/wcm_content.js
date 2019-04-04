@@ -203,13 +203,11 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 }
                             }
 
-                            if(!(e.data.treeNodeTO.isAsset)){
-                                if (typeof WcmDashboardWidgetCommon != 'undefined'){
-                                    WcmDashboardWidgetCommon.refreshAllDashboards();
-                                    _this.drawNav();
-                                }
-                                lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
+                            if (typeof WcmDashboardWidgetCommon != 'undefined'){
+                                WcmDashboardWidgetCommon.refreshAllDashboards();
+                                _this.drawNav();
                             }
+                            lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
 
                         }, false);
 
