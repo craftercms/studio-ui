@@ -207,8 +207,7 @@
 
             // LOG CONSOLE 
             this.getLog = function(data){
-                // TODO - Pending API url - SERVICE|SERVICE2
-                return $http.get(Constants.SERVICE + '', {
+                return $http.get(Constants.SERVICE2 + 'monitoring/log', {
                     params: data
                 });
             }
@@ -635,9 +634,9 @@
     ]);
 
     app.controller('LogConsoleCtrl', [
-        '$scope', '$state', '$window', 'adminService', '$translate', '$interval',
-        function ($scope, $state, $window, adminService, $translate, $interval) {
-
+        '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout',
+        function ($scope, $state, $window, adminService, $translate, $interval, $timeout) {
+           
             $scope.logs = {
                 entries: [],
                 running: true,
@@ -656,12 +655,22 @@
                 }
             };
 
-            var currMillis = new Date().getTime(),
-                getLogs = function() {
-                    adminService.getLog({ since: currMillis })
-                        .success(function (data) {
-                            logs.entries = data;
-                        });
+            var getLogs = function() {
+                var dateNow = new Date(),
+                    currMillis = new Date(dateNow.getTime() - 5000).getTime(),
+                    container = document.getElementById('logConsoleContainer');
+                    
+                adminService.getLog({ since: currMillis })
+                    .success(function (data) {
+                        if(data.events.length > 0){
+                            logs.entries = logs.entries.concat(data.events);
+
+                            $timeout(function() {
+                                container.scrollTop = container.scrollHeight;
+                            }, 0, false);
+                            
+                        }
+                    });
                 };
 
             logs.clearLogs = function() {
