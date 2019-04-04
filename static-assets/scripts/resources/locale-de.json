@@ -166,13 +166,13 @@
     "audit": {
       "AUDIT": "Audit",
       "ALL_USERS": "Alle Nutzer",
-      "actions": {
-        "ACTIONS": "Aktionen",
-        "ALL_ACTIONS": "Alle Aktionen",
-        "CREATED": "Erstellen",
-        "UPDATED": "Editieren",
-        "DELETED": "Löschen",
-        "MOVED": "Verschieben",
+      "operations": {
+        "OPERATIONS": "Aktionen",
+        "ALL_OPERATIONS": "Alle Aktionen",
+        "CREATE": "Erstellen",
+        "UPDATE": "Editieren",
+        "DELETE": "Löschen",
+        "MOVE": "Verschieben",
         "ADD_USER_TO_GROUP": "Benuutzer zu Gruppe hinzufügen",
         "REMOVE_USER_FROM_GROUP": "Benutzer aus Gruppe entfernen",
         "PUSH_TO_REMOTE": "Push in Remote Git Repository",
