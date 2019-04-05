@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+<form onsubmit="return false;" name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
 
 <div class="tab-content m20" id="wizard-content-container">
 
@@ -57,7 +57,7 @@
                     <li ng-repeat="versioSupported in siteBP.blueprint.craftercmsVersionsSupported">{{versioSupported.version}}</li>
                 </ul>
                 <p ng-show="siteBP.blueprint.website.url"><strong>{{ 'dashboard.sites.create.WEBSITE' | translate }}: </strong><a target="_blank" href="{{siteBP.blueprint.website.url}}">{{siteBP.blueprint.website.url}}</a></p>
-                <button ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.id; site.blueprintName = siteBP.blueprint.name; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
+                <button type="button" ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.id; site.blueprintName = siteBP.blueprint.name; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
             </div>
         </article>
     </section>
@@ -417,33 +417,33 @@
             {{ 'common.create_LABEL' | translate }}
         </button>-->
         <div class="left-btns pull-left">
-            <button ng-click="adminModal.close()" class="btn btn-default cancel">
+            <button  type="button" ng-click="adminModal.close()" class="btn btn-default cancel">
                 {{ 'common.CANCEL_LABEL' | translate }}
             </button>
-            <button ng-disabled="currentStep <= 1" class="btn btn-default" name="previous" type="button" ng-click="gotoPreviousStep()"><i class="fa fa-arrow-left"></i> {{ 'dashboard.sites.create.PREVIOUS_STEP' | translate }}</button>
-            <button ng-show="((currentStep == 2 && !isRemoteGit) || currentStep == 3 || currentStep == 4 )" class="btn btn-primary" name="previous" type="button"
+            <button type="button" ng-disabled="currentStep <= 1" class="btn btn-default" name="previous" type="button" ng-click="gotoPreviousStep()"><i class="fa fa-arrow-left"></i> {{ 'dashboard.sites.create.PREVIOUS_STEP' | translate }}</button>
+            <button type="button" ng-show="((currentStep == 2 && !isRemoteGit) || currentStep == 3 || currentStep == 4 )" class="btn btn-primary" name="previous" type="button"
                     ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
                                     (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid)) ||
                                     (currentStep == 4 && (createNameForm.push_name.$invalid || createNameForm.push_url.$invalid || createNameForm.push_username.$invalid || createNameForm.push_password.$invalid || createNameForm.push_tokenNum.$invalid || createNameForm.push_keyNum.$invalid))"
                     ng-click="gotoStep(5)">{{ 'dashboard.sites.create.REVIEW_CREATE' | translate }} <i class="fa fa-arrow-right"></i>
             </button>
-            <button ng-show="currentStep == 1 " class="btn btn-default" name="previous" type="button"
+            <button type="button" ng-show="currentStep == 1 " class="btn btn-default" name="previous" type="button"
                     ng-disabled="(currentStep == 1 && !isRemoteGit) ||
                                     (currentStep == 2 && createNameForm.siteId.$invalid )"
                     ng-click="gotoStep(2)">{{ 'dashboard.sites.create.BASIC_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
             </button>
-            <button ng-show="currentStep == 2 && isRemoteGit" class="btn btn-default" name="previous" type="button"
+            <button type="button" ng-show="currentStep == 2 && isRemoteGit" class="btn btn-default" name="previous" type="button"
                     ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid )"
                     ng-click="gotoStep(3)">{{ 'dashboard.sites.create.BASIC_DEVELOPER_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
             </button>
-            <button ng-show="(currentStep == 2 && !isRemoteGit) || currentStep == 3" class="btn btn-default" name="previous" type="button"
+            <button type="button" ng-show="(currentStep == 2 && !isRemoteGit) || currentStep == 3" class="btn btn-default" name="previous" type="button"
                     ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
                                     (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid))"
                     ng-click="gotoStep(4)">{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }} <i class="fa fa-arrow-right"></i>
             </button>
         </div>
         <div class="right-btns pull-right">
-            <button id="saveBtn" type="submit" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary" name="create"
+            <button type="button" id="saveBtn" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary" name="create"
                     type="button" ng-click="create()"><i class="fa fa-floppy-o"></i> {{ 'common.create_LABEL' | translate }}
             </button>
         </div>
@@ -474,6 +474,6 @@
         <p class="word-wrap errorMessage">{{ 'dashboard.sites.create.ERROR' | translate }} {{error}}</p>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-default" ng-click="cancel()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+        <button type="button" class="btn btn-default" ng-click="cancel()">{{ 'common.CLOSE_LABEL' | translate }}</button>
     </div>
 </script>
