@@ -136,8 +136,10 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         document.addEventListener('crafter.create.contenMenu', function (e) {
                         if(e.item && CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
-                            CStudioAuthoring.SelectedContent.clear();
-                            CStudioAuthoring.SelectedContent.setContent(e.item);
+                            if(!(CStudioAuthoringContext.isPreview && e.item.isAsset)){
+                                CStudioAuthoring.SelectedContent.clear();
+                                CStudioAuthoring.SelectedContent.setContent(e.item);
+                            }
                              _this.drawNav();
                         }else{
                             if(YDom.get("activeContentActions").innerHTML) {
