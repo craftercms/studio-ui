@@ -319,7 +319,7 @@
                 <input type="password" class="form-control" id="push_tokenNum" name="push_tokenNum" ng-model="site.push_token" ng-required="(site.push_authentication == 'token') && !isRemoteGit" />
 
                 <div class="error-container"
-                     ng-show="(createNameForm.push_tokenNum.$dirty && createNameForm.push_password.$invalid) || (createNameForm.push_tokenNum.$touched && createNameForm.push_tokenNum.$invalid)">
+                     ng-show="(createNameForm.push_tokenNum.$dirty && createNameForm.push_tokenNum.$invalid) || (createNameForm.push_tokenNum.$touched && createNameForm.push_tokenNum.$invalid)">
                     <small class="error"
                            ng-show="createNameForm.push_tokenNum.$error.required">
                         {{ 'dashboard.sites.create.TOKEN' | translate }} {{ 'dashboard.sites.create.IS_REQUIRED' | translate }}
@@ -443,7 +443,7 @@
             </button>
         </div>
         <div class="right-btns pull-right">
-            <button type="button" id="saveBtn" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary" name="create"
+            <button id="saveBtn" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary" name="create"
                     type="button" ng-click="create()"><i class="fa fa-floppy-o"></i> {{ 'common.create_LABEL' | translate }}
             </button>
         </div>
