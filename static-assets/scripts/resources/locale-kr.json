@@ -79,6 +79,7 @@
         "ADITIONAL_DEVELOPER_OPTIONS":"추가 개발자 옵션",
         "PUSH_REMOTE_GIT":"Remote Git Repo에 푸시",
         "PUSH_SITE_TO_REMOTE_GIT":"생성 후 사이트를 원격 Git 저장소로 푸시",
+        "NO_PUSH_SITE_TO_REMOTE_GIT":"생성 후 사이트를 원격 Git 저장소로 푸시하지 마라.",
         "REVIEW_CREATE":"검토 및 작성",
         "SEARCH_ENGINE":"검색 엔진",
         "BLUEPRINT":"청사진",
@@ -88,8 +89,6 @@
         "RECOMMENDED":"(권장)",
         "IS_REQUIRED":"필요합니다.",
         "ALREADY_EXIST":"이미 존재합니다.",
-        "ELASTIC_SEARCH":"Elasticsearch",
-        "CRAFTER_SEARCH_SOLR":"Solr와 함께 Crafter 검색",
         "CHOOSE_BLUEPRINT":"청사진 선택",
         "PREVIOUS_STEP":"이전 단계"
       }

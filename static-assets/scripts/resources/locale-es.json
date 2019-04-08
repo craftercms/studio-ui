@@ -79,6 +79,7 @@
         "ADITIONAL_DEVELOPER_OPTIONS":"Opciones de desarrollador adicionales",
         "PUSH_REMOTE_GIT":"Subir al Repositorio Git remoto",
         "PUSH_SITE_TO_REMOTE_GIT":"Subir el sitio a un repositorio de Git remoto después de la creación",
+         "NO_PUSH_SITE_TO_REMOTE_GIT":"No empuje el sitio a un repositorio remoto de Git después de la creación",
         "REVIEW_CREATE":"Revisar y crear",
         "SEARCH_ENGINE":"Buscador",
         "BLUEPRINT":"Cianotipo",
@@ -88,8 +89,6 @@
         "RECOMMENDED":"(Recomendada)",
         "IS_REQUIRED":"es requerido.",
         "ALREADY_EXIST":"ya existe.",
-        "ELASTIC_SEARCH":"Elasticsearch",
-        "CRAFTER_SEARCH_SOLR":"Búsqueda con Solr de Crafter",
         "CHOOSE_BLUEPRINT":"Elegir plano",
         "PREVIOUS_STEP":"Paso previo"
       }
