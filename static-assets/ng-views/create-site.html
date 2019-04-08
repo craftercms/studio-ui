@@ -316,7 +316,7 @@
 
             <div class="form-group" ng-show="site.push_authentication == 'token'">
                 <label for="push_tokenNum">* {{ 'dashboard.sites.create.TOKEN' | translate }}</label>
-                <input type="password" class="form-control" id="push_tokenNum" name="push_tokenNum" ng-model="site.push_tokenNum" ng-required="(site.push_authentication == 'token') && !isRemoteGit && isPushChecked" />
+                <input type="password" class="form-control" id="push_tokenNum" name="push_tokenNum" ng-model="site.push_token" ng-required="(site.push_authentication == 'token') && !isRemoteGit && isPushChecked" />
 
                 <div class="error-container"
                      ng-show="((createNameForm.push_tokenNum.$dirty && createNameForm.push_tokenNum.$invalid) || (createNameForm.push_tokenNum.$touched && createNameForm.push_tokenNum.$invalid)) && !isRemoteGit">

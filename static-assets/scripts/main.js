@@ -1466,7 +1466,7 @@
                             params.remote_password = $scope.site.push_password;
                         }
                         if($scope.site.push_authentication == "token"){
-                            if($scope.site.username){
+                            if($scope.site.push_username){
                                 params.remote_username = $scope.site.push_username;
                             }
                             params.remote_token = $scope.site.push_token;
