@@ -1223,13 +1223,13 @@
             //table setup
             $scope.membersCollection = [];
 
-            var getClusters = function() {
+            clusters.getClusters = function() {
                 adminService.getClusterMembers().success(function (data) {
                     $scope.membersCollection = data.clusterMembers;
                 });
             };
 
-            getClusters();
+            clusters.getClusters();
 
             clusters.viewClusterMember = function(clusterMember){
                 $scope.clusterMember = clusterMember;
