@@ -974,7 +974,10 @@ table {
   }
 
   .right-btns{
-    width: 100px;
+    width: 88px;
+    button{
+      width: 100%;
+    }
   }
 
   @media (max-width: $screen-xs-max) {

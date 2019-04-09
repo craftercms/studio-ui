@@ -6898,7 +6898,9 @@ table td {
     padding: 20px;
     margin-top: 10px; }
   #create-site-dialog .right-btns {
-    width: 100px; }
+    width: 88px; }
+    #create-site-dialog .right-btns button {
+      width: 100%; }
   @media (max-width: 767px) {
     #create-site-dialog .flex-viewport li.list-gallery {
       height: auto; }
