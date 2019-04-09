@@ -1058,6 +1058,7 @@
             users.createUser = function(user) {
                 adminService.createUser(user).success(function (data) {
                     $scope.hideModal();
+                    user = data.user;
                     $scope.usersCollection.push(user);
                     $scope.notification('\''+ user.username + '\' created.','','studioMedium');
                 }).error(function(response){
