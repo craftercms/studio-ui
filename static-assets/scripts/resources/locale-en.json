@@ -78,6 +78,7 @@
         "ADITIONAL_DEVELOPER_OPTIONS":"Additional Developer Options",
         "PUSH_REMOTE_GIT":"Push to Remote Git Repo",
         "PUSH_SITE_TO_REMOTE_GIT":"Push the site to a remote Git repository after creation",
+        "NO_PUSH_SITE_TO_REMOTE_GIT":"Don't push the site to a remote Git repository after creation",
         "REVIEW_CREATE":"Review and Create",
         "SEARCH_ENGINE":"Search Engine",
         "BLUEPRINT":"Blueprint",
@@ -88,8 +89,6 @@
         "RECOMMENDED":"(Recommended)",
         "IS_REQUIRED":"is required.",
         "ALREADY_EXIST":"already exist.",
-        "ELASTIC_SEARCH":"Elasticsearch",
-        "CRAFTER_SEARCH_SOLR":"Crafter Search with Solr",
         "CHOOSE_BLUEPRINT":"Choose Blueprint",
         "PREVIOUS_STEP":"Previous step"
       }
