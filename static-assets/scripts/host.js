@@ -697,17 +697,6 @@
       goToHashPage();
     }
 
-    // getEngineWindow().addEventListener('load', function() {
-    //   var loadedPath;
-    //   try{
-    //     loadedPath = getEngineWindow().contentWindow.location.pathname;
-    //     selectContent(loadedPath);
-    //   }catch(e){
-    //     console.error(e);
-    //   }
-
-    // });
-
     communicator.subscribe("URL_CHANGE", function (message) {
       selectContent(message.pathname);
     });
