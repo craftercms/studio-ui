@@ -41,8 +41,13 @@ define('guest', [
     iceToolsOn = false;
 
   return {
-    init: init
+    init: init,
+    reportNavigation: reportNavigation
   };
+
+  function reportNavigation(location, url) {
+    communicator.publish(Topics.GUEST_SITE_URL_CHANGE, { location, url });
+  }
 
   function init(config) {
 
@@ -52,6 +57,8 @@ define('guest', [
       window: window.parent,
       origin: origin
     }, origin);
+
+    this.test = config.test
 
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {
       require(['dnd-controller'], function (DnDController) {
