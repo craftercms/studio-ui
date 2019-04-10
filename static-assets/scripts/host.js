@@ -258,11 +258,14 @@
 
     if (message.url) {
       var params = {
-        page: message.url,
-        site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
-      };
+            page: message.url,
+            site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
+          },
+          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       setHash(params);
       amplify.publish(cstopic('GUEST_SITE_LOAD'), params);
+
+      selectStudioContent(params.site, studioPath);
     }
 
     // Once the guest window notifies that the page as successfully loaded,
@@ -272,6 +275,14 @@
       window: getEngineWindow().contentWindow
     });
 
+  });
+
+  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function(message, scope){
+    if (message.url) {
+      var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
+          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
+      selectStudioContent(site, studioPath);
+    }
   });
 
   communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
@@ -660,6 +671,16 @@
     return retVal;
   }
 
+  function selectStudioContent(site, url){
+    CStudioAuthoring.Service.lookupContentItem(site, url, {
+      success: function (content) {
+        if(content.item.isPage) {
+          CStudioAuthoring.SelectedContent.setContent(content.item);
+        }
+      }
+    });
+  }
+
   window.addEventListener("hashchange", function (e) {
     e.preventDefault();
     goToHashPage();
@@ -675,6 +696,21 @@
     } else {
       goToHashPage();
     }
+
+    // getEngineWindow().addEventListener('load', function() {
+    //   var loadedPath;
+    //   try{
+    //     loadedPath = getEngineWindow().contentWindow.location.pathname;
+    //     selectContent(loadedPath);
+    //   }catch(e){
+    //     console.error(e);
+    //   }
+
+    // });
+
+    communicator.subscribe("URL_CHANGE", function (message) {
+      selectContent(message.pathname);
+    });
 
   }, false);
 
