@@ -6425,6 +6425,8 @@ table td {
 
 .audit-view {
   min-height: 435px; }
+  .audit-view.operations-open {
+    min-height: 662px; }
   .audit-view .audit-nav {
     border-bottom: 1px solid #e7e7e7; }
     .audit-view .audit-nav i.fa {
@@ -6494,6 +6496,13 @@ table td {
   .audit-view .audit-table-container {
     width: 100%;
     overflow-y: scroll; }
+    .audit-view .audit-table-container .each-param {
+      background-color: #efeeee;
+      padding: 4px;
+      border-radius: 4px; }
+    .audit-view .audit-table-container hr {
+      margin-top: 8px;
+      margin-bottom: 8px; }
     .audit-view .audit-table-container .wrap-content {
       word-break: break-all; }
     .audit-view .audit-table-container .min-cel-width {
@@ -6889,7 +6898,10 @@ table td {
     padding: 20px;
     margin-top: 10px; }
   #create-site-dialog .right-btns {
-    width: 100px; }
+    width: 88px;
+    margin-right: 1%; }
+    #create-site-dialog .right-btns button {
+      width: 100%; }
   @media (max-width: 767px) {
     #create-site-dialog .flex-viewport li.list-gallery {
       height: auto; }
@@ -6899,7 +6911,7 @@ table td {
         width: 100%;
         margin-top: 10px; }
     #create-site-dialog .right-btns {
-      margin-top: 20px;
+      margin: 20px 0 auto auto;
       width: 100%; }
       #create-site-dialog .right-btns button {
         width: 100%; } }
@@ -7162,3 +7174,5 @@ body.iewarning header {
   margin-top: 21px; }
 body.iewarning .ccms-iewarning {
   display: block; }
+
+/*# sourceMappingURL=main.css.map */

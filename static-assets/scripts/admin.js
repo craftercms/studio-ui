@@ -487,12 +487,36 @@
                 var html;
                 adminService.getSpecificAudit(id).success(function (data) {
                     var parameters = data.auditLog.parameters;
+                    //parameters = [{id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}, {id: 0, auditId: 0, targetId: "2", targetType: "User", targetSubtype: null, targetValue: "reviewer"}]
 
-                    if(parameters.length > 0 || parameters.targetId){
-                        html="<div class='mt10 has-children'><span><strong>"+$translate.instant('admin.audit.ID')+": </strong>"+ parameters.targetId+"</span><br/>"+
-                            "<span><strong>"+$translate.instant('admin.audit.TYPE')+": </strong>"+ parameters.targetType+"</span><br/>"+
-                            "<span><strong>"+$translate.instant('admin.audit.SUBTYPE')+": </strong>"+ parameters.targetSubtype+"</span><br/>"+
-                            "<span><strong>"+$translate.instant('admin.audit.VALUE')+": </strong>"+ parameters.targetValue+"</span></div>";
+                    if(parameters.length > 0){
+                        html="<div class='mt10 has-children'>";
+
+                        for(var i=0; parameters.length > i; i++) {
+
+                            if(parameters[i].targetId || parameters[i].targetType || parameters[i].targetSubtype || parameters[i].targetValue){
+                                html += "<div class='each-param'>";
+                            }
+                            if(parameters[i].targetId){
+                                html += "<span><strong>" + $translate.instant('admin.audit.ID') + ": </strong>" + parameters[i].targetId + "</span><br/>";
+                            }
+                            if(parameters[i].targetType){
+                                html += "<span><strong>" + $translate.instant('admin.audit.TYPE') + ": </strong>" + parameters[i].targetType + "</span><br/>";
+                            }
+                            if(parameters[i].targetSubtype){
+                                html += "<span><strong>" + $translate.instant('admin.audit.SUBTYPE') + ": </strong>" + parameters[i].targetSubtype + "</span><br/>";
+                            }
+                            if(parameters[i].targetValue){
+                                html += "<span><strong>" + $translate.instant('admin.audit.VALUE') + ": </strong>" + parameters[i].targetValue + "</span>";
+                            }
+                            if(parameters[i].targetId || parameters[i].targetType || parameters[i].targetSubtype || parameters[i].targetValue){
+                                html += "</div>";
+                            }
+                            if(parameters.length > i+1){
+                                html += "<hr />";
+                            }
+                        }
+                        html+="</div>";
                     }else{
                         html="<div class='mt10 has-children'><span>"+$translate.instant('admin.audit.NO_PARAM')+"</span></div>";
                     }
@@ -1034,6 +1058,7 @@
             users.createUser = function(user) {
                 adminService.createUser(user).success(function (data) {
                     $scope.hideModal();
+                    user = data.user;
                     $scope.usersCollection.push(user);
                     $scope.notification('\''+ user.username + '\' created.','','studioMedium');
                 }).error(function(response){
@@ -1198,13 +1223,13 @@
             //table setup
             $scope.membersCollection = [];
 
-            var getClusters = function() {
+            clusters.getClusters = function() {
                 adminService.getClusterMembers().success(function (data) {
                     $scope.membersCollection = data.clusterMembers;
                 });
             };
 
-            getClusters();
+            clusters.getClusters();
 
             clusters.viewClusterMember = function(clusterMember){
                 $scope.clusterMember = clusterMember;

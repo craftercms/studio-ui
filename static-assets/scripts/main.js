@@ -1331,7 +1331,7 @@
             $scope.blueprints = [];
             $scope.isValid = false;
             $scope.isCollapsed = true;
-            $scope.isPushChecked = true;
+            $scope.isPushChecked = false;
             $scope.isRemoteGit = false;
 
             function getBlueprints() {
@@ -1466,7 +1466,7 @@
                             params.remote_password = $scope.site.push_password;
                         }
                         if($scope.site.push_authentication == "token"){
-                            if($scope.site.username){
+                            if($scope.site.push_username){
                                 params.remote_username = $scope.site.push_username;
                             }
                             params.remote_token = $scope.site.push_token;
@@ -1477,10 +1477,7 @@
                     }
 
                 }
-                params.search_engine = $scope.site.search;
                 params.create_option = $scope.site.push_site ? "push" : "clone";
-
-                console.log(params);
 
                 sitesService.create(params)
                     .success(function (data) {
