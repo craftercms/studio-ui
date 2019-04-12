@@ -343,9 +343,9 @@
 
     app.controller('AuditCtrl', [
         '$scope', '$state', '$window', '$sce', 'adminService', '$timeout',
-        '$stateParams', '$translate', '$location', 'moment', 'sitesService',
+        '$stateParams', '$translate', '$location', 'moment', 'sitesService', '$cookies', 'Constants',
         function ($scope, $state, $window, $sce, adminService, $timeout,
-                  $stateParams, $translate, $location, moment, sitesService) {
+                  $stateParams, $translate, $location, moment, sitesService, $cookies, Constants) {
 
             $scope.audit = {};
             $scope.isCollapsed = true;
@@ -361,16 +361,15 @@
 
             var delayTimer;
 
-            if(audit.site){
-                adminService.getTimeZone({
-                    "site" : audit.site,
-                    "path" : "/site-config.xml"
-                }).success(function (data) {
-                    audit.timeZone = data["default-timezone"];
-                });
+            if($cookies.get(Constants.AUDITTIMEZONECOOKIE)){
+                audit.timeZone = $cookies.get(Constants.AUDITTIMEZONECOOKIE);
             }else{
                 audit.timeZone = moment.tz.guess();
             }
+
+            audit.newTimezone = function() {
+                $cookies.put(Constants.AUDITTIMEZONECOOKIE, audit.timeZone);
+            };
 
             var getUsers = function(site) {
                 adminService.getUsers(site)
