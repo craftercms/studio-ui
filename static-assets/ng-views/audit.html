@@ -188,7 +188,7 @@
 
              <div class="mb10 btn-group col-xs-6  col-sm-4 col-md-4">
                  <label>{{ 'admin.audit.TIMEZONE' | translate }}: </label>
-                 <select class="form-control" id="auditTimezone" ng-init="audit.timeZone" ng-options="value for value in audit.allTimeZones" ng-model="audit.timeZone"></select>
+                 <select class="form-control" id="auditTimezone" ng-init="audit.timeZone" ng-options="value for value in audit.allTimeZones" ng-model="audit.timeZone" ng-change="audit.newTimezone();" ></select>
              </div>
 
          </div>

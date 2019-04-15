@@ -383,7 +383,8 @@
         SHOW_LOADER: 'show-loader',
         BULK_ENVIRONMENT: 'Live',
         HEADERS: 'headers',
-        AUTH_HEADERS: "AUTH_HEADERS"
+        AUTH_HEADERS: "AUTH_HEADERS",
+        AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone"
     });
 
     app.service('authService', [
