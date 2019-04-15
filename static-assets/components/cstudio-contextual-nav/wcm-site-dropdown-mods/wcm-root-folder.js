@@ -632,7 +632,9 @@
                                 }
                             }
 
-                            WcmDashboardWidgetCommon.refreshAllDashboards();
+                            if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                WcmDashboardWidgetCommon.refreshAllDashboards();
+                            }
 
                         }, false);
 
@@ -1642,7 +1644,9 @@
                                                 eventCM.typeAction = typeAction;
                                                 eventCM.item = treeData.item;
                                                 document.dispatchEvent(eventCM);
-                                                WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                }
                                             }
                                             else {
                                                 if (style.indexOf("in-flight") != -1) {
@@ -1671,7 +1675,9 @@
                                                                 eventCM.typeAction = typeAction;
                                                                 eventCM.item = treeData.item;
                                                                 document.dispatchEvent(eventCM);
-                                                                WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                                if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                                }
                                                             }
                                                         }, 300);
                                                     }
@@ -1709,7 +1715,9 @@
                                     //console.log(itemStore);
                                     if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
                                     self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
-                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                                    if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                        WcmDashboardWidgetCommon.refreshAllDashboards();
+                                    }
                                 }
 
                             } else {
@@ -1731,7 +1739,9 @@
                                     Self.initializeContentTree(instance.rootFolderEl, null, instance);
                                     Self.toggleFolderState(instance, "open");
                                 }
-                                WcmDashboardWidgetCommon.refreshAllDashboards();
+                                if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                                }
                             }
                             if(i >= (node.length - 1)){
                                 eventYS.parent = null;
