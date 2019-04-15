@@ -230,7 +230,7 @@
       "TYPE":"Type",
       "SUBTYPE":"Subtype",
       "VALUE":"Value",
-      "NO_PARAM":"There is no parameters",
+      "NO_PARAM":"There are no additional parameters.",
       "ERROR_PARAM":"Error getting parameters"
     },
     "publishing": {

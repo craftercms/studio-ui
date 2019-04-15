@@ -229,7 +229,7 @@
       "TYPE":"유형",
       "SUBTYPE":"하위 유형",
       "VALUE":"값",
-      "NO_PARAM":"매개 변수가 없습니다",
+      "NO_PARAM":"추가 매개 변수는 없습니다",
       "ERROR_PARAM":"매개 변수 가져 오는 중 오류"
     },
       "publishing": {
