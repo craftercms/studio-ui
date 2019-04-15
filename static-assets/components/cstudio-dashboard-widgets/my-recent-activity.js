@@ -101,7 +101,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 								"widgetFilterBy",
 								newState);
 
-            WcmDashboardWidgetCommon.refreshAllDashboards();
+            if (typeof WcmDashboardWidgetCommon != "undefined") {
+                WcmDashboardWidgetCommon.refreshAllDashboards();
+            }
 
         };
 
@@ -117,7 +119,9 @@ CStudioAuthoringWidgets.MyRecentActivityDashboard = CStudioAuthoringWidgets.MyRe
 			else {
 				this.innerHTML = CMgs.format(langBundle, "dashletMyRecentActivityShowLiveItems");
 			}
-            WcmDashboardWidgetCommon.refreshAllDashboards();
+            if (typeof WcmDashboardWidgetCommon != "undefined") {
+                WcmDashboardWidgetCommon.refreshAllDashboards();
+            }
 		};
 	};
 
