@@ -361,14 +361,14 @@
 
             var delayTimer;
 
-            if($cookies.get(Constants.AUDITTIMEZONECOOKIE)){
-                audit.timeZone = $cookies.get(Constants.AUDITTIMEZONECOOKIE);
+            if($cookies.get(Constants.AUDIT_TIMEZONE_COOKIE)){
+                audit.timeZone = $cookies.get(Constants.AUDIT_TIMEZONE_COOKIE);
             }else{
                 audit.timeZone = moment.tz.guess();
             }
 
             audit.newTimezone = function() {
-                $cookies.put(Constants.AUDITTIMEZONECOOKIE, audit.timeZone);
+                $cookies.put(Constants.AUDIT_TIMEZONE_COOKIE, audit.timeZone);
             };
 
             var getUsers = function(site) {
