@@ -227,7 +227,7 @@
       "TYPE":"Art",
       "SUBTYPE":"Untertyp ",
       "VALUE":"Wert",
-      "NO_PARAM":"Es gibt keine Parameter",
+      "NO_PARAM":"Es gibt keine zusätzlichen Parameter.",
       "ERROR_PARAM":"Fehler beim Abrufen der Parameter"
     },
       "publishing": {
