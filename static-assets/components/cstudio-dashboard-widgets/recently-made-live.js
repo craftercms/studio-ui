@@ -112,7 +112,9 @@ CStudioAuthoringWidgets.RecentlyMadeLiveDashboard = CStudioAuthoringWidgets.Rece
                 "widgetFilterBy",
                 newState);
 
-            WcmDashboardWidgetCommon.refreshAllDashboards();
+            if (typeof WcmDashboardWidgetCommon != "undefined") {
+                WcmDashboardWidgetCommon.refreshAllDashboards();
+            }
 
         };
     };

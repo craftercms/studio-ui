@@ -106,7 +106,9 @@ CStudioAuthoringWidgets.GoLiveQueueDashboard = CStudioAuthoringWidgets.GoLiveQue
                     YDom.get('sort-type-' + _self.widgetId).innerHTML = "true";
                 }
 
-                WcmDashboardWidgetCommon.refreshAllDashboards();
+                if (typeof WcmDashboardWidgetCommon != "undefined") {
+                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                }
             };
         };
 
