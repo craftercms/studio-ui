@@ -549,14 +549,14 @@
                 }, audit.defaultDelay);
             };
 
-            audit.updateSite = function(site, isNoTranslate){
+            audit.updateSite = function(site, translate){
                 if(site){
                     audit.site = site;
                 }else{
                     audit.site = '';
                 }
 
-                if(isNoTranslate){
+                if(translate){
                     audit.siteLabel = $translate.instant(site);
                 }else{
                     audit.siteLabel = '';
