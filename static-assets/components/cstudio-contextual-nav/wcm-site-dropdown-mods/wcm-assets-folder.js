@@ -381,7 +381,9 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                         }
                     }
 
-                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                    if (typeof WcmDashboardWidgetCommon != "undefined") {
+                        WcmDashboardWidgetCommon.refreshAllDashboards();
+                    }
 
                 }, false);
 

@@ -229,7 +229,7 @@
       "TYPE":"Tipo",
       "SUBTYPE":"Subtipo",
       "VALUE":"Valor",
-      "NO_PARAM":"No hay parametros",
+      "NO_PARAM":"No hay parámetros adicionales.",
       "ERROR_PARAM":"Error al obtener los parametros"
     },
       "publishing": {

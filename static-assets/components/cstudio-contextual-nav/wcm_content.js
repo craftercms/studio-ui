@@ -177,7 +177,9 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                                         lookupSiteContent(curNode, cont);
                                                     }, 3000);
                                                 }else {
-                                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                    if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                                        WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                    }
                                                 }
                                             } else {
                                                 cont++;
@@ -193,7 +195,9 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                                         document.dispatchEvent(eventCM);
 
                                                     }
-                                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                    if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                                        WcmDashboardWidgetCommon.refreshAllDashboards();
+                                                    }
                                                 }
                                             }
                                         },

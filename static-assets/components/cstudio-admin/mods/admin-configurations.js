@@ -166,6 +166,7 @@ CStudioAuthoring.Module.requireModule(
 				// add onchange behavior to display selected
 				itemSelectEl.onchange = function() {
 					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
+						configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN,
 						selectedIndex = itemSelectEl.selectedIndex,
                         contentArea = document.getElementById("content-area");
 
@@ -220,8 +221,8 @@ CStudioAuthoring.Module.requireModule(
 						var samplePath = itemSelectEl[selectedIndex].getAttribute("sample");
 						var viewSampleButtonEl = document.getElementById("view-sample-button");
 						if (samplePath != 'undefined' && samplePath != '') {
-							var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-								CStudioAuthoringContext.site + '&path=' + configFilesPath + itemSelectEl[selectedIndex].getAttribute("sample");
+							var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=' +
+								configSampleFilesPath + '/' + itemSelectEl[selectedIndex].getAttribute("sample");
 
 							var getSampleCb = {
 								success: function(response) {
@@ -310,7 +311,8 @@ CStudioAuthoring.Module.requireModule(
                 var sampleAreaEl = document.getElementById("sample-window");
                 var contentArea = document.getElementById("content-area");
                 var me = this,
-                    configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN;
+                    configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
+					configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN;;
                 hideSampleButtonEl.style.display = 'none';
 
                 var saveFn = function(){
