@@ -394,7 +394,8 @@
             source = $("#hb-search-result").html(),
             template = Handlebars.compile(source),
             html,
-            editable = true;
+            editable = true,
+            permissionsKey = CStudioAuthoringContext.user;
 
         if(
             result.type === "Page"
@@ -411,31 +412,33 @@
         }
         result.icon = CStudioSearch.typesMap[result.type].icon;
 
-        // if editable by ace-editor -> ask for permissions
-        if(editable){
+        var permissionsCached = cache.get(permissionsKey),
+            validateAndRender = function(results) {
+                var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "write"),
+                    isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "delete");
+                result.editable = isWriteAllowed;
+                // set permissions for edit/delete actions to be (or not) rendered
+                result.permissions = {
+                    edit: isWriteAllowed && editable,
+                    delete: isDeleteAllowed
+                };
+
+                html = template(result);
+                $(html).appendTo($resultsContainer);
+            };
+
+        if(permissionsCached){
+            validateAndRender(permissionsCached);
+        }else{
             CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, result.path, {
                 success: function (results) {
-                    var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "write"),
-                        isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "delete");
-                    result.editable = isWriteAllowed;
-
-                    // set permissions for edit/delete actions to be (or not) rendered
-                    result.permissions = {
-                        edit: isWriteAllowed,
-                        delete: isDeleteAllowed
-                    };
-
-                    html = template(result);
-                    $(html).appendTo($resultsContainer);
+                    cache.set(permissionsKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
+                    validateAndRender(results);
                 },
                 failure: function () {
                     throw new Error('Unable to retrieve user permissions');
                 }
             });
-        }else{
-            result.editable = editable;
-            html = template(result);
-            $(html).appendTo($resultsContainer);
         }
     }
 
