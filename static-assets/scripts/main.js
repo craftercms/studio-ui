@@ -182,7 +182,7 @@
                     views: {
                         contentTab: {
                             templateUrl: '/studio/static-assets/ng-views/log-console.html',
-                            controller: 'LogConsoleCtrl'
+                            controller: 'LogConsoleStudioCtrl'
                         }
                     }
                 })
@@ -265,6 +265,15 @@
                         content: {
                             templateUrl: '/studio/static-assets/ng-views/admin-repository.html',
                             controller: 'RepositoriesCtrl'
+                        }
+                    }
+                })
+                .state('home.log', {
+                    url: 'log',
+                    views: {
+                        content: {
+                            templateUrl: '/studio/static-assets/ng-views/log-console.html',
+                            controller: 'LogConsolePreviewCtrl'
                         }
                     }
                 })

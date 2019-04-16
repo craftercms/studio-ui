@@ -206,8 +206,14 @@
             }
 
             // LOG CONSOLE 
-            this.getLog = function(data){
+            this.getLogStudio = function(data){
                 return $http.get(Constants.SERVICE2 + 'monitoring/log', {
+                    params: data
+                });
+            }
+
+            this.getLogPreview = function(data){
+                return $http.get('/api/1/monitoring/log.json', {
                     params: data
                 });
             }
@@ -663,18 +669,24 @@
     ]);
 
     app.controller('LogConsoleCtrl', [
-        '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout',
-        function ($scope, $state, $window, adminService, $translate, $interval, $timeout) {
-           
+        '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', 'logType',
+        function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType) {
             $scope.logs = {
                 entries: [],
                 running: true,
-                timer: null
+                timer: null,
+                interval: 5000,
+                since: 3600000
             };
-            var logs = $scope.logs;
+            var logs = $scope.logs,
+                logService = logType === 'studio' ? adminService.getLogStudio : adminService.getLogPreview;
+
+            logs.logType = logType;
 
             logs.startTimer = function () { 
-                logs.timer = $interval(getLogs, 5000);
+                logs.timer = $interval(function(){
+                    logs.getLogs();
+                }, logs.interval);
             };
 
             logs.stopTimer = function () {
@@ -684,15 +696,25 @@
                 }
             };
 
-            var getLogs = function() {
+            logs.getLogs = function(since) {
                 var dateNow = new Date(),
-                    currMillis = new Date(dateNow.getTime() - 5000).getTime(),
+                    since = since ? since : logs.interval,
+                    currMillis = new Date(dateNow.getTime() - since).getTime(),
                     container = document.getElementById('logConsoleContainer');
-                    
-                adminService.getLog({ since: currMillis })
+
+                var data = {
+                    since: currMillis
+                }
+
+                if(logType === 'preview') {
+                    data.site = $location.search().site
+                }
+
+                logService(data)
                     .success(function (data) {
-                        if(data.events.length > 0){
-                            logs.entries = logs.entries.concat(data.events);
+                        var events = data.events ? data.events : data;
+                        if(events.length > 0){
+                            logs.entries = logs.entries.concat(events);
 
                             $timeout(function() {
                                 container.scrollTop = container.scrollHeight;
@@ -715,7 +737,7 @@
                 logs.running = !logs.running;
             }
 
-            getLogs();
+            logs.getLogs(logs.since);
 
             $scope.$on('$viewContentLoaded', function() {
                 logs.startTimer();
@@ -725,6 +747,30 @@
                 logs.stopTimer();
             });
             
+        }
+    ]);
+
+    app.controller('LogConsoleStudioCtrl', [
+        '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', '$controller',
+        function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, $controller) {
+           
+            $controller('LogConsoleCtrl', 
+                {
+                    $scope, $state, $window, adminService, $translate, $interval, $timeout, $location,
+                    logType: 'studio'
+                });
+        }
+    ]);
+
+    app.controller('LogConsolePreviewCtrl', [
+        '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', '$controller',
+        function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, $controller) {
+           
+            $controller('LogConsoleCtrl', 
+                {
+                    $scope, $state, $window, adminService, $translate, $interval, $timeout, $location,
+                    logType: 'preview'
+                });
         }
     ]);
 
