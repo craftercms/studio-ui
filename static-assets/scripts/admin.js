@@ -549,16 +549,22 @@
                 }, audit.defaultDelay);
             };
 
-            audit.updateSite = function(site){
+            audit.updateSite = function(site, translate){
                 if(site){
-                    audit.site = site.siteId;
+                    audit.site = site;
                 }else{
                     audit.site = '';
                 }
 
+                if(translate){
+                    audit.siteLabel = $translate.instant(site);
+                }else{
+                    audit.siteLabel = '';
+                }
+
                 $timeout.cancel(delayTimer)
                 delayTimer = $timeout(function() {
-                    getAudit(audit.site);
+                    getAudit(audit.site === 'admin.audit.SYSTEM' ? Constants.AUDIT_SYSTEM : audit.site);
                 }, audit.defaultDelay);
             };
 

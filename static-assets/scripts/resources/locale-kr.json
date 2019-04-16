@@ -167,6 +167,7 @@
       "AUDIT": "심사",
       "ALL_USERS": "모든 사용자들",
       "ALL_SITES":"모든 사이트",
+      "SYSTEM":"체계",
       "operations": {
         "OPERATIONS": "행위",
         "ALL_OPERATIONS": "모든 작업",
