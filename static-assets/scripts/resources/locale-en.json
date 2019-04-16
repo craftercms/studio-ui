@@ -302,7 +302,11 @@
       "TIMESTAMP": "Timestamp",
       "MESSAGE": "Message",
       "DETAILS": "Details",
-      "CLEAR": "Clear"
+      "CLEAR": "Clear",
+      "LEVEL": "Level",
+      "THREAD": "Thread",
+      "SITE": "Site",
+      "EXCEPTION": "Exception"
     }
   },
   "common": {

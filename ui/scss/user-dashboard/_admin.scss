@@ -390,6 +390,23 @@ table {
   .logs {
     max-height: calc( 100vh - 327px );
     overflow-y: scroll;
+
+    &.preview {
+      max-height: calc( 100vh - 140px );
+    }
+  }
+
+  table {
+    tbody{
+      .log {
+        .thread {
+          min-width: 142px;
+        }
+        .message {
+          word-break: break-all;
+        }
+      }
+    }
   }
 }
 

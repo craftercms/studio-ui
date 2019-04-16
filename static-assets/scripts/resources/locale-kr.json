@@ -295,6 +295,17 @@
         "LEVEL_WARN": "경고하다",
         "LEVEL_INFO": "정보",
         "LEVEL_ERROR": "오류"
+      },
+      "logconsole": {
+        "HEADER_LABEL": "로그 콘솔",
+        "TIMESTAMP": "타임 스탬프",
+        "MESSAGE": "메시지",
+        "DETAILS": "세부",
+        "CLEAR": "명확한",
+        "LEVEL": "수평",
+        "THREAD": "실",
+        "SITE": "대지",
+        "EXCEPTION": "예외"
       }
   },
   "common": {

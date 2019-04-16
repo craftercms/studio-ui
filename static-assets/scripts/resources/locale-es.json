@@ -295,6 +295,17 @@
         "LEVEL_WARN": "advertir",
         "LEVEL_INFO": "info",
         "LEVEL_ERROR": "error"
+      },
+      "logconsole": {
+        "HEADER_LABEL": "Consola de Registro",
+        "TIMESTAMP": "Marca de Tiempo",
+        "MESSAGE": "Mensaje",
+        "DETAILS": "Detalles",
+        "CLEAR": "Limpiar",
+        "LEVEL": "Nivel",
+        "THREAD": "Hilo",
+        "SITE": "Sitio",
+        "EXCEPTION": "Excepción"
       }
   },
   "common": {

@@ -13,20 +13,26 @@
             </div>
         </header>
     
-        <div class="logs" id="logConsoleContainer">
+        <div class="logs {{logs.logType}}" id="logConsoleContainer">
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>{{ 'admin.logconsole.LEVEL' | translate }}</th>
                         <th>{{ 'admin.logconsole.TIMESTAMP' | translate }}</th>
-                        <th>{{ 'admin.logconsole.MESSAGE' | translate }}</th>
-                        <th>{{ 'admin.logconsole.DETAILS' | translate }}</th>                        
+                        <th>{{ 'admin.logconsole.THREAD' | translate }}</th>
+                        <th>{{ 'admin.logconsole.SITE' | translate }}</th>
+                        <th>{{ 'admin.logconsole.MESSAGE' | translate }}</th> 
+                        <th>{{ 'admin.logconsole.EXCEPTION' | translate }}</th>                   
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="log in logs.entries">
-                        <td>{{log.timestamp}}</td>
-                        <td>{{log.message}}</td>
-                        <td>{{log.details}}</td>
+                    <tr class="log" ng-repeat="log in logs.entries">
+                        <td class="level">{{log.level}}</td>
+                        <td class="timestamp">{{log.timestamp}}</td>
+                        <td class="thread">{{log.thread}}</td>
+                        <td class="site">{{log.site}}</td>
+                        <td class="message">{{log.message}}</td>
+                        <td class="exception">{{log.exception}}</td>
                     </tr>
                 </tbody>
             </table>

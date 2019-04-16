@@ -6513,6 +6513,12 @@ table td {
 .logging-levels-view .logs, .log-console-view .logs {
   max-height: calc( 100vh - 327px );
   overflow-y: scroll; }
+  .logging-levels-view .logs.preview, .log-console-view .logs.preview {
+    max-height: calc( 100vh - 140px ); }
+.logging-levels-view table tbody .log .thread, .log-console-view table tbody .log .thread {
+  min-width: 142px; }
+.logging-levels-view table tbody .log .message, .log-console-view table tbody .log .message {
+  word-break: break-all; }
 
 .publishing-view {
   padding: 0 20px; }
@@ -7174,5 +7180,3 @@ body.iewarning header {
   margin-top: 21px; }
 body.iewarning .ccms-iewarning {
   display: block; }
-
-/*# sourceMappingURL=main.css.map */

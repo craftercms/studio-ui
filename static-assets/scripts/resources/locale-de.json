@@ -293,6 +293,17 @@
         "LEVEL_WARN": "warn",
         "LEVEL_INFO": "info",
         "LEVEL_ERROR": "error"
+      },
+      "logconsole": {
+        "HEADER_LABEL": "Protokollkonsole",
+        "TIMESTAMP": "Zeitstempel",
+        "MESSAGE": "Botschaft",
+        "DETAILS": "Einzelheiten",
+        "CLEAR": "Klar",
+        "LEVEL": "Niveau",
+        "THREAD": "Faden",
+        "SITE": "Seite",
+        "EXCEPTION": "Ausnahme"
       }
   },
   "common": {
