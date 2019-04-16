@@ -384,7 +384,8 @@
         BULK_ENVIRONMENT: 'Live',
         HEADERS: 'headers',
         AUTH_HEADERS: "AUTH_HEADERS",
-        AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone"
+        AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone",
+        AUDIT_SYSTEM: "Studio Root"
     });
 
     app.service('authService', [

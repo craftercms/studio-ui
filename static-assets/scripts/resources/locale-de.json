@@ -165,6 +165,8 @@
     "audit": {
       "AUDIT": "Audit",
       "ALL_USERS": "Alle Nutzer",
+      "ALL_SITES":"Alle Standorte",
+      "SYSTEM":"System",
       "operations": {
         "OPERATIONS": "Aktionen",
         "ALL_OPERATIONS": "Alle Aktionen",
