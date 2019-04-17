@@ -250,7 +250,8 @@
 
             if(treeVal){
                 treeCookieName = CStudioAuthoringContext.site + '-' + treeVal + '-opened';
-                treeCookie = JSON.parse(CStudioAuthoring.Storage.read(treeCookieName));
+                treeCookie = CStudioAuthoring.Storage.read(treeCookieName);
+                treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : [];
 
                 // validate if is page and if has folder (ends with index.xml)
                 if(type === "Page" && (url.indexOf("index.xml") !== -1)){
