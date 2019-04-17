@@ -2006,7 +2006,8 @@ var CStudioForms = CStudioForms || function() {
                                 if(lastTwo){
                                     setTimeout(function(lastTwo){
                                         for(var k=0; k < formField.form.sections[0].fields.length; k++){
-                                            if(!formField.form.sections[0].fields[k].inputEl.disabled){                                            
+                                            var elt = formField.form.sections[0].fields[k].inputEl;
+                                            if(elt && !elt.disabled){
                                                 
                                                 var position = $('html').scrollTop();
                                                 formField.form.sections[0].fields[k].inputEl.focus();
