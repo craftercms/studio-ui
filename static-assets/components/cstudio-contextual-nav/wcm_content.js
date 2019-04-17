@@ -136,7 +136,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         document.addEventListener('crafter.create.contenMenu', function (e) {
                         if(e.item && CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
-                            if(!(CStudioAuthoringContext.isPreview && e.item.isAsset)){
+                            if(!(CStudioAuthoringContext.isPreview && !(e.item.isPage))){
                                 CStudioAuthoring.SelectedContent.clear();
                                 CStudioAuthoring.SelectedContent.setContent(e.item);
                             }
