@@ -833,7 +833,7 @@ var nodeOpen = false,
                             }
 
 
-                            dialogue.hide();
+                            dialogue.destroy();
                             eventNS.data = items;
                             eventNS.typeAction = "publish";
                             eventNS.dependencies = self.getGenDependency();
