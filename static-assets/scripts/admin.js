@@ -1714,7 +1714,7 @@
                     }).error(function (error) {
                         $scope.messageTitle = $translate.instant('common.ERROR');
                         $scope.messageText = error.message;
-                        $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                        $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     });
                 };
 
@@ -1743,7 +1743,7 @@
                         repositories.spinnerOverlay.close();
                         $scope.messageTitle = $translate.instant('common.ERROR');
                         $scope.messageText = error.message;
-                        $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                        $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     });
                 };
 
@@ -1773,7 +1773,7 @@
                         repositories.spinnerOverlay.close();
                         $scope.messageTitle = $translate.instant('common.ERROR');
                         $scope.messageText = error.message;
-                        $scope.adminModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                        $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     });
                 };
 
