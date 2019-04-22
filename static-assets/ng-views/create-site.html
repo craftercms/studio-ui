@@ -42,7 +42,7 @@
                 <div ng-attr-id="{{ 'flexslider' + $index }}" class="flexslider mt15 mainslider" ng-init="flexSilderInit('flexslider' + $index)" >
                     <ul class="slides">
                         <li class="list-gallery" ng-repeat="media in siteBP.blueprint.media.screenshots" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'" >
-                            <img class="gallery-image" src="{{media.screenshot.url}}" alt="{{media.screenshot.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
+                            <img class="gallery-image" ng-src="{{media.screenshot.url}}" alt="{{media.screenshot.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
                         </li>
                     </ul>
                 </div>
