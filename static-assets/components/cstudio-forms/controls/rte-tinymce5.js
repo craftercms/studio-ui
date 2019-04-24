@@ -281,6 +281,12 @@ CStudioAuthoring.Module.requireModule(
 							_thisControl.save();
 						}
 					});
+
+					editor.on('Change', function(e){
+						if(!e.initial) {
+							_thisControl.save();
+						}
+					});
 				}
 			});
 			
