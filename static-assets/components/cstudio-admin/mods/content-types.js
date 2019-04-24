@@ -250,8 +250,8 @@ CStudioAuthoring.Module.requireModule(
                                                     { width: "400px",fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
                                                         text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_WARN,
                                                         constraintoviewport: true,
-                                                        buttons: [ { text:CMgs.format(formsLangBundle, "continueEditing"),  handler:function(){this.hide();}, isDefault:false },
-                                                            { text:CMgs.format(formsLangBundle, "save"),  handler:function(){this.hide(); saveFn();}, isDefault:false }]
+                                                        buttons: [ { text:CMgs.format(formsLangBundle, "continueEditing"),  handler:function(){this.destroy();}, isDefault:false },
+                                                            { text:CMgs.format(formsLangBundle, "save"),  handler:function(){this.destroy(); saveFn();}, isDefault:false }]
                                                     });
                                                 dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                                                 dialog.render(document.body);
