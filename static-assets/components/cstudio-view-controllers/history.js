@@ -60,7 +60,7 @@
                         success: function (history) {
 
                             var versions = history.versions,
-                                contentType = history.item.contentType;
+                                isAsset = history.item.isAsset;
 
                             var itemStateEl = _this.getComponent('span.show-for-item');
                             Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
@@ -72,7 +72,7 @@
 
                                 tbody.innerHTML = '';
 
-                                if(contentType != "asset"){
+                                if(!isAsset){
                                     var actionWrapper = _this.getComponent(".history-view .action-wrapper"),
                                         compareButton = document.createElement('input');
                                     $('#historyCompareBtn').remove();
@@ -112,7 +112,7 @@
                                     var versionNumber = new Date(version.lastModifiedDate);
                                     versionNumber = versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
 
-                                    if(contentType != "asset"){
+                                    if(!isAsset){
                                         checkboxEl = document.createElement('input');
                                         checkboxEl.maxLength = 300;
                                         checkboxEl.type = "checkbox";
@@ -147,7 +147,7 @@
                                     tdEl.appendChild(col5El);
                                     rowEl.appendChild(tdEl);
 
-                                    if(contentType != "asset"){
+                                    if(!isAsset){
                                         var viewActionEl = document.createElement("a");
                                         viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action fa fa-eye"></span>';
                                         viewActionEl.version = version.versionNumber;
