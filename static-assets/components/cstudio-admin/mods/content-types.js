@@ -276,9 +276,9 @@ CStudioAuthoring.Module.requireModule(
                                                 [ { text:CMgs.format(formsLangBundle, "yes"),  handler:function(){
                                                     CStudioAdminConsole.isDirty = false;
                                                     _self.renderWorkarea();
-                                                    this.hide();}, isDefault:false },
+                                                    this.destroy();}, isDefault:false },
                                                 { text:CMgs.format(formsLangBundle, "no"),  handler:function(){
-                                                    this.hide();
+                                                    this.destroy();
                                                 }, isDefault:false }],
                                                 YAHOO.widget.SimpleDialog.ICON_WARN,
                                                 "studioDialog"
@@ -623,9 +623,9 @@ CStudioAuthoring.Module.requireModule(
                             CStudioAdminConsole.isDirty = false;
                             CStudioAuthoring.Service.getAllContentTypesForSite(
                                 CStudioAuthoringContext.site, chooseTemplateCb);
-                            this.hide();}, isDefault:false },
+                            this.destroy();}, isDefault:false },
                             { text:CMgs.format(formsLangBundle, "no"),  handler:function(){
-                                this.hide();
+                                this.destroy();
                             }, isDefault:false }],
                         YAHOO.widget.SimpleDialog.ICON_WARN,
                         "studioDialog"
@@ -674,9 +674,9 @@ CStudioAuthoring.Module.requireModule(
                                 "/static-assets/components/cstudio-dialogs/new-content-type.js",
                                 moduleConfig,
                                 dialogLoadedCb);
-                            this.hide();}, isDefault:false },
+                            this.destroy();}, isDefault:false },
                             { text:CMgs.format(formsLangBundle, "no"),  handler:function(){
-                                this.hide();
+                                this.destroy();
                             }, isDefault:false }],
                         YAHOO.widget.SimpleDialog.ICON_WARN,
                         "studioDialog"
