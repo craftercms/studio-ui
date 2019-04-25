@@ -155,6 +155,7 @@
                                         col5El.appendChild(viewActionEl);
                                         new YAHOO.widget.Tooltip("tooltipView" + viewActionEl.version, {
                                             context: "actionView" + viewActionEl.version,
+                                            container: _this.tooltipsContainer,
                                             text: CMgs.format(formsLangBundle, "historyDialogViewFileMessage"),
                                             zIndex: 104103
                                         });
@@ -166,6 +167,7 @@
                                         col5El.appendChild(compareActionEl);
                                         new YAHOO.widget.Tooltip("tooltipCompare" + compareActionEl.version, {
                                             context: "actionCompare" + viewActionEl.version,
+                                            container: _this.tooltipsContainer,
                                             text: CMgs.format(formsLangBundle, "historyDialogCompareFileMessage"),
                                             zIndex: 104103
                                         });
@@ -178,6 +180,7 @@
                                         revertActionEl.version = version.versionNumber;
                                         new YAHOO.widget.Tooltip("tooltipRevert"+ revertActionEl.version, {
                                             context: "actionRevert" + revertActionEl.version,
+                                            container: _this.tooltipsContainer,
                                             text: CMgs.format(formsLangBundle, "historyDialogRevertFileMessage"),
                                             zIndex: 104103
                                         });
@@ -248,11 +251,18 @@
                         }
                     });
             };
+
+            var tooltipsContainer = document.createElement("div");
+			YAHOO.util.Dom.addClass(tooltipsContainer, 'tooltips-container');
+			document.querySelector('body').appendChild(tooltipsContainer);
+			this.tooltipsContainer = tooltipsContainer;
+
             loadFn();
 
             $(document).on("keyup", function(e) {
                 if (e.keyCode === 27) {	// esc
                     _this.end();
+                    _this.destroyTooltips();
                     $(document).off("keyup");
                 }
             });
@@ -315,7 +325,12 @@
         },
         closeButtonActionClicked: function () {
             this.end();
+            this.destroyTooltips();
             $(document).off("keyup");
+        },
+        // Destroy tooltips to avoid unnecesary markup when dismissing history dialog
+        destroyTooltips: function () {
+            $('.tooltips-container').remove();
         },
         compareButtonActionClicked: function () {
             var tbody = this.getComponent('table.item-listing tbody'),
