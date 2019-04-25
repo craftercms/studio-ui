@@ -730,7 +730,7 @@ var nodeOpen = false,
                         // Admin version of the view does not have this events
                         // but then the call is ignored
                         this.on("hideRequest", function (evt, args) {
-                            dialogue.hide();
+                            dialogue.destroy();
                         });
                         this.on("showRequest", function (evt, args) {
                             dialogue.show();
@@ -760,7 +760,7 @@ var nodeOpen = false,
                         this.on("submitComplete", function(evt, args){
 
                             var reloadFn = function(){
-                                dialogue.hide();
+                                dialogue.destroy();
                                 eventNS.data = contentObj;
                                 eventNS.typeAction = "";
                                 eventNS.oldPath = null;
@@ -774,7 +774,7 @@ var nodeOpen = false,
                         // Admin version of the view does not have this events
                         // but then the call is ignored
                         this.on("hideRequest", function(evt, args){
-                            dialogue.hide();
+                            dialogue.destroy();
                         });
 
                         this.on("showRequest", function(evt, args){
