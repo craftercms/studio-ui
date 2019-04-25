@@ -65,7 +65,7 @@
 
 </head>
 
-<body class="yui-skin-cstudioTheme">
+<body>
 
 <section class="site-dashboard">
     <div class="container">

@@ -63,7 +63,7 @@
     <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
 </head>
 
-<body class="yui-skin-cstudioTheme">
+<body>
     <section class="cstudio-search">
         <div class="search-bar row">
             <div class="col-md-12">
