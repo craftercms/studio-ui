@@ -1488,8 +1488,8 @@
 	* methos that fires when new items added to tree.
 	*/
 	refreshNodes: function(treeNode, status, parent, tree, instance, changeStructure, typeAction, oldPath, dependencies) {
-        var treePath = treeNode.path,
-            instancePath = instance.path,
+        var treePath = treeNode ? treeNode.path : null,
+            instancePath = instance ? instance.path : null,
             isValidPath = instance && treePath && (Array.isArray(instancePath) ?  instancePath.indexOf(treePath) >= 0 : treePath.indexOf(instancePath) >= 0),
             refresh = typeAction == "edit" ? isValidPath : true;
         if(refresh){
