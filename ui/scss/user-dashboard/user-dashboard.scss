@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 @import "../variables";
 
 $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
@@ -44,6 +43,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-300.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-regular - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -57,6 +57,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-regular.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-300italic - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -70,6 +71,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-300italic.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-300italic.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-italic - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -83,6 +85,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-italic.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-italic.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-600 - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -96,6 +99,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-600.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-600.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-600italic - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -109,6 +113,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-600italic.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-600italic.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-700 - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -122,6 +127,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-700.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-800 - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -135,6 +141,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-800.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-800.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-700italic - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -148,6 +155,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-700italic.ttf') format('truetype'), /* Safari, Android, iOS */
   url('../../static-assets/themes/cstudioTheme/fonts/open-sans/open-sans-v14-latin-700italic.svg#OpenSans') format('svg'); /* Legacy iOS */
 }
+
 /* open-sans-800italic - latin */
 @font-face {
   font-family: 'Open Sans';
@@ -171,21 +179,21 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 .modal-backdrop {
-    height: 100%;
-    background-color: #444;
-    position: fixed;
+  height: 100%;
+  background-color: #444;
+  position: fixed;
 }
 
 .login-view,
 .recover-view {
 
-    .pad {
-        padding: 20px;
-    }
+  .pad {
+    padding: 20px;
+  }
 
-    h2 {
-        margin-top: 0;
-    }
+  h2 {
+    margin-top: 0;
+  }
 
   .alert {
     padding: 7px 15px;
@@ -193,25 +201,26 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 }
 
-.settings-view, .about-us-view{
-  .row{
+.settings-view, .about-us-view {
+  .row {
     padding: 0 25px;
   }
 }
 
-.about-us-view{
+.about-us-view {
   .studio-info {
     overflow: hidden;
     max-width: 560px;
     margin: 50px auto 0;
     padding: 30px 2%;
 
-    #studio-logo{
+    #studio-logo {
       display: block;
-      float: left;
-      width: 22%;
+      width: 250px;
+      margin: 0 auto 20px;
     }
-    #studio-data{
+
+    #studio-data {
       float: left;
       padding-left: 4%;
       width: 78%;
@@ -222,50 +231,51 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 .panel {
 
-    .alert {
-        margin: 0;
-        border: 0;
-        border-radius: 0;
-    }
+  .alert {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+  }
 
 }
 
 .user-display {
 
-    padding: 0 20px 5px;
-    margin-bottom: 5px;
-    border-bottom: 1px solid #f2f2f2;
+  padding: 0 20px 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #f2f2f2;
 
-    .name {
-      font-size: 1.2em;
-      font-weight: bold;
-    }
+  .name {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
 
-    #language{
-      width: 42%;
-      display: inline-block;
-      margin-top: 20px;
-      max-width: 370px;
-    }
+  #language {
+    width: 42%;
+    display: inline-block;
+    margin-top: 20px;
+    max-width: 370px;
+  }
 
 }
 
 small {
-    .text-sm {
-        font-size: 40%;
-    }
+  .text-sm {
+    font-size: 40%;
+  }
 }
 
-.site-list{
+.site-list {
   a {
     color: #4F81A0;
   }
+
   .remove a .fa {
     font-size: 14px;
   }
 }
 
-i.fa{
+i.fa {
   font-size: 16px;
 }
 
@@ -274,7 +284,7 @@ i.fa{
 }
 
 .reset-password-view {
-  .password-requirements{
+  .password-requirements {
     border-bottom: 1px solid #eeeeee;
     padding-bottom: 15px;
     margin-bottom: 15px;
@@ -292,9 +302,9 @@ i.fa{
 }
 
 @media only screen and (max-width: 460px) {
-  .about-us-view{
+  .about-us-view {
     .studio-info {
-      #studio-logo{
+      #studio-logo {
         display: none;
       }
     }
@@ -311,8 +321,7 @@ i.fa{
   display: none;
 }
 
-.nav-label-hover
-{
+.nav-label-hover {
   display: inline-block;
 
   -webkit-animation: fadeInFromNone 1s ease-out;
