@@ -41,11 +41,11 @@ CStudioAuthoring.ContextualNav.WcmLogo = CStudioAuthoring.ContextualNav.WcmLogo 
 					if(response){
 						YDom.get('cstudio-logo').src = '/studio/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg';
 					}else{
-						YDom.get('cstudio-logo').src = '/studio/static-assets/images/crafter_studio_360.png';
+						YDom.get('cstudio-logo').src = '/studio/static-assets/images/logo.svg';
 					}
 				},
 				failure: function() {
-					YDom.get('cstudio-logo').src = '/studio/static-assets/images/crafter_studio_360.png';
+					YDom.get('cstudio-logo').src = '/studio/static-assets/images/logo.svg';
 				}
 			});
 			

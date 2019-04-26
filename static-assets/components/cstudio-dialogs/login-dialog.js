@@ -147,11 +147,11 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
                 if(response){
                     YDom.get('crafterLogo').src = '/studio/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg';
                 }else{
-                    YDom.get('crafterLogo').src = '/studio/static-assets/images/crafter_studio_360.png';
+                    YDom.get('crafterLogo').src = '/studio/static-assets/images/logo.svg';
                 }
             },
             failure: function() {
-                YDom.get('crafterLogo').src = '/studio/static-assets/images/crafter_studio_360.png';
+                YDom.get('crafterLogo').src = '/studio/static-assets/images/logo.svg';
             }
         });
 

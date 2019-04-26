@@ -902,7 +902,7 @@
                 function successCallback(response) {
                     $scope.crafterLogo = authService.getLoginUrl();
                 }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/crafter_studio_360.png";
+                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
                 }
             );
 
@@ -1701,7 +1701,7 @@
                 function successCallback(response) {
                     $scope.crafterLogo = authService.getLoginUrl();
                 }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/crafter_studio_360.png";
+                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
                 }
             );
 
@@ -1759,7 +1759,7 @@
                 function successCallback(response) {
                     $scope.crafterLogo = authService.getLoginUrl();
                 }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/crafter_studio_360.png";
+                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
                 }
             );
 

@@ -65,7 +65,7 @@
     <script src="/studio/static-assets/libs/angular-moment/angular-moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <link rel="shortcut icon" href="/studio/static-assets/img/favicon.png?version=${UIBuildId!.now?string('Mddyyyy')}">
+    <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico?version=${UIBuildId!.now?string('Mddyyyy')}">
 
     <script> var xsrfToken = "${_csrf.token}" </script>
 
@@ -77,7 +77,7 @@
 <div class="footer-general" ng-show="isFooter">
     <section class="footer-body">
         <p class="entitlementValidator">${applicationContext.get("crafter.entitlementValidator").getDescription()}</p>
-        <img class="crafter-studio-logo" alt="Crafter Studio" ng-src="/studio/static-assets/images/crafter_studio_360.png" src="/studio/static-assets/images/crafter_studio_360.png">
+        <img class="crafter-studio-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
     </section>
 </div>
 
