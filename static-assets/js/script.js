@@ -20,7 +20,7 @@
 */
 
 $('#main').bgStretcher({
-	images: ['/static-assets/img/gc2.jpg'], 
+	images: ['/static-assets/img/gears.jpg'], 
 	imageWidth: 1533,
 	imageHeight: 1148,
     anchoringImg: 'center top'
