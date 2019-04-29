@@ -287,7 +287,7 @@
         $('.cstudio-wcm-result .results').delegate( ".magnify-icon", "click", function() {
             var path = $(this).attr('data-source');
             var type = $(this).attr('data-type');
-            me.magnify(path, type);
+            CStudioAuthoring.Utils.previewAssetDialog(path, type);
         });
 
         var pathURL = CStudioAuthoring.Utils.getQueryParameterByName("path");

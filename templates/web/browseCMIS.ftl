@@ -133,17 +133,17 @@
       </div>
     </div>
 
-    <div class="cstudio-browse-image-popup-overlay">
-      <div id="cstudio-browse-image-pop-up">
+  <div class="cstudio-image-popup-overlay">
+      <div class="cstudio-image-pop-up">
           <div>
-              <input type="button" class="close btn btn-default" value="x">
+              <span class="close fa fa-close"></span>
           </div>
           <img src="">
           <video id="videoOverlay" controls="true" >
-            <source src="" type="">
+              <source src="" type="">
           </video>
       </div>
-    </div>
+  </div>
 
      <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="cstudio-search-result clearfix">
