@@ -133,18 +133,6 @@
       </div>
     </div>
 
-  <div class="cstudio-image-popup-overlay">
-      <div class="cstudio-image-pop-up">
-          <div>
-              <span class="close fa fa-close"></span>
-          </div>
-          <img src="">
-          <video id="videoOverlay" controls="true" >
-              <source src="" type="">
-          </video>
-      </div>
-  </div>
-
      <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="cstudio-search-result clearfix">
             <div class="cstudio-result-body row" style="overflow: hidden;">

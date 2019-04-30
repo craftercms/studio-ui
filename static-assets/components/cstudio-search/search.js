@@ -141,7 +141,7 @@
                 type = $(this).attr('data-type').toLowerCase();
             e.preventDefault();
 
-            CStudioAuthoring.Utils.previewAssetDialog(path, type, $('#searchPreviewPopup'));
+            CStudioAuthoring.Utils.previewAssetDialog(path, type);
         });
 
         // Clicking on edit icon from the results
