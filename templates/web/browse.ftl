@@ -100,18 +100,6 @@
         
       </div>
     </div>
-
-    <div class="cstudio-image-popup-overlay">
-        <div class="cstudio-image-pop-up">
-            <div>
-                <span class="close fa fa-close"></span>
-            </div>
-            <img src="">
-            <video id="videoOverlay" controls="true" >
-                <source src="" type="">
-            </video>
-        </div>
-    </div>
   
     <#-- <#if view == "window" >
      <div id="studioBar" class="studio-view">

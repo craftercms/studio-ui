@@ -8006,8 +8006,26 @@ var nodeOpen = false,
          * @param type {string} Asset Mime type.
          * @param container {jQuery} The popup element
          */
-        previewAssetDialog: function(source, type, container) {
-            var $container = container ? container : $('.cstudio-image-popup-overlay'),
+        previewAssetDialog: function(source, type) {
+
+            if($('.cstudio-image-popup-overlay').length <= 0) {
+                var dialogHtml =
+                    '<div class="cstudio-image-popup-overlay" style="display: none;">' +
+                    '<div class="cstudio-image-pop-up">' +
+                    '<div>' +
+                    '<span class="close fa fa-close"></span>' +
+                    '</div>' +
+                    '<img src="">' +
+                    '<video id="videoOverlay" controls="true" >' +
+                    '<source src="" type="">' +
+                    '</video>' +
+                    '</div>' +
+                    '</div>"';
+
+                $('body').append(dialogHtml);
+            }
+
+            var $container = $('.cstudio-image-popup-overlay'),
                 $img = $container.find('img'),
                 $video = $container.find('video');
                 $img.hide(); $video.hide();
@@ -8028,7 +8046,7 @@ var nodeOpen = false,
     
             // Close - on button click
             $container.one('click', '.close', function(){
-                $container.hide();
+                $container.remove();
             });
 
             // Close - on click outside dialog
@@ -8036,13 +8054,13 @@ var nodeOpen = false,
                 if (e.target !== this)
                     return;
     
-                $container.hide();
+                $container.remove();
             });
 
             // Close - on escape
             $(document).on('keyup', function(e){
                 if(e.keyCode === 27){
-                    $container.hide();
+                    $container.remove();
                 }
             });
     

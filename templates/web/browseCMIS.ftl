@@ -133,18 +133,6 @@
       </div>
     </div>
 
-    <div class="cstudio-browse-image-popup-overlay">
-      <div id="cstudio-browse-image-pop-up">
-          <div>
-              <input type="button" class="close btn btn-default" value="x">
-          </div>
-          <img src="">
-          <video id="videoOverlay" controls="true" >
-            <source src="" type="">
-          </video>
-      </div>
-    </div>
-
      <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="cstudio-search-result clearfix">
             <div class="cstudio-result-body row" style="overflow: hidden;">
