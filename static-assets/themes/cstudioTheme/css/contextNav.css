@@ -519,8 +519,8 @@ div[id*="expandComponentError"].yui-dialog {
     padding: 0px 15px 3px!important;
 }
 #cstudio-wcm-popup-div .contentTypePopupHeader.loginHeader #crafterLogo, #cstudio-wcm-popup-div-login .contentTypePopupHeader.loginHeader #crafterLogo{
-    width: 140px;
-    margin: 0 auto;
+    width: 200px;
+    margin: 30px auto 0;
     display: block;
 }
 #login_form .subtitleErr{
