@@ -316,9 +316,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 		
 	},
 	closeDialog:function() {
-        this.dialog.hide();
-        var element = YDom.get("cstudio-wcm-popup-div");
-        element.parentNode.removeChild(element);
+        this.dialog.destroy();
     },
 	/**
 	 * event fired when the ok is pressed
