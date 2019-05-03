@@ -259,7 +259,7 @@
                     }
                 }
 
-                if(optionSelected == 'depends-on'){
+                if(optionSelected !== 'depends-on'){
                     CStudioAuthoring.Service.loadDependantItems(
                         CStudioAuthoringContext.site,
                         item.uri,
