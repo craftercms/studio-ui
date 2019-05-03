@@ -690,7 +690,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     hubspotForms: "Hubspot Forms",
     imageFromRepository: "Image From Repository",
     imageFromCMISRepository: "Image From CMIS Repository",
-    CMISRepository: "CMIS Repository",
+    CMISRepository: "File from CMIS Repository",
+    CMISUpload: "File Uploaded to CMIS Repository",
+    CMISUploadImage:"Image Uploaded to CMIS Repository",
+    CMISUploadVideo:"Video Uploaded to CMIS Repository",
     salesforceCampaigns: "Salesforce Campaigns",
     treeContent: "Tree content",
 
