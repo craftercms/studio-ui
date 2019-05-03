@@ -26,8 +26,8 @@ function(id, form, properties, constraints)  {
    		if(properties[i].name == "repoPath") {
 			this.repoPath = properties[i].value;
 		}
-		if(properties[i].name === "profileId") {
-			this.profileId = properties[i].value;
+		if(properties[i].name === "repositoryId") {
+			this.repositoryId = properties[i].value;
 		}
    	} 
 	
@@ -124,10 +124,10 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 			YAHOO.util.Event.on(createEl, 'click', function() {
 				control.addContainerEl = null;
 				control.containerEl.removeChild(addContainerEl);
-				CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.profileId, callback);
+				CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
 			}, createEl);
 		}else{
-			CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.profileId, callback);
+			CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
 		}
 	},
 
@@ -146,7 +146,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 	getSupportedProperties: function() {
 		return [
 			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
-			{ label: CMgs.format(langBundle, "repositoryId"), name: "repoId", type: "string" }
+			{ label: CMgs.format(langBundle, "repositoryId"), name: "repositoryId", type: "string" }
 		];
 	},
 
