@@ -160,7 +160,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                 constraintoviewport: true,
                 buttons: [ { text:"OK", handler: function(){
                     this.destroy();
-                    self.decreaseFormDialog();
+                    CStudioAuthoring.Utils.decreaseFormDialog();
 
                 }, isDefault:false } ]
             });
@@ -172,7 +172,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     cropPopupCancel: function(event) {
         this.crop_dialog.destroy();
-        self.decreaseFormDialog();
+        CStudioAuthoring.Utils.decreaseFormDialog();
     },
 
     setImageData: function(imagePicker, imageData){
@@ -193,13 +193,6 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         imagePicker.adjustImage();
 
         imagePicker._onChangeVal(null, imagePicker);
-    },
-
-    decreaseFormDialog: function(){
-        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
-            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
-        }
     },
 
     increaseFormDialogForCrop: function(){
@@ -359,10 +352,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                                     }else{
                                         if(this.setImageData){
                                             this.setImageData(imagePicker, imageData);
-                                            this.decreaseFormDialog();
+                                            CStudioAuthoring.Utils.decreaseFormDialog();
                                         }else{
                                             self.setImageData(imagePicker, imageData);
-                                            self.decreaseFormDialog();
+                                            CStudioAuthoring.Utils.decreaseFormDialog();
                                         }
                                     }                                    
                                 }
