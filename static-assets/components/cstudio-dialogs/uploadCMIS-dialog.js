@@ -36,7 +36,6 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
      */
     showDialog: function(site, path, repositoryId, serviceUri, callback) {
         this._self = this;
-        console.log('dialog');
 
         this.dialog = this.createDialog(path, site, repositoryId, serviceUri);
 
@@ -66,6 +65,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
      */
     closeDialog:function() {
         this.dialog.destroy();
+        $("#cstudio-wcm-popup-div").off("keyup");
     },
 
     /**
@@ -104,9 +104,6 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
             '</div> ' +
             '</div>';
 
-        document.getElementById("upload-popup-inner").style.width = "350px";
-        document.getElementById("upload-popup-inner").style.height = "180px";
-
         // Instantiate the Dialog
         upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
             { width : "360px",
@@ -139,7 +136,6 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
         $("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
             if (e.keyCode === 27) {	// esc
                 me.closeDialog();
-                $("#cstudio-wcm-popup-div").off("keyup");
             }
         });
 

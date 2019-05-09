@@ -141,7 +141,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
                 constraintoviewport: true,
                 buttons: [ { text:"OK", handler: function(){
                     this.destroy();
-                    self.decreaseFormDialog();
+                    CStudioAuthoring.Utils.decreaseFormDialog();
 
                 }, isDefault:false } ]
             });
@@ -155,13 +155,6 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
      */
     uploadPopupCancel: function(event) {
         this.upload_dialog.destroy();
-    },
-
-    decreaseFormDialog: function(){
-        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
-            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
-        }
     },
 
     addVideo: function() {
@@ -274,7 +267,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
                             this.videoPicker._onChangeVal(null, this.videoPicker);
 
-                            self.decreaseFormDialog();
+                            CStudioAuthoring.Utils.decreaseFormDialog();
                         }
                     },
                     failure: function(message) {
