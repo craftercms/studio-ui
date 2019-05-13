@@ -137,21 +137,24 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 		var handleSet = function() {
 			var state = document.getElementById('setState').value;
 			var processing = document.getElementById('setProcessing').checked;
+            var maxList = list.length - 1;
 			
 			for(var i=0;  i< list.length; i++) {
 				var item = list[i];
 				var path = item.path;
 				var serviceUri = "/api/1/services/api/1/content/set-item-state.json?site="+CStudioAuthoringContext.site+"&path="+path+"&state="+state+"&systemprocessing="+processing;
+                var callback;
 				
-				cb = { 
-						success:function() {
-							CStudioAdminConsole.Tool.WorkflowStates.prototype.renderStatesTable();
-						}, 
-						failure: function() {} 
-				};
-
-				YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
-				YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
+				if(maxList <= i){
+                    callback = {
+                        success:function() {
+                            CStudioAdminConsole.Tool.WorkflowStates.prototype.renderStatesTable();
+                        },
+                        failure: function() {}
+                    };
+                }
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), callback);
 			}
 
             this.destroy();
