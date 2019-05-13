@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.ImgWebDAVUpload = CStudioForms.Datasources.ImgWebDAVUpload ||
+CStudioForms.Datasources.ImgCMISUpload = CStudioForms.Datasources.ImgCMISUpload ||
 function(id, form, properties, constraints)  {
    	this.id = id;
    	this.form = form;
@@ -26,15 +26,15 @@ function(id, form, properties, constraints)  {
    		if(properties[i].name == "repoPath") {
 			this.repoPath = properties[i].value;
 		}
-		if(properties[i].name === "profileId") {
-			this.profileId = properties[i].value;
+		if(properties[i].name === "repositoryId") {
+			this.repositoryId = properties[i].value;
 		}
    	} 
 	
 	return this;
 }
 
-YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormDatasource, {
+YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
 
 	/**
@@ -78,12 +78,12 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
 			context: this
 		};
 
-		CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback);
+		CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
 
 	},
 
     getLabel: function() {
-        return CMgs.format(langBundle, "WebDAV Upload Image");
+        return CMgs.format(langBundle, "CMISUploadImage");
     },
 
    	getInterface: function() {
@@ -91,13 +91,13 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
    	},
 
 	getName: function() {
-		return "img-WebDAV-upload";
+		return "img-CMIS-upload";
 	},
 
 	getSupportedProperties: function() {
 		return [
 			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
-			{ label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" },
+            { label: CMgs.format(langBundle, "repositoryId"), name: "repositoryId", type: "string" }
 		];
 	},
 
@@ -107,4 +107,4 @@ YAHOO.extend(CStudioForms.Datasources.ImgWebDAVUpload, CStudioForms.CStudioFormD
 	}
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-img-WebDAV-upload", CStudioForms.Datasources.ImgWebDAVUpload);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-img-CMIS-upload", CStudioForms.Datasources.ImgCMISUpload);
