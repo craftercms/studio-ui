@@ -639,7 +639,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     hubspotForms: "허브 스팟 양식",
     imageFromRepository: "저장소에서 이미지",
     imageFromCMISRepository: "CMIS 저장소의 이미지",
-    CMISRepository: "CMIS 저장소",
+    CMISRepository: "CMIS 저장소의 파일",
+    CMISUpload: "CMIS 저장소에 업로드 된 파일",
+    CMISUploadImage:"CMIS 저장소에 업로드 된 이미지",
+    CMISUploadVideo:"CMIS 저장소에 업로드 된 비디오",
     salesforceCampaigns: "세일즈 포스 캠페인",
     treeContent: "트리 내용",
 

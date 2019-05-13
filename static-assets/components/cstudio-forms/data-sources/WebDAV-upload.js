@@ -37,12 +37,6 @@ function(id, form, properties, constraints)  {
 YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
 
-    decreaseFormDialog: function(){
-        var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-        if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
-            $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
-        }
-    },
 	/**
 	 * action called when user clicks insert file
 	 */
@@ -71,7 +65,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
 
 					control.insertItem(item, item, fileExtension);
 					control._renderItems();
-					control.decreaseFormDialog();
+                    CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
 

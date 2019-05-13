@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.VideoWebDAVUpload = CStudioForms.Datasources.VideoWebDAVUpload ||
+CStudioForms.Datasources.ImgCMISUpload = CStudioForms.Datasources.ImgCMISUpload ||
 function(id, form, properties, constraints)  {
    	this.id = id;
    	this.form = form;
@@ -26,21 +26,21 @@ function(id, form, properties, constraints)  {
    		if(properties[i].name == "repoPath") {
 			this.repoPath = properties[i].value;
 		}
-		if(properties[i].name === "profileId") {
-			this.profileId = properties[i].value;
+		if(properties[i].name === "repositoryId") {
+			this.repositoryId = properties[i].value;
 		}
    	} 
 	
 	return this;
 }
 
-YAHOO.extend(CStudioForms.Datasources.VideoWebDAVUpload, CStudioForms.CStudioFormDatasource, {
+YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
 
 	/**
 	 * action called when user clicks insert file
 	 */
-    insertVideoAction: function(insertCb) {
+    insertImageAction: function(insertCb) {
 		this._self = this,
 			me = this;
 
@@ -61,41 +61,43 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVUpload, CStudioForms.CStudioFor
                 var uri = fileData;
                 var fileExtension = fileData.split(".").pop();
 
-                var videoData = {
+                var imageData = {
                     previewUrl : uri,
                     relativeUrl : uri,
-                    fileExtension : fileExtension
+                    fileExtension : fileExtension,
+                    remote : true
                 };
 
-                insertCb.success(videoData);
+                insertCb.success(imageData);
 			},
 
 			failure: function() {
-                insertCb.failure("An error occurred while uploading the video.");
-			},
+                insertCb.failure("An error occurred while uploading the image.");
+            },
 
 			context: this
 		};
 
-		CStudioAuthoring.Operations.uploadWebDAVAsset(site, path, me.profileId, callback);
+		CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
+
 	},
 
     getLabel: function() {
-        return CMgs.format(langBundle, "WebDAVUploadVideo");
+        return CMgs.format(langBundle, "CMISUploadImage");
     },
 
    	getInterface: function() {
-   		return "video";
+   		return "image";
    	},
 
 	getName: function() {
-		return "video-WebDAV-upload";
+		return "img-CMIS-upload";
 	},
 
 	getSupportedProperties: function() {
 		return [
 			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
-			{ label: CMgs.format(langBundle, "profileId"), name: "profileId", type: "string" },
+            { label: CMgs.format(langBundle, "repositoryId"), name: "repositoryId", type: "string" }
 		];
 	},
 
@@ -105,4 +107,4 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVUpload, CStudioForms.CStudioFor
 	}
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-video-WebDAV-upload", CStudioForms.Datasources.VideoWebDAVUpload);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-img-CMIS-upload", CStudioForms.Datasources.ImgCMISUpload);

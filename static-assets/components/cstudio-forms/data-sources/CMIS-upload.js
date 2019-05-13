@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.FileDesktopUpload = CStudioForms.Datasources.FileDesktopUpload ||
+CStudioForms.Datasources.CMISUpload = CStudioForms.Datasources.CMISUpload ||
 function(id, form, properties, constraints)  {
    	this.id = id;
    	this.form = form;
@@ -24,21 +24,25 @@ function(id, form, properties, constraints)  {
    	
    	for(var i=0; i<properties.length; i++) {
    		if(properties[i].name == "repoPath") {
- 			this.repoPath = properties[i].value;
-   		}
+			this.repoPath = properties[i].value;
+		}
+		if(properties[i].name === "repositoryId") {
+			this.repositoryId = properties[i].value;
+		}
    	} 
 	
 	return this;
 }
 
-YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFormDatasource, {
+YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
 
 	/**
 	 * action called when user clicks insert file
 	 */
 	add: function(control, multiple) {
-		this._self = this;
+		this._self = this,
+			me = this;
 
 		var site = CStudioAuthoringContext.site;
 		var path = this._self.repoPath;
@@ -55,7 +59,11 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 		var callback = {
 			success: function(fileData) {
 				if (control) {
-					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
+					var item = fileData,
+						fileName = item,
+						fileExtension = fileName.split(".").pop();
+
+					control.insertItem(item, item, fileExtension);
 					control._renderItems();
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
@@ -103,60 +111,22 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 
 			var createEl = document.createElement("div");
 			YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-			createEl.innerHTML = "Create New - " + newElTitle;
+			createEl.innerHTML = "Upload - " + newElTitle;
 			control.addContainerEl.create.appendChild(createEl);
 
 			var addContainerEl = control.addContainerEl;			
 			YAHOO.util.Event.on(createEl, 'click', function() {
 				control.addContainerEl = null;
 				control.containerEl.removeChild(addContainerEl);
-
-				CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+				CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
 			}, createEl);
 		}else{
-			CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+			CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
 		}
-	},
-
-	edit: function(key, control) {
-		this._self = this;
-
-		var site = CStudioAuthoringContext.site;
-		var path = this._self.repoPath;
-		var isUploadOverwrite = true;
-
-		for(var i=0; i<this.properties.length; i++) {
-			if(this.properties[i].name == "repoPath") {
-				path = this.properties[i].value;
-
-				path = this.processPathsForMacros(path);
-			}
-		}
-
-		var callback = { 
-			success: function(fileData) {
-				if (control) {
-					control.deleteItem(key);
-					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
-					control._renderItems();
-                    CStudioAuthoring.Utils.decreaseFormDialog();
-				}
-			},
-
-			failure: function() {
-				if (control) {
-					control.failure("An error occurred while uploading the file."); 
-				}
-			},
-
-			context: this 
-		};
-
-		CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
 	},
 
     getLabel: function() {
-        return CMgs.format(langBundle, "fileUploadedDesktop");
+        return CMgs.format(langBundle, "CMISUpload" );
     },
 
    	getInterface: function() {
@@ -164,12 +134,13 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
    	},
 
 	getName: function() {
-		return "file-desktop-upload";
+		return "CMIS-upload";
 	},
 
 	getSupportedProperties: function() {
 		return [
-			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" }
+			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
+			{ label: CMgs.format(langBundle, "repositoryId"), name: "repositoryId", type: "string" }
 		];
 	},
 
@@ -179,4 +150,4 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 	}
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-file-desktop-upload", CStudioForms.Datasources.FileDesktopUpload);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-CMIS-upload", CStudioForms.Datasources.CMISUpload);

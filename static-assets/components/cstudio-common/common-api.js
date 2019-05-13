@@ -2779,6 +2779,41 @@ var nodeOpen = false,
                 CStudioAuthoring.Operations.openCropDialog(site, Message, imageData, imageWidth, imageHeight, aspectRatio, repoImage, callback);
             },
 
+            uploadCMISAsset: function(site, path, repositoryId, uploadCb) {
+                CStudioAuthoring.Operations.openCMISUploadDialog(site, path, repositoryId, uploadCb);
+            },
+
+            /**
+             *  opens a dialog to upload an asset
+             */
+            openCMISUploadDialog: function(site, path, repositoryId, callback) {
+
+                var serviceUri = CStudioAuthoring.Service.writeCMISContentUri;
+
+                var openUploadDialogCb = {
+                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                        dialogClass.showDialog(
+                            moduleConfig.site,
+                            moduleConfig.path,
+                            moduleConfig.repo,
+                            moduleConfig.serviceUri,
+                            moduleConfig.callback);
+                    }
+                };
+
+                var moduleConfig = {
+                    path: encodeURI(path),
+                    site: site,
+                    repo: repositoryId,
+                    serviceUri: serviceUri,
+                    callback: callback
+                }
+
+                CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
+
+                CStudioAuthoring.Module.requireModule("upload-cmis-dialog", "/static-assets/components/cstudio-dialogs/uploadCMIS-dialog.js", moduleConfig, openUploadDialogCb);
+            },
+
                 /**
              *  opens a dialog to crop an image
              */
@@ -3080,6 +3115,7 @@ var nodeOpen = false,
             getCMISContentBySearchUri: "/api/1/services/api/1/cmis/search.json",
             getCMISContentByBrowseUri: "/api/1/services/api/1/cmis/list.json",
             getCMISCloneUri: "/api/1/services/api/1/cmis/clone.json",
+            writeCMISContentUri: "/api/1/services/api/1/cmis/upload.json",
 
             //WEBDAV
             getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
@@ -7824,7 +7860,17 @@ var nodeOpen = false,
                 }
                 iconContainer.appendChild(iconElt);
                 return iconContainer;
+            },
+
+        decreaseFormDialog: function(){
+            if( window.frameElement){
+                var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+                if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
+                    $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
+                }
             }
+
+        }
 
         },
         "Utils.Doc": {
