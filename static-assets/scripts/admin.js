@@ -980,8 +980,7 @@
                     .success(function (data) {
                         publish.commitIdsDisable = false;
                         spinnerOverlay.close();
-
-                        publish.notification($translate.instant('publishing.PUBLISHBYCOMMITS_SUCCESS', '', null,"studioMedium"));
+                        publish.notification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'), '', null,"studioMedium");
                     })
                     .error(function (err) {
                         publish.error = err.message;
