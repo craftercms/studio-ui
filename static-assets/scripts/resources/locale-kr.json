@@ -247,6 +247,7 @@
         "WRNINGGPBODY":" 대량 게시는 요청한 패턴과 일치하는 모든 항목을 해당 종속성을 포함하여 강제로 게시합니다. 잠재적으로 누군가 진행중인 작업을 포함하여 모든 수정 된 항목이 계속되기 전에 게시 될 준비가되었는지 확인하십시오.",
         "PUBLISHSTARTED":"대량 게시 프로세스가 시작되었습니다.",
         "PUBLISHBYCOMMITS": "커밋 ID로 게시",
+        "PUBLISHBYCOMMITS_SUCCESS": "성공적으로 커밋 됨",
         "COMMITIDS": "커밋 ID",
         "COMMENT": "논평",
         "COMMITIDSEXAMPLE": "(예 : bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbb5b91fb31841303b0c428f14b0e66f8a7)"

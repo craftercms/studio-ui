@@ -812,6 +812,19 @@
                     $scope.errorDialog.close();
                 }
 
+                publish.notification = function(notificationText, showOnTop, styleClass){
+                    var verticalAlign = showOnTop ? false : true;
+                    $scope.notificationText = notificationText;
+                    $scope.notificationType = 'exclamation-triangle';
+
+                    var modal = publish.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
+
+                    $timeout(function () {
+                        modal.close();
+                    }, 1500, false);
+
+                };  
+
                 publish.stopDisabled = false;
                 publish.startDisabled = false;
                 publish.site = $location.search().site;
@@ -967,6 +980,8 @@
                     .success(function (data) {
                         publish.commitIdsDisable = false;
                         spinnerOverlay.close();
+
+                        publish.notification($translate.instant('publishing.PUBLISHBYCOMMITS_SUCCESS', '', null,"studioMedium"));
                     })
                     .error(function (err) {
                         publish.error = err.message;

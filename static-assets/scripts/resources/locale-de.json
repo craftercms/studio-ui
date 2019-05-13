@@ -246,6 +246,7 @@
         "WRNINGGPBODY":"Die Massen-Publizierung beinhaltet alle Elemente, die dem angegebenen Pfad entsprechen, inklusive ihrer Abhängigkeiten. Bitte versichern Sie sich, dass alle betroffenem Inhalte publiziert werden dürfen.",
         "PUBLISHSTARTED":"Massen-Publizierung wurde gestartet.",
         "PUBLISHBYCOMMITS": "Publizierung anhand eines oder mehrerer Commit-Hashs",
+        "PUBLISHBYCOMMITS_SUCCESS": "Erfolgreich verpflichtet",
         "COMMITIDS": "Commit-Hash(s)",
         "COMMENT": "Kommentar",
         "COMMITIDSEXAMPLE": "(z.B. bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbbb5b91fb31841303b0c428f14b0e66f8a7)"

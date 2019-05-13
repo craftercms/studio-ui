@@ -247,6 +247,7 @@
         "WRNINGGPBODY":"La publicación masiva obligará a publicar todos los artículos que coincidan con el patrón solicitado, incluidas sus dependencias. Asegúrese de que todos los elementos modificados (incluido el trabajo potencialmente en progreso) estén listos para publicarse antes de continuar.",
         "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado.",
         "PUBLISHBYCOMMITS": "Públicar por id(s) de commit",
+        "PUBLISHBYCOMMITS_SUCCESS": "Publicado exitosamente",
         "COMMITIDS": "ID de commits",
         "COMMENT": "Comentario",
         "COMMITIDSEXAMPLE": "(por ejemplo, bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbbb5b91fb31841303b0c428f14b0e66f8a7)"
