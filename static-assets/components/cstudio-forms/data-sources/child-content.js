@@ -72,8 +72,6 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
             }
         }
 
-        console.log('test');
-
 		if(!control.addContainerEl){
             addContainerEl = document.createElement("div");
             if(this.enableCreateNew || this.defaultEnableCreateNew) {
