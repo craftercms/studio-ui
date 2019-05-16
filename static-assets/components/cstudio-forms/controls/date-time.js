@@ -1200,7 +1200,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
             var populateDateExp = this.populateDateExp.replace(/ /g,'');
 			var action=populateDateExp.match(/(\+|\-)/gi)[0];
 			var value = populateDateExp.match(/\d+/gi)[0];
-			var type = populateDateExp.match(/((days)|(weeks)|(years))/gi);
+			var type = populateDateExp.match(/((days)|(weeks)|(years)|(hours)|(minutes))/gi);
 			if(action=='-'){
 				modifier=modifier*-1;
 			}
@@ -1210,15 +1210,18 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				currentDate.setDate(currentDate.getDate()+(modifier*value*daysInWeek))
 			}else if(type=="days") {
 				currentDate.setDate(currentDate.getDate()+(modifier*value));
+			}else if(type=="hours") {
+				currentDate.setTime(currentDate.getTime() + (modifier*(value*60*60*1000)));
+			}else if(type=="minutes") {
+				currentDate.setTime(currentDate.getTime() + (modifier*value*60000));
 			}
-			console.log(currentDate)
 		}
 		return currentDate;
 	},
 
 	checkPopulateDateExpisValid : function() {
 		if(this.populateDateExp){
-			if(this.populateDateExp.replace(/ /g,'').match(/(now)?(\+|\-)\d+((days)|(weeks)|(years))/gi)){
+			if(this.populateDateExp.replace(/ /g,'').match(/(now)?(\+|\-)\d+((days)|(weeks)|(years)|(hours)|(minutes))/gi)){
 				return true;
 			}
 		}
