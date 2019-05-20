@@ -25,7 +25,7 @@
     <title>Crafter Studio</title>
     <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <#if userEmail??><script type="application/json" id="user">{"name":"${userFirstName!""}","surname":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
+    <#if userEmail??><script type="application/json" id="user">{"first_name":"${userFirstName!""}","last_name":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
 
     </#if>
 
