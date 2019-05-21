@@ -1204,15 +1204,15 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			if(action=='-'){
 				modifier=modifier*-1;
 			}
-			if(type=="years"){
+			if(type==="years"){
 				currentDate.setFullYear(currentDate.getFullYear()+(modifier*value))
-			}else if (type=="weeks"){
+			}else if (type==="weeks"){
 				currentDate.setDate(currentDate.getDate()+(modifier*value*daysInWeek))
-			}else if(type=="days") {
+			}else if(type==="days") {
 				currentDate.setDate(currentDate.getDate()+(modifier*value));
-			}else if(type=="hours") {
-				currentDate.setTime(currentDate.getTime() + (modifier*(value*60*60*1000)));
-			}else if(type=="minutes") {
+			}else if(type==="hours") {
+				currentDate.setTime(currentDate.getTime() + (modifier*(value*3600000)));
+			}else if(type==="minutes") {
 				currentDate.setTime(currentDate.getTime() + (modifier*value*60000));
 			}
 		}
