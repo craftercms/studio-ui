@@ -636,6 +636,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     dropdown: "Menú Desplegable",
     linkedDropdown:"Menú Desplegable Vinculado",
     dateTime: "Fecha Y Hora",
+    time: "Hora",
     checkBox: "Casilla de Verificación",
     groupedCheckboxes: "Grupo de Casillas de Verificación",
     itemSelector: "Selector de Elementos",
