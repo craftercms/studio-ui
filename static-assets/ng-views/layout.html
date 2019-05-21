@@ -58,8 +58,7 @@
                         <a id="account-dropdown" class="dropdown-toggle" uib-dropdown-toggle>{{user.username}} <span class="caret"></span></a>
                         <ul id="account-dropdown-container" class="dropdown-menu" role="menu">
                             <li class="user-display">
-                                <div class="first-name" ng-if="user.first_name">{{user.first_name}} {{user.last_name}}</div>
-                                <div class="name" ng-if="user.name">{{user.last_name}} {{user.name}} {{user.surname}}</div>
+                                <div class="first-name" ng-if="user.firstName">{{user.firstName}} {{user.lastName}}</div>
                                 <div class="email">{{user.email}}</div>
                             </li>
                             <li><a class="settings" ui-sref-active="active" ui-sref="home.settings">{{ 'common.SETTINGS' | translate }}</a></li>
