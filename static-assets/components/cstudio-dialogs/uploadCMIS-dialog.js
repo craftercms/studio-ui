@@ -90,9 +90,9 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
             '<div><form id="asset_upload_form">' +
             '<div class="contentTypeOuter">'+
             '<div class="formDesc">Please select a file to upload</div> ' +
-            '<div><table><tr><td><input type="hidden" name="site_id" value="' + site + '"/></td>' +
-            '<td><input type="hidden" name="cmis_path" value="' + path + '"/></td></tr>' +
-            '<td><input type="hidden" name="cmis_repo_id" value="' + repositoryId + '"/></td></tr>' +
+            '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
+            '<td><input type="hidden" name="cmisPath" value="' + path + '"/></td></tr>' +
+            '<td><input type="hidden" name="cmisRepoId" value="' + repositoryId + '"/></td></tr>' +
             '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
             '</table></div>' +
             '</div>' +
