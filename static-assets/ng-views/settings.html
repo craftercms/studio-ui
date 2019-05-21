@@ -26,7 +26,7 @@
             <h2>{{ 'settings.PROFILE' | translate }}</h2>
             <div class="well">
                 <div class="user-display">
-                    <div class="name">{{user.name}} {{user.surname}}</div>
+                    <div class="name">{{user.name || user.first_name}} {{user.surname || user.last_name}}</div>
                     <div class="email">{{user.email}}</div>
                     <div class="language">
                         <select id="language"
