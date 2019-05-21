@@ -38,12 +38,12 @@ function(id, form, properties, constraints)  {
 			this.type = (Array.isArray(properties[i].value))?"":properties[i].value;
 		}
 
-        if(properties[i].name == "enableCreateNew"){
+        if(properties[i].name === "enableCreateNew"){
             this.enableCreateNew = properties[i].value == "true" ? true : false;
             this.defaultEnableCreateNew = false;
         }
 
-        if(properties[i].name == "enableBrowseExisting"){
+        if(properties[i].name === "enableBrowseExisting"){
             this.enableBrowseExisting = properties[i].value == "true" ? true : false;
             this.defaultEnableBrowseExisting = false;
         }
@@ -67,7 +67,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
             newElTitle = '';
 
         for(var x = 0; x < datasourceDef.length; x++){
-            if (datasourceDef[x].id == this.id){
+            if (datasourceDef[x].id === this.id){
                 newElTitle = datasourceDef[x].title;
             }
         }
@@ -103,7 +103,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
             YAHOO.util.Event.on(createEl, 'click', function () {
                 control.addContainerEl = null;
                 control.containerEl.removeChild(addContainerEl);
-                if (_self.type == "") {
+                if (_self.type === "") {
                     CStudioAuthoring.Operations.createNewContent(
                         CStudioAuthoringContext.site,
                         _self.processPathsForMacros(_self.repoPath),
