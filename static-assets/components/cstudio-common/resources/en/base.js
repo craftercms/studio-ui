@@ -659,6 +659,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     dropdown: "Dropdown",
     linkedDropdown:"Linked Dropdown",
     dateTime: "Date / Time",
+    time: "Time",
     checkBox: "Check Box",
     groupedCheckboxes: "Grouped Checkboxes",
     itemSelector: "Item Selector",

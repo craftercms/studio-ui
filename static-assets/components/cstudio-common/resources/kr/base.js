@@ -609,6 +609,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     uuid: "UUID",
     dropdown: "쓰러지 다",
     dateTime: "날짜 시간",
+    time: "시간",
     checkBox: "확인란",
     groupedCheckboxes: "그룹화 확인란",
     itemSelector: "항목 선택기",
