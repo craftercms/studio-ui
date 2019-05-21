@@ -3170,10 +3170,10 @@ var nodeOpen = false,
             stopPublishStatusServiceUrl: "/api/1/services/api/1/publish/stop.json",
 
             //CMIS
-            getCMISContentBySearchUri: "/api/1/services/api/1/cmis/search.json",
-            getCMISContentByBrowseUri: "/api/1/services/api/1/cmis/list.json",
-            getCMISCloneUri: "/api/1/services/api/1/cmis/clone.json",
-            writeCMISContentUri: "/api/1/services/api/1/cmis/upload.json",
+            getCMISContentBySearchUri: "/api/2/cmis/search",
+            getCMISContentByBrowseUri: "/api/2/cmis/list",
+            getCMISCloneUri: "/api/2/cmis/clone",
+            writeCMISContentUri: "/api/2/cmis/upload",
 
             //WEBDAV
             getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
@@ -5641,7 +5641,7 @@ var nodeOpen = false,
 
             getCMISContentBySearch: function(site, repoId, path, searchTerm, callback) {
 
-                var serviceUri = this.getCMISContentBySearchUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&search_term=" + searchTerm + "&path=" + path;
+                var serviceUri = this.getCMISContentBySearchUri + "?siteId=" + site + "&cmisRepoId=" + repoId + "&searchTerm=" + searchTerm + "&path=" + path;
                 serviceUri = serviceUri + "&nocache="+new Date();
 
                 var serviceCallback = {
@@ -5661,7 +5661,7 @@ var nodeOpen = false,
 
             getCMISContentByBrowser: function(site, repoId, path, callback) {
 
-                var serviceUri = this.getCMISContentByBrowseUri + "?site_id=" + site + "&cmis_repo_id=" + repoId + "&path=" + path;
+                var serviceUri = this.getCMISContentByBrowseUri + "?siteId=" + site + "&cmisRepoId=" + repoId + "&path=" + path;
                 serviceUri = serviceUri + "&nocache="+new Date();
 
                 var serviceCallback = {
