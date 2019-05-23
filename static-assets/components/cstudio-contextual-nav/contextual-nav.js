@@ -32,7 +32,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	hookNavOverlayFromAuthoring: function() {
 		if(!this.initialized) {
 			this.initialized = true;
-			this.updateContextualNavOverlay()
+			this.updateContextualNavOverlay();
 		}
 	},
 
@@ -51,7 +51,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				YAHOO.util.Event.onAvailable("authoringContextNavHeader", function() {
                     document.domain = CStudioAuthoringContext.cookieDomain;
 					CStudioAuthoring.Events.contextNavReady.fire();
-					me.getNavBarContent()
+					me.getNavBarContent();
 				}, this);
 			},
 			failure: function() {
@@ -65,7 +65,8 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	 */
 	addNavContent: function(navHtmlContent) {
 
-		var bar = document.createElement("div");
+		var bar = document.createElement("div"),
+            self = this;
 
 		bar.id = "controls-overlay";
 		bar.innerHTML = navHtmlContent;
@@ -96,6 +97,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				});
 
                 CStudioAuthoring.Operations.createNavBarDropDown("help");
+                self.addResizeEventToNavbar();
 
 			},
 			failure: function() {},
@@ -234,7 +236,18 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 			}
 
 		};
-	}
+	},
+
+    addResizeEventToNavbar: function() {
+        new ResizeSensor($('.navbar-default'), function () {
+            if ($('.navbar-default').height() > 55) {
+                $('.studio-preview').css('top', 100 + "px");
+            } else {
+                $('.studio-preview').css('top', 50 + "px");
+            }
+        });
+    }
+
 };
 
 CStudioAuthoring.ContextualNav.LeftModulesMap = {

@@ -38,7 +38,7 @@
 
                 <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
-                <div class="navbar-right-wrapper">
+                <div class="navbar-right-wrapper navbar-right">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a id="sitesRightNav" class="nav-link" href="/studio/#/globalMenu">
@@ -72,7 +72,8 @@
                     <div id="acn-separator" class="navbar-right">
                         <p class="ellipsis-icon">&#124;</p>
                     </div>
-                    <div class="navbar-right">
+
+                    <div class="acn-status-container navbar-right">
                         <div id="acn-status" class="nav-link form-group">
                             <span value=""  class="nav-icon fa fa-cloud-upload f18" ></span>
                             <span class="nav-label" data-translation="publishingStatus">Publishing Status</span>
