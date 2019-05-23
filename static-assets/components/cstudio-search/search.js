@@ -249,29 +249,32 @@
                 cookieKey = type === 'Page' ? 'sitewebsite' : 'static-assets';
 
             if(treeVal){
-                treeCookieName = CStudioAuthoringContext.site + '-' + treeVal + '-opened';
-                treeCookie = CStudioAuthoring.Storage.read(treeCookieName);
-                treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : [];
 
-                // validate if is page and if has folder (ends with index.xml)
-                if(type === "Page" && (url.indexOf("index.xml") !== -1)){
-                    //remove everything after last-1 '/'
-                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
-                    parsedUrl = parsedUrl.substr(0, parsedUrl.lastIndexOf('/'));
-                }else{
-                    //remove everything after last '/'
-                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
-                }
+                CStudioAuthoring.Operations.updateTreePath(treeVal, cookieKey, url);
 
-                // key doesn't exist in cookie
-                if(!treeCookie[cookieKey] && parsedUrl != '/site'){
-                    treeCookie[cookieKey] = [];
-                }
-                // in entry doesn't exist in key
-                if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
-                    treeCookie[cookieKey].push(parsedUrl);
-                }
-                storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
+                // treeCookieName = CStudioAuthoringContext.site + '-' + treeVal + '-opened';
+                // treeCookie = CStudioAuthoring.Storage.read(treeCookieName);
+                // treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : [];
+
+                // // validate if is page and if has folder (ends with index.xml)
+                // if(type === "Page" && (url.indexOf("index.xml") !== -1)){
+                //     //remove everything after last-1 '/'
+                //     parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                //     parsedUrl = parsedUrl.substr(0, parsedUrl.lastIndexOf('/'));
+                // }else{
+                //     //remove everything after last '/'
+                //     parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                // }
+
+                // // key doesn't exist in cookie
+                // if(!treeCookie[cookieKey] && parsedUrl != '/site'){
+                //     treeCookie[cookieKey] = [];
+                // }
+                // // in entry doesn't exist in key
+                // if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
+                //     treeCookie[cookieKey].push(parsedUrl);
+                // }
+                // storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
             }
             CStudioSearch.previewElement($(this).attr('data-url'));
         });

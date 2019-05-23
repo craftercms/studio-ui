@@ -614,30 +614,34 @@
                         document.addEventListener('crafter.refresh', function (e) {
                             /*eventCM.typeAction = e.typeAction;
                             document.dispatchEvent(eventCM);*/
-                            try {
-                                if(e.data && e.data.length) {
-                                    for (var i = 0; i < e.data.length; i++){
-                                        var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
-                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
-                                     }
-                                }else{
-                                    var changeStructure =  ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
-                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
-                                }
-                            } catch (er) {
-                                var contentSelected = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-                                if (contentSelected) {
-                                    var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
-                                    Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath, e.dependencies);
-                                }
-                            }
 
-                            if (typeof WcmDashboardWidgetCommon != "undefined") {
-                                WcmDashboardWidgetCommon.refreshAllDashboards();
+                            if(e.data.initialize){
+                                self.openLatest(inst);      
+                            }else{
+                                try {
+                                    if(e.data && e.data.length) {
+                                        for (var i = 0; i < e.data.length; i++){
+                                            var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
+                                            Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
+                                         }
+                                    }else{
+                                        var changeStructure =  ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
+                                        Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
+                                    }
+                                } catch (er) {
+                                    var contentSelected = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
+                                    if (contentSelected) {
+                                        var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
+                                        Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath, e.dependencies);
+                                    }
+                                }
+    
+                                if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                                }
                             }
 
                         }, false);
-
                     })(tree, instance);
                 }
 
@@ -863,6 +867,16 @@
              */
             drawTreeItem: function(treeNodeTO, root, instance) {
 
+                var isPreview = CStudioAuthoringContext.isPreview,
+                    isLevelDescriptor = '/component/level-descriptor' === treeNodeTO.contentType,
+                    isFolder = 'folder' === treeNodeTO.contentType,
+                    currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
+                    highlight = false;
+
+                if(isPreview && ( currentPreviewed[0].path === treeNodeTO.path ) && !isLevelDescriptor){
+                    highlight = true;
+                }
+
                 if (treeNodeTO.container == true || treeNodeTO.name != 'index.xml') {
 
                     var nodeSpan = document.createElement("span");
@@ -889,6 +903,12 @@
                     nodeSpan.innerHTML += treeNodeTO.label;
                     nodeSpan.setAttribute("title", treeNodeTO.title);
                     nodeSpan.className = treeNodeTO.style + " yui-resize-label treenode-label over-effect-set";
+
+                    nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
+
+                    if(!isLevelDescriptor){
+                        nodeSpan.dataset.uri = treeNodeTO.uri;
+                    }
 
                     treeNodeTO.html = nodeSpan;
                     var treeNode = new YAHOO.widget.HTMLNode(treeNodeTO, root, false);
@@ -3473,10 +3493,10 @@
 
         ++(CStudioAuthoring.ContextualNav.WcmRootFolder.instanceCount);
 
+        var _self = this;
         this._self = this;
         this._toggleState = CStudioAuthoring.ContextualNav.WcmRootFolder.ROOT_CLOSED;
         this.rootFolderEl = null;
-        //this.instanceId = ++(CStudioAuthoring.ContextualNav.WcmRootFolder.instanceCount);
 
         this.type = config.name;
         this.label = config.params["label"];
@@ -3485,6 +3505,36 @@
         this.onClickAction = (config.params["onClick"]) ? config.params["onClick"] : "";
         this.config = config;
         this.mods = [];
+       
+        if(config.params.path === '/site/website'){
+
+            cb = function (message) {
+
+                if(self.loaded){
+                    var contentTO = message.contentTO,
+                        $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
+                        highlightVisible = $highlightEl.is(":visible"),
+                        treeExists = $("#pages-tree + div").children().length > 0;
+
+                    if (!highlightVisible && treeExists) {
+                        console.log($(config.containerEl));
+                        var $container = $(config.containerEl).empty();
+                        CStudioAuthoring.Operations.updateTreePath('pages', 'sitewebsite', contentTO.uri);
+                        CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(Object.assign({}, config, { containerEl: $container[0] }));
+                    } else {
+                        $('#acn-dropdown-menu [data-uri]').removeClass('highlighted');
+                        $highlightEl.addClass('highlighted');
+                    }
+                }else{
+                    self.loaded = true;
+                }
+
+                
+            }
+            
+            amplify.unsubscribe("SET_TREE_HIGHLIGHT", cb);
+            amplify.subscribe("SET_TREE_HIGHLIGHT", cb);
+        }
     }
     CStudioAuthoring.Module.moduleLoaded("wcm-root-folder", CStudioAuthoring.ContextualNav.WcmRootFolder);
 })();
