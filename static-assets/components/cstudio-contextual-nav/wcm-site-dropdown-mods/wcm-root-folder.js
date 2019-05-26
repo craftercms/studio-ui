@@ -615,30 +615,26 @@
                             /*eventCM.typeAction = e.typeAction;
                             document.dispatchEvent(eventCM);*/
 
-                            if(e.data.initialize){
-                                self.openLatest(inst);      
-                            }else{
-                                try {
-                                    if(e.data && e.data.length) {
-                                        for (var i = 0; i < e.data.length; i++){
-                                            var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
-                                            Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
-                                         }
-                                    }else{
-                                        var changeStructure =  ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
-                                        Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
-                                    }
-                                } catch (er) {
-                                    var contentSelected = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
-                                    if (contentSelected) {
+                            try {
+                                if(e.data && e.data.length) {
+                                    for (var i = 0; i < e.data.length; i++){
                                         var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
-                                        Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath, e.dependencies);
-                                    }
+                                        Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
+                                        }
+                                }else{
+                                    var changeStructure =  ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
+                                    Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
                                 }
-    
-                                if (typeof WcmDashboardWidgetCommon != "undefined") {
-                                    WcmDashboardWidgetCommon.refreshAllDashboards();
+                            } catch (er) {
+                                var contentSelected = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
+                                if (contentSelected) {
+                                    var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
+                                    Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction, e.oldPath, e.dependencies);
                                 }
+                            }
+
+                            if (typeof WcmDashboardWidgetCommon != "undefined") {
+                                WcmDashboardWidgetCommon.refreshAllDashboards();
                             }
 
                         }, false);
@@ -1335,18 +1331,16 @@
 
                             Self.drawSubtree(treeData.item.children, args.node, args.pathToOpenTo, args.instance);
 
-                            // window.setTimeout(function(){
-                                args.fnLoadComplete();
-                                
-                                /* wire up new to search items */
-                                Self.wireUpCannedSearches();
+                            args.fnLoadComplete();
+                            
+                            /* wire up new to search items */
+                            Self.wireUpCannedSearches();
 
-                                //add hover effect to nodes
-                                Self.nodeHoverEffects(this);
+                            //add hover effect to nodes
+                            Self.nodeHoverEffects(this);
 
-                                //add blur effect for cut items
-                                Self.setChildrenStyles(args.node);
-                            // }, 0);
+                            //add blur effect for cut items
+                            Self.setChildrenStyles(args.node);
                             	            			
 	            	    },
 

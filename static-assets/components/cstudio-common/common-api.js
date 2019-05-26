@@ -386,9 +386,6 @@ var nodeOpen = false,
                 var event = new CustomEvent("setContentDone");
                 document.dispatchEvent(event);
 
-                // var highlighted = $('#acn-dropdown-menu .treenode-label.highlighted');
-
-                //TODO: Change it to Topics.EVENT_NAME
                 amplify.publish("SET_TREE_HIGHLIGHT", {
                     contentTO
                 });
@@ -3025,8 +3022,6 @@ var nodeOpen = false,
              * @param {*} cookieKey - cookey key of the tree that will be updated (depends of tree)
              * @param {*} path - path to be added into the tree cookie (state) -> item uri
              */
-
-            //  TODO: check if uri is the one needed
             updateTreePath: function(treeName, cookieKey, path){
                 var url = path,
                     treeCookieName,
