@@ -867,9 +867,9 @@
              */
             drawTreeItem: function(treeNodeTO, root, instance) {
 
-                var isPreview = CStudioAuthoringContext.isPreview,
+                var _self = this;
+                    isPreview = CStudioAuthoringContext.isPreview,
                     isLevelDescriptor = '/component/level-descriptor' === treeNodeTO.contentType,
-                    isFolder = 'folder' === treeNodeTO.contentType,
                     currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
                     highlight = false;
 
@@ -917,9 +917,18 @@
                     treeNode.labelElId = "ygtvlabelel" + treeNode.index;
                     treeNode.nodeType = "CONTENT";
                     treeNode.treeNodeTO = treeNodeTO;
-                    // treeNode.initContent = treeNodeTO;
                     treeNode.renderHidden = true;
                     treeNode.nowrap = true;
+
+                    if(highlight){
+                        function loadedNode() {
+                            window.setTimeout(function(){
+                                self.scrollToHighlighted();
+                            }, 500);
+                        };
+
+                        treeNode.html.onload = loadedNode();
+                    }
 
                     if (!treeNodeTO.isContainer) {
                         treeNode.isLeaf = true;
@@ -935,6 +944,18 @@
 
                 return treeNode;
             },
+
+            scrollToHighlighted: function() {
+                var $highlightedEl = $('#acn-dropdown-menu .highlighted'),
+                    highlightedElTop = $highlightedEl.length > 0 ? $highlightedEl.offset().top : 0,
+                    $dropdownMenuContainer = $('#acn-dropdown-menu'),
+                    $dropdownMenuContainerHeight = $dropdownMenuContainer.height(),
+                    scrollElement = ( highlightedElTop > $dropdownMenuContainerHeight ) || ( highlightedElTop < 0 );
+
+                if ($highlightedEl.length > 0 && scrollElement) {
+                    $dropdownMenuContainer.scrollTop(highlightedElTop / 2);
+                }
+            },
             
             /**
              * method fired when user clicks on the root level folder
@@ -942,6 +963,7 @@
             onRootFolderClick: function() {
                 Self.toggleFolderState(this.componentInstance, Self.ROOT_TOGGLE);
             },
+
             /**
              * toggle folder state
              */
@@ -1216,7 +1238,7 @@
 				} else {
                     Self.firePathLoaded(instance);
                 }
-			},
+            },
             firePathLoaded: function(instance) {
                 ++(Self.treePathOpenedEvt.fireCount);
                 Self.treePathOpenedEvt.fire(Self.instanceCount, Self.treePathOpenedEvt.fireCount);
@@ -1287,7 +1309,7 @@
             onLoadNodeDataOnClick: function(node, fnLoadComplete) {
 				// applicable for items under detail folder
 				if (!node.treeNodeTO) {
-					fnLoadComplete();
+                    fnLoadComplete();
 					return ;
 				}
 
@@ -1311,19 +1333,21 @@
 	                			node.isLeaf = true;
 	                		}
 
-	                		Self.drawSubtree(treeData.item.children, args.node, args.pathToOpenTo, args.instance);
+                            Self.drawSubtree(treeData.item.children, args.node, args.pathToOpenTo, args.instance);
 
-	            			args.fnLoadComplete();
+                            // window.setTimeout(function(){
+                                args.fnLoadComplete();
+                                
+                                /* wire up new to search items */
+                                Self.wireUpCannedSearches();
 
-	            			/* wire up new to search items */
+                                //add hover effect to nodes
+                                Self.nodeHoverEffects(this);
 
-	    					Self.wireUpCannedSearches();
-
-	    					//add hover effect to nodes
-	    					Self.nodeHoverEffects(this);
-
-	    					//add blur effect for cut items
-	    					Self.setChildrenStyles(args.node);
+                                //add blur effect for cut items
+                                Self.setChildrenStyles(args.node);
+                            // }, 0);
+                            	            			
 	            	    },
 
 	                    failure: function(err, args) {
@@ -3492,8 +3516,6 @@
     CStudioAuthoring.ContextualNav.WcmRootFolderInstance = function(config) {
 
         ++(CStudioAuthoring.ContextualNav.WcmRootFolder.instanceCount);
-
-        var _self = this;
         this._self = this;
         this._toggleState = CStudioAuthoring.ContextualNav.WcmRootFolder.ROOT_CLOSED;
         this.rootFolderEl = null;
@@ -3506,34 +3528,23 @@
         this.config = config;
         this.mods = [];
        
-        if(config.params.path === '/site/website'){
+        if(config.params.path === '/site/website'){            
+            amplify.subscribe("SET_TREE_HIGHLIGHT", function (message) {
+                var contentTO = message.contentTO,
+                    $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
+                    highlightVisible = $highlightEl.is(":visible"),
+                    treeExists = $("#pages-tree + div").children().length > 0;
 
-            cb = function (message) {
-
-                if(self.loaded){
-                    var contentTO = message.contentTO,
-                        $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
-                        highlightVisible = $highlightEl.is(":visible"),
-                        treeExists = $("#pages-tree + div").children().length > 0;
-
-                    if (!highlightVisible && treeExists) {
-                        console.log($(config.containerEl));
-                        var $container = $(config.containerEl).empty();
-                        CStudioAuthoring.Operations.updateTreePath('pages', 'sitewebsite', contentTO.uri);
-                        CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(Object.assign({}, config, { containerEl: $container[0] }));
-                    } else {
-                        $('#acn-dropdown-menu [data-uri]').removeClass('highlighted');
-                        $highlightEl.addClass('highlighted');
-                    }
-                }else{
-                    self.loaded = true;
-                }
-
-                
-            }
-            
-            amplify.unsubscribe("SET_TREE_HIGHLIGHT", cb);
-            amplify.subscribe("SET_TREE_HIGHLIGHT", cb);
+                if (!highlightVisible && treeExists) {
+                    var $container = $(config.containerEl).empty();
+                    CStudioAuthoring.Operations.updateTreePath('pages', 'sitewebsite', contentTO.uri);
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(Object.assign({}, config, { containerEl: $container[0] }));
+                } else {
+                    $('#acn-dropdown-menu [data-uri]').removeClass('highlighted');
+                    $highlightEl.addClass('highlighted');
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.scrollToHighlighted();
+                }                
+            });
         }
     }
     CStudioAuthoring.Module.moduleLoaded("wcm-root-folder", CStudioAuthoring.ContextualNav.WcmRootFolder);
