@@ -239,11 +239,27 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	},
 
     addResizeEventToNavbar: function() {
+        if ($('.studio-preview').length > 0) {
+            $('.navbar-right-wrapper').width('460');
+        }
         new ResizeSensor($('.navbar-default'), function () {
             if ($('.navbar-default').height() > 55) {
                 $('.studio-preview').css('top', 100 + "px");
+                $('.site-dashboard').css('top', 100 + "px");
+                if ($('#admin-console').length > 0) {
+                    $('.cstudio-admin-console-item-first').css('margin-top', 110 + "px");
+                    $('#cstudio-admin-console-workarea').css('margin-top', 100 + "px");
+                    $('#content-type-tools').css('top', 50 + "px");
+                }
+
             } else {
                 $('.studio-preview').css('top', 50 + "px");
+                $('.site-dashboard').css('top', 50 + "px");
+                if ($('#admin-console').length > 0) {
+                    $('.cstudio-admin-console-item-first').css('margin-top', 60 + "px");
+                    $('#cstudio-admin-console-workarea').css('margin-top', 0 + "px");
+                    $('#content-type-tools').css('top', 0 + "px");
+                }
             }
         });
     }

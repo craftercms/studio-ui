@@ -15534,10 +15534,12 @@ body.masked {
   padding-left: 5px;
   padding-right: 5px; }
 
-.navbar-right-wrapper {
-  width: 460px;
+.navbar-default.navbar-fixed-top {
+  position: fixed !important; }
+.navbar-default .navbar-right-wrapper {
+  width: 360px;
   margin-right: 0px !important; }
-  .navbar-right-wrapper .acn-status-container {
+  .navbar-default .navbar-right-wrapper .acn-status-container {
     margin-right: 0px; }
 
 .nav-container.nav-link .nav-icon {
