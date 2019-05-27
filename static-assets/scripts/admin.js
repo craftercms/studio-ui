@@ -156,23 +156,23 @@
             //REPOSITORIES
 
             this.getRepositories = function(data) {
-                return $http.get(repositories('list-remote', 'site_id=' + data.site));
+                return $http.get(repositories('list_remotes', 'siteId=' + data.site));
             };
 
             this.createRepository = function(data) {
-                return $http.post(repositories('add-remote'), data);
+                return $http.post(repositories('add_remote'), data);
             };
 
             this.deleteRepository = function(data) {
-                return $http.post(repositories('remove-remote'), data);
+                return $http.post(repositories('remove_remote'), data);
             };
 
             this.pullRepository = function(data) {
-                return $http.post(repositories('pull-from-remote'), data);
+                return $http.post(repositories('pull_from_remote'), data);
             };
 
             this.pushRepository = function(data) {
-                return $http.post(repositories('push-to-remote'), data);
+                return $http.post(repositories('push_to_remote'), data);
             };
 
             //AUDIT
@@ -328,9 +328,9 @@
 
             function repositories(action, params) {
                 if(params){
-                    return Constants.SERVICE + 'repo/' + action + '.json?' + params;
+                    return Constants.SERVICE2 + 'repository/' + action + '?' + params;
                 }else {
-                    return Constants.SERVICE + 'repo/' + action + '.json';
+                    return Constants.SERVICE2 + 'repository/' + action;
                 }
             }
 
@@ -1692,8 +1692,8 @@
             }
             $scope.createRepo = function(repo) {
                 repositories.spinnerOverlay = $scope.spinnerOverlay();
-                repo.site_id = repositories.site;
-                repo.authentication_type = repo.authentication_type ? repo.authentication_type : "none";
+                repo.siteId = repositories.site;
+                repo.authenticationType = repo.authenticationType ? repo.authenticationType : "none";
 
                 adminService.createRepository(repo).success(function (data) {
                     $scope.hideModal();
@@ -1715,8 +1715,8 @@
             $scope.removeRepo = function(repo) {
                 var deleteRepo = function() {
                     var currentRepo = {};
-                    currentRepo.site_id = repositories.site;
-                    currentRepo.remote_name = repo.name;
+                    currentRepo.siteId = repositories.site;
+                    currentRepo.remoteName = repo.name;
 
                     adminService.deleteRepository(currentRepo).success(function (data) {
                         var index = repositories.repositories.remotes.indexOf(repo);
@@ -1744,9 +1744,9 @@
                 var pullRepo = function(branch) {
                     repositories.spinnerOverlay = $scope.spinnerOverlay();
                     var currentRepo = {};
-                    currentRepo.site_id = repositories.site;
-                    currentRepo.remote_name = repo.name;
-                    currentRepo.remote_branch = branch;
+                    currentRepo.siteId = repositories.site;
+                    currentRepo.remoteName = repo.name;
+                    currentRepo.remoteBranch = branch;
 
                     adminService.pullRepository(currentRepo).success(function (data) {
 
@@ -1774,9 +1774,9 @@
                 var pushRepo = function(branch) {
                     repositories.spinnerOverlay = $scope.spinnerOverlay();
                     var currentRepo = {};
-                    currentRepo.site_id = repositories.site;
-                    currentRepo.remote_name = repo.name;
-                    currentRepo.remote_branch = branch;
+                    currentRepo.siteId = repositories.site;
+                    currentRepo.remoteName = repo.name;
+                    currentRepo.remoteBranch = branch;
 
                     adminService.pushRepository(currentRepo).success(function (data) {
 
