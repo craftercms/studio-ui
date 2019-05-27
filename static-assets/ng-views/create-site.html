@@ -220,16 +220,16 @@
         <h4>{{ 'dashboard.sites.create.PUSH_REMOTE_GIT' | translate }}</h4>
 
         <div class="form-group">
+            <label for="push_sandboxBranch">{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SANDBOX_BRANCH_MSG' | translate }}</span>
+            <input type="text" class="form-control" id="push_sandboxBranch" name="push_sandboxBranch" ng-model="site.push_sandbox_branch" />
+        </div>
+
+        <div class="form-group">
             <input type="checkbox" ng-click="isPushChecked = !isPushChecked" id="push_site" name="push_site" value="none" ng-model="site.push_site" >
             <label for="push_site">{{ 'dashboard.sites.create.PUSH_SITE_TO_REMOTE_GIT' | translate }}</label><br/>
         </div>
 
         <div id="pushRemoteGitRepository" uib-collapse="!isPushChecked" ng-hide="!isPushChecked">
-
-            <div class="form-group">
-                <label for="push_sandboxBranch">{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.SANDBOX_BRANCH_MSG' | translate }}</span>
-                <input type="text" class="form-control" id="push_sandboxBranch" name="push_sandboxBranch" ng-model="site.push_sandbox_branch" />
-            </div>
 
             <div class="form-group">
                 <label for="push_name">* {{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
@@ -383,9 +383,9 @@
         <fieldset>
             <legend><strong>{{ 'dashboard.sites.create.ADITIONAL_DEVELOPER_OPTIONS' | translate }}</strong></legend>
             <div class="reviewContainer">
+                <p ng-show="site.push_sandbox_branch"><strong>{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</strong> {{site.push_sandbox_branch}}</p>
                 <p ng-show="site.push_site">{{ 'dashboard.sites.create.PUSH_SITE_TO_REMOTE_GIT' | translate }}</p>
                 <p ng-show="!site.push_site">{{ 'dashboard.sites.create.NO_PUSH_SITE_TO_REMOTE_GIT' | translate }}</p>
-                <p ng-show="site.push_site && site.push_sandbox_branch"><strong>{{ 'dashboard.sites.create.SANDBOX_BRANCH' | translate }}</strong> {{site.push_sandbox_branch}}</p>
                 <p ng-show="site.push_site && site.push_name"><strong>{{ 'dashboard.sites.create.NAME' | translate }}:</strong> {{site.push_name}}</p>
                 <p ng-show="site.push_site && site.push_url"><strong>{{ 'dashboard.sites.create.URL' | translate }}:</strong> {{site.push_url}}</p>
                 <p ng-show="site.push_site && site.push_remote_branch"><strong>{{ 'admin.repositories.REMOTE_BRANCH' | translate }}:</strong> {{site.push_remote_branch}}</p>
