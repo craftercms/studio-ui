@@ -65,18 +65,36 @@ CStudioAuthoring.Module.requireModule(
 			},
 
 			titleNameValidation: function(formDef) {
-				var sections = formDef.sections;
-				var datasources = formDef.datasources;
-				var idError = [];
-				var flagTitleError = false;
+					var sections = formDef.sections,
+					datasources = formDef.datasources,
+					idError = [],
+					flagTitleError = false,
+					currentField;
 
-				for(var i = 0; i<sections.length; i++){
-					for(var j = 0; j<sections[i].fields.length; j++){
-						if(!sections[i].fields[j].title || sections[i].fields[j].title == ''){
+				for (var i = 0; i<sections.length; i++) {
+					for (var j = 0; j<sections[i].fields.length; j++) {
+						currentField = sections[i].fields[j];	
+					
+						if (!currentField.title || currentField.title == '') {
 							flagTitleError = true;
 						}
-						if ( (!sections[i].fields[j].id || sections[i].fields[j].id == '') && (sections[i].fields[j].title && sections[i].fields[j].title != '')){
-							idError.push(sections[i].fields[j].title);
+						if ( (!currentField.id || currentField.id == '') && (currentField.title && currentField.title != '')) {
+							idError.push(currentField.title);
+						}
+
+						// If it's a repeating group, validate fields - We have no nested repeating groups,
+						// so it's only 1 level
+						if (currentField.type === 'repeat' && currentField.fields.length > 0) {
+							var currentSubField;
+							for (var x = 0; x < currentField.fields.length ; x++) {
+								currentSubField = currentField.fields[x];
+								if (!currentSubField.title || currentSubField.title == '') {
+									flagTitleError = true;
+								}
+								if ( (!currentSubField.id || currentSubField.id == '') && (currentSubField.title && currentSubField.title != '')) {
+									idError.push(currentSubField.title);
+								}
+							}
 						}
 					}
 				}
