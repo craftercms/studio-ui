@@ -65,7 +65,7 @@ CStudioAuthoring.Module.requireModule(
 			},
 
 			titleNameValidation: function(formDef) {
-					var sections = formDef.sections,
+				var sections = formDef.sections,
 					datasources = formDef.datasources,
 					idError = [],
 					flagTitleError = false,
