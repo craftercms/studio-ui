@@ -17,7 +17,14 @@
 
 
 .sites-view {
-
+  .site-message{
+    position: relative;
+    top: 80px;
+    width: 100%;
+    text-align: center;
+    color: #615f5f;
+    font-weight: 600;
+  }
 }
 
 .screen-title {
@@ -131,7 +138,6 @@
   .row {
     margin-bottom: 20px;
   }
-
 }
 
 .create-site-view {
