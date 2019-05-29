@@ -386,7 +386,7 @@ var nodeOpen = false,
                 var event = new CustomEvent("setContentDone");
                 document.dispatchEvent(event);
 
-                amplify.publish("SET_TREE_HIGHLIGHT", {
+                amplify.publish("SELECTED_CONTENT_SET", {
                     contentTO
                 });
             },
@@ -3022,7 +3022,7 @@ var nodeOpen = false,
              * @param {*} cookieKey - cookey key of the tree that will be updated (depends of tree)
              * @param {*} path - path to be added into the tree cookie (state) -> item uri
              */
-            updateTreePath: function(treeName, cookieKey, path){
+            updateTreeCookiePath: function(treeName, cookieKey, path){
                 var url = path,
                     treeCookieName,
                     treeCookie;

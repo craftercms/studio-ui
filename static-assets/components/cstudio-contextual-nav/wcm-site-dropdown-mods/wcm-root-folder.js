@@ -907,6 +907,7 @@
                     }
 
                     treeNodeTO.html = nodeSpan;
+
                     var treeNode = new YAHOO.widget.HTMLNode(treeNodeTO, root, false);
 
                     treeNode.html.id = "ygtvlabelel" + treeNode.index;
@@ -917,13 +918,9 @@
                     treeNode.nowrap = true;
 
                     if(highlight){
-                        function loadedNode() {
-                            window.setTimeout(function(){
-                                self.scrollToHighlighted();
-                            }, 500);
-                        };
-
-                        treeNode.html.onload = loadedNode();
+                        window.setTimeout(function(){
+                            self.scrollToHighlighted();
+                        }, 500);
                     }
 
                     if (!treeNodeTO.isContainer) {
@@ -3523,7 +3520,7 @@
         this.mods = [];
        
         if(config.params.path === '/site/website'){            
-            amplify.subscribe("SET_TREE_HIGHLIGHT", function (message) {
+            amplify.subscribe("SELECTED_CONTENT_SET", function (message) {
                 var contentTO = message.contentTO,
                     $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
                     highlightVisible = $highlightEl.is(":visible"),
@@ -3531,7 +3528,7 @@
 
                 if (!highlightVisible && treeExists) {
                     var $container = $(config.containerEl).empty();
-                    CStudioAuthoring.Operations.updateTreePath('pages', 'sitewebsite', contentTO.uri);
+                    CStudioAuthoring.Operations.updateTreeCookiePath('pages', 'sitewebsite', contentTO.uri);
                     CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(Object.assign({}, config, { containerEl: $container[0] }));
                 } else {
                     $('#acn-dropdown-menu [data-uri]').removeClass('highlighted');

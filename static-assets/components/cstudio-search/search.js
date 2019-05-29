@@ -250,7 +250,7 @@
 
             if(treeVal){
 
-                CStudioAuthoring.Operations.updateTreePath(treeVal, cookieKey, url);
+                CStudioAuthoring.Operations.updateTreeCookiePath(treeVal, cookieKey, url);
             }
             CStudioSearch.previewElement($(this).attr('data-url'));
         });
