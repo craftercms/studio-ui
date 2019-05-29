@@ -37,7 +37,7 @@
       "ACCOUNT": "Cuenta",
       "SITE_ERROR" : "es un sitio inválido",
       "SITES_PER_PAGE": "Sitios por página",
-      "NO_SITES_MESSAGE":"No eres miembro de ningún sitio. Por favor, póngase en contacto con su administrador para solicitar el acceso.",
+      "NO_SITES_MESSAGE":"Usted no es miembro de ningún sitio. Por favor, póngase en contacto con su administrador para solicitar el acceso.",
 
       "create": {
         "HEADER_LABEL": "Crear Sitio",
