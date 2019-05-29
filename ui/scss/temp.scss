@@ -2103,8 +2103,7 @@ div.rejectContainer{
   height: 20px;
   left: 1px;
   margin: 2px 0 0 3px;
-  _position: none;
-  position: none;
+  position: static;
   vertical-align: middle;
   width: 18px;
 }
@@ -2341,7 +2340,7 @@ div#cal1Container {
 .yui-calendar td.calcell {
   background: #fff;
   border: 0px;
-  #padding: 5px;
+  padding: 5px;
 }
 
 .yui-calendar td.calcell {

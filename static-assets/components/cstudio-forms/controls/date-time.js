@@ -1200,7 +1200,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
             var populateDateExp = this.populateDateExp.replace(/ /g,'');
 			var action=populateDateExp.match(/(\+|\-)/gi)[0];
 			var value = populateDateExp.match(/\d+/gi)[0];
-			var type = populateDateExp.match(/((days)|(weeks)|(years)|(hours)|(minutes))/gi);
+			var type = populateDateExp.match(/((days)|(weeks)|(years)|(hours)|(minutes))/gi)[0];
 			if(action=='-'){
 				modifier=modifier*-1;
 			}

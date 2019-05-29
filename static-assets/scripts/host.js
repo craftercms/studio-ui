@@ -617,14 +617,6 @@
       }
     });
 
-    new ResizeSensor($('.navbar-default'), function () {
-      if ($('.navbar-default').height() > 55) {
-        $('.studio-preview').css('top', 100 + "px");
-      } else {
-        $('.studio-preview').css('top', 50 + "px");
-      }
-    });
-
   }
 
   // TODO better URL support. Find existing lib, use angular or use backbone router?

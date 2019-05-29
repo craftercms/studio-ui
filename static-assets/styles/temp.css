@@ -4466,8 +4466,7 @@ div.rejectContainer {
   height: 20px;
   left: 1px;
   margin: 2px 0 0 3px;
-  _position: none;
-  position: none;
+  position: static;
   vertical-align: middle;
   width: 18px; }
 
@@ -4664,7 +4663,7 @@ div#cal1Container {
 .yui-calendar td.calcell {
   background: #fff;
   border: 0px;
-  #padding: 5px; }
+  padding: 5px; }
 
 .yui-calendar td.calcell {
   background-color: #e6e6e6 !important;
@@ -5374,11 +5373,8 @@ span.acn-canned-search {
   transition: width 0.6s ease;
   background: repeating-linear-gradient(45deg, #5d84a9, #5d84a9 10px, #7e9dbb 10px, #7e9dbb 20px); }
 
-.studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper {
+.studio-preview #studioBar .navbar-right-wrapper {
   float: right; }
-  @media (max-width: 1320px) {
-    .studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper {
-      width: 506px; } }
 
 .cstudio-image-popup-overlay {
   position: fixed;
@@ -15540,6 +15536,14 @@ body.masked {
 .navbar form[role="search"] {
   padding-left: 5px;
   padding-right: 5px; }
+
+.navbar-default.navbar-fixed-top {
+  position: fixed !important; }
+.navbar-default .navbar-right-wrapper {
+  width: 360px;
+  margin-right: 0px !important; }
+  .navbar-default .navbar-right-wrapper .acn-status-container {
+    margin-right: 0px; }
 
 .nav-container.nav-link .nav-icon {
   margin-right: 4px; }
