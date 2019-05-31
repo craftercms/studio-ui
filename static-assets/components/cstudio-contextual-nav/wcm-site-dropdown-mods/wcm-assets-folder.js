@@ -487,7 +487,16 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
      * render a tree item
      */
     drawTreeItem: function(treeNodeTO, root, instance) {
-        var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
+        var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder,
+            isPreview = CStudioAuthoringContext.isPreview,
+            isLevelDescriptor = '/component/level-descriptor' === treeNodeTO.contentType,
+            isFolder = 'folder' === treeNodeTO.contentType,
+            currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
+            highlight = false;
+
+        if(isPreview && ( currentPreviewed[0].browserUri === treeNodeTO.browserUri ) && !isLevelDescriptor){
+            highlight = true;
+        }
 
         if (treeNodeTO.container == true || treeNodeTO.name != 'index.xml') {
 
@@ -520,6 +529,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             }
 
             nodeSpan.className += "  yui-resize-label";
+
+            nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
+
+            if(!isFolder && !isLevelDescriptor){
+                nodeSpan.dataset.uri = treeNodeTO.uri;
+            }
 
             treeNodeTO.html = nodeSpan;
             var treeNode = new YAHOO.widget.HTMLNode(treeNodeTO, root, false);

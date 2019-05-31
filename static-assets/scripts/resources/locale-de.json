@@ -37,6 +37,7 @@
       "ACCOUNT": "Konto",
       "SITE_ERROR" : "ist ein ungültiges Projekt.",
       "SITES_PER_PAGE": "Projekte pro Seite",
+      "NO_SITES_MESSAGE":"Sie sind kein Mitglied einer Website. Wenden Sie sich an Ihren Administrator, um Zugriff anzufordern.",
 
       "create": {
         "HEADER_LABEL": "Neues Projekt anlegen",

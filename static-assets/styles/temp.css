@@ -3066,6 +3066,8 @@ div#acn-active-content {
       text-decoration: none; }
 .acn-dropdown-wrapper .treenode-label {
   margin: 0 0 5px 0; }
+  .acn-dropdown-wrapper .treenode-label .highlighted {
+    font-weight: bold; }
 .acn-dropdown-wrapper .acn-dropdown-toggler {
   text-decoration: none; }
 
@@ -3144,6 +3146,8 @@ div#acn-active-content {
 
 .acn-dropdown-wrapper .acn-dropdown-menu div.acn-parent {
   margin: 15px 0 0 0; }
+  .acn-dropdown-wrapper .acn-dropdown-menu div.acn-parent .treenode-label.highlighted {
+    font-weight: bold; }
 
 .acn-dropdown-wrapper .acn-dropdown-menu li.last {
   border-width: 0;
@@ -4462,8 +4466,7 @@ div.rejectContainer {
   height: 20px;
   left: 1px;
   margin: 2px 0 0 3px;
-  _position: none;
-  position: none;
+  position: static;
   vertical-align: middle;
   width: 18px; }
 
@@ -4660,7 +4663,7 @@ div#cal1Container {
 .yui-calendar td.calcell {
   background: #fff;
   border: 0px;
-  #padding: 5px; }
+  padding: 5px; }
 
 .yui-calendar td.calcell {
   background-color: #e6e6e6 !important;
@@ -15606,5 +15609,3 @@ body.masked {
 #activeContentActions li > .navbar-text {
   margin-left: 0;
   margin-right: 10px; }
-
-/*# sourceMappingURL=temp.css.map */

@@ -37,6 +37,7 @@
       "ACCOUNT": "Account",
       "SITE_ERROR" : "is an invalid site.",
       "SITES_PER_PAGE": "Sites per page",
+      "NO_SITES_MESSAGE":"You are not a member of any site. Please contact your administrator to request access.",
 
       "create": {
         "HEADER_LABEL": "Create Site",

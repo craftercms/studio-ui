@@ -37,6 +37,7 @@
       "ACCOUNT": "계정",
       "SITE_ERROR" : "잘못된 사이트입니다",
       "SITES_PER_PAGE": "페이지 당 사이트",
+      "NO_SITES_MESSAGE":"귀하는 어떤 사이트의 회원도 아닙니다. 액세스 권한을 요청하려면 관리자에게 문의하십시오.",
 
       "create": {
         "HEADER_LABEL": "사이트 만들기",

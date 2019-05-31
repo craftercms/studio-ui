@@ -614,12 +614,13 @@
                         document.addEventListener('crafter.refresh', function (e) {
                             /*eventCM.typeAction = e.typeAction;
                             document.dispatchEvent(eventCM);*/
+
                             try {
                                 if(e.data && e.data.length) {
                                     for (var i = 0; i < e.data.length; i++){
                                         var changeStructure = ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
                                         Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
-                                     }
+                                        }
                                 }else{
                                     var changeStructure =  ((e.data && e.data.children && e.data.children.length > 0 && e.data.data.path != "/site/website") || e.changeStructure) ? true : false;
                                     Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, changeStructure, e.typeAction, e.oldPath, e.dependencies);
@@ -637,7 +638,6 @@
                             }
 
                         }, false);
-
                     })(tree, instance);
                 }
 
@@ -863,6 +863,16 @@
              */
             drawTreeItem: function(treeNodeTO, root, instance) {
 
+                var _self = this;
+                    isPreview = CStudioAuthoringContext.isPreview,
+                    isLevelDescriptor = '/component/level-descriptor' === treeNodeTO.contentType,
+                    currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
+                    highlight = false;
+
+                if(isPreview && ( currentPreviewed[0].path === treeNodeTO.path ) && !isLevelDescriptor){
+                    highlight = true;
+                }
+
                 if (treeNodeTO.container == true || treeNodeTO.name != 'index.xml') {
 
                     var nodeSpan = document.createElement("span");
@@ -890,16 +900,28 @@
                     nodeSpan.setAttribute("title", treeNodeTO.title);
                     nodeSpan.className = treeNodeTO.style + " yui-resize-label treenode-label over-effect-set";
 
+                    nodeSpan.className = highlight ? nodeSpan.className + ' highlighted' : nodeSpan.className;
+
+                    if(!isLevelDescriptor){
+                        nodeSpan.dataset.uri = treeNodeTO.uri;
+                    }
+
                     treeNodeTO.html = nodeSpan;
+
                     var treeNode = new YAHOO.widget.HTMLNode(treeNodeTO, root, false);
 
                     treeNode.html.id = "ygtvlabelel" + treeNode.index;
                     treeNode.labelElId = "ygtvlabelel" + treeNode.index;
                     treeNode.nodeType = "CONTENT";
                     treeNode.treeNodeTO = treeNodeTO;
-                    // treeNode.initContent = treeNodeTO;
                     treeNode.renderHidden = true;
                     treeNode.nowrap = true;
+
+                    if(highlight){
+                        window.setTimeout(function(){
+                            self.scrollToHighlighted();
+                        }, 500);
+                    }
 
                     if (!treeNodeTO.isContainer) {
                         treeNode.isLeaf = true;
@@ -915,6 +937,18 @@
 
                 return treeNode;
             },
+
+            scrollToHighlighted: function() {
+                var $highlightedEl = $('#acn-dropdown-menu .highlighted'),
+                    highlightedElTop = $highlightedEl.length > 0 ? $highlightedEl.offset().top : 0,
+                    $dropdownMenuContainer = $('#acn-dropdown-menu'),
+                    $dropdownMenuContainerHeight = $dropdownMenuContainer.height(),
+                    scrollElement = ( highlightedElTop > $dropdownMenuContainerHeight ) || ( highlightedElTop < 0 );
+
+                if ($highlightedEl.length > 0 && scrollElement) {
+                    $dropdownMenuContainer.scrollTop(highlightedElTop / 2);
+                }
+            },
             
             /**
              * method fired when user clicks on the root level folder
@@ -922,6 +956,7 @@
             onRootFolderClick: function() {
                 Self.toggleFolderState(this.componentInstance, Self.ROOT_TOGGLE);
             },
+
             /**
              * toggle folder state
              */
@@ -1196,7 +1231,7 @@
 				} else {
                     Self.firePathLoaded(instance);
                 }
-			},
+            },
             firePathLoaded: function(instance) {
                 ++(Self.treePathOpenedEvt.fireCount);
                 Self.treePathOpenedEvt.fire(Self.instanceCount, Self.treePathOpenedEvt.fireCount);
@@ -1267,7 +1302,7 @@
             onLoadNodeDataOnClick: function(node, fnLoadComplete) {
 				// applicable for items under detail folder
 				if (!node.treeNodeTO) {
-					fnLoadComplete();
+                    fnLoadComplete();
 					return ;
 				}
 
@@ -1291,19 +1326,19 @@
 	                			node.isLeaf = true;
 	                		}
 
-	                		Self.drawSubtree(treeData.item.children, args.node, args.pathToOpenTo, args.instance);
+                            Self.drawSubtree(treeData.item.children, args.node, args.pathToOpenTo, args.instance);
 
-	            			args.fnLoadComplete();
+                            args.fnLoadComplete();
+                            
+                            /* wire up new to search items */
+                            Self.wireUpCannedSearches();
 
-	            			/* wire up new to search items */
+                            //add hover effect to nodes
+                            Self.nodeHoverEffects(this);
 
-	    					Self.wireUpCannedSearches();
-
-	    					//add hover effect to nodes
-	    					Self.nodeHoverEffects(this);
-
-	    					//add blur effect for cut items
-	    					Self.setChildrenStyles(args.node);
+                            //add blur effect for cut items
+                            Self.setChildrenStyles(args.node);
+                            	            			
 	            	    },
 
 	                    failure: function(err, args) {
@@ -3472,11 +3507,9 @@
     CStudioAuthoring.ContextualNav.WcmRootFolderInstance = function(config) {
 
         ++(CStudioAuthoring.ContextualNav.WcmRootFolder.instanceCount);
-
         this._self = this;
         this._toggleState = CStudioAuthoring.ContextualNav.WcmRootFolder.ROOT_CLOSED;
         this.rootFolderEl = null;
-        //this.instanceId = ++(CStudioAuthoring.ContextualNav.WcmRootFolder.instanceCount);
 
         this.type = config.name;
         this.label = config.params["label"];
@@ -3485,6 +3518,25 @@
         this.onClickAction = (config.params["onClick"]) ? config.params["onClick"] : "";
         this.config = config;
         this.mods = [];
+       
+        if(config.params.path === '/site/website'){            
+            amplify.subscribe("SELECTED_CONTENT_SET", function (message) {
+                var contentTO = message.contentTO,
+                    $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
+                    highlightVisible = $highlightEl.is(":visible"),
+                    treeExists = $("#pages-tree + div").children().length > 0;
+
+                if (!highlightVisible && treeExists) {
+                    var $container = $(config.containerEl).empty();
+                    CStudioAuthoring.Operations.updateTreeCookiePath('pages', 'sitewebsite', contentTO.uri);
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(Object.assign({}, config, { containerEl: $container[0] }));
+                } else {
+                    $('#acn-dropdown-menu [data-uri]').removeClass('highlighted');
+                    $highlightEl.addClass('highlighted');
+                    CStudioAuthoring.ContextualNav.WcmRootFolder.scrollToHighlighted();
+                }                
+            });
+        }
     }
     CStudioAuthoring.Module.moduleLoaded("wcm-root-folder", CStudioAuthoring.ContextualNav.WcmRootFolder);
 })();

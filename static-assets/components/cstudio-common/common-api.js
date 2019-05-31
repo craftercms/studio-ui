@@ -385,6 +385,10 @@ var nodeOpen = false,
 
                 var event = new CustomEvent("setContentDone");
                 document.dispatchEvent(event);
+
+                amplify.publish("SELECTED_CONTENT_SET", {
+                    contentTO
+                });
             },
 
             /**
@@ -3010,6 +3014,46 @@ var nodeOpen = false,
                 }
 
                 return path;
+            },
+
+            /**
+             * updates sidebar tree cookie that keeps its state
+             * @param {*} tree - tree that the cookie will be updated
+             * @param {*} cookieKey - cookey key of the tree that will be updated (depends of tree)
+             * @param {*} path - path to be added into the tree cookie (state) -> item uri
+             */
+            updateTreeCookiePath: function(treeName, cookieKey, path){
+                var url = path,
+                    treeCookieName,
+                    treeCookie;
+
+                treeCookieName = CStudioAuthoringContext.site + '-' + treeName + '-opened';
+                treeCookie = CStudioAuthoring.Storage.read(treeCookieName);
+                treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : [];   
+
+                if(treeCookie[cookieKey] && treeCookie[cookieKey].indexOf("root-folder") !== -1){
+                    treeCookie.sitewebsite = treeCookie.sitewebsite.splice(1,0);
+                }
+
+                // validate if is page and if has folder (ends with index.xml)
+                if(url.indexOf("index.xml") !== -1){
+                    //remove everything after last-1 '/'
+                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                    parsedUrl = parsedUrl.substr(0, parsedUrl.lastIndexOf('/'));
+                }else{
+                    //remove everything after last '/'
+                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
+                }
+
+                // key doesn't exist in cookie
+                if(!treeCookie[cookieKey] && parsedUrl != '/site'){
+                    treeCookie[cookieKey] = [];
+                }
+                // in entry doesn't exist in key
+                if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
+                    treeCookie[cookieKey].push(parsedUrl);
+                }
+                storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
             }
 
         },

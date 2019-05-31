@@ -392,6 +392,10 @@ div#acn-active-content {
   }
   .treenode-label {
     margin: 0 0 5px 0;
+
+    .highlighted {
+      font-weight: bold;
+    }
   }
   .acn-dropdown-toggler {
     text-decoration: none;
@@ -491,6 +495,12 @@ div#acn-active-content {
 
 .acn-dropdown-wrapper .acn-dropdown-menu div.acn-parent {
   margin: 15px 0 0 0;
+
+  .treenode-label {
+    &.highlighted {
+      font-weight: bold;
+    }
+  }
 }
 
 .acn-dropdown-wrapper .acn-dropdown-menu li.last {
