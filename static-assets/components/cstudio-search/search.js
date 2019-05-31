@@ -160,7 +160,8 @@
 
         // Selecting a filter
         $('.cstudio-search').on('change', '.filter-item input[type="radio"]', function(){
-            var filterName = $(this).attr('name'),
+            var searchFilters = CStudioSearch.searchContext.filters,
+                filterName = $(this).attr('name'),
                 isRange = $(this).attr('data-range') === 'true',
                 filterValue,
                 from,
@@ -176,12 +177,18 @@
             
             if(isAdditional){
                 if(isRange){
-                    CStudioSearch.searchContext.filters[filterName] = {
+                    searchFilters[filterName] = {
                         min: isNaN(parseInt(from)) ? null : from,
                         max: isNaN(parseInt(to)) ? null : to
                     }; 
+
+                    if (filterName === 'last-edit-date') {
+                        searchFilters[filterName].date = true;
+                        searchFilters[filterName].id = $(this).attr('id');
+                        
+                    }
                 }else{
-                    CStudioSearch.searchContext.filters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue); 
+                    searchFilters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue); 
                 }
             }else{
                 CStudioSearch.searchContext[filterName] = filterValue;
@@ -311,13 +318,16 @@
 
                 //csr = crafter studio range
                 if(value.indexOf("csr_") === 0){
-                    var range;
-                    processedValue = value.replace("csr_", "");
-                    range = processedValue.split('-');
+                    var rangeArray = value.split('csrID'),   //if parameter has id, separate from the rest of the param
+                        range,
+                        id = rangeArray[1];
+                    processedValue = rangeArray[0].replace("csr_", "");
+                    range = processedValue.split('csrTO');
 
                     searchContext.filters[processedKey] = {};
                     searchContext.filters[processedKey].min = range[0] === "null" ? null : range[0];
                     searchContext.filters[processedKey].max = range[1] === "null" ? null : range[1];
+                    id && (searchContext.filters[processedKey].id = id);
                 }else{
                    processedValue = value;
                    searchContext.filters[processedKey] = processedValue;
@@ -558,11 +568,15 @@
                             to = to === aboveLabel ? to : CStudioAuthoring.Utils.formatFileSize(parseInt(to));
                         }
 
-                        // if both values are ints, label will have a dash
-                        if(isNaN(parseInt(from)) || isNaN(parseInt(to))){ 
-                            label = from + ' ' + to; 
-                        }else{
-                            label = from + ' - ' + to;
+                        if ( facet.date ) {
+                            label = CMgs.format(langBundle, key);
+                        } else {
+                            // if both values are ints, label will have a dash
+                            if(isNaN(parseInt(from)) || isNaN(parseInt(to))){ 
+                                label = from + ' ' + to; 
+                            }else{
+                                label = from + ' - ' + to;
+                            }
                         }
 
                     }else{
@@ -597,7 +611,7 @@
             CStudioSearch.addSeeMore($('#' + facet.name + ' .panel-body'), facet.name);
 
             // If facet is a range, add inputs for a custom range
-            if(facet.range){    
+            if(facet.range && !facet.date){    
                 rangeHtml = rangeTemplate({ name: facet.name });
                 $(rangeHtml).appendTo($('#' + facet.name + ' .panel-body'));
             }
@@ -608,13 +622,21 @@
         $.each(CStudioSearch.searchContext.filters, function(key, value){
             if( typeof value === 'object' ){
                 var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
-                    $filterRadio = $('input[type="radio"][name="' + key + '"]#' + key + value.min);
-                $filterContainer.find('input[name="min"]').val(isNaN(value.min) ? '' : value.min);
-                $filterContainer.find('input[name="max"]').val(isNaN(value.max) ? '' : value.max);
-
-                if($filterRadio.length > 0){
+                    $filterRadio;
+                    
+                if (value.date === true || key === 'last-edit-date') {
+                    $filterRadio = $('input[type="radio"][name="' + key + '"]#' + value.id);
                     $filterRadio.prop("checked", true);
                     $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
+                } else {
+                    $filterRadio = $('input[type="radio"][name="' + key + '"]#' + key + value.min);
+                    $filterContainer.find('input[name="min"]').val(isNaN(value.min) ? '' : value.min);
+                    $filterContainer.find('input[name="max"]').val(isNaN(value.max) ? '' : value.max);
+
+                    if($filterRadio.length > 0){
+                        $filterRadio.prop("checked", true);
+                        $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
+                    }
                 }
                 
             }else{
@@ -778,14 +800,23 @@
         // Add search filters to url
         // csf = crafter studio filter
         // csr = crafter studio range
+        // csrTO = crafter studio range separator in URL 
         if(!jQuery.isEmptyObject( searchContext.filters )) {
             $.each(searchContext.filters, function(key, value){
                 if(typeof value === 'string'){
                     newUrl += '&csf_' + key + '=' + value;
-                }else{
-                    var min = isNaN(value.min) ? 'null' : value.min,
-                        max = isNaN(value.max) ? 'null' : value.max;
-                    newUrl += '&csf_' + key + '=csr_' + min + '-' + max;
+                } else {  //is a range
+                    if (value.date) {
+                        var min = value.min,
+                            max = value.max,
+                            id = value.id;
+                        newUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max + 'csrID' + id;
+                    }else{
+                        var min = isNaN(value.min) ? 'null' : value.min,
+                            max = isNaN(value.max) ? 'null' : value.max;
+                        newUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max;
+                    }
+                    
                 }
             })
         }
