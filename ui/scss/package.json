@@ -1,0 +1,15 @@
+{
+  "name": "studio-scss",
+  "version": "1.0.0",
+  "description": "SASS for studio",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "build": "node index.js",
+    "watch": "node watch.js"
+  },
+  "dependencies": {
+    "node-sass": "^4.12.0",
+    "rxjs": "^6.5.2"
+  }
+}
