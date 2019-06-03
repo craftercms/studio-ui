@@ -37,7 +37,7 @@ CStudioForms.Controls.Time = CStudioForms.Controls.Time ||
 		this.startDateTimeObj = null; // Object storing the time when the form was loaded; will be used to adjust startTzDateTimeStr before the form is saved
 		this.startTzDateTimeStr = null;	// Time the form was loaded (adjusted to the site's timezone)
 		this.populateDateExp = "now";
-        this.defaultTimezone = "UTC"
+        this.defaultTimezone = "UTC";
 		this.defaultTimezones = [
 			{key: 'Etc/GMT+12', value: '(GMT-12:00) International Date Line West'},
 			{key: 'Etc/GMT+11', value: '(GMT-11:00) Coordinated Universal Time-11'},
