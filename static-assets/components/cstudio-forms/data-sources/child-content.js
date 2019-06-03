@@ -25,6 +25,7 @@ function(id, form, properties, constraints)  {
 	this.type = "";
     this.defaultEnableCreateNew = true;
     this.defaultEnableBrowseExisting = true;
+    this.countOptions = 0;
    	
    	for(var i=0; i<properties.length; i++) {
    		if(properties[i].name == "repoPath") {
@@ -39,21 +40,96 @@ function(id, form, properties, constraints)  {
 		}
 
         if(properties[i].name === "enableCreateNew"){
-            this.enableCreateNew = properties[i].value == "true" ? true : false;
+            this.enableCreateNew = properties[i].value === "true" ? true : false;
             this.defaultEnableCreateNew = false;
+            properties[i].value === "true" ? this.countOptions ++ : null;
         }
 
         if(properties[i].name === "enableBrowseExisting"){
-            this.enableBrowseExisting = properties[i].value == "true" ? true : false;
+            this.enableBrowseExisting = properties[i].value === "true" ? true : false;
             this.defaultEnableBrowseExisting = false;
+            properties[i].value === "true" ? this.countOptions ++ : null;
         }
-   	} 
+   	}
+
+    if(this.defaultEnableCreateNew){
+        this.countOptions ++;
+    }
+    if(this.defaultEnableBrowseExisting){
+        this.countOptions ++;
+    }
 
 	return this;
 }
 
 YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
+
+    createElementAction:function(control, _self, addContainerEl){
+        if(this.countOptions > 1) {
+            control.addContainerEl = null;
+            control.containerEl.removeChild(addContainerEl);
+        }
+        if (_self.type === "") {
+            CStudioAuthoring.Operations.createNewContent(
+                CStudioAuthoringContext.site,
+                _self.processPathsForMacros(_self.repoPath),
+                false, {
+                    success: function (formName, name, value) {
+                        control.insertItem(value, formName.item.internalName);
+                        control._renderItems();
+                    },
+                    failure: function () {
+                    }
+                }, true);
+        } else {
+            CStudioAuthoring.Operations.openContentWebForm(
+                _self.type,
+                null,
+                null,
+                _self.processPathsForMacros(_self.repoPath),
+                false,
+                false,
+                {
+                    success: function (contentTO, editorId, name, value) {
+                        control.insertItem(name, value);
+                        control._renderItems();
+                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                    },
+                    failure: function () {
+                    }
+                },
+                [
+                    { name: "childForm", value: "true"}
+                ]);
+        }
+    },
+
+    browseExistingElementAction:function(control, _self, addContainerEl){
+        if(this.countOptions > 1) {
+            control.addContainerEl = null;
+            control.containerEl.removeChild(addContainerEl);
+        }
+        // if the browsePath property is set, use the property instead of the repoPath property
+        // otherwise continue to use the repoPath for both cases for backward compatibility
+        var browsePath = _self.repoPath;
+        if (_self.browsePath != undefined && _self.browsePath != '') {
+            browsePath = _self.browsePath;
+        }
+        CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(browsePath), _self.selectItemsCount, "select", true, {
+            success: function (searchId, selectedTOs) {
+
+                for (var i = 0; i < selectedTOs.length; i++) {
+                    var item = selectedTOs[i];
+                    var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
+                    control.insertItem(item.uri, value);
+                    control._renderItems();
+                }
+            },
+            failure: function () {
+            }
+        });
+    },
 	
 	add: function(control) {
 		var CMgs = CStudioAuthoring.Messages;
@@ -72,109 +148,52 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
             }
         }
 
-		if(!control.addContainerEl){
+        if(this.countOptions > 1) {
             addContainerEl = document.createElement("div");
-            if(this.enableCreateNew || this.defaultEnableCreateNew) {
+            control.containerEl.appendChild(addContainerEl);
+            YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+            control.addContainerEl = addContainerEl;
+            control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
+            control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
+        }
+
+        if (this.enableCreateNew || this.defaultEnableCreateNew) {
+            if(this.countOptions > 1) {
                 addContainerEl.create = document.createElement("div");
                 addContainerEl.appendChild(addContainerEl.create);
                 YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+
+                var createEl = document.createElement("div");
+                YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+                createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
+                control.addContainerEl.create.appendChild(createEl);
+                var addContainerEl = control.addContainerEl;
+                YAHOO.util.Event.on(createEl, 'click', function () {
+                    _self.createElementAction(control, _self, addContainerEl);
+                }, createEl);
+            }else{
+                _self.createElementAction(control, _self);
             }
 
-            if(this.enableBrowseExisting || this.defaultEnableBrowseExisting) {
+        }
+
+        if (this.enableBrowseExisting || this.defaultEnableBrowseExisting) {
+            if(this.countOptions > 1) {
                 addContainerEl.browse = document.createElement("div");
                 addContainerEl.appendChild(addContainerEl.browse);
                 YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
+
+                var browseEl = document.createElement("div");
+                browseEl.innerHTML = CMgs.format(langBundle, "browseExisting") + " - " + newElTitle;
+                YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
+                control.addContainerEl.browse.appendChild(browseEl);
+                var addContainerEl = control.addContainerEl;
+                YAHOO.util.Event.on(browseEl, 'click', function () {
+                    _self.browseExistingElementAction(control, _self, addContainerEl);
+                }, browseEl);
+            }else{
+                _self.browseExistingElementAction(control, _self);
             }
-
-			control.containerEl.appendChild(addContainerEl);
-			YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-			control.addContainerEl = addContainerEl;
-			control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-			control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
-		}
-
-        if(this.enableCreateNew || this.defaultEnableCreateNew) {
-            var createEl = document.createElement("div");
-            YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-            createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
-            control.addContainerEl.create.appendChild(createEl);
-
-            var addContainerEl = control.addContainerEl;
-            YAHOO.util.Event.on(createEl, 'click', function () {
-                control.addContainerEl = null;
-                control.containerEl.removeChild(addContainerEl);
-                if (_self.type === "") {
-                    CStudioAuthoring.Operations.createNewContent(
-                        CStudioAuthoringContext.site,
-                        _self.processPathsForMacros(_self.repoPath),
-                        false, {
-                            success: function (formName, name, value) {
-                                control.insertItem(value, formName.item.internalName);
-                                control._renderItems();
-
-                                //var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                                //CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                            },
-                            failure: function () {
-                            }
-                        }, true);
-                } else {
-                    CStudioAuthoring.Operations.openContentWebForm(
-                        _self.type,
-                        null,
-                        null,
-                        _self.processPathsForMacros(_self.repoPath),
-                        false,
-                        false,
-                        {
-                            success: function (contentTO, editorId, name, value) {
-                                control.insertItem(name, value);
-                                control._renderItems();
-                                CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                            },
-                            failure: function () {
-                            }
-                        },
-                        [
-                            { name: "childForm", value: "true"}
-                        ]);
-                }
-            }, createEl);
-        }
-
-        if(this.enableBrowseExisting || this.defaultEnableBrowseExisting) {
-            var browseEl = document.createElement("div");
-            browseEl.innerHTML = CMgs.format(langBundle, "browseExisting") + " - " + newElTitle;
-            YAHOO.util.Dom.addClass(browseEl, 'cstudio-form-control-node-selector-add-container-item');
-            control.addContainerEl.browse.appendChild(browseEl);
-
-            var addContainerEl = control.addContainerEl;
-            YAHOO.util.Event.on(browseEl, 'click', function () {
-                control.addContainerEl = null;
-                control.containerEl.removeChild(addContainerEl);
-                // if the browsePath property is set, use the property instead of the repoPath property
-                // otherwise continue to use the repoPath for both cases for backward compatibility
-                var browsePath = _self.repoPath;
-                if (_self.browsePath != undefined && _self.browsePath != '') {
-                    browsePath = _self.browsePath;
-                }
-                CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(browsePath), _self.selectItemsCount, "select", true, {
-                    success: function (searchId, selectedTOs) {
-
-                        for (var i = 0; i < selectedTOs.length; i++) {
-                            var item = selectedTOs[i];
-                            var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
-                            control.insertItem(item.uri, value);
-                            control._renderItems();
-
-                            // var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                            // CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                        }
-                    },
-                    failure: function () {
-                    }
-                });
-            }, browseEl);
         }
 
 	},
