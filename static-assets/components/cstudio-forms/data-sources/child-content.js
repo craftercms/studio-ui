@@ -40,15 +40,15 @@ function(id, form, properties, constraints)  {
 		}
 
         if(properties[i].name === "enableCreateNew"){
-            this.enableCreateNew = properties[i].value == "true" ? true : false;
+            this.enableCreateNew = properties[i].value === "true" ? true : false;
             this.defaultEnableCreateNew = false;
-            properties[i].value == "true" ? this.countOptions ++ : null;
+            properties[i].value === "true" ? this.countOptions ++ : null;
         }
 
         if(properties[i].name === "enableBrowseExisting"){
-            this.enableBrowseExisting = properties[i].value == "true" ? true : false;
+            this.enableBrowseExisting = properties[i].value === "true" ? true : false;
             this.defaultEnableBrowseExisting = false;
-            properties[i].value == "true" ? this.countOptions ++ : null;
+            properties[i].value === "true" ? this.countOptions ++ : null;
         }
    	}
 
