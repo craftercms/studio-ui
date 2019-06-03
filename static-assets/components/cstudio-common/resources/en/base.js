@@ -540,7 +540,15 @@ CStudioAuthoring.Messages.registerBundle("search", "en", {
     height: "Height",
     "content-type": "Content Type",
     "mime-type": "MIME Type",
+    "last-edit-date": "Last Edit Date",
     size: "Content Size",
+    today: "Today",
+    "in-last-day": "In last day",
+    "in-last-week": "In last week",
+    "over-a-month-ago": "Over a month ago",
+    "over-six-months-ago": "Over six months ago",
+    "over-a-week-ago": "Over a week ago",
+    "over-a-year-ago": "Over a year ago",
     paginationFirst: "First",
     paginationPrev: "Prev",
     paginationNext: "Next",
@@ -549,7 +557,7 @@ CStudioAuthoring.Messages.registerBundle("search", "en", {
     seeLess: 'See Less',
     under: 'Under',
     above: 'and Above',
-    errorMessage: 'There was an issue completing your search, please contact the Administrator if this issue persists.'
+    errorMessage: 'There was an issue completing your search, please contact the Administrator if this issue persists.',
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "en", {
