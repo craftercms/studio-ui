@@ -41,23 +41,23 @@
             <div class="col-xs-12 col-sm-7 col-md-6">
                 <div ng-attr-id="{{ 'flexslider' + $index }}" class="flexslider mt15 mainslider" ng-init="flexSilderInit('flexslider' + $index)" >
                     <ul class="slides">
-                        <li class="list-gallery" ng-repeat="media in siteBP.blueprint.media.screenshots" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'" >
-                            <img class="gallery-image" ng-src="{{media.screenshot.url}}" alt="{{media.screenshot.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
+                        <li class="list-gallery" ng-repeat="media in siteBP.plugin.media.screenshots" >
+                            <img class="gallery-image" ng-src="{{media.url}}" alt="{{media.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="text col-xs-12 col-sm-5 col-md-6">
-                <h3>{{siteBP.blueprint.name}}</h3>
-                <p ng-show="siteBP.blueprint.description"><strong>{{ 'dashboard.sites.create.DESCRIPTION' | translate }}: </strong>{{siteBP.blueprint.description}}</p>
-                <p ng-show="siteBP.blueprint.version"><strong>{{ 'dashboard.sites.create.VERSION' | translate }}: </strong>{{siteBP.blueprint.version.major}}.{{siteBP.blueprint.version.minor}}.{{siteBP.blueprint.version.patch}}</p>
-                <p ng-show="siteBP.blueprint.license.name"><strong>{{ 'dashboard.sites.create.LICENSE' | translate }}: </strong>{{siteBP.blueprint.license.name}}</p>
-                <p ng-show="siteBP.blueprint.craftercmsVersionsSupported"><strong>{{ 'dashboard.sites.create.CRAFTERVERSIONSSUPPORTED' | translate }}: </strong></p>
-                <ul ng-show="siteBP.blueprint.craftercmsVersionsSupported">
-                    <li ng-repeat="versioSupported in siteBP.blueprint.craftercmsVersionsSupported">{{versioSupported.version}}</li>
+                <h3>{{siteBP.plugin.name}}</h3>
+                <p ng-show="siteBP.plugin.description"><strong>{{ 'dashboard.sites.create.DESCRIPTION' | translate }}: </strong>{{siteBP.plugin.description}}</p>
+                <p ng-show="siteBP.plugin.version"><strong>{{ 'dashboard.sites.create.VERSION' | translate }}: </strong>{{siteBP.plugin.version.major}}.{{siteBP.plugin.version.minor}}.{{siteBP.plugin.version.patch}}</p>
+                <p ng-show="siteBP.plugin.license.name"><strong>{{ 'dashboard.sites.create.LICENSE' | translate }}: </strong>{{siteBP.plugin.license.name}}</p>
+                <p ng-show="siteBP.plugin.crafterCmsVersions"><strong>{{ 'dashboard.sites.create.CRAFTERVERSIONSSUPPORTED' | translate }}: </strong></p>
+                <ul ng-show="siteBP.plugin.crafterCmsVersions">
+                    <li ng-repeat="versioSupported in siteBP.plugin.crafterCmsVersions">{{versioSupported.major}}.{{versioSupported.minor}}.{{versioSupported.patch}}</li>
                 </ul>
-                <p ng-show="siteBP.blueprint.website.url"><strong>{{ 'dashboard.sites.create.WEBSITE' | translate }}: </strong><a target="_blank" href="{{siteBP.blueprint.website.url}}">{{siteBP.blueprint.website.url}}</a></p>
-                <button type="button" ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.blueprint.id; site.blueprintName = siteBP.blueprint.name; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
+                <p ng-show="siteBP.plugin.website.url"><strong>{{ 'dashboard.sites.create.WEBSITE' | translate }}: </strong><a target="_blank" href="{{siteBP.plugin.website.url}}">{{siteBP.plugin.website.url}}</a></p>
+                <button type="button" ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.plugin.id; site.blueprintName = siteBP.plugin.name; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
             </div>
         </article>
     </section>
