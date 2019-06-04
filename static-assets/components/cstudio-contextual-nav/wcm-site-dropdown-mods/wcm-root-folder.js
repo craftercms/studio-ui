@@ -1749,7 +1749,6 @@
                             var curNode = node[i];
                             if (curNode.nodeType == "CONTENT") {
                                 var itemStore = instance ? storage.read(Self.getStoredPathKey(instance)) : null;
-                                //console.log(itemStore);
                                 if(YDom.get(curNode.labelElId)) {
                                     tree.removeChildren(curNode);
                                     var loadEl = YAHOO.util.Selector.query(".ygtvtp", curNode.getEl(), true);
@@ -1757,9 +1756,7 @@
                                     YDom.addClass(loadEl, "ygtvloading");
                                     curNode.renderChildren();
                                     curNode.refresh();
-                                    //console.log(itemStore);
                                     if (instance) {
-                                      console.log("IN REFRESH NODES", itemStore);
                                       storage.write(Self.getStoredPathKey(instance), itemStore.sitewebsite, 360);
                                     }
                                     self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
