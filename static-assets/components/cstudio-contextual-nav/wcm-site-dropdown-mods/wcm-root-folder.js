@@ -879,7 +879,7 @@
 
                     if (!treeNodeTO.style.match(/\bfolder\b/)) {
                         treeNodeTO.linkToPreview = true;
-                        
+
                         var icon = CStudioAuthoring.Utils.getContentItemIcon(treeNodeTO);
                         nodeSpan.appendChild(icon);
 
@@ -949,7 +949,7 @@
                     $dropdownMenuContainer.scrollTop(highlightedElTop / 2);
                 }
             },
-            
+
             /**
              * method fired when user clicks on the root level folder
              */
@@ -1163,7 +1163,7 @@
                                             //add custom icon class
                                             var keyId = instance.label;
                                             keyId = keyId.replace(/\s/g,'');
-                                            
+
                                             var $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
                                             $el.removeClass('closed');
                                             $el.addClass('open');
@@ -1329,7 +1329,7 @@
                             Self.drawSubtree(treeData.item.children, args.node, args.pathToOpenTo, args.instance);
 
                             args.fnLoadComplete();
-                            
+
                             /* wire up new to search items */
                             Self.wireUpCannedSearches();
 
@@ -1338,7 +1338,7 @@
 
                             //add blur effect for cut items
                             Self.setChildrenStyles(args.node);
-                            	            			
+
 	            	    },
 
 	                    failure: function(err, args) {
@@ -1399,6 +1399,14 @@
             plainpath = iniPath.replace("/" + fileName, ""),
             el = node.getEl(),
             num = el.getAttribute('num');
+
+        if ( iniPath.endsWith('/' + fileName) ){
+          var index = iniPath.lastIndexOf( '/' + fileName );
+          plainpath = iniPath.slice(0, index);
+        } else {
+          plainpath = iniPath.replace('/' + fileName + '/', '/');
+        }
+
         plainpath = (plainpath == '/site') || path == num ? "root-folder" : plainpath;
         if(!num){
             while ((el = el.parentElement) && !el.hasAttribute("num"));
@@ -1457,7 +1465,6 @@
                 break;
             }
         }
-        //storage.write(Self.getStoredPathKey(instance, path), path, 360);
         storage.write(Self.getStoredPathKey(instance), JSON.stringify(instance.openArray), 360);
     },
 
@@ -1751,7 +1758,10 @@
                                     curNode.renderChildren();
                                     curNode.refresh();
                                     //console.log(itemStore);
-                                    if (instance) storage.write(Self.getStoredPathKey(instance), itemStore, 360);
+                                    if (instance) {
+                                      console.log("IN REFRESH NODES", itemStore);
+                                      storage.write(Self.getStoredPathKey(instance), itemStore.sitewebsite, 360);
+                                    }
                                     self.expandTree ? self.expandTree(curNode) : WcmAssetsFolder.expandTree;
                                     if (typeof WcmDashboardWidgetCommon != "undefined") {
                                         WcmDashboardWidgetCommon.refreshAllDashboards();
@@ -1887,7 +1897,7 @@
                 retTransferObj.mimeType = treeItem.mimeType;
                 retTransferObj.contentType = treeItem.contentType;
                 var itemNameLabel = "Page";
-                
+
                 retTransferObj.statusObj = {
                     deleted: treeItem.deleted,
                     scheduled: treeItem.scheduled,
@@ -1933,7 +1943,7 @@
                 }
 
                 retTransferObj.label = retTransferObj.internalName;
-                
+
                 if (treeItem.previewable == false) {
                     retTransferObj.style += " no-preview";
                 }else{
@@ -1960,7 +1970,7 @@
                     retTransferObj.editedDate = formattedEditDate;
                     ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
                 }
-                
+
                 var icon = treeItem.folder ? CStudioAuthoring.Utils.createIcon("", Self.defaultIcons.childClosed )
                                            : CStudioAuthoring.Utils.getContentItemIcon(treeItem);
 
@@ -2212,7 +2222,7 @@
 			                    };
 
                                 CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
-                    
+
 			                    p_aArgs.render();
 								menuId.removeChild(d);
 		                    }
@@ -2295,7 +2305,7 @@
 			                        		}
 			                        	}
                                         p_aArgs.addItems([ menuItems.copyOption ]);
-                                        
+
 
 			                        } else {
 			                        	if (isUserAllowed) {
@@ -2333,7 +2343,7 @@
                                                 }
                                                 p_aArgs.addItems([ menuItems.newFolderOption ]);
                                                 p_aArgs.addItems([ menuItems.renameFolderOption ]);
-                                                
+
 					                        }
 				                        	if (isUserAllowed) {
 
@@ -2485,7 +2495,7 @@
                                             }
                                             Self.copiedItem = Self.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"));
                                         }
-                                        
+
                                         if(isWrite && isCreateContentAllowed && ("/site/website/index.xml" != oCurrentTextNode.data.uri) && ("folder" != oCurrentTextNode.data.contentType)){
                                             p_aArgs.addItems([ menuItems.duplicateOption ]);
                                         }
@@ -2501,7 +2511,7 @@
                                             if(isCreateContentAllowed){
                                                 p_aArgs.addItems([ menuItems.separator ]);
                                             }
-                                            
+
                                             publishAllowed();
                                             dependenciesAllowed();
                                         }
@@ -2591,7 +2601,7 @@
 					newContentOption: { text: CMgs.format(siteDropdownLangBundle, "newContent"), onclick: { fn: Self.createContent } },
 
                     newFolderOption: { text: CMgs.format(siteDropdownLangBundle, "newFolder"), onclick: { fn: Self.createContainer } },
-                    
+
                     renameFolderOption: { text: CMgs.format(siteDropdownLangBundle, "renameFolder"), onclick: { fn: Self.renameContainer } },
 
 					editOption: { text: CMgs.format(siteDropdownLangBundle, "edit"), onclick: { fn: Self.editContent } },
@@ -2607,7 +2617,7 @@
 					copyOption: { text: CMgs.format(siteDropdownLangBundle, "copy"), onclick: { fn: Self.copyTree, obj:tree } },
 
                     pasteOption: { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: Self.pasteContent} },
-                    
+
                     duplicateOption: { text: CMgs.format(siteDropdownLangBundle, "duplicate"), onclick: { fn: Self.duplicateContent} },
 
 					revertOption: { text: CMgs.format(siteDropdownLangBundle, "history"), onclick: { fn: Self.revertContent, obj:tree } },
@@ -2760,7 +2770,7 @@
                                 var currentContentTO,
                                     URLBrowseUri = pageParameter,
                                     contentTOBrowseUri = contentTO.item.browserUri == "" ? "/" : contentTO.item.browserUri;
-                                
+
                                 if (URLBrowseUri == contentTOBrowseUri){
                                     currentContentTO = null;
                                 } else{
@@ -2792,10 +2802,10 @@
 
                             if(CStudioAuthoring.ContextualNav.WcmRootFolder) {
                                 var tree = CStudioAuthoring.ContextualNav.WcmRootFolder.myTree
-    
+
                                 var tmpNode = tree.getNodesByProperty("uri", contentTO.item.uri);
                                 var parentNode = tmpNode[0].parent.data;
-    
+
                                 eventYS.data = contentTO.item;
                                 eventYS.typeAction = "edit";
                                 eventYS.draft = draft;
@@ -2806,7 +2816,7 @@
                                 eventNS.draft = draft;
                                 document.dispatchEvent(eventNS);
                             }
-                        
+
                         }else{
                             eventNS.data = contentTO.item;
                             eventNS.typeAction = "edit";
@@ -2879,7 +2889,7 @@
 							window,
 							createCb);
             },
-            
+
             /**
 			 * Rename a container, Opens a dialog box to enter new folder name
 			 */
@@ -3518,8 +3528,8 @@
         this.onClickAction = (config.params["onClick"]) ? config.params["onClick"] : "";
         this.config = config;
         this.mods = [];
-       
-        if(config.params.path === '/site/website'){            
+
+        if(config.params.path === '/site/website'){
             amplify.subscribe("SELECTED_CONTENT_SET", function (message) {
                 var contentTO = message.contentTO,
                     $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
@@ -3534,7 +3544,7 @@
                     $('#acn-dropdown-menu [data-uri]').removeClass('highlighted');
                     $highlightEl.addClass('highlighted');
                     CStudioAuthoring.ContextualNav.WcmRootFolder.scrollToHighlighted();
-                }                
+                }
             });
         }
     }

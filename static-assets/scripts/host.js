@@ -668,6 +668,12 @@
       success: function (content) {
         if(content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
+
+          window.setTimeout(function() {
+            amplify.publish("SELECTED_CONTENT_SET", {
+              contentTO: content.item
+            });
+          }, 0);
         }
       }
     });

@@ -551,6 +551,13 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             treeNode.treeNodeTO = treeNodeTO;
             treeNode.renderHidden = true;
             treeNode.nowrap = true;
+
+            if(highlight){
+              window.setTimeout(function(){
+                  CStudioAuthoring.ContextualNav.WcmRootFolder.scrollToHighlighted();
+              }, 500);
+            }
+
             if(!treeNodeTO.isContainer) {
                 treeNode.isLeaf = true;
             }
@@ -1594,7 +1601,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         CStudioAuthoring.Operations.createNewTemplate(oCurrentTextNode.data.uri, {
             success: function(templatePath) {
                 Self.refreshNodes(this.tree,false, false, null, null, true);
-            }, 
+            },
             failure: function() {
                 //this.callingWindow.location.reload(true);
             },
@@ -1605,10 +1612,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     },
 
     createNewScript: function() {
-        CStudioAuthoring.Operations.createNewScript( oCurrentTextNode.data.uri, { 
+        CStudioAuthoring.Operations.createNewScript( oCurrentTextNode.data.uri, {
             success: function(templatePath) {
                 Self.refreshNodes(this.tree,false, false, null, null, true);
-            }, 
+            },
             failure: function() {
 
             },
@@ -1658,14 +1665,14 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             document.body.appendChild(view.element);
             var serviceUrl = CStudioAuthoring.Service.createServiceUri(
                 CStudioAuthoring.Service.createWriteServiceUrl(
-                    treeNode.data.uri, 
-                    treeNode.data.filename, 
+                    treeNode.data.uri,
+                    treeNode.data.filename,
                     null,
-                    treeNode.data.contentType, 
-                    CSAC.site, 
-                    true, 
-                    false, 
-                    false, 
+                    treeNode.data.contentType,
+                    CSAC.site,
+                    true,
+                    false,
+                    false,
                     true));
 
             var dropbox = new Dropbox({
