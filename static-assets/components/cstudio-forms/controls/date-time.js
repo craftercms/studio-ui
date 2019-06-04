@@ -41,6 +41,7 @@ CStudioForms.Controls.DateTime = CStudioForms.Controls.DateTime ||
 		this.startDateTimeObj = null; // Object storing the time when the form was loaded; will be used to adjust startTzDateTimeStr before the form is saved
 		this.startTzDateTimeStr = null;	// Time the form was loaded (adjusted to the site's timezone)
 		this.populateDateExp = "now";
+        this.defaultTimezone = "UTC";
 		this.defaultTimezones = [
 			{key: 'Etc/GMT+12', value: '(GMT-12:00) International Date Line West'},
 			{key: 'Etc/GMT+11', value: '(GMT-11:00) Coordinated Universal Time-11'},
@@ -771,9 +772,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 			if (prop.name == "useCustomTimezone" && prop.value == "true") {
 				this.useCustomTimezone = true;
-
-				this.form.registerDynamicField(this.timezoneId);
 			}
+
+            this.form.registerDynamicField(this.timezoneId);
 		}
 
 		var today = new Date(),
@@ -1256,11 +1257,18 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		this.getCurrentDateTime(nowObj, configTimezone, cb);
 	},
 
-	setValue: function(value) {
+    setStaticTimezone: function(value, timezone) {
+        var timezoneStr = timezone.substr(0, 3);
+        YDom.get(this.id + "-timezoneCode").innerHTML = timezoneStr;
+        this._setValue(value, timezone);
+    },
+
+
+    setValue: function(value) {
 		this.edited = false;
+        this.timezone = this.form.getModelValue(this.timezoneId);
 
 		if (this.useCustomTimezone) {
-			this.timezone = this.form.getModelValue(this.timezoneId);
 			if (this.timezone) {
 				this.setSelectedTimezone(this.timezone);
 			} else {
@@ -1269,26 +1277,30 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 			this._setValue(value, this.timezone);
 		} else {
-			var timezoneCb = {
-				context: this,
+            if (!this.timezone) {
+                var timezoneCb = {
+                    context: this,
 
-				success: function (config) {
-					this.context.timezone = config['default-timezone'];
-					var timezoneStr = this.context.timezone.substr(0, 3);
+                    success: function (config) {
+                        //config['default-timezone'] = null;
+                        if (config['default-timezone']) {
+                            this.context.timezone = config['default-timezone'];
+                        } else {
+                            this.context.timezone = this.context.defaultTimezone;
+                        }
+                        this.context.setStaticTimezone(value, this.context.timezone);
+                    },
 
-					if (this.context.showTime) {
-						YDom.get(this.context.id + "-timezoneCode").innerHTML = timezoneStr;
-					}
+                    failure: function () {
+                        this.context.timezone = this.context.defaultTimezone;
+                    }
+                };
 
-					this.context._setValue(value, this.context.timezone);
-				},
-
-				failure: function () {
-				}
-			};
-
-			CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, "/site-config.xml", timezoneCb);
-		}
+                CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, "/site-config.xml", timezoneCb);
+            }else{
+                this.setStaticTimezone(value, this.timezone);
+            }
+        }
 	},
 
 	getSelectedTimezone: function(selectEl) {
