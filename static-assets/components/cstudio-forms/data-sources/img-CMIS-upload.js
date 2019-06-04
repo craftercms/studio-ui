@@ -58,8 +58,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
 
 		var callback = {
 			success: function(fileData) {
-                var uri = fileData;
-                var fileExtension = fileData.split(".").pop();
+                var uri = fileData.url;
+                var fileExtension = fileData.fileExtension;
 
                 var imageData = {
                     previewUrl : uri,

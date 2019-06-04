@@ -59,13 +59,13 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 		var callback = {
 			success: function(fileData) {
 				if (control) {
-					var item = fileData,
-						fileName = item,
-						fileExtension = fileName.split(".").pop();
+					var item = fileData.url,
+						fileName = fileData.url,
+						fileExtension = fileData.fileExtension;
 
 					control.insertItem(item, item, fileExtension);
 					control._renderItems();
-					control.decreaseFormDialog();
+                    CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
 
