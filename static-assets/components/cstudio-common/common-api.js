@@ -385,10 +385,6 @@ var nodeOpen = false,
 
                 var event = new CustomEvent("setContentDone");
                 document.dispatchEvent(event);
-
-                amplify.publish("SELECTED_CONTENT_SET", {
-                    contentTO
-                });
             },
 
             /**
@@ -455,7 +451,7 @@ var nodeOpen = false,
 
             /**
              * Unselects or clears all the selected items from the data structure
-             * 
+             *
              */
             clear: function() {
                 this.selectedContent = [];
@@ -854,9 +850,9 @@ var nodeOpen = false,
             },
 
             viewDependencies: function (site, items, approveType, defaultSelection) {
-                //defaultSelection may be: 'depends-on' (default) or 'depends-on-me', 
+                //defaultSelection may be: 'depends-on' (default) or 'depends-on-me',
 
-                var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on' 
+                var dependenciesSelection = defaultSelection ? defaultSelection : 'depends-on'
 
                 CSA.Operations._showDialogueView({
                     fn: CSA.Service.getDependenciesView,
@@ -1435,7 +1431,7 @@ var nodeOpen = false,
                             return;
                         }
 
-                        context.callingWindow.location.reload(true);   
+                        context.callingWindow.location.reload(true);
                     }
                 }
             },
@@ -1447,10 +1443,10 @@ var nodeOpen = false,
 
             /**
              * Based on content item, returns preview url properly
-             * 
+             *
              * @param contentTO {object} item data
              * @param useAppBase {boolean} if false, forces url to be returned without baseUri
-             * 
+             *
              * return {string}
              */
             getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
@@ -1846,7 +1842,7 @@ var nodeOpen = false,
                 $('body').on("diff-end", function () {
                     $modal.remove();
                 });
-                
+
                 diffUrl = CStudioAuthoringContext.baseUri + "/diff?site=" + site + "&path=" + path + "&version=" + version;
                 diffUrl = versionTO ? diffUrl + '&versionTO=' + versionTO : diffUrl;
                 diffUrl += "&mode=iframe";
@@ -1922,7 +1918,7 @@ var nodeOpen = false,
 
                 parent.iframeOpener = window;
                 window.open(url, name);
-        
+
                 animator.slideInDown();
             },
 
@@ -2018,7 +2014,7 @@ var nodeOpen = false,
 
                                     for(var x = 0; x < moduleConfig.contentTypes.length; x++){
                                         var compareContentType = moduleConfig.contentTypes[x].name;
-                                        
+
                                         if("/component/level-descriptor" === currentContentType === compareContentType){
                                             contentTypes.push(currentContentType);
                                         }else{
@@ -2368,37 +2364,37 @@ var nodeOpen = false,
                                 parentPath = parentPath.substring(0, parentPath.lastIndexOf("/"));
                                 parentPath += "/index.xml";
                             }
-                            
+
                             var refreshFn = function(to, newTo) {
                                 if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
                                     CStudioAuthoring.SelectedContent.clear(); // clear selected contents after duplicate
                                 }
-            
+
                                 if(newTo) {
                                     CStudioAuthoring.Operations.refreshPreview(newTo);
                                 }
-                                
+
                                 eventYS.data = to;
                                 eventYS.typeAction = "";
                                 eventYS.oldPath = null;
                                 eventYS.parent = false;
                                 document.dispatchEvent(eventYS);
                             };
-            
+
                             CStudioAuthoring.Service.lookupContentItem(
-                                site, 
-                                parentPath, 
+                                site,
+                                parentPath,
                                 {
                                     success: function(parentItemTo) {
                                         var copyCb = {
                                             success: function() {
-            
+
                                                 var pasteCb = {
                                                     success: function(pasteResponse) {
 
                                                         var filePath = pasteResponse.status[0];
                                                         var extension = filePath.split('.')[filePath.split('.').length - 1];
-            
+
                                                         var editCb = {
                                                             success: function(newItem) {
                                                                 refreshFn(parentItemTo.item, newItem.item);
@@ -2407,7 +2403,7 @@ var nodeOpen = false,
                                                             failure: function(errorResponse) {
                                                                 opCallBack.failure(errorResponse);
                                                             },
-            
+
                                                             cancelled: function() {
                                                                 refreshFn(parentItemTo.item, null);
                                                             },
@@ -2432,22 +2428,22 @@ var nodeOpen = false,
                                                         opCallBack.failure(errorResponse);
                                                     },
                                                 };
-            
+
                                                 CStudioAuthoring.Service.pasteContentFromClipboard(site, parentItemTo.item.uri, pasteCb);
                                             },
-            
+
                                             failure: function(errorResponse) {
                                                 opCallBack.failure(errorResponse);
                                             }
                                         };
-            
+
                                         //This method doesn't seem to do the rght thing
                                         //CStudioAuthoring.Clipboard.copyTree(contentTO, copyCb);
-                                        var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site; 
+                                        var serviceUri = CStudioAuthoring.Service.copyServiceUrl + "?site=" + site;
                                         var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
                                         YAHOO.util.Connect.setDefaultPostHeader(false);
                                         YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
+                                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
                                         YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
                                     },
                                     failure: function() {
@@ -2815,10 +2811,10 @@ var nodeOpen = false,
                 var openUploadDialogCb = {
                     moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
                         dialogClass.showDialog(
-                            moduleConfig.site, 
-                            moduleConfig.path, 
-                            moduleConfig.profile, 
-                            moduleConfig.serviceUri, 
+                            moduleConfig.site,
+                            moduleConfig.path,
+                            moduleConfig.profile,
+                            moduleConfig.serviceUri,
                             moduleConfig.callback);
                     }
                 };
@@ -3025,11 +3021,12 @@ var nodeOpen = false,
             updateTreeCookiePath: function(treeName, cookieKey, path){
                 var url = path,
                     treeCookieName,
-                    treeCookie;
+                    treeCookie,
+                    cookieRoot = [];
 
                 treeCookieName = CStudioAuthoringContext.site + '-' + treeName + '-opened';
                 treeCookie = CStudioAuthoring.Storage.read(treeCookieName);
-                treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : [];   
+                treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : {};
 
                 if(treeCookie[cookieKey] && treeCookie[cookieKey].indexOf("root-folder") !== -1){
                     treeCookie.sitewebsite = treeCookie.sitewebsite.splice(1,0);
@@ -3045,13 +3042,39 @@ var nodeOpen = false,
                     parsedUrl = url.substr(0, url.lastIndexOf('/'));
                 }
 
+                if ( !treeCookie['root-folder'] ) {
+                  cookieRoot.push('root-folder');
+                  treeCookie['root-folder'] = cookieRoot;
+                }
+
                 // key doesn't exist in cookie
                 if(!treeCookie[cookieKey] && parsedUrl != '/site'){
                     treeCookie[cookieKey] = [];
                 }
                 // in entry doesn't exist in key
                 if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
+                  var override = false,
+                      addToCookie = true,
+                      existingEntry;
+
+                  // validate if a path of the cookie is sub-path of the new entry or viceversa
+                  // if EXISTING is part of NEW entry -> delete EXISTING and add new
+                  // if NEW is part of EXISTING entry -> don't add NEW
+                  // EXISTING = parsedUrl, NEW = existingEntry
+                  for (var x = 0; x < treeCookie[cookieKey].length; x++) {
+                    existingEntry = treeCookie[cookieKey][x];
+
+                    if ( parsedUrl.indexOf(existingEntry) === 0 ){
+                      // delete entry so it can be replaced
+                      treeCookie[cookieKey] = treeCookie[cookieKey].filter(item => item !== existingEntry)
+                    } else if ( existingEntry.indexOf(parsedUrl) === 0 ) {
+                      addToCookie = false;
+                    }
+                  }
+
+                  if( addToCookie ) {
                     treeCookie[cookieKey].push(parsedUrl);
+                  }
                 }
                 storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
             }
@@ -3281,14 +3304,14 @@ var nodeOpen = false,
             getWorkflowJobsServiceUrl: "/api/1/services/api/1/workflow/get-active-jobs.json",
             rejectContentServiceUrl: "/api/1/services/api/1/workflow/reject.json",
             getGoLiveServiceUrl: "/api/1/services/api/1/workflow/go-live.json",
-        
+
             // Clipboard
             copyServiceUrl: "/api/1/services/api/1/clipboard/copy-item.json",
             copyContentToClipboardServiceUri: "/api/1/services/api/1/clipboard/copy-item.json",
             cutContentToClipboardServiceUri: "/api/1/services/api/1/clipboard/cut-item.json",
             pasteContentFromClipboardServiceUri: "/api/1/services/api/1/clipboard/paste-item.json",
             getClipboardItemsServiceUri: "/api/1/services/api/1/clipboard/get-items.json",
-            duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",   
+            duplicateContentServiceUri: "/api/1/services/api/1/clipboard/duplicate.json",
 
             // Dependencies
             lookupContentDependenciesServiceUri: "/api/1/services/api/1/dependency/get-dependencies.json?deletedep=true&",
@@ -6172,12 +6195,12 @@ var nodeOpen = false,
                 if (!this.arrayContains(css, this.addedCss)) {
 
                     this.addedCss.push(css);
-                    
+
                     if(css.indexOf("http") == -1) {
                         css = CStudioAuthoringContext.baseUri + css + '?version=' + CStudioAuthoring.UIBuildId;
                     }
 
-                    css = (css.indexOf("?")==-1) ? 
+                    css = (css.indexOf("?")==-1) ?
                         css + "?nocache="+new Date() : css + "&nocache="+new Date();
 
                     var headID = document.getElementsByTagName("head")[0];
@@ -6548,7 +6571,7 @@ var nodeOpen = false,
                 "" + time;
                 return dateTimeStr;
             },
-            
+
             /**
              * create yui based datepicker
              */
@@ -7743,7 +7766,7 @@ var nodeOpen = false,
 
             buildToolTip: function (itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon) {
                 label = label.replace(new RegExp(" ", 'g'), "&nbsp;");
-               
+
                 if(contentType.indexOf("/page/") != -1)
                 contentType = contentType.replace("/page/", "") + "&nbsp;(Page)";
 
@@ -7780,14 +7803,14 @@ var nodeOpen = false,
                         "</tr>"].join("");
                 }
 
-                if(lockOwner && lockOwner != null && lockOwner.trim() != "") {                    
+                if(lockOwner && lockOwner != null && lockOwner.trim() != "") {
                     toolTipMarkup +=  [
                         "<tr>",
                         "<td class='acn-width80'><strong>Locked by:</strong> </td>",
                         "<td class='acn-width200'>{6}</td>",
                         "</tr>"].join("");
                 }
-   
+
                 if (schedDate) {
                     toolTipMarkup +=  ["<tr>",
                        "<td class='acn-width80'><strong>Scheduled:<strong> </td>",
@@ -7797,15 +7820,15 @@ var nodeOpen = false,
                 toolTipMarkup += "</table>"
 
                 return CStudioAuthoring.StringUtils.format(
-                        toolTipMarkup, 
+                        toolTipMarkup,
 
-                        itemNameLabel, 
-                        label, 
-                        style, 
-                        status, 
-                        editedDate, 
-                        modifier, 
-                        lockOwner, 
+                        itemNameLabel,
+                        label,
+                        style,
+                        status,
+                        editedDate,
+                        modifier,
+                        lockOwner,
                         schedDate,
                         contentType);
             },
@@ -8110,7 +8133,7 @@ var nodeOpen = false,
                 $video = $container.find('video');
                 $img.hide(); $video.hide();
                 $container.removeClass('cstudio-video-popup-overlay');
-    
+
             if(type.match(/\bvideo\b/)) {
                 $container.addClass('cstudio-video-popup-overlay');
                 $video.show();
@@ -8121,9 +8144,9 @@ var nodeOpen = false,
                 $img.show();
                 $img.attr('src', source);
             }
-    
+
             $container.show();
-    
+
             // Close - on button click
             $container.one('click', '.close', function(){
                 $container.remove();
@@ -8133,7 +8156,7 @@ var nodeOpen = false,
             $container.on('click', function(e) {
                 if (e.target !== this)
                     return;
-    
+
                 $container.remove();
             });
 
@@ -8143,7 +8166,7 @@ var nodeOpen = false,
                     $container.remove();
                 }
             });
-    
+
         },
 
         decreaseFormDialog: function(){
@@ -8610,7 +8633,7 @@ var nodeOpen = false,
                     this.forms[formId] = childFormConfig;
                 } else {
                     if (this.forms[childFormId].windowRef.closed) {
-                        // A child name with the same window name was created previously, but it doesn't reference 
+                        // A child name with the same window name was created previously, but it doesn't reference
                         // a window any more => delete the reference to this child form
                         delete this.forms[childFormId];
                         this.forms[formId] = childFormConfig;
@@ -8647,7 +8670,7 @@ var nodeOpen = false,
                         CStudioAuthoring.Utils.Cookies.eraseCookie("cstudio-preview-notify");
                         if (document.location.href.indexOf(CStudioAuthoringContext.authoringAppBaseUri) == -1) {
                             // in some cases where common-api.js is not included in preview
-                            // this message shows up on the dashboard because the cookie does not get erased.  
+                            // this message shows up on the dashboard because the cookie does not get erased.
                             // The basic assumption here is preview is not rooted below authoring url
                             YAHOO.lang.later(2000, this, function() {
                                 CStudioAuthoring.Operations.showSimpleDialog(
@@ -8924,11 +8947,11 @@ CStudioAuthoring.InContextEdit = {
         window.top.iceCallback[editorId] = callback;
         window.top.iceCallback[window.top.iceCallback.length] = {key: editorId, value: callback };
     },
-  
+
     getIceCallback: function(editorId) {
 
         var iceWindowCallback;
-        
+
         if(window.top.iceCallback) {
             iceWindowCallback = window.top.iceCallback[editorId];
         }
@@ -9050,7 +9073,7 @@ CStudioAuthoring.InContextEdit = {
     editControlClicked: function() {
         if(this.content.itemIsLoaded == true) {
             CStudioAuthoring.Operations.performSimpleIceEdit(
-                    CStudioAuthoring.SelectedContent.getSelectedContent()[0], 
+                    CStudioAuthoring.SelectedContent.getSelectedContent()[0],
                     this.content.field
                     //isEdit
                     //callback
@@ -9061,7 +9084,7 @@ CStudioAuthoring.InContextEdit = {
             var lookupContentCb = {
                 success: function(contentTO) {
                     CStudioAuthoring.Operations.performSimpleIceEdit(
-                        contentTO.item, 
+                        contentTO.item,
                         this.field
                         //isEdit
                         //callback
