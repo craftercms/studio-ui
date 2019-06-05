@@ -190,13 +190,10 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
             type: "POST",
             url: serviceUri,
             data: data,
-            success: function(item)
+            success: function(response)
             {
-                var r = eval('(' + item.responseText + ')');
+                var r = response.item;
                 CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
-                if(r.fileExtension) {
-                    r.fileExtension = r.fileExtension.substring(r.fileExtension.lastIndexOf(".")+1);
-                }
                 args.self.callback.success(r);
             },
             error: function(err){
