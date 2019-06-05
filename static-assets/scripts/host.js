@@ -614,6 +614,7 @@
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
       success: function (content) {
         CStudioAuthoring.SelectedContent.setContent(content.item);
+        selectContentSet(content.item);
       }
     });
 
@@ -668,15 +669,18 @@
       success: function (content) {
         if(content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
-
-          window.setTimeout(function() {
-            amplify.publish("SELECTED_CONTENT_SET", {
-              contentTO: content.item
-            });
-          }, 0);
+          selectContentSet(content.item);
         }
       }
     });
+  }
+
+  function selectContentSet(item) {
+    window.setTimeout(function() {
+      amplify.publish("SELECTED_CONTENT_SET", {
+        contentTO: item
+      });
+    }, 0);
   }
 
   window.addEventListener("hashchange", function (e) {
