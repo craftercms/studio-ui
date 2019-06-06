@@ -34,10 +34,10 @@
         sortOrder: "asc",
         numFilters: 1,
         filtersShowing: 10,
-        currentPage: 1,	
+        currentPage: 1,
         searchInProgress: false,
         view: 'grid',
-        lastSelectedFilterSelector: '' 
+        lastSelectedFilterSelector: ''
     };
 
     CStudioSearch.typesMap = {
@@ -61,8 +61,8 @@
         JavaScript: { icon: 'fa-file-code-o' },
         Groovy: { icon: 'fa-file-code-o' },
         PDF: { icon: 'fa-file-pdf-o' },
-        "MS WORD": { icon: 'fa-file-word-o' },
-        "MS EXCEL": { icon: 'fa-file-excel-o' },
+        "MS Word": { icon: 'fa-file-word-o' },
+        "MS Excel": { icon: 'fa-file-excel-o' },
         "MS PowerPoint": { icon: 'fa-file-powerpoint-o' }
     }
 
@@ -92,7 +92,7 @@
                 CStudioSearch.clearFilters();
                 CStudioSearch.performSearch();
                 CStudioSearch.updateUrl();
-            }else{ 
+            }else{
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(function(){
                     CStudioSearch.searchContext.keywords = e.target.value;
@@ -115,14 +115,14 @@
             var path = $(this).attr('data-url'),
                 selected = $(this).is(":checked"),
                 allSelected;
-            
+
             // synchronize checkbox (grid and list view)
             $('input[type="checkbox"][data-url="' + path + '"]').prop('checked', selected);
 
             // if all checkboxes are selected/unselected -> update select all checkbox
             allSelected = $('input[type="checkbox"].search-select-item:checked').length == $('input[type="checkbox"].search-select-item').length;
             $('#searchSelectAll').prop('checked', allSelected);
-                
+
             CStudioSearch.changeSelectStatus(path, selected);
         });
 
@@ -132,7 +132,7 @@
                 $elements = $('input[type="checkbox"].search-select-item');
 
             $elements.prop('checked', selected).trigger("change");
-            
+
         });
 
         // Clicking on view icon from the results
@@ -174,35 +174,35 @@
             }else{
                 filterValue = $(this).val()
             }
-            
+
             if(isAdditional){
                 if(isRange){
                     searchFilters[filterName] = {
                         min: isNaN(parseInt(from)) ? null : from,
                         max: isNaN(parseInt(to)) ? null : to
-                    }; 
+                    };
 
                     if (filterName === 'last-edit-date') {
                         searchFilters[filterName].date = true;
                         searchFilters[filterName].id = $(this).attr('id');
-                        
+
                     }
                 }else{
-                    searchFilters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue); 
+                    searchFilters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue);
                 }
             }else{
                 CStudioSearch.searchContext[filterName] = filterValue;
             }
 
             CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
-            
+
             CStudioSearch.updateNumFilters(filterName);
             CStudioSearch.performSearch(true);
             CStudioSearch.updateUrl();
         });
 
         // Applying range to a filter
-        $('.cstudio-search').on('click', '.filter-range .apply-range', function(){ 
+        $('.cstudio-search').on('click', '.filter-range .apply-range', function(){
             var $parent = $(this).parent(),
                 filterName = $parent.attr('filter-name'),
                 rangeMin = parseInt($parent.find('.range-min').val()),
@@ -212,7 +212,7 @@
             CStudioSearch.searchContext.filters[filterName] = {
                 min: rangeMin,
                 max: rangeMax
-            }; 
+            };
 
             CStudioSearch.updateNumFilters();
             CStudioSearch.performSearch(true);
@@ -236,12 +236,12 @@
             var $resultsContainer = $('.results'),
                 newView = $(this).attr('data-view'),
                 oldView = newView === 'grid' ? 'list' : 'grid';
-            
+
             CStudioSearch.searchContext.view = newView;
             $('.view-selector button').removeClass('active');
             $(this).addClass('active');
 
-            $resultsContainer.switchClass(oldView, newView);    
+            $resultsContainer.switchClass(oldView, newView);
             CStudioSearch.updateUrl();
         });
 
@@ -272,7 +272,7 @@
         var searchContext = CStudioSearch.searchContext;
 
         var urlParams = CStudioAuthoring.Utils.getUrlParams();
-        
+
         var queryString = document.location.search;
         var keywords = CStudioAuthoring.Utils.getQueryVariable(queryString, "keywords");
         var searchId = CStudioAuthoring.Utils.getQueryVariable(queryString, "searchId");
@@ -280,14 +280,14 @@
         var page = CStudioAuthoring.Utils.getQueryVariable(queryString, "page");
         var sortBy = CStudioAuthoring.Utils.getQueryVariable(queryString, "sortBy");
         var view = CStudioAuthoring.Utils.getQueryVariable(queryString, "view");
-    
+
         searchContext.keywords = (keywords) ? keywords : searchContext.keywords;
         searchContext.searchId = (searchId) ? searchId : null;
         searchContext.currentPage = (page) ? page : searchContext.currentPage;
         searchContext.sortBy = (sortBy) ? sortBy : searchContext.sortBy;
         searchContext.view = (view) ? view : searchContext.view;
         searchContext.itemsPerPage = (itemsPerPage) ? itemsPerPage : searchContext.itemsPerPage;
-            
+
         $.each(urlParams, function(key, value){
             var processedKey,
                 processedValue;
@@ -329,7 +329,7 @@
             view = CStudioSearch.searchContext.view;
         $resultsContainer.empty();
         $resultsContainer.addClass(view);
-    
+
         this.searchContext.facets = results.facets;     // for filters
         CStudioSearch.cleanFilters();
         this.initFilters();
@@ -391,7 +391,7 @@
             result.type === "Page"
             || result.type === "Image"
             || result.type === "Video"
-        ){  
+        ){
             result.previewable = true;
         }
 
@@ -400,7 +400,7 @@
         if(result.type !== 'Page' && result.type !== 'Component' && result.type !== 'Taxonomy' && result.type !== 'Image') {
             result.asset = true;
         }
-        result.icon = CStudioSearch.typesMap[result.type].icon;
+        result.icon = CStudioSearch.typesMap[result.type] ? CStudioSearch.typesMap[result.type].icon : CStudioSearch.typesMap["Other"].icon;
 
         var permissionsCached = cache.get(permissionsKey),
             validateAndRender = function(results) {
@@ -433,7 +433,7 @@
     }
 
     // creates a search query from searchContext
-    CStudioSearch.createSearchQuery = function() {        
+    CStudioSearch.createSearchQuery = function() {
         var searchContext = this.searchContext;
         var query = {
             "keywords": searchContext.keywords,
@@ -509,7 +509,7 @@
             }
 
             headerLabel = CMgs.format(langBundle, facet.name) ? headerLabel + CMgs.format(langBundle, facet.name) : headerLabel + facet.name;
-            headerHtml = headerTemplate({ 
+            headerHtml = headerTemplate({
                 value: facet.name,
                 label: headerLabel,
                 main: !groupedFacetsName,
@@ -523,7 +523,7 @@
                 if($groupElems.length > 0){
                     $groupElems.last().after($(headerHtml));
                 }else{
-                    $(headerHtml).appendTo($container);    
+                    $(headerHtml).appendTo($container);
                 }
             }else{
                 $(headerHtml).appendTo($container);
@@ -539,7 +539,7 @@
 
                     // create label - if number => parseInt, if size => formatFileSize, if range => createRange
                     if(facet.range){
-                        var from = isNaN(parseInt(value.from)) ? underLabel : value.from, 
+                        var from = isNaN(parseInt(value.from)) ? underLabel : value.from,
                             to = isNaN(parseInt(value.to)) ? aboveLabel : value.to;
 
                         if(facet.name === 'size'){
@@ -551,8 +551,8 @@
                             label = CMgs.format(langBundle, key);
                         } else {
                             // if both values are ints, label will have a dash
-                            if(isNaN(parseInt(from)) || isNaN(parseInt(to))){ 
-                                label = from + ' ' + to; 
+                            if(isNaN(parseInt(from)) || isNaN(parseInt(to))){
+                                label = from + ' ' + to;
                             }else{
                                 label = from + ' - ' + to;
                             }
@@ -584,13 +584,13 @@
                     html = template(filterItem);
                     $(html).appendTo($('#' + facet.name + ' .panel-body'));
                 }
-                
+
             });
 
             CStudioSearch.addSeeMore($('#' + facet.name + ' .panel-body'), facet.name);
 
             // If facet is a range, add inputs for a custom range
-            if(facet.range && !facet.date){    
+            if(facet.range && !facet.date){
                 rangeHtml = rangeTemplate({ name: facet.name });
                 $(rangeHtml).appendTo($('#' + facet.name + ' .panel-body'));
             }
@@ -602,7 +602,7 @@
             if( typeof value === 'object' ){
                 var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
                     $filterRadio;
-                    
+
                 if (value.date === true || key === 'last-edit-date') {
                     $filterRadio = $('input[type="radio"][name="' + key + '"]#' + value.id);
                     $filterRadio.prop("checked", true);
@@ -617,7 +617,7 @@
                         $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
                     }
                 }
-                
+
             }else{
                 var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
                 $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
@@ -632,7 +632,7 @@
 
         this.updateNumFilters();
     }
-    
+
     // clear the filters applied into the searchContext
     CStudioSearch.clearFilters = function() {
         CStudioSearch.searchContext.filters = {};
@@ -663,7 +663,7 @@
         }
     }
 
-    // Clear the filters html 
+    // Clear the filters html
     CStudioSearch.cleanFilters = function(){
         $('#searchFilters .dropdown-menu .panel-default.tmpl').remove();
         $('#searchFilters .dropdown-menu .panel-default .filter-item.tmpl').remove();
@@ -675,7 +675,7 @@
         $('#numFilters').text('(' + this.searchContext.numFilters + ')');
     }
 
-    // Before calling this function the searchContext needs to be updated so 
+    // Before calling this function the searchContext needs to be updated so
     // it can create an updated searchQuery
     CStudioSearch.performSearch = function(clean) {
         if(clean){
@@ -759,12 +759,12 @@
 
     CStudioSearch.previewElement = function(url){
         CStudioAuthoring.Service.lookupContentItem(
-            CStudioAuthoringContext.site, 
-            url, 
-            { success:function(to) { 
-                CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false); 
-            }, 
-            failure: function() {} 
+            CStudioAuthoringContext.site,
+            url,
+            { success:function(to) {
+                CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false);
+            },
+            failure: function() {}
         }, false);
     }
 
@@ -779,7 +779,7 @@
         // Add search filters to url
         // csf = crafter studio filter
         // csr = crafter studio range
-        // csrTO = crafter studio range separator in URL 
+        // csrTO = crafter studio range separator in URL
         if(!jQuery.isEmptyObject( searchContext.filters )) {
             $.each(searchContext.filters, function(key, value){
                 if(typeof value === 'string'){
@@ -795,13 +795,13 @@
                             max = isNaN(value.max) ? 'null' : value.max;
                         newUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max;
                     }
-                    
+
                 }
             })
         }
 
         newUrl += '&keywords=' + searchContext.keywords;
-        
+
         window.history.pushState({path:newUrl},'',newUrl);
     }
 
