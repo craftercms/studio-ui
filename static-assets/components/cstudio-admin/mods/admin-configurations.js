@@ -140,6 +140,7 @@ CStudioAuthoring.Module.requireModule(
 									var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
 									option.setAttribute("description", CMgs.format(langBundle, fileConfig.description));
 									option.setAttribute("sample", fileConfig.samplePath);
+                  option.setAttribute("module", fileConfig.module);
 									itemSelectEl.options[index++] = option;
 								}
 							} else if (config.files.file) {
@@ -147,6 +148,7 @@ CStudioAuthoring.Module.requireModule(
 								var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
 								option.setAttribute("description", CMgs.format(langBundle, fileConfig.description));
 								option.setAttribute("sample", fileConfig.samplePath);
+                option.setAttribute("module", fileConfig.module);
 								itemSelectEl.options[1] = option;
 							}
 						},
@@ -179,12 +181,14 @@ CStudioAuthoring.Module.requireModule(
 						descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute("description");
 
 						// load configuration into editor
-						var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-							CStudioAuthoringContext.site + '&path=' + configFilesPath + itemSelectEl[selectedIndex].value,
-							elemPath = configFilesPath + itemSelectEl[selectedIndex].value;
+						var url = '/studio/api/2/configuration/get_configuration?siteId=' +
+							CStudioAuthoringContext.site + '&module=' + itemSelectEl[selectedIndex].getAttribute('module') +
+              '&location=' + itemSelectEl[selectedIndex].value, // + '&environment=test',
+							elemPath =  itemSelectEl[selectedIndex].value;
 						var getConfigCb = {
 							success: function(response) {
-								editor.setValue(response.responseText);
+							  var responseObj = eval('(' + response.responseText + ')')
+								editor.setValue(responseObj.content);
                                 editor.clearSelection(); // This will remove the highlight over the text
                                 CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 
@@ -339,15 +343,18 @@ CStudioAuthoring.Module.requireModule(
                     var savePath = itemSelectEl[selectedIndex].value;
                     if (savePath != 'undefined' && savePath != '') {
 
-                        var defPath =  configFilesPath + itemSelectEl[selectedIndex].value;
+                        var defPath =  itemSelectEl[selectedIndex].value;
 
-                        var url = "/api/1/services/api/1/site/write-configuration.json" +
-                            "?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
+                        var url = "/api/2/configuration/write_configuration";
 
+                        var reqObj = { siteId: CStudioAuthoringContext.site, module: itemSelectEl[selectedIndex].getAttribute("module"),
+                            location: defPath, environment: "", content: xml };
+
+                      var requestAsString = JSON.stringify(reqObj);
                         YAHOO.util.Connect.setDefaultPostHeader(false);
-						YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
+                      YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
 						YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
-                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, xml);
+                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, requestAsString);
                     } else {
                         CStudioAuthoring.Operations.showSimpleDialog(
                             "errorDialog-dialog",
