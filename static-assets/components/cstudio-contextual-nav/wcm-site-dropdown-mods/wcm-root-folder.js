@@ -74,6 +74,15 @@
             initialize: function(config) {
                 var Self = this;
 
+                // When initializing, check if it's in preview and set the current previewed item into tree cookie
+                if ( CStudioAuthoringContext.isPreview && config.params.path === '/site/website' ) {
+                  var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
+                  //check if selected content is type page
+                  if ( selectedContent.isPage ){
+                    CStudioAuthoring.Operations.updateTreeCookiePath('pages', 'sitewebsite', selectedContent.uri);
+                  }
+                }
+
                 if (config.name == "wcm-root-folder") {
                     var instance = new CStudioAuthoring.ContextualNav.WcmRootFolderInstance(config);
                     instance.cannedSearchCache = [];
@@ -3535,7 +3544,6 @@
 
                 if (!highlightVisible && treeExists) {
                     var $container = $(config.containerEl).empty();
-                    CStudioAuthoring.Operations.updateTreeCookiePath('pages', 'sitewebsite', contentTO.uri);
                     CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(Object.assign({}, config, { containerEl: $container[0] }));
                 } else {
                     $('#acn-dropdown-menu [data-uri]').removeClass('highlighted');
