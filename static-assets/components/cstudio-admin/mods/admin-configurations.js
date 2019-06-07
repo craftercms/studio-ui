@@ -183,7 +183,7 @@ CStudioAuthoring.Module.requireModule(
 						// load configuration into editor
 						var url = '/studio/api/2/configuration/get_configuration?siteId=' +
 							CStudioAuthoringContext.site + '&module=' + itemSelectEl[selectedIndex].getAttribute('module') +
-              '&location=' + itemSelectEl[selectedIndex].value, // + '&environment=test',
+              '&path=' + itemSelectEl[selectedIndex].value, // + '&environment=test',
 							elemPath =  itemSelectEl[selectedIndex].value;
 						var getConfigCb = {
 							success: function(response) {
@@ -348,7 +348,7 @@ CStudioAuthoring.Module.requireModule(
                         var url = "/api/2/configuration/write_configuration";
 
                         var reqObj = { siteId: CStudioAuthoringContext.site, module: itemSelectEl[selectedIndex].getAttribute("module"),
-                            location: defPath, environment: "", content: xml };
+                            path: defPath, environment: "", content: xml };
 
                       var requestAsString = JSON.stringify(reqObj);
                         YAHOO.util.Connect.setDefaultPostHeader(false);
