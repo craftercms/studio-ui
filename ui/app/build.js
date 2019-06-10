@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+const
+  fs = require('fs'),
+  ncp = require('ncp').ncp,
+  rimraf = require('rimraf'),
+
+  APP_DIR = __dirname,
+  PATH_BUILD = `${APP_DIR}/build`,
+  TEMPLATES = `../../templates`,
+  DEST = `../../static-assets/next`,
+
+  REQUIRE_JS_SCRIPT = '<script src="/studio/static-assets/libs/requirejs/require.js"></script>',
+  PLACEHOLDER = '<script id="_placeholderscript_"></script>',
+
+  indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString(),
+  position = indexContents.indexOf(PLACEHOLDER),
+
+  templateScripts = indexContents
+    .substr(position + PLACEHOLDER.length)
+    .replace(/\<\/(body|html)>/gi, '')
+    .replace(/<\/script>/gi, '<\/script>\n')
+;
+
+console.log(`Updating script imports`);
+fs.writeFileSync(
+  `${TEMPLATES}/web/common/js-next-scripts.ftl`,
+  `${REQUIRE_JS_SCRIPT}\n${templateScripts}`);
+
+rimraf.sync(`${DEST}/*`);
+
+console.log(`Copying build files to ${DEST}/static`)
+ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
+  if (err) {
+    return console.error(err);
+  }
+  console.log('Done!');
+});
