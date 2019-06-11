@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import '../styles/index.scss';
 
-const AsyncVideoPlayer = React.lazy(() => import('./AsyncVideoPlayer'));
+import React, { Suspense } from 'react';
 
-function App() {
+function CrafterCMSNextBridge(props: any) {
   return (
-    <AsyncVideoPlayer nonPlayableMessage={'The video is not ready to be played.'}/>
+    <Suspense fallback={'Loading...'}>
+      {props.children}
+    </Suspense>
   );
 }
 
-export default App;
+export default CrafterCMSNextBridge;
