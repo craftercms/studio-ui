@@ -15,53 +15,105 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {  } from 'react';
+import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-/*
+import { capitalize } from './string-utils';
+import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
+
+/**
  *
  * To use from existing studio-ui code:
+ *
+ * Example 1 - Using components
+ *
+ * CrafterCMSNext
+ *   .render(someElementOrSelector, 'AsyncVideoPlayer', { nonPlayableMessage })
+ *   .then(() => {
+ *     // Optional callback - you don't call .then(...) if you don't need a callback
+ *     console.log('The AsyncVideoPlayer (react component) is now rendered.')
+ *   });
+ *
+ * Example 2 - Using assets
+ *
+ * img.src = CrafterCMSNext.Asset.logoIcon
+ *
+ */
 
-requirejs(['studio-lib'], function ({ renderComponent, AsyncVideoPlayer }) {
-  renderComponent('#asycVideoPlayer', AsyncVideoPlayer, { nonPlayableMessage: '...' });
-});
-
-requirejs(['studio-lib'], function ({ renderComponent, AsyncVideoPlayer, ASSETS }) {
-  const
-    div = document.createElement('div'),
-    { logo } = ASSETS;
-
-  div.id = 'someUniqueId';
-  document.body.appendChild(div);
-
-  renderComponent(div, AsyncVideoPlayer, { logo });
-})
-
-*/
+interface CodebaseBridge {
+  React: typeof React;
+  ReactDOM: typeof ReactDOM;
+  Components: { [key: string]: JSXElementConstructor<any> };
+  Assets: { [key: string]: () => Promise<any> };
+  Util: { [key: string]: Function };
+  render: Function;
+}
 
 export function createCodebaseBridge() {
 
-  const { define }: any = window;
+  const Bridge: CodebaseBridge = {
 
-  define && define('studio-lib', [], function () {
-    return {
-      // React
-      React,
-      ReactDOM,
-      // Components
-      AsyncVideoPlayer: React.lazy(() => import('../components/AsyncVideoPlayer')),
-      // Assets
-      ASSETS: {
-        // e.g. logo: require('../assets/logo.svg'),
-      },
-      renderComponent: (elem: string | Element, Component: React.FC, props: object) => {
-        if (typeof elem === 'string') {
-          elem = document.querySelector(elem);
-        }
-        props = props || {};
-        ReactDOM.render(<Component {...props} />, elem);
+    // React
+    React,
+    ReactDOM,
+
+    Components: {
+      AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer'))
+    },
+
+    Assets: {
+      logoIcon: require('../assets/crafter-icon.svg')
+    },
+
+    Util: {
+      capitalize
+    },
+
+    // Mechanics
+    render(
+      container: (string | Element),
+      component: string | JSXElementConstructor<any>,
+      props: object = {}): Promise<any> {
+
+      if (
+        typeof component !== 'string' &&
+        !Object.values(Bridge.Components).includes(component)
+      ) {
+        throw new Error('The supplied module is not a know component of CrafterCMSNext.');
+      } else if (!(component in Bridge.Components)) {
+        throw new Error('The supplied component name is not a know component of CrafterCMSNext.');
       }
-    };
-  });
+
+      if (typeof container === 'string') {
+        container = document.querySelector(container);
+      }
+
+      const Component: JSXElementConstructor<any> = (typeof component === 'string')
+        ? Bridge.Components[component]
+        : component;
+
+      return (
+        new Promise((resolve, reject) => {
+          try {
+            // @ts-ignore
+            ReactDOM.unstable_createRoot(container)
+              .render(
+                // @ts-ignore
+                <CrafterCMSNextBridge>
+                  <Component {...props} />,
+                </CrafterCMSNextBridge>,
+                () => resolve()
+              );
+          } catch (e) {
+            reject(e);
+          }
+        })
+      );
+    }
+
+  };
+
+  // @ts-ignore
+  window.CrafterCMSNext = Bridge;
 
 }

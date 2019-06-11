@@ -25,7 +25,6 @@ const
   TEMPLATES = `../../templates`,
   DEST = `../../static-assets/next`,
 
-  REQUIRE_JS_SCRIPT = '<script src="/studio/static-assets/libs/requirejs/require.js"></script>',
   PLACEHOLDER = '<script id="_placeholderscript_"></script>',
 
   indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString(),
@@ -40,14 +39,16 @@ const
 console.log(`Updating script imports`);
 fs.writeFileSync(
   `${TEMPLATES}/web/common/js-next-scripts.ftl`,
-  `${REQUIRE_JS_SCRIPT}\n${templateScripts}`);
+  `${templateScripts}`);
 
+console.log(`Deleting previous build (rm -rf ${DEST}/*)`);
 rimraf.sync(`${DEST}/*`);
 
-console.log(`Copying build files to ${DEST}/static`)
+console.log(`Copying build files to ${DEST}/static`);
 ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
   if (err) {
-    return console.error(err);
+    console.error(err);
+  } else {
+    console.log('Done!');
   }
-  console.log('Done!');
 });

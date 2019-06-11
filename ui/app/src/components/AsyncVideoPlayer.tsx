@@ -18,12 +18,12 @@
 import React, { useState, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
 
-interface AsycVideoPlayerProps {
+interface AsyncVideoPlayerProps {
   // list props...
   nonPlayableMessage: string;
 }
 
-function AsyncVideoPlayer(props: AsycVideoPlayerProps) {
+function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
 
   const
     {
