@@ -1561,6 +1561,10 @@ CStudioAuthoring.Module.requireModule(
 					});
 				}
 
+                this.createRowHeading(CMgs.format(langBundle, "quickCreate"), sheetEl);
+                this.createRowFn(CMgs.format(langBundle, "showQuickCreate"), "quickCreate", item.quickCreate, "", "boolean", sheetEl,  function(e, el) { item.quickCreate = el.value; CStudioAdminConsole.isDirty = true;});
+                this.createRowFn(CMgs.format(langBundle, "destinationPath"), "quickCreatePath", item.quickCreatePath?item.quickCreatePath:"", "", "string", sheetEl,  function(e, el) { item.quickCreatePath = el.value; CStudioAdminConsole.isDirty = true;});
+
 			},
 
 			renderDatasourcePropertySheet: function(item, sheetEl) {
@@ -2251,12 +2255,16 @@ CStudioAuthoring.Module.requireModule(
 			 * formatting needs to come out of this and go in a function
 			 */
 			serializeDefinitionToXml: function(definition) {
+                var quickCreate = definition.quickCreate ? definition.quickCreate : "false";
+                var quickCreatePath = definition.quickCreatePath ? definition.quickCreatePath : "";
 				var xml = "<form>\r\n";
 				xml += "\t<title>" + CStudioForms.Util.escapeXml(definition.title) + "</title>\r\n" +
 					"\t<description>" + CStudioForms.Util.escapeXml(definition.description) + "</description>\r\n" +
 					"\t<objectType>" + definition.objectType + "</objectType>\r\n" +
 					"\t<content-type>" + definition.contentType + "</content-type>\r\n" +
                     "\t<imageThumbnail>" + definition.imageThumbnail + "</imageThumbnail>\r\n" +
+                    "\t<quickCreate>" + quickCreate + "</quickCreate>\r\n" +
+                    "\t<quickCreatePath>" + quickCreatePath + "</quickCreatePath>\r\n" +
 					"\t<properties>";
 				for(var i=0; i<definition.properties.length; i++) {
 					var property=definition.properties[i];

@@ -231,7 +231,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     about: "약",
     settings: "설정",
     signOut: "로그 아웃",
-    mainMenu: "기본 메뉴"
+    mainMenu: "기본 메뉴",
+    quickCreate: "빠른 만들기"
 
 });
 
@@ -729,6 +730,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     profileId: "프로필 ID",
     path: "통로",
     type: "유형",
+    quickCreate: "빠른 만들기",
+    showQuickCreate: "빠른 만들기에 표시",
+    destinationPath: "목적지 경로",
 
     /*Restrictions*/
     required: "필요",

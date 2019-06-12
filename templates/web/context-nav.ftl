@@ -32,8 +32,16 @@
                     <li>
                         <a id="navbar-site-name" href="/studio/site-dashboard"></a>
                     </li>
+                    <li class="dropdown quick-create hide" dropdown>
+                        <a id="quick-create-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
+                            <span class="nav-icon fa fa-plus-circle"></span>
+                        </a>
+                        <ul id="quick-create" class="dropdown-menu" role="menu">
+                            <li class="title" style=""><span data-translation="quickCreate">Quick Create</span></li>
+                        </ul>
+                    </li>
                 </ul>
- 
+
                 <ul class="nav navbar-nav" id="acn-quick-content"></ul>
 
                 <ul class="nav navbar-nav" id="activeContentActions"></ul>

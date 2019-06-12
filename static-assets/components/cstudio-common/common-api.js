@@ -2969,10 +2969,15 @@ var nodeOpen = false,
             /**
              * handle macros in file paths
              */
-            processPathsForMacros: function(path, model) {
+            processPathsForMacros: function(path, model, useUUID) {
+
 
                 if(path.indexOf("{objectId}") != -1) {
-                    path = path.replace("{objectId}", model["objectId"]);
+                    if(useUUID){
+                        path = path.replace("{objectId}", CStudioAuthoring.Utils.generateUUID());
+                    }else{
+                        path = path.replace("{objectId}", model["objectId"]);
+                    }
                 }
 
                 if(path.indexOf("{objectGroupId}") != -1) {
@@ -3330,6 +3335,9 @@ var nodeOpen = false,
 
             // Global Menu
             getGlobalMenuURL: "/api/2/ui/views/global_menu.json",
+
+            // Quick Create
+            getQuickCreateURL: "/api/2/content/quick_create.json",
 
             /**
              * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
@@ -4484,6 +4492,26 @@ var nodeOpen = false,
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
                         results = results.menuItems;
+                        callback.success(results);
+                    },
+                    failure: function(response) {
+                        callback.failure(response);
+                    }
+                };
+                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * get Quick Create
+             */
+            getQuickCreate: function(callback) {
+                var serviceUrl = this.getQuickCreateURL;
+                serviceUrl += "?siteId=" + CStudioAuthoringContext.site;
+
+                var serviceCallback = {
+                    success: function(jsonResponse) {
+                        var results = eval("(" + jsonResponse.responseText + ")");
+                        results = results.items;
                         callback.success(results);
                     },
                     failure: function(response) {

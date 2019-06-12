@@ -240,7 +240,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     about: "About",
     settings: "Settings",
     signOut: "Sign Out",
-    mainMenu: "Main Menu"
+    mainMenu: "Main Menu",
+    quickCreate: "Quick Create"
 
 });
 
@@ -783,6 +784,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     profileId: "Profile Id",
     path: "Path",
     type: "Type",
+    quickCreate: "Quick Create",
+    showQuickCreate: "Show in Quick Create",
+    destinationPath: "Destination Path",
 
     /*Restrictions*/
     required: "Required",

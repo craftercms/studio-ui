@@ -58,7 +58,7 @@
 
 </head>
 
-<body class="yui-skin-cstudioTheme">
+<body class="yui-skin-cstudioTheme siteConfiguration">
 <div id="admin-console" class="categories-panel-active"></div>
 </body>
 </html>

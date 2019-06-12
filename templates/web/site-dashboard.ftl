@@ -45,6 +45,7 @@
 
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
     <#include "/templates/web/common/page-fragments/context-nav.ftl" />
+    <script>CStudioAuthoringContext.isDashboard = true</script>
 
     <script>
         var

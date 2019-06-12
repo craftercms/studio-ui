@@ -55,6 +55,45 @@
    }
 }
 
+.quick-create{
+  &.open {
+    #quick-create{
+      top: 49px;
+    }
+
+    #quick-create-dropdown {
+      padding: 17px 8px;
+      z-index: 9999;
+    }
+  }
+
+  #quick-create-dropdown{
+    font-size: 15px;
+    padding: 15px 8px;
+    margin-right: 12px;
+    .nav-icon {
+      color: #3dd2ef;
+    }
+  }
+
+  .dropdown-menu{
+    padding-top: 0px;
+
+    .title{
+      padding: 5px 20px 5px;
+      margin-bottom: 5px;
+      border-bottom: 1px solid #afadad;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 10px;
+      font-weight: bold;
+      background-color: #e7e7e7;
+      right: 0.5px;
+      position: relative;
+    }
+  }
+}
+
 .nav-container.nav-link .nav-icon{
   margin-right: 4px;
 }
@@ -145,6 +184,10 @@
     display: inline-block;
     opacity: 1;
   }
+}
+
+.siteConfiguration #activeContentActions{
+  padding-left: 20px;
 }
 
 #activeContentActions {
