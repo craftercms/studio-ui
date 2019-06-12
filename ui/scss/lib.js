@@ -37,8 +37,11 @@ function write({ file, content }) {
   }
 
   const
-    copyright = content.match(/\/\*[^*]*\*+([^\/][^*]*)(Crafter Software)[^*]*\*+([^\/][^*]*\*+)*\//g),
-    withoutCopyrights = content.replace(/\/\*[^*]*\*+([^\/][^*]*)(Crafter Software)[^*]*\*+([^\/][^*]*\*+)*\//g, ''),
+    regExp = /\/\*[^*]*\*+([^\/][^*]*)(Crafter Software)[^*]*\*+([^\/][^*]*\*+)*\//g,
+    copyright = content.match(regExp),
+    withoutCopyrights = content
+      .replace(regExp, '')
+      .replace(String.fromCharCode(65279), ''),
     css = copyright ? `${copyright[0]}\n\n${withoutCopyrights}` : content;
 
   fs.writeFile(`${OUT_DIR}/${file}.css`, css, function (error) {
