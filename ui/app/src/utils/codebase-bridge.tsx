@@ -18,8 +18,9 @@
 import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-import { capitalize } from './string-utils';
+import { capitalize } from './string';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
+import { get, post, setGlobalHeaders, getGlobalHeaders, OMIT_GLOBAL_HEADERS } from './ajax';
 
 /**
  *
@@ -45,7 +46,7 @@ interface CodebaseBridge {
   ReactDOM: typeof ReactDOM;
   Components: { [key: string]: JSXElementConstructor<any> };
   Assets: { [key: string]: () => Promise<any> };
-  Util: { [key: string]: Function };
+  Util: object;
   render: Function;
 }
 
@@ -66,7 +67,8 @@ export function createCodebaseBridge() {
     },
 
     Util: {
-      capitalize
+      ajax: { get, post, setGlobalHeaders, getGlobalHeaders, OMIT_GLOBAL_HEADERS },
+      string: { capitalize }
     },
 
     // Mechanics
