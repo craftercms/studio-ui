@@ -20,7 +20,7 @@ import ReactDOM from 'react-dom';
 
 import { capitalize } from './string';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
-import { get, post, setGlobalHeaders, getGlobalHeaders, OMIT_GLOBAL_HEADERS } from './ajax';
+import ajax from './ajax';
 
 /**
  *
@@ -44,9 +44,9 @@ import { get, post, setGlobalHeaders, getGlobalHeaders, OMIT_GLOBAL_HEADERS } fr
 interface CodebaseBridge {
   React: typeof React;
   ReactDOM: typeof ReactDOM;
-  Components: { [key: string]: JSXElementConstructor<any> };
-  Assets: { [key: string]: () => Promise<any> };
-  Util: object;
+  components: { [key: string]: JSXElementConstructor<any> };
+  assets: { [key: string]: () => Promise<any> };
+  util: object;
   render: Function;
 }
 
@@ -58,16 +58,16 @@ export function createCodebaseBridge() {
     React,
     ReactDOM,
 
-    Components: {
+    components: {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer'))
     },
 
-    Assets: {
+    assets: {
       logoIcon: require('../assets/crafter-icon.svg')
     },
 
-    Util: {
-      ajax: { get, post, setGlobalHeaders, getGlobalHeaders, OMIT_GLOBAL_HEADERS },
+    util: {
+      ajax,
       string: { capitalize }
     },
 
@@ -79,10 +79,10 @@ export function createCodebaseBridge() {
 
       if (
         typeof component !== 'string' &&
-        !Object.values(Bridge.Components).includes(component)
+        !Object.values(Bridge.components).includes(component)
       ) {
         throw new Error('The supplied module is not a know component of CrafterCMSNext.');
-      } else if (!(component in Bridge.Components)) {
+      } else if (!(component in Bridge.components)) {
         throw new Error('The supplied component name is not a know component of CrafterCMSNext.');
       }
 
@@ -91,7 +91,7 @@ export function createCodebaseBridge() {
       }
 
       const Component: JSXElementConstructor<any> = (typeof component === 'string')
-        ? Bridge.Components[component]
+        ? Bridge.components[component]
         : component;
 
       return (
