@@ -36,3 +36,10 @@ export function underscore(str: string) {
 export function dasherize(str: string) {
   return str.replace(/_/g, '-');
 }
+
+export default {
+  camelize,
+  capitalize,
+  underscore,
+  dasherize
+};
