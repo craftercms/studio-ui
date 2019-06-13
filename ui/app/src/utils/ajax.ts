@@ -56,3 +56,14 @@ export function put(url: string, body: any, headers: object = {}) {
 export function del(url: string, headers: object = {}) {
   return ajax.delete(url, mergeHeaders(headers));
 }
+
+export default {
+  OMIT_GLOBAL_HEADERS,
+  getGlobalHeaders,
+  setGlobalHeaders,
+  get,
+  post,
+  patch,
+  put,
+  del
+}

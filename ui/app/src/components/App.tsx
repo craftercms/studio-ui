@@ -16,12 +16,15 @@
  */
 
 import React from 'react';
+import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 
 const AsyncVideoPlayer = React.lazy(() => import('./AsyncVideoPlayer'));
 
 function App() {
   return (
-    <AsyncVideoPlayer nonPlayableMessage={'The video is not ready to be played.'}/>
+    <CrafterCMSNextBridge>
+      <AsyncVideoPlayer nonPlayableMessage={'The video is not ready to be played.'}/>
+    </CrafterCMSNextBridge>
   );
 }
 
