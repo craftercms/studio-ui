@@ -43,34 +43,40 @@
             $rootScope.imagesDirectory = Constants.PATH_IMG;
 
             $rootScope.$on('$stateChangeStart', function (event, toState) {
-                authService.validateSession().then(
-                    function successCallback(response) {
+
+                // No need to re-check session if heading to the login page
+                // 1. Is "public"
+                // 2. Is where people authenticate
+                if (toState.name !== 'login') {
+                  authService.validateSession()
+                    .then(
+                      function (response) {
                         if (toState.name.indexOf('login') !== -1) {
-                            if (authService.getUser() && authService.getUser().authenticationType == Constants.HEADERS) {
-                                $state.go('home.globalMenu');
-                            }
+                          var user = authService.getUser() || {};
+                          if (user.authenticationType === Constants.HEADERS) {
+                            $state.go('home.globalMenu');
+                          }
                         }
-
-                    }, function errorCallback(e) {
+                      },
+                      function (e) {
                         authService.removeUser();
-
                         if (toState.name.indexOf('login') === -1 && e.status !== 500) {
-                            if (toState.name.indexOf('reset') === -1) {
-                                event.preventDefault();
-                                $state.go('login');
-                            }
+                          if (toState.name.indexOf('reset') === -1) {
+                            event.preventDefault();
+                            $state.go('login');
+                          }
                         }
-                    }
-                );
+                      }
+                    );
+                }
 
                 if(toState.name.indexOf('users') !== -1 ){
-                    // console.log('on users page');
 
                     var user = authService.getUser();
-                        var createSitePermissions = false;
 
                     if(user && user.username) {
-                        sitesService.getPermissions('', '/', user.username || user)
+                      var createSitePermissions = false;
+                      sitesService.getPermissions('', '/', user.username || user)
                             .success(function (data) {
                                 for(var i=0; i<data.permissions.length;i++){
                                     if(data.permissions[i]=='create-site'){
@@ -394,7 +400,8 @@
         HEADERS: 'headers',
         AUTH_HEADERS: "AUTH_HEADERS",
         AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone",
-        AUDIT_SYSTEM: "Studio Root"
+        AUDIT_SYSTEM: "Studio Root",
+        CRAFTER_LOGO: "/studio/static-assets/images/logo.svg"
     });
 
     app.service('authService', [
@@ -502,7 +509,7 @@
             this.getLoginLogo = function() {
                 return $http.get(api('get-ui-resource-override', true), {
                     params: { resource : 'logo.jpg' }
-                })
+                });
             };
 
             this.getLoginUrl = function() {
@@ -733,6 +740,7 @@
             $rootScope.isFooter = true;
             $scope.showLogoutLink = false;
             $scope.logoutInfo = {};
+            $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
             if($location.$$search.iframe){
                 $rootScope.isFooter = false;
@@ -901,8 +909,6 @@
             authService.getLoginLogo().then(
                 function successCallback(response) {
                     $scope.crafterLogo = authService.getLoginUrl();
-                }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
                 }
             );
 
@@ -1107,7 +1113,7 @@
 
             $scope.sitesPag = {
                 sitesPerPage: $cookies.get("crafterStudioSitesPagination") ? parseInt($cookies.get("crafterStudioSitesPagination"), 10) : 15
-            }
+            };
 
             $scope.totalSites = 0;
             $scope.defaultDelay = 500;
@@ -1610,12 +1616,13 @@
     ]);
 
     app.controller('LoginCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate',
-        function ($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate) {
+        '$rootScope', '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate', 'Constants',
+        function ($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate, Constants) {
 
             var credentials = {};
             $scope.langSelected = '';
             $rootScope.isFooter = false;
+            $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
             function login() {
 
@@ -1700,8 +1707,6 @@
             authService.getLoginLogo().then(
                 function successCallback(response) {
                     $scope.crafterLogo = authService.getLoginUrl();
-                }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
                 }
             );
 
@@ -1748,18 +1753,17 @@
     ]);
 
     app.controller('ResetCtrl', [
-        '$scope', '$state', '$location', 'authService', '$timeout', '$translate',
-        function ($scope, $state, $location, authService, $timeout, $translate) {
+        '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants',
+        function ($scope, $state, $location, authService, $timeout, $translate, Constants) {
 
             var successDelay = 2500;
             $scope.user = {};
             $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
+            $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
             authService.getLoginLogo().then(
                 function successCallback(response) {
                     $scope.crafterLogo = authService.getLoginUrl();
-                }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
                 }
             );
 
