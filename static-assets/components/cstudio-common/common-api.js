@@ -3337,7 +3337,7 @@ var nodeOpen = false,
             getGlobalMenuURL: "/api/2/ui/views/global_menu.json",
 
             // Quick Create
-            getQuickCreateURL: "/api/2/content/quick_create.json",
+            getQuickCreateURL: "/api/2/content/list_quick_create_content.json",
 
             /**
              * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
