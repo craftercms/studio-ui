@@ -1571,11 +1571,25 @@ CStudioAuthoring.Module.requireModule(
 				}
 
                 this.createRowHeading(CMgs.format(langBundle, "quickCreate"), sheetEl);
-                this.createRowFn(CMgs.format(langBundle, "showQuickCreate"), "quickCreate", item.quickCreate, "", "boolean", sheetEl,
-                    function(e, el) { item.quickCreate = el.value; CStudioAdminConsole.isDirty = true;});
-                this.createRowFn(CMgs.format(langBundle, "destinationPath"), "quickCreatePath", item.quickCreatePath?item.quickCreatePath:"", "",
-                    "string", sheetEl,function(e, el) { item.quickCreatePath = el.value; CStudioAdminConsole.isDirty = true;}, true,
-                    CMgs.format(langBundle, "pattern"), this.renderQuickCreatePattern);
+                this.createRowFn(
+                    CMgs.format(langBundle, "showQuickCreate"),
+                    "quickCreate", item.quickCreate, "", "boolean", sheetEl,
+                    function(e, el){
+                        item.quickCreate = el.value;
+                        CStudioAdminConsole.isDirty = true;
+                    });
+                this.createRowFn(
+                    CMgs.format(langBundle, "destinationPath"),
+                    "quickCreatePath",
+                    item.quickCreatePath ? item.quickCreatePath : "",
+                    "", "string", sheetEl,
+                    function(e, el){
+                        item.quickCreatePath = el.value;
+                        CStudioAdminConsole.isDirty = true;
+                    },
+                    true, CMgs.format(langBundle, "pattern"),
+                    this.renderQuickCreatePattern
+                );
 
 			},
 

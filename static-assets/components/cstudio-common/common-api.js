@@ -4517,7 +4517,6 @@ var nodeOpen = false,
                     },
                     function (response) {
                         callback.failure(response);
-                        return null;
                     }
                 );
             },

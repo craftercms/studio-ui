@@ -39,7 +39,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
                 var createCb = {
                     success: function (contentTO, editorId, name, value, draft) {
                         var page = CStudioAuthoring.Utils.getQueryParameterURL("page");
-                        var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
+                        var acnDraftContent = $('.acnDraftContent').get(0);
                         eventYS.data = contentTO.item;
                         eventYS.typeAction = "createContent";
                         eventYS.oldPath = null;
