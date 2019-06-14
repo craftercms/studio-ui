@@ -17,31 +17,56 @@
 
 import React, { useState, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
-
-interface AsyncVideoPlayerProps {
-  // list props...
-  nonPlayableMessage: string;
-}
+import { AsyncVideoPlayerProps } from '../models/AsyncVideoPlayerProps';
+import { PlayerOptions } from '../models/PlayerOptions';
+import '../styles/async-video-player.scss';
 
 function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
 
   const
     {
+      playerOptions,
       nonPlayableMessage
     } = props,
-    [playable, setPlayable] = useState(false);
+    [playable, setPlayable] = useState(null),
+    renderPlayer = function(playerOptions: PlayerOptions, nonPlayableMessage: string) {
+
+      const playerStyle = {
+        height: playerOptions.height ? playerOptions.height : 150,
+        width: playerOptions.width ? playerOptions.width : 300
+      };
+
+      if ( playable ) {
+        return (
+          <section className="async-video-player"><VideoPlayer {...playerOptions}/></section>
+        );
+      } else {
+        if ( playable === null ) {
+          return (
+            <div className="async-video-player--loading" style={playerStyle}>Loading...</div>
+          );
+        } else {
+          return (
+            <div className="async-video-player--unavailable-message" style={playerStyle}>{ nonPlayableMessage }</div>
+          );
+        }
+      }
+    };
 
   useEffect(
     () => {
-      // ComponentWillMount stuff here...
-
-      // make async request to check for 404
+      // async request to check for 404
       // if response is 200 setPlayable(true)
-
-      return () => {
-        // ComponentWillUnmount stuff here...
-        // Remove return statement if not needed.
-      }
+      fetch(playerOptions.src)
+        .then(function(response) {
+          if ( response.status === 200 ) {
+            setPlayable(true);
+          } else {
+            setPlayable(false);
+          }
+        }).catch(function(){
+          setPlayable(false);
+        });
     },
     []
   );
@@ -49,13 +74,7 @@ function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
   return (
     <>
       {
-        playable
-          ? <VideoPlayer />
-          : (
-            <>
-              {nonPlayableMessage}
-            </>
-          )
+        renderPlayer(playerOptions, nonPlayableMessage)
       }
     </>
   );

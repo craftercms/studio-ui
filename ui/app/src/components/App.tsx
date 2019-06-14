@@ -20,10 +20,23 @@ import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 
 const AsyncVideoPlayer = React.lazy(() => import('./AsyncVideoPlayer'));
 
+const playerOptions = {
+  autoplay: true,
+  controls: true,
+  // src: 'http://vjs.zencdn.net/v/oceans.mp4',
+  // src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+  // src: 'https://s3.amazonaws.com/_bc_dml/example-content/sintel_dash/sintel_vod.mpd',
+  src: 'http://techslides.com/demos/sample-videos/small.3gp',
+  width: 640,
+  height: 480
+};
+
 function App() {
   return (
     <CrafterCMSNextBridge>
-      <AsyncVideoPlayer nonPlayableMessage={'The video is not ready to be played.'}/>
+      <AsyncVideoPlayer
+          playerOptions={ playerOptions }
+          nonPlayableMessage={'The video is not ready to be played.'} />
     </CrafterCMSNextBridge>
   );
 }
