@@ -61,7 +61,7 @@ CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.W
                 };
                 if(CStudioAuthoringContext.isPreview || CStudioAuthoringContext.isDashboard){
                     $(quickCreateWrapper).removeClass('hide');
-                    if (response.length > 0) {
+                    if (response && response.length > 0) {
                         var item = null,
                             html = "";
                         for (var i = 0; i < response.length; i++) {
