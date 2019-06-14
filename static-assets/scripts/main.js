@@ -506,16 +506,6 @@
                 return $http.get(security('validate-session'));
             };
 
-            this.getLoginLogo = function() {
-                return $http.get(api('get-ui-resource-override', true), {
-                    params: { resource : 'logo.jpg' }
-                });
-            };
-
-            this.getLoginUrl = function() {
-                return api('get-ui-resource-override', true) + '?resource=logo.jpg';
-            };
-
             function api(action, server, monitor) {
                 var api = "user/";
 
@@ -905,12 +895,6 @@
                 $scope.user = user;
                 $scope.data.email = $scope.user.email;
             });
-
-            authService.getLoginLogo().then(
-                function successCallback(response) {
-                    $scope.crafterLogo = authService.getLoginUrl();
-                }
-            );
 
             if(authService.getUser()) {
                 authService.getStudioInfo().then(
@@ -1704,12 +1688,6 @@
 
             sitesService.getLanguages($scope);
 
-            authService.getLoginLogo().then(
-                function successCallback(response) {
-                    $scope.crafterLogo = authService.getLoginUrl();
-                }
-            );
-
             $scope.selectAction = function(optSelected) {
                 $scope.langSelected = optSelected;
                 $translate.use($scope.langSelected);
@@ -1760,12 +1738,6 @@
             $scope.user = {};
             $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
             $scope.crafterLogo = Constants.CRAFTER_LOGO;
-
-            authService.getLoginLogo().then(
-                function successCallback(response) {
-                    $scope.crafterLogo = authService.getLoginUrl();
-                }
-            );
 
             authService.validateToken({
                 'token': $location.search().token,
