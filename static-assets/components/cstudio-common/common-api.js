@@ -4508,17 +4508,18 @@ var nodeOpen = false,
                 var serviceUrl = this.getQuickCreateURL;
                 serviceUrl += "?siteId=" + CStudioAuthoringContext.site;
 
-                var serviceCallback = {
-                    success: function(jsonResponse) {
-                        var results = eval("(" + jsonResponse.responseText + ")");
+                CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUrl))
+                    .subscribe(
+                    function (response) {
+                        var results = response.response;
                         results = results.items;
                         callback.success(results);
                     },
-                    failure: function(response) {
+                    function (response) {
                         callback.failure(response);
+                        return null;
                     }
-                };
-                YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+                );
             },
 
             /**

@@ -153,7 +153,8 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     publishStatus: "게시 상태",
     idle: "게으른",
     busy: "바쁜",
-    stopped: "중지됨"
+    stopped: "중지됨",
+    quickCreateEmpty:"빠른 작성을위한 아무 것도 구성되어 있지 않습니다. 시스템 관리자에게 문의하여 원하는 빠른 작성 컨텐츠 유형을 구성하십시오."
 
 });
 
@@ -732,7 +733,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     type: "유형",
     quickCreate: "빠른 만들기",
     showQuickCreate: "빠른 만들기에 표시",
-    destinationPath: "목적지 경로",
+    destinationPath: "대상 경로 패턴",
 
     /*Restrictions*/
     required: "필요",
@@ -839,7 +840,16 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     delete: "지우다",
     edit: "편집하다",
     createNew: "새로 만들기",
-    browseExisting: "기존 항목 찾아보기"
+    browseExisting: "기존 항목 찾아보기",
+
+    /*help popover*/
+    pattern: "무늬",
+    objectIdPattern:"GUID를 삽입합니다.",
+    yearPattern:"현재 연도 (4 자리 연도)를 삽입합니다.",
+    monthPattern:"현재 달 (2 자리 숫자의 달)을 삽입합니다.",
+    yyyyPattern:"현재 연도 (4 자리 연도)를 삽입합니다.",
+    mmPattern:"현재 달 (2 자리 숫자의 달)을 삽입합니다.",
+    ddPattern:"현재 날짜 (2 자리 날짜)를 삽입합니다."
 });
 
 CStudioAuthoring.Messages.registerBundle("targeting", "kr", {

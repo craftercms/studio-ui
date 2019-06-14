@@ -47,6 +47,7 @@
     <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!.now?string('Mddyyyy')}" ></script>
     <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script>
         CMgs = CStudioAuthoring.Messages;
@@ -58,7 +59,7 @@
 
 </head>
 
-<body class="yui-skin-cstudioTheme siteConfiguration">
+<body class="yui-skin-cstudioTheme">
 <div id="admin-console" class="categories-panel-active"></div>
 </body>
 </html>

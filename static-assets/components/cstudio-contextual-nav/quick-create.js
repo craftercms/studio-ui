@@ -23,68 +23,82 @@ var YEvent = YAHOO.util.Event;
  */
 CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.WcmQuickCreate || {
 
-    initialized: false,
+    CMgs: CStudioAuthoring.Messages,
+    contextNavLangBundle: this.CMgs.getBundle("contextnav", CStudioAuthoringContext.lang),
 
     /**
      * initialize module
      */
-    initialize: function(config) {
-        YAHOO.util.Event.onAvailable("quick-create", function() {
-            CStudioAuthoring.Service.getQuickCreate( {
-                success: function (response) {
-                    var dropdown = $('#quick-create');
-                    var quickCreateWrapper = $('.dropdown.quick-create');
-                    var createCb = {
-                        success: function(contentTO, editorId, name, value, draft) {
-                            var page =  CStudioAuthoring.Utils.getQueryParameterURL("page");
-                            var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
-                            eventYS.data = contentTO.item;
-                            eventYS.typeAction = "createContent";
-                            eventYS.oldPath = null;
-                            eventYS.parent = contentTO.item.path === "/site/website" ? null : false;
-                            document.dispatchEvent(eventYS);
+    initialize: function () {
+        var dropdown = $('#quick-create'),
+            quickCreateWrapper = $('.dropdown.quick-create'),
 
-                            if(contentTO.item.isPage){
-                                CStudioAuthoring.Operations.refreshPreview(contentTO.item);
-                                if(page == contentTO.item.browserUri && acnDraftContent){
-                                    CStudioAuthoring.SelectedContent.setContent(contentTO.item);
-                                }
-                            }else{
-                                CStudioAuthoring.Operations.refreshPreview();
+            self = this;
+        CStudioAuthoring.Service.getQuickCreate({
+            success: function (response) {
+                var createCb = {
+                    success: function (contentTO, editorId, name, value, draft) {
+                        var page = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                        var acnDraftContent = YDom.getElementsByClassName("acnDraftContent", null, parent.document)[0];
+                        eventYS.data = contentTO.item;
+                        eventYS.typeAction = "createContent";
+                        eventYS.oldPath = null;
+                        eventYS.parent = contentTO.item.path === "/site/website" ? null : false;
+                        document.dispatchEvent(eventYS);
+
+                        if (contentTO.item.isPage) {
+                            CStudioAuthoring.Operations.refreshPreview(contentTO.item);
+                            if (page == contentTO.item.browserUri && acnDraftContent) {
+                                CStudioAuthoring.SelectedContent.setContent(contentTO.item);
                             }
-                        },
-                        failure: function() { },
-                        callingWindow: window
-                    };
-                    if (response.length > 0 && (CStudioAuthoringContext.isPreview || CStudioAuthoringContext.isDashboard)) {
-                        $(quickCreateWrapper).removeClass('hide');
+                        } else {
+                            CStudioAuthoring.Operations.refreshPreview();
+                        }
+                    },
+                    failure: function () {
+                    },
+                    callingWindow: window
+                };
+                if(CStudioAuthoringContext.isPreview || CStudioAuthoringContext.isDashboard){
+                    $(quickCreateWrapper).removeClass('hide');
+                    if (response.length > 0) {
+                        var item = null,
+                            html = "";
                         for (var i = 0; i < response.length; i++) {
                             (function (item) {
-                                dropdown.append(
-                                    $('<li>').append(
-                                        $('<a>').append(response[i].label).click(function () {
-                                            CStudioAuthoring.Operations.openContentWebForm(
-                                                item.contentTypeId,
-                                                null,
-                                                null,
-                                                CStudioAuthoring.Operations.processPathsForMacros(item.path, null, true),
-                                                false,
-                                                false,
-                                                createCb,
-                                                null
-                                            );
-                                        })
-                                    ));
+                                html = $(self.rowTemplate(item.label, i));
+                                html.click(function() {
+                                    CStudioAuthoring.Operations.openContentWebForm(
+                                        item.contentTypeId,
+                                        null,
+                                        null,
+                                        CStudioAuthoring.Operations.processPathsForMacros(item.path, null, true),
+                                        false,
+                                        false,
+                                        createCb,
+                                        null
+                                    );
+                                });
+                                dropdown.append(html);
                             })(response[i]);
                         }
+                    }else{
+                        dropdown.html(self.createEmptyTemplate());
                     }
-                },
-                failure: function() {
-
                 }
-            });
+            },
+            failure: function () {
+                dropdown.html(self.createEmptyTemplate());
+            }
+        });
+    },
 
-        }, this);
+    rowTemplate : function (label, i) {
+        return '<li class="item'+ i +'"><a>'+ label + '</a></li>';
+    },
+
+    createEmptyTemplate : function () {
+        return '<li class="quickCreateEmpty"><i class="fa fa-exclamation-circle"></i>'+ this.CMgs.format(this.contextNavLangBundle, 'quickCreateEmpty')+'</li>';
     }
 }
 
