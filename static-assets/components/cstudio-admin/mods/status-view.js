@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/log-view.css");
 CStudioAdminConsole.Tool.statusView = CStudioAdminConsole.Tool.statusView ||  function(config, el)  {
     this.containerEl = el;
     this.config = config;

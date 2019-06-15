@@ -141,23 +141,15 @@ CStudioAuthoring.Dialogs.LoginDialog = CStudioAuthoring.Dialogs.LoginDialog || {
             self: this
         };
 
-
-        CStudioAuthoring.Service.lookupSiteLogo(CStudioAuthoringContext.site, {
-            success: function (response) {
-                if(response){
-                    YDom.get('crafterLogo').src = '/studio/api/1/services/api/1/server/get-ui-resource-override.json?resource=logo.jpg';
-                }else{
-                    YDom.get('crafterLogo').src = '/studio/static-assets/images/logo.svg';
-                }
-            },
-            failure: function() {
-                YDom.get('crafterLogo').src = '/studio/static-assets/images/logo.svg';
-            }
-        });
+        YDom.get('crafterLogo').src = '/studio/static-assets/images/logo.svg';
 
        YAHOO.util.Event.addListener("loginButton", "click", this.loginPopupSubmit, eventParams);
        YAHOO.util.Event.addListener("loginCancelButton", "click", authRedirect);
-       setTimeout(function(){YDom.addClass(YAHOO.util.Selector.query('body > .mask:first-child'),"login-dialog-mask"); }, 100);
+
+       setTimeout(function () {
+         var el = YAHOO.util.Selector.query('body > .mask:first-child');
+         YDom.addClass(el, "login-dialog-mask");
+       }, 100);
 
         return login_dialog;
     },
