@@ -2342,15 +2342,17 @@ CStudioAuthoring.Module.requireModule(
              * formatting needs to come out of this and go in a function
              */
             serializeConfigToXml: function(config, formDef) {
-                var xml = '<content-type name="'+ config.contentType + '" is-wcm-type="true">\r\n';
+                var xml = '<content-type name="'+ formDef["content-type"] + '" is-wcm-type="true">\r\n';
 
-                xml += "\t<label>" + CStudioForms.Util.escapeXml(config.label) + "</label>\r\n"+
-                    "\t<form>" + CStudioForms.Util.escapeXml(config.form) + "</form>\r\n" +
+                xml += "\t<label>" + CStudioForms.Util.escapeXml(formDef.title) + "</label>\r\n"+
+                    "\t<form>" + CStudioForms.Util.escapeXml(formDef["content-type"]) + "</form>\r\n" +
                     "\t<form-path>" + CStudioForms.Util.escapeXml(config["form-path"]) + "</form-path>\r\n" +
                     "\t<model-instance-path>" + CStudioForms.Util.escapeXml(config["model-instance-path"]) + "</model-instance-path>\r\n" +
                     "\t<file-extension>" + CStudioForms.Util.escapeXml( config["file-extension"]) + "</file-extension>\r\n" +
                     "\t<content-as-folder>" + CStudioForms.Util.escapeXml(config["content-as-folder"]) + "</content-as-folder>\r\n" +
-                    "\t<previewable>" + CStudioForms.Util.escapeXml(config.previewable) + "</previewable>\r\n";
+                    "\t<previewable>" + CStudioForms.Util.escapeXml(config.previewable) + "</previewable>\r\n" +
+                    "\t<quickCreate>" + CStudioForms.Util.escapeXml(formDef.quickCreate) + "</quickCreate>\r\n" +
+                    "\t<quickCreatePath>" + CStudioForms.Util.escapeXml(formDef.quickCreatePath) + "</quickCreatePath>\r\n";
 
                 if(formDef.imageThumbnail && formDef.imageThumbnail != "" && formDef.imageThumbnail != "undefined") {
                     xml += "\t<noThumbnail>" + CStudioForms.Util.escapeXml("false") + "</noThumbnail>\r\n" +
