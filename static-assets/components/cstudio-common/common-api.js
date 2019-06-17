@@ -5254,33 +5254,6 @@ var nodeOpen = false,
             },
 
             /**
-             * lookup site logo
-             */
-            lookupSiteLogo: function(site, callback) {
-
-                var serviceUri = this.getUiResource;
-
-                var serviceCallback = {
-                    success: function(oResponse) {
-                        var responseText = oResponse.responseText;
-
-                        try {
-                            callback.success(responseText);
-                        }
-                        catch(err) {
-                            callback.failure(err);
-                        }
-                    },
-
-                    failure: function(response) {
-                        callback.failure(response);
-                    }
-                };
-
-                YConnect.asyncRequest('GET', this.createServiceUri(serviceUri), serviceCallback);
-            },
-
-            /**
              * given a site id returns the available All content types
              */
             getAllContentTypesForSite: function(site, callback) {
