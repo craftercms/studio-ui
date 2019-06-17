@@ -2969,10 +2969,15 @@ var nodeOpen = false,
             /**
              * handle macros in file paths
              */
-            processPathsForMacros: function(path, model) {
+            processPathsForMacros: function(path, model, useUUID) {
+
 
                 if(path.indexOf("{objectId}") != -1) {
-                    path = path.replace("{objectId}", model["objectId"]);
+                    if(useUUID){
+                        path = path.replace("{objectId}", CStudioAuthoring.Utils.generateUUID());
+                    }else{
+                        path = path.replace("{objectId}", model["objectId"]);
+                    }
                 }
 
                 if(path.indexOf("{objectGroupId}") != -1) {
@@ -3330,6 +3335,9 @@ var nodeOpen = false,
 
             // Global Menu
             getGlobalMenuURL: "/api/2/ui/views/global_menu.json",
+
+            // Quick Create
+            getQuickCreateURL: "/api/2/content/list_quick_create_content.json",
 
             /**
              * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
@@ -4491,6 +4499,26 @@ var nodeOpen = false,
                     }
                 };
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+            },
+
+            /**
+             * get Quick Create
+             */
+            getQuickCreate: function(callback) {
+                var serviceUrl = this.getQuickCreateURL;
+                serviceUrl += "?siteId=" + CStudioAuthoringContext.site;
+
+                CrafterCMSNext.util.ajax.get(this.createServiceUri(serviceUrl))
+                    .subscribe(
+                    function (response) {
+                        var results = response.response;
+                        results = results.items;
+                        callback.success(results);
+                    },
+                    function (response) {
+                        callback.failure(response);
+                    }
+                );
             },
 
             /**
