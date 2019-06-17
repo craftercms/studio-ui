@@ -102,7 +102,7 @@ export function createCodebaseBridge() {
               .render(
                 // @ts-ignore
                 <CrafterCMSNextBridge>
-                  <Component {...props} />,
+                  <Component {...props} />
                 </CrafterCMSNextBridge>,
                 () => resolve()
               );

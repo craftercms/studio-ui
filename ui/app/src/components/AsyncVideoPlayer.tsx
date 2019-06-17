@@ -16,10 +16,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import VideoPlayer from './VideoPlayer';
+import VideoPlayer, { VideoPlayerProps } from './VideoPlayer';
+import '../styles/async-video-player.scss';
 
 interface AsyncVideoPlayerProps {
-  // list props...
+  playerOptions: VideoPlayerProps;
   nonPlayableMessage: string;
 }
 
@@ -27,38 +28,48 @@ function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
 
   const
     {
+      playerOptions,
       nonPlayableMessage
     } = props,
-    [playable, setPlayable] = useState(false);
+    [playable, setPlayable] = useState(null),
+    errMessageStyle = {
+      height: playerOptions.height ? playerOptions.height : 150,
+      width: playerOptions.width ? playerOptions.width : 300
+    };
 
   useEffect(
     () => {
-      // ComponentWillMount stuff here...
-
-      // make async request to check for 404
+      // async request to check for 404
       // if response is 200 setPlayable(true)
-
-      return () => {
-        // ComponentWillUnmount stuff here...
-        // Remove return statement if not needed.
-      }
+      fetch(playerOptions.src)
+        .then(function(response) {
+          if ( response.status === 200 ) {
+            setPlayable(true);
+          } else {
+            setPlayable(false);
+          }
+        }).catch(function(){
+          setPlayable(false);
+        });
     },
-    []
+    [playerOptions.src]
   );
 
-  return (
-    <>
-      {
-        playable
-          ? <VideoPlayer />
-          : (
-            <>
-              {nonPlayableMessage}
-            </>
-          )
-      }
-    </>
-  );
+  if ( playable ) {
+    return (
+      <section className="async-video-player"><VideoPlayer {...playerOptions}/></section>
+    );
+  } else {
+    if ( playable === null ) {
+      return (
+        <div className="async-video-player--loading" style={ errMessageStyle }>Loading...</div>
+      );
+    } else {
+      return (
+        <div className="async-video-player--unavailable-message" style={ errMessageStyle }>{ nonPlayableMessage }</div>
+      );
+    }
+  }
 }
 
 export default AsyncVideoPlayer;
