@@ -16,10 +16,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import VideoPlayer from './VideoPlayer';
-import { AsyncVideoPlayerProps } from '../models/AsyncVideoPlayerProps';
-import { PlayerOptions } from '../models/PlayerOptions';
+import VideoPlayer, { VideoPlayerProps } from './VideoPlayer';
 import '../styles/async-video-player.scss';
+
+interface AsyncVideoPlayerProps {
+  playerOptions: VideoPlayerProps;
+  nonPlayableMessage: string;
+}
 
 function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
 
@@ -29,28 +32,9 @@ function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
       nonPlayableMessage
     } = props,
     [playable, setPlayable] = useState(null),
-    renderPlayer = function(playerOptions: PlayerOptions, nonPlayableMessage: string) {
-
-      const playerStyle = {
-        height: playerOptions.height ? playerOptions.height : 150,
-        width: playerOptions.width ? playerOptions.width : 300
-      };
-
-      if ( playable ) {
-        return (
-          <section className="async-video-player"><VideoPlayer {...playerOptions}/></section>
-        );
-      } else {
-        if ( playable === null ) {
-          return (
-            <div className="async-video-player--loading" style={playerStyle}>Loading...</div>
-          );
-        } else {
-          return (
-            <div className="async-video-player--unavailable-message" style={playerStyle}>{ nonPlayableMessage }</div>
-          );
-        }
-      }
+    errMessageStyle = {
+      height: playerOptions.height ? playerOptions.height : 150,
+      width: playerOptions.width ? playerOptions.width : 300
     };
 
   useEffect(
@@ -68,16 +52,24 @@ function AsyncVideoPlayer(props: AsyncVideoPlayerProps) {
           setPlayable(false);
         });
     },
-    []
+    [playerOptions.src]
   );
 
-  return (
-    <>
-      {
-        renderPlayer(playerOptions, nonPlayableMessage)
-      }
-    </>
-  );
+  if ( playable ) {
+    return (
+      <section className="async-video-player"><VideoPlayer {...playerOptions}/></section>
+    );
+  } else {
+    if ( playable === null ) {
+      return (
+        <div className="async-video-player--loading" style={ errMessageStyle }>Loading...</div>
+      );
+    } else {
+      return (
+        <div className="async-video-player--unavailable-message" style={ errMessageStyle }>{ nonPlayableMessage }</div>
+      );
+    }
+  }
 }
 
 export default AsyncVideoPlayer;
