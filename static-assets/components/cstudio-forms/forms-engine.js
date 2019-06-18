@@ -1642,7 +1642,7 @@ var CStudioForms = CStudioForms || function() {
                                 .done(onDone)
                                 .fail((function(datasourceDef){
                                     return function(jqxhr, settings, exception){
-                                        console.log(exeption);
+                                        console.log(exception);
                                         notLoaded.push(datasourceDef.type);
                                         releaseCallback();
                                     }
