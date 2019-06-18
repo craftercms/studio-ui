@@ -210,6 +210,8 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 			 '<file-extension>xml</file-extension>\r\n' +
 			 '<content-as-folder>'+contentAsFolder+'</content-as-folder>\r\n' +
 			 '<previewable>'+ (type == 'page') +'</previewable>\r\n' +
+             '<quickCreate>false</quickCreate>\r\n' +
+             '<quickCreatePath></quickCreatePath>\r\n' +
 			 '<noThumbnail>true</noThumbnail>\r\n' +
 			 '<image-thumbnail></image-thumbnail>\r\n' +
 			'</content-type>';
