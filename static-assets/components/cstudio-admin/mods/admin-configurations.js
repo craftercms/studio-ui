@@ -110,7 +110,7 @@ CStudioAuthoring.Module.requireModule(
 
                 var callback = {
                     success: function (data) {
-                        var environment = YAHOO.lang.JSON.parse(data.responseText).environment;
+                        var environment = JSON.parse(data.responseText).environment;
                         if (environment){
                             elt.parentElement.classList.remove("hide");
                             elt.innerHTML = environment;
