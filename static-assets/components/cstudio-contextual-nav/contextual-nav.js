@@ -97,6 +97,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				});
 
                 CStudioAuthoring.Operations.createNavBarDropDown("help");
+                CStudioAuthoring.Operations.createNavBarDropDown("quick-create");
                 self.addResizeEventToNavbar();
 
 			},
@@ -269,6 +270,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 CStudioAuthoring.ContextualNav.LeftModulesMap = {
 	'wcm_logo': '.navbar-brand',
 	'wcm_dropdown': '#acn-dropdown-wrapper',
+    'quick-create': '#quick-create',
 	'wcm_content': '#activeContentActions',
 	'admin_console': '#acn-admin-console'
 };

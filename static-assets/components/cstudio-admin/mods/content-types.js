@@ -1500,6 +1500,15 @@ CStudioAuthoring.Module.requireModule(
 				}
 			},
 
+            renderQuickCreatePattern: function(){
+                return '<p><strong>{objectId}</strong> | '+ CMgs.format(langBundle, "objectIdPattern") + '</p>'+
+                       '<p><strong>{year}</strong> | '+ CMgs.format(langBundle, "yearPattern") + '</p>'+
+                       '<p><strong>{month}</strong> | '+ CMgs.format(langBundle, "monthPattern") + '</p>'+
+                       '<p><strong>{yyyy}</strong> | '+ CMgs.format(langBundle, "yyyyPattern") + '</p>'+
+                       '<p><strong>{mm}</strong> | '+ CMgs.format(langBundle, "mmPattern") + '</p>'+
+                       '<p><strong>{dd}</strong> | '+ CMgs.format(langBundle, "ddPattern") + '</p>';
+            },
+
 			renderFormPropertySheet: function(item, sheetEl) {
 
 				this.createRowHeading(CMgs.format(langBundle, "formBasics"), sheetEl);
@@ -1560,6 +1569,27 @@ CStudioAuthoring.Module.requireModule(
 						updatePropertyFn(el.fieldName, el.value);
 					});
 				}
+
+                this.createRowHeading(CMgs.format(langBundle, "quickCreate"), sheetEl);
+                this.createRowFn(
+                    CMgs.format(langBundle, "showQuickCreate"),
+                    "quickCreate", item.quickCreate, "", "boolean", sheetEl,
+                    function(e, el){
+                        item.quickCreate = el.value;
+                        CStudioAdminConsole.isDirty = true;
+                    });
+                this.createRowFn(
+                    CMgs.format(langBundle, "destinationPath"),
+                    "quickCreatePath",
+                    item.quickCreatePath ? item.quickCreatePath : "",
+                    "", "string", sheetEl,
+                    function(e, el){
+                        item.quickCreatePath = el.value;
+                        CStudioAdminConsole.isDirty = true;
+                    },
+                    true, CMgs.format(langBundle, "pattern"),
+                    this.renderQuickCreatePattern
+                );
 
 			},
 
@@ -1852,9 +1882,10 @@ CStudioAuthoring.Module.requireModule(
 			/**
 			 * render a property sheet row
 			 */
-			createRowFn: function(label, fName, value, defaultValue, type, containerEl, fn) {
+			createRowFn: function(label, fName, value, defaultValue, type, containerEl, fn, help, helpTitle, helpHTML) {
 
 				var itemId = this.itemId;
+                var helpIcon = "";
 				var propertyContainerEl = document.createElement("div");
 				YAHOO.util.Dom.addClass(propertyContainerEl, "property-wrapper");
 				if (label.length > 24){YAHOO.util.Dom.addClass(propertyContainerEl, "large");}
@@ -1863,7 +1894,20 @@ CStudioAuthoring.Module.requireModule(
 				var labelEl = document.createElement("div");
 				YAHOO.util.Dom.addClass(labelEl, "property-label");
 				YAHOO.util.Dom.addClass(labelEl, "label-"+label.replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
-				labelEl.innerHTML = label;
+                labelEl.innerHTML = label;
+                if(help) {
+                    labelEl.innerHTML += "&nbsp;";
+                    helpIcon =$('<i id="help-'+fName+'" class="fa fa-question-circle"></i>');
+                    helpIcon.popover({
+                            container: 'body',
+                            title: helpTitle,
+                            html: true,
+                            content:helpHTML,
+                            placement: "left"
+                        }
+                    )
+                    $(labelEl).append(helpIcon);
+                }
 				propertyContainerEl.appendChild(labelEl);
 				
 				var propTypeCb = {
@@ -2251,12 +2295,16 @@ CStudioAuthoring.Module.requireModule(
 			 * formatting needs to come out of this and go in a function
 			 */
 			serializeDefinitionToXml: function(definition) {
+                var quickCreate = definition.quickCreate ? definition.quickCreate : "false";
+                var quickCreatePath = definition.quickCreatePath ? definition.quickCreatePath : "";
 				var xml = "<form>\r\n";
 				xml += "\t<title>" + CStudioForms.Util.escapeXml(definition.title) + "</title>\r\n" +
 					"\t<description>" + CStudioForms.Util.escapeXml(definition.description) + "</description>\r\n" +
 					"\t<objectType>" + definition.objectType + "</objectType>\r\n" +
 					"\t<content-type>" + definition.contentType + "</content-type>\r\n" +
                     "\t<imageThumbnail>" + definition.imageThumbnail + "</imageThumbnail>\r\n" +
+                    "\t<quickCreate>" + quickCreate + "</quickCreate>\r\n" +
+                    "\t<quickCreatePath>" + quickCreatePath + "</quickCreatePath>\r\n" +
 					"\t<properties>";
 				for(var i=0; i<definition.properties.length; i++) {
 					var property=definition.properties[i];
@@ -2294,15 +2342,17 @@ CStudioAuthoring.Module.requireModule(
              * formatting needs to come out of this and go in a function
              */
             serializeConfigToXml: function(config, formDef) {
-                var xml = '<content-type name="'+ config.contentType + '" is-wcm-type="true">\r\n';
+                var xml = '<content-type name="'+ formDef["content-type"] + '" is-wcm-type="true">\r\n';
 
-                xml += "\t<label>" + CStudioForms.Util.escapeXml(config.label) + "</label>\r\n"+
-                    "\t<form>" + CStudioForms.Util.escapeXml(config.form) + "</form>\r\n" +
+                xml += "\t<label>" + CStudioForms.Util.escapeXml(formDef.title) + "</label>\r\n"+
+                    "\t<form>" + CStudioForms.Util.escapeXml(formDef["content-type"]) + "</form>\r\n" +
                     "\t<form-path>" + CStudioForms.Util.escapeXml(config["form-path"]) + "</form-path>\r\n" +
                     "\t<model-instance-path>" + CStudioForms.Util.escapeXml(config["model-instance-path"]) + "</model-instance-path>\r\n" +
                     "\t<file-extension>" + CStudioForms.Util.escapeXml( config["file-extension"]) + "</file-extension>\r\n" +
                     "\t<content-as-folder>" + CStudioForms.Util.escapeXml(config["content-as-folder"]) + "</content-as-folder>\r\n" +
-                    "\t<previewable>" + CStudioForms.Util.escapeXml(config.previewable) + "</previewable>\r\n";
+                    "\t<previewable>" + CStudioForms.Util.escapeXml(config.previewable) + "</previewable>\r\n" +
+                    "\t<quickCreate>" + CStudioForms.Util.escapeXml(formDef.quickCreate) + "</quickCreate>\r\n" +
+                    "\t<quickCreatePath>" + CStudioForms.Util.escapeXml(formDef.quickCreatePath) + "</quickCreatePath>\r\n";
 
                 if(formDef.imageThumbnail && formDef.imageThumbnail != "" && formDef.imageThumbnail != "undefined") {
                     xml += "\t<noThumbnail>" + CStudioForms.Util.escapeXml("false") + "</noThumbnail>\r\n" +

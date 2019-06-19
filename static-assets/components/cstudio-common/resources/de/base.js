@@ -162,7 +162,8 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     publishStatus: "Veröffentlichungsstatus",
     idle: "Leerlauf",
     busy: "Beschäftigt",
-    stopped: "Angehalten"
+    stopped: "Angehalten",
+    quickCreateEmpty:"Für das schnelle Erstellen ist nichts konfiguriert. Bitten Sie Ihren Systemadministrator, die gewünschten Inhaltstypen für die schnelle Erstellung zu konfigurieren."
 
 });
 
@@ -242,7 +243,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "de", {
     signOut: "Abmelden",
     mainMenu: "Hauptmenü",
 
-    videoProcessed: 'Video wird verarbeitet, Vorschau ist verfügbar, wenn die Verarbeitung abgeschlossen ist'
+    videoProcessed: 'Video wird verarbeitet, Vorschau ist verfügbar, wenn die Verarbeitung abgeschlossen ist',
+    quickCreate: "Schnell erstellen"
 
 });
 
@@ -785,6 +787,9 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     profileId: "Profil-ID",
     path: "Pfad",
     type: "Typ",
+    quickCreate: "Schnell erstellen",
+    showQuickCreate: "In Quick Create anzeigen",
+    destinationPath: "Zielpfadmuster",
 
     /*Restrictions*/
     required: "Erforderlich",
@@ -914,7 +919,16 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     delete: "Löschen",
     edit: "Bearbeiten",
     createNew: "Neu Anlegen",
-    browseExisting: "Auswählen"
+    browseExisting: "Auswählen",
+
+    /*help popover*/
+    pattern: "Muster",
+    objectIdPattern:"Fügt eine GUID ein.",
+    yearPattern:"Fügt das aktuelle Jahr ein (4-stelliges Jahr).",
+    monthPattern:"Fügt den aktuellen Monat ein (zweistelliger Monat des Jahres).",
+    yyyyPattern:"Fügt das aktuelle Jahr ein (4-stelliges Jahr).",
+    mmPattern:"Fügt den aktuellen Monat ein (zweistelliger Monat des Jahres).",
+    ddPattern:"Fügt den aktuellen Tag ein (zweistelliger Tag des Monats)."
 });
 
 CStudioAuthoring.Messages.registerBundle("targeting", "de", {

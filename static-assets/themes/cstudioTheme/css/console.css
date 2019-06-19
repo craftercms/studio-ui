@@ -470,6 +470,10 @@ body,tbody {
     width: 94%;
 }
 
+.popover-content p{
+    padding: 0px;
+}
+
 .checkboxes .property-label {
     /*border-right: 0 none;*/
 }

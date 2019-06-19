@@ -162,7 +162,8 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     publishStatus: "Publish Status",
     idle: "Idle",
     busy: "Busy",
-    stopped: "Stopped"
+    stopped: "Stopped",
+    quickCreateEmpty:"Nothing is configured for Quick Create. Please ask your system administrator to configure your desired quick create content types."
 
 });
 
@@ -242,7 +243,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     signOut: "Sign Out",
     mainMenu: "Main Menu",
 
-    videoProcessed: 'Video is being processed, preview will be available when processing is complete'
+    videoProcessed: 'Video is being processed, preview will be available when processing is complete',
+    quickCreate: "Quick Create"
 
 });
 
@@ -785,6 +787,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     profileId: "Profile Id",
     path: "Path",
     type: "Type",
+    quickCreate: "Quick Create",
+    showQuickCreate: "Show in Quick Create",
+    destinationPath: "Destination Path Pattern",
+
 
     /*Restrictions*/
     required: "Required",
@@ -914,7 +920,17 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     delete: "Delete",
     edit: "Edit",
     createNew: "Create New",
-    browseExisting: "Browse for Existing"
+    browseExisting: "Browse for Existing",
+
+    /*help popover*/
+    pattern: "Pattern",
+    objectIdPattern:"Inserts a GUID.",
+    yearPattern:"Inserts the current year (4 digit year).",
+    monthPattern:"Inserts the current month (2-digit month of the year).",
+    yyyyPattern:"Inserts the current year (4 digit year).",
+    mmPattern:"Inserts the current month (2-digit month of the year).",
+    ddPattern:"Inserts the current day (2-digit day of the month)."
+
 });
 
 CStudioAuthoring.Messages.registerBundle("targeting", "en", {
