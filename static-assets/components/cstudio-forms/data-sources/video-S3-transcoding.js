@@ -23,9 +23,6 @@ CStudioForms.Datasources.VideoS3Transcoding = CStudioForms.Datasources.VideoS3Tr
     this.constraints = constraints;
 
     for (var i = 0; i < properties.length; i++) {
-      if (properties[i].name == "repoPath") {
-        this.repoPath = properties[i].value;
-      }
       if (properties[i].name === "outputProfileId") {
         this.outputProfileId = properties[i].value;
       }
@@ -111,7 +108,6 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
 
   getSupportedProperties: function () {
     return [
-      { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
       { label: CMgs.format(langBundle, "inputProfileId"), name: "inputProfileId", type: "string" },
       { label: CMgs.format(langBundle, "outputProfileId"), name: "outputProfileId", type: "string" }
     ];

@@ -701,6 +701,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     S3UploadVideo: "Video Uploaded to S3 Repository",
     imageS3Repository:"Image From S3 Repository",
     videoS3Repository:"Video From S3 Repository",
+    videos3Transcoding: "Video Transcoding From S3 Repository",
     fileS3Repository:"File From S3 Repository",
     fileUploadedS3Repository:"File Uploaded to S3 Repository",
     DAMImage: "DAM Image Flickr",

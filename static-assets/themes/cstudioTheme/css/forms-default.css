@@ -58,6 +58,18 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     text-align: left;
 }
 
+.cstudio-form-control-video-selector-item {
+  padding-right: 30px;
+  position: relative;
+}
+
+.cstudio-form-control-video-selector-item .video-preview {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  margin-top: -6px;
+}
+
 .cstudio-form-control-node-selector-options {
 	display: inline-block;
 	vertical-align: top;
@@ -138,7 +150,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     padding: 5px 5px 0;
 }
 
-[role="dialog"] .cstudio-form-control-image-picker-add-container 
+[role="dialog"] .cstudio-form-control-image-picker-add-container
 .cstudio-form-control-image-picker-add-container-item:first-child {
     margin-bottom: 10px;
 }
@@ -166,7 +178,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     margin-left: 3px;
     margin-right: 3px;
     padding: 1px 4px;
-    vertical-align: top;   
+    vertical-align: top;
 }
 
 .cstudio-button-disabled {
@@ -192,7 +204,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     display: inline-block;
     width: 74%;
 }
- 
+
 .cstudio-form-control-file-name-container {
     display: inline-block;
     width: 74%;
@@ -233,7 +245,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     cursor: pointer;
     padding-left: 7px;
     text-decoration: none;
-    
+
 	display: inline;
 	margin-left: 10px;
 }
@@ -270,7 +282,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   position: relative;
   top: -2px;
  }
- 
+
 .cstudio-form-section-title {
 	font-family: Arial,Verdana,sans-serif;
 	font-size: 15.6px;
@@ -582,7 +594,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     border: 1px solid #C5D6E2;
     font-weight: normal;
     padding: 2px;
-    display: inline; 
+    display: inline;
 }
 
 .cstudio-form-control-input-count {
@@ -942,9 +954,9 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     background-position: -500px 0;
 }
 
-.yui-ac-content { 
-	background: none repeat scroll 0 0 transparent; 
-	border: none; 
+.yui-ac-content {
+	background: none repeat scroll 0 0 transparent;
+	border: none;
 	height: 300px;
 	overflow-y: scroll;
 }

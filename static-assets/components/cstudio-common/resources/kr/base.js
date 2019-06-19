@@ -651,6 +651,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     S3UploadVideo: "S3 저장소에 업로드 된 비디오",
     imageS3Repository:"S3 저장소의 이미지",
     videoS3Repository:"S3 저장소의 비디오",
+    videos3Transcoding: "S3 저장소에서 비디오 트랜스 코딩",
     fileS3Repository:"S3 저장소의 파일",
     fileUploadedS3Repository:"S3 저장소에 업로드 된 파일",
     DAMImage: "DAM 이미지 플리커 (Flickr)",
