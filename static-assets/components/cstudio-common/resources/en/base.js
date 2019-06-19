@@ -242,7 +242,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     settings: "Settings",
     signOut: "Sign Out",
     mainMenu: "Main Menu",
-    quickCreate: "Quick Create"
+    quickCreate: "Quick Create",
+    inContextEdit: "In-Context Edit"
 
 });
 

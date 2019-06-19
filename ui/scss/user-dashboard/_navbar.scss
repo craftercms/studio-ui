@@ -31,4 +31,18 @@
 
   }
 
+  .nav-link {
+    .tooltip {
+      .tooltip-arrow{
+        border-bottom-color: #949494;
+      }
+
+      .tooltip-inner{
+        color: #fff;
+        background-color: #949494;
+        min-width: 82px;
+      }
+    }
+  }
+
 }

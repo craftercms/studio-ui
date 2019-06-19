@@ -233,7 +233,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     settings: "설정",
     signOut: "로그 아웃",
     mainMenu: "기본 메뉴",
-    quickCreate: "빠른 만들기"
+    quickCreate: "빠른 만들기",
+    inContextEdit: "인 - 컨텍스트 편집"
 
 });
 
