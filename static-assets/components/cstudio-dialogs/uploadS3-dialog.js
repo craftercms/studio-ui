@@ -34,16 +34,15 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 	/**
 	 * show dialog
 	 */
-	showDialog: function(site, path, profileId, serviceUri, callback) {
+	showDialog: function(site, path, profileId, serviceUri, callback, params) {
         this._self = this;
-        console.log('dialog');
 
-		this.dialog = this.createDialog(path, site, profileId, serviceUri);
+		this.dialog = this.createDialog(path, site, profileId, serviceUri, params);
 
 		this.site = site;
         this.path = path;
         this.profile = profileId;
-		this.asPopup = true;			
+		this.asPopup = true;
 		this.serviceUri = serviceUri;
 		this.callback = callback;
 		this.dialog.show();
@@ -60,7 +59,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
             }
 		}
 	},
-	
+
 	/**
 	 * hide dialog
 	 */
@@ -71,7 +70,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     /**
 	 * create dialog
 	 */
-	createDialog: function(path, site, profileId, serviceUri) {
+	createDialog: function(path, site, profileId, serviceUri, params) {
 		var me = this;
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
@@ -84,31 +83,43 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 		var divIdName = "cstudio-wcm-popup-div";
 		newdiv.setAttribute("id",divIdName);
 		newdiv.className= "yui-pe-content";
-        newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
-                           '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-                           '<div class="contentTypePopupHeader">Upload</div> ' +
-						   '<div><form id="asset_upload_form">' +
-                                '<div class="contentTypeOuter">'+
-                                    '<div class="formDesc">Please select a file to upload</div> ' +
-                                    '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
-                                    '<td><input type="hidden" name="path" value="' + path + '"/></td></tr>' +
-                                    '<td><input type="hidden" name="profileId" value="' + profileId + '"/></td></tr>' +
-						            '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
-						            '</table></div>' +
-                                '</div>' +
-						        '<div class="contentTypePopupBtn"> ' +
-						            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
-                                    '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
-						        '</form></div>' +
-						   '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' + 
-                           '</div> ' +
-                           '</div>';
-		
+    newdiv.innerHTML =
+      '<div class="contentTypePopupInner" id="upload-popup-inner">' +
+        '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
+          '<div class="contentTypePopupHeader">Upload</div> ' +
+            '<div><form id="asset_upload_form">' +
+              '<div class="contentTypeOuter">'+
+                '<div class="formDesc">Please select a file to upload</div> ' +
+                  '<div><table>' +
+                    '<tr id="asset_upload-hidden"></tr>' +
+                    '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
+                  '</table></div>' +
+                '</div>' +
+                '<div class="contentTypePopupBtn"> ' +
+                  '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
+                  '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
+            '</form></div>' +
+          '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' +
+        '</div> ' +
+      '</div>';
+
+    if ( params.transcode ){
+      document.getElementById("asset_upload-hidden").innerHTML =
+        '<td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
+        '<td><input type="hidden" name="inputProfileId" value="' + profileId.inputProfileId + '"/></td>' +
+        '<td><input type="hidden" name="outputProfileId" value="' + profileId.outputProfileId + '"/></td>';
+    } else {
+      document.getElementById("asset_upload-hidden").innerHTML =
+        '<td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
+        '<td><input type="hidden" name="path" value="' + path + '"/></td>' +
+        '<td><input type="hidden" name="profileId" value="' + profileId + '"/></td>';
+    }
+
 		document.getElementById("upload-popup-inner").style.width = "350px";
 		document.getElementById("upload-popup-inner").style.height = "180px";
 
 		 // Instantiate the Dialog
-		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", 
+		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
 								{ width : "360px",
 								  height : "242px",
                                   effect:{
@@ -120,22 +131,22 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 								  modal:true,
 								  close:false,
 								  constraintoviewport : true,
-								  underlay:"none"							  							
-								});	
-								
+								  underlay:"none"
+								});
+
 		// Render the Dialog
 		upload_dialog.render();
 
         var filenameInput = document.getElementById("uploadFileNameId");
         YAHOO.util.Event.addListener(filenameInput, "change", this.uploadFileEvent);
-		
+
 		var eventParams = {
 			self: this
 		};
 
         YAHOO.util.Event.addListener("uploadButton", "click", this.uploadPopupSubmit, eventParams);
 		YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
-		
+
 		$("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
             if (e.keyCode === 27) {	// esc
                 me.closeDialog();
@@ -158,9 +169,9 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
         }
 
     },
-		
+
 	/**
-	 * event fired when the ok is pressed - checks if the file already exists and has edit permission or not 
+	 * event fired when the ok is pressed - checks if the file already exists and has edit permission or not
 	 * by using the getPermissions Service call
 	 */
 	uploadPopupSubmit: function(event, args) {
@@ -171,12 +182,12 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
         }
 		var basePath = path;
             path= basePath ? basePath+"/"+filename : filename;
-            
+
         CStudioAuthoring.Dialogs.UploadS3Dialog.uploadFile(args);
 
 		YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
 	},
-	
+
    /**
 	 * upload file when upload pressed
 	 */
@@ -196,12 +207,14 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
            data: data,
            success: function(item)
            {
-               var r = item.item;
+               var r = item.item,
+                   response = r.url ? r.url : r;
+
                    CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
                    if(r.fileExtension) {
-                       r.fileExtension = r.fileExtension.substring(r.fileExtension.lastIndexOf(".")+1);
+                       r.fileExtension = r.fileExtension ? r.fileExtension.substring(r.fileExtension.lastIndexOf(".")+1) : null;
                    }
-                   args.self.callback.success(r.url);
+                   args.self.callback.success(response);
            },
            error: function(err){
                CStudioAuthoring.Operations.showSimpleDialog(
@@ -217,7 +230,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
        });
 
 	},
-	
+
 	/**
 	 *
 	 */

@@ -239,7 +239,9 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "es", {
     about: "Acerca De",
     settings: "Preferencias",
     signOut: "Desloguearse",
-    mainMenu: "Menu Principal"
+    mainMenu: "Menu Principal",
+
+    videoProcessed: 'El video se está procesado, la vista previa estará disponible cuando se complete el procesamiento'
 
 });
 

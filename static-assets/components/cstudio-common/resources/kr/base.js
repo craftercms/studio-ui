@@ -231,7 +231,9 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     about: "약",
     settings: "설정",
     signOut: "로그 아웃",
-    mainMenu: "기본 메뉴"
+    mainMenu: "기본 메뉴",
+
+    videoProcessed: '동영상 처리 중, 처리가 완료되면 미리보기를 사용할 수 있습니다.'
 
 });
 
@@ -360,7 +362,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     bulkPublishPathToPublish: "게시 경로",
     bulkPublishPublishingEnv: "출판 환경",
     bulkPublishPublish: "게시",
-                        
+
     historyDialogTitle: "버전 기록",
     historyDialogSubTitle: "역사에 대해 표시 :",
     historyDialogTableRowVersion: "버전 날짜 및 시간",

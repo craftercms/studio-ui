@@ -240,7 +240,9 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     about: "About",
     settings: "Settings",
     signOut: "Sign Out",
-    mainMenu: "Main Menu"
+    mainMenu: "Main Menu",
+
+    videoProcessed: 'Video is being processed, preview will be available when processing is complete'
 
 });
 
@@ -382,7 +384,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     changeTemplateDialogTitle:"Warning: Change Content Type",
     changeTemplateDialogSubTitle:"Crafter Studio",
     changeTemplateDialogBody:"The following operation may result in data loss. Would you like to proceed?",
-    
+
     bulkPublishDialogTitle:"Warning: Bulk Publish",
     bulkPublishDialogBody:"Bulk publish will force publish all items that match the pattern requested including their dependencies.</br> Please make sure that all modified items (including potentially someone's work in progress) are ready to </br> be published before continuing.",
     bulkPublish: "Bulk Publish",
@@ -583,7 +585,7 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
     408: "CMIS Timeout.",
     500: "Internal server error.",
     503: "CMIS Unavailable."
-}); 
+});
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     contenttypes: "Content Types",
