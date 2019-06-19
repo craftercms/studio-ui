@@ -101,14 +101,23 @@
   margin-right: 4px;
 }
 
-.nav-link .nav-icon {
-  font-size: 16px;
-  margin-right: 2px;
-}
+.nav-link {
+  .nav-icon {
+    font-size: 16px;
+    margin-right: 2px;
+  }
+  .tooltip {
+    width: auto;
+    .tooltip-arrow{
+      border-bottom-color: #949494;
+    }
 
-.nav-link .nav-label {
-  display: none;
-  color: #777;
+    .tooltip-inner{
+      color: #fff;
+      background-color: #949494;
+      min-width: 82px;
+    }
+  }
 }
 
 .nav-label-hover
