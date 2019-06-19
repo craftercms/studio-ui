@@ -201,8 +201,11 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
             selector: '.nav-icon',
             placement: "bottom",
             title: function () {
-                var text = $(this).attr("data-title");
-                return self.CMgs.format(self.contextNavLangBundle, text);
+                var text = $(this).attr("data-title"),
+                    textTranslated = self.CMgs.format(self.contextNavLangBundle, text);
+                $(this).attr("title", textTranslated);
+                $(this).attr("data-original-title", textTranslated);
+                return textTranslated;
             }
 
         })
