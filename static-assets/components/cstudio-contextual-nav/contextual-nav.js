@@ -241,9 +241,6 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	},
 
     addResizeEventToNavbar: function() {
-        if ($('.studio-preview').length > 0) {
-            $('.navbar-right-wrapper').width('460');
-        }
         new ResizeSensor($('.navbar-default'), function () {
             if ($('.navbar-default').height() > 55) {
                 $('.studio-preview').css('top', 100 + "px");
