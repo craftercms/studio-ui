@@ -41,15 +41,15 @@
                            ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
                             <span class="nav-icon fa fa-bars" tooltip-placement="bottom"
                                   uib-tooltip="{{ 'common.MAIN_MENU' | translate }}"
-                                  title="{{ 'common.MAIN_MENU' | translate }}"></span>
+                                  aria-label="{{ 'common.MAIN_MENU' | translate }}"></span>
                         </a>
                     </li>
                     <li id="help-dropdown" class="dropdown" uib-dropdown is-open="isHelpDropdownOpen">
                         <a class="nav-link dropdown-toggle" uib-dropdown-toggle >
-                            <span class="nav-icon fa fa-life-ring" tooltip-placement="bottom"
+                            <span class="nav-icon fa fa-life-ring pointer" tooltip-placement="bottom"
                                   uib-tooltip="{{ 'common.HELP' | translate }}" tooltip-is-open="helpTooltipIsOpen"
                                   ng-click="helpTooltipIsOpen = !helpTooltipIsOpen" tooltip-enable="!isHelpDropdownOpen"
-                                  title= "{{ 'common.HELP' | translate }}"></span>
+                                  aria-label= "{{ 'common.HELP' | translate }}"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a class="documentation" href="{{helpUrl}}" target="_blank">{{ 'common.DOCUMENTATION' | translate }}</a></li>
@@ -57,7 +57,7 @@
                         </ul>
                     </li>
                     <li class="dropdown" uib-dropdown>
-                        <a id="account-dropdown" class="dropdown-toggle" uib-dropdown-toggle>{{user.username}} <span class="caret"></span></a>
+                        <a id="account-dropdown" class="dropdown-toggle pointer" uib-dropdown-toggle>{{user.username}} <span class="caret"></span></a>
                         <ul id="account-dropdown-container" class="dropdown-menu" role="menu">
                             <li class="user-display">
                                 <div class="first-name" ng-if="user.firstName">{{user.firstName}} {{user.lastName}}</div>

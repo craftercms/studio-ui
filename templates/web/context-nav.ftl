@@ -34,7 +34,7 @@
                     </li>
                     <li class="dropdown quick-create hide" dropdown>
                         <a id="quick-create-dropdown" class="dropdown-toggle nav-link ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
-                            <span class="nav-icon fa fa-plus-circle" data-title="quickCreate"></span>
+                            <span class="nav-icon fa fa-plus-circle pointer" data-title="quickCreate"></span>
                         </a>
                         <ul id="quick-create" class="dropdown-menu" role="menu">
                             <li class="title" style=""><span data-translation="quickCreate">Quick Create</span></li>
@@ -54,7 +54,7 @@
                             </a>
                         </li>
                         <li class="dropdown" dropdown>
-                            <a id="help-dropdown" class="nav-link dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
+                            <a id="help-dropdown" class="nav-link dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
                                 <span class="nav-icon fa fa-life-ring" data-title="help"></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
@@ -63,7 +63,7 @@
                             </ul>
                         </li>
                         <li class="dropdown" dropdown="">
-                            <a id="account-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">&nbsp; <span class="caret"></span></a>
+                            <a id="account-dropdown" class="dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">&nbsp; <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li class="user-display" style="padding: 0 20px 5px; margin-bottom: 5px; border-bottom: 1px solid #f2f2f2;">
                                     <div id="nav-user-name"></div>
