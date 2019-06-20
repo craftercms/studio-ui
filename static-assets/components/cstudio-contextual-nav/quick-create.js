@@ -24,7 +24,7 @@ var YEvent = YAHOO.util.Event;
 CStudioAuthoring.ContextualNav.WcmQuickCreate = CStudioAuthoring.ContextualNav.WcmQuickCreate || {
 
     CMgs: CStudioAuthoring.Messages,
-    contextNavLangBundle: this.CMgs.getBundle("contextnav", CStudioAuthoringContext.lang),
+    contextNavLangBundle: CStudioAuthoring.Messages.getBundle("contextnav", CStudioAuthoringContext.lang),
 
     /**
      * initialize module

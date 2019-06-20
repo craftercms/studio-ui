@@ -25,7 +25,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 
 	initialized: false,
     CMgs: CStudioAuthoring.Messages,
-    contextNavLangBundle: this.CMgs.getBundle("previewTools", CStudioAuthoringContext.lang),
+    contextNavLangBundle: CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang),
 
 	/**
 	 * call out to the authoring environment for the nav content and overlay it
