@@ -8121,7 +8121,9 @@ var nodeOpen = false,
           var $container = $('.cstudio-image-popup-overlay'),
               $mediaContainer,
               CMgs = CStudioAuthoring.Messages,
-              formsLangBundle = CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang);
+              formsLangBundle = CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang),
+              clickHandler,
+              escHandler;
 
           if ( $container.length === 0 ) {
             $container = $(
@@ -8165,25 +8167,31 @@ var nodeOpen = false,
 
           $container.show();
 
+          clickHandler = function (e) {
+            if (e.target !== this)
+              return;
+
+            $container.remove();
+            $(document).unbind('click', clickHandler);
+          }
+
+          escHandler = function (e) {
+            if(e.keyCode === 27){
+              $container.remove();
+              $(document).unbind('keyup', escHandler);
+            }
+          }
+
           // Close - on button click
           $container.one('click', '.close', function(){
               $container.remove();
           });
 
           // Close - on click outside dialog
-          $container.on('click', function(e) {
-              if (e.target !== this)
-                  return;
-
-              $container.remove();
-          });
+          $container.bind('click', clickHandler);
 
           // Close - on escape
-          $(document).on('keyup', function(e){
-              if(e.keyCode === 27){
-                  $container.remove();
-              }
-          });
+          $(document).bind('keyup', escHandler);
 
         },
 

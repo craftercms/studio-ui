@@ -767,6 +767,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     quickCreate: "Creación Rápida",
     showQuickCreate: "Mostrat en Creación Rápida",
     destinationPath: "Patrón de ruta de destino",
+    inputProfileId: "Id de perfil de entrada",
+    outputProfileId: "Id de perfil de salida",
 
     /*Restrictions*/
     required: "Requerido",
@@ -896,3 +898,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "es", {
     cancel: "Cancelar",
     userProps: "Propiedades de Usuario"
 });
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "es", {
+  upload: "Subir",
+  uploadSelect: "Por favor seleccionar un archivo para subir",
+  file: "Archivo",
+  chooseFile: "Seleccionar archivo",
+  noFileChosen: "Ningún archivo seleccionado",
+  uploadBtn: "Subir",
+  cancelBtn: "Cancelar",
+  uploading: "Subiendo"
+});
+

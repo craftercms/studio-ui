@@ -62,7 +62,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     obj.owner.notifyValidation();
 
     if (obj.videoData) {
-      obj.form.updateModel(obj.id, obj.videoData);
+      obj.form.updateModel(obj.id, obj.videoData, obj.remote);
     } else {
       obj.form.updateModel(obj.id, obj.getValue(), obj.remote);
     }
@@ -166,17 +166,17 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(previewEl, 'cstudio-form-control-node-selector-item cstudio-form-control-video-selector-item');
     previewEl.style.wordWrap = 'break-word';
 
-    previewEl.innerHTML = '<span>' + video.previewUrl + '</span>';
+    previewEl.innerHTML = '<span>' + video.url + '</span>';
 
     var previewBtn = document.createElement('a');
     YAHOO.util.Dom.addClass(previewBtn, 'action video-preview');
     previewBtn.setAttribute('href', '#');
-    previewBtn.setAttribute('data-url', video.previewUrl);
+    previewBtn.setAttribute('data-url', video.url);
     previewBtn.innerHTML = '<i class="fa fa-search-plus" aria-hidden="true"></i>';
 
     previewBtn.onclick = function(e){
       e.preventDefault();
-      CStudioAuthoring.Utils.previewAssetDialog(video.previewUrl, "video");
+      CStudioAuthoring.Utils.previewAssetDialog(video.url, "video");
     };
 
     previewEl.appendChild(previewBtn);
@@ -265,6 +265,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
               this.videoPicker.previewEl.style.display = "none";
               this.videoPicker.previewEl.videoData = videoData;
               this.videoPicker.inputEl.value = "multiple";
+              this.videoPicker.remote = videoData.remote ? videoData.remote : false;
 
               videoData.videos.forEach(function (video) {
                 videoContainer = self.createVideoContainer(video);

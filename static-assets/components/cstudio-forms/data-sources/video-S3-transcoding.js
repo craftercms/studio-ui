@@ -63,10 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
 
         fileData.urls.forEach(function (url) {
           var video = {
-            previewUrl: url,
-            relativeUrl: url,
-            fileExtension: url.substring(url.lastIndexOf(".") + 1),
-            remote: true
+            url: url
           }
 
           videoData.videos.push(video);

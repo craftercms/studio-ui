@@ -738,6 +738,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     quickCreate: "빠른 만들기",
     showQuickCreate: "빠른 만들기에 표시",
     destinationPath: "대상 경로 패턴",
+    inputProfileId: "입력 프로파일 ID",
+    outputProfileId: "출력 프로필 ID",
 
     /*Restrictions*/
     required: "필요",
@@ -862,4 +864,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "kr", {
     apply: "대다",
     cancel: "취소",
     userProps: "사용자 속성"
+});
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "kr", {
+  upload: "업로드",
+  uploadSelect: "업로드 할 파일을 선택하십시오.",
+  file: "파일",
+  chooseFile: "파일을 선택",
+  noFileChosen: "선택된 파일 없음",
+  uploadBtn: "업로드",
+  cancelBtn: "취소",
+  uploading: "업로드 중"
 });

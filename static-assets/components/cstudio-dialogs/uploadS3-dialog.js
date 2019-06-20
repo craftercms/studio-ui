@@ -17,6 +17,7 @@
 
 var YDom = YAHOO.util.Dom;
 var YEvent = YAHOO.util.Event;
+var CMgs = CStudioAuthoring.Messages;
 
 CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 
@@ -71,7 +72,8 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
 	 * create dialog
 	 */
 	createDialog: function(path, site, profileId, serviceUri, params) {
-		var me = this;
+    var me = this,
+        langBundle = CMgs.getBundle("dialogs", CStudioAuthoringContext.lang);
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
 		var newdiv = YDom.get("cstudio-wcm-popup-div");
@@ -86,20 +88,20 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     newdiv.innerHTML =
       '<div class="contentTypePopupInner" id="upload-popup-inner">' +
         '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-          '<div class="contentTypePopupHeader">Upload</div> ' +
+          '<div class="contentTypePopupHeader">' + CMgs.format(langBundle, 'upload') + '</div> ' +
             '<div><form id="asset_upload_form">' +
               '<div class="contentTypeOuter">'+
-                '<div class="formDesc">Please select a file to upload</div> ' +
+                '<div class="formDesc">' + CMgs.format(langBundle, 'uploadSelect') + '</div> ' +
                   '<div><table>' +
                     '<tr id="asset_upload-hidden"></tr>' +
-                    '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
+                    '<tr><td>' + CMgs.format(langBundle, 'file') + ':</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
                   '</table></div>' +
                 '</div>' +
                 '<div class="contentTypePopupBtn"> ' +
-                  '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
-                  '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
+                  '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="' + CMgs.format(langBundle, 'uploadBtn') + '" disabled />' +
+                  '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="' + CMgs.format(langBundle, 'cancelBtn') + '"  /></div>' +
             '</form></div>' +
-          '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' +
+          '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">' + CMgs.format(langBundle, 'uploading') + '...</div>' +
         '</div> ' +
       '</div>';
 

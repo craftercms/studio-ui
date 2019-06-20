@@ -792,6 +792,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     quickCreate: "Schnell erstellen",
     showQuickCreate: "In Quick Create anzeigen",
     destinationPath: "Zielpfadmuster",
+    inputProfileId: "Eingabeprofil-ID",
+    outputProfileId: "Ausgabeprofil-ID",
 
     /*Restrictions*/
     required: "Erforderlich",
@@ -939,4 +941,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "de", {
     apply: "Anwenden",
     cancel: "Abbrechen",
     userProps: "Benutzereigenschaften"
+});
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "de", {
+  upload: "Hochladen",
+  uploadSelect: "Bitte wählen Sie eine Datei zum Hochladen aus",
+  file: "Datei",
+  chooseFile: "Datei wählen",
+  noFileChosen: "Keine Datei ausgewählt",
+  uploadBtn: "Hochladen",
+  cancelBtn: "Stornieren",
+  uploading: "Hochladen"
 });
