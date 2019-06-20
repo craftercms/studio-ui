@@ -243,7 +243,9 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "es", {
     mainMenu: "Menu Principal",
 
     videoProcessed: 'El video se está procesado, la vista previa estará disponible cuando se complete el procesamiento',
-    quickCreate: "Creación Rápida"
+    quickCreate: "Creación Rápida",
+    inContextEdit: "Edición en Contexto"
+
 
 });
 

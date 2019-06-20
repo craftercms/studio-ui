@@ -34,8 +34,7 @@
                     </li>
                     <li class="dropdown quick-create hide" dropdown>
                         <a id="quick-create-dropdown" class="dropdown-toggle nav-link ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
-                            <span class="nav-icon fa fa-plus-circle"></span>
-                            <span class="nav-label" data-translation="mainMenu">Main Menu</span>
+                            <span class="nav-icon fa fa-plus-circle pointer" data-title="quickCreate"></span>
                         </a>
                         <ul id="quick-create" class="dropdown-menu" role="menu">
                             <li class="title" style=""><span data-translation="quickCreate">Quick Create</span></li>
@@ -51,14 +50,12 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a id="sitesRightNav" class="nav-link" href="/studio/#/globalMenu">
-                                <span class="nav-icon fa fa-bars"></span>
-                                <span class="nav-label" data-translation="mainMenu">Main Menu</span>
+                                <span class="nav-icon fa fa-bars" data-title="mainMenu" ></span>
                             </a>
                         </li>
                         <li class="dropdown" dropdown>
-                            <a id="help-dropdown" class="nav-link dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
-                                <span class="nav-icon fa fa-life-ring"></span>
-                                <span class="nav-label"><span data-translation="help">Help</span><span class="caret"></span></span>
+                            <a id="help-dropdown" class="nav-link dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
+                                <span class="nav-icon fa fa-life-ring" data-title="help"></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="https://docs.craftercms.org/en/3.1/index.html" target="_blank" data-translation="documentation">Documentation</a></li>
@@ -66,7 +63,7 @@
                             </ul>
                         </li>
                         <li class="dropdown" dropdown="">
-                            <a id="account-dropdown" class="dropdown-toggle ng-binding" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">&nbsp; <span class="caret"></span></a>
+                            <a id="account-dropdown" class="dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">&nbsp; <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li class="user-display" style="padding: 0 20px 5px; margin-bottom: 5px; border-bottom: 1px solid #f2f2f2;">
                                     <div id="nav-user-name"></div>
@@ -84,14 +81,12 @@
 
                     <div class="acn-status-container navbar-right">
                         <div id="acn-status" class="nav-link form-group">
-                            <span value=""  class="nav-icon fa fa-cloud-upload f18" ></span>
-                            <span class="nav-label" data-translation="publishingStatus">Publishing Status</span>
+                            <span value=""  class="nav-icon fa fa-cloud-upload f18" data-title="publishingStatus" ></span>
                         </div>
                     </div>
                     <div class="navbar-form navbar-right" role="search">
                         <div id="acn-searchtext" class="nav-link form-group">
-                            <span value=""  class="nav-icon fa fa-search f18" ></span>
-                            <span class="nav-label" data-translation="search">Search</span>
+                            <span value=""  class="nav-icon fa fa-search f18" data-title="search" ></span>
                         </div>
                     </div>
                     <div id="acn-persona" class="navbar-right"></div>

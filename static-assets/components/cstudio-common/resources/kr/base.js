@@ -235,7 +235,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     mainMenu: "기본 메뉴",
 
     videoProcessed: '동영상 처리 중, 처리가 완료되면 미리보기를 사용할 수 있습니다.',
-    quickCreate: "빠른 만들기"
+    quickCreate: "빠른 만들기",
+    inContextEdit: "인 - 컨텍스트 편집"
 
 });
 

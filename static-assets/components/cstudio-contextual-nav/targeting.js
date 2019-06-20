@@ -65,7 +65,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 				
 				render: function() {
 					var me = this,
-						el, containerEl, iconEl, iconLabel, ptoOn;
+						el, containerEl, iconEl, ptoOn;
 
 					var CMgs = CStudioAuthoring.Messages;
 					var previewLangBundle = CMgs.getBundle("targeting", CStudioAuthoringContext.lang);
@@ -78,13 +78,9 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
                     iconEl = document.createElement("span");
                     iconEl.id = "acn-persona-image";
                     YDom.addClass(iconEl, "nav-icon fa fa-bullseye");
-
-                    iconLabel = document.createElement("span");
-                    YDom.addClass(iconLabel, "nav-label");
-                    iconLabel.innerHTML = CMgs.format(previewLangBundle, "targeting");
+                    $(iconEl).attr('data-title', 'targeting');
 
 					containerEl.appendChild(iconEl);
-                    containerEl.appendChild(iconLabel);
 					el.appendChild(containerEl);
 
                     containerEl.onclick = function() {

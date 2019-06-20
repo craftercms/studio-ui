@@ -24,6 +24,8 @@ var YEvent = YAHOO.util.Event;
 CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 
 	initialized: false,
+    CMgs: CStudioAuthoring.Messages,
+    contextNavLangBundle: CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang),
 
 	/**
 	 * call out to the authoring environment for the nav content and overlay it
@@ -187,30 +189,29 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	showRightModules: function(modules, barEl) {
 		var modulesMap = CStudioAuthoring.ContextualNav.RightModulesMap;
 		this.showModules(modulesMap, modules, barEl);
-        this.showLabelsRightModules();
+        this.showTooltipModules();
 	},
 
     /**
      * Shown right context nav labels
      */
-    showLabelsRightModules: function() {
-        $( "#studioBar" ).delegate( ".nav-link", "mouseenter mouseleave", function(event) {
-            if( event.type === "mouseover"  || event.type === "mouseenter" ){
-                var elt = $( this).find(".nav-label");
-                setTimeout(function () {
-                    if ($("#"+elt.parent().get(0).id+':hover').length != 0) {
-                        elt.addClass('nav-label-hover');
-                        elt.removeClass('nav-label');
-                    }
-                }, 1000, false);
+    showTooltipModules: function() {
+        var self = this;
+        $("#studioBar").tooltip({
+            selector: '.nav-icon',
+            placement: "bottom",
+            title: function () {
+                var text = $(this).attr("data-title"),
+                    textTranslated = self.CMgs.format(self.contextNavLangBundle, text);
+                $(this).attr("title", textTranslated);
+                $(this).attr("data-original-title", textTranslated);
+                return textTranslated;
             }
-            else{
-                var elt = $(this).find(".nav-label-hover");
-                elt.addClass( "nav-label" );
-                elt.removeClass( "nav-label-hover" );
-            }
-        });
 
+        })
+        $("#studioBar").delegate(".nav-icon", "click", function (event) {
+            $(this).tooltip('hide');
+        });
     },
 
 	/**
@@ -240,9 +241,6 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	},
 
     addResizeEventToNavbar: function() {
-        if ($('.studio-preview').length > 0) {
-            $('.navbar-right-wrapper').width('460');
-        }
         new ResizeSensor($('.navbar-default'), function () {
             if ($('.navbar-default').height() > 55) {
                 $('.studio-preview').css('top', 100 + "px");
