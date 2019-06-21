@@ -363,7 +363,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     bulkPublishPathToPublish: "게시 경로",
     bulkPublishPublishingEnv: "출판 환경",
     bulkPublishPublish: "게시",
-                        
+
     historyDialogTitle: "버전 기록",
     historyDialogSubTitle: "역사에 대해 표시 :",
     historyDialogTableRowVersion: "버전 날짜 및 시간",
@@ -728,6 +728,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     taxonomyName: "분류 이름",
     defaultType: "기본 유형",
     displayTemplate: "디스플레이 템플릿",
+    noTemplateRequired: "템플릿 필요 없음",
     mergeStrategy: "전략을 병합",
     profileId: "프로필 ID",
     path: "통로",

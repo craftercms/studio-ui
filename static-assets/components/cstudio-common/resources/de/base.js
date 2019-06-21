@@ -138,7 +138,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     wcmContentHistory: "Verlauf",
     wcmContentPageDisabled: "Dieser Inhalt ist deaktiviert",
     wcmContentSavedAsDraft: "Dieser Inhalt wurde als ENTWURF gespeichert. Pflichtfelder sind eventuell nicht ausgefüllt. Das zu Fehlern bei Vorschau oder Veröffentlichung führen.",
-    
+
     InProgress: "Bearbeitet",
     Deleted: "Gelöscht",
     SubmittedforDelete: "Zum Löschen eingereicht",
@@ -148,14 +148,14 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     Scheduled: "Geplant",
 
     search: "Suche",
-    
+
     logout: "Abmelden",
     close: "Schließen",
-    
+
     variableLabel: "Beispiele für Templates",
-    
+
     networkError: "Netzwerk-Fehler. Eventuell eingeschränkte Funktionalität.",
-    
+
     notification: "Hinweis",
     noEventError: "Fehlende Ereignisbehandlung.",
 
@@ -780,6 +780,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     taxonomyName: "Taxonomy Name",
     defaultType: "Standardtyp",
     displayTemplate: "Template",
+    noTemplateRequired: "Keine Vorlage erforderlich",
     mergeStrategy: "Merge Strategie",
     componentPath: "Komponenten-Pfad",
     dependsOn: "Hängt ab von",

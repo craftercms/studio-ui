@@ -73,8 +73,8 @@ CStudioAuthoring.Module.requireModule(
 
 				for (var i = 0; i<sections.length; i++) {
 					for (var j = 0; j<sections[i].fields.length; j++) {
-						currentField = sections[i].fields[j];	
-					
+						currentField = sections[i].fields[j];
+
 						if (!currentField.title || currentField.title == '') {
 							flagTitleError = true;
 						}
@@ -112,18 +112,21 @@ CStudioAuthoring.Module.requireModule(
 			},
 
 			templateValidation: function(formDef) {
-				var properties = formDef.properties,
-					flagTemplateError = false;
+        var properties = formDef.properties,
+					  flagTemplateError = false;
 
 				for(var i = 0; i<properties.length; i++){
-					if(properties[i].name == 'display-template' && properties[i].value != ""){
+					if(properties[i].name == 'display-template' && properties[i].value !== ""){
 						flagTemplateError = true;
-					}
+          }
+          //if no-template-required property exists and has value "true"
+          if (properties[i].name == 'no-template-required' && properties[i].value === "true") {
+            flagTemplateError = true;
+          }
 				}
 
 				return {flagTemplateError:flagTemplateError}
 			},
-
 
 			openExistingItemRender: function(contentType) {
 				var _self = this;
@@ -508,7 +511,7 @@ CStudioAuthoring.Module.requireModule(
                                         var dd = new DragAndDropDecorator(this.controlContainerEl);
                                         tool.id = tool.getFixedId();
                                         this.controlContainerEl.prototypeField = tool;
-										
+
 										YDom.addClass(this.controlContainerEl, "new-control-type");
 										YDom.addClass(this.controlContainerEl, tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase()+"-control");
 
@@ -1551,16 +1554,17 @@ CStudioAuthoring.Module.requireModule(
 						}
 					}
 
-
 					var value = (itemProperty.value) ? itemProperty.value : "";
 					var propertyLabel = "";
-					if(property.label == "Display Template"){
+					if(property.label === "Display Template"){
 						propertyLabel = "displayTemplate";
-					}else if(property.label == "Merge Strategy"){
+          }else if (property.label === "No Template Required") {
+            propertyLabel = "noTemplateRequired";
+          }else if(property.label === "Merge Strategy"){
 						propertyLabel = "mergeStrategy";
-					}else if(property.label == "Show In Nav"){
+					}else if(property.label === "Show In Nav"){
 						propertyLabel = "showInNav";
-					}else if(property.label == "Descriptor Mapper"){
+					}else if(property.label === "Descriptor Mapper"){
 						propertyLabel = "descriptorMapper";
 					}else{
 						propertyLabel = property.label;
@@ -1909,7 +1913,7 @@ CStudioAuthoring.Module.requireModule(
                     $(labelEl).append(helpIcon);
                 }
 				propertyContainerEl.appendChild(labelEl);
-				
+
 				var propTypeCb = {
 					moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
 						try {
@@ -2426,7 +2430,7 @@ CStudioAuthoring.Module.requireModule(
                     }
                     xml+= "\t</delete-dependencies>\r\n";
 				}
-				
+
 				if(config['copy-dependencies']) {
                     xml += "\t<copy-dependencies>\r\n";
 
