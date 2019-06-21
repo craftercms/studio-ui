@@ -8122,6 +8122,7 @@ var nodeOpen = false,
               $mediaContainer,
               CMgs = CStudioAuthoring.Messages,
               formsLangBundle = CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang),
+              destroy,
               clickHandler,
               escHandler;
 
@@ -8167,24 +8168,30 @@ var nodeOpen = false,
 
           $container.show();
 
+          destroy = function() {
+            $(document).unbind('click', clickHandler);
+            $(document).unbind('keyup', escHandler);
+          }
+
           clickHandler = function (e) {
             if (e.target !== this)
               return;
 
             $container.remove();
-            $(document).unbind('click', clickHandler);
+            destroy();
           }
 
           escHandler = function (e) {
             if(e.keyCode === 27){
               $container.remove();
-              $(document).unbind('keyup', escHandler);
+              destroy();
             }
           }
 
           // Close - on button click
           $container.one('click', '.close', function(){
               $container.remove();
+              destroy();
           });
 
           // Close - on click outside dialog
