@@ -242,6 +242,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "de", {
     settings: "Einstellungen",
     signOut: "Abmelden",
     mainMenu: "Hauptmenü",
+
+    videoProcessed: 'Video wird verarbeitet, Vorschau ist verfügbar, wenn die Verarbeitung abgeschlossen ist',
     quickCreate: "Schnell erstellen",
     inContextEdit: "Im-Kontext Bearbeitung"
 
@@ -700,6 +702,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     S3UploadVideo: "Videos in S3 Repository hochladen",
     imageS3Repository:"Bilder aus S3 Repository",
     videoS3Repository:"Videos aus S3 Repository",
+    videos3Transcoding: "Videotranscodierung aus dem S3-Repository",
     fileS3Repository:"Dateien aus S3 Repository",
     fileUploadedS3Repository:"Dateien in S3 Repository hochladen",
     DAMImage: "DAM Bild Flickr",
@@ -790,6 +793,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     quickCreate: "Schnell erstellen",
     showQuickCreate: "In Quick Create anzeigen",
     destinationPath: "Zielpfadmuster",
+    inputProfileId: "Eingabeprofil-ID",
+    outputProfileId: "Ausgabeprofil-ID",
 
     /*Restrictions*/
     required: "Erforderlich",
@@ -937,4 +942,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "de", {
     apply: "Anwenden",
     cancel: "Abbrechen",
     userProps: "Benutzereigenschaften"
+});
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "de", {
+  upload: "Hochladen",
+  uploadSelect: "Bitte wählen Sie eine Datei zum Hochladen aus",
+  file: "Datei",
+  chooseFile: "Datei wählen",
+  noFileChosen: "Keine Datei ausgewählt",
+  uploadBtn: "Hochladen",
+  cancelBtn: "Stornieren",
+  uploading: "Hochladen"
 });

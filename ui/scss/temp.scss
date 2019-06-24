@@ -520,7 +520,7 @@ div#acn-active-content {
 }
 
 #admin-console {
-  margin-top: 15px; 
+  margin-top: 15px;
 }
 
 .acn-admin-console:hover {
@@ -3248,64 +3248,6 @@ span.acn-canned-search {
   float: right;
 }
 
-.cstudio-image-popup-overlay{
-  position: fixed;
-  display: none;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  margin: auto;
-  z-index: 32;
-  background: rgba(0, 0, 0, 0.6);
-  text-align: center;
-
-  .cstudio-image-pop-up {
-    display: inline-block;
-    box-sizing: content-box;
-    background: #f2f2f2;
-    border-radius: 4px;
-    padding: 5px 10px 10px;
-
-    &> div {
-      text-align: right;
-        .close {
-          float: none;
-          border: none;
-          background: transparent;
-          box-shadow: none;
-          font-size: 20px;
-          font-weight: normal;
-          padding: 0;
-          line-height: 12px;
-          padding-bottom: 7px;
-          margin-right: -4px;
-          margin-top: 1px;
-          opacity: 1;
-          border-radius: 0;
-          color: #5d5d5d;
-      }
-    }
-
-    img, video {
-      border-radius: 6px;
-        max-width: 700px;
-        background-color: #fff;
-    }
-
-          video {
-            max-width: 600px;
-          }
-  }
-
-  &:before{
-    content: "";
-      display: inline-block;
-       vertical-align: middle;
-      height: 100%;
-  }
-}
-
 .site-dashboard {
   .panel {
     .ttTbody{
@@ -3328,3 +3270,4 @@ span.acn-canned-search {
 @import "cstudio-view";
 @import "preview";
 @import "navbar";
+@import "preview-dialog";

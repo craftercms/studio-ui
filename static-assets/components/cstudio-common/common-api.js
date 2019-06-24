@@ -2867,39 +2867,45 @@ var nodeOpen = false,
                 CStudioAuthoring.Module.requireModule("upload-cmis-dialog", "/static-assets/components/cstudio-dialogs/uploadCMIS-dialog.js", moduleConfig, openUploadDialogCb);
             },
 
-            uploadS3Asset: function(site, path, profileId, uploadCb) {
-                CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb);
+            uploadS3Asset: function(site, path, profileId, uploadCb, params) {
+              CStudioAuthoring.Operations.openS3UploadDialog(site, path, profileId, uploadCb, params);
             },
 
             /**
              *  opens a dialog to upload an asset
              */
-            openS3UploadDialog: function(site, path, profileId, callback) {
+            openS3UploadDialog: function(site, path, profileId, callback, params) {
+              var transcode = params && params.transcode ? params.transcode : false;
+                  serviceUri = transcode ? CStudioAuthoring.Service.videoTranscode : CStudioAuthoring.Service.writeS3ContentUri;
 
-                var serviceUri = CStudioAuthoring.Service.writeS3ContentUri;
+              var openUploadDialogCb = {
+                  moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
+                      dialogClass.showDialog(
+                          moduleConfig.site,
+                          moduleConfig.path,
+                          moduleConfig.profile,
+                          moduleConfig.serviceUri,
+                          moduleConfig.callback,
+                          moduleConfig.params);
+                  }
+              };
 
-                var openUploadDialogCb = {
-                    moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
-                        dialogClass.showDialog(
-                            moduleConfig.site,
-                            moduleConfig.path,
-                            moduleConfig.profile,
-                            moduleConfig.serviceUri,
-                            moduleConfig.callback);
-                    }
-                };
+              var moduleConfig = {
+                  path: path ? encodeURI(path) : '',
+                  site: site,
+                  profile: profileId,
+                  serviceUri: serviceUri,
+                  callback: callback,
+                  params: {}
+              }
 
-                var moduleConfig = {
-                    path: path ? encodeURI(path) : '',
-                    site: site,
-                    profile: profileId,
-                    serviceUri: serviceUri,
-                    callback: callback
-                }
+              if ( transcode ) {
+                moduleConfig.params.transcode = true;
+              }
 
-                CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
+              CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
 
-                CStudioAuthoring.Module.requireModule("upload-S3-dialog", "/static-assets/components/cstudio-dialogs/uploadS3-dialog.js", moduleConfig, openUploadDialogCb);
+              CStudioAuthoring.Module.requireModule("upload-S3-dialog", "/static-assets/components/cstudio-dialogs/uploadS3-dialog.js", moduleConfig, openUploadDialogCb);
             },
 
             /**
@@ -3254,6 +3260,7 @@ var nodeOpen = false,
             //S3
             getS3ContentByBrowseUri: "/api/2/aws/s3/list",
             writeS3ContentUri: "/api/2/aws/s3/upload.json",
+            videoTranscode: "/api/2/aws/mediaconvert/upload",
 
             //Box File
             getBoxUrlUri: "/api/1/services/api/1/box/url.json",
@@ -8111,62 +8118,87 @@ var nodeOpen = false,
          * @param container {jQuery} The popup element
          */
         previewAssetDialog: function(source, type) {
+          var $container = $('.cstudio-image-popup-overlay'),
+              $mediaContainer,
+              CMgs = CStudioAuthoring.Messages,
+              formsLangBundle = CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang),
+              destroy,
+              clickHandler,
+              escHandler;
 
-            if($('.cstudio-image-popup-overlay').length <= 0) {
-                var dialogHtml =
-                    '<div class="cstudio-image-popup-overlay" style="display: none;">' +
+          if ( $container.length === 0 ) {
+            $container = $(
+                  '<div class="cstudio-image-popup-overlay" style="display: none;">' +
                     '<div class="cstudio-image-pop-up">' +
-                    '<div>' +
-                    '<span class="close fa fa-close"></span>' +
+                      '<div>' +
+                        '<span class="close fa fa-close"></span>' +
+                      '</div>' +
+                      '<div class="media-container"></div>' +
                     '</div>' +
-                    '<img src="">' +
-                    '<video id="videoOverlay" controls="true" >' +
-                    '<source src="" type="">' +
-                    '</video>' +
-                    '</div>' +
-                    '</div>"';
+                  '</div>'
+                );
 
-                $('body').append(dialogHtml);
+            $('body').append($container);
+          }
+
+          $mediaContainer = $container.find('.media-container');
+          $container.removeClass('cstudio-video-popup-overlay');
+
+          if ( type.match(/\bvideo\b/) ) {
+            var playerOptions = {
+                  autoplay: true,
+                  controls: true,
+                  src: source,
+                  width: 400,
+                  height: 240
+                },
+                div = document.createElement('div');
+
+            $container.addClass('cstudio-video-popup-overlay');
+            $mediaContainer.append(div);
+            CrafterCMSNext.render(div, 'AsyncVideoPlayer',
+              {
+                playerOptions: playerOptions,
+                nonPlayableMessage: CMgs.format(formsLangBundle, 'videoProcessed')
+              }
+            );
+          } else {
+            $mediaContainer.append('<img alt="" src="' + source + '"/>');
+          }
+
+          $container.show();
+
+          destroy = function() {
+            $(document).unbind('click', clickHandler);
+            $(document).unbind('keyup', escHandler);
+          }
+
+          clickHandler = function (e) {
+            if (e.target !== this)
+              return;
+
+            $container.remove();
+            destroy();
+          }
+
+          escHandler = function (e) {
+            if(e.keyCode === 27){
+              $container.remove();
+              destroy();
             }
+          }
 
-            var $container = $('.cstudio-image-popup-overlay'),
-                $img = $container.find('img'),
-                $video = $container.find('video');
-                $img.hide(); $video.hide();
-                $container.removeClass('cstudio-video-popup-overlay');
+          // Close - on button click
+          $container.one('click', '.close', function(){
+              $container.remove();
+              destroy();
+          });
 
-            if(type.match(/\bvideo\b/)) {
-                $container.addClass('cstudio-video-popup-overlay');
-                $video.show();
-                $video.find('source').attr('src', source);
-                $video.find('source').attr('type', type);
-                $video.load();
-            }else{
-                $img.show();
-                $img.attr('src', source);
-            }
+          // Close - on click outside dialog
+          $container.bind('click', clickHandler);
 
-            $container.show();
-
-            // Close - on button click
-            $container.one('click', '.close', function(){
-                $container.remove();
-            });
-
-            // Close - on click outside dialog
-            $container.on('click', function(e) {
-                if (e.target !== this)
-                    return;
-
-                $container.remove();
-            });
-
-            // Close - on escape
-            $(document).on('keyup', function(e){
-                if(e.keyCode === 27){
-                    $container.remove();
-                }
-            });
+          // Close - on escape
+          $(document).bind('keyup', escHandler);
 
         },
 
