@@ -233,6 +233,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     settings: "설정",
     signOut: "로그 아웃",
     mainMenu: "기본 메뉴",
+
+    videoProcessed: '동영상 처리 중, 처리가 완료되면 미리보기를 사용할 수 있습니다.',
     quickCreate: "빠른 만들기",
     inContextEdit: "인 - 컨텍스트 편집"
 
@@ -363,7 +365,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     bulkPublishPathToPublish: "게시 경로",
     bulkPublishPublishingEnv: "출판 환경",
     bulkPublishPublish: "게시",
-                        
+
     historyDialogTitle: "버전 기록",
     historyDialogSubTitle: "역사에 대해 표시 :",
     historyDialogTableRowVersion: "버전 날짜 및 시간",
@@ -650,6 +652,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     S3UploadVideo: "S3 저장소에 업로드 된 비디오",
     imageS3Repository:"S3 저장소의 이미지",
     videoS3Repository:"S3 저장소의 비디오",
+    videos3Transcoding: "S3 저장소에서 비디오 트랜스 코딩",
     fileS3Repository:"S3 저장소의 파일",
     fileUploadedS3Repository:"S3 저장소에 업로드 된 파일",
     DAMImage: "DAM 이미지 플리커 (Flickr)",
@@ -735,6 +738,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     quickCreate: "빠른 만들기",
     showQuickCreate: "빠른 만들기에 표시",
     destinationPath: "대상 경로 패턴",
+    inputProfileId: "입력 프로파일 ID",
+    outputProfileId: "출력 프로필 ID",
 
     /*Restrictions*/
     required: "필요",
@@ -859,4 +864,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "kr", {
     apply: "대다",
     cancel: "취소",
     userProps: "사용자 속성"
+});
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "kr", {
+  upload: "업로드",
+  uploadSelect: "업로드 할 파일을 선택하십시오.",
+  file: "파일",
+  chooseFile: "파일을 선택",
+  noFileChosen: "선택된 파일 없음",
+  uploadBtn: "업로드",
+  cancelBtn: "취소",
+  uploading: "업로드 중"
 });

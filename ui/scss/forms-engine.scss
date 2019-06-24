@@ -17,6 +17,7 @@
 
 
 @import "variables";
+@import "preview-dialog";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
 
 #formContainer {
@@ -91,6 +92,9 @@ div.xdsoft_datetimepicker {
   line-height: 12px;
 }
 
+.cstudio-image-popup-overlay::before {
+  height: 50%;
+}
 
 /****** RTE2 *******/
 
@@ -104,14 +108,14 @@ div.xdsoft_datetimepicker {
     background: white;
     color: #595959;
     border: 1px solid #c5c5c5;
-    
+
     .cstudio-form-control-image-picker-add-container-item {
-      padding: 8px 15px;    
+      padding: 8px 15px;
     }
   }
 }
 
-.yui-dialog,  {
+.yui-dialog {
   z-index: 100102 !important;
 }
 

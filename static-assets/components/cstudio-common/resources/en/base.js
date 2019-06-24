@@ -242,6 +242,8 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "en", {
     settings: "Settings",
     signOut: "Sign Out",
     mainMenu: "Main Menu",
+
+    videoProcessed: 'Video is being processed, preview will be available when processing is complete',
     quickCreate: "Quick Create",
     inContextEdit: "In-Context Edit"
 
@@ -385,7 +387,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     changeTemplateDialogTitle:"Warning: Change Content Type",
     changeTemplateDialogSubTitle:"Crafter Studio",
     changeTemplateDialogBody:"The following operation may result in data loss. Would you like to proceed?",
-    
+
     bulkPublishDialogTitle:"Warning: Bulk Publish",
     bulkPublishDialogBody:"Bulk publish will force publish all items that match the pattern requested including their dependencies.</br> Please make sure that all modified items (including potentially someone's work in progress) are ready to </br> be published before continuing.",
     bulkPublish: "Bulk Publish",
@@ -586,7 +588,7 @@ CStudioAuthoring.Messages.registerBundle("browse", "en", {
     408: "CMIS Timeout.",
     500: "Internal server error.",
     503: "CMIS Unavailable."
-}); 
+});
 
 CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     contenttypes: "Content Types",
@@ -700,6 +702,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     S3UploadVideo: "Video Uploaded to S3 Repository",
     imageS3Repository:"Image From S3 Repository",
     videoS3Repository:"Video From S3 Repository",
+    videos3Transcoding: "Video Transcoding From S3 Repository",
     fileS3Repository:"File From S3 Repository",
     fileUploadedS3Repository:"File Uploaded to S3 Repository",
     DAMImage: "DAM Image Flickr",
@@ -789,7 +792,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     quickCreate: "Quick Create",
     showQuickCreate: "Show in Quick Create",
     destinationPath: "Destination Path Pattern",
-
+    inputProfileId: "Input Profile Id",
+    outputProfileId: "Output Profile Id",
 
     /*Restrictions*/
     required: "Required",
@@ -938,4 +942,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "en", {
     apply: "Apply",
     cancel: "Cancel",
     userProps: "User Properties"
+});
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "en", {
+  upload: "Upload",
+  uploadSelect: "Please select a file to upload",
+  file: "File",
+  chooseFile: "Choose File",
+  noFileChosen: "No file chosen",
+  uploadBtn: "Upload",
+  cancelBtn: "Cancel",
+  uploading: "Uploading"
 });
