@@ -804,6 +804,8 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 
 					this.timezone = this.getSelectedTimezone(timezoneEl);
 					this._setValue(value, this.timezone);
+                    this.form.updateModel(this.id, value);
+                    this.form.updateModel(this.timezoneId, this.timezone);
 				}, timezoneEl, this);
 			} else {
 				timezoneEl = document.createElement("span");
@@ -1192,7 +1194,9 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 
 		this.validate(null, this, true);
 
-		this.form.updateModel(this.id, this.getValue());
+        this.value  = this.getFieldValue();
+		this.form.updateModel(this.id, this.value);
+        this.form.updateModel(this.timezoneId, this.timezone);
 	},
 
 	getDescendantProp: function(obj, desc) {
