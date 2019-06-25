@@ -879,7 +879,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 			YAHOO.util.Event.addListener(timeEl, 'click', function(e) {
 				var caretPos = this.saveCaretPosition(timeEl);
-                self.form.setFocusedField(self);
+                this.form.setFocusedField(this);
 				timeEl.setAttribute("data-cursor", caretPos);
 			}, timeEl, this);
 
@@ -904,6 +904,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 					this.timezone = this.getSelectedTimezone(timezoneEl);
 					this._setValue(value, this.timezone);
+                    this.form.updateModel(this.id, value);
+                    this.form.updateModel(this.timezoneId, this.timezone);
 				}, timezoneEl, this);
 			} else {
 				timezoneEl = document.createElement("span");

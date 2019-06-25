@@ -605,6 +605,8 @@ var CStudioForms = CStudioForms || function() {
                     var repeatField = parts[2];
 
                     if (this.model[repeatGroup].length > 0 && (this.model[repeatGroup][repeatIndex] != null || this.model[repeatGroup][repeatIndex] != undefined)) {
+                        value = this.model[repeatGroup][repeatIndex][repeatField];
+                    }else{
                         this.model[repeatGroup][repeatIndex][repeatField] = value;
                     }
                 }
