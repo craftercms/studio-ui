@@ -731,6 +731,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     taxonomyName: "분류 이름",
     defaultType: "기본 유형",
     displayTemplate: "디스플레이 템플릿",
+    noTemplateRequired: "템플릿 필요 없음",
     mergeStrategy: "전략을 병합",
     profileId: "프로필 ID",
     path: "통로",

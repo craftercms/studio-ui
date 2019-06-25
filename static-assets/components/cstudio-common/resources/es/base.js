@@ -759,6 +759,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     taxonomyName: "Nombre de Taxonomía",
     defaultType: "Tipo por Defecto",
     displayTemplate: "Plantilla de Pantalla",
+    noTemplateRequired: "Plantilla no Requerida",
     mergeStrategy: "Combinar Estrategia",
     dependsOn: "Depende En",
     profileId: "ID de perfil",

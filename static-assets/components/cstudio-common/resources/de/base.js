@@ -783,6 +783,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     taxonomyName: "Taxonomy Name",
     defaultType: "Standardtyp",
     displayTemplate: "Template",
+    noTemplateRequired: "Keine Vorlage erforderlich",
     mergeStrategy: "Merge Strategie",
     componentPath: "Komponenten-Pfad",
     dependsOn: "Hängt ab von",
