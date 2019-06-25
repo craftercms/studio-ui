@@ -6278,7 +6278,22 @@ var nodeOpen = false,
 
                 urlParams = {};
                 while (match = search.exec(query)){
-                    urlParams[decode(match[1])] = decode(match[2]);
+                    // urlParams[decode(match[1])] = decode(match[2]);
+
+                    // if urlPamars at position already exists
+                    if (urlParams[decode(match[1])]) {
+                      // if current value is string - create array and add both
+                      if (typeof urlParams[decode(match[1])] === 'string') {
+                        var valuesArray = [];
+                        valuesArray.push(urlParams[decode(match[1])]);
+                        valuesArray.push(decode(match[2]));
+                        urlParams[decode(match[1])] = valuesArray;
+                      }else{
+                        urlParams[decode(match[1])].push(decode(match[2]));
+                      }
+                    } else {
+                      urlParams[decode(match[1])] = decode(match[2]);
+                    }
                 }
                 return urlParams;
             },
