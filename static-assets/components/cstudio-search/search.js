@@ -213,7 +213,7 @@
           //timeout to wait for other checkboxes selections
           clearTimeout(filterTimeout);
           filterTimeout = setTimeout(function(){
-            $.each($(".filter[name='" + filterName + "']:checked"), function(){
+            $(".filter[name='" + filterName + "']:checked").each(function(){
               filterValues.push($(this).val());
             });
 
