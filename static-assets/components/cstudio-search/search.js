@@ -82,7 +82,8 @@
     };
 
     CStudioSearch.bindEvents = function() {
-        var searchTimeout;
+        var searchTimeout,
+            filterTimeout;
 
         // Search input changes
         $('#searchInput').on('keyup', function(e){
@@ -104,10 +105,12 @@
         });
 
         $('#searchButton').on('click', function(e){
-            CStudioSearch.searchContext.keywords = $('#searchInput').val();
+          var $searchInput = $('#searchInput');
+            CStudioSearch.searchContext.keywords = $searchInput.val();
             CStudioSearch.clearFilters();
-            CStudioSearch.performSearch();
+            CStudioSearch.performSearch(true);
             CStudioSearch.updateUrl();
+            $searchInput.focus().select();
         });
 
         // Selecting an item from the results
@@ -158,7 +161,7 @@
             CStudioSearch.deleteElement(path);
         });
 
-        // Selecting a filter
+        // Selecting a single value filter
         $('.cstudio-search').on('change', '.filter-item input[type="radio"]', function(){
             var searchFilters = CStudioSearch.searchContext.filters,
                 filterName = $(this).attr('name'),
@@ -199,6 +202,28 @@
             CStudioSearch.updateNumFilters(filterName);
             CStudioSearch.performSearch(true);
             CStudioSearch.updateUrl();
+        });
+
+        // Selecting a multiple value filter
+        $('.cstudio-search').on('change', '.filter-item input[type="checkbox"]', function(){
+          var searchFilters = CStudioSearch.searchContext.filters,
+              filterName = $(this).attr('name'),
+              filterValues = [];
+
+          //timeout to wait for other checkboxes selections
+          clearTimeout(filterTimeout);
+          filterTimeout = setTimeout(function(){
+            $(".filter[name='" + filterName + "']:checked").each(function(){
+              filterValues.push($(this).val());
+            });
+
+            searchFilters[filterName] = filterValues;
+            CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
+
+            CStudioSearch.updateNumFilters(filterName);
+            CStudioSearch.performSearch(true);
+            CStudioSearch.updateUrl();
+          }, 1000);
         });
 
         // Applying range to a filter
@@ -308,8 +333,8 @@
                     searchContext.filters[processedKey].max = range[1] === "null" ? null : range[1];
                     id && (searchContext.filters[processedKey].id = id);
                 }else{
-                   processedValue = value;
-                   searchContext.filters[processedKey] = processedValue;
+                  processedValue = value;
+                  searchContext.filters[processedKey] = processedValue;
                 }
             }
         });
@@ -499,6 +524,7 @@
         $.each(searchContext.facets, function(index, facet){
             var groupedFacetsName = CStudioSearch.facetsMap[facet.name] ? CStudioSearch.facetsMap[facet.name] : null,
                 $container = $('#searchFilters .dropdown-menu .panel-group'),
+                multipleSelection = facet.multiple,
                 headerExists = $container.find('.dropdown-header').length > 0,
                 headerLabel = '';
 
@@ -570,7 +596,8 @@
                         name: facet.name,
                         id: isNaN(parseInt(escapedKey)) ? escapedKey : parseInt(escapedKey),
                         label: label + ' (' + count + ')',
-                        filter: true
+                        filter: true,
+                        multiple: multipleSelection
                     }
 
                     if(facet.range){
@@ -599,30 +626,36 @@
 
         // set selected filter values
         $.each(CStudioSearch.searchContext.filters, function(key, value){
-            if( typeof value === 'object' ){
-                var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
-                    $filterRadio;
+          var $filterHeader = $('.filter-header[href="#' + key + '"] .selected');
+          if ( $.isArray(value) ) {   // if value is array = multiple selections
+            $.each(value, function() {
+              var escapedValue = this.replace(/\//g, "_")
+              $filterHeader.removeClass('hide');
+              $('#' + key + escapedValue).prop('checked', true);
+            });
+          } else if ( typeof value === 'object' ) {   // if value is object = range
+              var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
+                  $filterRadio;
 
-                if (value.date === true || key === 'last-edit-date') {
-                    $filterRadio = $('input[type="radio"][name="' + key + '"]#' + value.id);
-                    $filterRadio.prop("checked", true);
-                    $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
-                } else {
-                    $filterRadio = $('input[type="radio"][name="' + key + '"]#' + key + value.min);
-                    $filterContainer.find('input[name="min"]').val(isNaN(value.min) ? '' : value.min);
-                    $filterContainer.find('input[name="max"]').val(isNaN(value.max) ? '' : value.max);
+              if (value.date === true || key === 'last-edit-date') {
+                  $filterRadio = $('input[type="radio"][name="' + key + '"]#' + value.id);
+                  $filterRadio.prop("checked", true);
+                  $filterHeader.removeClass('hide');
+              } else {
+                  $filterRadio = $('input[type="radio"][name="' + key + '"]#' + key + value.min);
+                  $filterContainer.find('input[name="min"]').val(isNaN(value.min) ? '' : value.min);
+                  $filterContainer.find('input[name="max"]').val(isNaN(value.max) ? '' : value.max);
 
-                    if($filterRadio.length > 0){
-                        $filterRadio.prop("checked", true);
-                        $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
-                    }
-                }
-
-            }else{
-                var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
-                $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
-                $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
-            }
+                  if($filterRadio.length > 0){
+                      $filterRadio.prop("checked", true);
+                      $filterHeader.removeClass('hide');
+                  }
+              }
+          } else {    // otherwise, single value
+              var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
+              $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
+              $filterHeader.removeClass('hide');
+          }
         });
 
         // Open accordion panel from last selected filter
@@ -784,6 +817,10 @@
             $.each(searchContext.filters, function(key, value){
                 if(typeof value === 'string'){
                     newUrl += '&csf_' + key + '=' + value;
+                } else if( $.isArray(value) ) {
+                  $.each(value, function() {
+                    newUrl += '&csf_' + key + '=' + this;
+                  })
                 } else {  //is a range
                     if (value.date) {
                         var min = value.min,

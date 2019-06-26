@@ -6274,11 +6274,29 @@ var nodeOpen = false,
                     pl     = /\+/g,  // Regex for replacing addition symbol with a space
                     search = /([^&=]+)=?([^&]*)/g,
                     decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-                    query  = window.location.search.substring(1);
+                    query  = window.location.search.substring(1),
+                    key,
+                    value;
 
                 urlParams = {};
-                while (match = search.exec(query)){
-                    urlParams[decode(match[1])] = decode(match[2]);
+                while (match = search.exec(query)) {
+                  key = decode(match[1]),
+                  value = decode(match[2]);
+
+                  // if urlPamars at position already exists
+                  if (urlParams[key]) {
+                    // if current value is string - create array and add both
+                    if (typeof urlParams[key] === 'string') {
+                      var valuesArray = [];
+                      valuesArray.push(urlParams[key]);
+                      valuesArray.push(value);
+                      urlParams[key] = valuesArray;
+                    }else{
+                      urlParams[key].push(value);
+                    }
+                  } else {
+                    urlParams[key] = value;
+                  }
                 }
                 return urlParams;
             },
