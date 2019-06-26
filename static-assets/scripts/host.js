@@ -32,7 +32,10 @@
 
   communicator.subscribe(Topics.RESET_ICE_TOOLS_CONTENT, function (message) {
     sessionStorage.setItem("ice-tools-content", message);
-    initRegCookie && initRegCookie();
+    try {
+      // For ICE tools panel syncing.
+      window.initRegCookie();
+    } catch(e) {}
   });
 
   communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function (message) {
@@ -261,7 +264,7 @@
             page: message.url,
             site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
           },
-          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
+          studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
       setHash(params);
       amplify.publish(cstopic('GUEST_SITE_LOAD'), params);
 

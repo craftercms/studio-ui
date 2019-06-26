@@ -279,25 +279,7 @@
                     // }
                 },
 
-                getPreviewPagePath: function (previewPath) {
-                    if(previewPath.indexOf("?") > 0){
-                        previewPath = previewPath.split("?")[0];
-                    }
-                    if(previewPath.indexOf('#') > 0){
-                        previewPath = previewPath.split("#")[0];
-                    }
-                    if(previewPath.indexOf(';') > 0){
-                        previewPath = previewPath.split(";")[0];
-                    }
-                    var pagePath = previewPath.replace(".html", ".xml");
-                    if (pagePath.indexOf(".xml") == -1) {
-                        if (pagePath.substring(pagePath.length - 1) != "/") {
-                            pagePath += "/";
-                        }
-                        pagePath += "index.xml";
-                    }
-                    return '/site/website' + pagePath;
-                },
+                getPreviewPagePath: CrafterCMSNext.util.path.getPathFromPreviewURL,
 
                 /*
                  * Load the model of a page and publish it
