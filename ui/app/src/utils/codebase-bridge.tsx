@@ -18,9 +18,10 @@
 import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-import { capitalize } from './string';
 import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
+import string from './string';
 import ajax from './ajax';
+import path from './path';
 
 /**
  *
@@ -68,7 +69,8 @@ export function createCodebaseBridge() {
 
     util: {
       ajax,
-      string: { capitalize }
+      path,
+      string
     },
 
     // Mechanics
