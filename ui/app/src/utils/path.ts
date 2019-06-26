@@ -43,4 +43,4 @@ export function getPathFromPreviewURL(previewURL: string) {
 
 export default {
   getPathFromPreviewURL
-}
+};
