@@ -160,7 +160,7 @@ CStudioAuthoring.Dialogs.NewFolderNameDialog = CStudioAuthoring.Dialogs.NewFolde
             callback: args.self.callback
         };
 		YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
-		YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+		YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
 		YConnect.asyncRequest('POST', serviceUri, serviceCallback);
 	},
 

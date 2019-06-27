@@ -162,7 +162,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.WorkflowStates, CStudioAdminConsole.Tool, 
 						failure: function() {} 
 				};
 
-				YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
+				YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());                                        
 				YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
 			}
 			

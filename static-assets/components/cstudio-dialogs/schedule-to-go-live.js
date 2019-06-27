@@ -464,7 +464,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 								}            
 								YConnect.setDefaultPostHeader(false);
 								YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-								YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+								YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
 								YConnect.asyncRequest('POST', dependencyUrl, serviceCallback, xmlString);
 								
 							} else {

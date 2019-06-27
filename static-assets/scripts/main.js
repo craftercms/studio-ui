@@ -34,8 +34,6 @@
         '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
         function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
 
-            $http.defaults.headers.common['X-XSRF-TOKEN'] = xsrfToken;
-
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
 

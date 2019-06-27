@@ -148,7 +148,7 @@ YAHOO.extend(CStudioForms.Controls.BoxFileUpload, CStudioForms.CStudioFormField,
     var tokenUri = CStudioAuthoring.Service.createServiceUri("/api/1/services/api/1/box/token.json");
     tokenUri += "&site=" + CStudioAuthoringContext.site;
     tokenUri += "&profileId=" + this.profile_id;
-    tokenUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;    
+    tokenUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoring.Storage.getRequestForgeryToken();    
     YAHOO.util.Connect.asyncRequest("GET", tokenUri, {
         success: function(o) {
             var data = JSON.parse(o.responseText);

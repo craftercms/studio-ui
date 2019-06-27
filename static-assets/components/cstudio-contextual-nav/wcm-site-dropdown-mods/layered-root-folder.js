@@ -117,7 +117,7 @@ CStudioAuthoringContext.site,
                     
                     YAHOO.util.Connect.setDefaultPostHeader(false);
                     YAHOO.util.Connect.initHeader("Content-Type", "text/xml; charset=utf-8");
-                    YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                    YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                     YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUrl), writeCb, json.content);
                 },
                 
@@ -2056,7 +2056,7 @@ CStudioAuthoringContext.site,
 
                         YAHOO.util.Connect.setDefaultPostHeader(false);
                         YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                         YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
 
                     },
@@ -2225,7 +2225,7 @@ CStudioAuthoringContext.site,
 	       	                var request = this.args['request'];
 	       	                YAHOO.util.Connect.setDefaultPostHeader(false);
                             YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                            YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                            YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
 	       	                YAHOO.util.Connect.asyncRequest('POST', request, oncomplete, myJSON);
         				},
         				failure:function() {
