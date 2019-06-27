@@ -6489,7 +6489,7 @@ var nodeOpen = false,
                         newDate = newDate + " ("+newTimeZone+")";
                     }else{
                         if(format === "large"){
-                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm:ss a');
+                            newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY HH:mm:ss');
                         }else{
                             if(format === "medium"){
                                 newDate = utcDate.tz(newTimeZone ? newTimeZone : 'EST5EDT').format('MM/DD/YYYY hh:mm a');
@@ -6519,7 +6519,7 @@ var nodeOpen = false,
                         newDate = newDate + " (Etc/UTC)";
                     }else{
                         if(formatSize === "large"){
-                            newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY hh:mm:ss a');
+                            newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY HH:mm:ss');
                         }else{
                             if(formatSize === "medium"){
                                 newDate = currentDate.clone().tz("Etc/UTC").format('MM/DD/YYYY hh:mm a');

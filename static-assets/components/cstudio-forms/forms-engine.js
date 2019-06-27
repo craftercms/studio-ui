@@ -1927,7 +1927,7 @@ var CStudioForms = CStudioForms || function() {
                             containerEl.reRender(containerEl);
 
                             var containerElNodes = $(containerEl.childNodes);
-                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex)).offset().top;
+                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
                             $('html').scrollTop(containerElLastChildTop);
 
                             repeatEdited = true;
