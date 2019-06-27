@@ -268,9 +268,7 @@ var nodeOpen = false,
                 '/static-assets/themes/cstudioTheme/yui/assets/skin.css',
                 '/static-assets/themes/cstudioTheme/css/contextNav.css',
                 '/static-assets/yui/container/assets/container.css',
-                '/static-assets/jquery/jquery-time/jquery.timeentry.css',
-                '/static-assets/jquery/jquery-ui/themes/smoothness/jquery-ui.css',
-                '/static-assets/jquery/jquery-ui/themes/smoothness/ui.resizable.css'
+                '/static-assets/jquery/jquery-time/jquery.timeentry.css'
             ], js: [
                 '/static-assets/yui/connection/connection-min.js',
                 '/static-assets/yui/json/json-min.js',
