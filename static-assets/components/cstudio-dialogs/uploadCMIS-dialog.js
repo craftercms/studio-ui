@@ -182,7 +182,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
         var form = $('#asset_upload_form')[0];
         var data = new FormData(form);
 
-        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;
+        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoring.Storage.getRequestForgeryToken();
         $.ajax({
             enctype: 'multipart/form-data',
             processData: false,  // Important!
@@ -227,7 +227,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
                 var form = $('#asset_upload_form')[0];
                 var data = new FormData(form);
 
-                serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;
+                serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoring.Storage.getRequestForgeryToken();
 
                 $.ajax({
                     enctype: 'multipart/form-data',

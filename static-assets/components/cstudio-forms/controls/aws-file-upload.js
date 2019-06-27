@@ -143,7 +143,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     };
 
     YAHOO.util.Connect.setForm("upload_form_" + obj.id, true);
-    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;    
+    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoring.Storage.getRequestForgeryToken();    
     YAHOO.util.Connect.asyncRequest("POST", serviceUri, callback);
     document.getElementById("cstudioSaveAndClose").disabled="disabled";
     document.getElementById("cstudioSaveAndCloseDraft").disabled="disabled";

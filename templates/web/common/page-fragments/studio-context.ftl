@@ -42,7 +42,7 @@
 		isPreview: false,
 		liveAppBaseUri:"",
 		lang: "${envConfig.language!'UNSET'}",
-		xsrfToken: "${_csrf.token}",
+		xsrfCookieName: "XSRF-TOKEN",
 		xsrfHeaderName: "${_csrf.headerName}",
 		xsrfParameterName: "${_csrf.parameterName}"
 

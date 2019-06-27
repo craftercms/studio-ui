@@ -2426,7 +2426,7 @@ var nodeOpen = false,
                                         var copyData =  "{ \"item\":[{ \"uri\": \""+contentTO.uri+"\"}]}";
                                         YAHOO.util.Connect.setDefaultPostHeader(false);
                                         YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
+                                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());                                        
                                         YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), copyCb, copyData);
                                     },
                                     failure: function() {
@@ -2971,7 +2971,7 @@ var nodeOpen = false,
                 }
                 Connect.setDefaultPostHeader(oRequest.defaultPostHeader || false);
                 Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 Connect.asyncRequest(
                     oRequest.method || "GET",
                     oRequest.url,
@@ -2986,7 +2986,7 @@ var nodeOpen = false,
                 var Connect = YAHOO.util.Connect;
                 Connect.setDefaultPostHeader(oRequest.defaultPostHeader || false);
                 Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 Connect.asyncRequest(
                     oRequest.method || "GET",
                     oRequest.url,
@@ -3406,7 +3406,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, markup);
             },
 
@@ -3460,7 +3460,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), {
                     success: function(response) {
                         var content = response.responseText;
@@ -3530,7 +3530,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, content);
             },
 
@@ -3610,7 +3610,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, JSON.stringify(data));
             },
 
@@ -3735,7 +3735,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(taxonomies));
             },
 
@@ -3757,7 +3757,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(taxonomies));
             },
 
@@ -3789,7 +3789,7 @@ var nodeOpen = false,
                         );
                     }
                 };
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback);
             },
             /**
@@ -3995,7 +3995,7 @@ var nodeOpen = false,
                     }
                 };
 
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback);
             },
 
@@ -4021,7 +4021,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUrl), serviceCallback, JSON.stringify(postData));
             },
             /**
@@ -4768,7 +4768,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
             },
 
@@ -4863,7 +4863,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
             },
 
@@ -4889,7 +4889,7 @@ var nodeOpen = false,
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, requestAsString);
 
             },
@@ -5162,7 +5162,7 @@ var nodeOpen = false,
                 };
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, dependencyJson);
             },
 
@@ -5552,7 +5552,7 @@ var nodeOpen = false,
 
                     YConnect.setDefaultPostHeader(false);
                     YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                     YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUrl), searchCb, searchConfig);
 
                 }else{
@@ -5636,7 +5636,7 @@ var nodeOpen = false,
                 };
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, JSON.stringify(paramJson));
             }
 
@@ -5671,7 +5671,7 @@ var nodeOpen = false,
 
             YConnect.setDefaultPostHeader(false);
             YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-            YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+            YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoring.Storage.getRequestForgeryToken());
             YConnect.asyncRequest('POST', this.createServiceUri(serviceUri), serviceCallback, dependencyXml);
         },
 
@@ -8100,6 +8100,10 @@ var nodeOpen = false,
                 var value = this.read(name); // retrieve the value before deleting
                 this.write(name, "", -168); // Set expiration to a week before now
                 return value;
+            },
+
+            getRequestForgeryToken: function() {
+              return this.read(CStudioAuthoringContext.xsrfCookieName);
             }
         },
         /**
