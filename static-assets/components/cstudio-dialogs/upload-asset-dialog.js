@@ -44,7 +44,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 
 		this.site = site;
 		this.path = path;
-		this.asPopup = true;			
+		this.asPopup = true;
 		this.serviceUri = serviceUri;
 		this.callback = callback;
 		this.isUploadOverwrite = isUploadOverwrite;
@@ -62,7 +62,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
             }
 		}
 	},
-	
+
 	/**
 	 * hide dialog
 	 */
@@ -76,9 +76,9 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	createDialog: function(path, site, serviceUri, isUploadOverwrite) {
 		var me = this;
 		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
-		
+
 		if (isUploadOverwrite == "overwrite") {
-			path = path.substring(0, path.lastIndexOf("/"));	
+			path = path.substring(0, path.lastIndexOf("/"));
 		}
 
 		var newdiv = YDom.get("cstudio-wcm-popup-div");
@@ -107,15 +107,15 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 						            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
                                     '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
 						        '</form></div>' +
-						   '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' + 
+						   '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' +
                            '</div> ' +
                            '</div>';
-		
+
 		document.getElementById("upload-popup-inner").style.width = "350px";
 		document.getElementById("upload-popup-inner").style.height = "180px";
 
 		 // Instantiate the Dialog
-		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", 
+		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
 								{ width : "360px",
 								  height : "242px",
                                   effect:{
@@ -127,15 +127,15 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 								  modal:true,
 								  close:false,
 								  constraintoviewport : true,
-								  underlay:"none"							  							
-								});	
-								
+								  underlay:"none"
+								});
+
 		// Render the Dialog
 		upload_dialog.render();
 
         var filenameInput = document.getElementById("uploadFileNameId");
         YAHOO.util.Event.addListener(filenameInput, "change", this.uploadFileEvent);
-		
+
 		var eventParams = {
 			self: this
 		};
@@ -147,7 +147,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 //			YAHOO.util.Event.addListener("uploadButton", "click", this.overwritePopupSubmit, eventParams);
 		}
 		YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
-		
+
 		$("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
             if (e.keyCode === 27) {	// esc
                 me.closeDialog();
@@ -170,9 +170,9 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
         }
 
     },
-		
+
 	/**
-	 * event fired when the ok is pressed - checks if the file already exists and has edit permission or not 
+	 * event fired when the ok is pressed - checks if the file already exists and has edit permission or not
 	 * by using the getPermissions Service call
 	 */
 	uploadPopupSubmit: function(event, args) {
@@ -189,7 +189,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 			basePath: basePath,
 			exists: function(jsonResponse) {
 				//Get user permissions to get read write operations
-				
+
 				var checkPermissionsCb = {
 		        	success: function(results) {
 						var isWrite = CStudioAuthoring.Service.isWrite(results.permissions);
@@ -203,10 +203,10 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 					},
 					failure: function() { }
 	        	};
-				
+
 				CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, this.basePath, checkPermissionsCb);
 			},
-			failure: function(response) {		
+			failure: function(response) {
 				CStudioAuthoring.Dialogs.UploadDialog.uploadFile(args);
 			}
 		};
@@ -214,7 +214,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 		YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
 		CStudioAuthoring.Service.contentExists(path, serviceCallback);
 	},
-	
+
    /**
 	 * upload file when upload pressed
 	 */
@@ -253,15 +253,15 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 		//the second argument of setForm is crucial,
 		//which tells Connection Manager this is an file upload form
 		YAHOO.util.Connect.setForm('asset_upload_form', true);
-		serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;		
+		serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
 		YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
 	},
-	
+
 	/**
 	 *
 	 */
 	 overwritePopupSubmit: function(event, args) {
-	 	
+
         var callback = {
             success: function(response) {
 				var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
@@ -282,7 +282,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
                             );
 
 						}else{
-							CStudioAuthoring.Dialogs.UploadDialog.closeDialog();				
+							CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
 						    args.self.callback.success(r);
 						}
 					}
@@ -291,8 +291,8 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 				//the second argument of setForm is crucial,
 				//which tells Connection Manager this is an file upload form
 				YAHOO.util.Connect.setForm('asset_upload_form', true);
-				serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;				
-				YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);				
+				serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+				YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
             },
 
             failure: function() {
@@ -300,7 +300,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
         };
 
         CStudioAuthoring.Service.deleteContentForPathService(args.self.site, args.self.path, callback);
-	 	
+
 	 },
 
 	/**

@@ -61,7 +61,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                     "<form name='contentFromWCM'>" +
                     "<div class='contentTypePopupHeader'>" + CMgs.format(formsLangBundle, "bulkPublishDialogTitle")+ "</div> " +
                     "<div class='contentTypeOuter'>"+
-                        "<div>" + CMgs.format(formsLangBundle, "bulkPublishDialogBody")+ "</div>" +                    
+                        "<div>" + CMgs.format(formsLangBundle, "bulkPublishDialogBody")+ "</div>" +
                     "</div>" +
                     "<div class='contentTypePopupBtn'>" +
                         "<input type='submit' class='btn btn-primary ok' id='acceptCTChange' value='" +CMgs.format(formsLangBundle, 'yes')+ "' />" +
@@ -87,7 +87,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
 
             var continueFn = function continueFn (e) {
                 e.preventDefault();
-                dialog.destroy();   
+                dialog.destroy();
 
                 var envSelectEl = document.getElementById("go-pub-channel");
                 var environment = envSelectEl[envSelectEl.selectedIndex].value;
@@ -100,12 +100,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.BulkOperations, CStudioAdminConsole.Tool, 
                         success:function() {},
                         failure: function(err) {}
                     }
-   
-                    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
+
+                    YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
                     YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
                     goLiveOpMessage.innerHTML = CMgs.format(langBundle, "publishStarted");
                 }
-            } 
+            }
 
             var cancelFn = function cancelFn (e) {
                 e.preventDefault();

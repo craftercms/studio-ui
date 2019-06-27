@@ -22,17 +22,17 @@ CStudioAuthoringContext.site,
     success: function(config) {
         CStudioAuthoringContext.baseSite = config.baseSite;
     },
-    
+
     failure: function() {
     }
-}); 
+});
 
 (function() {
     var YDom = YAHOO.util.Dom,
     	YEvent = YAHOO.util.Event,
     	YConnect = YAHOO.util.Connect;
 		sutils = CStudioAuthoring.StringUtils,
-		storage = CStudioAuthoring.Storage,		
+		storage = CStudioAuthoring.Storage,
 		counter = 0, // Used to identify the contextmenu for each instances. May be used for any other purpose while numberic chronological order is maintained
 		LSelf = null; // Local reference to CStudioAuthoring.ContextualNav.WcmRootFolder initialized by CStudioAuthoring.register call
         treeFlag = false;
@@ -41,7 +41,7 @@ CStudioAuthoringContext.site,
 			// YUI version conflicts
 			YAHOO.lang.escapeHTML = function(val) { return val; }
 		}
-		
+
     /**
      * WcmRootFolder
      * A root level folder is a configurable folder element that can be based at any
@@ -68,7 +68,7 @@ CStudioAuthoringContext.site,
 
 
 /* ============================================= */
-/* Major changes are here, other change is 
+/* Major changes are here, other change is
  * the use of LSelf name rather than Self (it's a global)
  */
             lookupSiteContent: function(rootPath, cb) {
@@ -96,7 +96,7 @@ CStudioAuthoringContext.site,
                         "&user=" + CStudioAuthoringContext.user +
                         "&unlock=true"+
                         "&createFolders=true";
-                        
+
                     var writeCb = {
                         success: function() {
                             var nodeEl = oCurrentTextNode.getEl();
@@ -107,31 +107,31 @@ CStudioAuthoringContext.site,
                             if(nodeEl.innerHTML.indexOf("*") == -1) {
                                 nodeEl.innerHTML += "*";
                             }
-                                
+
                         },
                         failure: function() {
                         },
-                        
+
                         callingWindow: this.callingWindow,
                         tree: this.tree
                     };
-                    
+
                     YAHOO.util.Connect.setDefaultPostHeader(false);
                     YAHOO.util.Connect.initHeader("Content-Type", "text/xml; charset=utf-8");
-                    YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                    YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
                     YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUrl), writeCb, json.content);
                 },
-                
+
                 failure: function(err) {
                        this.callingWindow.location.reload(true);
                 },
-                
+
                 callingWindow: window,
                 tree: tree,
                 currentNode: oCurrentTextNode
-            };    
+            };
 
-            var getContent = function(site, path, edit, callback) { 
+            var getContent = function(site, path, edit, callback) {
                 var serviceCallback = {
                     success : function(response) {
                         callback.success(response);
@@ -142,46 +142,46 @@ CStudioAuthoringContext.site,
                 };
 
                 var baseContentPath = path.replace("/ja/", "/en/");
-                
-                var serviceUri = CStudioAuthoring.Service.createServiceUri(CStudioAuthoring.Service.getContentUri) + "&site=" + site + "&path=" + baseContentPath + "&edit=false"; 
-                YConnect.asyncRequest('GET',serviceUri, serviceCallback);               
+
+                var serviceUri = CStudioAuthoring.Service.createServiceUri(CStudioAuthoring.Service.getContentUri) + "&site=" + site + "&path=" + baseContentPath + "&edit=false";
+                YConnect.asyncRequest('GET',serviceUri, serviceCallback);
             };
-            
-            // this call gets content dispite that it says checkstatus.... 
+
+            // this call gets content dispite that it says checkstatus....
                getContent(CStudioAuthoringContext.baseSite, oCurrentTextNode.data.uri, false, overlayCb);
-           },            
+           },
 
             removeOverlayContent: function() {
- 
+
                 CStudioAuthoring.Service.deleteContentForPathService(
-                    CStudioAuthoringContext.site, 
-                    oCurrentTextNode.data.uri, 
+                    CStudioAuthoringContext.site,
+                    oCurrentTextNode.data.uri,
                     {
                         success: function() {
                             this.callingWindow.location.reload(true);
                         },
-                        
+
                         failure: function() {
                             this.callingWindow.location.reload(true);
                         },
-                        
+
                         callingWindow: window
                     });
-            },  
+            },
 
             lookupLayeredSiteContent: function(site, path, level, action, callback) {
                 var combineResultsFn = function(baseTreeData, currentTreeData) {
                     var treeData = {};
-                                                                
+
                     if(currentTreeData.item && currentTreeData.item.path != "/site/website") {
                         treeData.item = currentTreeData.item;
-                        treeData.item.overlay = true; 
+                        treeData.item.overlay = true;
                     }
                     else {
                         treeData.item = baseTreeData.item;
                         treeData.item.overlay = false;
                     }
-                                            
+
                     // for each child of the base
                     var indexByPath = [];
                     if(baseTreeData.item && baseTreeData.item.children) {
@@ -192,10 +192,10 @@ CStudioAuthoringContext.site,
                             child.overlay = false;
                         }
                     }
-                        
+
                     if(currentTreeData.item && currentTreeData.item.children) {
                         for(var j=0; j<currentTreeData.item.children.length; j++) {
-                            var child = currentTreeData.item.children[j]; 
+                            var child = currentTreeData.item.children[j];
                             var path =  child.path;
                             path = path.replace("/ja", "/en");
 
@@ -206,10 +206,10 @@ CStudioAuthoringContext.site,
                             }
                         }
                     }
-                        
+
                     var k = 0;
                     var children = [];
-                                            
+
                     for(var key in indexByPath) {
                         children[k] = indexByPath[key];
                         children[k].path = children[k].path.replace("/en", "/ja");
@@ -219,7 +219,7 @@ CStudioAuthoringContext.site,
                         k++;
                     }
                     LSelf.parentX =this;
-                    treeData.item.parentX = this;                   
+                    treeData.item.parentX = this;
                     treeData.item.children = children;
                     treeData.parentX = this;
 
@@ -229,11 +229,11 @@ CStudioAuthoringContext.site,
                 // NEED TO USE CONFIG ^
                 var newPath = path.replace("/ja", "/en")
                 CStudioAuthoringContext.baseSite = CStudioAuthoringContext.site;
-                
-                CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.baseSite, newPath, level, action, {  
+
+                CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.baseSite, newPath, level, action, {
                     success: function(treeData, args) {
-                        
-                        CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, path, level, action, {     
+
+                        CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, path, level, action, {
                             success: function(treeData, args) {
                                 var combinedTree = combineResultsFn(this.baseTreeData, treeData);
                                 this.cb.success(combinedTree, args);
@@ -246,10 +246,10 @@ CStudioAuthoringContext.site,
                             baseTreeData: treeData,
                             cb: this.cb,
                             argument: this.argument
-                        });                         
+                        });
                     },
                     failure: function() {
-                        CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, path, level, action, {     
+                        CStudioAuthoring.Service.lookupSiteContent(CStudioAuthoringContext.site, path, level, action, {
                             success: function(treeData, args) {
                                 var combinedTree = combineResultsFn({}, treeData);
                                 this.cb.success(combinedTree, args);
@@ -298,7 +298,7 @@ CStudioAuthoringContext.site,
                     instance.excludeCache = [];
 
                     if(config.params.excludes) {
-                        if ( (typeof(config.params.excludes) == "object")  
+                        if ( (typeof(config.params.excludes) == "object")
                         && (typeof(config.params.excludes.exclude) != "array")) {
                             if (config.params.excludes.exclude != undefined) {
                                 var path = config.params.excludes.exclude;
@@ -307,8 +307,8 @@ CStudioAuthoringContext.site,
                                 }
                                 instance.excludeCache[path].push(config.params.excludes.exclude);
                             }
-                        } 
-                        else { 
+                        }
+                        else {
                             for (var i = 0; i < config.params.excludes.exclude.length; i++) {
                                 var path = config.params.excludes.exclude[i];
                                 if (!instance.excludeCache[path]) {
@@ -316,7 +316,7 @@ CStudioAuthoringContext.site,
                                 }
                                 instance.excludeCache[path].push(config.params.excludes.exclude[i]);
                             }
-                        }                    
+                        }
                     }
 
 
@@ -331,7 +331,7 @@ CStudioAuthoringContext.site,
                     			}
                     			instance.cannedSearchCache[searchPath].push(config.params.cannedSearches.cannedSearch);
                     		}
-                    	} else { 
+                    	} else {
                     		for (var i = 0; i < config.params.cannedSearches.cannedSearch.length; i++) {
                     			var searchPath = config.params.cannedSearches.cannedSearch[i].path;
                     			if (!instance.cannedSearchCache[searchPath]) {
@@ -345,21 +345,21 @@ CStudioAuthoringContext.site,
                     /**
                      * EMO-8478
                      */
-                    var thisComponent = this;                    
+                    var thisComponent = this;
                     if(YAHOO.util.Dom.getStyle("acn-dropdown-menu-wrapper", "display") != "none") {
                         window.firstClick = true;
                         thisComponent.openLatest(instance);
                     }
-                    YEvent.on('acn-dropdown-toggler', 'click', function() {       
+                    YEvent.on('acn-dropdown-toggler', 'click', function() {
                     	if(!window.firstClick && YAHOO.util.Dom.getStyle("acn-dropdown-menu-wrapper", "display") != "none") {
                     		window.firstClick = true;
                     		thisComponent.openLatest(instance);
                     	}
                         this.blur();
-                    });					
+                    });
                 }
             },
-            
+
             /**
              * add a root level folder to the content drop down
              */
@@ -418,11 +418,11 @@ CStudioAuthoringContext.site,
 	                //CStudioAuthoring.Service.lookupSiteContent(site, rootPath, 1, "default", {
 	                LSelf.lookupSiteContent(rootPath, {
                         openToPath: pathToOpen,
-	                    success: function(treeData) { 
-	                	
+	                    success: function(treeData) {
+
 	                		if(rootPath == "/site/website")
 	                			window.ltreeData = treeData;
-	                	
+
 	                        var items = treeData.item.children;
 	                        if (instance.showRootItem) {
 	                            items = new Array(treeData.item);
@@ -432,7 +432,7 @@ CStudioAuthoringContext.site,
 	                        //add hover effect to nodes
 	                        LSelf.nodeHoverEffects(this);
 	                    },
-	
+
 	                    failure: function() {
 	                        YDom.removeClass(label, "loading");
 	                    }
@@ -443,7 +443,7 @@ CStudioAuthoringContext.site,
              * to check, if extra ajax call can be reduced
              */
 			pathOnlyHasCannedSearch: function(path, instance) {
-				if (instance.showRootItem == "false" && instance.cannedSearchCache[path]) 
+				if (instance.showRootItem == "false" && instance.cannedSearchCache[path])
 					return true;
 				return false;
 			},
@@ -512,7 +512,7 @@ CStudioAuthoringContext.site,
 
                         if(treeNodeTO.overlay != undefined && treeNodeTO.overlay == false) {
                             treeNodeTO.style += " no-overlay";
-                        }                        
+                        }
 
 
                     }
@@ -641,7 +641,7 @@ CStudioAuthoringContext.site,
 
                     if(treeNodeTO.overlay != undefined && treeNodeTO.overlay == false) {
                         treeNodeTO.style += " no-overlay";
-                    }   
+                    }
 
                     if (treeNodeTO.isLevelDescriptor || treeNodeTO.isComponent ||
                         treeNodeTO.container == false || treeNodeTO.name == 'index.xml' ||
@@ -651,7 +651,7 @@ CStudioAuthoringContext.site,
                     }else{
                         treeNodeTO.style += " preview";
                     }
-                    
+
                     renderChild = true;
 
                     if (replaceAllChildFolders && treeNodeTO.isContainer) {
@@ -728,11 +728,11 @@ CStudioAuthoringContext.site,
                  var newId = CStudioAuthoring.Utils.generateUUID();
                  if (searchConfig.newPath && !window.pasteFlag) {
                     	var label = "<a style='display: inline; padding-right:5px;' id='ID' href='#' class='canned-search-el'>LABEL</a><a style='display: inline; border-left: 1px solid grey; padding-left: 5px;' id='NEWID' href='#'>+add</a>";
-                            
-                        label = label.replace("ID", searchId); 
+
+                        label = label.replace("ID", searchId);
                         label = label.replace("LABEL",searchConfig.label);
-                        label = label.replace("NEWID", newId); 
-                        
+                        label = label.replace("NEWID", newId);
+
                         searchConfig.label = label;
 
                     treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
@@ -742,7 +742,7 @@ CStudioAuthoringContext.site,
                             searchConfig.label + "</a>";
 
                     treeNode = new YAHOO.widget.TextNode(searchConfig, root, false);
-                    
+
                     LSelf.searchesToWire.push(treeNode);
                 }
 
@@ -756,14 +756,14 @@ CStudioAuthoringContext.site,
                 treeNode.isLeaf = true;
                 treeNode.labelStyle = "acn-canned-search yui-resize-label";
 				treeNode._yuiGetHtml = treeNode.getHtml();
-				
-                treeNode.getHtml = function() { 
-                	var markup = treeNode._yuiGetHtml;   
+
+                treeNode.getHtml = function() {
+                	var markup = treeNode._yuiGetHtml;
                 	markup = markup.replace(/\&gt;/g, ">");
                 	markup = markup.replace(/\&lt;/g, "<");
                 	markup = markup.replace(/\&amp;/g, "&");
                 	markup = markup.replace(/\&#x27;/g, "'");
-                	markup = markup.replace(/\&#x2F;/g, "/");	
+                	markup = markup.replace(/\&#x2F;/g, "/");
 
                 	return markup;
                 };
@@ -779,7 +779,7 @@ CStudioAuthoringContext.site,
                     if (!treeNodeTO.style.match(/\bfolder\b/)) {
                         treeNodeTO.linkToPreview = true;
                     }
-                    
+
                     var treeNode = new YAHOO.widget.TextNode(treeNodeTO, root, false);
 
                     treeNode.labelStyle = treeNodeTO.style + " yui-resize-label treenode-label";
@@ -799,7 +799,7 @@ CStudioAuthoringContext.site,
             /**
              * method fired when user clicks on the root level folder
              */
-            onRootFolderClick: function() {				
+            onRootFolderClick: function() {
                 LSelf.toggleFolderState(this.componentInstance, LSelf.ROOT_TOGGLE);
             },
 
@@ -831,11 +831,11 @@ CStudioAuthoringContext.site,
                     }
                 }
             },
-            
+
             getStoredPathKey: function(instance) {
 				return (instance.config.params.path + '-latest-opened-path');
 			},
-			
+
 			openLatest: function(instance){
 
                 var latestStored;
@@ -913,7 +913,7 @@ CStudioAuthoringContext.site,
 
 								if(rootPath == "/site/website")
 									window.ltreeData = treeData;
-							
+
 								var items = treeData.item.children;
 								if (instance.showRootItem) {
 									items = new Array(treeData.item);
@@ -949,7 +949,7 @@ CStudioAuthoringContext.site,
             },
 
             /**
-			 *  wire up new to search items 
+			 *  wire up new to search items
 			 */
 			wireUpCannedSearches: function() {
 				var searchesToWire = LSelf.searchesToWire;
@@ -1010,26 +1010,26 @@ CStudioAuthoringContext.site,
             /**
              * method fired when tree node is expanded for first time
              */
-			
+
             onLoadNodeDataOnClick: function(node, fnLoadComplete) {
 				// applicable for items under detail folder
-				if (!node.treeNodeTO) { 
+				if (!node.treeNodeTO) {
 					fnLoadComplete();
 					return ;
 				}
-					
+
 				var plainpath = node.treeNodeTO.path,
 					path = encodeURI(plainpath),
                 	site = node.treeNodeTO.site,
                 	pathToOpenTo = node.openToPath;
 
 				LSelf.save(node.instance, plainpath);
-				
-				
+
+
 				var serviceCb = {
-	                	
+
 	                    success: function(treeData, args) {
-	                		
+
 		                	/**
 							 * nodes will not have collapse/expand icon if they do not have any children
 							 * after clicking them.
@@ -1037,41 +1037,41 @@ CStudioAuthoringContext.site,
 	                		if(treeData.item.children.length == 0) {
 	                			node.isLeaf = true;
 	                		}
-	            		
+
 	                		LSelf.drawSubtree(treeData.item.children, args.node, args.pathToOpenTo, args.instance);
-	
+
 	            			args.fnLoadComplete();
-	
+
 	            			/* wire up new to search items */
-	                		
+
 	    					LSelf.wireUpCannedSearches();
-	        		
+
 	    					//add hover effect to nodes
 	    					LSelf.nodeHoverEffects(this);
 
 	    					//add blur effect for cut items
 	    					LSelf.setChildrenStyles(args.node);
 	            	    },
-	
+
 	                    failure: function(err, args) {
 	                        args.fnLoadComplete();
 	                    },
-	
+
 	                    argument: {
 	                        "node": node,
 	                        "instance": node.instance,
 	                        "fnLoadComplete": fnLoadComplete,
 	                        pathToOpenTo: pathToOpenTo
 	                    }
-	           	} 
+	           	}
 				LSelf.lookupSiteContent(path, serviceCb);
 	            //CStudioAuthoring.Service.lookupSiteContent(site, path, 1, "default", serviceCb);
     },
-    
+
     save: function(instance, path) {
         storage.write(LSelf.getStoredPathKey(instance), path, 360);
     },
-    
+
     /**
 	* methos that fires when new items added to tree.
 	*/
@@ -1090,22 +1090,22 @@ CStudioAuthoringContext.site,
         else {
            node = treeNode;
         }
-        
+
 	   	tree.removeChildren(node);
 		var loadEl = $(".ygtvtp", node.getEl(), true);
 		loadEl == null && (loadEl = $(".ygtvlp", node.getEl(), true));
 		YDom.addClass(loadEl, "ygtvloading");
 		node.renderChildren();
 		node.refresh();
-		
+
 		var treeInner = YDom.get('acn-dropdown-menu-inner');
 		var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
-		
+
 		for(var i=0; i<previousCutEl.length; i++){
-			
-			if(previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB 
+
+			if(previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB
                 || previousCutEl[i].style.color == LSelf.CUT_STYLE ){
-				
+
 				if(status){
 					var tempSplit = previousCutEl[i].id.split("labelel");
 					var parentNode = YDom.get(tempSplit[0]+tempSplit[1]);
@@ -1113,7 +1113,7 @@ CStudioAuthoringContext.site,
 					if (LSelf.cutItem != null) {
 						var parNode = tree.getNodeByProperty("path", LSelf.cutItem.parent.data.path);
 						//if parent have single child and we did cut and paste the child,
-						//we should refresh the parent node to remove expand collapse icon 
+						//we should refresh the parent node to remove expand collapse icon
 						if (parNode && parNode.children && parNode.children.length == 1) {
 							tree.removeChildren(parNode);
 							var parLoadEl = $(".ygtvtp", parNode.getEl(), true);
@@ -1130,21 +1130,21 @@ CStudioAuthoringContext.site,
 				}else{
 					previousCutEl[i].removeAttribute("style");
 				}
-			}						
+			}
 		}
-		
-		
+
+
 	},
-	
+
 	/**
 	* method fired when tree item is clicked
 	 */
 	onTreeNodeClick: function(node) {
-	
+
 		// lets remove ths case logic here and just invoke a callback
 		if (node.nodeType == "CONTENT") {
 			if (node.data.previewable == true && node.instance.onClickAction == "preview") {
-			
+
 				if(node.data.isContainer == true && node.data.pathSegment != 'index.xml') {
 					// this is a false state coming from the back-end
 				} else /*if (node.data.isLevelDescriptor == false)*/ {
@@ -1189,7 +1189,7 @@ CStudioAuthoringContext.site,
                 retTransferObj.inProgress = treeItem.inProgress;
                 retTransferObj.previewable = treeItem.previewable;
                 var itemNameLabel = "Page";
-                
+
 
                 retTransferObj.status = CStudioAuthoring.Utils.getContentItemStatus(treeItem).string;
                 retTransferObj.style = CStudioAuthoring.Utils.getIconFWClasses(treeItem); //, treeItem.container
@@ -1315,7 +1315,7 @@ CStudioAuthoringContext.site,
             },
 
 
-			/** 
+			/**
 			 * render the context menu
 			 */
 			_renderContextMenu: function(target, p_aArgs, component, menuItems, oCurrentTextNode, isWrite) {
@@ -1342,7 +1342,7 @@ CStudioAuthoringContext.site,
                         isOpen = null;
                         var isOverlay = oCurrentTextNode.data.overlay;
 
- 
+
                     //Get user permissions to get read write operations
 					var checkPermissionsCb = {
                         success: function(results) {
@@ -1467,7 +1467,7 @@ CStudioAuthoringContext.site,
                                 if(isOverlay===false) {
                                     p_aArgs.addItems([menuItems.overlayOption ]);
                                 }
-                                else 
+                                else
                                 if (isComponent == true || isLevelDescriptor == true) {
 			                        if (formPath == "" || formPath == undefined) {
 			                        	p_aArgs.addItems([ menuItems.viewOption ]);
@@ -1641,7 +1641,7 @@ CStudioAuthoringContext.site,
     			                        }
                                     }
 			                    }
-			                    
+
 			                    var checkClipboardCb = {
 			                        success: function(collection) {
 										var contextMenuItems = [];
@@ -1662,16 +1662,16 @@ CStudioAuthoringContext.site,
                                             }
                                             LSelf.copiedItem = LSelf.myTree.getNodeByProperty("uri", collection.item[0].uri.replace(/\/\//g,"/"));
 			                            }
-										
+
 			                            if(isUserAllowed && isOverlay == true) {
 			                            	this.args.addItems([ menuItems.separator ]);
 			                            	this.args.addItems([ menuItems.revertOption ]);
-		                   	            }                   	                   				
-		
+		                   	            }
+
                                         if(isUserAllowed && this.item.overlay===true) {
                                             this.args.addItems([ menuItems.separator ]);
                                             this.args.addItems([ menuItems.removeOverlayOption ]);
-                                        }           
+                                        }
 
                                         menuId.removeChild(d);  // Remove the "Loading ..." message
 			                            this.args.render();     // Render the site dropdown's context menu
@@ -1684,9 +1684,9 @@ CStudioAuthoringContext.site,
 			                        itemInProgress: isInProgress,
 			                        item: oCurrentTextNode.data
 			                    };
-			                    
+
 			                    CStudioAuthoring.Clipboard.getClipboardContent(checkClipboardCb);
-		                   	
+
 		                   	} // end of else
 
                             if((oCurrentTextNode.data.lockOwner != ""
@@ -1694,14 +1694,14 @@ CStudioAuthoringContext.site,
                             || oCurrentTextNode.data.lockOwner === CStudioAuthoringContext.user ) {
                                p_aArgs.addItems([ menuItems.separator ]);
                                 p_aArgs.addItems([ menuItems.unlockOption ]);
-                            }                                                       
+                            }
 
-		                   	
+
 	                 	},
                         failure: function() { }
 
                     };
-					
+
                     checkPermissionsCb.isComponent = isComponent;
                     checkPermissionsCb.isLevelDescriptor = isLevelDescriptor;
                     checkPermissionsCb.aMenuItems = aMenuItems;
@@ -1731,13 +1731,13 @@ CStudioAuthoringContext.site,
                         }
                     }, false, false);
 			},
-			
+
 			/**
 			 * load context menu
 			 */
             onTriggerContextMenu: function(tree, p_aArgs) {
                 var target = p_aArgs.contextEventTarget;
-                
+
                 /* Get the TextNode instance that that triggered the display of the ContextMenu instance. */
                 oCurrentTextNode = tree.getNodeByElement(target);
 
@@ -1747,7 +1747,7 @@ CStudioAuthoringContext.site,
                     oCurrentTextNode.data.inFlight) {
                     oCurrentTextNode = null;
                 }
-                
+
                 var menuItems = {
                 	separator: { text: "<div>&nbsp;</div>", disabled:true, classname:"menu-separator" },
 
@@ -1756,25 +1756,25 @@ CStudioAuthoringContext.site,
 					newFolderOption: { text: CMgs.format(siteDropdownLangBundle, "newFolder"), onclick: { fn: LSelf.createContainer } },
 
 					editOption: { text: CMgs.format(siteDropdownLangBundle, "edit"), onclick: { fn: LSelf.editContent } },
-					
+
 					viewOption: { text: CMgs.format(siteDropdownLangBundle, "view"), onclick: { fn: LSelf.viewContent } },
-					
+
 					changeTemplateOption: { text: CMgs.format(siteDropdownLangBundle, "changeTemplate"), onclick: { fn: LSelf.changeTemplate, obj:tree } },
 
 					deleteOption: { text: CMgs.format(siteDropdownLangBundle, "delete"), onclick: { fn: LSelf.deleteContent, obj:tree } },
 
 					cutOption: { text: CMgs.format(siteDropdownLangBundle, "cut"), onclick: { fn: LSelf.cutContent, obj:tree } },
-					
+
 					copyOption: { text: CMgs.format(siteDropdownLangBundle, "copy"), onclick: { fn: LSelf.copyTree, obj:tree } },
-					
+
 					pasteOption: { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: LSelf.pasteContent} },
 
 					revertOption: { text: CMgs.format(siteDropdownLangBundle, "history"), onclick: { fn: LSelf.revertContent, obj:tree } },
-					
+
 					unlockOption: { text: CMgs.format(siteDropdownLangBundle, "Unlock"), onclick: { fn: LSelf.unlockContent } },
 
                     overlayOption: { text: "Override", onclick: { fn: LSelf.overlayContent } },
-                    
+
                     removeOverlayOption: { text: "Remove Override", onclick: { fn: LSelf.deleteContent, obj:tree } }
 
 				};
@@ -1787,44 +1787,44 @@ CStudioAuthoringContext.site,
 						if(isWrite) {
 							LSelf._renderContextMenu(
 								target,
-								p_aArgs, 
-								this.component, 
-								menuItems, 
-								oCurrentTextNode, 
+								p_aArgs,
+								this.component,
+								menuItems,
+								oCurrentTextNode,
 								true);
 						}
 						else {
 							LSelf._renderContextMenu(
 								target,
-								p_aArgs, 
-								this.component, 
-								menuItems, 
-								oCurrentTextNode, 
+								p_aArgs,
+								this.component,
+								menuItems,
+								oCurrentTextNode,
 								false);
 						}
 					},
-					
+
 					failure: function() {
 						LSelf_renderContextMenu(
 							target,
-							p_aArgs, 
-							this.component, 
-							menuItems, 
-							oCurrentTextNode, 
+							p_aArgs,
+							this.component,
+							menuItems,
+							oCurrentTextNode,
 							false);
 					},
-					
+
 					_self: this,
-					component: LSelf    
+					component: LSelf
 				};
 
                 if (oCurrentTextNode != null) {
-				
+
 					CStudioAuthoring.Service.getUserPermissions(
-						CStudioAuthoringContext.site, 
-						oCurrentTextNode.data.uri, 
+						CStudioAuthoringContext.site,
+						oCurrentTextNode.data.uri,
 						permsCallback);
-                
+
                 }else{
                 	p_aArgs.clearContent();
                 	p_aArgs.cancel();
@@ -1847,7 +1847,7 @@ CStudioAuthoringContext.site,
                         CStudioAuthoringContext.site,
                         oCurrentTextNode.data.uri,
                         unlockCb);
-            },            
+            },
             /**
              * Creates new content. Opens the form to create content
              */
@@ -1929,7 +1929,7 @@ CStudioAuthoringContext.site,
                     CStudioAuthoringContext.site,path,
                     oCurrentTextNode.data.nodeRef, path, false, viewCb);
             },
-            
+
 			/**
 			 * Creates new container, Opens a dialog box to enter folder name
 			 */
@@ -1942,7 +1942,7 @@ CStudioAuthoringContext.site,
 					callingWindow: window,
 					currentNode: oCurrentTextNode
 				};
-				
+
 				CStudioAuthoring.Operations.createFolder(
 							CStudioAuthoringContext.site,
 							oCurrentTextNode.data.uri,
@@ -1965,7 +1965,7 @@ CStudioAuthoringContext.site,
 				var dropDownWrap = YDom.get('acn-dropdown-menu-wrapper');
 				if(dropDownWrap){
 					//dropDownWrap.style.display = 'none';
-				}				
+				}
                 CStudioAuthoring.Operations.deleteContent(
                         [oCurrentTextNode.data]);
             },
@@ -1990,49 +1990,49 @@ CStudioAuthoringContext.site,
              * cut content
              */
             cutContent: function(sType, args, tree) {
-				
+
 				var parentTreeNode = oCurrentTextNode.getEl();
-				var getChildNodeClass = YDom.getElementsByClassName("ygtvlp", null, parentTreeNode); 
-				var isExpandableNode = YDom.getElementsByClassName("ygtvtp", null, parentTreeNode); 				
-				
+				var getChildNodeClass = YDom.getElementsByClassName("ygtvlp", null, parentTreeNode);
+				var isExpandableNode = YDom.getElementsByClassName("ygtvtp", null, parentTreeNode);
+
 				if(oCurrentTextNode.hasChildren() || getChildNodeClass.length > 0 || isExpandableNode.length > 0){
 					// alert("The page and its child pages have been cut to the clipboard");
 				}
-				
+
                 var uri = oCurrentTextNode.data.uri;
                 LSelf.cutItem = oCurrentTextNode;
 
 				if(uri.lastIndexOf("index.xml")==-1){
 					var serviceUri = CStudioAuthoring.Service.getPagesServiceUrl + "?site=" + CStudioAuthoringContext.site + "&path=" + uri + "&depth=-1&order=default";
-					
+
 				}
 				else {
-	                var folderPath = uri.substring(0, uri.lastIndexOf("index.xml"));                
+	                var folderPath = uri.substring(0, uri.lastIndexOf("index.xml"));
 
     	            var serviceUri = CStudioAuthoring.Service.getPagesServiceUrl + "?site=" + CStudioAuthoringContext.site + "&path=" + folderPath + "&depth=-1&order=default";
 				}
-				
+
                 var getTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
 
-                try { 
-					
+                try {
+
 					var treeInner = YDom.get('acn-dropdown-menu-inner');
 					var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
 					for(var i=0; i<previousCutEl.length; i++){
-						if(previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB 
+						if(previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB
                             || previousCutEl[i].style.color == LSelf.CUT_STYLE ){
-							previousCutEl[i].style.color = '';					
-						}						
+							previousCutEl[i].style.color = '';
+						}
 					}
-					
+
 					YDom.setStyle(oCurrentTextNode.labelElId, "color", LSelf.CUT_STYLE);
-					if(oCurrentTextNode.hasChildren()){						
-						var getTextNodes = YDom.getElementsByClassName("status-icon", null, parentTreeNode); 
+					if(oCurrentTextNode.hasChildren()){
+						var getTextNodes = YDom.getElementsByClassName("status-icon", null, parentTreeNode);
 						for(var i=0; i<getTextNodes.length; i++){
 							getTextNodes[i].style.color = LSelf.CUT_STYLE;
-						}						
+						}
 					}
-					
+
 				} catch (ex) {  }
 
                 //CStudioAuthoring.Operations.openCopyDialog(CStudioAuthoringContext.site, oCurrentTextNode.data.uri, assignTemplateCb, args);
@@ -2048,7 +2048,7 @@ CStudioAuthoringContext.site,
 
                         var onComplete = {
                             success:function(response) {
-                                
+
                             },
                             failure: function() {
                             }
@@ -2057,7 +2057,7 @@ CStudioAuthoringContext.site,
 
                         YAHOO.util.Connect.setDefaultPostHeader(false);
                         YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
                         YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
 
                     },
@@ -2150,10 +2150,10 @@ CStudioAuthoringContext.site,
                     tree: oCurrentTextNode
                 };
 
-                try{					
+                try{
 					YDom.addClass(oCurrentTextNode.getLabelEl().parentNode.previousSibling, "ygtvloading");
 				}catch(e){}
-				
+
 				CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
             },
 
@@ -2179,30 +2179,30 @@ CStudioAuthoringContext.site,
 
                 LSelf.copiedItem = Self.myTree.getNodeByProperty("path", oCurrentTextNode.data.path);
                 LSelf.copiedItem ? null : LSelf.copiedItem = oCurrentTextNode;
-                
-                
+
+
                 // if the tree does not have child do not open the copy dialoge
                 // only call the copy content function
                 if (oCurrentTextNode.isLeaf) {
-                	
+
                 	var copyContext = {
                     	"heading":"Copy",
                     	"description":"Please select any of the sub-pages you would like to batch copy.<br/> When pasting, any selected sub-pages and their positional heirarchy will be retained",
                     	"actionButton":"Copy"
                 	};
-                	
+
                 	var site = CStudioAuthoringContext.site;
-                	
+
                 	var context = copyContext;
                 	context.request = CStudioAuthoringContext.baseUri + CStudioAuthoring.Service.copyServiceUrl + "?site=" + site;
-                	
-                	var uri = oCurrentTextNode.data.uri; 
-                	
+
+                	var uri = oCurrentTextNode.data.uri;
+
                 	var folderPath = uri;
                     if (uri.indexOf("index.xml") != -1) {
                         folderPath = uri.substring(0, uri.lastIndexOf("index.xml"));
                     }
-                	
+
                 	var openCopyDialog = {
         				success:function(response) {
         				   var copyTree= eval("(" + response.responseText + ")");
@@ -2213,20 +2213,20 @@ CStudioAuthoringContext.site,
 	       	                var pasteFormatItem = {};
 	       	                pasteFormatItem.item = [];
 	       	                pasteFormatItem.item.push(rootItem);
-	       	                
+
 	       	                var myJSON = YAHOO.lang.JSON.stringify(pasteFormatItem);
 	       	                var oncomplete = {
 	       	                    success:function() {
 	       	                        CStudioAuthoring.ContextualNav.LayeredRootFolder.resetNodeStyles();
 	       	                    },
 	       	                    failure:function() {
-	       	  
+
 	       	                    }
-	       	                };  
+	       	                };
 	       	                var request = this.args['request'];
 	       	                YAHOO.util.Connect.setDefaultPostHeader(false);
                             YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-                            YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                            YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
 	       	                YAHOO.util.Connect.asyncRequest('POST', request, oncomplete, myJSON);
         				},
         				failure:function() {
@@ -2251,7 +2251,7 @@ CStudioAuthoringContext.site,
 				var getCopyTreeItemReuest = CStudioAuthoring.Service.createServiceUri(serviceUri);
 				YConnect.asyncRequest('GET', getCopyTreeItemReuest, openCopyDialog);
                 CStudioAuthoring.Operations.openCopyDialog(sType,args,tree);
-				
+
 			},
             /**
              * change template for given item
@@ -2323,7 +2323,7 @@ CStudioAuthoringContext.site,
                                             '<div class="contentTypePopupHeader">' + CMgs.format(formsLangBundle, "changeTemplateDialogTitle")+ '</div> ' +
                                             '<div class="contentTypeOuter">'+
                                                 '<div>' + CMgs.format(formsLangBundle, "changeTemplateDialogBody")+ '</div>' +
-                                            '</div>' +    
+                                            '</div>' +
                                             '<div class="contentTypePopupBtn">' +
                                                 '<input type="submit" class="btn btn-primary ok" id="acceptCTChange" value="' +CMgs.format(formsLangBundle, 'yes')+ '" />' +
                                                 '<input type="submit" class="btn btn-default cancel" id="cancelCTChange" value="' +CMgs.format(formsLangBundle, 'no')+ '" />' +
@@ -2332,12 +2332,12 @@ CStudioAuthoringContext.site,
                                         '</div>' +
                                       '</div>';
 
-                var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", 
+                var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
                                 { fixedcenter : true,
                                   effect:{
                                     effect: YAHOO.widget.ContainerEffect.FADE,
                                     duration: 0.25
-                                  }, 
+                                  },
                                   visible : false,
                                   modal:true,
                                   close:false,
@@ -2401,7 +2401,7 @@ CStudioAuthoringContext.site,
                                         ? YDom.getFirstChild(LSelf.lastSelectedTextNode)
                                         : LSelf.lastSelectedTextNode.parentNode))
                                         .style.backgroundColor = "";
-                            	
+
                             	LSelf.lastSelectedTextNode = null;
                             }
                         },
@@ -2450,7 +2450,7 @@ CStudioAuthoringContext.site,
                 var treeInner = YDom.get('acn-dropdown-menu-inner');
                 var previousCutEl = YDom.getElementsByClassName("status-icon", null, treeInner);
                 for(var i=0; i<previousCutEl.length; i++) {
-                    if(previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB 
+                    if(previousCutEl[i].style.color == LSelf.CUT_STYLE_RGB
                         || previousCutEl[i].style.color == LSelf.CUT_STYLE ) {
                         previousCutEl[i].removeAttribute("style");
                     }
@@ -2478,9 +2478,9 @@ CStudioAuthoringContext.site,
 
         // this is a hack.  This value needs to go in to the context and be set by other config, not set here
         CStudioAuthoringContext.baseSite = (config.params["baseSite"]) ? config.params["baseSite"] : "";
-        
+
     }
-    
+
     CStudioAuthoring.Module.moduleLoaded("layered-root-folder", CStudioAuthoring.ContextualNav.LayeredRootFolder);
 
 })();

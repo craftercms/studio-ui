@@ -594,7 +594,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', dependencyUrl, {
                     success: function(o) {
 
@@ -644,7 +644,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
 
                             dialog.show();
                             me.dialog = dialog;
-                            
+
                             for(var i=0; i<contentItems.length; i++) {
                                 if(contentItems[i].submittedForDeletion==true) {
                                     document.getElementById("globalSetToDateTime").disabled = true;
@@ -742,7 +742,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog", "/static-assets/componen
 
             YConnect.setDefaultPostHeader(false);
             YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-            YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+            YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
             YConnect.asyncRequest('POST', dependencyUrl, {
                 success: function(o) {
 

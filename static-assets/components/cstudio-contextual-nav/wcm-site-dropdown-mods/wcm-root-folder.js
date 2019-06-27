@@ -3020,7 +3020,7 @@
 
               YAHOO.util.Connect.setDefaultPostHeader(false);
               YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-              YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+              YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
               YAHOO.util.Connect.asyncRequest('POST', cutRequest, onComplete, jsonArray);
 
             },
@@ -3246,7 +3246,7 @@
               var request = this.args['request'];
               YAHOO.util.Connect.setDefaultPostHeader(false);
               YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-              YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+              YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
               YAHOO.util.Connect.asyncRequest('POST', request, oncomplete, myJSON);
             },
             failure:function() {

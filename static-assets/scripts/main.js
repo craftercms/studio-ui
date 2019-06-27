@@ -35,8 +35,6 @@
         '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
         function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
 
-            $http.defaults.headers.common['X-XSRF-TOKEN'] = xsrfToken;
-
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
 
@@ -894,7 +892,7 @@
 
             if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
                 isChromium = true;
-            } else { 
+            } else {
                 isChromium = false;
                 var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
             }
@@ -905,7 +903,7 @@
             }
 
             $scope.reLogin = function() {
-                
+
                 var data =  {
                     "username": $scope.user.username,
                     "password": $scope.user.reLoginPass
@@ -913,8 +911,8 @@
 
                 authService.login(data)
                     .then(function success(data) {
-                        window.reLoginModalOn = false; 
-                        $scope.reLoginModal.close();  
+                        window.reLoginModalOn = false;
+                        $scope.reLoginModal.close();
                         setTimeout(function () {
                             authLoop();
                         }, $scope.authDelay);
@@ -963,7 +961,7 @@
                     authService.validateSession().then(
                         function successCallback(response) {
                             if (response.status == 200 && response.data.message == "OK") {
-                                window.reLoginModalOn = false;                                
+                                window.reLoginModalOn = false;
                                 setTimeout(function () {
                                     authLoop();
                                 }, $scope.authDelay);
@@ -987,7 +985,7 @@
                                 }
 
                             } else {
-                                window.reLoginModalOn = false;     
+                                window.reLoginModalOn = false;
                                 setTimeout(function () {
                                     authLoop();
                                 }, $scope.authDelay);
@@ -1202,17 +1200,17 @@
 
                 $scope.toggleOpen = function() {
                     $scope.bpSelectorOpen = !$scope.bpSelectorOpen;
-                }; 
+                };
 
                 $scope.trySubmit = function(e){
                     // Internet Explorer 6-11
                     var isIE = /*@cc_on!@*/false || !!document.documentMode;
-                
+
                     // Edge 20+
                     var isEdge = !isIE && !!window.StyleMedia;
-    
+
                     if(isIE || isEdge) {
-                        
+
                         if(e.keyCode == 13){
                             if($scope.bpSelectorOpen){
                                 $scope.bpSelectorOpen = false;

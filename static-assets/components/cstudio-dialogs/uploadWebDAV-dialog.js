@@ -42,7 +42,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 		this.site = site;
         this.path = path;
         this.profile = profileId;
-		this.asPopup = true;			
+		this.asPopup = true;
 		this.serviceUri = serviceUri;
 		this.callback = callback;
 		this.dialog.show();
@@ -59,7 +59,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
             }
 		}
 	},
-	
+
 	/**
 	 * hide dialog
 	 */
@@ -99,15 +99,15 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 						            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
                                     '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
 						        '</form></div>' +
-						   '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' + 
+						   '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' +
                            '</div> ' +
                            '</div>';
-		
+
 		document.getElementById("upload-popup-inner").style.width = "350px";
 		document.getElementById("upload-popup-inner").style.height = "180px";
 
 		 // Instantiate the Dialog
-		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", 
+		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
 								{ width : "360px",
 								  height : "242px",
                                   effect:{
@@ -119,22 +119,22 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 								  modal:true,
 								  close:false,
 								  constraintoviewport : true,
-								  underlay:"none"							  							
-								});	
-								
+								  underlay:"none"
+								});
+
 		// Render the Dialog
 		upload_dialog.render();
 
         var filenameInput = document.getElementById("uploadFileNameId");
         YAHOO.util.Event.addListener(filenameInput, "change", this.uploadFileEvent);
-		
+
 		var eventParams = {
 			self: this
 		};
 
         YAHOO.util.Event.addListener("uploadButton", "click", this.uploadPopupSubmit, eventParams);
 		YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
-		
+
 		$("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
             if (e.keyCode === 27) {	// esc
                 me.closeDialog();
@@ -157,9 +157,9 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         }
 
     },
-		
+
 	/**
-	 * event fired when the ok is pressed - checks if the file already exists and has edit permission or not 
+	 * event fired when the ok is pressed - checks if the file already exists and has edit permission or not
 	 * by using the getPermissions Service call
 	 */
 	uploadPopupSubmit: function(event, args) {
@@ -170,12 +170,12 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         }
 		var basePath = path;
             path=basePath+"/"+filename;
-            
+
         CStudioAuthoring.Dialogs.UploadWebDAVDialog.uploadFile(args);
 
 		YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
 	},
-	
+
    /**
 	 * upload file when upload pressed
 	 */
@@ -213,15 +213,15 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 		//the second argument of setForm is crucial,
 		//which tells Connection Manager this is an file upload form
 		YAHOO.util.Connect.setForm('asset_upload_form', true);
-		serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;		
+		serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
 		YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
 	},
-	
+
 	/**
 	 *
 	 */
 	 overwritePopupSubmit: function(event, args) {
-	 	
+
         var callback = {
             success: function(response) {
 				var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
@@ -241,7 +241,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
                             );
 
 						}else{
-							CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();				
+							CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
 						    args.self.callback.success(r);
 						}
 					}
@@ -250,8 +250,8 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 				//the second argument of setForm is crucial,
 				//which tells Connection Manager this is an file upload form
 				YAHOO.util.Connect.setForm('asset_upload_form', true);
-				serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CStudioAuthoringContext.xsrfToken;				
-				YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);				
+				serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+				YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
             },
 
             failure: function() {
@@ -259,7 +259,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         };
 
         CStudioAuthoring.Service.deleteContentForPathService(args.self.site, args.self.path, callback);
-	 	
+
 	 },
 
 	/**
