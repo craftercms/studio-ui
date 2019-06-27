@@ -30,25 +30,25 @@ var queueItems = [];
 YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool, {
     renderWorkarea: function() {
 		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		
-		workareaEl.innerHTML = 
+
+		workareaEl.innerHTML =
 			"<div id='deployment-tool-area'>" +
 			"</div>";
-			
+
 			var actions = [];
 
 			CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
-			
+
 			this.renderDeploymentTools();
 	},
-	
+
 	renderQueueList: function() {
-		
+
 		var actions = [
 				{ name: CMgs.format(formsLangBundle, "setQueueDialogCancelDeployment"), context: this, method: this.cancelDeployment }
 		];
 		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
-			
+
 		this.renderQueueTable();
 
 	},
@@ -304,7 +304,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
             }
         };
     },
-	
+
 	renderQueueTable: function () {
 		var queueListEl = document.getElementById("queue-list");
 		queueListEl.innerHTML =
@@ -319,7 +319,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
     			 	"<th class='cs-statelist-heading'>"+CMgs.format(langBundle, "setQueueTabState")+"</th>" +
                     "<th class='cs-statelist-heading'>"+CMgs.format(langBundle, "setQueueTabAction")+"</th>" +
 				 	"<th class='cs-statelist-heading'>"+CMgs.format(langBundle, "setQueueTabScheduledDate")+"</th>" +
-				 "</tr>" + 
+				 "</tr>" +
 			"</table><button type='button' id=''btnCancelBot>" + CMgs.format(formsLangBundle, "setQueueDialogCancelDeployment") + "</button></div>";
 
         var btnTopEl = document.getElementById("btnCancelTop");
@@ -332,18 +332,18 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
             me.cancelDeployment();
         });
 
-	
+
 			cb = {
 				success: function(response) {
 					var queue = eval("(" + response.responseText + ")");
 					queueItems = queue.items;
-					
+
 					var queueTableEl = document.getElementById("queueTable");
 					for(var i=0; i<queue.items.length; i++) {
 						var item = queue.items[i];
 						var trEl = document.createElement("tr");
-						     
-						var rowHTML = 				 	
+
+						var rowHTML =
 							"<td class='cs-statelist-detail'><input class='act'  type='checkbox' value='"+item.id+"' /></td>" +
 				 			"<td class='cs-statelist-detail-id'>" + item.id + "</td>" +
                             "<td class='cs-statelist-detail'>" + item.path + "</td>" +
@@ -360,7 +360,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
 				},
 				self: this
 			};
-			
+
 			var serviceUri = "/api/1/services/api/1/deployment/get-deployment-queue.json?site="+CStudioAuthoringContext.site;
 
 			YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
@@ -413,7 +413,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
                 }
             };
 
-            YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);                                        
+            YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
             YConnect.asyncRequest("POST", CStudioAuthoring.Service.createServiceUri(serviceUri), cb);
         }
     },
@@ -496,10 +496,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.DeploymentTools, CStudioAdminConsole.Tool,
 // add static function
 CStudioAdminConsole.Tool.DeploymentTools.selectAll = function() {
 	var items = document.getElementsByClassName('act');
- 
+
 	for(var i=0; i<items.length; i++) {
-		items[i].checked = true; 
+		items[i].checked = true;
 	}
 };
-		
+
 CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-deployment-tools",CStudioAdminConsole.Tool.DeploymentTools);

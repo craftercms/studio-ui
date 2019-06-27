@@ -36,10 +36,10 @@ CStudioAuthoring.Module.requireModule(
  		*/
 		YAHOO.extend(CStudioAdminConsole.Tool.AdminConfig, CStudioAdminConsole.Tool, {
 			height: 600,
-			
+
 			renderWorkarea: function() {
 				var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		
+
 				workareaEl.innerHTML =
 					"<div id='config-area'>" +
 					"</div>";
@@ -53,37 +53,37 @@ CStudioAuthoring.Module.requireModule(
 
 				document.getElementById('activeContentActions').appendChild(historyEl);
 			},
-	
+
 			renderJobsList: function() {
-		
+
 				var containerEl = document.getElementById("config-area");
-				
-				containerEl.innerHTML = 
+
+				containerEl.innerHTML =
 					"<div class='configuration-window'>" +
                         "<p id='activeEnvironment' class='hide'><strong>Active Environment:</strong> <span id='active-environment-value'></span></p>" +
 						"<select id='config-list'>" +
 					 		" <option value='' >"+CMgs.format(langBundle, "confTabSelectConf")+"</option>" +
 						"</select>" +
-						"<div id='edit-area'>" + 
-							"<div id='menu-area'>" + 
-								"<div id='config-description'>" + 
+						"<div id='edit-area'>" +
+							"<div id='menu-area'>" +
+								"<div id='config-description'>" +
 								"</div>" +
                                 "<div id='config-buttons'>" +
                                 "</div>" +
-							"</div>" + 
+							"</div>" +
 							"<div id='content-area'>" +
-								"<div id='edit-window'>" + 
+								"<div id='edit-window'>" +
 								"</div>" +
 								"<div id='sample-window'>" +
-								"</div>" + 
-							"</div>" + 
-						"</div>" + 
+								"</div>" +
+							"</div>" +
+						"</div>" +
 					"</div>";
-				// set editor for configuration file 	
-				var editorContainerEl = document.getElementById("edit-window");	
+				// set editor for configuration file
+				var editorContainerEl = document.getElementById("edit-window");
 				var editorEl = this.setEditor(editorContainerEl, false);
-				// set editor for sample configuration file 
-				var sampleEditorContainerEl = document.getElementById("sample-window");	
+				// set editor for sample configuration file
+				var sampleEditorContainerEl = document.getElementById("sample-window");
 				var sampleEditorEl = this.setEditor(sampleEditorContainerEl, true);
 
                 // set active environment
@@ -100,7 +100,7 @@ CStudioAuthoring.Module.requireModule(
 
 				// hide display area by default
 				editAreaEl.style.display = 'none';
-		
+
 			},
 
             /*
@@ -123,14 +123,14 @@ CStudioAuthoring.Module.requireModule(
 
                 CStudioAuthoring.Service.getActiveEnvironment(callback);
             },
-			
+
 			/*
 			* populate the list of configuration files
 			*/
 			loadConfigFiles: function (itemSelectEl, editAreaEl, editor, sampleEditor) {
 				// load configuration to get the configuration files list
 				CStudioAuthoring.Service.lookupConfigurtion(
-					CStudioAuthoringContext.site, 
+					CStudioAuthoringContext.site,
 					"/administration/config-list.xml", {
 						success: function(config) {
 							if (config.files.file && config.files.file.length) {
@@ -165,7 +165,7 @@ CStudioAuthoring.Module.requireModule(
 						}
 					}
 				);
-			
+
 				// add onchange behavior to display selected
 				itemSelectEl.onchange = function() {
 					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
@@ -259,7 +259,7 @@ CStudioAuthoring.Module.requireModule(
 					}
 				}; // end of change
 			},
-			
+
 			/*
 			* create editor
 			*/
@@ -268,7 +268,7 @@ CStudioAuthoring.Module.requireModule(
 				editorEl.id = readOnly ? "sample-text" : "text-editor";
 				editorEl.className += "editor-text";
 				editorContainerEl.appendChild(editorEl);
-				
+
 				var mode = "ace/mode/xml";
 
 				var langTools = ace.require("ace/ext/language_tools");
@@ -289,8 +289,8 @@ CStudioAuthoring.Module.requireModule(
 				return aceEditor;
 
 			},
-			
-			
+
+
 			/*
 			* add save, view sample and hide sample buttons
 			*/
@@ -353,7 +353,7 @@ CStudioAuthoring.Module.requireModule(
                       var requestAsString = JSON.stringify(reqObj);
                         YAHOO.util.Connect.setDefaultPostHeader(false);
                       YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-						YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+						YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
                         YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, requestAsString);
                     } else {
                         CStudioAuthoring.Operations.showSimpleDialog(
@@ -383,14 +383,14 @@ CStudioAuthoring.Module.requireModule(
                 };
 
 			},
-			
+
 			expandEditor: function(editor) {
 				var editorContainer = editor.container;
 				editorContainer.style.width = this.width;
 				editorContainer.style.height = this.height;
 				editor.resize();
 			},
-			
+
 			shrinkEditor: function(editor) {
 				var editorContainer = editor.container;
 				editorContainer.style.width = this.width/2;
@@ -439,11 +439,11 @@ CStudioAuthoring.Module.requireModule(
 
                 YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), clearCacheCb);
             }
-			
+
 		});
 
 	CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-admin-configurations",CStudioAdminConsole.Tool.AdminConfig);
 
 }});
 
-	
+

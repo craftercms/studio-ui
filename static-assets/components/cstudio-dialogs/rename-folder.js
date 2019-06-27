@@ -43,9 +43,9 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
         this.dialog = this.createDialog(path);
 		this.dialog.show();
 		document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
-		
+
 	},
-	
+
 	/**
 	 * hide dialog
 	 */
@@ -90,12 +90,12 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
 
                            "</div> " +
 						   "</div>";
-						
-		
+
+
 		document.getElementById("upload-popup-inner").style.width = "350px";
 		document.getElementById("upload-popup-inner").style.height = "250px";
 
-		 var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", 
+		 var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
 								{ width : "360px",
 								  height : "250px",
                                   effect:{
@@ -107,19 +107,19 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
 								  modal:true,
 								  close:false,
 								  constraintoviewport : true,
-								  underlay:"none"							  							
-								});	
-								
+								  underlay:"none"
+								});
+
 		// Render the Dialog
 		dialog.render();
-		
+
 		var eventParams = {
 			self: this,
 			nameEl: document.getElementById('folderName'),
             path: path
 		},
 			me = this;
-		
+
 		YAHOO.util.Event.addListener("folderName", "keypress", this.limitInput, eventParams);
 
 		YAHOO.util.Event.addListener("createButton", "click", this.createClick, eventParams);
@@ -145,7 +145,7 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
             this.value = this.value.toLocaleLowerCase();
         });
 
-		
+
 		return dialog;
 	},
 
@@ -156,15 +156,15 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
 		params.nameEl.value = value;
 	},
 
-	/** 
-	 * create clicked 
+	/**
+	 * create clicked
 	 */
 	createClick: function(event, params) {
 		var _self = CStudioAuthoring.Dialogs.RenameFolder;
 		var name = params.nameEl.value;
 		var folderPath;
         params.path ? folderPath = params.path : templatePath = "/templates/web";
-		
+
 	    var writeServiceUrl = "/api/1/services/api/1/content/rename-folder.json" +
 	            "?site=" + CStudioAuthoringContext.site +
 	            "&path=" + folderPath +
@@ -177,15 +177,15 @@ CStudioAuthoring.Dialogs.RenameFolder = CStudioAuthoring.Dialogs.RenameFolder ||
 			},
 			failure: function() {
 			}
-		};	
-			
+		};
+
 		YAHOO.util.Connect.setDefaultPostHeader(false);
 		YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
-		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
 		YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), saveSvcCb, "");
- 
-	},		
-	
+
+	},
+
 	/**
 	 * event fired when the ok is pressed
 	 */

@@ -35,7 +35,7 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 	/**
 	 * show dialog
 	 */
-	showDialog: function(cb, config) {	
+	showDialog: function(cb, config) {
 		this.config = config;
 		this._self = this;
 		this.cb = cb;
@@ -43,9 +43,9 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 		this.dialog = this.createDialog(config.path);
 		this.dialog.show();
 		document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
-		
+
 	},
-	
+
 	/**
 	 * hide dialog
 	 */
@@ -87,11 +87,11 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 
                            '</div> ' +
                            '</div>';
-		
+
 		document.getElementById("upload-popup-inner").style.width = "350px";
 		document.getElementById("upload-popup-inner").style.height = "250px";
 
-		 var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", 
+		 var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
 								{ width : "360px",
 								  height : "250px",
                                   effect:{
@@ -103,19 +103,19 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 								  modal:true,
 								  close:false,
 								  constraintoviewport : true,
-								  underlay:"none"							  							
-								});	
-								
+								  underlay:"none"
+								});
+
 		// Render the Dialog
 		dialog.render();
-		
+
 		var eventParams = {
 			self: this,
 			path: path,
 			nameEl: document.getElementById('templateName')
 		},
 			me = this;
-		
+
 
 
 		YAHOO.util.Event.addListener("templateName", "keypress", this.limitInput, eventParams);
@@ -131,7 +131,7 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 				me.createClick(e, eventParams);
 			}
 		}, newdiv);
-		
+
 		return dialog;
 	},
 
@@ -142,14 +142,14 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 		params.nameEl.value = value;
 	},
 
-	/** 
-	 * create clicked 
+	/**
+	 * create clicked
 	 */
 	createClick: function(event, params) {
 		var _self = CStudioAuthoring.Dialogs.NewScript;
 		var name = params.nameEl.value;
 		var templatePath = params.path;
-		
+
 		if(name.indexOf(".groovy") == -1) {
 			name = name + ".groovy";
 		}
@@ -165,27 +165,27 @@ CStudioAuthoring.Dialogs.NewScript = CStudioAuthoring.Dialogs.NewScript || {
 		var saveSvcCb = {
 			success: function() {
 				CStudioAuthoring.Dialogs.NewScript.closeDialog();
-				
+
 				CStudioAuthoring.Operations.openTemplateEditor
-					(templatePath+"/"+name, "default", { 
-						success: function() { 
-							_self.cb.success(templatePath+"/"+name); 
-						}, 
+					(templatePath+"/"+name, "default", {
+						success: function() {
+							_self.cb.success(templatePath+"/"+name);
+						},
 						failure: function() {
 						}
 					}, null, null);
 			},
 			failure: function() {
 			}
-		};	
-			
+		};
+
 		YAHOO.util.Connect.setDefaultPostHeader(false);
 		YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
-		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
 		YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), saveSvcCb, "");
- 
-	},		
-	
+
+	},
+
 	/**
 	 * event fired when the ok is pressed
 	 */

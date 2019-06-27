@@ -22,6 +22,7 @@ import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
 import string from './string';
 import ajax from './ajax';
 import path from './path';
+import storage from './storage';
 
 /**
  *
@@ -70,7 +71,8 @@ export function createCodebaseBridge() {
     util: {
       ajax,
       path,
-      string
+      string,
+      storage
     },
 
     // Mechanics
