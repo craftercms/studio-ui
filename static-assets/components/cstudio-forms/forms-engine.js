@@ -1926,9 +1926,12 @@ var CStudioForms = CStudioForms || function() {
                             itemArray.splice(repeatArrayIndex, 1);
                             containerEl.reRender(containerEl);
 
-                            var containerElNodes = $(containerEl.childNodes);
-                            containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
-                            $('html').scrollTop(containerElLastChildTop);
+                            if(repeatArrayIndex){
+                                var containerElNodes = $(containerEl.childNodes);
+                                containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
+                                $('html').scrollTop(containerElLastChildTop);
+                            }
+
 
                             repeatEdited = true;
                         }
