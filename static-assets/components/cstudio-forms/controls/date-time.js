@@ -194,12 +194,17 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		return valid;
 	},
 
-	_onChangeVal: function(evt, obj) {
-		obj.edited = true;
-		if(this._onChange){
-			this._onChange(evt, obj);
-		}
-	},
+    _onChange: function(evt, obj) {
+        obj.updateTime();
+
+    },
+
+    _onChangeVal: function(evt, obj) {
+        obj.edited = true;
+        if(obj._onChange){
+            obj._onChange(evt, obj);
+        }
+    },
 
 	// Get the UTC date representation for what is currently in the UI fields (date/time)
 	// Returns a date/time value in a string (see getConvertFormat for value format)
@@ -505,6 +510,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	 */
 
 	textFieldTimeIncrementHelper : function(triggerEl, targetEl, event, keyCode) {
+        var self = this;
 
 		var incrementHandler = function (type, args) {
 
@@ -567,6 +573,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				}
 
 				timePicker.value = hourValue + ":" + minuteValue + ":" + secondValue + " " + amPmValue;
+                self.updateTime();
 			}
 		};
 
@@ -584,6 +591,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	 * that decrese the input time
 	 */
 	textFieldTimeDecrementHelper : function(triggerEl, targetEl, event, keyCode) {
+        var self = this;
 
 		var decrementHandler = function (type, args) {
 
@@ -653,6 +661,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				}
 
 				timePicker.value = hourValue + ":" + minuteValue + ":" + secondValue + " " + amPmValue;
+                self.updateTime();
 			}
 		};
 
@@ -708,8 +717,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		// we need to make the general layout of a control inherit from common
 		// you should be able to override it -- but most of the time it wil be the same
 		containerEl.id = this.id;
-		var CMgs = CStudioAuthoring.Messages;
-		var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
+		var CMgs = CStudioAuthoring.Messages,
+		    langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang),
+            self = this;
 
 		var beforeSaveCb = {
 			beforeSave: function(paramObj) {
@@ -853,14 +863,12 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				incrementControlEl.type="button";
 				incrementControlEl.id=divPrefix + "timeIncrementButton";
 				incrementControlEl.className = "time-increment";
-				YAHOO.util.Event.on(incrementControlEl, 'click',  this._onChangeVal, this);
                 YAHOO.util.Event.on(incrementControlEl, 'click',  function() { self.form.setFocusedField(self);}, this);
 
 				decrementControlEl = document.createElement("input");
 				decrementControlEl.type="button";
 				decrementControlEl.id=divPrefix + "timeDecrementButton";
 				decrementControlEl.className = "time-decrement";
-				YAHOO.util.Event.on(decrementControlEl, 'click',  this._onChangeVal, this);
                 YAHOO.util.Event.on(decrementControlEl, 'click',  function() { self.form.setFocusedField(self);}, this);
 
 				timeWrapper.appendChild(incrementControlEl);

@@ -169,10 +169,15 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 		return valid;
 	},
 
+    _onChange: function(evt, obj) {
+        obj.updateTime();
+
+    },
+
 	_onChangeVal: function(evt, obj) {
 		obj.edited = true;
-		if(this._onChange){
-			this._onChange(evt, obj);
+		if(obj._onChange){
+            obj._onChange(evt, obj);
 		}
 	},
 
@@ -445,6 +450,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 	 */
 
 	textFieldTimeIncrementHelper : function(triggerEl, targetEl, event, keyCode) {
+        var self = this;
 
 		var incrementHandler = function (type, args) {
 
@@ -507,6 +513,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 				}
 
 				timePicker.value = hourValue + ":" + minuteValue + ":" + secondValue + " " + amPmValue;
+                self.updateTime();
 			}
 		};
 
@@ -524,6 +531,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 	 * that decrese the input time
 	 */
 	textFieldTimeDecrementHelper : function(triggerEl, targetEl, event, keyCode) {
+        var self = this;
 
 		var decrementHandler = function (type, args) {
 
@@ -593,6 +601,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 				}
 
 				timePicker.value = hourValue + ":" + minuteValue + ":" + secondValue + " " + amPmValue;
+                self.updateTime();
 			}
 		};
 
@@ -753,14 +762,12 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 				incrementControlEl.type="button";
 				incrementControlEl.id=divPrefix + "timeIncrementButton";
 				incrementControlEl.className = "time-increment";
-				YAHOO.util.Event.on(incrementControlEl, 'click',  this._onChangeVal, this);
                 YAHOO.util.Event.on(incrementControlEl, 'click',  function() { self.form.setFocusedField(self);}, this);
 
 				decrementControlEl = document.createElement("input");
 				decrementControlEl.type="button";
 				decrementControlEl.id=divPrefix + "timeDecrementButton";
 				decrementControlEl.className = "time-decrement";
-				YAHOO.util.Event.on(decrementControlEl, 'click',  this._onChangeVal, this);
                 YAHOO.util.Event.on(decrementControlEl, 'click',  function() { self.form.setFocusedField(self);}, this);
 
 				timeWrapper.appendChild(incrementControlEl);
