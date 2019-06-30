@@ -96,10 +96,11 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 						});
 
 					me.context.buildModules(config, bar);
+
+                    CStudioAuthoring.Operations.createNavBarDropDown("help");
+                    CStudioAuthoring.Operations.createNavBarDropDown("quick-create");
 				});
 
-                CStudioAuthoring.Operations.createNavBarDropDown("help");
-                CStudioAuthoring.Operations.createNavBarDropDown("quick-create");
                 self.addResizeEventToNavbar();
 
 			},
