@@ -1081,10 +1081,10 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 	},
 
     setStaticTimezone: function(value, timezone) {
-        var timezoneElt = $(this.id + "-timezoneCode");
+        var timezoneElt = document.getElementById(this.id + "-timezoneCode");
         if(timezoneElt){
             var timezoneStr = timezone.substr(0, 3);
-            timezoneElt.html(timezoneStr);
+            $(timezoneElt).html(timezoneStr);
         }
         this._setValue(value, timezone);
     },

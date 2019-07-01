@@ -195,8 +195,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	},
 
     _onChange: function(evt, obj) {
-        obj.updateTime();
-
+        if(obj.showTime){
+            obj.updateTime();
+        }
     },
 
     _onChangeVal: function(evt, obj) {
@@ -443,7 +444,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		}
 
 		//parse the value using patterns and retrive the date with format
-		var inputTime = parseTimeString(this.timeEl.value);
+		if(this.timeEl) {
+            var inputTime = parseTimeString(this.timeEl.value);
+        }
 
         var CMgs = CStudioAuthoring.Messages;
         var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
@@ -1268,10 +1271,10 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	},
 
     setStaticTimezone: function(value, timezone) {
-        var timezoneElt = $(this.id + "-timezoneCode");
+        var timezoneElt = document.getElementById(this.id + "-timezoneCode");
         if(timezoneElt){
             var timezoneStr = timezone.substr(0, 3);
-            timezoneElt.html(timezoneStr);
+            $(timezoneElt).html(timezoneStr);
         }
         this._setValue(value, timezone);
     },
@@ -1281,7 +1284,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		this.edited = false;
         this.timezone = this.form.getModelValue(this.timezoneId);
 
-		if (this.useCustomTimezone) {
+		if (this.useCustomTimezone && this.showTime) {
 			if (this.timezone) {
 				this.setSelectedTimezone(this.timezone);
 			} else {
