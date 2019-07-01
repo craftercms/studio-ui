@@ -270,7 +270,9 @@
         "REMOTE_BRANCH_PUSH":"Remote Branch to push to ",
         "SUCCESSFULLY_PUSHED": "Successfully Pushed",
         "SUCCESSFULLY_PULLED": "Successfully Pulled",
-        "REPO_DELETED": "repository deleted"
+        "REPO_DELETED": "repository deleted",
+        "ACCEPT_THEIRS": "Accept Theirs",
+        "ACCEPT_THEIRS_DESCRIPTION": "Accept the remote's version of the site and overwrite the local version if different"
     },
     "clustering": {
         "HEADER_LABEL": "Cluster",

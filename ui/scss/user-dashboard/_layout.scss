@@ -129,3 +129,16 @@
   }
 
 }
+
+// align checkboxes with labels in studio forms groups
+.modal-body {
+  .form-group {
+    label {
+      input[type="checkbox"] {
+        position: relative;
+        top: 2px;
+        margin-right: 2px;
+      }
+    }
+  }
+}

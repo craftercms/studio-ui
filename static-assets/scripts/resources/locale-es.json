@@ -269,7 +269,9 @@
         "REMOTE_BRANCH_PUSH":"Sucursal remota para empujar a ",
         "SUCCESSFULLY_PUSHED": "Empujado con éxito",
         "SUCCESSFULLY_PULLED": "Jaló con éxito",
-        "REPO_DELETED": "repositorio borrado"
+        "REPO_DELETED": "repositorio borrado",
+        "ACCEPT_THEIRS": "Acepta los suyos",
+        "ACCEPT_THEIRS_DESCRIPTION": "Acepta la versión remota del sitio y sobrescribe la versión local si es diferente"
     },
     "clustering": {
         "HEADER_LABEL": "Agrupar",

@@ -268,7 +268,9 @@
         "REMOTE_BRANCH_PUSH":"Remote Branch zu dem Push ausgeführt werden soll",
         "SUCCESSFULLY_PUSHED": "Push war erfolgreich",
         "SUCCESSFULLY_PULLED": "Pull war erfolgreich",
-        "REPO_DELETED": "Repository wurde gelöscht"
+        "REPO_DELETED": "Repository wurde gelöscht",
+        "ACCEPT_THEIRS": "Akzeptiere ihre",
+        "ACCEPT_THEIRS_DESCRIPTION": "Akzeptieren Sie die Remote-Version der Site und überschreiben Sie die lokale Version, falls diese nicht identisch ist"
     },
     "clustering": {
         "HEADER_LABEL": "Cluster",

@@ -193,7 +193,7 @@
                 })
             };
 
-            //LOGGING 
+            //LOGGING
 
             this.getLoggers = function() {
                 return $http.get(Constants.SERVICE + 'server/get-loggers.json');
@@ -205,7 +205,7 @@
                 });
             }
 
-            // LOG CONSOLE 
+            // LOG CONSOLE
             this.getLogStudio = function(data){
                 return $http.get(Constants.SERVICE2 + 'monitoring/log', {
                     params: data
@@ -648,7 +648,7 @@
 
             $scope.logging = {};
             var logging = $scope.logging;
-            
+
             adminService.getLoggers()
                 .success(function (data) {
                     logging.levels = data;
@@ -683,7 +683,7 @@
 
             logs.logType = logType;
 
-            logs.startTimer = function () { 
+            logs.startTimer = function () {
                 logs.timer = $interval(function(){
                     logs.getLogs();
                 }, logs.interval);
@@ -719,7 +719,7 @@
                             $timeout(function() {
                                 container.scrollTop = container.scrollHeight;
                             }, 0, false);
-                            
+
                         }
                     });
                 };
@@ -746,15 +746,15 @@
             $scope.$on('$destroy', function() {
                 logs.stopTimer();
             });
-            
+
         }
     ]);
 
     app.controller('LogConsoleStudioCtrl', [
         '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', '$controller',
         function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, $controller) {
-           
-            $controller('LogConsoleCtrl', 
+
+            $controller('LogConsoleCtrl',
                 {
                     $scope, $state, $window, adminService, $translate, $interval, $timeout, $location,
                     logType: 'studio'
@@ -765,8 +765,8 @@
     app.controller('LogConsolePreviewCtrl', [
         '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', '$controller',
         function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, $controller) {
-           
-            $controller('LogConsoleCtrl', 
+
+            $controller('LogConsoleCtrl',
                 {
                     $scope, $state, $window, adminService, $translate, $interval, $timeout, $location,
                     logType: 'preview'
@@ -823,7 +823,7 @@
                         modal.close();
                     }, 1500, false);
 
-                };  
+                };
 
                 publish.stopDisabled = false;
                 publish.startDisabled = false;
@@ -1634,6 +1634,7 @@
             var repositories = $scope.repositories;
             repositories.site = $location.search().site;
             repositories.spinnerOverlay;
+            repositories.mergeStrategyTheirs = false;
 
             this.init = function() {
 
@@ -1644,7 +1645,6 @@
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
                         keyboard: true,
-                        controller: 'RepositoriesCtrl',
                         scope: $scope,
                         size: size ? size : ''
                     });
@@ -1748,6 +1748,10 @@
                     currentRepo.remoteName = repo.name;
                     currentRepo.remoteBranch = branch;
 
+                    if ( repositories.mergeStrategyTheirs ) {
+                      currentRepo.mergeStrategy = "theirs";
+                    }
+
                     adminService.pullRepository(currentRepo).success(function (data) {
 
                         repositories.spinnerOverlay.close();
@@ -1761,6 +1765,7 @@
                     });
                 };
 
+                repositories.repoAction = 'pull';
                 $scope.confirmationAction = pullRepo;
                 $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PULL')+":";
                 $scope.dialogTitle = $translate.instant('admin.repositories.PULL');
@@ -1791,6 +1796,7 @@
                     });
                 };
 
+                repositories.repoAction = 'push';
                 $scope.confirmationAction = pushRepo;
                 $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PUSH') + repo.name + ":";
                 $scope.dialogTitle = $translate.instant('admin.repositories.PUSH');
