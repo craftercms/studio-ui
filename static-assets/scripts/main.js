@@ -477,21 +477,22 @@
             };
 
             this.forgotPassword = function (username) {
-                return $http.get(api('forgot-password'), {
+                return $http.get(userActions('/forgot_password'), {
                     params: { username : username }
                 });
             };
 
             this.recoverPassword = function (data) {
-                return $http.post(api('reset-password'), data);
+                return $http.post(userActions(user + '/reset_password'), data);
             };
 
             this.setPassword = function (data) {
-                return $http.post(api('set-password'), data);
+                return $http.post(userActions('/set_password'), data);
             };
 
             this.changePassword = function (data) {
-                return $http.post(api('change-password'), data);
+                var requestData = {username: data.username, current: data.current, new: data.new}
+                return $http.post(userActions('/me/change_password'), requestData);
             };
 
             this.validateToken = function (data){

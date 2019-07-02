@@ -82,20 +82,20 @@
             };
 
             this.setPassword = function(data){
-                return $http.post(users('set-password'), data);
+                return $http.post(usersActions('/set_password'), data);
             };
 
             //Allow the administrator to reset Crafter Studio’s user password provided.
             this.resetPassword = function(data){
-                return $http.post(users('reset-password'), data);
+                return $http.post(usersActions(data.username + '/reset_password'), data);
             };
 
             this.changePassword = function(data){
-                return $http.post(users('change-password'), data);
+                return $http.post(usersActions('/me/change_password'), data);
             };
 
             this.forgotPassword = function(username){
-                return $http.get(users('forgot-password', 'username=' + username));
+                return $http.get(usersActions('/forgot_password', 'username=' + username));
             };
 
             //CLUSTERS
