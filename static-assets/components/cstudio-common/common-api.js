@@ -268,7 +268,8 @@ var nodeOpen = false,
                 '/static-assets/themes/cstudioTheme/yui/assets/skin.css',
                 '/static-assets/themes/cstudioTheme/css/contextNav.css',
                 '/static-assets/yui/container/assets/container.css',
-                '/static-assets/jquery/jquery-time/jquery.timeentry.css'
+                '/static-assets/jquery/jquery-time/jquery.timeentry.css',
+                '/static-assets/libs/jquery-ui/jquery-ui.css'
             ], js: [
                 '/static-assets/yui/connection/connection-min.js',
                 '/static-assets/yui/json/json-min.js',
