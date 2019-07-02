@@ -617,7 +617,7 @@
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
       success: function (content) {
         CStudioAuthoring.SelectedContent.setContent(content.item);
-        selectContentSet(content.item);
+        selectContentSet(content.item, false);
       }
     });
 
@@ -672,16 +672,20 @@
       success: function (content) {
         if(content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
-          selectContentSet(content.item);
+          selectContentSet(content.item, true);
         }
       }
     });
   }
 
-  function selectContentSet(item) {
+  // Triggers selected content set event to update highlight
+  // item: selected item
+  // reloadTree: if needed, allows tree to be reloaded. For assets it will be false since reload is not needed.
+  function selectContentSet(item, reloadTree) {
     window.setTimeout(function() {
       amplify.publish("SELECTED_CONTENT_SET", {
-        contentTO: item
+        contentTO: item,
+        reload: reloadTree
       });
     }, 0);
   }

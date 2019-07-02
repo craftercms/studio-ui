@@ -3538,11 +3538,12 @@
     if(config.params.path === '/site/website'){
       amplify.subscribe("SELECTED_CONTENT_SET", function (message) {
         var contentTO = message.contentTO,
-          $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
-        highlightVisible = $highlightEl.is(":visible"),
-          treeExists = $("#pages-tree + div").children().length > 0;
+            reload = message.reload,
+            $highlightEl = $('#acn-dropdown-menu [data-uri="' + contentTO.uri + '"]');
+            highlightVisible = $highlightEl.is(":visible"),
+            treeExists = $("#pages-tree + div").children().length > 0;
 
-        if (!highlightVisible && treeExists) {
+        if (!highlightVisible && treeExists && reload) {
           var $container = $(config.containerEl).empty();
           CStudioAuthoring.ContextualNav.WcmRootFolder.initialize(Object.assign({}, config, { containerEl: $container[0] }));
         } else {
