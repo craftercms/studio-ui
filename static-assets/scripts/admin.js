@@ -82,7 +82,7 @@
             };
 
             this.setPassword = function(data){
-                return $http.post(usersActions('/me/set_password'), data);
+                return $http.post(usersActions('/set_password'), data);
             };
 
             //Allow the administrator to reset Crafter Studio’s user password provided.

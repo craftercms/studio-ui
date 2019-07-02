@@ -487,7 +487,7 @@
             };
 
             this.setPassword = function (data) {
-                return $http.post(userActions('/me/set_password'), data);
+                return $http.post(userActions('/set_password'), data);
             };
 
             this.changePassword = function (data) {
