@@ -20,7 +20,9 @@
       "CHANGE_PASSWORD": "Passwort ändern",
       "RECOVER_ERROR": "Offenbar ist der SMTP-Server nicht richtig konfiguriert. Bitte wenden Sie sich an Ihren Systemadministrator.",
       "USER_PASSWORD_INVALID": "Ungültige Anmeldedaten",
-      "LOGIN_ERROR": "Ein Systemfehler ist aufgetreten. Wenn das Problem weiterhin besteht, wenden Sie sich bitte an Ihren Systemadministrator."
+      "LOGIN_ERROR": "Ein Systemfehler ist aufgetreten. Wenn das Problem weiterhin besteht, wenden Sie sich bitte an Ihren Systemadministrator.",
+      "PASSWORD_REQUIREMENTS_ERROR": "Das Benutzerpasswort erfüllt nicht die Anforderungen",
+      "PASSWORD_REQUIREMENTS_REMEDIAL": "Verwenden Sie ein Passwort, das die Passwortanforderungen erfüllt"
     },
     "sites": {
       "SITES_LABEL": "Projekte",

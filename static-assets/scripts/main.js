@@ -1689,7 +1689,7 @@
                 $scope.recoverProcessing = true;
 
                 authService.forgotPassword(credentials.username).success(function(data) {
-                    if(data.message === 'OK') {
+                    if(data.response.message === 'OK') {
                         $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
                         $scope.recoverSuccess = true;
                     }
@@ -1729,13 +1729,19 @@
                         'token': $location.search().token,
                         'new': $scope.user.password
                     }).success(function(data) {
-                        $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
+                      $scope.error = null;
+                      $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
 
-                        $timeout(function() {
-                            $state.go('login');
-                        }, successDelay);
+                      $timeout(function() {
+                        $state.go('login');
+                      }, successDelay);
                     }).error(function(error){
-                        $scope.error = error.status;
+                      if (error.response.code === 6003) {
+                        $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
+                                        $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL')
+                      } else {
+                        $scope.error = error.reponse.message + '. ' + error.response.remedialAction;
+                      }
                     });
                 };
             },function(error){

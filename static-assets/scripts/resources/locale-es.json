@@ -20,7 +20,9 @@
       "CHANGE_PASSWORD": "Cambiar contraseña",
       "RECOVER_ERROR": "Por favor verifique con su sysadmin para asegurarse de que un servidor SMTP esté configurado.",
       "USER_PASSWORD_INVALID": "Usuario o contraseña inválidos.",
-      "LOGIN_ERROR": "Ha ocurrido un error de sistema. Por favor espere unos minutos o contacte un administrador."
+      "LOGIN_ERROR": "Ha ocurrido un error de sistema. Por favor espere unos minutos o contacte un administrador.",
+      "PASSWORD_REQUIREMENTS_ERROR": "La contraseña no cumple con los requerimientos",
+      "PASSWORD_REQUIREMENTS_REMEDIAL": "Use una contraseña que cumpla con los requerimientos"
     },
     "sites": {
       "SITES_LABEL": "Sitios",
