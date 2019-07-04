@@ -270,8 +270,17 @@
         "SUCCESSFULLY_PUSHED": "Empujado con éxito",
         "SUCCESSFULLY_PULLED": "Jaló con éxito",
         "REPO_DELETED": "repositorio borrado",
-        "ACCEPT_THEIRS": "Acepta los suyos",
-        "ACCEPT_THEIRS_DESCRIPTION": "Acepta la versión remota del sitio y sobrescribe la versión local si es diferente"
+        "MERGE_STRATEGY_LABEL": "Estrategia de Fusión",
+        "MERGE_STRATEGIES": {
+          "none": "Ninguna",
+          "ours": "Aceptar el nuestro",
+          "theirs": "Aceptar los suyos"
+        },
+        "MERGE_STRATEGY_DESCRIPTIONS": {
+          "none": "",
+          "ours": "Acepta la versión local del sitio y sobreescribe la versión remota (si es diferente)",
+          "theirs": "Acepta la versión remota del sitio y sobreescribe la versión local (si es diferente)"
+        }
     },
     "clustering": {
         "HEADER_LABEL": "Agrupar",
