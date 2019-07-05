@@ -271,8 +271,17 @@
         "SUCCESSFULLY_PUSHED": "Push war erfolgreich",
         "SUCCESSFULLY_PULLED": "Pull war erfolgreich",
         "REPO_DELETED": "Repository wurde gelöscht",
-        "ACCEPT_THEIRS": "Akzeptiere ihre",
-        "ACCEPT_THEIRS_DESCRIPTION": "Akzeptieren Sie die Remote-Version der Site und überschreiben Sie die lokale Version, falls diese nicht identisch ist"
+        "MERGE_STRATEGY_LABEL": "Strategie zusammenführen",
+        "MERGE_STRATEGIES": {
+          "none": "Keiner",
+          "ours": "Akzeptiere unsere",
+          "theirs": "Akzeptiere ihre"
+        },
+        "MERGE_STRATEGY_DESCRIPTIONS": {
+          "none": "",
+          "ours": "Akzeptieren Sie die lokale Version der Site und überschreiben Sie die Remote-Version, falls diese nicht identisch ist",
+          "theirs": "Akzeptieren Sie die Remote-Version der Site und überschreiben Sie die lokale Version, falls diese nicht identisch ist"
+        }
     },
     "clustering": {
         "HEADER_LABEL": "Cluster",

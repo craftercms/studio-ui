@@ -1629,12 +1629,15 @@
         function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
                   $stateParams, $translate, $location, $q) {
 
-
             $scope.repositories = {};
             var repositories = $scope.repositories;
             repositories.site = $location.search().site;
             repositories.spinnerOverlay;
-            repositories.mergeStrategyTheirs = false;
+            repositories.mergeStrategy = 'none';
+
+            $scope.$watch('repositories.mergeStrategy', function() {
+              repositories.mergeStrategyDescription = $translate.instant('admin.repositories.MERGE_STRATEGY_DESCRIPTIONS.' + repositories.mergeStrategy);
+            });
 
             this.init = function() {
 
@@ -1747,10 +1750,7 @@
                     currentRepo.siteId = repositories.site;
                     currentRepo.remoteName = repo.name;
                     currentRepo.remoteBranch = branch;
-
-                    if ( repositories.mergeStrategyTheirs ) {
-                      currentRepo.mergeStrategy = "theirs";
-                    }
+                    currentRepo.mergeStrategy = repositories.mergeStrategy;
 
                     adminService.pullRepository(currentRepo).success(function (data) {
 

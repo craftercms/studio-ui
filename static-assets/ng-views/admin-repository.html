@@ -242,11 +242,13 @@
                 </select>
 
                 <div ng-if="repositories.repoAction == 'pull'">
-                  <label class="merge-strategy mt10">
-                    <input type="checkbox" id="mergeStrategy" name="mergeStrategy" ng-model="repositories.mergeStrategyTheirs"/>
-                    {{ 'admin.repositories.ACCEPT_THEIRS' | translate }}
-                  </label>
-                  <div>{{ 'admin.repositories.ACCEPT_THEIRS_DESCRIPTION' | translate }}</div>
+                  <label class="mt15" for="branch">{{ 'admin.repositories.MERGE_STRATEGY_LABEL' | translate }}</label>
+                  <select class="form-control" id="mergeStrategy" name="mergeStrategy" ng-model="repositories.mergeStrategy">
+                    <option value="none">{{ 'admin.repositories.MERGE_STRATEGIES.none' | translate }}</option>
+                    <option value="ours">{{ 'admin.repositories.MERGE_STRATEGIES.ours' | translate }}</option>
+                    <option value="theirs">{{ 'admin.repositories.MERGE_STRATEGIES.theirs' | translate }}</option>
+                  </select>
+                  <div class="mt10">{{ repositories.mergeStrategyDescription }}</div>
                 </div>
 
                 <div class="error-container"

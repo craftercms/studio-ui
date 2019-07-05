@@ -272,8 +272,17 @@
         "SUCCESSFULLY_PUSHED": "성공적으로 푸시 됨",
         "SUCCESSFULLY_PULLED": "성공적으로 당겨서",
         "REPO_DELETED": "저장소 삭제됨",
-        "ACCEPT_THEIRS": "그들의 수락",
-        "ACCEPT_THEIRS_DESCRIPTION": "다른 사이트의 경우 원격 버전의 사이트를 수락하고 로컬 버전을 덮어 씁니다."
+        "MERGE_STRATEGY_LABEL": "병합 전략",
+        "MERGE_STRATEGIES": {
+          "none": "없음",
+          "ours": "우리의 동의",
+          "theirs": "그들의 수락"
+        },
+        "MERGE_STRATEGY_DESCRIPTIONS": {
+          "none": "",
+          "ours": "로컬 버전의 사이트를 수락하고 다른 버전 인 경우 원격 버전을 덮어 씁니다.",
+          "theirs": "다른 사이트의 경우 원격 버전의 사이트를 수락하고 로컬 버전을 덮어 씁니다."
+        }
     },
     "clustering": {
         "HEADER_LABEL": "클러스터",
