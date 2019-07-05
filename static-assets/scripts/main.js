@@ -769,6 +769,7 @@
 
             function changePassword() {
                 $scope.data.username = $scope.user.username;
+                $translate.use($scope.langSelected);
 
                 if($scope.data.new == $scope.data.confirmation){
                     authService.changePassword($scope.data)
@@ -799,7 +800,14 @@
 
                             }
                         }, function(error){
-                            $scope.error = error.data.message;
+                            var errorResponse = error.data.response;
+
+                            if (errorResponse.code === 6003) {
+                              $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
+                                              $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL')
+                            } else {
+                              $scope.error = errorResponse.message + '. ' + errorResponse.remedialAction;
+                            }
                         });
                 }else{
                     $scope.error = "Passwords don't match.";
