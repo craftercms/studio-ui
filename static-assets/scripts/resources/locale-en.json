@@ -20,7 +20,9 @@
       "CHANGE_PASSWORD": "Change Password",
       "RECOVER_ERROR": "Please check with your sysadmin to make sure an SMTP server is configured.",
       "USER_PASSWORD_INVALID": "Invalid username or password",
-      "LOGIN_ERROR": "A system error has occurred. Please wait a few minutes or contact an administrator"
+      "LOGIN_ERROR": "A system error has occurred. Please wait a few minutes or contact an administrator",
+      "PASSWORD_REQUIREMENTS_ERROR": "User password does not fullfill requirements",
+      "PASSWORD_REQUIREMENTS_REMEDIAL": "Use password that will fullfill password requirements"
     },
     "sites": {
       "SITES_LABEL": "Sites",
