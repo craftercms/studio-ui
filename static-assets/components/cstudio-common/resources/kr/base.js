@@ -741,6 +741,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     destinationPath: "대상 경로 패턴",
     inputProfileId: "입력 프로파일 ID",
     outputProfileId: "출력 프로필 ID",
+    postfixes: "포스트 픽스",
 
     /*Restrictions*/
     required: "필요",
@@ -827,9 +828,25 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabCMISConfiguration: "CMIS 구성",
     confTabCMISConfigurationDesc: "이 파일은 컨텐트 작성자가 선택할 수있는 0 이상의 CMIS 가능 리포지토리를 데이터 소스로 구성합니다",
 
+    /*Postfixes*/
+    iDescription: "정수의 경우",
+    sDescription: "문자열의 경우",
+    lDescription: "긴 정수의 경우",
+    tDescription: "여러 단어 또는 토큰의 경우",
+    bDescription: "부울의 경우 (true 또는 false)",
+    fDescription: "부동 소수점 숫자",
+    dDescription: "긴 부동 소수점의 경우",
+    dtDescription: "ISO 8601 날짜 형식의 날짜",
+    toDescription: "HH 시간 : mm : ss 형식",
+    htmlDescription: "HTML 태그가있는 텍스트의 경우",
+    oDescription: "오브젝트 용",
+    enDescription: "여러 단어 또는 토큰의 경우",
+    txtDescription: "여러 단어 또는 토큰의 경우",
+
     /* Errors */
     error: "오류",
     errorTitle: ". 필드와 데이터 소스에 대한 모든 제목을 입력 해주세요.",
+    postfixError: "다음에 대한 변수 이름에 후위를 추가하십시오. ",
     errorName: ". 대한 변수 이름을 기입하십시오: ",
     contentTypeNotFound: "구성 요소의 콘텐츠 형식을 찾을 수 없습니다.",
     failConfig: "구성을로드하지 못했습니다.",

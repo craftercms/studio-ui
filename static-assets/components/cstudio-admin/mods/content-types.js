@@ -17,6 +17,7 @@
 
 CStudioAdminConsole.isDirty = false;
 CStudioAdminConsole.contentTypeSelected = "";
+CStudioAdminConsole.isPostfixAvailable = false;
 
 window.addEventListener("beforeunload", function (e) {
   confirmationMessage = 'If you leave before saving, your changes will be lost.';
@@ -42,6 +43,15 @@ CStudioAuthoring.Module.requireModule(
         this.types = [];
         return this;
       }
+
+      CStudioAuthoring.Service.getConfiguration(
+          CStudioAuthoringContext.site,
+          "/site-config.xml",
+          {
+              success: function(config) {
+                  CStudioAdminConsole.isPostfixAvailable = (config["form-engine"]["field-name-postfix"] === "true");
+              }
+          });
 
       /**
        * Overarching class that drives the content type tools
@@ -69,17 +79,35 @@ CStudioAuthoring.Module.requireModule(
             datasources = formDef.datasources,
             idError = [],
             flagTitleError = false,
-            currentField;
+            currentField,
+            postfixError = [],
+            postfixes,
+            postfixesFlag = false;
 
           for (var i = 0; i<sections.length; i++) {
             for (var j = 0; j<sections[i].fields.length; j++) {
               currentField = sections[i].fields[j];
+              postfixesFlag = false;
 
               if (!currentField.title || currentField.title == '') {
                 flagTitleError = true;
               }
               if ( (!currentField.id || currentField.id == '') && (currentField.title && currentField.title != '')) {
                 idError.push(currentField.title);
+              }
+
+              if((currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '') && (currentField.id !== "internal-name")) {
+                  postfixes = CStudioAdminConsole.renderPostfixes()[currentField.type] ?
+                      CStudioAdminConsole.renderPostfixes()[currentField.type] : [];
+                  for (var k = 0; k < postfixes.length; k++) {
+                      if (currentField.id.indexOf(postfixes[k]) > -1) {
+                          postfixesFlag = true;
+                          break;
+                      }
+                  }
+                  if(!postfixesFlag && postfixes.length > 0){
+                      postfixError.push(currentField.title);
+                  }
               }
 
               // If it's a repeating group, validate fields - We have no nested repeating groups,
@@ -108,7 +136,7 @@ CStudioAuthoring.Module.requireModule(
             }
           }
 
-          return {flagTitleError:flagTitleError, idError:idError}
+          return {flagTitleError:flagTitleError, idError:idError, postfixError: postfixError}
         },
 
         templateValidation: function(formDef) {
@@ -261,7 +289,17 @@ CStudioAuthoring.Module.requireModule(
                             YAHOO.widget.SimpleDialog.ICON_BLOCK,
                             "studioDialog"
                           );
-                        } else {
+                        } if (validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable) {
+                              CStudioAuthoring.Operations.showSimpleDialog(
+                                  "errorName-dialog",
+                                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                  CMgs.format(langBundle, "notification"),
+                                  CMgs.format(langBundle, "postfixError") + validation.postfixError.toString().replace(/,/g, ", "),
+                                  null, // use default button
+                                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                  "studioDialog"
+                              );
+                          } else {
                           if (!istemplate.flagTemplateError) {
                             var dialogEl = document.getElementById("errTemplates");
                             if(dialogEl) {
@@ -1503,66 +1541,90 @@ CStudioAuthoring.Module.requireModule(
           }
         },
 
-        renderQuickCreatePattern: function(){
-          return [
-            '<table class="quick-create-help">',
-            /**/'<tr>',
-            /****/'<th>{objectId}</th>',
-            /****/'<td>' + CMgs.format(langBundle, "objectIdPattern") + '</td>',
-            /****/'<td>',
-            /******/'<button onclick="CStudioAdminConsole.quickCreateHelpInsert(this)" data-insert="{objectId}" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-            /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-            /******/'</button>',
-            /****/'</td>',
-            /**/'</tr>',
-            /**/'<tr>',
-            /****/'<th>{year}</th>',
-            /****/'<td>' + CMgs.format(langBundle, "yearPattern") + '</td>',
-            /****/'<td>',
-            /******/'<button onclick="CStudioAdminConsole.quickCreateHelpInsert(this)" data-insert="{year}" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-            /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-            /******/'</button>',
-            /****/'</td>',
-            /**/'</tr>',
-            /**/'<tr>',
-            /****/'<th>{month}</th>',
-            /****/'<td>' + CMgs.format(langBundle, "monthPattern") + '</td>',
-            /****/'<td>',
-            /******/'<button onclick="CStudioAdminConsole.quickCreateHelpInsert(this)" data-insert="{month}" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-            /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-            /******/'</button>',
-            /****/'</td>',
-            /**/'</tr>',
-            /**/'<tr>',
-            /****/'<th>{yyyy}</th>',
-            /****/'<td>' + CMgs.format(langBundle, "yyyyPattern") + '</td>',
-            /****/'<td>',
-            /******/'<button onclick="CStudioAdminConsole.quickCreateHelpInsert(this)" data-insert="{yyyy}" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-            /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-            /******/'</button>',
-            /****/'</td>',
-            /**/'</tr>',
-            /**/'<tr>',
-            /****/'<th>{mm}</th>',
-            /****/'<td>' + CMgs.format(langBundle, "mmPattern") + '</td>',
-            /****/'<td>',
-            /******/'<button onclick="CStudioAdminConsole.quickCreateHelpInsert(this)" data-insert="{mm}" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-            /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-            /******/'</button>',
-            /****/'</td>',
-            /**/'</tr>',
-            /**/'<tr>',
-            /****/'<th>{dd}</th>',
-            /****/'<td>' + CMgs.format(langBundle, "ddPattern") + '</td>',
-            /****/'<td>',
-            /******/'<button onclick="CStudioAdminConsole.quickCreateHelpInsert(this)" data-insert="{dd}" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
-            /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
-            /******/'</button>',
-            /****/'</td>',
-            /**/'</tr>',
-            '</table>'
-          ].join('');
+        renderPostfixesVariable: function(type){
+
+          var renderPostfixes = CStudioAdminConsole.renderPostfixes()[type] ?
+              CStudioAdminConsole.renderPostfixes()[type] : [],
+              identifier = ".label-name-variable-name",
+              xml = '<table class="quick-create-help">';
+
+          for(var i = 0; i < renderPostfixes.length ; i ++){
+              xml += /**/'<tr>' +
+                     /****/'<th>' + renderPostfixes[i] + '</th>' +
+                     /****/'<td>' + CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]] + '</td>' +
+                     /****/'<td>' +
+                     /******/'<button onclick="CStudioAdminConsole.cleanPostfix(\''+ identifier + '\', \''+ type + '\'); CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="' + renderPostfixes[i] + '" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">' +
+                     /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>' +
+                     /******/'</button>' +
+                     /****/'</td>' +
+                     /**/'</tr>';
+          }
+          xml += '</table>';
+          return xml;
+
         },
+
+          renderQuickCreatePattern: function(){
+              var identifier = ".label-destination-path-pattern";
+              return [
+                  '<table class="quick-create-help">',
+                  /**/'<tr>',
+                  /****/'<th>{objectId}</th>',
+                  /****/'<td>' + CMgs.format(langBundle, "objectIdPattern") + '</td>',
+                  /****/'<td>',
+                  /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="{objectId}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+                  /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
+                  /******/'</button>',
+                  /****/'</td>',
+                  /**/'</tr>',
+                  /**/'<tr>',
+                  /****/'<th>{year}</th>',
+                  /****/'<td>' + CMgs.format(langBundle, "yearPattern") + '</td>',
+                  /****/'<td>',
+                  /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="{year}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+                  /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
+                  /******/'</button>',
+                  /****/'</td>',
+                  /**/'</tr>',
+                  /**/'<tr>',
+                  /****/'<th>{month}</th>',
+                  /****/'<td>' + CMgs.format(langBundle, "monthPattern") + '</td>',
+                  /****/'<td>',
+                  /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="{month}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+                  /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
+                  /******/'</button>',
+                  /****/'</td>',
+                  /**/'</tr>',
+                  /**/'<tr>',
+                  /****/'<th>{yyyy}</th>',
+                  /****/'<td>' + CMgs.format(langBundle, "yyyyPattern") + '</td>',
+                  /****/'<td>',
+                  /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="{yyyy}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+                  /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
+                  /******/'</button>',
+                  /****/'</td>',
+                  /**/'</tr>',
+                  /**/'<tr>',
+                  /****/'<th>{mm}</th>',
+                  /****/'<td>' + CMgs.format(langBundle, "mmPattern") + '</td>',
+                  /****/'<td>',
+                  /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="{mm}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+                  /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
+                  /******/'</button>',
+                  /****/'</td>',
+                  /**/'</tr>',
+                  /**/'<tr>',
+                  /****/'<th>{dd}</th>',
+                  /****/'<td>' + CMgs.format(langBundle, "ddPattern") + '</td>',
+                  /****/'<td>',
+                  /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="{dd}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+                  /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
+                  /******/'</button>',
+                  /****/'</td>',
+                  /**/'</tr>',
+                  '</table>'
+              ].join('');
+          },
 
         renderFormPropertySheet: function(item, sheetEl) {
 
@@ -1799,8 +1861,12 @@ CStudioAuthoring.Module.requireModule(
             }else{
               item.id = el.value;
             }
-          } );
-          this.createRowFn(CMgs.format(langBundle, "variableName"), "id", item.id,  "", "variable", sheetEl, function(e, el) { item.id = el.value; CStudioAdminConsole.isDirty = true;});
+          }, false, null, null, item.type);
+          this.createRowFn(CMgs.format(langBundle, "variableName"),
+              "id", item.id,  "", "variable", sheetEl,
+              function(e, el) { item.id = el.value; CStudioAdminConsole.isDirty = true;},
+              CStudioAdminConsole.renderPostfixes()[item.type] && item.id !== "internal-name" ? true : false, "Postfixes",
+              this.renderPostfixesVariable(item.type));
 
           this.createRowFn(CMgs.format(langBundle, "iceGroup"), "iceGroup", item.iceId,  "", "string", sheetEl,  function(e, el) { item.iceId = el.value; CStudioAdminConsole.isDirty = true;});
           this.createRowFn(CMgs.format(langBundle, "description"), "description", item.description, "", "string",  sheetEl,  function(e, el) { item.description = el.value; CStudioAdminConsole.isDirty = true;});
@@ -1820,8 +1886,12 @@ CStudioAuthoring.Module.requireModule(
             }else{
               item.id = el.value;
             }
-          } );
-          this.createRowFn(CMgs.format(langBundle, "variableName"), "id", item.id,  "", "variable", sheetEl, function(e, el) { item.id = el.value; CStudioAdminConsole.isDirty = true;});
+          }, false, null, null, item.type );
+          this.createRowFn(CMgs.format(langBundle, "variableName"),
+              "id", item.id,  "", "variable", sheetEl,
+              function(e, el) { item.id = el.value; CStudioAdminConsole.isDirty = true;},
+              CStudioAdminConsole.renderPostfixes()[item.type] && item.id !== "internal-name" ? true : false, "Postfixes",
+              this.renderPostfixesVariable(item.type));
           this.createRowFn(CMgs.format(langBundle, "iceGroup"), "iceGroup", item.iceId,  "", "string", sheetEl,  function(e, el) { item.iceId = el.value; CStudioAdminConsole.isDirty = true;});
           this.createRowFn(CMgs.format(langBundle, "description"), "description", item.description, "",  "string", sheetEl,  function(e, el) { item.description = el.value; CStudioAdminConsole.isDirty = true;});
           this.createRowFn(CMgs.format(langBundle, "defaultValue"), "defaultValue", item.defaultValue, "", "string", sheetEl,  function(e, el) { item.defaultValue = el.value; CStudioAdminConsole.isDirty = true;});
@@ -1940,7 +2010,7 @@ CStudioAuthoring.Module.requireModule(
         /**
          * render a property sheet row
          */
-        createRowFn: function(label, fName, value, defaultValue, type, containerEl, fn, help, helpTitle, helpHTML) {
+        createRowFn: function(label, fName, value, defaultValue, type, containerEl, fn, help, helpTitle, helpHTML, typeControl) {
 
           var itemId = this.itemId;
           var helpIcon = "";
@@ -1997,7 +2067,7 @@ CStudioAuthoring.Module.requireModule(
             moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
               try {
                 var propControl = new moduleClass(fName, propertyContainerEl, this.self.form, type);
-                propControl.render(value, fn, fName, itemId, defaultValue);
+                propControl.render(value, fn, fName, itemId, defaultValue, typeControl);
               } catch (e) {}
             },
             self: this
@@ -2706,11 +2776,70 @@ CStudioAuthoring.Module.requireModule(
         }
       }
 
-      CStudioAdminConsole.quickCreateHelpInsert = function(button) {
+      CStudioAdminConsole.helpInsert = function(button, identifier) {
         var $button = $(button);
-        var $input = $('.label-destination-path-pattern').siblings('input');
-        $input.val($input.val() + $button.attr('data-insert') + '/');
+        var $input = $(identifier).siblings('input');
+        $input.val($input.val() + $button.attr('data-insert'));
+
+        $input.change();
       };
+
+      CStudioAdminConsole.cleanPostfix = function(identifier, type) {
+          var $input = $(identifier).siblings('input');
+          var currentPostfix = "_" + $input.val().split("_").pop();
+          var postfixes = CStudioAdminConsole.renderPostfixes()[type] ?
+              CStudioAdminConsole.renderPostfixes()[type] : [];
+          var replace = currentPostfix+"([^"+currentPostfix+"]*)$";
+          var re = new RegExp(replace, "i");
+          for (var k = 0; k <= postfixes.length; k++) {
+              if (currentPostfix.indexOf(postfixes[k]) > -1) {
+                  $input.val($input.val().replace(re, ""));
+              }
+          }
+      },
+
+      CStudioAdminConsole.renderPostfixes = function(){
+          var renderPostfixes =
+          {
+              "repeat": ["_o"],
+              "input": ["_s", "_t", "_i", "_l", "_f", "_d", "_b", "_html", "_dt", "_to"],
+              "textarea": ["_s", "_t"],
+              "rte": ["_html"],
+              "rte-tinymce5": ["_html"],
+              "dropdown": ["_s"],
+              "time": ["_to"],
+              "date-time": ["_dt"],
+              "checkbox": ["_b"],
+              "checkbox-group": ["_o"],
+              "node-selector": ["_o"],
+              "image-picker": ["_s"],
+              "video-picker": ["_s"],
+              "label": ["_s"]
+          }
+
+          return renderPostfixes;
+      },
+
+      CStudioAdminConsole.renderPostfixDescriptions = function(){
+        var renderPostfixDescriptions =
+            {
+                "_i": CMgs.format(langBundle, "iDescription"),
+                "_s": CMgs.format(langBundle, "sDescription"),
+                "_l": CMgs.format(langBundle, "lDescription"),
+                "_t": CMgs.format(langBundle, "tDescription"),
+                "_b": CMgs.format(langBundle, "bDescription"),
+                "_f": CMgs.format(langBundle, "fDescription"),
+                "_d": CMgs.format(langBundle, "dDescription"),
+                "_dt": CMgs.format(langBundle, "dtDescription"),
+                "_to": CMgs.format(langBundle, "toDescription"),
+                "_html": CMgs.format(langBundle, "htmlDescription"),
+                "_o": CMgs.format(langBundle, "oDescription"),
+                "_en": CMgs.format(langBundle, "enDescription"),
+                "_txt": CMgs.format(langBundle, "txtDescription")
+              }
+
+        return renderPostfixDescriptions;
+      },
 
       CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types",CStudioAdminConsole.Tool.ContentTypes);
     }} );

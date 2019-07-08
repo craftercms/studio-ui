@@ -795,6 +795,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     destinationPath: "Destination Path Pattern",
     inputProfileId: "Input Profile Id",
     outputProfileId: "Output Profile Id",
+    postfixes: "Postfixes",
 
     /*Restrictions*/
     required: "Required",
@@ -904,10 +905,26 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     fileNotImage: "The uploaded file is not of type image",
     loadImageError:"Unable to load the selected image. Please try again or select another image",
 
+    /*Postfixes*/
+    iDescription: "For integer number.",
+    sDescription: "For string.",
+    lDescription: "For long integer number.",
+    tDescription: "For multiple words or tokens.",
+    bDescription: "For boolean (true or false).",
+    fDescription: "For floating point number.",
+    dDescription: "For long floating point number.",
+    dtDescription: "For date in ISO 8601 date format.",
+    toDescription: "For time in HH:mm:ss format.",
+    htmlDescription: "For text with html tags.",
+    oDescription: "For object.",
+    enDescription: "For multiple words or tokens.",
+    txtDescription: "For multiple words or tokens.",
+
     /* Errors */
     error: "Error",
     errorTitle: ". Please fill every title for fields and datasources.",
     errorName: ". Please fill variable name for: ",
+    postfixError: "Please add postfix to variable name for: ",
     contentTypeNotFound: "Component's content type not found.",
     failConfig: "Failed to load configuration.",
     noConfPathError: "No configuration path is defined.",
