@@ -795,6 +795,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     destinationPath: "Zielpfadmuster",
     inputProfileId: "Eingabeprofil-ID",
     outputProfileId: "Ausgabeprofil-ID",
+    postfixes: "Postfixes",
 
     /*Restrictions*/
     required: "Erforderlich",
@@ -904,9 +905,25 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     fileNotImage: "Die hochgeladene Datei ist fehlerhaft oder entspricht keinem der unterstützten Bildformate",
     loadImageError:"Fehler beim Laden des Bildes. Bitte versuchen Sie es erneut oder wählen ein anderes Bild",
 
+    /*Postfixes*/
+    iDescription: "Für eine Ganzzahl",
+    sDescription: "Für die Zeichenfolge",
+    lDescription: "Für eine lange Ganzzahl",
+    tDescription: "Für mehrere Wörter oder Token",
+    bDescription: "Für Boolean (wahr oder falsch)",
+    fDescription: "Für Gleitkommazahl",
+    dDescription: "Für lange Gleitkommazahlen",
+    dtDescription: "Für Datum im Datumsformat ISO 8601",
+    toDescription: "Für die Zeit im Format HH: mm: ss",
+    htmlDescription: "Für Text mit HTML-Tags",
+    oDescription: "Zum Objekt",
+    enDescription: "Für mehrere Wörter oder Token",
+    txtDescription: "Für mehrere Wörter oder Token",
+
     /* Errors */
     error: "Fehler",
     errorTitle: ". Bitte vergeben Sie Titel für alle Attribute und Data Sources.",
+    postfixError: "Bitte fügen Sie dem Variablennamen ein Postfix hinzu für: ",
     errorName: ". Bitte vergeben Sie einen Variablennamen für: ",
     contentTypeNotFound: "Der Content-Typ für die Komponente wurde nicht gefunden.",
     failConfig: "Fehler beim Laden der Konfiguration.",

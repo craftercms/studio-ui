@@ -770,6 +770,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     destinationPath: "Patrón de ruta de destino",
     inputProfileId: "Id de perfil de entrada",
     outputProfileId: "Id de perfil de salida",
+    postfixes: "Postfixes",
 
     /*Restrictions*/
     required: "Requerido",
@@ -860,9 +861,25 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabEngineSiteAppContextConfiguration: "Configuración de Contexto de Aplicación de Sitio de Engine",
     confTabEngineSiteAppContextConfigurationDesc: "Configuración del Contexto de Aplicación para el Sitio de Engine",
 
+    /*Postfixes*/
+    iDescription: "Para nuúmero entero.",
+    sDescription: "Para texto.",
+    lDescription: "Para número entero largo.",
+    tDescription: "Para múltiples palabras o tokens.",
+    bDescription: "Para booleano (verdadero o falso).",
+    fDescription: "Para numero de punto flotante.",
+    dDescription: "Para número de punto flotante largo.",
+    dtDescription: "Para fecha en formato de fecha ISO 8601.",
+    toDescription: "Por tiempo en formato HH: mm: ss.",
+    htmlDescription: "Para texto con etiquetas html.",
+    oDescription: "Para objeto.",
+    enDescription: "Para múltiples palabras o tokens.",
+    txtDescription: "Para múltiples palabras o tokens.",
+
     /* Errors */
     error: "Error",
     errorTitle: ". Rellene todos los títulos de los campos y fuentes de datos.",
+    postfixError: "Por favor agregue el postfix al nombre de la variable para: ",
     errorName: ". Por favor, rellene el nombre de variable para: ",
     contentTypeNotFound: "El content type del componente no fue encontrado.",
     failConfig: "La configuracioón no pudo ser cargada.",
