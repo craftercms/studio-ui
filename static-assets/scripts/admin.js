@@ -1154,7 +1154,7 @@
                 });
             };
             users.editUser = function(user) {
-                $scope.hideModal();
+
 
                 var currentUser = {};
                 currentUser.id = user.id;
@@ -1167,27 +1167,38 @@
                 currentUser.externallyManaged = user.externallyManaged;
 
                 adminService.editUser(currentUser).success(function (data) {
-                    var index = $scope.usersCollection.indexOf($scope.editedUser);
+                  var index = $scope.usersCollection.indexOf($scope.editedUser);
 
-                    if(index != -1){
-                        $scope.usersCollection[index] = user;
-                        $scope.displayedCollection = $scope.usersCollection;
-                    }
+                  if(index != -1){
+                      $scope.usersCollection[index] = user;
+                      $scope.displayedCollection = $scope.usersCollection;
+                  }
 
-                    $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
-                }).error(function(error){
-                    console.log(error);
-                    //TODO: properly display the error.
-                });
-
-                if(user.newPassword){
+                  if (user.newPassword) {
                     user.password = user.newPassword;
                     adminService.resetPassword({
                         "username" : user.username,
                         "new" : user.newPassword
+                    }).success(function(){
+                      $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+                      $scope.hideModal();
+                    }).error(function(error){
+                      $scope.usersError = {
+                        message: error.response.message,
+                        remedialAction: error.response.remedialAction
+                      }
                     });
                     delete user.newPassword;
-                }
+                  } else {
+                    $scope.hideModal();
+                    $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+                  }
+                }).error(function(error){
+                  $scope.usersError = {
+                    message: error.response.message,
+                    remedialAction: error.response.remedialAction
+                  }
+                });
 
                 users.toggleUserStatus(user);
             };
