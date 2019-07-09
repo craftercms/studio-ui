@@ -9101,8 +9101,13 @@ CStudioAuthoring.FilesDiff = {
                 key;
 
             if(data && data["mime-type"]){
-                for( var i = 0; i < data["mime-type"].length; i++){
-                    confMimeType = data["mime-type"][i];
+                var mimeTypes = data["mime-type"];
+                if(!Array.isArray(mimeTypes)) {
+                    //support single values coming from SiteServiceImpl#createMap
+                    mimeTypes = [mimeTypes];
+                }
+                for( var i = 0; i < mimeTypes.length; i++){
+                    confMimeType = mimeTypes[i];
                     mimeType = {};
 
                     if(confMimeType.icon){
