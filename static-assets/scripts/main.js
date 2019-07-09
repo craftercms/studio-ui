@@ -1199,7 +1199,7 @@
                 $scope.adminModal = $uibModal.open({
                     templateUrl: '/studio/static-assets/ng-views/create-site.html?version='+ UIBuildId,
                     backdrop: 'static',
-                    keyboard: true,
+                    keyboard: false,
                     controller: 'SiteCtrl',
                     scope: $scope,
                     size: 'lg'
@@ -1582,6 +1582,23 @@
                 });
             }
 
+            $scope.cancelCreateDialog = function(eve) {
+                $(document).off( "keyup");
+                $scope.adminModal.close();
+            };
+
+            $(document).on('keyup',function(evt) {
+                if(evt.which == 13) {
+                    var isRemoteGit = $scope.isRemoteGit ? "remoteGit" : "BPAvailable",
+                        elt = $scope.getStepTemplate() + "-" + isRemoteGit + "-key";
+
+                    !$("." + elt).is(':disabled') ? $("." + elt).trigger( "click") : null;
+                }
+                if(evt.which == 27) {
+                    $scope.cancelCreateDialog();
+                }
+            });
+
             // END NEW Create Site
 
         }
@@ -1876,5 +1893,7 @@
             return (!value) ? '' : value.replace(/ /g, '');
         };
     });
+
+
 
 })(angular);

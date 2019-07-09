@@ -41,7 +41,7 @@
             <div class="col-xs-12 col-sm-7 col-md-6">
                 <div ng-attr-id="{{ 'flexslider' + $index }}" class="flexslider mt15 mainslider" ng-init="flexSilderInit('flexslider' + $index)" >
                     <ul class="slides">
-                        <li class="list-gallery" ng-repeat="media in siteBP.plugin.media.screenshots" >
+                        <li class="list-gallery" ng-repeat="media in siteBP.plugin.media.screenshots">
                             <img class="gallery-image" ng-src="{{media.url}}" alt="{{media.title}}" onerror="this.src='/studio/static-assets/images/no_image_available.jpg'">
                         </li>
                     </ul>
@@ -57,7 +57,7 @@
                     <li ng-repeat="versioSupported in siteBP.plugin.crafterCmsVersions">{{versioSupported.major}}.{{versioSupported.minor}}.{{versioSupported.patch}}</li>
                 </ul>
                 <p ng-show="siteBP.plugin.website.url"><strong>{{ 'dashboard.sites.create.WEBSITE' | translate }}: </strong><a target="_blank" href="{{siteBP.plugin.website.url}}">{{siteBP.plugin.website.url}}</a></p>
-                <button type="button" ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.plugin.id; site.blueprintName = siteBP.plugin.name; gotoStep(2)" class="btn btn-primary">{{ 'dashboard.sites.create.SELECT' | translate }}</button>
+                <button type="button" ng-disabled="isRemoteGit" ng-click="site.blueprint = siteBP.plugin.id; site.blueprintName = siteBP.plugin.name; gotoStep(2)" class="btn btn-primary" ng-class="{'createSitesBlueprint-BPAvailable-key':$first}" >{{ 'dashboard.sites.create.SELECT' | translate }}</button>
             </div>
         </article>
     </section>
@@ -405,22 +405,23 @@
             {{ 'common.create_LABEL' | translate }}
         </button>-->
         <div class="left-btns pull-left">
-            <button  type="button" ng-click="adminModal.close()" class="btn btn-default cancel">
+            <button  type="button" ng-click="cancelCreateDialog()" class="btn btn-default cancel">
                 {{ 'common.CANCEL_LABEL' | translate }}
             </button>
             <button type="button" ng-disabled="currentStep <= 1" class="btn btn-default" name="previous" type="button" ng-click="gotoPreviousStep()"><i class="fa fa-arrow-left"></i> {{ 'dashboard.sites.create.PREVIOUS_STEP' | translate }}</button>
-            <button type="button" ng-show="((currentStep == 2 && !isRemoteGit) || currentStep == 3 || currentStep == 4 )" class="btn btn-primary" name="previous" type="button"
+            <button type="button" ng-show="((currentStep == 2 && !isRemoteGit) || currentStep == 3 || currentStep == 4 )"
+                    class="btn btn-primary createSitesBasicInfo-BPAvailable-key createSitesBasicDevInfo-remoteGit-key createSitesAditionalDevOptions-BPAvailable-key" name="previous" type="button"
                     ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid ) ||
                                     (currentStep == 3 && (createNameForm.name.$invalid || createNameForm.url.$invalid || createNameForm.username.$invalid || createNameForm.password.$invalid || createNameForm.tokenNum.$invalid || createNameForm.keyNum.$invalid)) ||
                                     (currentStep == 4 && (createNameForm.push_name.$invalid || createNameForm.push_url.$invalid || createNameForm.push_username.$invalid || createNameForm.push_password.$invalid || createNameForm.push_tokenNum.$invalid || createNameForm.push_keyNum.$invalid))"
                     ng-click="gotoStep(5)">{{ 'dashboard.sites.create.REVIEW_CREATE' | translate }} <i class="fa fa-arrow-right"></i>
             </button>
-            <button type="button" ng-show="currentStep == 1 " class="btn btn-default" name="previous" type="button"
+            <button type="button" ng-show="currentStep == 1 " class="btn btn-default createSitesBlueprint-remoteGit-key" name="previous" type="button"
                     ng-disabled="(currentStep == 1 && !isRemoteGit) ||
                                     (currentStep == 2 && createNameForm.siteId.$invalid )"
                     ng-click="gotoStep(2)">{{ 'dashboard.sites.create.BASIC_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
             </button>
-            <button type="button" ng-show="currentStep == 2 && isRemoteGit" class="btn btn-default" name="previous" type="button"
+            <button type="button" ng-show="currentStep == 2 && isRemoteGit" class="btn btn-default createSitesBasicInfo-remoteGit-key" name="previous" type="button"
                     ng-disabled="(currentStep == 2 && createNameForm.siteId.$invalid )"
                     ng-click="gotoStep(3)">{{ 'dashboard.sites.create.BASIC_DEVELOPER_INFORMATION' | translate }} <i class="fa fa-arrow-right"></i>
             </button>
@@ -431,7 +432,7 @@
             </button>
         </div>
         <div class="right-btns pull-right">
-            <button id="saveBtn" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary" name="create"
+            <button id="saveBtn" ng-disabled="(createNameForm.$invalid || isValid) || (currentStep != steps.length)" class="btn btn-primary createSitesReviewCreate-BPAvailable-key createSitesReviewCreate-remoteGit-key" name="create"
                     type="button" ng-click="create()">{{ 'common.create_LABEL' | translate }}
             </button>
         </div>
