@@ -7331,7 +7331,10 @@ var nodeOpen = false,
                     }
 
                 }else{
-                    if(treeNodeTO.isComponent){     //isLevelDescriptor - also component
+                    if(customIcons[treeNodeTO.contentType]){ //support any local overrides for content type styling
+                        mainIconClass = customIcons[treeNodeTO.contentType].class;
+                        customStyle = customIcons[treeNodeTO.contentType].style;
+                    }else if(treeNodeTO.isComponent){     //isLevelDescriptor - also component
                         mainIconClass = defaultIcons.component.class;
                     }else if(treeNodeTO.isPage){
                         if((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating || treeNodeTO.floating){
