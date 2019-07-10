@@ -1384,7 +1384,7 @@ var CStudioForms = CStudioForms || function() {
                                         text: message, icon: YAHOO.widget.SimpleDialog.ICON_WARN,
                                         constraintoviewport: true,
                                         buttons: [ { text:CMgs.format(formsLangBundle, "yes"), handler: function(){
-                                            this.hide();
+                                            this.destroy();
                                             var entityId = buildEntityIdFn(null);
                                             showWarnMsg = false;
 
@@ -1401,7 +1401,7 @@ var CStudioForms = CStudioForms || function() {
                                                 }
                                             }
                                         }, isDefault:false },
-                                            { text:CMgs.format(formsLangBundle, "no"),  handler:function(){this.hide();}, isDefault:true } ]
+                                            { text:CMgs.format(formsLangBundle, "no"),  handler:function(){this.destroy();}, isDefault:true } ]
                                     });
                                 dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                                 dialog.render(document.body);
