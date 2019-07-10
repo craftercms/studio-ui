@@ -7331,7 +7331,10 @@ var nodeOpen = false,
                     }
 
                 }else{
-                    if(treeNodeTO.isComponent){     //isLevelDescriptor - also component
+                    if(customIcons[treeNodeTO.contentType]){ //support any local overrides for content type styling
+                        mainIconClass = customIcons[treeNodeTO.contentType].class;
+                        customStyle = customIcons[treeNodeTO.contentType].style;
+                    }else if(treeNodeTO.isComponent){     //isLevelDescriptor - also component
                         mainIconClass = defaultIcons.component.class;
                     }else if(treeNodeTO.isPage){
                         if((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating || treeNodeTO.floating){
@@ -9098,8 +9101,13 @@ CStudioAuthoring.FilesDiff = {
                 key;
 
             if(data && data["mime-type"]){
-                for( var i = 0; i < data["mime-type"].length; i++){
-                    confMimeType = data["mime-type"][i];
+                var mimeTypes = data["mime-type"];
+                if(!Array.isArray(mimeTypes)) {
+                    //support single values coming from SiteServiceImpl#createMap
+                    mimeTypes = [mimeTypes];
+                }
+                for( var i = 0; i < mimeTypes.length; i++){
+                    confMimeType = mimeTypes[i];
                     mimeType = {};
 
                     if(confMimeType.icon){
