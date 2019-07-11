@@ -21,7 +21,7 @@
 CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.TargetingMod || {
 
 	initialized: false,
-	
+
 	/**
 	 * initialize module
 	 */
@@ -29,7 +29,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 		this.definePlugin();
 		CStudioAuthoring.ContextualNav.TargetingNav.init();
 	},
-	
+
 	definePlugin: function() {
 		var YDom = YAHOO.util.Dom,
 			YEvent = YAHOO.util.Event;
@@ -62,7 +62,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 						}
 					});
 				},
-				
+
 				render: function() {
 					var me = this,
 						el, containerEl, iconEl, ptoOn;
@@ -268,7 +268,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					clearBtn.onclick = function() {
 						CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/targeting/targeting-config.xml', {
 							success: function (config) {
-								var properties = config.property,
+								var properties = Array.isArray(config.property) ? config.property : [config.property],
 									currentProp,
 									controlEl;
 
@@ -335,8 +335,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 				updateTargeting: function(reportContainerEl) {
 					this.updateModel();
 
-					var serviceUri = "/api/1/profile/set",
-						first = true,
+					var serviceUri = "/api/1/profile/set?",
 						value,
 						key;
 
@@ -347,17 +346,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 							key = property;
 
 							if(value){
-								if(first){
-									first = false;
-									serviceUri += "?" + key + "=" + value;
-								}else{
-									serviceUri += "&" + key + "=" + value;
-								}
-							}
+                serviceUri += key + "=" + value + "&";
+              }
 						}
 					}
 
-					serviceUri = serviceUri + "&" + new Date();
+					serviceUri += new Date();
 
 					YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(encodeURI(serviceUri)), {
 						success: function() {
@@ -379,7 +373,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var me = this,
 						properties = properties;
 
-					if(!properties.forEach){	//if only 1 item - returns item, not in array		
+					if(!properties.forEach){	//if only 1 item - returns item, not in array
 						properties = [properties];
 					}
 
