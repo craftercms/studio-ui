@@ -7578,17 +7578,20 @@ var nodeOpen = false,
                     }
 
                 }else{
-                    if(treeNodeTO.isComponent){     //isLevelDescriptor - also component
-                        mainIconClass = defaultIcons.component.class;
-                    }else if(treeNodeTO.isPage){
-                        if((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating || treeNodeTO.floating){
-                            mainIconClass = defaultIcons.floatingPage.class;
-                        }else{
-                            mainIconClass = defaultIcons.navPage.class;
-                        }
-                    }else if(treeNodeTO.contentType && treeNodeTO.contentType.toLowerCase().indexOf("taxonomy") !== -1){
-                        mainIconClass = defaultIcons.taxonomy.class;
-                    }
+                  if (customIcons[treeNodeTO.contentType]) { //support any local overrides for content type styling
+                    mainIconClass = customIcons[treeNodeTO.contentType].class;
+                    customStyle = customIcons[treeNodeTO.contentType].style;
+                  } else if(treeNodeTO.isComponent) {     //isLevelDescriptor - also component
+                      mainIconClass = defaultIcons.component.class;
+                  } else if(treeNodeTO.isPage) {
+                      if ((treeNodeTO.style && treeNodeTO.style.match(/\bfloating\b/)) || treeNodeTO.isFloating || treeNodeTO.floating) {
+                          mainIconClass = defaultIcons.floatingPage.class;
+                      } else {
+                          mainIconClass = defaultIcons.navPage.class;
+                      }
+                  } else if(treeNodeTO.contentType && treeNodeTO.contentType.toLowerCase().indexOf("taxonomy") !== -1) {
+                      mainIconClass = defaultIcons.taxonomy.class;
+                  }
                 }
 
                 iconConfig.icon.class = mainIconClass;
@@ -9450,22 +9453,27 @@ CStudioAuthoring.FilesDiff = {
                 mimeType,
                 key;
 
-            if(data && data["mime-type"]){
-                for( var i = 0; i < data["mime-type"].length; i++){
-                    confMimeType = data["mime-type"][i];
-                    mimeType = {};
+            if (data && data["mime-type"]) {
+              var mimeTypes = data["mime-type"];
+              if (!Array.isArray(mimeTypes)) {
+                  //support single values coming from SiteServiceImpl#createMap
+                  mimeTypes = [mimeTypes];
+              }
+              for( var i = 0; i < mimeTypes.length; i++){
+                confMimeType = mimeTypes[i];
+                mimeType = {};
 
-                    if(confMimeType.icon){
-                        if(confMimeType.icon.class){
-                            mimeType.class = confMimeType.icon.class;
-                        }
-                        if(confMimeType.icon.styles){
-                            mimeType.styles = confMimeType.icon.styles;
-                        }
+                if(confMimeType.icon){
+                    if(confMimeType.icon.class){
+                        mimeType.class = confMimeType.icon.class;
                     }
-
-                    mimeTypes[confMimeType.type] = mimeType;
+                    if(confMimeType.icon.styles){
+                        mimeType.styles = confMimeType.icon.styles;
+                    }
                 }
+
+                mimeTypes[confMimeType.type] = mimeType;
+              }
             }
 
             CStudioAuthoring.mimeTypes = mimeTypes;
