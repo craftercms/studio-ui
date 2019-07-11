@@ -49,7 +49,7 @@ CStudioAuthoring.Module.requireModule(
           "/site-config.xml",
           {
               success: function(config) {
-                  CStudioAdminConsole.isPostfixAvailable = (config["form-engine"]["field-name-postfix"] === "true");
+                  CStudioAdminConsole.isPostfixAvailable = config["form-engine"] && config["form-engine"]["field-name-postfix"] === "true" ? true : false;
               }
           });
 
