@@ -1521,7 +1521,9 @@
             };
 
             groups.getUsersAutocomplete = function() {
-                adminService.getUsers().success(function(data){
+                var params = {};
+                params.limit = -1;
+                adminService.getUsers(params).success(function(data){
                     groups.usersAutocomplete = [];
 
                     data.users.forEach(function(user){
