@@ -53,12 +53,18 @@
                         <td>{{group.name}}</td>
                         <td>{{group.desc}}</td>
                         <td>
-                            <a ng-click="groups.viewGroup(group)" class="btn btn-sm edit">
+                            <a ng-click="groups.viewGroup(group)"
+                               class="btn btn-sm edit"
+                               tooltip-placement="bottom"
+                               uib-tooltip="{{'common.edit_LABEL' | translate}}">
                                 <i class="fa fa-pencil"></i>
                             </a>
                         </td>
                         <td>
-                            <a ng-click="removeGroup(group)" class="btn btn-sm remove">
+                            <a ng-click="removeGroup(group)"
+                               class="btn btn-sm remove"
+                               tooltip-placement="bottom"
+                               uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
                                 <i class="fa fa-trash-o"></i>
                             </a>
                         </td>
@@ -138,7 +144,10 @@
                     <td>{{user.username}}</td>
                     <td>{{user.email}}</td>
                     <td>
-                        <a ng-click="removeUserFromGroup(user, groups.selectedGroup)" class="btn btn-sm">
+                        <a ng-click="removeUserFromGroup(user, groups.selectedGroup)"
+                           class="btn btn-sm"
+                           tooltip-placement="bottom"
+                           uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
                             <i class="glyphicon glyphicon-trash"></i>
                         </a>
                     </td>

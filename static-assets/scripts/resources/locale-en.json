@@ -357,7 +357,8 @@
     "ERROR": "Error",
     "DELETE_QUESTION":"Do you want to delete",
     "GLOBAL_MENU": "Global Menu",
-    "MAIN_MENU": "Main Menu"
+    "MAIN_MENU": "Main Menu",
+    "RESET_PASSWORD": "Reset Password"
 
   }
 }

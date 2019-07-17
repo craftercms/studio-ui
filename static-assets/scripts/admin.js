@@ -1136,6 +1136,36 @@
                 });
 
             };
+            users.resetPasswordDialog = function(user) {
+              $scope.editedUser = user;
+              $scope.user = {};
+              $scope.okModalFunction = users.editPassword;
+
+              $scope.adminModal = $scope.showModal('resetPassword.html');
+
+              adminService.getUser(user.username).success(function (data) {
+                  $scope.user = data.user;
+                  $scope.user.enabled = data.user.enabled;
+              }).error(function (error) {
+                  console.log(error);
+              });
+            };
+            users.editPassword = function(user) {
+              user.password = user.newPassword;
+              adminService.resetPassword({
+                  "username" : user.username,
+                  "new" : user.newPassword
+              }).success(function(){
+                $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+                $scope.hideModal();
+              }).error(function(error){
+                $scope.usersError = {
+                  message: error.response.message,
+                  remedialAction: error.response.remedialAction
+                }
+              });
+              delete user.newPassword;
+            };
             users.editUserDialog = function(user) {
                 $scope.editedUser = user;
                 $scope.user = {};
@@ -1154,8 +1184,6 @@
                 });
             };
             users.editUser = function(user) {
-
-
                 var currentUser = {};
                 currentUser.id = user.id;
                 currentUser.username = user.username
@@ -1174,25 +1202,8 @@
                       $scope.displayedCollection = $scope.usersCollection;
                   }
 
-                  if (user.newPassword) {
-                    user.password = user.newPassword;
-                    adminService.resetPassword({
-                        "username" : user.username,
-                        "new" : user.newPassword
-                    }).success(function(){
-                      $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
-                      $scope.hideModal();
-                    }).error(function(error){
-                      $scope.usersError = {
-                        message: error.response.message,
-                        remedialAction: error.response.remedialAction
-                      }
-                    });
-                    delete user.newPassword;
-                  } else {
-                    $scope.hideModal();
-                    $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
-                  }
+                  $scope.hideModal();
+                  $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
                 }).error(function(error){
                   $scope.usersError = {
                     message: error.response.message,
