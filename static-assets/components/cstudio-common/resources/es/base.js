@@ -548,7 +548,9 @@ CStudioAuthoring.Messages.registerBundle("search", "es", {
     seeLess: 'Ver Menos',
     under: 'Menos de ',
     above: 'y más',
-    errorMessage: 'Hubo un problema completando su búsqueda, por favor contacte al Administrador si el problema persite.'
+    errorMessage: 'Hubo un problema completando su búsqueda, por favor contacte al Administrador si el problema persite.',
+    clear: 'Limpiar',
+    apply: 'Aplicar'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "es", {
