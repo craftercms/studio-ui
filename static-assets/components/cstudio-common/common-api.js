@@ -1269,7 +1269,7 @@ var nodeOpen = false,
             /**
              * open a browse page for CMIS repo
              */
-            openWebDAVBrowse: function(path, profileId, baseUrl, mode, newWindow, callback, filter = 'none') {
+            openWebDAVBrowse: function(path, profileId, mode, newWindow, callback, filter = 'none') {
 
                 var searchId = null;
 
@@ -1289,10 +1289,6 @@ var nodeOpen = false,
 
                 if(filter !== 'none'){
                     browseUrl += "&filter=" + filter;
-                }
-
-                if(baseUrl){
-                    browseUrl += "&baseUrl=" + baseUrl;
                 }
 
                 if (!CStudioAuthoring.Utils.isEmpty(mode)) {
