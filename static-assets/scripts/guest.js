@@ -223,10 +223,24 @@ define('guest', [
       clearSetTimeout(Constants.TIME_SCROLL);
     });
 
-    loadCss(config.hostOrigin + '/' + crafter.join(config.studioContext, config.studioStaticAssets, 'styles', 'guest.css'));
+    loadCss(config.hostOrigin + crafter.join(
+      '/',
+      config.studioContext,
+      config.studioStaticAssets,
+      'styles',
+      'guest.css'
+    ));
 
-    if (!$("link[href*='font-awesome']").length) {
-      loadCss(config.hostOrigin + '/' + crafter.join(config.studioContext, config.studioStaticAssets, 'themes', 'cstudioTheme', 'css', 'font-awesome.min.css'));
+    if (!$('link[href*=\'font-awesome\']').length) {
+      loadCss(config.hostOrigin + crafter.join(
+        '/',
+        config.studioContext,
+        config.studioStaticAssets,
+        'themes',
+        'cstudioTheme',
+        'css',
+        'font-awesome.min.css'
+      ));
     }
 
     setRegionsCookie();
