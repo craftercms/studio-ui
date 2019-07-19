@@ -95,8 +95,8 @@
                             <span class="caret"></span>
                         </button>
 
-                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="searchDropdown">
-                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <ul class="dropdown-menu dropdown-menu-right pr5 pl5" aria-labelledby="searchDropdown">
+                            <div class="panel-group mb0" id="accordion" role="tablist" aria-multiselectable="true">
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingTwo">
                                         <h4 class="panel-title">
@@ -110,30 +110,19 @@
                                     <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
                                     <div class="panel-body">
                                         <li class="filter-item">
-                                            <a href="#">
-                                                <input type="radio" name="sortBy" value="internalName" id="sortByinternalName">
-                                                <label for="sortByinternalName" data-trans="name">Name</label>
-                                            </a>
+                                          <select class="sort-dropdown search-dropdown" name="sortBy"></select>
                                         </li>
-                                        <div class="sort-dinam"></div>
                                     </div>
                                     <#--  Sort order  -->
                                     <div class="panel-footer subfilter">
                                         <h4 class="panel-title" data-trans="sortOrder">
                                             Sort Order
                                         </h4>
-
                                         <li class="filter-item">
-                                            <a href="#">
-                                                <input type="radio" name="sortOrder" value="asc" id="asc">
-                                                <label for="asc" data-trans="asc">Asc</label>
-                                            </a>
-                                        </li>
-                                        <li class="filter-item">
-                                            <a href="#">
-                                                <input type="radio" name="sortOrder" value="desc" id="desc">
-                                                <label for="desc" data-trans="desc">Desc</label>
-                                            </a>
+                                          <select class="sort-dropdown search-dropdown" name="sortOrder">
+                                            <option value="asc" data-trans="asc">Asc</option>
+                                            <option value="desc" data-trans="desc">Desc</option>
+                                          </select>
                                         </li>
                                     </div>
                                 </div>
@@ -268,7 +257,8 @@
                 </h4>
             </div>
             <div id="{{ value }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ value }}">
-                {{#if clear}}<a class="clear-filter">Clear</a>{{/if}}
+                {{#if multiple}}<button type="button" name="{{ value }}" class="btn btn-primary apply-selections pull-right mt10 mr10" disabled="true" data-trans="apply">Apply</button>{{/if}}
+                {{#if clear}}<button type="button" class="btn btn-default clear-filter" name="{{ value }}" disabled="true" data-trans="clear">Clear</button>{{/if}}
                 <div class="panel-body">
 
                 </div>

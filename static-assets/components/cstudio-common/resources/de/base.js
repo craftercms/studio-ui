@@ -562,7 +562,9 @@ CStudioAuthoring.Messages.registerBundle("search", "de", {
     seeLess: 'Weniger sehen',
     under: 'Unter',
     above: 'und darüber',
-    errorMessage: 'Bei der Suche ist ein Problem aufgetreten. Wenden Sie sich an den Administrator, falls das Problem weiterhin besteht.'
+    errorMessage: 'Bei der Suche ist ein Problem aufgetreten. Wenden Sie sich an den Administrator, falls das Problem weiterhin besteht.',
+    clear: 'klar',
+    apply: 'Sich bewerben'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "de", {
