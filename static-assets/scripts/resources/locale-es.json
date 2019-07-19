@@ -356,6 +356,7 @@
     "ERROR": "Error",
     "DELETE_QUESTION":"Quieres borrar",
     "GLOBAL_MENU": "Menu Global",
-    "MAIN_MENU": "Menu Principal"
+    "MAIN_MENU": "Menu Principal",
+    "RESET_PASSWORD": "Restablecer la contraseña"
   }
 }

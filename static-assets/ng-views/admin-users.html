@@ -44,6 +44,7 @@
                             <th>{{ 'admin.users.EMAIL' | translate }}</th>
                             <th></th>
                             <th></th>
+                            <th></th>
                         </tr>
                         <tr>
                             <th colspan="12">
@@ -61,13 +62,28 @@
                             <td class="email">{{user.email}}</td>
 
                             <td class="edit">
-                                <a ng-click="users.editUserDialog(user)" class="btn btn-sm">
+                                <a ng-click="users.editUserDialog(user)"
+                                   class="btn btn-sm"
+                                   tooltip-placement="bottom"
+                                   uib-tooltip="{{'common.edit_LABEL' | translate}}">
                                     <i class="fa fa-pencil">
                                     </i>
                                 </a>
                             </td>
+                            <td class="reset-password">
+                              <a ng-click="users.resetPasswordDialog(user)"
+                                 class="btn btn-sm"
+                                 tooltip-placement="bottom"
+                                 uib-tooltip="{{'common.RESET_PASSWORD' | translate}}">
+                                  <i class="fa fa-key fa-flip-horizontal">
+                                  </i>
+                              </a>
+                          </td>
                             <td class="remove">
-                                <a ng-click="users.removeUser(user)" class="btn btn-sm">
+                                <a ng-click="users.removeUser(user)"
+                                   class="btn btn-sm"
+                                   tooltip-placement="bottom"
+                                   uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
                                     <i class="fa fa-trash-o">
                                     </i>
                                 </a>
@@ -245,21 +261,6 @@
                             </small>
                         </div>
                     </div>
-                    <div class="form-group" ng-if="dialogMode == 'edit'">
-                        <hr/>
-                        <label for="newPassword" class="control-label">Reset Password
-                        </label>
-                        <input type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword"
-                               placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'>
-
-                        <!--<div class="error-container" ng-if="dialogMode"-->
-                        <!--ng-show="(createNameForm.newPassword.$dirty && createNameForm.newPassword.$invalid) || (createNameForm.newPassword.$touched && createNameForm.newPassword.$invalid)">-->
-                        <!--<small class="error"-->
-                        <!--ng-show="createNameForm.newPassword.$error.required">-->
-                        <!--{{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}-->
-                        <!--</small>-->
-                        <!--</div>-->
-                    </div>
                 </fieldset>
                 <div class="alert alert-danger" ng-if="usersError">
                     {{usersError.message}}. {{usersError.remedialAction}}
@@ -276,6 +277,37 @@
             <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
         </div>
     </form>
+</script>
+
+<script type="text/ng-template" id="resetPassword.html">
+  <div class="modal-header">
+      <!-- <h3 ng-if="dialogMode" class="modal-title">{{ 'common.' + dialogMode + '_LABEL' | translate }} {{ 'admin.users.USER_LABEL' | translate }}</h3> -->
+      <h3 class="modal-title">Reset Password</h3>
+  </div>
+  <form name="passwordForm" id="password-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+      <div class="modal-body clearfix edit-edit admin-dialog">
+          <div class="col-md-12">
+              <fieldset ng-disabled="user.externallyManaged">
+                  <div class="form-group">
+                      <label for="newPassword" class="control-label">Reset Password
+                      </label>
+                      <input type="password" class="form-control" id="newPassword" name="newPassword" ng-model="user.newPassword"
+                             placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'>
+                  </div>
+              </fieldset>
+              <div class="alert alert-danger" ng-if="usersError">
+                  {{usersError.message}}. {{usersError.remedialAction}}
+              </div>
+          </div>
+      </div>
+
+      <div class="modal-footer" id="new-user-dialog-footer">
+          <button class="btn btn-primary text-capitalize"
+                  ng-click="okModalFunction(user)" ng-disabled="passwordForm.$invalid || user.externallyManaged">{{ 'admin.users.SAVE' | translate }}</button>
+          <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+          <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+      </div>
+  </form>
 </script>
 
 <script type="text/ng-template" id="creatingUserConfirmation.html">

@@ -357,7 +357,8 @@
     "ERROR": "Fehler",
     "DELETE_QUESTION":"Sind Sie sicher, dass Sie den folgenden Eintrag löschen möchten: ",
     "GLOBAL_MENU": "Globales Menü",
-    "MAIN_MENU": "Hauptmenü"
+    "MAIN_MENU": "Hauptmenü",
+    "RESET_PASSWORD": "Passwort zurücksetzen"
 
   }
 }

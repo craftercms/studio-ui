@@ -356,6 +356,7 @@
     "ERROR": "오류",
     "DELETE_QUESTION":"삭제 하시겠습니까",
     "GLOBAL_MENU": "글로벌 메뉴",
-    "MAIN_MENU": "기본 메뉴"
+    "MAIN_MENU": "기본 메뉴",
+    "RESET_PASSWORD": "암호를 재설정"
   }
 }
