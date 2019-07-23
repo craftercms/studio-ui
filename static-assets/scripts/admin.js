@@ -1597,6 +1597,7 @@
               groups.membersCollection = {};
               groups.members.totalLogs = 0;
               groups.members.pagination = { current: 1 };
+              groups.members.getMembersError = null;
 
               $scope.activeGroup = group;
               $scope.noGroupSelected = false;
@@ -1608,8 +1609,6 @@
               function getResultsPage(pageNumber) {
 
                 var params = {};
-
-                //params.site_id = site;
 
                 if(groups.members.totalLogs && groups.members.totalLogs > 0) {
                   var offset = (pageNumber - 1) * groups.itemsPerPage,
@@ -1625,8 +1624,8 @@
                   groups.members.totalLogs = data.total;
                   groups.usersFromGroupCollection = data.users;
                   groups.getUsersAutocomplete();
-                }).error(function () {
-                    //TODO: properly display error
+                }).error(function (e) {
+                    groups.members.getMembersError = e.response.message + '. ' + e.response.remedialAction;
                 });
               }
 

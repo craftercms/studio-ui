@@ -156,6 +156,8 @@
                 </tbody>
             </table>
 
+            <h5 ng-show="groups.members.getMembersError">{{ groups.members.getMembersError }}</h5>
+
             <dir-pagination-controls pagination-id="paginateMembers" on-page-change="groups.members.pageChanged(newPageNumber)"></dir-pagination-controls>
         </div>
     </div>
