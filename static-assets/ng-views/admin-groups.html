@@ -49,7 +49,7 @@
                     <tbody>
 
                     <tr id="group-{{ group.name | nospace }}" dir-paginate="group in groupsCollection | filter:q | itemsPerPage: groups.itemsPerPage"
-                        current-page="groups.pagination.current" total-items="groups.totalLogs">
+                      pagination-id="paginateGroups" current-page="groups.pagination.current" total-items="groups.totalLogs">
                         <td>{{group.name}}</td>
                         <td>{{group.desc}}</td>
                         <td>
@@ -72,7 +72,7 @@
                     </tbody>
                 </table>
 
-                <dir-pagination-controls on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
+                <dir-pagination-controls pagination-id="paginateGroups" on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>
             </div>
         </div>
         <div ng-show="groups.groupView" class="col-md-12">
@@ -140,7 +140,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr id="member-{{user.username}}" ng-repeat="user in displayedCollection">
+                <tr id="member-{{user.username}}" dir-paginate="user in displayedCollection | itemsPerPage: groups.itemsPerPage" current-page="groups.members.pagination.current"
+                    pagination-id="paginateMembers" total-items="groups.members.totalLogs">
                     <td>{{user.username}}</td>
                     <td>{{user.email}}</td>
                     <td>
@@ -153,14 +154,11 @@
                     </td>
                 </tr>
                 </tbody>
-                <tfoot>
-                <tr>
-                    <td colspan="12" class="">
-                        <div st-pagination="" st-items-by-page="15" st-displayed-pages="7"></div>
-                    </td>
-                </tr>
-                </tfoot>
             </table>
+
+            <h5 ng-show="groups.members.getMembersError">{{ groups.members.getMembersError }}</h5>
+
+            <dir-pagination-controls pagination-id="paginateMembers" on-page-change="groups.members.pageChanged(newPageNumber)"></dir-pagination-controls>
         </div>
     </div>
 </div>

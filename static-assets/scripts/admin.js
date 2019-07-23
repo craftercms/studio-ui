@@ -119,8 +119,8 @@
                 return $http.get(groups('get', 'group_name=' + group.group_name + '&site_id=' + group.site_id));
             };
 
-            this.getUsersFromGroup = function(params) {
-                return $http.get(groupsMembers(params.id, true));
+            this.getUsersFromGroup = function(group, params) {
+                return $http.get(groupsMembers(group.id, true), { params });
             };
 
             this.deleteUserFromGroup = function(groupId, params){
@@ -1401,7 +1401,7 @@
 
             /////////////////// MULTIPLE GROUPS VIEW ////////////////////
 
-            var getGroups = function(site) {
+            var getGroups = function() {
 
                 groups.totalLogs = 0;
                 getResultsPage(1);
@@ -1437,7 +1437,7 @@
 
                 }
             };
-            getGroups(groups.site);
+            getGroups();
 
             $scope.createGroupDialog = function(){
                 $scope.group = {};
@@ -1528,7 +1528,7 @@
                 groups.groupView = true;
                 groups.usersToAdd = [];
 
-                $scope.getUsersFromGroup(group);
+                $scope.getGroupMembers(group);
             };
 
             groups.getUsersAutocomplete = function() {
@@ -1592,20 +1592,48 @@
                 return false;
             };
 
-            $scope.getUsersFromGroup = function(group){
-                groups.usersFromGroupCollection = {};
-                $scope.activeGroup = group;
-                $scope.noGroupSelected = false;
+            groups.members = {};
+            $scope.getGroupMembers = function(group) {
+              groups.membersCollection = {};
+              groups.members.totalLogs = 0;
+              groups.members.pagination = { current: 1 };
+              groups.members.getMembersError = null;
 
-                //group.site_id = groups.site;
+              $scope.activeGroup = group;
+              $scope.noGroupSelected = false;
 
-                adminService.getUsersFromGroup(group).success(function (data) {
-                    groups.usersFromGroupCollection = data.users;
-                    groups.getUsersAutocomplete();
-                }).error(function () {
-                    //TODO: properly display error
+              groups.members.pageChanged = function(newPage) {
+                getResultsPage(newPage);
+              };
+
+              function getResultsPage(pageNumber) {
+
+                var params = {};
+
+                if(groups.members.totalLogs && groups.members.totalLogs > 0) {
+                  var offset = (pageNumber - 1) * groups.itemsPerPage,
+                      end = offset + groups.itemsPerPage;
+                  params.offset = offset;
+                  params.limit = groups.itemsPerPage;
+                }else{
+                  params.offset = 0;
+                  params.limit = groups.itemsPerPage;
+                }
+
+                adminService.getUsersFromGroup(group, params).success(function (data) {
+                  groups.members.totalLogs = data.total;
+                  groups.usersFromGroupCollection = data.users;
+                  groups.getUsersAutocomplete();
+                }).error(function (e) {
+                    groups.members.getMembersError = e.response.message + '. ' + e.response.remedialAction;
                 });
-            };
+              }
+
+              getResultsPage(1);
+
+            }
+
+
 
             $scope.removeUserFromGroup = function(user, group) {
 
