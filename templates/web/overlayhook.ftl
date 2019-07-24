@@ -1,6 +1,6 @@
 <#assign authoringServer = envConfig.authoringServer!''/>
 <#assign studioContext = envConfig.studioContext!''/>
-<#assign staticAssets = "${authoringServer}/${studioContext}/static-assets"/>
+<#assign staticAssets = "${authoringServer}/static-assets"/>
 
 requirejs.config({
     baseUrl: '${staticAssets}/scripts',
