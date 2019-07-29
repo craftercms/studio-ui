@@ -796,7 +796,6 @@ var nodeOpen = false,
                         CStudioAuthoring.Utils.removeLoadingIcon();
 
                         this.on("submitComplete", function(evt, args){
-                          //window.location.reload();
                           if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
                                 CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
                           }
@@ -817,7 +816,7 @@ var nodeOpen = false,
                                       URLBrowseUri = pageParameter,
                                       contentTOBrowseUri = items[0].browserUri;
 
-                                  if (URLBrowseUri == contentTOBrowseUri){
+                                  if (URLBrowseUri === contentTOBrowseUri){
                                       currentContentTO = null;
                                   } else{
                                       currentContentTO = items[0];
