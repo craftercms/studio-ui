@@ -796,50 +796,61 @@ var nodeOpen = false,
                         CStudioAuthoring.Utils.removeLoadingIcon();
 
                         this.on("submitComplete", function(evt, args){
-                            //window.location.reload();
-                            if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
-                                 CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
+                          //window.location.reload();
+                          if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
+                                CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
+                          }
+
+                          if(items.length > 1){
+                              var oldItems = [];
+                              for(var i = 0; i < items.length; i++ ){
+                                  oldItems[items[i].browserUri.replace(/\//g, '')] = items[i].uri;
+                              }
+                              eventNS.oldPath = oldItems;
+                          }else{
+                              eventNS.oldPath = items[0].uri;
+                          }
+                          var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                          if(CStudioAuthoringContext.isPreview){
+                              try{
+                                  var currentContentTO,
+                                      URLBrowseUri = pageParameter,
+                                      contentTOBrowseUri = items[0].browserUri;
+
+                                  if (URLBrowseUri == contentTOBrowseUri){
+                                      currentContentTO = null;
+                                  } else{
+                                      currentContentTO = items[0];
+                                  }
+
+                                  if(currentContentTO.isPage){
+                                      CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                                  }else{
+                                      CStudioAuthoring.Operations.refreshPreview();
+                                  }
+                              }catch(err) {}
+                          }
+
+
+                          dialogue.destroy();
+                          eventNS.data = items;
+                          eventNS.typeAction = "publish";
+                          self.getGenDependency({
+                            success: function(response) {
+                              var dependenciesObj = JSON.parse(response.responseText).entities,
+                                  dependencies = [];
+
+                              $.each(dependenciesObj, function(){
+                                $.each(this.dependencies, function(){
+                                  dependencies.push(this.item);
+                                });
+                              });
+
+                              eventNS.dependencies = dependencies;
+                              document.dispatchEvent(eventNS);
+                              eventNS.dependencies = null;
                             }
-
-                            if(items.length > 1){
-                                var oldItems = [];
-                                for(var i = 0; i < items.length; i++ ){
-                                    oldItems[items[i].browserUri.replace(/\//g, '')] = items[i].uri;
-                                }
-                                eventNS.oldPath = oldItems;
-                            }else{
-                                eventNS.oldPath = items[0].uri;
-                            }
-                            var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
-                            if(CStudioAuthoringContext.isPreview){
-                                try{
-                                    var currentContentTO,
-                                        URLBrowseUri = pageParameter,
-                                        contentTOBrowseUri = items[0].browserUri;
-
-                                    if (URLBrowseUri == contentTOBrowseUri){
-                                        currentContentTO = null;
-                                    } else{
-                                        currentContentTO = items[0];
-                                    }
-
-                                    if(currentContentTO.isPage){
-                                        CStudioAuthoring.Operations.refreshPreview(currentContentTO);
-                                    }else{
-                                        CStudioAuthoring.Operations.refreshPreview();
-                                    }
-                                }catch(err) {}
-                            }
-
-
-                            dialogue.destroy();
-                            eventNS.data = items;
-                            eventNS.typeAction = "publish";
-                            eventNS.dependencies = self.getGenDependency();
-
-                            document.dispatchEvent(eventNS);
-
-                            eventNS.dependencies = null;
+                          });
 
                         });
 

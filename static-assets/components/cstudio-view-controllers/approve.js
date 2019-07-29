@@ -63,8 +63,8 @@
 
     });
 
-    function getGenDependency() {
-        return genDependency;
+    function getGenDependency(callback) {
+        calculateDependencies(this.submitItems, callback);
     }
 
     function closeButtonClicked() {
@@ -160,7 +160,7 @@
 
     function loadItems(data) {
         var me = this;
-        
+
         var loadSpinner = document.getElementById('loadSpinner');
         var flag = true;
 
@@ -170,7 +170,7 @@
         me.renderItems(items);
         $("#approveSubmit").prop('disabled', false);
         verifyMixedSchedules(items);
-        
+
     }
 
     function traverse (items, referenceDate) {
@@ -250,10 +250,14 @@
     }
 
     function calculateDependencies(data, callback){
-        var entities = { "entities" : [] }; 
+        var entities = { "entities" : [] };
 
         if( typeof data === 'string' || data instanceof String ){
             entities.entities.push({ "item": data });
+        } else {
+          $.each(data, function(){
+            entities.entities.push({ "item": this.uri });
+          });
         }
 
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
@@ -281,7 +285,7 @@
                                 elem.uri = dependency.item;
                                 elem.index = currentElId;
                                 $parentEl.after(agent.get('SUBITEM_ROW', elem));
-                            }); 
+                            });
 
                             $currentEl.attr("data-loaded", "true");
                         }
@@ -296,7 +300,7 @@
                     });
                 },
                 failure: function(error) {
-                    
+
                 }
             };
 
@@ -329,7 +333,7 @@
             if(index == 0) $container.empty();
             $container.append($parentRow);
             item.scheduledDate = temp;
-            
+
             var data = "[ { uri:\"" +  item.uri + "\" }]";
 
         });
@@ -347,7 +351,7 @@
                 //If no deps data has been loaded - load
                 if( $currentEl.attr("data-loaded") === "false"){
                     $currentEl.attr("data-loaded", "true");
-                    
+
                     var callback = {
                         success: function(response) {
                             var response = eval("(" + response.responseText + ")")
@@ -355,13 +359,13 @@
                             $.each(response.entities, function(){
                                 var currentElId = $currentEl.attr("id"),
                                     $parentEl = $currentEl.closest("tr");
-        
+
                                 $.each(this.dependencies, function(index, dependency){
                                     var elem = {};
                                     elem.uri = dependency.item;
                                     elem.index = currentElId;
                                     $parentEl.after(agent.get('SUBITEM_ROW', elem));
-                                });                            
+                                });
                             });
                             $childItems = $container.find("." + parentId);
 
@@ -369,7 +373,7 @@
                             $currentEl.attr('class', 'ttClose parent-div-widget');
                         },
                         failure: function(error) {
-                            
+
                         }
                     };
 
