@@ -1358,6 +1358,7 @@
             $scope.groups = {};
             var groups = $scope.groups;
             groups.site = $location.search().site;
+            groups.members = {};
 
             this.init = function() {
                 $scope.debounceDelay = 500;
@@ -1397,6 +1398,7 @@
 
             //table setup
             groups.itemsPerPage=10;
+            groups.members.itemsPerPage=10;
             $scope.groupsCollection = [];
 
             /////////////////// MULTIPLE GROUPS VIEW ////////////////////
@@ -1438,6 +1440,25 @@
                 }
             };
             getGroups();
+
+            groups.searchGroup = function(query){
+              if( "" === query){
+                  $scope.groupsCollection = groups.groupsCollectionBackup;
+                  groups.itemsPerPage = groups.itemsPerPageBackup;
+                  groups.searchdirty = false;
+              }else{
+                  if(!groups.searchdirty){
+                      groups.searchdirty = true;
+
+                      adminService.getGroups().success(function(data){
+                          groups.groupsCollectionBackup = $scope.groupsCollection;
+                          groups.itemsPerPageBackup = groups.itemsPerPage;
+                          $scope.groupsCollection = data.groups;
+                          groups.itemsPerPage = adminService.maxInt;
+                      });
+                  }
+              }
+          }
 
             $scope.createGroupDialog = function(){
                 $scope.group = {};
@@ -1528,6 +1549,14 @@
                 groups.groupView = true;
                 groups.usersToAdd = [];
 
+                // RESET TABLE STATE
+                if($scope.mq && $scope.mq !== ""){
+                  $scope.mq = "";
+                  groups.members.itemsPerPage = groups.members.itemsPerPageBackup ? groups.members.itemsPerPageBackup : groups.members.itemsPerPage;
+                  groups.members.searchdirty = false;
+                  $('#groups-members-clear-filter').click();    // trigger reset filters directive
+                }
+
                 $scope.getGroupMembers(group);
             };
 
@@ -1592,7 +1621,6 @@
                 return false;
             };
 
-            groups.members = {};
             $scope.getGroupMembers = function(group) {
               groups.membersCollection = {};
               groups.members.totalLogs = 0;
@@ -1611,13 +1639,12 @@
                 var params = {};
 
                 if(groups.members.totalLogs && groups.members.totalLogs > 0) {
-                  var offset = (pageNumber - 1) * groups.itemsPerPage,
-                      end = offset + groups.itemsPerPage;
+                  var offset = (pageNumber - 1) * groups.members.itemsPerPage;
                   params.offset = offset;
-                  params.limit = groups.itemsPerPage;
+                  params.limit = groups.members.itemsPerPage;
                 }else{
                   params.offset = 0;
-                  params.limit = groups.itemsPerPage;
+                  params.limit = groups.members.itemsPerPage;
                 }
 
                 adminService.getUsersFromGroup(group, params).success(function (data) {
@@ -1633,7 +1660,24 @@
 
             }
 
+            groups.searchGroupMembers = function(query){
+              if( "" === query){
+                  groups.usersFromGroupCollection = groups.usersFromGroupCollectionBackup;
+                  groups.members.itemsPerPage = groups.members.itemsPerPageBackup;
+                  groups.members.searchdirty = false;
+              }else{
+                  if(!groups.members.searchdirty){
+                      groups.members.searchdirty = true;
 
+                      adminService.getGroups().success(function(data){
+                          groups.usersFromGroupCollectionBackup = groups.usersFromGroupCollection;
+                          groups.members.itemsPerPageBackup = groups.members.itemsPerPage;
+                          $scope.usersFromGroupCollection = data.users;
+                          groups.members.itemsPerPage = adminService.maxInt;
+                      });
+                  }
+              }
+          }
 
             $scope.removeUserFromGroup = function(user, group) {
 
@@ -1644,7 +1688,7 @@
 
                 var removeUserFromGroup = function() {
                     adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
-                        $scope.getUsersFromGroup(group);
+                        $scope.getGroupMembers(group);
                         $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, "studioMedium");
                     }).error(function (error) {
                         $scope.errorTitle = $translate.instant('admin.users.DELETE_ERROR');
@@ -1667,7 +1711,7 @@
                     "userId": user.id,
                     "groupId": activeGroup.id
                 }).success(function (data) {
-                    $scope.getUsersFromGroup(activeGroup);
+                    $scope.getGroupMembers(activeGroup);
                 }).error(function () {
 
                 });
