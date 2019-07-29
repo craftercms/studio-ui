@@ -36,7 +36,7 @@
             </div>
 
             <div class="">
-                <input ng-model="q" class="form-control mb10" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
+                <input id="groups-search-input" data-ng-change="groups.searchGroup(q)" ng-model="q" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
 
                 <table class="table table-striped">
                     <thead>
@@ -131,7 +131,10 @@
             <table st-table="displayedCollection" st-safe-src="groups.usersFromGroupCollection" class="table table-striped">
                 <thead>
                 <tr>
-                    <th colspan="12"><input st-search="" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/></th>
+                    <th colspan="12">
+                      <input st-search="" id="groups-members-search-input" data-ng-change="groups.searchGroupMembers(mq)" ng-model="mq" class="form-control" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>
+                      <button ng-hide="true" id="groups-members-clear-filter" type="button" st-reset-search></button>
+                    </th>
                 </tr>
                 <tr>
                     <th>{{ 'admin.groups.DISPLAY_NAME' | translate }}</th>
@@ -140,7 +143,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr id="member-{{user.username}}" dir-paginate="user in displayedCollection | itemsPerPage: groups.itemsPerPage" current-page="groups.members.pagination.current"
+                <tr id="member-{{user.username}}" dir-paginate="user in displayedCollection | itemsPerPage: groups.members.itemsPerPage" current-page="groups.members.pagination.current"
                     pagination-id="paginateMembers" total-items="groups.members.totalLogs">
                     <td>{{user.username}}</td>
                     <td>{{user.email}}</td>
