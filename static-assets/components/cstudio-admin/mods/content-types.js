@@ -96,7 +96,8 @@ CStudioAuthoring.Module.requireModule(
                 idError.push(currentField.title);
               }
 
-              if((currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '') && (currentField.id !== "internal-name")) {
+              if((currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '') && (currentField.id !== "internal-name")
+                  && (currentField.id !== "placeInNav") && (currentField.id !== "disabled")) {
                   postfixes = CStudioAdminConsole.renderPostfixes()[currentField.type] ?
                       CStudioAdminConsole.renderPostfixes()[currentField.type] : [];
                   for (var k = 0; k < postfixes.length; k++) {
@@ -106,7 +107,7 @@ CStudioAuthoring.Module.requireModule(
                       }
                   }
                   if(!postfixesFlag && postfixes.length > 0){
-                      postfixError.push(currentField.title);
+                      postfixError.push({"title" : currentField.title, "type" : currentField.type});
                   }
               }
 
@@ -291,10 +292,10 @@ CStudioAuthoring.Module.requireModule(
                           );
                         } if (validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable) {
                               CStudioAuthoring.Operations.showSimpleDialog(
-                                  "errorName-dialog",
+                                  "errorPostfix-dialog",
                                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                                   CMgs.format(langBundle, "notification"),
-                                  CMgs.format(langBundle, "postfixError") + validation.postfixError.toString().replace(/,/g, ", "),
+                                  _self.postfixErrorMessage(validation.postfixError),
                                   null, // use default button
                                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
                                   "studioDialog"
@@ -364,6 +365,25 @@ CStudioAuthoring.Module.requireModule(
 
             context: this
           });
+        },
+
+        postfixErrorMessage: function(postfixArray) {
+            var html = "<div class='postfixErrorContainer'>" + CMgs.format(langBundle, "postfixError") + "</br>";
+            var type, description;
+            html+= "<ul>";
+            for(var i = 0; i < postfixArray.length; i++ ){
+                type = CStudioAdminConsole.renderPostfixes()[postfixArray[i].type];
+                description = type.length > 1 ? CMgs.format(langBundle, "optionsPostfixError") : CMgs.format(langBundle, "optionPostfixError");
+                html+= "<li>" +
+                           "<strong>" + postfixArray[i].title + ":</strong> " +
+                           description +
+                           type.toString().replace(/,/g, ", ").replace(/,([^,]*)$/,' and$1'); +
+                       "</li>";
+            }
+            html+= "</ul>";
+            html+= "</div>";
+
+            return html;
         },
 
         clearCache: function() {

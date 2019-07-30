@@ -876,6 +876,26 @@ body.yui-skin-cstudioTheme .mask {
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
+#errorPostfix-dialog .bd{
+    max-height: 232px;
+    overflow: scroll;
+}
+
+#errorPostfix-dialog .bd span.fa{
+    float: left;
+}
+
+#errorPostfix-dialog .bd .postfixErrorContainer{
+    max-height: 180px;
+    overflow-y: scroll;
+    float: left;
+    width: 310px !important;
+}
+
+#errorPostfix-dialog .bd .postfixErrorContainer ul{
+    padding-left: 24px;
+}
+
 .yui-overlay.yui-panel .ft {
   background-color: white;
   padding: 0px 10px 10px;

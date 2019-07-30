@@ -925,7 +925,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     /* Errors */
     error: "Fehler",
     errorTitle: ". Bitte vergeben Sie Titel für alle Attribute und Data Sources.",
-    postfixError: "Bitte fügen Sie dem Variablennamen ein Postfix hinzu für: ",
+    postfixError: "Modellfelder benötigen ihren jeweiligen Datentyp postfix: ",
+    optionsPostfixError:"Optionen sind ",
+    optionPostfixError:"Option ist",
+    andPostfixError:"und",
     errorName: ". Bitte vergeben Sie einen Variablennamen für: ",
     contentTypeNotFound: "Der Content-Typ für die Komponente wurde nicht gefunden.",
     failConfig: "Fehler beim Laden der Konfiguration.",
