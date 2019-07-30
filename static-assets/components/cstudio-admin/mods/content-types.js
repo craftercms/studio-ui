@@ -2822,7 +2822,7 @@ CStudioAuthoring.Module.requireModule(
           var renderPostfixes =
           {
               "repeat": ["_o"],
-              "input": ["_s", "_t", "_i", "_l", "_f", "_d", "_b", "_html", "_dt", "_to"],
+              "input": ["_s", "_t"],
               "textarea": ["_s", "_t"],
               "rte": ["_html"],
               "rte-tinymce5": ["_html"],
