@@ -848,7 +848,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     /* Errors */
     error: "오류",
     errorTitle: ". 필드와 데이터 소스에 대한 모든 제목을 입력 해주세요.",
-    postfixError: "다음에 대한 변수 이름에 후위를 추가하십시오. ",
+    postfixError: "모델 필드에는 각각의 데이터 유형 후위가 필요합니다. ",
+    optionsPostfixError:"옵션은 ",
+    optionPostfixError:"옵션은 ",
+    andPostfixError:"과",
     errorName: ". 대한 변수 이름을 기입하십시오: ",
     contentTypeNotFound: "구성 요소의 콘텐츠 형식을 찾을 수 없습니다.",
     failConfig: "구성을로드하지 못했습니다.",

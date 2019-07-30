@@ -34,11 +34,35 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable, CStudi
 			var updateFieldFn = function(event, el) {
 				updateFn(event, el);
                 var addPostfixes = "";
-                if (type === "input"){
-                    addPostfixes = "_s"
-                }
-                if (type === "textarea"){
-                    addPostfixes = "_t"
+                switch (type) {
+                    case  "dropdown":
+                    case  "image-picker":
+                    case  "video-picker":
+                    case  "label":
+                    case  "input":
+                        addPostfixes = "_s";
+                        break;
+                    case "textarea":
+                        addPostfixes = "_t";
+                        break;
+                    case "repeat":
+                    case "checkbox-group":
+                    case "node-selector":
+                        addPostfixes = "_o";
+                        break;
+                    case "rte":
+                    case "rte-tinymce5":
+                        addPostfixes = "_html";
+                        break;
+                    case "time":
+                        addPostfixes = "_to";
+                        break;
+                    case "date-time":
+                        addPostfixes = "_dt";
+                        break;
+                    case "checkbox":
+                        addPostfixes = "_b";
+                        break;
                 }
 				if(YDom.hasClass(this,"property-input-title") && !(YDom.hasClass(this,"no-update"))){
 					var idDatasource = YDom.getElementsByClassName("property-input-name")[0] ? YDom.getElementsByClassName("property-input-name")[0] : YDom.getElementsByClassName("property-input-id")[0];
