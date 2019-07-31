@@ -504,9 +504,9 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
             highlight = false;
 
-        if(isPreview && ( currentPreviewed[0].browserUri === treeNodeTO.browserUri ) && !isLevelDescriptor){
-            highlight = true;
-        }
+      if (isPreview && ((currentPreviewed[0] || {}).browserUri === treeNodeTO.browserUri) && !isLevelDescriptor) {
+        highlight = true;
+      }
 
         if (treeNodeTO.container == true || treeNodeTO.name != 'index.xml') {
 
