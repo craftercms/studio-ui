@@ -16,10 +16,11 @@
  */
 
 (function() {
-  var YDom = YAHOO.util.Dom,
+  var
+    YDom = YAHOO.util.Dom,
     YEvent = YAHOO.util.Event,
-    YConnect = YAHOO.util.Connect;
-  sutils = CStudioAuthoring.StringUtils,
+    YConnect = YAHOO.util.Connect,
+    sutils = CStudioAuthoring.StringUtils,
     storage = CStudioAuthoring.Storage,
     counter = 0, // Used to identify the contextmenu for each instances. May be used for any other purpose while numberic chronological order is maintained
     Self = null; // Local reference to CStudioAuthoring.ContextualNav.WcmRootFolder initialized by CStudioAuthoring.register call
@@ -75,10 +76,10 @@
         var Self = this;
 
         // When initializing, check if it's in preview and set the current previewed item into tree cookie
-        if ( CStudioAuthoringContext.isPreview && config.params.path === '/site/website' ) {
+        if (CStudioAuthoringContext.isPreview && config.params.path === '/site/website') {
           var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
           //check if selected content is type page
-          if ( selectedContent.isPage ){
+          if (selectedContent != null && selectedContent.isPage) {
             CStudioAuthoring.Operations.updateTreeCookiePath('pages', 'sitewebsite', selectedContent.uri);
           }
         }
@@ -872,13 +873,20 @@
        */
       drawTreeItem: function(treeNodeTO, root, instance) {
 
-        var _self = this;
-        isPreview = CStudioAuthoringContext.isPreview,
+        var
+          _self = this,
+          isPreview = CStudioAuthoringContext.isPreview,
           isLevelDescriptor = '/component/level-descriptor' === treeNodeTO.contentType,
           currentPreviewed = CStudioAuthoring.SelectedContent.getSelectedContent(),
           highlight = false;
 
-        if(isPreview && ( currentPreviewed[0].path === treeNodeTO.path ) && !isLevelDescriptor){
+        if (
+          isPreview &&
+          (
+            currentPreviewed[0] &&
+            currentPreviewed[0].path === treeNodeTO.path
+          ) &&
+          !isLevelDescriptor) {
           highlight = true;
         }
 
@@ -2042,9 +2050,8 @@
 
         try {
           toolTip = CStudioAuthoring.Utils.buildToolTip(itemNameLabel, label, contentType, style, status, editedDate, modifier, lockOwner, schedDate, icon);
-        }
-        catch(err) {
-          //console.log(err);
+        } catch(err) {
+          console.error(err);
         }
         return toolTip;
       },
@@ -3144,7 +3151,9 @@
 
         try{
           YDom.addClass(oCurrentTextNode.html.parentElement.previousSibling, "ygtvloading");
-        }catch(e){}
+        } catch(e) {
+          console.error(e.message);
+        }
 
         CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
       },

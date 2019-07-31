@@ -51,10 +51,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     initialize: function(config) {
 
       // When initializing, check if it's in preview and set the current previewed item into tree cookie
-      if ( CStudioAuthoringContext.isPreview && config.params.path === '/static-assets') {
+      if (CStudioAuthoringContext.isPreview && config.params.path === '/static-assets') {
         var selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent()[0];
         //check if selected content is type asset
-        if ( selectedContent.isAsset ){
+        if (selectedContent != null && selectedContent.isAsset) {
           CStudioAuthoring.Operations.updateTreeCookiePath('staticassets', 'static-assets', selectedContent.uri);
         }
       }
