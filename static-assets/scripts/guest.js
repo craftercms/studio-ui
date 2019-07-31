@@ -257,8 +257,8 @@ define('guest', [
       iceToolsOn = (!!message.iceOn) && (message.componentsOn != 'true');
       if (
         // TODO: REFACTOR
-      // !!(window.parent.sessionStorage.getItem('ice-on')) &&
-      // window.parent.sessionStorage.getItem('components-on') != 'true'
+        // !!(window.parent.sessionStorage.getItem('ice-on')) &&
+        // window.parent.sessionStorage.getItem('components-on') != 'true'
         iceToolsOn
       ) {
         initICERegions();
