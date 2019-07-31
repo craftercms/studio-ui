@@ -452,13 +452,9 @@ CStudioAuthoring.ContextualNav.WcmDropDown = CStudioAuthoring.ContextualNav.WcmD
                                     try {
                                         moduleClass.initialize(moduleConfig);
                                     } catch (e) {
-                                      // in preview, this function undefined raises error -- unlike dashboard.
-                                      // I agree, not a good solution!
-
                                       // TODO: Address this error properly when it occurs.
                                       // This is catching other errors without intention. Address the specific cases properly.
                                       console.error(e.message);
-
                                     }
                                 }
                             };
