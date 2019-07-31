@@ -1,5 +1,6 @@
 <#assign authoringServer = envConfig.authoringServer!''/>
 <#assign studioContext = envConfig.studioContext!''/>
+<#assign hostOrigin = authoringServer?replace("/${studioContext}", "") />
 <#assign staticAssets = "${authoringServer}/static-assets"/>
 
 requirejs.config({
@@ -16,7 +17,7 @@ requirejs.config({
 
 require(['guest'], function (guest) {
     guest.init({
-        hostOrigin: '${authoringServer}',
+        hostOrigin: '${hostOrigin}',
         studioContext: '${studioContext}',
         studioStaticAssets: 'static-assets'
     });
