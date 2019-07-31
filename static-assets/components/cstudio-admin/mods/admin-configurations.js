@@ -38,20 +38,32 @@ CStudioAuthoring.Module.requireModule(
 			height: 600,
 
 			renderWorkarea: function() {
-				var workareaEl = document.getElementById("cstudio-admin-console-workarea");
+				var workareaEl = document.getElementById("cstudio-admin-console-workarea"),
+                    self = this;
 
 				workareaEl.innerHTML =
 					"<div id='config-area'>" +
 					"</div>";
 				var actions = [];
-				CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
-				this.renderJobsList();
 
-				var historyEl = document.createElement("li");
-				historyEl.className = 'acn-link';
-				historyEl.id = 'historyEl';
+                var callback = {
+                    success: function (data) {
+                        self.environment = JSON.parse(data.responseText).environment;
+                        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+                        self.renderJobsList();
 
-				document.getElementById('activeContentActions').appendChild(historyEl);
+                        var historyEl = document.createElement("li");
+                        historyEl.className = 'acn-link';
+                        historyEl.id = 'historyEl';
+
+                        document.getElementById('activeContentActions').appendChild(historyEl);
+                    },
+                    failure: function (data) {
+                        console.log(data.response.message);
+                    }
+                };
+
+                CStudioAuthoring.Service.getActiveEnvironment(callback);
 			},
 
 			renderJobsList: function() {
@@ -60,7 +72,7 @@ CStudioAuthoring.Module.requireModule(
 
 				containerEl.innerHTML =
 					"<div class='configuration-window'>" +
-                        "<p id='activeEnvironment' class='hide'><strong>Active Environment:</strong> <span id='active-environment-value'></span></p>" +
+                        "<p id='activeEnvironment' class='hide'><strong>Active Environment:</strong> <span id='active-environment-value'>" + this.environment + "</span></p>" +
 						"<select id='config-list'>" +
 					 		" <option value='' >"+CMgs.format(langBundle, "confTabSelectConf")+"</option>" +
 						"</select>" +
@@ -107,27 +119,16 @@ CStudioAuthoring.Module.requireModule(
              * populate the list of configuration files
              */
             loadActiveEnv: function (elt) {
-
-                var callback = {
-                    success: function (data) {
-                        var environment = JSON.parse(data.responseText).environment;
-                        if (environment){
-                            elt.parentElement.classList.remove("hide");
-                            elt.innerHTML = environment;
-                        }
-                    },
-                    failure: function (data) {
-                        console.log(data.response.message);
-                    }
-                };
-
-                CStudioAuthoring.Service.getActiveEnvironment(callback);
+                if (this.environment) {
+                    elt.parentElement.classList.remove("hide");
+                }
             },
 
 			/*
 			* populate the list of configuration files
 			*/
 			loadConfigFiles: function (itemSelectEl, editAreaEl, editor, sampleEditor) {
+                var self = this;
 				// load configuration to get the configuration files list
 				CStudioAuthoring.Service.lookupConfigurtion(
 					CStudioAuthoringContext.site,
@@ -171,7 +172,8 @@ CStudioAuthoring.Module.requireModule(
 					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
 						configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN,
 						selectedIndex = itemSelectEl.selectedIndex,
-                        contentArea = document.getElementById("content-area");
+                        contentArea = document.getElementById("content-area"),
+                        environment = self.environment ? self.environment : '';
 
 					$('#historyEl').empty();
 
@@ -183,8 +185,11 @@ CStudioAuthoring.Module.requireModule(
 						// load configuration into editor
 						var url = '/studio/api/2/configuration/get_configuration?siteId=' +
 							CStudioAuthoringContext.site + '&module=' + itemSelectEl[selectedIndex].getAttribute('module') +
-              '&path=' + itemSelectEl[selectedIndex].value, // + '&environment=test',
+              '&path=' + itemSelectEl[selectedIndex].value,
 							elemPath =  itemSelectEl[selectedIndex].value;
+                        if(environment){
+                            url += '&environment=' + environment;
+                        }
 						var getConfigCb = {
 							success: function(response) {
 							  var responseObj = eval('(' + response.responseText + ')')
@@ -317,11 +322,13 @@ CStudioAuthoring.Module.requireModule(
                 var contentArea = document.getElementById("content-area");
                 var me = this,
                     configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
-					configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN;;
+					configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN;
                 hideSampleButtonEl.style.display = 'none';
 
                 var saveFn = function(){
-                    var selectedIndex = itemSelectEl.selectedIndex;
+                    var selectedIndex = itemSelectEl.selectedIndex,
+                        environment = me.environment ? me.environment : "";
+
                     var saveCb = {
                         success: function() {
                             CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
@@ -348,7 +355,7 @@ CStudioAuthoring.Module.requireModule(
                         var url = "/api/2/configuration/write_configuration";
 
                         var reqObj = { siteId: CStudioAuthoringContext.site, module: itemSelectEl[selectedIndex].getAttribute("module"),
-                            path: defPath, environment: "", content: xml };
+                            path: defPath, environment: environment, content: xml };
 
                       var requestAsString = JSON.stringify(reqObj);
                         YAHOO.util.Connect.setDefaultPostHeader(false);
