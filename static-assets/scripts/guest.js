@@ -42,6 +42,7 @@ define('guest', [
 
   return {
     init: init,
+    iceRepaint: iceRepaint,
     reportNavigation: reportNavigation
   };
 
@@ -211,10 +212,6 @@ define('guest', [
 
     });
 
-    window.studioICERepaint = function () {
-      clearSetTimeout(Constants.TIME_RESIZE);
-    }
-
     $(window).resize(function (e) {
       clearSetTimeout(Constants.TIME_RESIZE);
     });
@@ -246,6 +243,12 @@ define('guest', [
     setRegionsCookie();
 
   }
+
+  function iceRepaint() {
+    clearSetTimeout(Constants.TIME_RESIZE);
+  }
+
+  window.studioICERepaint = iceRepaint;
 
   function initIceRegions_resizeIceRegions_handler(message) {
     if (!message) {
