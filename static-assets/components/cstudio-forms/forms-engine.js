@@ -192,14 +192,6 @@ var CStudioForms = CStudioForms || function() {
             focusIn: function() {
             },
 
-            /**
-             * A temp fix for many controls calling renderValidation with 2 params
-             * This should be merged into one method
-             **/
-            renderValidation: function(onOff, valid) {
-                renderValidation(onOff);
-            },
-
             renderValidation: function(onOff) {
                 var valid = true;
 

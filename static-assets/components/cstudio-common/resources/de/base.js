@@ -669,6 +669,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     richTextEditor: "Rich Text Editor (TinyMCE 2)",
     rteTinyMCE5: "Rich Text Editor (TinyMCE 5)",
     input: "Eingabefeld",
+    numericInput: "Numerische Eingabe",
     uuid: "UUID",
     linkInput:"Link Eingabefeld",
     dropdown: "Dropdown",

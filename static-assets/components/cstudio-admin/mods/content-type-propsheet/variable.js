@@ -42,6 +42,9 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable, CStudi
                     case  "input":
                         addPostfixes = "_s";
                         break;
+                    case  "numeric-input":
+                        addPostfixes = "_i";
+                        break;
                     case "textarea":
                         addPostfixes = "_t";
                         break;

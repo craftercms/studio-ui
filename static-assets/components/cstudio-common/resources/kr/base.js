@@ -621,6 +621,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     richTextEditor: "서식있는 텍스트 편집기s (TinyMCE 2)",
     rteTinyMCE5: "서식있는 텍스트 편집기s (TinyMCE 5)",
     input: "입력",
+    numericInput: "숫자 입력",
     uuid: "UUID",
     dropdown: "쓰러지 다",
     dateTime: "날짜 시간",

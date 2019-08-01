@@ -2823,6 +2823,7 @@ CStudioAuthoring.Module.requireModule(
           {
               "repeat": ["_o"],
               "input": ["_s", "_t"],
+              "numeric-input": ["_i", "_l", "_f", "_d"],
               "textarea": ["_s", "_t"],
               "rte": ["_html"],
               "rte-tinymce5": ["_html"],
