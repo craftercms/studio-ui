@@ -19,6 +19,9 @@ var YDom = YAHOO.util.Dom;
 var YEvent = YAHOO.util.Event;
 var storage = CStudioAuthoring.Storage;
 
+(function() {
+
+const Self = CStudioAuthoring.ContextualNav.WcmRootFolder;
 
 /**
  * WcmAssetsFolder
@@ -1852,3 +1855,5 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolderInstance = function(config) {
 };
 
 CStudioAuthoring.Module.moduleLoaded("wcm-assets-folder", CStudioAuthoring.ContextualNav.WcmAssetsFolder);
+
+})();
