@@ -21,9 +21,8 @@ var storage = CStudioAuthoring.Storage;
 
 (function() {
 
-let Self = CStudioAuthoring.ContextualNav.WcmRootFolder;
-function setSelf() {
-  Self = CStudioAuthoring.ContextualNav.WcmRootFolder;
+function RootFolder() {
+  return CStudioAuthoring.ContextualNav.WcmRootFolder;
 }
 
 /**
@@ -212,7 +211,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     var pathToOpen = (path != undefined) ? path : null;
 
     var tree = new YAHOO.widget.TreeView(treeEl);
-    Self.myTree = tree;
+    RootFolder().myTree = tree;
     tree.setDynamicLoad(this.onLoadNodeDataOnClick);
     tree.FOCUS_CLASS_NAME = null;
 
@@ -386,14 +385,14 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         try {
           if(e.data && e.data.length) {
             for (var i = 0; i < e.data.length; i++){
-              Self.refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
+              RootFolder().refreshNodes(e.data[i] ? e.data[i] : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
             }
           }else{
-            Self.refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
+            RootFolder().refreshNodes(e.data ? e.data : (oCurrentTextNode != null ? oCurrentTextNode : CStudioAuthoring.SelectedContent.getSelectedContent()[0]), true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
           }
         } catch (er) {
           if (CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
-            Self.refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
+            RootFolder().refreshNodes(CStudioAuthoring.SelectedContent.getSelectedContent()[0], true, e.parent == false? false : true, t, inst, e.changeStructure, e.typeAction);
           }
         }
 
@@ -411,7 +410,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         this.hide();
       }
       var idTree = tree.id.toString().replace(/-/g,'');
-      Self.myTree = Self.myTreePages[idTree];
+      RootFolder().myTree = RootFolder().myTreePages[idTree];
     }, tree, false);
 
     tree.draw();
@@ -433,10 +432,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     }
 
     var treeId = tree.id.toString().replace(/-/g,'');
-    Self.myTreePages[treeId] = tree;
+    RootFolder().myTreePages[treeId] = tree;
     if(treeNodeTO.path === "/static-assets"){
-      Self.currentTextNode = treeNodeTO;
-      Self.myTreeAssets = tree;
+      RootFolder().currentTextNode = treeNodeTO;
+      RootFolder().myTreeAssets = tree;
     }
   },
 
@@ -555,13 +554,13 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       treeNodeTO.html = nodeSpan;
       var treeNode = new YAHOO.widget.HTMLNode(treeNodeTO, root, false);
 
-      if(!Self.treeNodes)
-        Self.treeNodes = [];
+      if(!RootFolder().treeNodes)
+        RootFolder().treeNodes = [];
 
       treeNode.html.id = "ygtvlabelel" + treeNode.index;
       treeNode.labelElId = "ygtvlabelel" + treeNode.index;
 
-      Self.treeNodes[""+treeNode.labelElId] = treeNodeTO;
+      RootFolder().treeNodes[""+treeNode.labelElId] = treeNodeTO;
 
       treeNode.nodeType = "CONTENT";
       treeNode.treeNodeTO = treeNodeTO;
@@ -613,7 +612,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       else {
         instance.rootFolderEl.style.display = 'none';
         instance.state = WcmAssetsFolder.ROOT_CLOSED;
-        WcmAssetsFolder.storage.eliminate( Self.getStoredPathKey(instance) );
+        WcmAssetsFolder.storage.eliminate( RootFolder().getStoredPathKey(instance) );
 
         $el = $('#' + instance.rootFolderEl.id).parent().find('>a');
         $el.removeClass('open');
@@ -725,7 +724,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     if(!num){
       while ((el = el.parentElement) && !el.hasAttribute("num"));
     }
-    //Self.remove(node.instance, plainpath);
+
     CStudioAuthoring.ContextualNav.WcmAssetsFolder.save(node.instance, plainpath, fileName, el.getAttribute('num') ? el.getAttribute('num') : "root-folder", "collapse");
 
     var WcmAssets = CStudioAuthoring.ContextualNav.WcmAssetsFolder;
@@ -782,8 +781,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         break;
       }
     }
-    //storage.write(Self.getStoredPathKey(instance, path), path, 360);
-    CStudioAuthoring.ContextualNav.WcmAssetsFolder.storage.write(Self.getStoredPathKey(instance), JSON.stringify(instance.openArray), 360);
+
+    CStudioAuthoring.ContextualNav.WcmAssetsFolder.storage.write(RootFolder().getStoredPathKey(instance), JSON.stringify(instance.openArray), 360);
   },
 
   openLatest: function(instance){
@@ -812,7 +811,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         nextPathTrace = function(j, key){
           var cont = j == 0 ? 0 : counter[key][j] + 1;
           return (pathTrace[key][j] + "/" + paths[key][j][counter[key][j]]); }
-      YSelector = YAHOO.util.Selector.query;
+      var YSelector = YAHOO.util.Selector.query;
       var label = instance.rootFolderEl.previousElementSibling;
       YDom.addClass(label, "loading");
       var doCall = function(n, j, key){
@@ -834,7 +833,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             updatePathTrace(j, key);
             var node = tree.getNodesByProperty("path", pathTrace[key][j]);
             if (node != null) {
-              Self.getNumKey(node, key, function(currentNode) {
+              RootFolder().getNumKey(node, key, function(currentNode) {
                 var loadEl = YSelector(".ygtvtp", currentNode.getEl(), true);
                 loadEl == null && (loadEl = YSelector(".ygtvlp", currentNode.getEl(), true));
                 YDom.addClass(loadEl, "ygtvloading");
@@ -845,8 +844,8 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
               YDom.removeClass(label, "loading");
               YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
               // Add hover effect to nodes
-              Self.nodeHoverEffects(this);
-              Self.firePathLoaded(instance);
+              RootFolder().nodeHoverEffects(this);
+              RootFolder().firePathLoaded(instance);
             }
           } else {
             k[key]++;
@@ -870,7 +869,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
               }
 
               if (node != null) {
-                Self.getNumKey(node, key, function(currentNode) {
+                RootFolder().getNumKey(node, key, function(currentNode) {
                   var loadEl = YSelector(".ygtvtp", currentNode.getEl(), true);
                   loadEl == null && (loadEl = YSelector(".ygtvlp", currentNode.getEl(), true));
                   YDom.addClass(loadEl, "ygtvloading");
@@ -878,27 +877,26 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 });
               }
             } else {
-              //YDom.removeClass(label, "loading");
-              //Self.firePathLoaded(instance);
+
             }
 
             YDom.removeClass(label, "loading");
             YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
             // Add hover effect to nodes
-            Self.nodeHoverEffects(this);
-            Self.firePathLoaded(instance);
+            RootFolder().nodeHoverEffects(this);
+            RootFolder().firePathLoaded(instance);
           }
         });
       }
       tree.setDynamicLoad(this.onLoadNodeDataOnClick);
-      if (Self.pathOnlyHasCannedSearch(rootPath, instance)) {
+      if (RootFolder().pathOnlyHasCannedSearch(rootPath, instance)) {
         var dummy = new Object();
         dummy.path = rootPath;
         var items = new Array();
         items.push(dummy);
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, null, instance, pathFlag);
         YDom.removeClass(label, "loading");
-        Self.firePathLoaded(instance);
+        RootFolder().firePathLoaded(instance);
       } else {
         var ind=0;
         var servPath;
@@ -937,11 +935,11 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                   $el.removeClass('closed');
                   $el.addClass('open');
                 }
-                instance.state = Self.ROOT_OPEN;
+                instance.state = RootFolder().ROOT_OPEN;
                 CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, null, instance, pathFlag);
                 pathFlag = false;
 
-                if (latestStored[key] && latestStored[key][[key]] != Self.ROOT_OPENED) {
+                if (latestStored[key] && latestStored[key][[key]] != RootFolder().ROOT_OPENED) {
                   pathTrace[key][k[key]] = treeData.item.path;
                   counter[key][k[key]] = 0;
                   (function () {
@@ -952,7 +950,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                   var nodes, node, loadEl;
                   nodes = tree.getNodesByProperty("path", treeData.item.path);
                   if (nodes != null) {
-                    Self.getNumKey(nodes, key, function(currentNode) {
+                    RootFolder().getNumKey(nodes, key, function(currentNode) {
                       node = currentNode;
                     });
                   }
@@ -966,7 +964,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                   }
                   if (node == null) {
                     YDom.removeClass(label, "loading");
-                    Self.firePathLoaded(instance);
+                    RootFolder().firePathLoaded(instance);
                   } else {
                     YDom.addClass(loadEl, "ygtvloading");
                     //YDom.setAttribute ( node , "index" ,instance.pathNumber  );
@@ -974,7 +972,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                   }
                 } else {
                   YDom.removeClass(label, "loading");
-                  Self.firePathLoaded(instance);
+                  RootFolder().firePathLoaded(instance);
                 }
                 index = instance.indexPath++;
 
@@ -998,8 +996,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
       }
     } else {
-      setSelf();
-      Self.firePathLoaded(instance);
+      RootFolder().firePathLoaded(instance);
     }
   },
 
@@ -1101,7 +1098,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       ttFormattedEditDate = CStudioAuthoring.Utils.formatDateFromUTC(treeItem.eventDate, studioTimeZone);
     }
 
-    var icon = treeItem.folder ? CStudioAuthoring.Utils.createIcon("", Self.defaultIcons.childClosed )
+    var icon = treeItem.folder ? CStudioAuthoring.Utils.createIcon("", RootFolder().defaultIcons.childClosed )
       : CStudioAuthoring.Utils.getContentItemIcon(treeItem),
       contentType = "unknown" != retTransferObj.contentType ? retTransferObj.contentType : retTransferObj.mimeType;
 
@@ -1254,7 +1251,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             isCreateFolder = CSA.Service.isCreateFolder(perms);
 
           if (isWrite == true) {
-            Self.IS_WRITE = true;
+            RootFolder().IS_WRITE = true;
             if (this.isContainer) {
               this.menuWidth = "130px";
               if (isDeleteAllowed) {
@@ -1411,12 +1408,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
             this.aMenuItems.push({
               text: CMgs.format(siteDropdownLangBundle, "copy"),
-              onclick: { fn: Self.copyTree, obj: tree }
+              onclick: { fn: RootFolder().copyTree, obj: tree }
             });
 
             this.aMenuItems.push({
               text: CMgs.format(siteDropdownLangBundle, "cut"),
-              onclick: { fn: Self.cutContent, obj: tree }
+              onclick: { fn: RootFolder().cutContent, obj: tree }
             });
 
             var checkClipboardCb = {
@@ -1426,10 +1423,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                   if (collection.count > 0) {
                     if (isWrite == true) {
                       this.menuItems.push(
-                        { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: Self.pasteContent} });
+                        { text: CMgs.format(siteDropdownLangBundle, "paste"), onclick: { fn: RootFolder().pasteContent} });
                     } else {
                       this.menuItems.push(
-                        { text: CMgs.format(siteDropdownLangBundle, "paste"), disabled: true, onclick: { fn: Self.pasteContent} });
+                        { text: CMgs.format(siteDropdownLangBundle, "paste"), disabled: true, onclick: { fn: RootFolder().pasteContent} });
                     }
                   }
                 }
@@ -1467,7 +1464,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             if(!oCurrentTextNode.data.isContainer) {
               this.aMenuItems.push({
                 text: CMgs.format(siteDropdownLangBundle, "duplicate"),
-                onclick: { fn: Self.duplicateContent, obj: tree }
+                onclick: { fn: RootFolder().duplicateContent, obj: tree }
               });
             }
           }
@@ -1494,7 +1491,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
   createContainer: function() {
     var createCb = {
       success: function() {
-        Self.refreshNodes(this.tree,false, false, null, null, true);
+        RootFolder().refreshNodes(this.tree,false, false, null, null, true);
 
       },
 
@@ -1515,7 +1512,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
   renameContainer: function() {
     var createCb = {
       success: function() {
-        Self.refreshNodes(this.tree.parent,false, false, null, null, true);
+        RootFolder().refreshNodes(this.tree.parent,false, false, null, null, true);
       },
 
       failure: function() {
@@ -1617,7 +1614,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
   createNewTemplate: function() {
     CStudioAuthoring.Operations.createNewTemplate(oCurrentTextNode.data.uri, {
       success: function(templatePath) {
-        Self.refreshNodes(this.tree,false, false, null, null, true);
+        RootFolder().refreshNodes(this.tree,false, false, null, null, true);
       },
       failure: function() {
         //this.callingWindow.location.reload(true);
@@ -1631,7 +1628,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
   createNewScript: function() {
     CStudioAuthoring.Operations.createNewScript( oCurrentTextNode.data.uri, {
       success: function(templatePath) {
-        Self.refreshNodes(this.tree,false, false, null, null, true);
+        RootFolder().refreshNodes(this.tree,false, false, null, null, true);
       },
       failure: function() {
 
@@ -1649,7 +1646,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     var uploadCb = {
       success: function() {
         CStudioAuthoring.Operations.refreshPreview();
-        Self.refreshNodes(this.tree,false, false, null, null, true);
+        RootFolder().refreshNodes(this.tree,false, false, null, null, true);
       },
 
       failure: function() {
@@ -1724,7 +1721,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
   overwriteAsset: function() {
     var uploadCb = {
       success: function() {
-        Self.refreshNodes(this.tree,false, false, null, null, true);
+        RootFolder().refreshNodes(this.tree,false, false, null, null, true);
 
       },
 
@@ -1755,7 +1752,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
    *
    */
   revertContent: function(p_sType, p_aArgs, tree) {
-    CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, Self.IS_WRITE);
+    CStudioAuthoring.Operations.viewContentHistory(oCurrentTextNode.data, RootFolder().IS_WRITE);
   },
 
   /**
@@ -1795,24 +1792,24 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             ? YDom.setStyle(parent, 'background-color', highlightColor)
             : wrapEl(el);
         }
-        if(Self.lastSelectedTextNode != null) {
+        if(RootFolder().lastSelectedTextNode != null) {
           var currentlySelectedTextNode = el
-          if(currentlySelectedTextNode == Self.lastSelectedTextNode) return;
-          (YDom.hasClass(Self.lastSelectedTextNode, highlightWrpClass)
-            ? Self.lastSelectedTextNode
-            : (YDom.hasClass(Self.lastSelectedTextNode, 'ygtvitem')
-              ? YDom.getFirstChild(Self.lastSelectedTextNode)
-              : Self.lastSelectedTextNode.parentNode))
+          if(currentlySelectedTextNode == RootFolder().lastSelectedTextNode) return;
+          (YDom.hasClass(RootFolder().lastSelectedTextNode, highlightWrpClass)
+            ? RootFolder().lastSelectedTextNode
+            : (YDom.hasClass(RootFolder().lastSelectedTextNode, 'ygtvitem')
+              ? YDom.getFirstChild(RootFolder().lastSelectedTextNode)
+              : RootFolder().lastSelectedTextNode.parentNode))
             .style.backgroundColor = "";
 
-          Self.lastSelectedTextNode = null;
+          RootFolder().lastSelectedTextNode = null;
         }
 
         var nodeId = (""+el.id).replace("table","label");
-        var node = Self.treeNodes[nodeId];
+        var node = RootFolder().treeNodes[nodeId];
       },
       moutFn = function(evt) {
-        if(Self.lastSelectedTextNode != null) return;
+        if(RootFolder().lastSelectedTextNode != null) return;
         var el = this;
         (YDom.hasClass(el, highlightWrpClass)
           ? el

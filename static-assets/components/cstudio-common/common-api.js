@@ -1867,7 +1867,7 @@ var nodeOpen = false,
                                 '   </div>' +
                                 '   <div class="studio-ice-dialog studio-ice-container studio-ice-container-'+ editorId +'" id="studio-ice-container-' + editorId + '">' +
                                 '       <div class="bd">' +
-                                '           <input id="colExpButton" class="btn btn-default" type="button" value="Collapse">'
+                                '           <input id="colExpButton" class="btn btn-default" type="button" value="Collapse">' +
                                 '       </div>' +
                                 '   </div>' +
                                 '</div>',
@@ -3035,13 +3035,15 @@ var nodeOpen = false,
              * @param {*} path - path to be added into the tree cookie (state) -> item uri
              */
             updateTreeCookiePath: function(treeName, cookieKey, path){
-                var url = path,
-                    treeCookieName,
-                    treeCookie,
-                    cookieRoot = [];
+                var
+                  url = path,
+                  treeCookieName,
+                  treeCookie,
+                  cookieRoot = [],
+                  storage = CStudioAuthoring.Storage;
 
                 treeCookieName = CStudioAuthoringContext.site + '-' + treeName + '-opened';
-                treeCookie = CStudioAuthoring.Storage.read(treeCookieName);
+                treeCookie = storage.read(treeCookieName);
                 treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : {};
 
                 if(treeCookie[cookieKey] && treeCookie[cookieKey].indexOf("root-folder") !== -1){
