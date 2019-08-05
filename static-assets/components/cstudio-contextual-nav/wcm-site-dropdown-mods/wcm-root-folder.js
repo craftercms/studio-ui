@@ -1576,7 +1576,7 @@
 
             if(currentPath == '/site/website' && typeAction == "createContent"){
               var auxNodes = tree.getNodesByProperty("path", currentPath);
-              if(auxNodes.length){
+              if(auxNodes && auxNodes.length){
                 for(var i=0; i < auxNodes.length; i++){
                   if(auxNodes[i].data.path == '/site/website'){
                     node[0] = auxNodes[i];
