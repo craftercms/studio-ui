@@ -647,6 +647,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     richTextEditor: "Editor de Texto Enriquecido (TinyMCE 2)",
     rteTinyMCE5: "Editor de Texto Enriquecido (TinyMCE 5)",
     input: "Campo de Entrada",
+    numericInput: "Entrada numérica",
     uuid: "UUID",
     linkInput:"Campo de Entrada Vinculante",
     dropdown: "Menú Desplegable",
