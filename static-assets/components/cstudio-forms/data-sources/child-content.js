@@ -26,7 +26,7 @@ function(id, form, properties, constraints)  {
     this.defaultEnableCreateNew = true;
     this.defaultEnableBrowseExisting = true;
     this.countOptions = 0;
-   	
+
    	for(var i=0; i<properties.length; i++) {
    		if(properties[i].name == "repoPath") {
  			this.repoPath = properties[i].value;
@@ -130,14 +130,14 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
             }
         });
     },
-	
+
 	add: function(control) {
 		var CMgs = CStudioAuthoring.Messages;
 		var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
 		var _self = this;
-		
-		var addContainerEl = null;
+
+		var addContainerEl = control.addContainerEl ? control.addContainerEl : null;
 
         var datasourceDef = this.form.definition.datasources,
             newElTitle = '';
@@ -148,7 +148,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
             }
         }
 
-        if(this.countOptions > 1) {
+        if(!addContainerEl && this.countOptions > 1) {
             addContainerEl = document.createElement("div");
             control.containerEl.appendChild(addContainerEl);
             YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
@@ -197,7 +197,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
         }
 
 	},
-	
+
 	edit: function(key, control) {
 		var getContentItemCb = {
 			success: function(contentTO) {
@@ -213,7 +213,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 					failure: function() {
 					}
 				}
-				
+
 				CStudioAuthoring.Operations.editContent(
 					contentTO.item.contentType,
 					CStudioAuthoringContext.siteId,
@@ -221,12 +221,12 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 					contentTO.item.nodeRef,
 					contentTO.item.uri,
 					false,
-					editCallback);	
+					editCallback);
 			},
 			failure: function() {
 			}
 		};
-		
+
 		CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
 	},
 
@@ -256,7 +256,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 	getName: function() {
 		return "child-content";
 	},
-	
+
 	getSupportedProperties: function() {
 		return [
             { label: CMgs.format(langBundle, "Enable Create New"), name: "enableCreateNew", type: "boolean", defaultValue: "true"  },
