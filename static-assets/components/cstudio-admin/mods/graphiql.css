@@ -3,6 +3,7 @@
     height: calc( 100vh - 51px );
 }
 
-#graph-container .doc-explorer-title-bar {
+#graph-container .doc-explorer-title-bar,
+#graph-container .history-title-bar {
     height: 47px;
 }

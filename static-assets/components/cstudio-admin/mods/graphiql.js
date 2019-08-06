@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addJavascript("/static-assets/libs/graphiql/graphiql.js");
-CStudioAuthoring.Utils.addCss("/static-assets/libs/graphiql/graphiql.css");		// library css
+CStudioAuthoring.Utils.addCss("https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.13.2/graphiql.css");		// library css
 CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/graphiql.css");		// mod css
 CStudioAdminConsole.Tool.GraphiQL = CStudioAdminConsole.Tool.GraphiQL ||  function(config, el)  {
 	this.containerEl = el;
@@ -32,8 +31,8 @@ var wfStates = [];
 YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
 		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		
-		workareaEl.innerHTML = 
+
+		workareaEl.innerHTML =
 			"<div id='graph-container'>" +
 			"</div>";
 
@@ -45,11 +44,16 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 			actions = [];
 
 		CStudioAuthoring.Service.lookupConfigurtion(
-			CStudioAuthoringContext.site, 
+			CStudioAuthoringContext.site,
 			"/environment/environment-config.xml", {
 				success: function(config) {
 					graphServerUrl = config['graphql-server-url'];
-					GraphiQL(document.getElementById("graph-container"), graphServerUrl + '/api/1/site/graphql', site);
+          CrafterCMSNext.render(document.getElementById("graph-container"), 'GraphiQL',
+            {
+              url: graphServerUrl + '/api/1/site/graphql',
+              storageKey: site
+            }
+          );
 				},
 				failure: function() {
 					CStudioAuthoring.Operations.showSimpleDialog(
@@ -68,5 +72,5 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 	}
 });
-		
+
 CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-graphiql",CStudioAdminConsole.Tool.GraphiQL);
