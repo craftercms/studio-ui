@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <div ng-if="!sites">
+    <div ng-if="(!sites || !sites.length) && !createSites">
         <p class="site-message">{{ 'dashboard.sites.NO_SITES_MESSAGE' | translate }}</p>
     </div>
 
