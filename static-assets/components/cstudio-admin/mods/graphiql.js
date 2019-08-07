@@ -16,7 +16,6 @@
  */
 
 CStudioAuthoring.Utils.addCss("/static-assets/styles/graphiql.css");
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/graphiql-module.css");		// module styles
 CStudioAdminConsole.Tool.GraphiQL = CStudioAdminConsole.Tool.GraphiQL ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;
@@ -30,11 +29,11 @@ var wfStates = [];
  */
 YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
-		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
+		var workareaEl = document.getElementById('cstudio-admin-console-workarea');
 
 		workareaEl.innerHTML =
-			"<div id='graph-container'>" +
-			"</div>";
+			'<div id="graphContainer">' +
+			'</div>';
 
 			this.initializeGraphi();
 	},
@@ -45,10 +44,12 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 
 		CStudioAuthoring.Service.lookupConfigurtion(
 			CStudioAuthoringContext.site,
-			"/environment/environment-config.xml", {
+			'/environment/environment-config.xml', {
 				success: function(config) {
           graphServerUrl = config['graphql-server-url'];
-          CrafterCMSNext.render(document.getElementById("graph-container"), 'GraphiQL',
+          CrafterCMSNext.render(
+            document.getElementById('graphContainer'),
+            'GraphiQL',
             {
               url: graphServerUrl + '/api/1/site/graphql',
               storageKey: site
@@ -57,13 +58,13 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 				},
 				failure: function() {
 					CStudioAuthoring.Operations.showSimpleDialog(
-						"errorDialog-dialog",
+						'errorDialog-dialog',
 						CStudioAuthoring.Operations.simpleDialogTypeINFO,
-						CMgs.format(langBundle, "notification"),
-						CMgs.format(langBundle, "failConfig"),
+						CMgs.format(langBundle, 'notification'),
+						CMgs.format(langBundle, 'failConfig'),
 						null, // use default button
 						YAHOO.widget.SimpleDialog.ICON_BLOCK,
-						"studioDialog"
+						'studioDialog'
 					);
 				}
 			}
@@ -73,4 +74,4 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 	}
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-graphiql",CStudioAdminConsole.Tool.GraphiQL);
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-graphiql',CStudioAdminConsole.Tool.GraphiQL);
