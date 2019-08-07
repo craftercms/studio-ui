@@ -15,4 +15,5 @@ static-assets/styles/main.css
 static-assets/styles/search.css
 static-assets/styles/temp.css
 static-assets/styles/forms-engine.css
+static-assets/styles/graphiql.css
 templates/web/common/js-next-scripts.ftl
