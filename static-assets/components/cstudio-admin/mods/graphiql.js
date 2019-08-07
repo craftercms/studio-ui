@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addCss("https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.13.2/graphiql.css");		// library css
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/graphiql.css");		// mod css
+CStudioAuthoring.Utils.addCss("/static-assets/styles/graphiql.css");
+CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/graphiql-module.css");		// module styles
 CStudioAdminConsole.Tool.GraphiQL = CStudioAdminConsole.Tool.GraphiQL ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;
@@ -47,7 +47,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 			CStudioAuthoringContext.site,
 			"/environment/environment-config.xml", {
 				success: function(config) {
-					graphServerUrl = config['graphql-server-url'];
+          graphServerUrl = config['graphql-server-url'];
           CrafterCMSNext.render(document.getElementById("graph-container"), 'GraphiQL',
             {
               url: graphServerUrl + '/api/1/site/graphql',

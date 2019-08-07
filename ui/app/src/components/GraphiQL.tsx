@@ -19,10 +19,8 @@ import React, { useEffect, useState, useRef } from 'react';
 //@ts-ignore
 import GraphiQL from 'graphiql';
 //@ts-ignore
-import GraphiQLExplorer from "graphiql-explorer";
-import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from "graphql";
-
-import "graphiql/graphiql.css";
+import GraphiQLExplorer from 'graphiql-explorer';
+import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 
 export interface GraphiQLProps {
   url?: string,
@@ -66,7 +64,7 @@ function Graphi(props: GraphiQLProps) {
         method:string = props.method;
 
     if('get' === method){
-      if (typeof graphQLParams['variables'] === "undefined"){
+      if (typeof graphQLParams['variables'] === 'undefined'){
         graphQLParams['variables'] = "{}";
       }
 
@@ -112,11 +110,13 @@ function Graphi(props: GraphiQLProps) {
       }).then(result => {
         setSchema(buildClientSchema(result.data));
       });
-    }, []
+    },
+    // eslint-disable-next-line
+    []
   );
 
   return (
-    <div className="graphiql-container" style={{ height: '100vh' }}>
+    <div className='graphiql-container'>
       {/* Explorer plugin for GraphiQL  */}
       <GraphiQLExplorer
         schema={schema}
@@ -137,18 +137,18 @@ function Graphi(props: GraphiQLProps) {
         <GraphiQL.Toolbar>
           <GraphiQL.Button
             onClick={() => _graphiql.current.handlePrettifyQuery()}
-            label="Prettify"
-            title="Prettify Query (Shift-Ctrl-P)"
+            label='Prettify'
+            title='Prettify Query (Shift-Ctrl-P)'
           />
           <GraphiQL.Button
             onClick={() => _graphiql.current.handleToggleHistory()}
-            label="History"
-            title="Show History"
+            label='History'
+            title='Show History'
           />
           <GraphiQL.Button
             onClick={_handleToggleExplorer}
-            label="Explorer"
-            title="Toggle Explorer"
+            label='Explorer'
+            title='Toggle Explorer'
           />
         </GraphiQL.Toolbar>
       </GraphiQL>

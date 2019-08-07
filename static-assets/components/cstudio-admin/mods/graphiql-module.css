@@ -1,3 +1,9 @@
+/* fix scroll issue */
+.yui-skin-cstudioTheme {
+  height: auto;
+}
+
+/* position container under topbar */
 #graph-container {
     margin-top: 51px;
     height: calc( 100vh - 51px );
