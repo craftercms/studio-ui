@@ -29,13 +29,9 @@ var wfStates = [];
  */
 YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
-		var workareaEl = document.getElementById('cstudio-admin-console-workarea');
+    $('#cstudio-admin-console-workarea').html('<div id="graphContainer"/>');
 
-		workareaEl.innerHTML =
-			'<div id="graphContainer">' +
-			'</div>';
-
-			this.initializeGraphi();
+    this.initializeGraphi();
 	},
 
 	initializeGraphi: function() {
@@ -46,7 +42,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 			CStudioAuthoringContext.site,
 			'/environment/environment-config.xml', {
 				success: function(config) {
-          graphServerUrl = config['graphql-server-url'];
+          const graphServerUrl = config['graphql-server-url'];
           CrafterCMSNext.render(
             document.getElementById('graphContainer'),
             'GraphiQL',
