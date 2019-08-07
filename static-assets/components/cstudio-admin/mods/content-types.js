@@ -554,15 +554,36 @@ CStudioAuthoring.Module.requireModule(
           for(var j=0; j<controls.length; j++) {
             try {
               var controlContainerEl = document.createElement("div"),
-                controlName = controls[j].name ? controls[j].name : controls[j];
+                controlName = controls[j].name ? controls[j].name : controls[j],
+                controlPath = "";
               controlsPanelEl.appendChild(controlContainerEl);
+
+              if(controls[j].plugin && controls[j].plugin.type && controls[j].plugin.name && controls[j].plugin.filename){
+                  controlPath = CStudioAuthoring.Service.getPluginURL + "?siteId=" + CStudioAuthoringContext.site;
+                  if(controls[j].plugin.type){
+                      controlPath += "&type=" + controls[j].plugin.type;
+                  }
+                  if(controls[j].plugin.name){
+                      controlPath += "&name=" + controls[j].plugin.name;
+                  }
+                  if(controls[j].plugin.filename){
+                      controlPath += "&filename=" + controls[j].plugin.filename;
+                  }
+              }else{
+                  controlPath = CStudioAuthoring.Constants.CONTROL_URL + controlName+ ".js";
+              }
+
 
               rememberIdxF(function(idx) {
                 var cb = {
                   moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                     try {
-                      var tool = new moduleClass("fake", {}, fakeComponentOwner, [], [], []);
+                      var tool = new moduleClass("fake", {}, fakeComponentOwner, [], [], []),
+                          plugin = controls[idx].plugin ? controls[idx].plugin : null;
                       CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()] = tool;
+                      if(plugin){
+                          CStudioAdminConsole.Tool.ContentTypes.types[tool.getName()].plugin = plugin;
+                      }
                       YDom.addClass(this.controlContainerEl, "control");
                       this.controlContainerEl.innerHTML = tool.getLabel();
 
@@ -583,12 +604,11 @@ CStudioAuthoring.Module.requireModule(
                   context: this,
                   controlContainerEl: controlContainerEl
                 };
-
-                CStudioAuthoring.Module.requireModule(
-                  "cstudio-forms-controls-" + controlName,
-                  '/static-assets/components/cstudio-forms/controls/' + controlName+ ".js",
-                  { config: controlName },
-                  cb);
+                  CStudioAuthoring.Module.requireModule(
+                      "cstudio-forms-controls-" + controlName,
+                      controlPath,
+                      { config: controlName },
+                      cb);
               })(j);
             }
             catch(err) {
@@ -606,15 +626,35 @@ CStudioAuthoring.Module.requireModule(
           for(var l=0; l<datasources.length; l++) {
             try {
               var dsourceContainerEl = document.createElement("div"),
-                dsourceName = datasources[l].name ? datasources[l].name : datasources[l];
+                dsourceName = datasources[l].name ? datasources[l].name : datasources[l],
+                dsourcePath = "";
               dsourcePanelEl.appendChild(dsourceContainerEl);
+
+              if(datasources[l].plugin && datasources[l].plugin.type && datasources[l].plugin.name && datasources[l].plugin.filename){
+                  dsourcePath = CStudioAuthoring.Service.getPluginURL + "?siteId=" + CStudioAuthoringContext.site;
+                  if(datasources[l].plugin.type){
+                      dsourcePath += "&type=" + datasources[l].plugin.type;
+                  }
+                  if(datasources[l].plugin.name){
+                      dsourcePath += "&name=" + datasources[l].plugin.name;
+                  }
+                  if(datasources[l].plugin.filename){
+                      dsourcePath += "&filename=" + datasources[l].plugin.filename;
+                  }
+              }else{
+                  dsourcePath = CStudioAuthoring.Constants.DATASOURCE_URL + dsourceName+ ".js";
+              }
 
               rememberIdxF(function(idx) {
                 var cb = {
                   moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
                     try {
-                      var datasource = new moduleClass("", {}, [], []);
+                      var datasource = new moduleClass("", {}, [], []),
+                          plugin = datasources[idx].plugin ? datasources[idx].plugin : null;
                       CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()] = datasource;
+                      if(plugin){
+                        CStudioAdminConsole.Tool.ContentTypes.datasources[datasource.getName()].plugin = plugin;
+                      }
                       YDom.addClass(this.dsourceContainerEl, "datasource");
                       YDom.addClass(this.dsourceContainerEl, "new-datasource-type");
                       this.dsourceContainerEl.innerHTML = datasource.getLabel();
@@ -637,7 +677,7 @@ CStudioAuthoring.Module.requireModule(
 
                 CStudioAuthoring.Module.requireModule(
                   "cstudio-forms-controls-" + dsourceName,
-                  '/static-assets/components/cstudio-forms/data-sources/' + dsourceName + ".js",
+                   dsourcePath,
                   { config: dsourceName },
                   cb);
               })(l);
@@ -2164,6 +2204,10 @@ CStudioAuthoring.Module.requireModule(
           };
           newDataSource["interface"] = datasourcePrototype.getInterface();
 
+          if(datasourcePrototype.plugin){
+              newDataSource.plugin =  datasourcePrototype.plugin;
+          }
+
           var supportedProps = datasourcePrototype.getSupportedProperties();
           for(var i=0; i<supportedProps.length; i++) {
             var supportedProperty = supportedProps[i];
@@ -2209,6 +2253,10 @@ CStudioAuthoring.Module.requireModule(
             type: fieldPrototype.getName(),
             section: section
           };
+
+          if(fieldPrototype.plugin) {
+            newField.plugin = fieldPrototype.plugin;
+          }
 
           if(fieldPrototype.getName() == "repeat") {
             newField.fields = [];
@@ -2676,8 +2724,21 @@ CStudioAuthoring.Module.requireModule(
               "\t\t\t\t\t<title>" + CStudioForms.Util.escapeXml(field.title) + "</title>\r\n" +
               "\t\t\t\t\t<description>" + CStudioForms.Util.escapeXml(field.description) + "</description>\r\n" +
               "\t\t\t\t\t<defaultValue>" + CStudioForms.Util.escapeXml(field.defaultValue) + "</defaultValue>\r\n" +
-              "\t\t\t\t\t<help>" + CStudioForms.Util.escapeXml(field.help) + "</help>\r\n" +
-              "\t\t\t\t\t<properties>\r\n";
+              "\t\t\t\t\t<help>" + CStudioForms.Util.escapeXml(field.help) + "</help>\r\n";
+            if(field.plugin){
+                xml += "\t\t\t\t\t<plugin>\r\n";
+                if(field.plugin.type) {
+                    xml += "\t\t\t\t\t\t<type>" + field.plugin.type + "</type>\r\n";
+                }
+                if(field.plugin.name) {
+                    xml += "\t\t\t\t\t\t<name>" + field.plugin.name + "</name>\r\n";
+                }
+                if(field.plugin.filename) {
+                    xml += "\t\t\t\t\t\t<filename>" + field.plugin.filename + "</filename>\r\n";
+                }
+                xml += "\t\t\t\t\t</plugin>\r\n";
+            }
+            xml += "\t\t\t\t\t<properties>\r\n";
             for(var i=0; i<field.properties.length; i++) {
               var property = field.properties[i];
               if(property) {
@@ -2771,8 +2832,21 @@ CStudioAuthoring.Module.requireModule(
               "\t\t\t\t\t<type>" + datasource.type + "</type>\r\n" +
               "\t\t\t\t\t<id>" + datasource.id + "</id>\r\n" +
               "\t\t\t\t\t<title>" + CStudioForms.Util.escapeXml(datasource.title) + "</title>\r\n" +
-              "\t\t\t\t\t<interface>" + datasource["interface"] + "</interface>\r\n" +
-              "\t\t\t\t\t<properties>\r\n";
+              "\t\t\t\t\t<interface>" + datasource["interface"] + "</interface>\r\n";
+              if(datasource.plugin){
+                  xml += "\t\t\t\t\t<plugin>\r\n";
+                  if(datasource.plugin.type) {
+                      xml += "\t\t\t\t\t\t<type>" + datasource.plugin.type + "</type>\r\n";
+                  }
+                  if(datasource.plugin.name) {
+                      xml += "\t\t\t\t\t\t<name>" + datasource.plugin.name + "</name>\r\n";
+                  }
+                  if(datasource.plugin.filename) {
+                      xml += "\t\t\t\t\t\t<filename>" + datasource.plugin.filename + "</filename>\r\n";
+                  }
+                  xml += "\t\t\t\t\t</plugin>\r\n";
+              }
+            xml += "\t\t\t\t\t<properties>\r\n";
             for(var i=0; i<datasource.properties.length; i++) {
               var property = datasource.properties[i];
               if(property) {

@@ -257,7 +257,9 @@ var nodeOpen = false,
                 inWorkflowStatus: "in workflow"
             },
             HEADERS: "headers",
-            AUTH_HEADERS: "AUTH_HEADERS"
+            AUTH_HEADERS: "AUTH_HEADERS",
+            DATASOURCE_URL: "/static-assets/components/cstudio-forms/data-sources/",
+            CONTROL_URL: "/static-assets/components/cstudio-forms/controls/"
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -3352,6 +3354,9 @@ var nodeOpen = false,
 
             // Quick Create
             getQuickCreateURL: "/api/2/content/list_quick_create_content.json",
+
+           // Plugin
+            getPluginURL: "/api/2/plugin/file",
 
             /**
              * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor

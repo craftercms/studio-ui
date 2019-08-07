@@ -1605,9 +1605,25 @@ var CStudioForms = CStudioForms || function() {
                 }else{
                     for(var i=0, l=formDef.datasources.length; i < l; i++) {
                         var datasourceDef = formDef.datasources[i],
+                            datasourceDefPath = "",
                             script;
 
-                        script = CStudioAuthoringContext.baseUri + "/static-assets/components/cstudio-forms/data-sources/" + datasourceDef.type + ".js";
+                        if(datasourceDef.plugin && datasourceDef.plugin.type && datasourceDef.plugin.name && datasourceDef.plugin.filename){
+                            datasourceDefPath = CStudioAuthoring.Service.getPluginURL + "?siteId=" + CStudioAuthoringContext.site;
+                            if(datasourceDef.plugin.type){
+                                datasourceDefPath += "&type=" + datasourceDef.plugin.type;
+                            }
+                            if(datasourceDef.plugin.name){
+                                datasourceDefPath += "&name=" + datasourceDef.plugin.name;
+                            }
+                            if(datasourceDef.plugin.filename){
+                                datasourceDefPath += "&filename=" + datasourceDef.plugin.filename;
+                            }
+                        }else{
+                            datasourceDefPath = CStudioAuthoring.Constants.DATASOURCE_URL + datasourceDef.type + ".js";
+                        }
+
+                        script = CStudioAuthoringContext.baseUri + datasourceDefPath;
                         script = CStudioAuthoring.Utils.addURLParameter(script, "version", CStudioAuthoring.UIBuildId);
 
                         var onDone = (function(datasourceDef){
@@ -1953,7 +1969,22 @@ var CStudioForms = CStudioForms || function() {
                     return;
                 }
 
-                var fieldContainerEl = document.createElement("div");
+                var fieldContainerEl = document.createElement("div"),
+                    controlPath = "";
+                if(field.plugin && field.plugin.type && field.plugin.name && field.plugin.filename){
+                    controlPath = CStudioAuthoring.Service.getPluginURL + "?siteId=" + CStudioAuthoringContext.site;
+                    if(field.plugin.type){
+                        controlPath += "&type=" + field.plugin.type;
+                    }
+                    if(field.plugin.name){
+                        controlPath += "&name=" + field.plugin.name;
+                    }
+                    if(field.plugin.filename){
+                        controlPath += "&filename=" + field.plugin.filename;
+                    }
+                }else{
+                    controlPath = CStudioAuthoring.Constants.CONTROL_URL + field.type+ ".js";
+                }
                 YAHOO.util.Dom.addClass(fieldContainerEl, 'container');
                 YAHOO.util.Dom.addClass(fieldContainerEl, field.type + '-control');
                 YAHOO.util.Dom.addClass(fieldContainerEl, 'cstudio-form-field-container');
@@ -2040,7 +2071,7 @@ var CStudioForms = CStudioForms || function() {
 
                 CStudioAuthoring.Module.requireModule(
                     "cstudio-forms-controls-" + field.type,
-                    '/static-assets/components/cstudio-forms/controls/' + field.type + ".js",
+                    controlPath,
                     { config: { field: field,
                         repeatField: repeatField,
                         repeatIndex: repeatIndex}},
