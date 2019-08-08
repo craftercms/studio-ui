@@ -18,10 +18,12 @@
 import React from 'react';
 import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 
+import Graphi from './GraphiQL';
+
 function App() {
   return (
     <CrafterCMSNextBridge>
-      Hello World!
+      <Graphi url="http://localhost:8080/api/1/site/graphql" storageKey="editorial"/>
     </CrafterCMSNextBridge>
   );
 }

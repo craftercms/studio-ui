@@ -47,7 +47,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
             document.getElementById('graphContainer'),
             'GraphiQL',
             {
-              url: graphServerUrl + '/api/1/site/graphql',
+              url: `${graphServerUrl}/api/1/site/graphql`,
               storageKey: site
             }
           );
