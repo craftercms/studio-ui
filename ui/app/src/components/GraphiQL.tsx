@@ -77,7 +77,7 @@ function Graphi(props: GraphiQLProps) {
     return fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: method === 'post' ? JSON.stringify(graphQLParams) : ''
+      ...method === 'post' ? { body: JSON.stringify(graphQLParams) } : {}
     }).then(function (responseBody: any) {
       try {
         return responseBody.json();
