@@ -896,6 +896,11 @@ body.yui-skin-cstudioTheme .mask {
     padding-left: 24px;
 }
 
+#errorPostfix-dialog .descriptionMessage{
+    color: #8e8c8c;
+    font-style: italic;
+}
+
 .yui-overlay.yui-panel .ft {
   background-color: white;
   padding: 0px 10px 10px;

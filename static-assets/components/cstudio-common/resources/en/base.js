@@ -526,7 +526,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     revertError: "Revert failed.",
     legacyError: "legacy form server is no longer supported",
     contentTypesEmpty: "There are no content types available that can be created at the configured path.",
-    componentCategoriesError: "There are no categories available that can be created."
+    componentCategoriesError: "There are no categories available that can be created.",
+    pluginError: "Issues were found with your plugin configuration. The following properties are missing:",
+    pluginErrorSolution: "Go to <a id='siteConfigURL'>[site config page]</a> and select the 'Site Config Tools' on the dropdown to edit the file.",
+    control: "Control: ",
+    datasource: "Datasource: ",
+    propertyMessage: " property is missing",
+    propertiesMessage: " properties are missing"
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "en", {

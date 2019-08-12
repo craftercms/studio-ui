@@ -526,7 +526,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     revertError: "Zurücksetzen ist fehlgeschlagen.",
     legacyError: "Der alte Formular Server wird nicht mehr unterstützt.",
     contentTypesEmpty: "Es gibt keine Content-Typen, die unter dem konfigurierten Pfad angelegt werden können.",
-    componentCategoriesError: "Es sind keine Kategorien zum Anlegen verfügbar."
+    componentCategoriesError: "Es sind keine Kategorien zum Anlegen verfügbar.",
+    pluginError: "Es wurden Probleme mit Ihrer Plugin-Konfiguration gefunden. Die folgenden Eigenschaften fehlen:",
+    pluginErrorSolution: "<a id='siteConfigURL'>Gehen Sie zu <a id='siteConfigURL'> [Site-Konfigurationsseite] </a> und wählen Sie in der Dropdown-Liste die Option 'Site-Konfigurations-Tools' aus, um die Datei zu bearbeiten.",
+    control: "Steuerung: ",
+    datasource: "Datenquelle: ",
+    propertyMessage: " eigentum fehlt.",
+    propertiesMessage: " igenschaften fehlen."
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "de", {
