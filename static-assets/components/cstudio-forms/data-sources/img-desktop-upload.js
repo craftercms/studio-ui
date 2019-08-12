@@ -53,7 +53,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgDesktopUpload, CStudioForms.CStudioForm
 		
 		var callback = { 
 			success: function(imageData) {
-                var topWin = window.parent.self;
+                var topWin = window.parent.CStudioAuthoring.ContextualNav.WcmRootFolder;
                 if(topWin.currentTextNode && topWin.myTreeAssets){
                     topWin.refreshNodes(topWin.currentTextNode,false, false, topWin.myTreeAssets, null, true);
                 }

@@ -600,7 +600,6 @@ CStudioAuthoring.Module.requireModule(
                         })(j);
                     }
                     catch(err) {
-                        //alert(err);
                     }
 
                     if(pluginInfo.missingProp.length > 0){
@@ -662,7 +661,6 @@ CStudioAuthoring.Module.requireModule(
                         })(l);
                     }
                     catch(err) {
-                        //alert(err);
                     }
 
                     if(pluginInfo.missingProp.length > 0){
