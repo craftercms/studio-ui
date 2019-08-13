@@ -511,7 +511,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     revertError: "Error al revertir.",
     legacyError: "El servidor de formulario heredado ya no es compatible.",
     contentTypesEmpty: "No hay tipos de contenido disponibles que se pueden crear en la ruta de configuración.",
-    componentCategoriesError: "No hay categorías disponibles que puedan ser creadas."
+    componentCategoriesError: "No hay categorías disponibles que puedan ser creadas.",
+    pluginError: "Se encontraron problemas con la configuración de su plugin. Faltan las siguientes propiedades:",
+    pluginErrorSolution: "Vaya a <a id='siteConfigURL'> [página de configuración del sitio] </a> y seleccione 'Herramientas de configuración del sitio' en el menú desplegable para editar el archivo.",
+    control: "Control: ",
+    datasource: "Fuente de datos: ",
+    propertyMessage: " propiedad esta faltando",
+    propertiesMessage: " propiedades están faltando"
 
 });
 

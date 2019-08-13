@@ -257,7 +257,9 @@ var nodeOpen = false,
                 inWorkflowStatus: "in workflow"
             },
             HEADERS: "headers",
-            AUTH_HEADERS: "AUTH_HEADERS"
+            AUTH_HEADERS: "AUTH_HEADERS",
+            DATASOURCE_URL: "/static-assets/components/cstudio-forms/data-sources/",
+            CONTROL_URL: "/static-assets/components/cstudio-forms/controls/"
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -629,7 +631,7 @@ var nodeOpen = false,
 
                     if(dialogType) {
                         if (bdHeight > bdIcon.offsetHeight) {
-                            bdIcon.style.marginBottom = (bdHeight - 16) + "px";
+                            bdIcon.style.marginBottom = (bdHeight - 15) + "px";
                         }
                     }
 
@@ -3352,6 +3354,9 @@ var nodeOpen = false,
 
             // Quick Create
             getQuickCreateURL: "/api/2/content/list_quick_create_content.json",
+
+           // Plugin
+            getPluginURL: "/api/2/plugin/file",
 
             /**
              * lookup authoring role. having 'admin' role in one of user roles will return admin. otherwise it will return contributor
@@ -8238,6 +8243,90 @@ var nodeOpen = false,
                 }
             }
 
+        },
+
+        form: {
+
+            getPluginInfo: function (item, url, pluginType) {
+                var path, prefix, name, missingProp = [];
+
+                if (item.plugin != null) {
+                    name = item.plugin.name;
+                    path = CStudioAuthoring.Service.getPluginURL + "?siteId=" + CStudioAuthoringContext.site;
+                    prefix = name;
+                    if (item.plugin.type) {
+                        path += "&type=" + item.plugin.type;
+                    }else{
+                        missingProp.push("Type");
+                    }
+                    if (item.plugin.name) {
+                        path += "&name=" + name;
+                    }else{
+                        missingProp.push("Name");
+                    }
+                    if (item.plugin.filename) {
+                        path += "&filename=" + item.plugin.filename;
+                    }else{
+                        missingProp.push("File name");
+                    }
+                    if (missingProp.length > 0) {
+                        path = "";
+                    }
+
+                } else {
+                    name = item.name ? item.name : item;
+                    path = url + name + ".js";
+                    prefix = "cstudio-forms-controls-" + name;
+                }
+
+                return { "path": path, "prefix": prefix, "name": name, "missingProp": missingProp  };
+
+            },
+
+            getPluginError: function (errorObject, CMgs, formsLangBundle) {
+
+                var message = "<div class='postfixErrorContainer'>" + CMgs.format(formsLangBundle, "pluginError") + "<ul>",
+                    propertiesMessage;
+
+                if(errorObject.control.length > 0){
+                    for(var i = 0; errorObject.control.length > i; i++  ){
+                        propertiesMessage = errorObject.control[i].length > 1 ? CMgs.format(formsLangBundle, "propertiesMessage")
+                            : CMgs.format(formsLangBundle, "propertyMessage");
+                        message += "<li>" + "" +
+                                    /***/"<strong>" + CMgs.format(formsLangBundle, "control") + "</strong>"  + errorObject.control[i].toString().replace(/,/g, ", ") .replace(/,([^,]*)$/,' and$1') +
+                                    /***/propertiesMessage +
+                                   "</li>";
+                    }
+                }
+
+                if(errorObject.datasource.length > 0){
+                    for(var i = 0; errorObject.datasource.length > i; i++  ){
+                        propertiesMessage = errorObject.datasource[i].length > 1 ? CMgs.format(formsLangBundle, "propertiesMessage")
+                            : CMgs.format(formsLangBundle, "propertyMessage");
+                        message += "<li>" +
+                                    /***/"<strong>" + CMgs.format(formsLangBundle, "datasource") + "</strong>"  + errorObject.datasource[i].toString().replace(/,/g, ", ").replace(/,([^,]*)$/,' and$1') +
+                                    /***/propertiesMessage  +
+                                   "</li>";
+                    }
+                }
+
+                message += /**/"</ul>" +
+                           /**/"<p class='descriptionMessage' >" + CMgs.format(formsLangBundle, "pluginErrorSolution") + "</p>" +
+                           "</div>";
+
+                var $html = $('<div />',{html:message});
+                $html.find('a').attr("href", CStudioAuthoringContext.baseUri  + "/site-config");
+
+                CStudioAuthoring.Operations.showSimpleDialog(
+                    "errorPostfix-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(formsLangBundle, "notification"),
+                    $html.html(),
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                );
+            }
         }
 
         },

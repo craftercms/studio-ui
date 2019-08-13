@@ -485,8 +485,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     revertError: "되돌리기에 실패했습니다.",
     legacyError: "레거시 양식 서버는 더 이상 지원되지 않습니다.",
     contentTypesEmpty: "구성된 경로에서 사용할 수있는 콘텐츠 형식이 없습니다",
-    componentCategoriesError: "사용할 수있는 카테고리가 없습니다"
-
+    componentCategoriesError: "사용할 수있는 카테고리가 없습니다",
+    pluginError: "플러그인 구성에 문제가 있습니다. 다음과 같은 속성이 없습니다",
+    pluginErrorSolution: "[사이트 구성 페이지] </a>로 이동하여 드롭 다운에서“사이트 구성 도구”를 선택하여 파일을 편집하십시오.",
+    control: "제어: ",
+    datasource: "데이터 소스: ",
+    propertyMessage: " 재산이 없습니다",
+    propertiesMessage: "속성이 없습니다"
 
 });
 

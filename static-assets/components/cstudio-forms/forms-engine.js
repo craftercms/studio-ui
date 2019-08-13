@@ -67,6 +67,9 @@ var CStudioForms = CStudioForms || function() {
         var repeatEdited = false;
         var saveDraft = false;
         var lastDraft = false;
+        var pluginError = {};
+        pluginError.control = [];
+        pluginError.datasource = [];
 
         // private methods
 
@@ -991,6 +994,11 @@ var CStudioForms = CStudioForms || function() {
                         }
 
                         me._renderFormSections(form);
+
+                        if(pluginError.control.length > 0 ||
+                            pluginError.datasource.length > 0){
+                            CStudioAuthoring.Utils.form.getPluginError(pluginError, CMgs, formsLangBundle);
+                        }
                     }
 
                     var buildEntityIdFn = function(draft) {
@@ -1605,47 +1613,60 @@ var CStudioForms = CStudioForms || function() {
                 }else{
                     for(var i=0, l=formDef.datasources.length; i < l; i++) {
                         var datasourceDef = formDef.datasources[i],
+                            pluginInfo = "",
                             script;
+                        datasourceDef.name = datasourceDef.type;
 
-                        script = CStudioAuthoringContext.baseUri + "/static-assets/components/cstudio-forms/data-sources/" + datasourceDef.type + ".js";
-                        script = CStudioAuthoring.Utils.addURLParameter(script, "version", CStudioAuthoring.UIBuildId);
+                        pluginInfo = CStudioAuthoring.Utils.form.getPluginInfo(datasourceDef, CStudioAuthoring.Constants.DATASOURCE_URL, "datadource");
 
-                        var onDone = (function(datasourceDef){
-                            return function(script, textStatus){
-                                try {
+                        if(pluginInfo.path != "") {
+                            script = CStudioAuthoringContext.baseUri + pluginInfo.path;
+                            script = CStudioAuthoring.Utils.addURLParameter(script, "version", CStudioAuthoring.UIBuildId);
 
-                                    if("" === script){
-                                        notLoaded.push(datasourceDef.type);
-                                    }else{
-                                        var moduleClass = CStudioAuthoring.Module.loadedModules["cstudio-forms-controls-" + datasourceDef.type];
-                                        var datasource = new moduleClass(datasourceDef.id, form, datasourceDef.properties);
-                                        form.datasourceMap[datasource.id] = datasource;
-                                        amplify.publish("/datasource/loaded", { name: datasource.id});
+                            var onDone = (function (datasourceDef, pluginInfo) {
+                                return function (script, textStatus) {
+                                    try {
 
-                                        loaded.push(datasourceDef.type);
-                                    }
+                                        if ("" === script) {
+                                            notLoaded.push(datasourceDef.type);
+                                        } else {
+                                            var moduleClass = CStudioAuthoring.Module.loadedModules[pluginInfo.prefix];
+                                            var datasource = new moduleClass(datasourceDef.id, form, datasourceDef.properties);
+                                            form.datasourceMap[datasource.id] = datasource;
+                                            amplify.publish("/datasource/loaded", { name: datasource.id});
 
-                                    releaseCallback();
-                                }
-                                catch (e) {
-                                    console.log(e);
-                                }
-                            }
-                        })(datasourceDef);
+                                            loaded.push(datasourceDef.type);
+                                        }
 
-                        if(CStudioAuthoring.Module.loadedModules["cstudio-forms-controls-" + datasourceDef.type]){
-                            onDone();
-                        }else{
-                            jQuery.getScript(script)
-                                .done(onDone)
-                                .fail((function(datasourceDef){
-                                    return function(jqxhr, settings, exception){
-                                        console.log(exception);
-                                        notLoaded.push(datasourceDef.type);
                                         releaseCallback();
                                     }
-                                })(datasourceDef));
+                                    catch (e) {
+                                        console.log(e);
+                                    }
+                                }
+                            })(datasourceDef, pluginInfo);
+
+                            if (CStudioAuthoring.Module.loadedModules[pluginInfo.prefix]) {
+                                onDone();
+                            } else {
+                                jQuery.getScript(script)
+                                    .done(onDone)
+                                    .fail((function (datasourceDef) {
+                                        return function (jqxhr, settings, exception) {
+                                            console.log(exception);
+                                            notLoaded.push(datasourceDef.type);
+                                            releaseCallback();
+                                        }
+                                    })(datasourceDef));
+                            }
+                        }else{
+                            notLoaded.push(datasourceDef.type);
                         }
+
+                        if(pluginInfo.missingProp.length > 0){
+                            pluginError.datasource.push(pluginInfo.missingProp);
+                        }
+
                     }
                 }
 
@@ -1953,7 +1974,12 @@ var CStudioForms = CStudioForms || function() {
                     return;
                 }
 
-                var fieldContainerEl = document.createElement("div");
+                var fieldContainerEl = document.createElement("div"),
+                    pluginInfo;
+                field.name = field.type;
+
+                pluginInfo = CStudioAuthoring.Utils.form.getPluginInfo(field, CStudioAuthoring.Constants.CONTROL_URL, "control");
+
                 YAHOO.util.Dom.addClass(fieldContainerEl, 'container');
                 YAHOO.util.Dom.addClass(fieldContainerEl, field.type + '-control');
                 YAHOO.util.Dom.addClass(fieldContainerEl, 'cstudio-form-field-container');
@@ -2039,13 +2065,17 @@ var CStudioForms = CStudioForms || function() {
                 };
 
                 CStudioAuthoring.Module.requireModule(
-                    "cstudio-forms-controls-" + field.type,
-                    '/static-assets/components/cstudio-forms/controls/' + field.type + ".js",
+                    pluginInfo.prefix,
+                    pluginInfo.path,
                     { config: { field: field,
                         repeatField: repeatField,
                         repeatIndex: repeatIndex}},
                     cb
                 );
+
+                if(pluginInfo.missingProp.length > 0){
+                    pluginError.control.push(pluginInfo.missingProp);
+                }
             },
 
             _renderInContextEdit: function(form, iceId) {
