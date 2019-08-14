@@ -187,6 +187,7 @@
       },
       "repositories": {
           "REPOSITORIES": "Repositorios",
+          "REMOTES": "Remotos",
           "NEW_REPOSITORY":"Repositorios Nuevos",
           "REPOSITORIES_PER_PAGE": "Repositorios por página",
           "NAME": "Nombre",
@@ -201,7 +202,23 @@
           "REMOTE_BRANCH_PUSH":"Sucursal remota para empujar a ",
           "SUCCESSFULLY_PUSHED": "Empujado con éxito",
           "SUCCESSFULLY_PULLED": "Jaló con éxito",
-          "REPO_DELETED": "repositorio borrado"
+          "REPO_DELETED": "repositorio borrado",
+          "NO_CONFLICTS": "Repositorio local está libre de conflictos.",
+          "CONFLICTS_EXIST": "Las operaciones de repositorios están desactivadas mientras existan conflictos. Por favor resolver los conflictos.",
+          "COMMIT_RESOLUTION": "Commit de Resolución",
+          "COMMIT_RESOLUTION_CONFIRMATION": "Usted está por hacer commit de la resolución del conflicto.",
+          "COMMIT_RESOLUTION_MESSAGE_REQUIREMENT": "Por favor suministre un mensage para el registro de historia del repositorio.",
+          "COMMIT_RESOLUTION_INDICATIONS": "Luego de hacer commit de esta resolución, usted debe hacer \"push\" de los cambios a los remotos para sincronizar el nuevo estado que usted acaba de definir",
+          "REVERT_ALL": "Revertir Todo",
+          "REVERT_ALL_DESCRIPTION": "Cancelar la operación de pull y mantener lo que hay en este repositorio.",
+          "CONFLICTED_FILES": "Archivos en Conflicto",
+          "PENDING_COMMIT": "Pendientes de Commit",
+          "ACCEPT_REMOTE": "Aceptar Remoto",
+          "ACCEPT_REMOTE_DESCRIPTION": "Sobreescribir el archivo local con la versión jalada del remoto.",
+          "KEEP_LOCAL": "Mantener Local",
+          "KEEP_LOCAL_DESCRIPTION": "Descartar los cambios remotos y mantener el archivo local.",
+          "DIFF": "Diff",
+          "SPLIT_VIEW": "Vista Dividida"
       }
   },
   "common": {

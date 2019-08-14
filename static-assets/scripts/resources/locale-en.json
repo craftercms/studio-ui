@@ -209,7 +209,7 @@
           "COMMIT_RESOLUTION": "Commit Resolution",
           "COMMIT_RESOLUTION_CONFIRMATION": "You are about to commit the conflict resolution.",
           "COMMIT_RESOLUTION_MESSAGE_REQUIREMENT": "Please supply a message for the repository history log:",
-          "COMMIT_RESOLUTION_INDICATIONS": "After commiting this resolution. you should \"push\" the changes to remote(s) to sync up the new state that you have just defined.",
+          "COMMIT_RESOLUTION_INDICATIONS": "After committing this resolution. you should \"push\" the changes to remote(s) to sync up the new state that you have just defined.",
           "REVERT_ALL": "Revert All",
           "REVERT_ALL_DESCRIPTION": "Cancel pull operation and keep what's on this repository.",
           "CONFLICTED_FILES": "Conflicted Files",
