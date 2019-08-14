@@ -18,8 +18,6 @@
 import React from 'react';
 import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 
-import Graphi from './GraphiQL';
-
 function App() {
   return (
     <CrafterCMSNextBridge>
