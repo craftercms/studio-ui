@@ -2723,13 +2723,13 @@ var CStudioForms = CStudioForms || function() {
 
         try {
           if (fieldInstruction && fieldInstruction.tokenize == true) {
-            attributes += ' tokenized=\'true\' ';
+            attributes.push('tokenized="true"');
           }
           if (fieldList && fieldList.list == true) {
-            attributes += ' item-list="true" ';
+            attributes.push('item-list="true"');
           }
           if (CStudioRemote[key] && !isModelItemArray) {
-            attributes += ' remote="true" ';
+            attributes.push('remote="true"');
           }
         } catch (err) {
           CStudioAuthoring.Operations.showSimpleDialog(
