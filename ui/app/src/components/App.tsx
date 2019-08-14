@@ -23,7 +23,7 @@ import Graphi from './GraphiQL';
 function App() {
   return (
     <CrafterCMSNextBridge>
-      <Graphi url="http://localhost:8080/api/1/site/graphql" storageKey="editorial"/>
+      Hello World!
     </CrafterCMSNextBridge>
   );
 }
