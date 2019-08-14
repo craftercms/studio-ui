@@ -158,6 +158,28 @@
                 return $http.post(repositories('push-to-remote'), data);
             };
 
+            this.repositoryStatus = function(data) {
+                return $http.get(repositories('status', 'siteId=' + data));
+            }
+            
+            this.resolveConflict = function(data) {
+                return $http.post(repositories('resolve-conflict'), data);
+            }
+
+            this.diffConflictedFile = function(data) {
+                return $http.get(repositories('diff-conflicted-file'), {
+                    params: data
+                });
+            }
+
+            this.commitResolution = function(data) {
+                return $http.post(repositories('commit-resolution'), data);
+            }
+
+            this.cancelFailedPull = function(data) {
+                return $http.post(repositories('cancel-failed-pull'), data);
+            }
+
             //AUDIT
 
             this.getAudit = function(data) {
@@ -1096,11 +1118,25 @@
         function ($scope, $state, $window, $sce, adminService, $modal, $timeout,
                   $stateParams, $translate, $location, $q) {
 
-
-            $scope.repositories = {};
-            var repositories = $scope.repositories;
-            repositories.site = $location.search().site;
+            $scope.repositories = {
+                site: $location.search().site,
+                selectedTab: 'diff',
+                status: {
+                    clean: false
+                },
+                diff: {}
+            };
+            var repositories = $scope.repositories;            
             repositories.spinnerOverlay;
+         
+            repositories.getRepositoryStatus = function() {
+                adminService.repositoryStatus($location.search().site).success(function(data){
+                    repositories.status = data.repositoryStatus;
+                });
+            }
+            repositories.getFileName = function(filePath) {
+                return filePath.substr(filePath.lastIndexOf('/') + 1);
+            };
 
             this.init = function() {
 
@@ -1111,7 +1147,6 @@
                         windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
                         backdrop: 'static',
                         keyboard: true,
-                        controller: 'RepositoriesCtrl',
                         scope: $scope,
                         size: size ? size : ''
                     });
@@ -1138,6 +1173,8 @@
                     }, 1500, false);
 
                 };
+
+                repositories.getRepositoryStatus();
 
                 adminService.getRepositories(repositories).success(function (data) {
                     repositories.repositories = data;
@@ -1218,9 +1255,11 @@
                     adminService.pullRepository(currentRepo).success(function (data) {
 
                         repositories.spinnerOverlay.close();
+                        repositories.getRepositoryStatus();
                         $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', null,"studioMedium");
 
                     }).error(function (error) {
+                        repositories.getRepositoryStatus();
                         repositories.spinnerOverlay.close();
                         $scope.messageTitle = $translate.instant('common.ERROR');
                         $scope.messageText = error.message;
@@ -1264,6 +1303,59 @@
 
                 $scope.adminModal = $scope.showModal('pushPull.html', 'sm', true, "studioMedium");
             };
+
+            // Repository status
+
+            repositories.commitResolutionModal = function() {
+                $scope.adminModal = $scope.showModal('commitResolution.html', 'md', true);
+            }
+
+            repositories.commitResolution = function() {
+                adminService.commitResolution({
+                    siteId: repositories.site,
+                    commitMessage: repositories.commitMsg
+                }).success(function(data) {
+                    repositories.status = data.repositoryStatus;
+                    repositories.commitMsg = '';
+                });
+            }
+
+            repositories.diffContent = function(path) {
+                repositories.diffPath = path;
+
+                adminService.diffConflictedFile({
+                    siteId: repositories.site,
+                    path: path
+                }).success(function(data) {
+                    repositories.diff = {
+                        diff: data.diff.diff,
+                        studioVersion: data.diff.studioVersion,
+                        remoteVersion: data.diff.remoteVersion
+                    }
+
+                    $scope.adminModal = $scope.showModal('diffModal.html', 'lg', true);
+                }).error(function() {
+                    $scope.adminModal = $scope.showModal('diffModal.html', 'lg', true);
+                });
+            }
+
+            repositories.resolveConflict = function(path, resolution) {
+                adminService.resolveConflict({
+                    siteId: repositories.site,
+                    path,
+                    resolution
+                }).success(function(data) {
+                    repositories.status = data.repositoryStatus;
+                });
+            }
+
+            repositories.revertAll = function() {
+                adminService.cancelFailedPull({ 
+                    siteId: repositories.site 
+                }).success(function (data) {
+                    repositories.status = data.repositoryStatus;
+                });
+            }
 
         }
     ]);
