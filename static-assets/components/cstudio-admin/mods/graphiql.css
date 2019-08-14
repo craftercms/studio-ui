@@ -1,8 +1,0 @@
-#graph-container {
-    margin-top: 51px;
-    height: calc( 100vh - 51px );
-}
-
-#graph-container .doc-explorer-title-bar {
-    height: 47px;
-}

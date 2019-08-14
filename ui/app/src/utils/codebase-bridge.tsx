@@ -61,7 +61,8 @@ export function createCodebaseBridge() {
     ReactDOM,
 
     components: {
-      AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer'))
+      AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
+      GraphiQL: lazy(() => import('../components/GraphiQL'))
     },
 
     assets: {

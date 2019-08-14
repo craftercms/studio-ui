@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addJavascript("/static-assets/libs/graphiql/graphiql.js");
-CStudioAuthoring.Utils.addCss("/static-assets/libs/graphiql/graphiql.css");		// library css
-CStudioAuthoring.Utils.addCss("/static-assets/components/cstudio-admin/mods/graphiql.css");		// mod css
+CStudioAuthoring.Utils.addCss("/static-assets/styles/graphiql.css");
 CStudioAdminConsole.Tool.GraphiQL = CStudioAdminConsole.Tool.GraphiQL ||  function(config, el)  {
 	this.containerEl = el;
 	this.config = config;
@@ -31,13 +29,9 @@ var wfStates = [];
  */
 YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 	renderWorkarea: function() {
-		var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		
-		workareaEl.innerHTML = 
-			"<div id='graph-container'>" +
-			"</div>";
+    $('#cstudio-admin-console-workarea').html('<div id="graphContainer"/>');
 
-			this.initializeGraphi();
+    this.initializeGraphi();
 	},
 
 	initializeGraphi: function() {
@@ -45,21 +39,28 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 			actions = [];
 
 		CStudioAuthoring.Service.lookupConfigurtion(
-			CStudioAuthoringContext.site, 
-			"/environment/environment-config.xml", {
+			CStudioAuthoringContext.site,
+			'/environment/environment-config.xml', {
 				success: function(config) {
-					graphServerUrl = config['graphql-server-url'];
-					GraphiQL(document.getElementById("graph-container"), graphServerUrl + '/api/1/site/graphql', site);
+          const graphServerUrl = config['graphql-server-url'];
+          CrafterCMSNext.render(
+            document.getElementById('graphContainer'),
+            'GraphiQL',
+            {
+              url: `${graphServerUrl}/api/1/site/graphql`,
+              storageKey: site
+            }
+          );
 				},
 				failure: function() {
 					CStudioAuthoring.Operations.showSimpleDialog(
-						"errorDialog-dialog",
+						'errorDialog-dialog',
 						CStudioAuthoring.Operations.simpleDialogTypeINFO,
-						CMgs.format(langBundle, "notification"),
-						CMgs.format(langBundle, "failConfig"),
+						CMgs.format(langBundle, 'notification'),
+						CMgs.format(langBundle, 'failConfig'),
 						null, // use default button
 						YAHOO.widget.SimpleDialog.ICON_BLOCK,
-						"studioDialog"
+						'studioDialog'
 					);
 				}
 			}
@@ -68,5 +69,5 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 	}
 });
-		
-CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-graphiql",CStudioAdminConsole.Tool.GraphiQL);
+
+CStudioAuthoring.Module.moduleLoaded('cstudio-console-tools-graphiql',CStudioAdminConsole.Tool.GraphiQL);

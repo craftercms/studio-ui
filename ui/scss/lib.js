@@ -9,6 +9,7 @@ const
     'forms-engine',
     { input: 'user-dashboard/user-dashboard', output: 'main' },
     'search',
+    'graphiql',
     { input: 'guest/guest', output: 'guest' }
   ];
 
