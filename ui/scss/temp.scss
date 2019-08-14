@@ -505,12 +505,15 @@ div#acn-active-content {
 .acn-admin-console {
   font-size: 14px;
   line-height: 15px;
+  margin-top: 15px !important;
   color: #333333;
   cursor: pointer;
 }
 
-#admin-console {
-  margin-top: 15px; 
+#cstudio-admin-console-workarea {
+  iframe {
+    border: 0;
+  }
 }
 
 .acn-admin-console:hover {
