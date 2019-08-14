@@ -278,7 +278,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
         var datasource = datasources[0];
 
-        if( datasource && this.readonly == false ){
+        if (datasource && !this.readonly) {
             this.datasource = datasource;
 
             if(!this.addButtonEl.disabled){

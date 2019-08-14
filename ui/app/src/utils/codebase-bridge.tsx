@@ -23,6 +23,8 @@ import string from './string';
 import ajax from './ajax';
 import path from './path';
 import storage from './storage';
+import { Subject, fromEvent } from 'rxjs';
+import { filter, map, take } from 'rxjs/operators';
 
 /**
  *
@@ -50,6 +52,7 @@ interface CodebaseBridge {
   assets: { [key: string]: () => Promise<any> };
   util: object;
   render: Function;
+  rxjs: object;
 }
 
 export function createCodebaseBridge() {
@@ -60,8 +63,15 @@ export function createCodebaseBridge() {
     React,
     ReactDOM,
 
+    rxjs: {
+      Subject,
+      fromEvent,
+      operators: { filter, map, take }
+    },
+
     components: {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
+      Spinner: lazy(() => import('../components/Spinner')),
       GraphiQL: lazy(() => import('../components/GraphiQL'))
     },
 

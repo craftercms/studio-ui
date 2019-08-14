@@ -1,5 +1,4 @@
 <#assign allowedOperations = RequestParameters["allowedOperations"] />
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <!--
   ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
@@ -18,18 +17,18 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Crafter Studio</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <#include "/templates/web/common/page-fragments/head.ftl" />
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
-    <link rel="stylesheet" href="/static-assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/browse.css" />
 
     <link rel="stylesheet" href="/studio/static-assets/libs/jQuery-contextMenu-master/dist/jquery.contextMenu.css" type="text/css">
 
-    <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
     <script src="/studio/static-assets/libs/handlebars/handlebars.js"></script>
     <script src="/studio/static-assets/libs/jstree/dist/jstree.js"></script>
 
