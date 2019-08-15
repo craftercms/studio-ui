@@ -687,7 +687,8 @@ var CStudioForms = CStudioForms || function() {
   const
     FORM_REQUEST = 'FORMS.FORM_REQUEST',
     FORM_REQUEST_FULFILMENT = 'FORMS.FORM_REQUEST_FULFILMENT',
-    FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST';
+    FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
+    FORM_SAVE_COMPLETE = 'FORM_SAVE_COMPLETE';
 
   const { fromEvent, operators } = CrafterCMSNext.rxjs;
   const { map, filter, take } = operators;
@@ -753,7 +754,7 @@ var CStudioForms = CStudioForms || function() {
       readonly: (CStudioAuthoring.Utils.getQueryVariable(search, 'readonly') === 'true'),
       path: CStudioAuthoring.Utils.getQueryVariable(search, 'path'),
       isInclude: (CStudioAuthoring.Utils.getQueryVariable(search, 'isInclude') === 'true'),
-      edit: CStudioAuthoring.Utils.getQueryVariable(search, 'edit'),
+      isEdit: CStudioAuthoring.Utils.getQueryVariable(search, 'edit'),
       iceId: CStudioAuthoring.Utils.getQueryVariable(search, 'iceId'),
       iceComponent: CStudioAuthoring.Utils.getQueryVariable(search, 'iceComponent'),
       changeTemplate: CStudioAuthoring.Utils.getQueryVariable(search, 'changeTemplate'),
@@ -773,8 +774,7 @@ var CStudioForms = CStudioForms || function() {
         CStudioAuthoring.Utils.addCss('/static-assets/themes/cstudioTheme/css/forms-' + style + '.css');
       }
 
-      let { formId, path, isInclude, readonly } = this.config;
-      // isInclude = this.config.isInclude = (formId !== '/page/home');
+      let { formId, path, isInclude, readonly, isEdit } = this.config;
 
       // Check if "includes" may have flattened components within. In that case,
       // the post message subscription should be initialized for them too.
@@ -802,7 +802,7 @@ var CStudioForms = CStudioForms || function() {
               nextComponentDOM.setAttribute('path', message.path);
               FlattenerState[message.path] = nextComponentDOM.outerHTML;
 
-              cfe.engine.saveForm(message.preview, message.draft);
+              cfe.engine.saveForm(message.preview, message.draft, true);
 
               break;
             }
@@ -832,19 +832,21 @@ var CStudioForms = CStudioForms || function() {
         }),
         new Promise((resolve) => {
           if (isInclude) {
+            if (isEdit) {
+              messages$.pipe(
+                filter(message =>
+                  message.type === FORM_REQUEST_FULFILMENT &&
+                  message.path === path
+                ),
+                take(1)
+              ).subscribe((message) => {
+                resolve(message.payload);
+              });
 
-            messages$.pipe(
-              filter(message =>
-                message.type === FORM_REQUEST_FULFILMENT &&
-                message.path === path
-              ),
-              take(1)
-            ).subscribe((message) => {
-              resolve(message.payload);
-            });
-
-            sendMessage({ type: FORM_REQUEST, path });
-
+              sendMessage({ type: FORM_REQUEST, path });
+            } else {
+              resolve(null);
+            }
           } else {
             CStudioAuthoring.Service.getContent(path, false, { success: resolve });
           }
@@ -858,8 +860,8 @@ var CStudioForms = CStudioForms || function() {
         };
 
         if (model && model.item.lockOwner !== '' && model.item.lockOwner !== CStudioAuthoringContext.user) {
-                      readonly = true;
-                    }
+          readonly = true;
+        }
 
         if (!readonly && !isInclude) {
           // Lock file
@@ -1151,7 +1153,7 @@ var CStudioForms = CStudioForms || function() {
         var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, 'editorId');
         var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
-        var saveFn = function(preview,draft) {
+        var saveFn = function(preview, draft, keepOpen) {
           showWarnMsg = false;
           var saveDraft = (draft == true) ? true : false;
 
@@ -1243,9 +1245,18 @@ var CStudioForms = CStudioForms || function() {
               payload: xml,
               preview,
               draft
-            })
+            });
+
+            messages$.pipe(
+              filter(message =>
+                message.type === FORM_SAVE_COMPLETE
+              ),
+              take(1)
+            ).subscribe((message) => {
+              var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+              CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+            });
           } else {
-            // return; // <== REMOVE
             YAHOO.util.Connect.setDefaultPostHeader(false);
             YAHOO.util.Connect.initHeader('Content-Type', 'application/xml; charset=utf-8');
             YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
@@ -1274,13 +1285,13 @@ var CStudioForms = CStudioForms || function() {
                       contentTO.initialModel = CStudioForms.initialModel;
                       contentTO.updatedModel = CStudioForms.updatedModel;
 
-                      iceWindowCallback.success(contentTO, editorId, name, value, draft);
+                      keepOpen !== true && iceWindowCallback.success(contentTO, editorId, name, value, draft);
                       if (draft) {
                         CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                         createDialog();
                       } else {
                         CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
-                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                        keepOpen !== true && CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                         CStudioAuthoring.Operations.refreshPreview();
                       }
                     } else {
@@ -1291,7 +1302,7 @@ var CStudioForms = CStudioForms || function() {
                         createDialog();
                       } else {
                         CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
-                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                        keepOpen !== true && CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                         CStudioAuthoring.Operations.refreshPreview();
                       }
                     }
@@ -1307,6 +1318,10 @@ var CStudioForms = CStudioForms || function() {
                       YDom.addClass(noticeEl, 'acnDraftContent');
                       noticeEl.innerHTML = CMgs.format(formsLangBundle, 'wcmContentSavedAsDraft');
                     }
+
+                    sendMessage({
+                      type: FORM_SAVE_COMPLETE
+                    })
 
 
                   },
@@ -1602,6 +1617,7 @@ var CStudioForms = CStudioForms || function() {
         colExpButtonEl.value = 'Collapse';
         formControlBarEl.appendChild(colExpButtonEl);
         YAHOO.util.Event.addListener(colExpButtonEl, 'click', function () {
+          console.log('testing');
           if ((iceId && iceId !== '') || (iceComponent && iceComponent !== '')) {
             var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
             CStudioAuthoring.InContextEdit.collapseDialog(editorId);

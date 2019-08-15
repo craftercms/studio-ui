@@ -2214,7 +2214,7 @@ var nodeOpen = false,
              * opens a dialog if needed or goes directly to the form if no
              * template selection is require (only one option
              */
-            createNewContent: function(site, path, asPopup, formSaveCb, childForm) {
+            createNewContent: function(site, path, asPopup, formSaveCb, childForm, isFlattenedInclude) {
                 var auxParams = [];
                 if(childForm && childForm == true) {
                     auxParams = [ { name: "childForm", value: "true" }];
@@ -2251,7 +2251,9 @@ var nodeOpen = false,
                                 false,
                                 asPopup,
                                 formSaveCb,
-                                auxParams);
+                                auxParams,
+                                null,
+                                isFlattenedInclude);
                         }
                         else {
                             var selectTemplateCb = {
