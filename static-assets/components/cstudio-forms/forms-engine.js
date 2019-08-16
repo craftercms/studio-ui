@@ -2563,7 +2563,9 @@ var CStudioForms = CStudioForms || function() {
           var repeatChild = repeatChildren[j];
 
           if(repeatChild.nodeName != "#text") {
-            node[child.nodeName][repeatCount] = {};
+            node[child.nodeName][repeatCount] = repeatChild.getAttribute('data-source') ? {
+              datasource: repeatChild.getAttribute('data-source')
+            } : {};
 
             var repeatChildChildren =
               (repeatChild.children) ? repeatChild.children : repeatChild.childNodes;
@@ -2771,30 +2773,32 @@ var CStudioForms = CStudioForms || function() {
             output += '\t<' + key + (attributes.join(' ')) + '>';
             for (var j = 0; j < modelItem.length; j++) {
               var repeatItem = modelItem[j];
-              output += "\t<item>";
+              output += repeatItem.datasource? "\t<item data-source=\""+repeatItem.datasource+"\">" : "\t<item>";
               for (var repeatKey in repeatItem) {
-                var
-                  repeatValue = modelItem[j][repeatKey],
-                  isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
-                  repeatAttr = isRemote ? ' remote="true"' : '';
+                if(repeatKey !== 'datasource') {
+                  var
+                    repeatValue = modelItem[j][repeatKey],
+                    isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
+                    repeatAttr = isRemote ? ' remote="true"' : '';
 
-                output += '\t<' + repeatKey + repeatAttr + '>';
-                if (Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1) {
-                  for (var k = 0; k < repeatValue.length; k++) {
-                    var subModelItem = repeatValue[k];
-                    output += '\t\t<item>';
-                    for (var subRepeatKey in subModelItem) {
-                      var subRepeatValue = subModelItem[subRepeatKey];
-                      output += '<' + subRepeatKey + '>';
-                      output += this.escapeXml(subRepeatValue);
-                      output += '</' + subRepeatKey + '>\r\n';
+                  output += '\t<' + repeatKey + repeatAttr + '>';
+                  if (Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1) {
+                    for (var k = 0; k < repeatValue.length; k++) {
+                      var subModelItem = repeatValue[k];
+                      output += '\t\t<item>';
+                      for (var subRepeatKey in subModelItem) {
+                        var subRepeatValue = subModelItem[subRepeatKey];
+                        output += '<' + subRepeatKey + '>';
+                        output += this.escapeXml(subRepeatValue);
+                        output += '</' + subRepeatKey + '>\r\n';
+                      }
+                      output += '\t\t</item>';
                     }
-                    output += '\t\t</item>';
+                  } else {
+                    output += this.escapeXml(repeatValue);
                   }
-                } else {
-                  output += this.escapeXml(repeatValue);
+                  output += '</' + repeatKey + '>\r\n';
                 }
-                output += '</' + repeatKey + '>\r\n';
               }
               output += '\t</item>';
             }
