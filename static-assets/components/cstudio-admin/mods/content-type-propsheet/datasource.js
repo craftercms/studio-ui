@@ -115,7 +115,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
         cbEl.value = datasource.id;
         cbEl.id = datasource.id;
 
-        var datasourceId = datasource.id.replace(/[^a-zA-Z0-9,]/g, '');
+        var datasourceId = datasource.id.replace(/[^a-zA-Z0-9,-]/g, '');
 
         if (this.fieldValue.indexOf(datasourceId) > -1) {
             cbEl.checked = true;
