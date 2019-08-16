@@ -15,65 +15,155 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div class="container-fluid admin-view">
-    <div class="row full">
-        <div class="col-md-12">
-            <h2 class="page-header">{{ 'admin.repositories.REPOSITORIES' | translate }}</h2>
+<div class="container-fluid admin-view repositories">
+  <div class="row full">
+    <div class="col-md-12">
+      <h2 class="page-header">{{ 'admin.repositories.REMOTES' | translate }}</h2>
 
+      <div class="actions clearfix pull-right mb10">
+        <a class="btn btn-default" ng-click="createGroupDialog()" role="button"
+          style="float: right;">{{ 'admin.repositories.NEW_REPOSITORY' | translate }}</a>
+      </div>
 
-            <div class="actions clearfix pull-right mb10" style="width: 100%;">
-                <!--<h3 class="pull-left mt5">{{ 'admin.groups.HEADER_LABEL' | translate }}</h3>-->
+      <div class="repository-status-msg">
+        <h5 class="text-success" ng-show="repositories.status.clean">
+          <i class="fa fa-info-circle mr10" aria-hidden="true"></i>
+          {{ 'admin.repositories.NO_CONFLICTS' | translate }}
+        </h5>
+        <h5 class="text-warning" ng-show="!repositories.status.clean">
+          <i class="fa fa-exclamation-triangle mr10" aria-hidden="true"></i>
+          {{ 'admin.repositories.CONFLICTS_EXIST' | translate }}
+        </h5>
+      </div>
 
-                <a class="btn btn-default" ng-click="createGroupDialog()" role="button" style="float: right;">{{ 'admin.repositories.NEW_REPOSITORY' | translate }}</a>
-                <!--<div class="pull-right mr15">
-                    <label>{{ 'admin.groups.GROUPS_PER_PAGE' | translate }}: </label>
-                    <input class="audit-number-logs" type="number" name="input" ng-model="groups.itemsPerPage"
-                           min="1" max="100" ng-model-options="{debounce: debounceDelay}" only-digits>
-                </div>-->
-            </div>
+      <div class="repositories-table" ng-show="repositories.status.clean">
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>{{ 'admin.repositories.NAME' | translate }}</th>
+                <th>{{ 'admin.repositories.URL' | translate }}</th>
+                <th>{{ 'admin.repositories.FETCH' | translate }}</th>
+                <th>{{ 'admin.repositories.PUSH_URL' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
 
-            <div class="">
-                <!--<input ng-model="q" class="form-control mb10" placeholder="{{ 'common.SEARCH_LABEL' | translate }}" type="text"/>-->
-
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>{{ 'admin.repositories.NAME' | translate }}</th>
-                            <th>{{ 'admin.repositories.URL' | translate }}</th>
-                            <th>{{ 'admin.repositories.FETCH' | translate }}</th>
-                            <th>{{ 'admin.repositories.PUSH_URL' | translate }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    <tr id="repo" ng-repeat="repo in repositories.repositories.remotes track by $index">
-                        <td>{{repo.name}}</td>
-                        <td>{{repo.url}}</td>
-                        <td>{{repo.fetch}}</td>
-                        <td>{{repo.pushUrl}}</td>
-                        <td>
-                            <a ng-click="pullRepo(repo)" class="btn btn-sm pull">
-                                <i class="fa fa-arrow-down" title="Pull"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a ng-click="pushRepo(repo)" class="btn btn-sm push">
-                                <i class="fa fa-arrow-up" title="Push"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
-                                <i class="fa fa-trash-o" title="Remove"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <!--<dir-pagination-controls on-page-change="groups.pageChanged(newPageNumber)"></dir-pagination-controls>-->
-            </div>
-        </div>
+              <tr id="repo" ng-repeat="repo in repositories.repositories.remotes track by $index">
+                <td>{{repo.name}}</td>
+                <td>{{repo.url}}</td>
+                <td>{{repo.fetch}}</td>
+                <td>{{repo.pushUrl}}</td>
+                <td>
+                  <a ng-click="pullRepo(repo)" class="btn btn-sm pull">
+                    <i class="fa fa-arrow-down" title="Pull"></i>
+                  </a>
+                </td>
+                <td>
+                  <a ng-click="pushRepo(repo)" class="btn btn-sm push">
+                    <i class="fa fa-arrow-up" title="Push"></i>
+                  </a>
+                </td>
+                <td>
+                  <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
+                    <i class="fa fa-trash-o" title="Remove"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
     </div>
+    <div class="col-md-12">
+      <div class="repository-status" ng-show="!repositories.status.clean">
+        <h3 class="header header--inline">{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}</h3>
+        <div class="actions clearfix pull-right">
+          <div class="btn-group studio-dropdown mr10" dropdown>
+            <button type="button" class="btn btn-outline-danger dropdown-toggle" dropdown-toggle>
+              {{ 'admin.repositories.REVERT_ALL' | translate }} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="" ng-click="repositories.revertAll()">
+                  {{ 'common.CONFIRM' | translate }}
+                  <p class="description">
+                    {{ 'admin.repositories.REVERT_ALL_DESCRIPTION' | translate }}
+                  </p>
+                </a></li>
+            </ul>
+          </div>
+          <a class="btn btn-outline-success" role="button" ng-disabled="repositories.status.conflicting.length"
+            ng-click="repositories.commitResolutionModal()">
+            {{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}
+          </a>
+        </div>
+
+        <div class="conflicted-files">
+          <h4 class="text-danger" ng-show="repositories.status.conflicting.length">
+            {{ 'admin.repositories.CONFLICTED_FILES' | translate }}
+          </h4>
+
+          <table class="table table-striped">
+            <tbody>
+              <tr ng-repeat="file in repositories.status.conflicting track by $index">
+                <td>
+                  <p class="bold" ng-bind="repositories.getFileName('{{file}}')"></p>
+                  <p class="mb0">{{file}}</p>
+                </td>
+                <td class="tar">
+                  <div class="btn-group studio-dropdown mr10" dropdown>
+                    <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
+                      {{ 'admin.repositories.ACCEPT_REMOTE' | translate }} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                      <li role="separator" class="divider"></li>
+                      <li><a href="" ng-click="repositories.resolveConflict(file, 'theirs')">
+                          {{ 'common.CONFIRM' | translate }}
+                          <p class="description">
+                            {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
+                          </p>
+                        </a></li>
+                    </ul>
+                  </div>
+                  <div class="btn-group studio-dropdown mr10" dropdown>
+                    <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
+                      {{ 'admin.repositories.KEEP_LOCAL' | translate }} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                      <li role="separator" class="divider"></li>
+                      <li><a href="" ng-click="repositories.resolveConflict(file, 'ours')">
+                          {{ 'common.CONFIRM' | translate }}
+                          <p class="description">
+                            {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
+                          </p>
+                        </a></li>
+                    </ul>
+                  </div>
+                  <a class="btn btn-default" role="button" ng-click="repositories.diffContent(file)">Diff</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pending-commit">
+          <h4 class="text-success">{{ 'admin.repositories.PENDING_COMMIT' | translate }}</h4>
+
+          <table class="table table-striped">
+            <tbody>
+              <tr ng-repeat="file in repositories.status.uncommittedChanges track by $index">
+                <td>
+                  <span class="bold mr10" ng-bind="repositories.getFileName('{{file}}')"></span>
+                  <span class="mb0">{{file}}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="text/ng-template" id="modalView.html">
@@ -268,3 +358,121 @@
     </form>
 </script>
 
+<script type="text/ng-template" id="commitResolution.html">
+  <div class="modal-header">
+      <h3 class="modal-title">{{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}</h3>
+  </div>
+  <div class="modal-body">
+      <form name="confirmResolutionForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+          <div class="modal-body clearfix">
+              <div class="col-md-12">
+                  <div class="form-group">
+                      <h4>{{ 'admin.repositories.COMMIT_RESOLUTION_CONFIRMATION' | translate }}</br>
+                      {{ 'admin.repositories.COMMIT_RESOLUTION_MESSAGE_REQUIREMENT' | translate }}</h4>
+                      <textarea class="form-control mt15" rows="4" required id="commitMsg" name="commitMsg"
+                                ng-model="repositories.commitMsg" style="resize: none;"></textarea>
+
+                      <div class="error-container"
+                              ng-show="(confirmResolutionForm.commitMsg.$dirty && confirmResolutionForm.commitMsg.$invalid) || (confirmResolutionForm.commitMsg.$touched && confirmResolutionForm.commitMsg.$invalid)">
+                          <small class="error"
+                                  ng-show="confirmResolutionForm.commitMsg.$error.required">
+                              {{ 'dashboard.sites.create.NAME' | translate }} is required.
+                          </small>
+                      </div>
+
+                      <p class="description text-muted mt20">
+                          {{ 'admin.repositories.COMMIT_RESOLUTION_INDICATIONS' | translate }}
+                      </p>
+                  </div>
+              </div>
+          </div>
+
+          <div class="modal-footer">
+              <button class="btn btn-primary" ng-disabled="confirmResolutionForm.commitMsg.$error.required" ng-click="repositories.commitResolution(); hideModal()">
+                  {{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}
+              </button>
+              <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL' | translate }}</button>
+          </div>
+
+      </form>
+  </div>
+
+</script>
+
+<script type="text/ng-template" id="diffModal.html">
+  <div class="modal-header diff-header p0">
+      <h4 class="modal-title inline-block p15">
+          {{ 'admin.repositories.DIFF' | translate }} `{{repositories.diffPath}}`
+      </h4>
+
+      <div class="tabs pull-right">
+          <button class="btn btn-link diff-tab m0"
+                  ng-class="{'active': repositories.selectedTab == 'diff'}"
+                  ng-click="repositories.selectedTab='diff'">
+              {{ 'admin.repositories.DIFF' | translate }}
+          </button>
+          <button class="btn btn-link diff-tab m0"
+                  ng-class="{'active': repositories.selectedTab == 'split'}"
+                  ng-click="repositories.selectedTab='split'">
+              {{ 'admin.repositories.SPLIT_VIEW' | translate }}
+          </button>
+      </div>
+  </div>
+
+  <div class="modal-body diff-body clearfix">
+      <div class="col-md-12 diff-container">
+          <tabset>
+              <tab id="diffTab" active="repositories.selectedTab == 'diff'">
+                  <div class="tab-view diff-content">
+                      <pre>{{ repositories.diff.diff }}</pre>
+                  </div>
+              </tab>
+              <tab id="splitViewTab" active="repositories.selectedTab == 'split'">
+                  <div class="tab-view split-content">
+                      <div class="studio-version">
+                          <pre class="m0">{{ repositories.diff.studioVersion }}</pre>
+                      </div>
+                      <div class="remote-version">
+                          <pre class="m0">{{ repositories.diff.remoteVersion }}</pre>
+                      </div>
+                  </div>
+              </tab>
+
+          </tabset>
+      </div>
+  </div>
+
+  <div class="modal-footer">
+      <div class="btn-group studio-dropdown mr10" dropdown>
+              <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle >
+                  {{ 'admin.repositories.ACCEPT_REMOTE' | translate }}  <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                  <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="" ng-click="repositories.resolveConflict(repositories.diffPath, 'theirs'); hideModal()">
+                      {{ 'common.CONFIRM' | translate }}
+                      <p class="description">
+                          {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
+                      </p>
+                  </a></li>
+              </ul>
+          </div>
+          <div class="btn-group studio-dropdown mr10" dropdown>
+              <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle >
+                  {{ 'admin.repositories.KEEP_LOCAL' | translate }}  <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                  <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="" ng-click="repositories.resolveConflict(repositories.diffPath, 'ours'); hideModal()">
+                      {{ 'common.CONFIRM' | translate }}
+                      <p class="description">
+                          {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
+                      </p>
+                  </a></li>
+              </ul>
+          </div>
+      <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+  </div>
+</script>
