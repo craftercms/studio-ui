@@ -2516,7 +2516,10 @@ var CStudioForms = CStudioForms || function() {
 
                         if(repeatChild.nodeName != "#text") {
                             node[child.nodeName][repeatCount] = {};
-
+                            //checking if the node has the attribute 'data-source'
+                            node[child.nodeName][repeatCount] = repeatChild.getAttribute('data-source') ? {
+                              datasource: repeatChild.getAttribute('data-source')
+                            } : {};
                             var repeatChildChildren =
                                 (repeatChild.children) ? repeatChild.children : repeatChild.childNodes;
 
@@ -2684,49 +2687,48 @@ var CStudioForms = CStudioForms || function() {
                     // be delimited by the delimiter token (ie. comma)
                     fieldRe = new RegExp("," + key + "(?:,|\|\d+\|)", "g");
 
-                    if (fieldRe.test(validFieldsStr)) {
-                        if ( isModelItemArray ) {
-                            output += "\t<"+key+ " " +attributes +" >";
-                            for(var j = 0; j < modelItem.length; j++) {
-                                var repeatItem = modelItem[j];
-                                output += "\t<item>";
-                                for (var repeatKey in repeatItem) {
-                                    var repeatValue = modelItem[j][repeatKey],
-                                        isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
-                                        repeatAttr = isRemote ? ' remote=\"true\"': '';
+                  if (fieldRe.test(validFieldsStr)) {
+                    if ( isModelItemArray ) {
+                      output += "\t<"+key+ " " +attributes +" >";
+                      for(var j = 0; j < modelItem.length; j++) {
+                        var repeatItem = modelItem[j];
+                        output += repeatItem.datasource? "\t<item data-source=\""+repeatItem.datasource+"\">" : "\t<item>";
+                        for (var repeatKey in repeatItem) {
+                          if(repeatKey !== 'datasource') {
+                            var repeatValue = modelItem[j][repeatKey],
+                              isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
+                              repeatAttr = isRemote ? ' remote=\"true\"': '';
 
-                                    output += "\t<"+repeatKey+ repeatAttr +">";
-                                    if(Object.prototype.toString.call( repeatValue ).indexOf('[object Array]') != -1) {
-                                        for (var k = 0; k < repeatValue.length; k++) {
-                                            var subModelItem = repeatValue[k];
-                                            output += "\t\t<item>";
-                                            for (var subRepeatKey in subModelItem) {
-                                                var subRepeatValue = subModelItem[subRepeatKey];
-                                                output += "<"+subRepeatKey+">";
-                                                output +=  this.escapeXml(subRepeatValue);
-                                                output += "</"+subRepeatKey+">\r\n";
-                                            }
-                                            output += "\t\t</item>";
-                                        }
-                                    }
-                                    else {
-                                        output +=  this.escapeXml(repeatValue);
-                                    }
-                                    output += "</"+repeatKey+">\r\n";
+                            output += "\t<"+repeatKey+ repeatAttr +">";
+                            if(Object.prototype.toString.call( repeatValue ).indexOf('[object Array]') != -1) {
+                              for (var k = 0; k < repeatValue.length; k++) {
+                                var subModelItem = repeatValue[k];
+                                output += "\t\t<item>";
+                                for (var subRepeatKey in subModelItem) {
+                                  var subRepeatValue = subModelItem[subRepeatKey];
+                                  output += "<"+subRepeatKey+">";
+                                  output +=  this.escapeXml(subRepeatValue);
+                                  output += "</"+subRepeatKey+">\r\n";
                                 }
-                                output += "\t</item>";
+                                output += "\t\t</item>";
+                              }
+                            } else {
+                              output +=  this.escapeXml(repeatValue);
                             }
-                            output += "</"+key+">\r\n";
+                            output += "</"+repeatKey+">\r\n";
+                          }
                         }
-                        else {
-                            output += "\t<"+key+" " + attributes+ " >"
-                            output += this.escapeXml(modelItem);
-                            output += "</"+key+">\r\n";
-                        }
+                        output += "\t</item>";
+                      }
+                      output += "</"+key+">\r\n";
+                    } else {
+                      output += "\t<"+key+" " + attributes+ " >"
+                      output += this.escapeXml(modelItem);
+                      output += "</"+key+">\r\n";
                     }
-                    else {
-                        invalidFields[invalidFields.length] = key;
-                    }
+                  } else {
+                    invalidFields[invalidFields.length] = key;
+                  }
                 }
 
                 // TODO: This needs the code above to be move in to a reusable place and then placed
