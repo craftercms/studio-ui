@@ -2692,27 +2692,26 @@ var CStudioForms = CStudioForms || function() {
                                 output += "\t<item>";
                                 for (var repeatKey in repeatItem) {
                                     var repeatValue = modelItem[j][repeatKey],
-                                        isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
-                                        repeatAttr = isRemote ? ' remote=\"true\"': '';
+                                      isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
+                                      repeatAttr = isRemote ? ' remote=\"true\"' : '';
 
-                                    output += "\t<"+repeatKey+ repeatAttr +">";
-                                    if(Object.prototype.toString.call( repeatValue ).indexOf('[object Array]') != -1) {
-                                        for (var k = 0; k < repeatValue.length; k++) {
-                                            var subModelItem = repeatValue[k];
-                                            output += "\t\t<item>";
-                                            for (var subRepeatKey in subModelItem) {
-                                                var subRepeatValue = subModelItem[subRepeatKey];
-                                                output += "<"+subRepeatKey+">";
-                                                output +=  this.escapeXml(subRepeatValue);
-                                                output += "</"+subRepeatKey+">\r\n";
-                                            }
-                                            output += "\t\t</item>";
+                                    output += "\t<" + repeatKey + repeatAttr + ">";
+                                    if (Object.prototype.toString.call(repeatValue).indexOf('[object Array]') != -1) {
+                                      for (var k = 0; k < repeatValue.length; k++) {
+                                        var subModelItem = repeatValue[k];
+                                        output += "\t\t<item>";
+                                        for (var subRepeatKey in subModelItem) {
+                                          var subRepeatValue = subModelItem[subRepeatKey];
+                                          output += "<" + subRepeatKey + ">";
+                                          output += this.escapeXml(subRepeatValue);
+                                          output += "</" + subRepeatKey + ">\r\n";
                                         }
-                                    }
-                                    else {
-                                        output +=  this.escapeXml(repeatValue);
-                                    }
-                                    output += "</"+repeatKey+">\r\n";
+                                        output += "\t\t</item>";
+                                      }
+                                    } else {
+                                      output += this.escapeXml(repeatValue);
+                                    output += "</" + repeatKey + ">\r\n";
+                                  }
                                 }
                                 output += "\t</item>";
                             }
