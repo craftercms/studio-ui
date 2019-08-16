@@ -21,8 +21,8 @@ function(id, form, properties, constraints)  {
    	this.form = form;
    	this.properties = properties;
    	this.constraints = constraints;
-	this.selectItemsCount = -1;
-	this.type = "";
+	  this.selectItemsCount = -1;
+	  this.type = "";
     this.defaultEnableCreateNew = true;
     this.defaultEnableBrowseExisting = true;
     this.countOptions = 0;
@@ -76,7 +76,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
                 _self.processPathsForMacros(_self.repoPath),
                 false, {
                     success: function (formName, name, value) {
-                        control.insertItem(value, formName.item.internalName);
+                        control.insertItem(value, formName.item.internalName, null, null, _self.id);
                         control._renderItems();
                     },
                     failure: function () {
@@ -92,7 +92,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
                 false,
                 {
                     success: function (contentTO, editorId, name, value) {
-                        control.insertItem(name, value);
+                        control.insertItem(name, value, null, null, _self.id);
                         control._renderItems();
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                     },
@@ -122,7 +122,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
                 for (var i = 0; i < selectedTOs.length; i++) {
                     var item = selectedTOs[i];
                     var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
-                    control.insertItem(item.uri, value);
+                    control.insertItem(name, value, null, null, _self.id);
                     control._renderItems();
                 }
             },
@@ -199,13 +199,14 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 	},
 
 	edit: function(key, control) {
+    var _self = this;
 		var getContentItemCb = {
 			success: function(contentTO) {
 
 				var editCallback = {
 					success: function(contentTO, editorId, name, value) {
                         if(control){
-                            control.updateEditedItem(value);
+                            control.updateEditedItem(value, _self.id);
 							CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                         }
 

@@ -322,10 +322,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             if(this.allowEdit){
                 YAHOO.util.Event.on(this.editButtonEl, 'click', function(evt) {
                     _self.form.setFocusedField(_self);
-
-                    for(var x = 0; x < datasources.length; x++) {
-                        datasources[x].edit(_self.items[_self.selectedItemIndex].key, _self);
-                    }
+                    var selectedDatasource = datasources.find((item) =>
+                      item.id === _self.items[_self.selectedItemIndex].datasource
+                    ) || datasources[0];
+                    selectedDatasource.edit(_self.items[_self.selectedItemIndex].key, _self);
                 }, this.editButtonEl);
             }
 
@@ -349,8 +349,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         if((typeof this.items) == "string") {
             this.items = [];
         }
-
-
 
         var items =  this.items;
 
@@ -441,7 +439,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         }
     },
 
-    insertItem: function(key, value, fileType, fileSize) {
+    insertItem: function(key, value, fileType, fileSize, datasource) {
         var successful = true;
         var message = "";
         if(this.allowDuplicates != true){
@@ -495,6 +493,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                 }
             }
 
+            item.datasource = datasource;
+
             this.items[this.items.length] = item
 
             if(this.datasource.itemsAreContentReferences) {
@@ -539,9 +539,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         return this.items;
     },
 
-    updateEditedItem: function(value) {
+    updateEditedItem: function(value, datasource) {
         var item = this.items[this.selectedItemIndex];
         item.value =  value;
+        item.datasource = datasource;
         this._renderItems();
         this._onChangeVal(this);
     },
