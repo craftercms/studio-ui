@@ -22,7 +22,7 @@ CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properti
   this.constraints = constraints;
   this.selectItemsCount = -1;
   this.contentType = '';
-  
+
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name === 'contentType') {
       this.contentType = (Array.isArray(properties[i].value)) ? '' : properties[i].value;
@@ -77,44 +77,47 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
   },
 
   add: function (control) {
+    debugger;
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
     var _self = this;
 
-    var addContainerEl = control.addContainerEl || null;
+    // var addContainerEl = control.addContainerEl || null;
+    //
+    // var datasourceDef = this.form.definition.datasources,
+    //   newElTitle = '';
+    //
+    // for (var x = 0; x < datasourceDef.length; x++) {
+    //   if (datasourceDef[x].id === this.id) {
+    //     newElTitle = datasourceDef[x].title;
+    //   }
+    // }
 
-    var datasourceDef = this.form.definition.datasources,
-      newElTitle = '';
+    // if (!addContainerEl) {
+    //   addContainerEl = document.createElement("div");
+    //   control.containerEl.appendChild(addContainerEl);
+    //   YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+    //   control.addContainerEl = addContainerEl;
+    //   control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
+    //   control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
+    // }
 
-    for (var x = 0; x < datasourceDef.length; x++) {
-      if (datasourceDef[x].id === this.id) {
-        newElTitle = datasourceDef[x].title;
-      }
-    }
+    //
+    // addContainerEl.create = document.createElement("div");
+    // addContainerEl.appendChild(addContainerEl.create);
+    // YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+    //
+    // var createEl = document.createElement("div");
+    // YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+    // createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
+    // control.addContainerEl.create.appendChild(createEl);
+    // var addContainerEl = control.addContainerEl;
+    // YAHOO.util.Event.on(createEl, 'click', function () {
+    //   _self.createElementAction(control, _self, addContainerEl);
+    // }, createEl);
 
-    if (!addContainerEl) {
-      addContainerEl = document.createElement("div");
-      control.containerEl.appendChild(addContainerEl);
-      YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-      control.addContainerEl = addContainerEl;
-      control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-      control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
-    }
-
-
-    addContainerEl.create = document.createElement("div");
-    addContainerEl.appendChild(addContainerEl.create);
-    YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-
-    var createEl = document.createElement("div");
-    YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-    createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
-    control.addContainerEl.create.appendChild(createEl);
-    var addContainerEl = control.addContainerEl;
-    YAHOO.util.Event.on(createEl, 'click', function () {
-      _self.createElementAction(control, _self, addContainerEl);
-    }, createEl);
+    _self.createElementAction(control, _self);
 
   },
 

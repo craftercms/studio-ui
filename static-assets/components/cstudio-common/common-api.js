@@ -2266,7 +2266,9 @@ var nodeOpen = false,
                                         false,
                                         this.asPopup,
                                         this.formSaveCb,
-                                        auxParams);
+                                        auxParams,
+                                        null,
+                                        isFlattenedInclude);
                                 },
 
                                 failure: function() {

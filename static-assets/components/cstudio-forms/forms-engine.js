@@ -1617,7 +1617,6 @@ var CStudioForms = CStudioForms || function() {
         colExpButtonEl.value = 'Collapse';
         formControlBarEl.appendChild(colExpButtonEl);
         YAHOO.util.Event.addListener(colExpButtonEl, 'click', function () {
-          console.log('testing');
           if ((iceId && iceId !== '') || (iceComponent && iceComponent !== '')) {
             var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
             CStudioAuthoring.InContextEdit.collapseDialog(editorId);
