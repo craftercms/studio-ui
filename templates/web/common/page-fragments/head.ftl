@@ -35,6 +35,7 @@
 <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/global.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/styleicon.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/font-awesome.min.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
+<link rel="stylesheet" type="text/css" href="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
 <!--[if IE 9]>
 	<link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/css/ie9.css" />
 <![endif]-->
@@ -62,6 +63,7 @@
 <script src="/studio/static-assets/libs/css-element-queries/ElementQueries.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 <script src="/studio/static-assets/libs/css-element-queries/ResizeSensor.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+<script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
 
 <script>document.domain = "${cookieDomain}";</script>

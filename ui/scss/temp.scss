@@ -2856,6 +2856,40 @@ span.acn-canned-search {
     margin-bottom: 10px;
   }
 
+  .control-container.datetime{
+    .control-label {
+      float: left;
+    }
+
+    .date-container {
+      display: block;
+      padding-left: 100px;
+
+      .yui-calcontainer {
+        float: none;
+        position: relative;
+      }
+
+      .date-control.date {
+        margin-right: 40px;
+      }
+
+      select.date-control {
+        background-color: #fff;
+        padding: 1px;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  #targeting-container .hint {
+    visibility: hidden;
+  }
+
+  #targeting-container .control-container:hover .hint{
+    visibility: visible;
+  }
+
 }
 
 .target-btns{
