@@ -464,10 +464,8 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
           var timeZone = moment.tz.guess(),   //client timezone (just to display, saved in model as gmt)
               timestamp = moment(new Date()).unix(),
               timeZoneAbbr = moment.tz.zone(timeZone).abbr(timestamp),
-              $dateContainer = $('<div class="date-container clearfix" id="' + currentProp.name + '">')
-                                .appendTo(controlContainer),
-              $dateTimeEl = $('<input readonly class="date-picker mr10" name="' + currentProp.name + '-control" type="datetime" />')
-                              .appendTo($dateContainer),
+              $dateContainer = $('<div class="date-container clearfix" id="' + currentProp.name + '"/>').appendTo(controlContainer),
+              $dateTimeEl = $('<input readonly class="date-picker mr10" name="' + currentProp.name + '-control" type="datetime" />').appendTo($dateContainer),
               $timeZone =$('<span class="mr10">' + timeZoneAbbr + '</span>').appendTo($dateContainer),
               $setNowLink = $('<a href="#">Set Now</a>').appendTo($dateContainer);
 
