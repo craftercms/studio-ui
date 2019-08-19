@@ -118,11 +118,10 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
         }
         CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(browsePath), _self.selectItemsCount, "select", true, {
             success: function (searchId, selectedTOs) {
-
                 for (var i = 0; i < selectedTOs.length; i++) {
                     var item = selectedTOs[i];
                     var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
-                    control.insertItem(name, value, null, null, _self.id);
+                    control.insertItem(item.uri, value, null, null, _self.id);
                     control._renderItems();
                 }
             },
