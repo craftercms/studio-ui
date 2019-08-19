@@ -497,10 +497,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             item.datasource = datasource;
             this.items[this.items.length] = item
 
-            if(this.datasource.itemsAreContentReferences) {
+            if(this.form.datasourceMap[datasource].itemsAreContentReferences) {
                 if(key.indexOf(".xml") != -1) {
                     item.include = key;
                     item.disableFlattening = this.disableFlattening;
+                } else if (this.form.datasourceMap[datasource].flattened) {
+                  item.key = '';
                 }
             }
 

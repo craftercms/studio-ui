@@ -22,6 +22,7 @@ CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properti
   this.constraints = constraints;
   this.selectItemsCount = -1;
   this.contentType = '';
+  this.flattened = true;
 
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name === 'contentType') {
@@ -35,9 +36,9 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
   itemsAreContentReferences: true,
 
   createElementAction: function (control, _self, addContainerEl) {
-
-    control.addContainerEl = null;
-    control.containerEl.removeChild(addContainerEl);
+    //only with bro enabled;
+    // control.addContainerEl = null;
+    // control.containerEl.removeChild(addContainerEl);
 
     if (_self.contentType === "") {
       CStudioAuthoring.Operations.createNewContent(
@@ -63,7 +64,7 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
           success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
-            CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+            //CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
           failure: function () {
           }
@@ -77,13 +78,21 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
   },
 
   add: function (control) {
-    debugger;
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
     var _self = this;
+    var addContainerEl = control.addContainerEl || null;
 
-    // var addContainerEl = control.addContainerEl || null;
+    if (!addContainerEl) {
+      addContainerEl = document.createElement("div");
+      control.containerEl.appendChild(addContainerEl);
+      YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+      control.addContainerEl = addContainerEl;
+      control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
+      control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
+    }
+
     //
     // var datasourceDef = this.form.definition.datasources,
     //   newElTitle = '';
@@ -117,7 +126,7 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
     //   _self.createElementAction(control, _self, addContainerEl);
     // }, createEl);
 
-    _self.createElementAction(control, _self);
+    _self.createElementAction(control, _self, addContainerEl);
 
   },
 

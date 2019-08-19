@@ -799,8 +799,9 @@ var CStudioForms = CStudioForms || function() {
 
               // Update the DOM for subsequent content request messages.
               const nextComponentDOM = parseDOM(message.payload);
-              nextComponentDOM.setAttribute('path', message.path);
-              FlattenerState[message.path] = nextComponentDOM.outerHTML;
+              const objectId = nextComponentDOM.getElementsByTagName('objectId')[0].innerHTML;
+              nextComponentDOM.setAttribute('id', objectId);
+              FlattenerState[objectId] = nextComponentDOM.outerHTML;
 
               cfe.engine.saveForm(message.preview, message.draft, true);
 
@@ -873,8 +874,9 @@ var CStudioForms = CStudioForms || function() {
           responseXML: { documentElement: { children: [] } }
         };
 
+        //item include true component
         Array.from(dom.querySelectorAll(`craftercms-child-components > component`)).forEach((component) => {
-          FlattenerState[component.getAttribute('path')] = component.outerHTML;
+          FlattenerState[component.getAttribute('id')] = component.outerHTML;
         });
 
         _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
@@ -1239,9 +1241,13 @@ var CStudioForms = CStudioForms || function() {
           };
 
           if (me.config.isInclude) {
+            const componentDOM = parseDOM(xml);
+            const key = componentDOM.getElementsByTagName('objectId')[0].innerHTML;
+            const name = componentDOM.getElementsByTagName('internal-name')[0].innerHTML;
+            CStudioAuthoring.InContextEdit.getIceCallback(editorId).success({}, editorId, key, name, draft);
+
             sendMessage({
               type: FORM_SAVE_REQUEST,
-              path: me.config.path,
               payload: xml,
               preview,
               draft
@@ -1253,7 +1259,7 @@ var CStudioForms = CStudioForms || function() {
               ),
               take(1)
             ).subscribe((message) => {
-              var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+              const editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
               CStudioAuthoring.InContextEdit.unstackDialog(editorId);
             });
           } else {
@@ -1320,7 +1326,8 @@ var CStudioForms = CStudioForms || function() {
                     }
 
                     sendMessage({
-                      type: FORM_SAVE_COMPLETE
+                      type: FORM_SAVE_COMPLETE,
+                      payload : { contentTO, editorId, name, value, draft }
                     })
 
 
