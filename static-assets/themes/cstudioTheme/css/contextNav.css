@@ -878,17 +878,13 @@ body.yui-skin-cstudioTheme .mask {
 
 #errorPostfix-dialog .bd{
     max-height: 232px;
-    overflow: scroll;
-}
-
-#errorPostfix-dialog .bd span.fa{
-    float: left;
+    overflow: auto;
+    display: flex;
 }
 
 #errorPostfix-dialog .bd .postfixErrorContainer{
     max-height: 180px;
-    overflow-y: scroll;
-    float: left;
+    overflow-y: auto;
     width: 310px !important;
 }
 
