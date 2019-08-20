@@ -307,7 +307,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                         }else{
                             for(var x = 0; x < datasources.length; x++) {
                                 datasources[x].selectItemsCount = selectItemsCount;
-                                
                                 if(datasources.length > 1){
                                     datasources[x].add(_self, true);   
                                 }else{
@@ -494,15 +493,17 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                     item = { key: key, value: value};
                 }
             }
+
             item.datasource = datasource;
             this.items[this.items.length] = item
 
             if(this.form.datasourceMap[datasource].itemsAreContentReferences) {
-                if(key.indexOf(".xml") != -1) {
+                if(key.indexOf('.xml') != -1) {
                     item.include = key;
                     item.disableFlattening = this.disableFlattening;
                 } else if (this.form.datasourceMap[datasource].flattened) {
-                  item.key = '';
+                  item.key = key;
+                  item.inline = 'true';
                 }
             }
 
@@ -553,7 +554,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         if(this.datasource && this.datasource.updateItem){
             for(var i = 0; i < this.items.length; i++){
                 this.datasource.updateItem(this.items[i],this);
-                this.items[i].disableFlattening = this.disableFlattening;
+                if(this.items[i].inline !== 'true') {
+                  this.items[i].disableFlattening = this.disableFlattening;
+                }
             }
         }
     },
@@ -561,7 +564,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     setValue: function(value) {
         this.items = value;
         this.edited = false;
-
 
         if((typeof this.items) == "string") {
             //Check if the current value is the default value, split it by comma and load it using key/value pair

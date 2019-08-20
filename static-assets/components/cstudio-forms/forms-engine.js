@@ -874,10 +874,11 @@ var CStudioForms = CStudioForms || function() {
           responseXML: { documentElement: { children: [] } }
         };
 
-        //item include true component
-        Array.from(dom.querySelectorAll(`craftercms-child-components > component`)).forEach((component) => {
+        Array.from(dom.querySelectorAll(`item > component`)).forEach((component) => {
           FlattenerState[component.getAttribute('id')] = component.outerHTML;
         });
+
+        //{ components}
 
         _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
 
@@ -1326,8 +1327,7 @@ var CStudioForms = CStudioForms || function() {
                     }
 
                     sendMessage({
-                      type: FORM_SAVE_COMPLETE,
-                      payload : { contentTO, editorId, name, value, draft }
+                      type: FORM_SAVE_COMPLETE
                     })
 
 
@@ -2570,9 +2570,7 @@ var CStudioForms = CStudioForms || function() {
           var repeatChild = repeatChildren[j];
 
           if(repeatChild.nodeName != "#text") {
-            node[child.nodeName][repeatCount] = repeatChild.getAttribute('data-source') ? {
-              datasource: repeatChild.getAttribute('data-source')
-            } : {};
+            node[child.nodeName][repeatCount] = {};
 
             var repeatChildChildren =
               (repeatChild.children) ? repeatChild.children : repeatChild.childNodes;
@@ -2580,7 +2578,7 @@ var CStudioForms = CStudioForms || function() {
             for(var k=0; k<repeatChildChildren.length; k++) {
               var repeatField = repeatChildChildren[k];
 
-              if(repeatField.nodeName != "#text") {
+              if(repeatField.nodeName != "#text" && repeatField.nodeName != "component") {
 
                 if(repeatField.childElementCount > 0) {
                   this.xmlModelToMapArray(node[child.nodeName][repeatCount], repeatField);
@@ -2600,6 +2598,12 @@ var CStudioForms = CStudioForms || function() {
                 }
               }
             }
+
+            //getting values from attributes
+            Array.from(repeatChild.attributes).forEach((attr) => {
+              const {nodeName, nodeValue} = attr;
+              node[child.nodeName][repeatCount] = {...node[child.nodeName][repeatCount], [nodeName]:nodeValue}
+            })
 
             repeatCount++;
           }
@@ -2644,15 +2648,6 @@ var CStudioForms = CStudioForms || function() {
         form.definition.sections,
         form.definition.config
       );
-
-      const flattenedComponents = Object.keys(FlattenerState);
-      if (flattenedComponents.length) {
-        xml += `<craftercms-child-components>` + '\n';
-        flattenedComponents.forEach((componentPath) => {
-          xml += FlattenerState[componentPath] + '\n';
-        });
-        xml += `</craftercms-child-components>` + '\n';
-      }
 
       xml += '</' + form.definition.objectType + '>';
 
@@ -2780,9 +2775,14 @@ var CStudioForms = CStudioForms || function() {
             output += '\t<' + key + (attributes.join(' ')) + '>';
             for (var j = 0; j < modelItem.length; j++) {
               var repeatItem = modelItem[j];
-              output += repeatItem.datasource? "\t<item data-source=\""+repeatItem.datasource+"\">" : "\t<item>";
+              let attributes;
+              attributes = repeatItem.datasource? `datasource=\"${repeatItem.datasource}\"`: '';
+              if(repeatItem.inline) {
+                attributes += ` inline=\"${repeatItem.inline}\"`;
+              }
+              output += `\t<item ${attributes}>`;
               for (var repeatKey in repeatItem) {
-                if(repeatKey !== 'datasource') {
+                if(repeatKey !== 'datasource' && repeatKey !== 'inline' && repeatKey !== 'component') {
                   var
                     repeatValue = modelItem[j][repeatKey],
                     isRemote = CStudioRemote[key] && repeatKey === 'url' ? true : false,
@@ -2805,6 +2805,9 @@ var CStudioForms = CStudioForms || function() {
                     output += this.escapeXml(repeatValue);
                   }
                   output += '</' + repeatKey + '>\r\n';
+                }else if( repeatItem.inline === 'true' && repeatKey === 'inline') {
+                  const objId = modelItem[j]['key'];
+                  output += FlattenerState[objId] + '\n';
                 }
               }
               output += '\t</item>';

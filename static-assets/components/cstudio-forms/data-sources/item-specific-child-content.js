@@ -35,10 +35,11 @@ CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properti
 YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
-  createElementAction: function (control, _self, addContainerEl) {
-    //only with bro enabled;
-    // control.addContainerEl = null;
-    // control.containerEl.removeChild(addContainerEl);
+  createElementAction: function (control, _self, addContainerEl, onlyAppend) {
+    if(onlyAppend) {
+      control.addContainerEl = null;
+      control.containerEl.removeChild(addContainerEl);
+    }
 
     if (_self.contentType === "") {
       CStudioAuthoring.Operations.createNewContent(
@@ -77,14 +78,23 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
     }
   },
 
-  add: function (control) {
+  add: function (control, onlyAppend) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
     var _self = this;
     var addContainerEl = control.addContainerEl || null;
 
-    if (!addContainerEl) {
+    var datasourceDef = this.form.definition.datasources,
+      newElTitle = '';
+
+    for (var x = 0; x < datasourceDef.length; x++) {
+      if (datasourceDef[x].id === this.id) {
+        newElTitle = datasourceDef[x].title;
+      }
+    }
+
+    if (!addContainerEl && onlyAppend) {
       addContainerEl = document.createElement("div");
       control.containerEl.appendChild(addContainerEl);
       YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
@@ -93,50 +103,37 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
       control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
     }
 
-    //
-    // var datasourceDef = this.form.definition.datasources,
-    //   newElTitle = '';
-    //
-    // for (var x = 0; x < datasourceDef.length; x++) {
-    //   if (datasourceDef[x].id === this.id) {
-    //     newElTitle = datasourceDef[x].title;
-    //   }
-    // }
+    if(onlyAppend) {
+      addContainerEl.create = document.createElement("div");
+      addContainerEl.appendChild(addContainerEl.create);
+      YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
 
-    // if (!addContainerEl) {
-    //   addContainerEl = document.createElement("div");
-    //   control.containerEl.appendChild(addContainerEl);
-    //   YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-    //   control.addContainerEl = addContainerEl;
-    //   control.addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-    //   control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
-    // }
-
-    //
-    // addContainerEl.create = document.createElement("div");
-    // addContainerEl.appendChild(addContainerEl.create);
-    // YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-    //
-    // var createEl = document.createElement("div");
-    // YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-    // createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
-    // control.addContainerEl.create.appendChild(createEl);
-    // var addContainerEl = control.addContainerEl;
-    // YAHOO.util.Event.on(createEl, 'click', function () {
-    //   _self.createElementAction(control, _self, addContainerEl);
-    // }, createEl);
-
-    _self.createElementAction(control, _self, addContainerEl);
-
+      var createEl = document.createElement("div");
+      YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+      createEl.innerHTML = CMgs.format(langBundle, "createNew") + " - " + newElTitle;
+      control.addContainerEl.create.appendChild(createEl);
+      var addContainerEl = control.addContainerEl;
+      YAHOO.util.Event.on(createEl, 'click', function () {
+        _self.createElementAction(control, _self, addContainerEl, onlyAppend);
+      }, createEl);
+    }else {
+      _self.createElementAction(control, _self);
+    }
   },
 
   edit: function (key, control) {
-    // editContent
-    // => openContentWebForm
-    // =>=> openContentWebFormWithPermission
+    console.log(key);
+    // editContent //
+    // => openContentWebForm //
+    // =>=> openContentWebFormWithPermission //
     // =>=>=> performSimpleIceEdit
     // =>=>=>=> viewcontroller-in-context-edit.initializeContent
     // =>=>=>=>=> constructUrlWebFormSimpleEngine
+
+
+    //get the xml send Rquest data
+
+    //performSimpleIceEdit
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
       success: function (contentTO) {
         CStudioAuthoring.Operations.editContent(

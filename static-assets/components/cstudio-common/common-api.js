@@ -2103,8 +2103,6 @@ var nodeOpen = false,
                                         }
                                     }
 
-                                    console.log(contentTypes);
-
                                     // dialogClass.showDialog(moduleConfig.contentTypes, path, false, moduleConfig.selectTemplateCb, true);
                                     dialogClass.showDialog(contentTypes, path, false, moduleConfig.selectTemplateCb, true);
                                 }

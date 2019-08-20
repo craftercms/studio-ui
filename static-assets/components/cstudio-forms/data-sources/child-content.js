@@ -121,7 +121,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
         for (var i = 0; i < selectedTOs.length; i++) {
           var item = selectedTOs[i];
           var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
-          control.insertItem(item.uri, value);
+          control.insertItem(item.uri, value, null, null, _self.id);
           control._renderItems();
         }
       },
@@ -130,7 +130,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
     });
   },
 
-  add: function(control) {
+  add: function(control, onlyAppend) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
@@ -147,7 +147,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
       }
     }
 
-    if (!addContainerEl && this.countOptions > 1) {
+    if (!addContainerEl && (this.countOptions > 1 || onlyAppend)) {
       addContainerEl = document.createElement("div");
       control.containerEl.appendChild(addContainerEl);
       YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
@@ -157,7 +157,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
     }
 
     if (this.enableCreateNew || this.defaultEnableCreateNew) {
-      if(this.countOptions > 1) {
+      if(this.countOptions > 1 || onlyAppend) {
         addContainerEl.create = document.createElement("div");
         addContainerEl.appendChild(addContainerEl.create);
         YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
@@ -177,7 +177,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
     }
 
     if (this.enableBrowseExisting || this.defaultEnableBrowseExisting) {
-      if(this.countOptions > 1) {
+      if(this.countOptions > 1 || onlyAppend) {
         addContainerEl.browse = document.createElement("div");
         addContainerEl.appendChild(addContainerEl.browse);
         YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
@@ -198,6 +198,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
   },
 
   edit: function(key, control) {
+    var _self = this;
     // editContent
     // => openContentWebForm
     // =>=> openContentWebFormWithPermission
