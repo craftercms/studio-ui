@@ -256,6 +256,7 @@
     },
     "repositories": {
         "REPOSITORIES": "Repositories",
+        "REMOTES": "Fernbedienungen",
         "NEW_REPOSITORY":"Neues Repository",
         "REPOSITORIES_PER_PAGE": "Repositories pro Seite",
         "NAME": "Name",
@@ -281,7 +282,24 @@
           "none": "",
           "ours": "Akzeptieren Sie die lokale Version der Site und überschreiben Sie die Remote-Version, falls diese nicht identisch ist",
           "theirs": "Akzeptieren Sie die Remote-Version der Site und überschreiben Sie die lokale Version, falls diese nicht identisch ist"
-        }
+        },
+        "REPOSITORY_STATUS": "Repository-Status",
+        "NO_CONFLICTS": "Das lokale Repository ist frei von Konflikten.",
+        "CONFLICTS_EXIST": "Repository-Vorgänge sind deaktiviert, solange Konflikte bestehen. Bitte lösen Sie Konflikte.",
+        "COMMIT_RESOLUTION": "Commit Resolution",
+        "COMMIT_RESOLUTION_CONFIRMATION": "Sie sind dabei, die Konfliktlösung durchzuführen.",
+        "COMMIT_RESOLUTION_MESSAGE_REQUIREMENT": "Bitte geben Sie eine Nachricht für das Protokoll des Repository-Verlaufs ein:",
+        "COMMIT_RESOLUTION_INDICATIONS": "Nach dem Festschreiben dieser Entschließung. Sie sollten die Änderungen an den Fernbedienungen \"pushen\", um den neuen Status zu synchronisieren, den Sie gerade definiert haben.",
+        "REVERT_ALL": "Alles zurücksetzen",
+        "REVERT_ALL_DESCRIPTION": "Brechen Sie den Pull-Vorgang ab und behalten Sie das Repository bei.",
+        "CONFLICTED_FILES": "In Konflikt stehende Dateien",
+        "PENDING_COMMIT": "Ausstehendes Commit",
+        "ACCEPT_REMOTE": "Remote akzeptieren",
+        "ACCEPT_REMOTE_DESCRIPTION": "Überschreiben Sie die lokale Datei mit der Version, die von Remote heruntergeladen wurde.",
+        "KEEP_LOCAL": "Lokal behalten",
+        "KEEP_LOCAL_DESCRIPTION": "Entfernte Änderungen verwerfen und die lokale Datei behalten.",
+        "DIFF": "Diff",
+        "SPLIT_VIEW": "Geteilte Sicht"
     },
     "clustering": {
         "HEADER_LABEL": "Cluster",
@@ -341,6 +359,7 @@
     "ALL_LABEL": "Alle",
     "REMOVE_LABEL": "Entfernen",
     "CONFIRMATION": "Bestätigung",
+    "CONFIRM": "Bestätigen",
     "YES": "Ja",
     "NO": "Nein",
     "OK":"OK",
