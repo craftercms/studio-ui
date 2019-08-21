@@ -15,34 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const
-  FORM_REQUEST = 'FORMS.FORM_REQUEST',
-  FORM_REQUEST_FULFILMENT = 'FORMS.FORM_REQUEST_FULFILMENT',
-  FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
-  FORM_SAVE_COMPLETE = 'FORM_SAVE_COMPLETE';
-
-const { fromEvent, operators } = CrafterCMSNext.rxjs;
-const { map, filter, take } = operators;
-
-const messages$ = fromEvent(window, 'message').pipe(
-  filter(event => event.data && event.data.type),
-  map(event => event.data)
-);
-
-const sendMessage = (message) => {
-  window.top.CStudioAuthoring.InContextEdit.messageDialogs(message);
-};
-
-function parseDOM(content) {
-  try {
-    let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
-    return parseResult.documentElement;
-  } catch (ex) {
-    console.error(`Error attempting to parse content XML.`);
-    return null;
-  }
-}
-
 CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properties, constraints) {
   this.id = id;
   this.form = form;
@@ -65,7 +37,7 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
   itemsAreContentReferences: true,
 
   createElementAction: function (control, _self, addContainerEl, onlyAppend) {
-    if(onlyAppend) {
+    if (onlyAppend) {
       control.addContainerEl = null;
       control.containerEl.removeChild(addContainerEl);
     }
@@ -132,7 +104,7 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
       control.addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
     }
 
-    if(onlyAppend) {
+    if (onlyAppend) {
       addContainerEl.create = document.createElement("div");
       addContainerEl.appendChild(addContainerEl.create);
       YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
@@ -145,39 +117,33 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
       YAHOO.util.Event.on(createEl, 'click', function () {
         _self.createElementAction(control, _self, addContainerEl, onlyAppend);
       }, createEl);
-    }else {
+    } else {
       _self.createElementAction(control, _self);
     }
   },
 
   edit: function (key, control) {
     var _self = this;
-
-    messages$.pipe(
-      filter(message =>
-        message.type === FORM_REQUEST_FULFILMENT &&
-        message.key === key
-      ),
-      take(1)
-    ).subscribe((message) => {
-      const contentType = parseDOM(message.payload).getElementsByTagName('content-type')[0].innerHTML;
-      const success = function (contentTO, editorId, name, value) {
-        if (control) {
-          control.updateEditedItem(value, _self.id);
-        }
-      }
-
+    CStudioForms.communication.sendAndAwait(key, (message) => {
+      const contentType = CStudioForms.communication
+        .parseDOM(message.payload)
+        .querySelector('content-type')
+        .innerHTML;
       CStudioAuthoring.Operations.performSimpleIceEdit(
-        {contentType: contentType, uri:key},
+        { contentType: contentType, uri: key },
         null, // field
         true,
-        { success },
+        {
+          success: function (contentTO, editorId, name, value) {
+            if (control) {
+              control.updateEditedItem(value, _self.id);
+            }
+          }
+        },
         [],
         true
       );
     });
-
-    sendMessage({ type: FORM_REQUEST, key });
   },
 
   getLabel: function () {

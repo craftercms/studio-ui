@@ -713,6 +713,17 @@ var CStudioForms = CStudioForms || function() {
     }
   }
 
+  function sendAndAwait(key, observer) {
+    messages$.pipe(
+      filter(message =>
+        message.type === FORM_REQUEST_FULFILMENT &&
+        message.key === key
+      ),
+      take(1)
+    ).subscribe(observer);
+    sendMessage({ type: FORM_REQUEST, key });
+  }
+
   function setButtonsEnabled(enabled) {
     if (enabled === undefined) {
       enabled = true;
@@ -740,6 +751,12 @@ var CStudioForms = CStudioForms || function() {
   cfe.FormController = FormController;
   cfe.CStudioFormDatasource = CStudioFormDatasource;
   cfe.engine = {};
+  cfe.communication = {
+    messages$,
+    sendMessage,
+    parseDOM,
+    sendAndAwait
+  };
 
   /**
    * Form Rendering Engine
@@ -792,7 +809,6 @@ var CStudioForms = CStudioForms || function() {
               break;
             }
             case FORM_SAVE_REQUEST: {
-
               // Update the DOM for subsequent content request messages.
               const nextComponentDOM = parseDOM(message.payload);
               const objectId = nextComponentDOM.getElementsByTagName('objectId')[0].innerHTML;
@@ -830,17 +846,9 @@ var CStudioForms = CStudioForms || function() {
         new Promise((resolve) => {
           if (isInclude) {
             if (isEdit) {
-              messages$.pipe(
-                filter(message =>
-                  message.type === FORM_REQUEST_FULFILMENT &&
-                  message.key === path
-                ),
-                take(1)
-              ).subscribe((message) => {
+              sendAndAwait(path, (message) => {
                 resolve(message.payload);
               });
-
-              sendMessage({ type: FORM_REQUEST, key: path });
             } else {
               resolve(null);
             }
@@ -876,7 +884,7 @@ var CStudioForms = CStudioForms || function() {
 
         //{ components}
 
-        _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly, isInclude);
+        _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
 
       }).catch((reason) => {
                                 CStudioAuthoring.Operations.showSimpleDialog(
@@ -929,7 +937,7 @@ var CStudioForms = CStudioForms || function() {
       return "";
     },
 
-    _renderFormWithContent: function(content, formId, formDef, style, customControllerClass, readOnly, isInclude) {
+    _renderFormWithContent: function(content, formId, formDef, style, customControllerClass, readOnly) {
 
       var me = this;
 
@@ -959,8 +967,8 @@ var CStudioForms = CStudioForms || function() {
       } catch(err) {}
 
       //path in include items is the object id
+      if(me.config.isInclude && me.config.isEdit) {
       let filename = content.getElementsByTagName('file-name')[0].innerHTML;
-      if(isInclude) {
         path = `/${filename}`;
       }
 
@@ -1248,13 +1256,6 @@ var CStudioForms = CStudioForms || function() {
             const name = componentDOM.getElementsByTagName('internal-name')[0].innerHTML;
             CStudioAuthoring.InContextEdit.getIceCallback(editorId).success({}, editorId, key, name, draft);
 
-            sendMessage({
-              type: FORM_SAVE_REQUEST,
-              payload: xml,
-              preview,
-              draft
-            });
-
             messages$.pipe(
               filter(message =>
                 message.type === FORM_SAVE_COMPLETE
@@ -1263,6 +1264,13 @@ var CStudioForms = CStudioForms || function() {
             ).subscribe((message) => {
               const editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
               CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+            });
+
+            sendMessage({
+              type: FORM_SAVE_REQUEST,
+              payload: xml,
+              preview,
+              draft
             });
           } else {
             YAHOO.util.Connect.setDefaultPostHeader(false);
@@ -2652,6 +2660,15 @@ var CStudioForms = CStudioForms || function() {
 
       xml += '</' + form.definition.objectType + '>';
 
+      if(!cfe.engine.config.isInclude) {
+        const doc = parseDOM(xml);
+        doc.querySelectorAll('component[pending]').forEach(component => {
+          component.outerHTML = FlattenerState[component.getAttribute('id')];
+        });
+
+        xml = doc.outerHTML;
+      }
+
       return xml;
     },
 
@@ -2808,7 +2825,7 @@ var CStudioForms = CStudioForms || function() {
                   output += '</' + repeatKey + '>\r\n';
                 }else if( repeatItem.inline === 'true' && repeatKey === 'inline') {
                   const objId = modelItem[j]['key'];
-                  output += FlattenerState[objId] + '\n';
+                  output += (FlattenerState[objId] ? FlattenerState[objId] : `<component id="${objId}" pending="true"/>`) + '\n';
                 }
               }
               output += '\t</item>';
