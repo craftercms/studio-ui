@@ -15,6 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const
+  FORM_REQUEST = 'FORMS.FORM_REQUEST',
+  FORM_REQUEST_FULFILMENT = 'FORMS.FORM_REQUEST_FULFILMENT',
+  FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
+  FORM_SAVE_COMPLETE = 'FORM_SAVE_COMPLETE';
+
+const { fromEvent, operators } = CrafterCMSNext.rxjs;
+const { map, filter, take } = operators;
+
+const messages$ = fromEvent(window, 'message').pipe(
+  filter(event => event.data && event.data.type),
+  map(event => event.data)
+);
+
+const sendMessage = (message) => {
+  window.top.CStudioAuthoring.InContextEdit.messageDialogs(message);
+};
+
+function parseDOM(content) {
+  try {
+    let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
+    return parseResult.documentElement;
+  } catch (ex) {
+    console.error(`Error attempting to parse content XML.`);
+    return null;
+  }
+}
+
 CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properties, constraints) {
   this.id = id;
   this.form = form;
@@ -29,6 +57,7 @@ CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properti
       this.contentType = (Array.isArray(properties[i].value)) ? '' : properties[i].value;
     }
   }
+
   return this;
 };
 
@@ -122,57 +151,33 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
   },
 
   edit: function (key, control) {
-    console.log(key);
-    // editContent //
-    // => openContentWebForm //
-    // =>=> openContentWebFormWithPermission //
-    // =>=>=> performSimpleIceEdit
-    // =>=>=>=> viewcontroller-in-context-edit.initializeContent
-    // =>=>=>=>=> constructUrlWebFormSimpleEngine
+    var _self = this;
 
-
-    //get the xml send Rquest data
-
-    //performSimpleIceEdit
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
-      success: function (contentTO) {
-        CStudioAuthoring.Operations.editContent(
-          contentTO.item.contentType,
-          CStudioAuthoringContext.siteId,
-          contentTO.item.uri,
-          contentTO.item.nodeRef,
-          contentTO.item.uri,
-          false,
-          {
-            success: function (contentTO, editorId, name, value) {
-              if (control) {
-                control.updateEditedItem(value, _self.id);
-                CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-              }
-            }
-          },
-          null,
-          null,
-          true);
-      },
-      failure: function () {
-      }
-    });
-  },
-
-  updateItem: function (item, control) {
-    if (item.key && item.key.match(/\.xml$/)) {
-      var getContentItemCb = {
-        success: function (contentTO) {
-          item.value = contentTO.item.internalName || item.value;
-          control._renderItems();
-        },
-        failure: function () {
+    messages$.pipe(
+      filter(message =>
+        message.type === FORM_REQUEST_FULFILMENT &&
+        message.key === key
+      ),
+      take(1)
+    ).subscribe((message) => {
+      const contentType = parseDOM(message.payload).getElementsByTagName('content-type')[0].innerHTML;
+      const success = function (contentTO, editorId, name, value) {
+        if (control) {
+          control.updateEditedItem(value, _self.id);
         }
-      };
+      }
 
-      CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, item.key, getContentItemCb);
-    }
+      CStudioAuthoring.Operations.performSimpleIceEdit(
+        {contentType: contentType, uri:key},
+        null, // field
+        true,
+        { success },
+        [],
+        true
+      );
+    });
+
+    sendMessage({ type: FORM_REQUEST, key });
   },
 
   getLabel: function () {

@@ -554,9 +554,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         if(this.datasource && this.datasource.updateItem){
             for(var i = 0; i < this.items.length; i++){
                 this.datasource.updateItem(this.items[i],this);
-                if(this.items[i].inline !== 'true') {
-                  this.items[i].disableFlattening = this.disableFlattening;
-                }
+                this.items[i].disableFlattening = this.disableFlattening;
             }
         }
     },

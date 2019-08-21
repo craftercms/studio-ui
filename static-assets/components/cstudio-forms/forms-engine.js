@@ -703,10 +703,6 @@ var CStudioForms = CStudioForms || function() {
     window.top.CStudioAuthoring.InContextEdit.messageDialogs(message);
   };
 
-  function findComponent(dom, path) {
-    return dom.querySelector(`component[path="${path}"]`);
-  }
-
   function parseDOM(content) {
     try {
       let parseResult = new window.DOMParser().parseFromString(content, 'text/xml');
@@ -782,15 +778,15 @@ var CStudioForms = CStudioForms || function() {
         messages$.subscribe((message) => {
           switch (message.type) {
             case FORM_REQUEST: {
-              if (message.path !== path) {
-                if (FlattenerState.hasOwnProperty(message.path)) {
+              if (message.key) {
+                if (FlattenerState.hasOwnProperty(message.key)) {
                   sendMessage({
-                    path: message.path,
+                    key: message.key,
                     type: FORM_REQUEST_FULFILMENT,
-                    payload: FlattenerState[message.path]
+                    payload: FlattenerState[message.key]
                   });
                 } else {
-                  console.error(`FormEngine Flattener: The include \`component[path="${message.path}"]\` wasn't found.`);
+                  console.error(`FormEngine Flattener: The include \`component[key="${message.key}"]\` wasn't found.`);
                 }
               }
               break;
@@ -837,14 +833,14 @@ var CStudioForms = CStudioForms || function() {
               messages$.pipe(
                 filter(message =>
                   message.type === FORM_REQUEST_FULFILMENT &&
-                  message.path === path
+                  message.key === path
                 ),
                 take(1)
               ).subscribe((message) => {
                 resolve(message.payload);
               });
 
-              sendMessage({ type: FORM_REQUEST, path });
+              sendMessage({ type: FORM_REQUEST, key: path });
             } else {
               resolve(null);
             }
@@ -880,7 +876,7 @@ var CStudioForms = CStudioForms || function() {
 
         //{ components}
 
-        _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
+        _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly, isInclude);
 
       }).catch((reason) => {
                                 CStudioAuthoring.Operations.showSimpleDialog(
@@ -933,7 +929,7 @@ var CStudioForms = CStudioForms || function() {
       return "";
     },
 
-    _renderFormWithContent: function(content, formId, formDef, style, customControllerClass, readOnly) {
+    _renderFormWithContent: function(content, formId, formDef, style, customControllerClass, readOnly, isInclude) {
 
       var me = this;
 
@@ -955,13 +951,18 @@ var CStudioForms = CStudioForms || function() {
       var contentType = CStudioAuthoring.Utils.getQueryVariable(location.search, "form");
       var path = CStudioAuthoring.Utils.getQueryVariable(location.search, "path");
       var edit = CStudioAuthoring.Utils.getQueryVariable(location.search, "edit");
-
       try {
         if(window.opener) {
           window.previewTargetWindowId = (window.opener.previewTargetWindowId)
             ? window.opener.previewTargetWindowId : window.opener.name;
         }
       } catch(err) {}
+
+      //path in include items is the object id
+      let filename = content.getElementsByTagName('file-name')[0].innerHTML;
+      if(isInclude) {
+        path = `/${filename}`;
+      }
 
       var contentDom = content;
       var contentMap = CStudioForms.Util.xmlModelToMap(contentDom);
