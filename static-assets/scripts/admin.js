@@ -1843,8 +1843,9 @@
                         //TODO: properly display error.
                     });
                 }).error(function(error){
-                    $scope.messageTitle = $translate.instant('common.ERROR');
-                    $scope.messageText = error.message;
+                    $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${code}`;
+                    $scope.messageText = error.response.documentationUrl? error.response.message + ', ' : error.response.message;
+                    $scope.messageLink = error.response.documentationUrl;
                     $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     repositories.spinnerOverlay.close();
                 });
@@ -1865,15 +1866,15 @@
                         $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', null,"studioMedium");
 
                     }).error(function (error) {
-                        $scope.messageTitle = $translate.instant('common.ERROR');
-                        $scope.messageText = error.message;
+                        $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${code}`;
+                        $scope.messageText = error.response.documentationUrl? error.response.message + ', ' : error.response.message;
+                        $scope.messageLink = error.response.documentationUrl;
                         $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     });
                 };
 
                 $scope.confirmationAction = deleteRepo;
                 $scope.confirmationText = $translate.instant('common.DELETE_QUESTION')+" " + repo.name + "?";
-
                 $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
             };
 
@@ -1897,8 +1898,10 @@
                     }).error(function (error) {
                         repositories.getRepositoryStatus();
                         repositories.spinnerOverlay.close();
-                        $scope.messageTitle = $translate.instant('common.ERROR');
-                        $scope.messageText = error.message;
+                        error.response.documentationUrl = 'google.co.cr'
+                        $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${error.response.code}`;
+                        $scope.messageText = error.response.documentationUrl? error.response.message + ', ' : error.response.message;
+                        $scope.messageLink = error.response.documentationUrl;
                         $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     });
                 };
@@ -1928,8 +1931,9 @@
 
                     }).error(function (error) {
                         repositories.spinnerOverlay.close();
-                        $scope.messageTitle = $translate.instant('common.ERROR');
-                        $scope.messageText = error.message;
+                        $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${code}`;
+                        $scope.messageText = error.response.documentationUrl? error.response.message + ', ' : error.response.message;
+                        $scope.messageLink = error.response.documentationUrl;
                         $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
                     });
                 };

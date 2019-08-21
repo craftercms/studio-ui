@@ -373,6 +373,8 @@
     "VALID_EMAIL": "Ingrese un correo válido",
     "MATCH_ENTRY": "Debe coincidir con la entrada anterior",
     "ERROR": "Error",
+    "CODE": "Código",
+    "SEE_DOCUMENTATION": "Ver Documentación.",
     "DELETE_QUESTION":"Quieres borrar",
     "GLOBAL_MENU": "Menu Global",
     "MAIN_MENU": "Menu Principal",
