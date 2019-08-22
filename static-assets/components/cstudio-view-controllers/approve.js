@@ -34,7 +34,7 @@
     Base.extend('Approve', {
 
         events: ['submitStart','submitComplete','submitEnd'],
-        actions: ['.close-button', '.submit-button', '.select-all-check', '.show-all-deps'],
+        actions: ['.close-button', '.submit-button'],
         startup: ['itemsClickedDelegation'],
 
         itemsClickedDelegation: itemsClickedDelegation,
@@ -116,25 +116,22 @@
             submissionComment: this.getComponent('.submission-comment').value,
             publishOptionComment: (this.getComponent('.publish-option-comment')) ? this.getComponent('.publish-option-comment').value : "",
             publishChannel: this.getComponent('.publish-option').value,
-            items: []
+            items: this.result.current
         };
-
-        var checked = this.getComponents('tbody input[type="checkbox"]:checked');
-        each(checked, function (i, check) {
-            data.items.push(check.getAttribute('data-item-id'));
-        });
 
         var timezone = $("select.zone-picker").find(':selected').attr('data-offset');
 
         if (data.schedule === 'custom') {
-            data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
+            data.scheduledDate =  getScheduledDateTimeForJson(this.getCompodialognent('[name="scheduleDate"]').value);
             data.scheduledDate += timezone;
         }
 
         var loadSpinner = document.getElementById('loadSpinner');
+        var loadSpinnerMask = document.getElementById('loadSpinnerMask');
         //this.showProcessingOverlay(true);
         this.disableActions();
         loadSpinner.classList.remove("hidden");
+        loadSpinnerMask.classList.remove("hidden");
         this.fire("submitStart");
         //var data = this.getData(),
         var _this = this,
@@ -146,6 +143,7 @@
                 _this.fire("submitComplete", oResp);
                 _this.fire("submitEnd", oResp);
                 loadSpinner.classList.add("hidden");
+                loadSpinnerMask.classList.add("hidden");
             },
             failure: function(oResponse) {
                 var oResp = JSON.parse(oResponse.responseText);
@@ -317,73 +315,17 @@
     }
 
     function renderItems(items) {
-
-        var html = [],
-            me = this,
-            submit = submit;
-            $container = $(this.getComponent('tbody'));
-
-        each(items, function (index, item) {
-            var temp = item.scheduledDate,
-                itemDependenciesClass = "toggle-deps-" + index;
-
-            item.scheduledDate = CStudioAuthoring.Utils.formatDateFromUTC(temp, studioTimeZone, "medium");
-            item.index = itemDependenciesClass;
-            var $parentRow = $(agent.get('ITEM_ROW', item));
-            if(index == 0) $container.empty();
-            $container.append($parentRow);
-            item.scheduledDate = temp;
-
-            var data = "[ { uri:\"" +  item.uri + "\" }]";
-
-        });
-
-        $('.toggleDependencies').on('click', function(){
-            var $currentEl = $(this),
-                $container = $(me.getComponent('tbody')),
-                parentId = $currentEl.attr('id'),
-                $childItems = $container.find("." + parentId);
-
-            if($currentEl.attr('class') == "ttClose parent-div-widget"){
-                $childItems.hide();
-                $currentEl.attr('class', 'ttOpen parent-div-widget');
-            }else{
-                //If no deps data has been loaded - load
-                if( $currentEl.attr("data-loaded") === "false"){
-                    $currentEl.attr("data-loaded", "true");
-
-                    var callback = {
-                        success: function(response) {
-                            var response = eval("(" + response.responseText + ")")
-
-                            $.each(response.entities, function(){
-                                var currentElId = $currentEl.attr("id"),
-                                    $parentEl = $currentEl.closest("tr");
-
-                                $.each(this.dependencies, function(index, dependency){
-                                    var elem = {};
-                                    elem.uri = dependency.item;
-                                    elem.index = currentElId;
-                                    $parentEl.after(agent.get('SUBITEM_ROW', elem));
-                                });
-                            });
-                            $childItems = $container.find("." + parentId);
-
-                            $childItems.show();
-                            $currentEl.attr('class', 'ttClose parent-div-widget');
-                        },
-                        failure: function(error) {
-
-                        }
-                    };
-
-                    calculateDependencies($currentEl.attr("data-path"), callback);
-                }else{
-                    $childItems.show();
-                    $currentEl.attr('class', 'ttClose parent-div-widget');
+        this.result = {};
+        CrafterCMSNext
+            .render(
+                this.getComponent('.dependencies-display'), 
+                'DependencySelection', 
+                { 
+                    result: this.result,
+                    siteId: CStudioAuthoringContext.site,
+                    items: items
                 }
-            }
-        })
+             );
 
         $(document).on("keyup", function(e) {
             if (e.keyCode === 27) {	// esc

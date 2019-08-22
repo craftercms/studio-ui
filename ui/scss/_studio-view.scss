@@ -196,6 +196,14 @@
     position: absolute;
     top: 48%;
     left: 48%;
+    z-index: 110038!important;
+    color: #3f66a0;
+
+  }
+
+  #loadSpinnerMask{
+        z-index: 110037!important;
+        display: block;
   }
 
 }
@@ -480,4 +488,128 @@ table.scroll-body {
 
 .studio-view .navbar-fixed-top {
   z-index: 100;
+}
+
+#approve-dialog{ 
+  .aprove-subtitle{
+    font-size: 15px;
+  }
+  .action-wrapper{
+    position: relative;
+    top: 39px;
+  }
+}
+
+.submission-comment{
+  height: 111px!important;
+}
+
+.dependencies-display{
+  height: 444px;
+}
+
+//Publish - soft hard dependencies.
+.dependency-selection{ 
+  padding: 11px 12px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .125);
+  height: 340px;
+  overflow-y: scroll;
+}
+
+.dependency-selection--section-dependencies {
+  clear: both;
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.dependency-selection--checkbox{
+  float: left;
+}
+
+.dependency-selection--information{
+  float: left;
+  width: 90%;
+}
+
+.dependency-selection--information--internal-name,
+.dependency-selection--information--uri,
+.dependency-selection--list--soft-item{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 5px;
+  padding: 0;
+  line-height: 16px;
+}
+
+.dependency-selection--title{
+  margin: 6px auto 6px;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.dependency-selection--subtitle{
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.dependency-selection--list{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dependency-selection--list--hard{
+  margin: 5px 0;
+}
+
+.dependency-selection--list--soft-checkbox{
+  display: inline-block;
+}
+
+.dependency-selection--list--soft-item {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 90%;
+  position: relative;
+  top: 5px;
+  margin: 0 3px;
+}
+
+.yui-module.yui-overlay.yui-panel button.dependency-selection--nav-btn{ 
+  color: #7e9dbb; 
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  margin-left: 7px;
+  font-weight: bold;
+  background-color: transparent;
+  vertical-align: unset;
+}
+
+.yui-module.yui-overlay.yui-panel button.dependency-selection--select-all{
+  margin-left: 17px;
+  position: relative;
+  bottom: 1px;
+}
+
+.yui-module.yui-overlay.yui-panel button.dependency-selection--show-all{
+  margin-left: 0px;
+}
+
+.dependency-selection--bottom-section{
+  margin-top: 20px;
+  margin-left:10px;
+  color: #777;
+}
+
+.dependency-selection--center-circular-progress-text{
+  position: relative;
+  bottom: 9px;
 }
