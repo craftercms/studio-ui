@@ -82,7 +82,7 @@ function DependecySelection(props: DependecySelectionProps) {
   return (
     <div>
       <div className="dependency-selection">
-        <h2 className="dependency-selection--title">
+        <h2 className="dependency-selection--title dependency-selection--publish-title">
           Items to Publish
         </h2>
         <button className="dependency-selection--nav-btn dependency-selection--select-all" onClick={selectAll}>
