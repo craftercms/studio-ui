@@ -312,7 +312,8 @@
         <h3 class="modal-title">{{ messageTitle }}</h3>
     </div>
     <div class="modal-body">
-        {{ messageText }}
+        <p>{{ messageText }}</p>
+        <a target="_blank" ng-show="messageLink" href="{{messageLink}}">{{ 'common.SEE_DOCUMENTATION' | translate }}</a>
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" ng-click="hideMessageModal()">{{ 'common.OK' | translate }}</button>

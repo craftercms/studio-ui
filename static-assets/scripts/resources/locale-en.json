@@ -374,6 +374,8 @@
     "VALID_EMAIL": "Enter a valid email",
     "MATCH_ENTRY": "Must match the previous entry",
     "ERROR": "Error",
+    "CODE": "Code",
+    "SEE_DOCUMENTATION": "See Documentation.",
     "DELETE_QUESTION":"Do you want to delete",
     "GLOBAL_MENU": "Global Menu",
     "MAIN_MENU": "Main Menu",

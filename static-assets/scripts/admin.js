@@ -1775,6 +1775,13 @@
 
             this.init = function() {
 
+                $scope.showError = function(error){
+                  $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${error.code}`;
+                  $scope.messageText = error.remedialAction? `${error.message}. ${error.remedialAction}` : error.message + '.';
+                  $scope.messageLink = error.documentationUrl;
+                  $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                }
+
                 $scope.showModal = function(template, size, verticalCentered, styleClass){
                     $scope.groupsError = null;
                     var modalInstance = $uibModal.open({
@@ -1813,8 +1820,8 @@
 
                 adminService.getRepositories(repositories).success(function (data) {
                     repositories.repositories = data;
-                }).error(function () {
-                    //TODO: properly display error.
+                }).error(function (error) {
+                    $scope.showError(error.response);
                 });
 
             };
@@ -1839,13 +1846,12 @@
                     adminService.getRepositories(repositories).success(function (data) {
                         repositories.repositories = data;
                         repositories.spinnerOverlay.close();
-                    }).error(function () {
-                        //TODO: properly display error.
+                    }).error(function (error) {
+                        $scope.showError(error.response);
+                        repositories.spinnerOverlay.close();
                     });
                 }).error(function(error){
-                    $scope.messageTitle = $translate.instant('common.ERROR');
-                    $scope.messageText = error.message;
-                    $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                    $scope.showError(error.response);
                     repositories.spinnerOverlay.close();
                 });
 
@@ -1865,15 +1871,12 @@
                         $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', null,"studioMedium");
 
                     }).error(function (error) {
-                        $scope.messageTitle = $translate.instant('common.ERROR');
-                        $scope.messageText = error.message;
-                        $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                        $scope.showError(error.response);
                     });
                 };
 
                 $scope.confirmationAction = deleteRepo;
                 $scope.confirmationText = $translate.instant('common.DELETE_QUESTION')+" " + repo.name + "?";
-
                 $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
             };
 
@@ -1897,9 +1900,7 @@
                     }).error(function (error) {
                         repositories.getRepositoryStatus();
                         repositories.spinnerOverlay.close();
-                        $scope.messageTitle = $translate.instant('common.ERROR');
-                        $scope.messageText = error.message;
-                        $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                        $scope.showError(error.response);
                     });
                 };
 
@@ -1928,9 +1929,7 @@
 
                     }).error(function (error) {
                         repositories.spinnerOverlay.close();
-                        $scope.messageTitle = $translate.instant('common.ERROR');
-                        $scope.messageText = error.message;
-                        $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+                        $scope.showError(error.response);
                     });
                 };
 
