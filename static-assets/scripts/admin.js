@@ -1820,8 +1820,8 @@
 
                 adminService.getRepositories(repositories).success(function (data) {
                     repositories.repositories = data;
-                }).error(function () {
-                    //TODO: properly display error.
+                }).error(function (error) {
+                    $scope.showError(error.response);
                 });
 
             };
@@ -1846,8 +1846,9 @@
                     adminService.getRepositories(repositories).success(function (data) {
                         repositories.repositories = data;
                         repositories.spinnerOverlay.close();
-                    }).error(function () {
-                        //TODO: properly display error.
+                    }).error(function (error) {
+                        $scope.showError(error.response);
+                        repositories.spinnerOverlay.close();
                     });
                 }).error(function(error){
                     $scope.showError(error.response);
