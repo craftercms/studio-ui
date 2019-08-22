@@ -9169,7 +9169,6 @@ CStudioAuthoring.InContextEdit = {
     if (!window.top.iceDialogs) {
       window.top.iceDialogs = [];
     }
-    window.top.iceDialogs[editorId] = context;
     window.top.iceDialogs.push({ key: editorId, value: context, iframe });
   },
 
@@ -9195,8 +9194,9 @@ CStudioAuthoring.InContextEdit = {
 
   unstackDialog: function (editorId) {
     if (window.top.iceDialogs) {
-      window.top.iceDialogs[editorId] && window.top.iceDialogs[editorId].end();
+      let unStack = window.top.iceDialogs.find(dialog => dialog.key === editorId).value;
       window.top.iceDialogs = window.top.iceDialogs.filter((dialog) => dialog.key !== editorId);
+      unStack.end();
     }
   },
 

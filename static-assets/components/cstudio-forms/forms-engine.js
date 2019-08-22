@@ -739,6 +739,19 @@ var CStudioForms = CStudioForms || function() {
 
   }
 
+  function resolvePendingComponents(doc)
+  {
+    doc.querySelectorAll('component[pending]').forEach(component => {
+      component.outerHTML = FlattenerState[component.getAttribute('id')];
+    });
+
+    if(doc.querySelectorAll('component[pending]').length) {
+      resolvePendingComponents(doc);
+    }else {
+      return doc.outerHTML;
+    }
+  }
+
   // public methods
 
   cfe.Controls = {};
@@ -814,9 +827,9 @@ var CStudioForms = CStudioForms || function() {
               const objectId = nextComponentDOM.getElementsByTagName('objectId')[0].innerHTML;
               nextComponentDOM.setAttribute('id', objectId);
               FlattenerState[objectId] = nextComponentDOM.outerHTML;
-
-              cfe.engine.saveForm(message.preview, message.draft, true);
-
+              const name = nextComponentDOM.getElementsByTagName('internal-name')[0].innerHTML;
+              CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
+              CStudioAuthoring.InContextEdit.unstackDialog(message.editorId);
               break;
             }
           }
@@ -1251,23 +1264,9 @@ var CStudioForms = CStudioForms || function() {
           };
 
           if (me.config.isInclude) {
-            const componentDOM = parseDOM(xml);
-            const key = componentDOM.getElementsByTagName('objectId')[0].innerHTML;
-            const name = componentDOM.getElementsByTagName('internal-name')[0].innerHTML;
-            CStudioAuthoring.InContextEdit.getIceCallback(editorId).success({}, editorId, key, name, draft);
-
-            messages$.pipe(
-              filter(message =>
-                message.type === FORM_SAVE_COMPLETE
-              ),
-              take(1)
-            ).subscribe((message) => {
-              const editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-              CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-            });
-
             sendMessage({
               type: FORM_SAVE_REQUEST,
+              editorId: editorId,
               payload: xml,
               preview,
               draft
@@ -1301,13 +1300,13 @@ var CStudioForms = CStudioForms || function() {
                       contentTO.initialModel = CStudioForms.initialModel;
                       contentTO.updatedModel = CStudioForms.updatedModel;
 
-                      keepOpen !== true && iceWindowCallback.success(contentTO, editorId, name, value, draft);
+                      iceWindowCallback.success(contentTO, editorId, name, value, draft);
                       if (draft) {
                         CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                         createDialog();
                       } else {
                         CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
-                        keepOpen !== true && CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                         CStudioAuthoring.Operations.refreshPreview();
                       }
                     } else {
@@ -1318,7 +1317,7 @@ var CStudioForms = CStudioForms || function() {
                         createDialog();
                       } else {
                         CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
-                        keepOpen !== true && CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                         CStudioAuthoring.Operations.refreshPreview();
                       }
                     }
@@ -1334,12 +1333,6 @@ var CStudioForms = CStudioForms || function() {
                       YDom.addClass(noticeEl, 'acnDraftContent');
                       noticeEl.innerHTML = CMgs.format(formsLangBundle, 'wcmContentSavedAsDraft');
                     }
-
-                    sendMessage({
-                      type: FORM_SAVE_COMPLETE
-                    })
-
-
                   },
                   failure: function (err) {
                     CStudioAuthoring.Operations.showSimpleDialog(
@@ -2662,11 +2655,7 @@ var CStudioForms = CStudioForms || function() {
 
       if(!cfe.engine.config.isInclude) {
         const doc = parseDOM(xml);
-        doc.querySelectorAll('component[pending]').forEach(component => {
-          component.outerHTML = FlattenerState[component.getAttribute('id')];
-        });
-
-        xml = doc.outerHTML;
+        xml = resolvePendingComponents(doc);
       }
 
       return xml;

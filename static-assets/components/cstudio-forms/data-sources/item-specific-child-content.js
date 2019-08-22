@@ -66,7 +66,6 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
           success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
-            //CStudioAuthoring.InContextEdit.unstackDialog(editorId);
           },
           failure: function () {
           }
