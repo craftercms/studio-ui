@@ -23,7 +23,6 @@
   overflow-y: scroll;
 }
 
-
 .dependency-selection--section-dependencies {
   clear: both;
   overflow: hidden;
@@ -46,7 +45,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin: 2px 5px;
+  margin: 0 5px;
 }
 
 .dependency-selection--title{
@@ -106,7 +105,7 @@
 }
 
 .dependency-selection--show-all{
-  padding-left: 0px;
+  margin-left: 0px;
 }
 
 .dependency-selection--bottom-section{

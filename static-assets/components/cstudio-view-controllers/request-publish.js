@@ -52,7 +52,7 @@
 
     Base.extend('RequestPublish', {
 
-        actions: ['.close-button', '.submit-button', '.show-all-deps'],
+        actions: ['.close-button', '.submit-button'],
 
         startup: ['initDatePicker'],
 
@@ -109,13 +109,8 @@
             schedule: this.getComponent('[name="schedulingMode"]:checked').value,
             submissionComment: this.getComponent('.submission-comment').value,
             environment: this.getComponent('.publish-option').value,
-            items: []
+            items: this.result.current
         };
-
-        var checked = this.getComponents('tbody input[type="checkbox"]:checked');
-        $.each(checked, function (i, check) {
-            data.items.push(check.getAttribute('data-item-id'));
-        });
 
         if (data.schedule === 'custom') {
             data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
@@ -134,11 +129,13 @@
         }
 
         var loadSpinner = document.getElementById('loadSpinner');
+        var loadSpinnerMask = document.getElementById('loadSpinnerMask');
 
         //this.showProcessingOverlay(true);
         this.disableActions();
         this.fire("submitStart");
         loadSpinner.classList.remove("hidden");
+        loadSpinnerMask.classList.remove("hidden");
         //var data = this.getData(),
         var _this = this;
         CStudioAuthoring.Service.request({
@@ -153,6 +150,7 @@
                     _this.fire("submitComplete", oResp);
                     _this.fire("submitEnd", oResp);
                     loadSpinner.classList.add("hidden");
+                    loadSpinnerMask.classList.add("hidden");
 
                     eventNS.oldPath = currentItems.uri;
                     var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
@@ -258,84 +256,97 @@
     }
 
     function renderItems(items) {
-        currentItems = items[0];
-        var me = this,
-            loadSpinner = document.getElementById('loadSpinner'),
-            $container = this.$('.item-listing tbody');
-
-        me.submitItems = items;
-
-        loadSpinner.classList.add("hidden");
-        $.each(items, function (index, item) {
-            var itemDependenciesClass = "toggle-deps-" + index,
-                $parentRow;
-
-            item.index = itemDependenciesClass;
-            $parentRow = $(tpl
-                .replace('_INDEX_', item.index)
-                .replace('_URI_', item.uri)
-                .replace('_PATH_', item.uri)
-                .replace('_INTERNALNAME_', item.internalName)
-                .replace('_SCHEDULE_', item.scheduledDate ? item.scheduledDate : "")
-                .replace('_URI_', item.uri));
-
-            if(index == 0) $container.empty();
-            $container.append($parentRow);
-
-        });
-
-        //enable submit button after loading items
-        $("#approveSubmit").prop('disabled', false);
-
-        $('.toggleDependencies').on('click', function(){
-            var $currentEl = $(this),
-                $container = $(me.getComponent('tbody')),
-                parentId = $currentEl.attr('id'),
-                $childItems = $container.find("." + parentId);
-
-            if($currentEl.attr('class') == "ttClose parent-div-widget"){
-                $childItems.hide();
-                $currentEl.attr('class', 'ttOpen parent-div-widget');
-            }else{
-                //If no deps data has been loaded - load
-                if( $currentEl.attr("data-loaded") === "false"){
-                    $currentEl.attr("data-loaded", "true");
-                    
-                    var callback = {
-                        success: function(response) {
-                            var response = eval("(" + response.responseText + ")")
-
-                            $.each(response.entities, function(){
-                                var currentElId = $currentEl.attr("id"),
-                                    $parentEl = $currentEl.closest("tr");
-        
-                                $.each(this.dependencies, function(index, dependency){
-                                    var elem = {};
-                                    elem.uri = dependency.item;
-                                    elem.index = currentElId;
-                                    
-                                    $parentEl.after(depTpl
-                                        .replace('_INDEX_', elem.index)
-                                        .replace('_URI_', elem.uri));
-                                });                            
-                            });
-                            $childItems = $container.find("." + parentId);
-
-                            $childItems.show();
-                            $currentEl.attr('class', 'ttClose parent-div-widget');
-                        },
-                        failure: function(error) {
-                            
-                        }
-                    };
-
-                    calculateDependencies($currentEl.attr("data-path"), callback);
-                }else{
-                    $childItems.show();
-                    $currentEl.attr('class', 'ttClose parent-div-widget');
+        document.getElementById('loadSpinner').classList.add("hidden");
+        this.result = {};
+        CrafterCMSNext
+            .render(
+                this.getComponent('.dependencies-display'), 
+                'DependencySelection', 
+                { 
+                    result: this.result,
+                    siteId: CStudioAuthoringContext.site,
+                    items: items
                 }
-            }
-        })
+             );
+        $("#approveSubmit").prop('disabled', false);
+        currentItems = items[0];
+        // var me = this,
+        //     loadSpinner = document.getElementById('loadSpinner'),
+        //     $container = this.$('.item-listing tbody');
+
+        // me.submitItems = items;
+
+        // loadSpinner.classList.add("hidden");
+        // $.each(items, function (index, item) {
+        //     var itemDependenciesClass = "toggle-deps-" + index,
+        //         $parentRow;
+
+        //     item.index = itemDependenciesClass;
+        //     $parentRow = $(tpl
+        //         .replace('_INDEX_', item.index)
+        //         .replace('_URI_', item.uri)
+        //         .replace('_PATH_', item.uri)
+        //         .replace('_INTERNALNAME_', item.internalName)
+        //         .replace('_SCHEDULE_', item.scheduledDate ? item.scheduledDate : "")
+        //         .replace('_URI_', item.uri));
+
+        //     if(index == 0) $container.empty();
+        //     $container.append($parentRow);
+
+        // });
+
+        // //enable submit button after loading items
+        // $("#approveSubmit").prop('disabled', false);
+
+        // $('.toggleDependencies').on('click', function(){
+        //     var $currentEl = $(this),
+        //         $container = $(me.getComponent('tbody')),
+        //         parentId = $currentEl.attr('id'),
+        //         $childItems = $container.find("." + parentId);
+
+        //     if($currentEl.attr('class') == "ttClose parent-div-widget"){
+        //         $childItems.hide();
+        //         $currentEl.attr('class', 'ttOpen parent-div-widget');
+        //     }else{
+        //         //If no deps data has been loaded - load
+        //         if( $currentEl.attr("data-loaded") === "false"){
+        //             $currentEl.attr("data-loaded", "true");
+                    
+        //             var callback = {
+        //                 success: function(response) {
+        //                     var response = eval("(" + response.responseText + ")")
+
+        //                     $.each(response.entities, function(){
+        //                         var currentElId = $currentEl.attr("id"),
+        //                             $parentEl = $currentEl.closest("tr");
+        
+        //                         $.each(this.dependencies, function(index, dependency){
+        //                             var elem = {};
+        //                             elem.uri = dependency.item;
+        //                             elem.index = currentElId;
+                                    
+        //                             $parentEl.after(depTpl
+        //                                 .replace('_INDEX_', elem.index)
+        //                                 .replace('_URI_', elem.uri));
+        //                         });                            
+        //                     });
+        //                     $childItems = $container.find("." + parentId);
+
+        //                     $childItems.show();
+        //                     $currentEl.attr('class', 'ttClose parent-div-widget');
+        //                 },
+        //                 failure: function(error) {
+                            
+        //                 }
+        //             };
+
+        //             calculateDependencies($currentEl.attr("data-path"), callback);
+        //         }else{
+        //             $childItems.show();
+        //             $currentEl.attr('class', 'ttClose parent-div-widget');
+        //         }
+        //     }
+        // })
 
         $(document).on("keyup", function(e) {
             if (e.keyCode === 27) {	// esc

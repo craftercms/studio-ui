@@ -6,7 +6,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { get } from '../utils/ajax';
 
-// components/DependecySelection.tsx
 interface DependecySelectionProps {
   items: Item[];
   siteId: string;
@@ -113,9 +112,7 @@ function DependecySelection(props: DependecySelectionProps) {
           ))
         }
         {
-          deps == null ? (
-            <div></div>
-          ) : (
+          deps == null ? (null) : (
               <div>
                 <h2 className="dependency-selection--subtitle" >
                   Hard Dependencies
@@ -129,9 +126,7 @@ function DependecySelection(props: DependecySelectionProps) {
                           <li className="dependency-selection--list--hard" key={uri}>{uri}</li>
                         ))
                       )
-                      : (
-                        <div></div>
-                      )
+                      : (null)
                   }
                 </ul>
                 <h2 className="dependency-selection--subtitle">
@@ -159,9 +154,7 @@ function DependecySelection(props: DependecySelectionProps) {
                           </li>
                         ))
                       )
-                      : (
-                        <div></div>
-                      )
+                      : (null)
                   }
                 </ul>
               </div>
@@ -179,14 +172,11 @@ function DependecySelection(props: DependecySelectionProps) {
                 <button className="dependency-selection--nav-btn dependency-selection--show-all" onClick={showAllDependencies}>
                   Show All Dependencies
                 </button>
-              ) : (
-                  <div></div>
-                )
+              ) : (null)
             )
         }
         <p>
           Changes in the selection of items to publish will require "all dependencies" to be recalculated.
-          Dependency calculation is computationally.
       </p>
       </div>
     </div>

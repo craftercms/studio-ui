@@ -429,7 +429,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     deleteSubmitDialogAsSoon: "So schnell wie möglich.",
 
     approveDialogTitle: "Freigabe zum Publizieren",
-    approveDialogSubTitle: "Die folgenden, markierten Elemente werden publiziert.",
+    approveDialogSubTitle: "Ausgewählte Dateien werden veröffentlicht. Harte Abhängigkeiten werden automatisch berücksichtigt. Weiche Abhängigkeiten sind optional und Sie können auswählen, welche einbezogen werden sollen.",
     approveDialogWarning:"WARNUNG: Für die ausgewählten Elemente wurde bereits ein anderer Publizierungszeitpunkt definiert.",
     dependenciesDialogTitle: "Abhängigkeiten",
     dependenciesDialogSubTitle: "Die Abhängigkeiten werden angezeigt für:",

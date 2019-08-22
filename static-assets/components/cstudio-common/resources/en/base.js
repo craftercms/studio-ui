@@ -429,7 +429,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     deleteSubmitDialogAsSoon: "As soon as possible.",
 
     approveDialogTitle: "Approve for Publish",
-    approveDialogSubTitle: "The following checked items will go live.",
+    approveDialogSubTitle: "Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.",
     approveDialogWarning:"WARNING: The items you have selected for approval were submitted with different requested publish dates/times.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",

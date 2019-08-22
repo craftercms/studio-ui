@@ -400,7 +400,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     deleteSubmitDialogAsSoon:"최대한 빨리.",
 
     approveDialogTitle: "게시에 대한 승인",
-    approveDialogSubTitle: "다음 선택 항목이 게재됩니다.",
+    approveDialogSubTitle: "선택한 파일이 게시됩니다. 엄격한 종속성이 자동으로 포함됩니다. 소프트 종속성은 선택 사항이며 포함 할 항목을 선택할 수 있습니다.",
     approveDialogWarning:"경고 : 승인을 위해 선택한 항목이 요청 된 다른 게시 날짜 / 시간과 함께 제출되었습니다.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
