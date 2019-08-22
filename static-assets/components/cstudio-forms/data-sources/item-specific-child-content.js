@@ -47,8 +47,8 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
         CStudioAuthoringContext.site,
         "",
         false, {
-          success: function (formName, name, value) {
-            control.insertItem(value, formName.item.internalName, null, null, _self.id);
+          success: function (contentTO, editorId, name, value) {
+            control.insertItem(name, value, null, null, _self.id);
             control._renderItems();
           },
           failure: function () {
