@@ -26,7 +26,6 @@
     var Base = CStudioAuthoring.ViewController.Base,
         Dom = YAHOO.util.Dom,
         Event = YAHOO.util.Event,
-        agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(CStudioAuthoring.TemplateHolder.Approve),
         each = CStudioAuthoring.Utils.each,
         genDependency = [];
         $ = jQuery;
@@ -34,10 +33,7 @@
     Base.extend('Approve', {
 
         events: ['submitStart','submitComplete','submitEnd'],
-        actions: ['.close-button', '.submit-button', '.select-all-check', '.show-all-deps'],
-        startup: ['itemsClickedDelegation'],
-
-        itemsClickedDelegation: itemsClickedDelegation,
+        actions: ['.close-button', '.submit-button'],
 
         loadItems: loadItems,
 
@@ -51,11 +47,7 @@
 
         submitButtonActionClicked: submit,
 
-        selectAllCheckActionClicked: selectAllItems,
-
         closeButtonActionClicked: closeButtonClicked,
-
-        showAllDepsActionClicked: showAllDeps,
 
         initDatePicker: initDatePicker,
 
@@ -72,43 +64,6 @@
         this.end();
     }
 
-    function itemsClickedDelegation() {
-        var me = this;
-        Event.delegate(this.cfg.getProperty('context'), "click", function(e, elem) {
-
-            var allCheck = me.getComponent('.select-all-check');
-
-            if (!elem.checked) {
-                allCheck.checked = false;
-            } else {
-
-                var allItemsChecked = true;
-                var itemChecks = me.getComponents('input[data-item-id]');
-
-                each(itemChecks, function (i, check) {
-                    if (!check.checked) {
-                        allItemsChecked = false;
-                        return false;
-                    }
-                });
-
-                allCheck.checked = allItemsChecked;
-
-            }
-
-        }, 'input.item-checkbox');
-    }
-
-    function selectAllItems(checkbox) {
-
-        var items = this.getComponents('input[data-item-id][type="checkbox"]');
-        var bool = checkbox.checked;
-
-        each(items, function (i, check) {
-            check.checked = bool;
-        });
-    }
-
     function submit() {
 
         var data = {
@@ -116,13 +71,8 @@
             submissionComment: this.getComponent('.submission-comment').value,
             publishOptionComment: (this.getComponent('.publish-option-comment')) ? this.getComponent('.publish-option-comment').value : "",
             publishChannel: this.getComponent('.publish-option').value,
-            items: []
+            items: this.result.current
         };
-
-        var checked = this.getComponents('tbody input[type="checkbox"]:checked');
-        each(checked, function (i, check) {
-            data.items.push(check.getAttribute('data-item-id'));
-        });
 
         var timezone = $("select.zone-picker").find(':selected').attr('data-offset');
 
@@ -132,9 +82,11 @@
         }
 
         var loadSpinner = document.getElementById('loadSpinner');
+        var loadSpinnerMask = document.getElementById('loadSpinnerMask');
         //this.showProcessingOverlay(true);
         this.disableActions();
         loadSpinner.classList.remove("hidden");
+        loadSpinnerMask.classList.remove("hidden");
         this.fire("submitStart");
         //var data = this.getData(),
         var _this = this,
@@ -146,6 +98,7 @@
                 _this.fire("submitComplete", oResp);
                 _this.fire("submitEnd", oResp);
                 loadSpinner.classList.add("hidden");
+                loadSpinnerMask.classList.add("hidden");
             },
             failure: function(oResponse) {
                 var oResp = JSON.parse(oResponse.responseText);
@@ -263,127 +216,18 @@
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
     }
 
-    function showAllDeps (el) {
-        var me = this,
-            $el = $(el),
-            loadSpinner = document.getElementById('loadSpinner');
-
-        var entities = { "entities" : [] },
-            callback = {
-                success: function(response) {
-                    var response = eval("(" + response.responseText + ")")
-                    $.each(response.entities, function(){
-                        var currentItem = this.item,
-                            $currentEl = $("[data-path='" + this.item + "']"),
-                            currentElId = $currentEl.attr("id"),
-                            $parentEl = $currentEl.closest("tr"),
-                            $container = $(me.getComponent('tbody'));
-
-                        if( $currentEl.attr("data-loaded") === "false" ){
-                            $.each(this.dependencies, function(index, dependency){
-                                var elem = {};
-                                elem.uri = dependency.item;
-                                elem.index = currentElId;
-                                $parentEl.after(agent.get('SUBITEM_ROW', elem));
-                            });
-
-                            $currentEl.attr("data-loaded", "true");
-                        }
-
-                        $childItems = $container.find("." + currentElId);
-                        $childItems.show();
-                        $currentEl.attr('class', 'ttClose parent-div-widget');
-
-                        loadSpinner.classList.add("hidden");
-                        $el.removeAttr('disabled');
-
-                    });
-                },
-                failure: function(error) {
-
-                }
-            };
-
-        $el.attr('disabled', 'true');
-        loadSpinner.classList.remove("hidden");
-
-        $.each( this.submitItems, function(){
-            entities.entities.push({ "item": this.uri });
-        })
-
-
-
-        CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
-    }
-
     function renderItems(items) {
-
-        var html = [],
-            me = this,
-            submit = submit;
-            $container = $(this.getComponent('tbody'));
-
-        each(items, function (index, item) {
-            var temp = item.scheduledDate,
-                itemDependenciesClass = "toggle-deps-" + index;
-
-            item.scheduledDate = CStudioAuthoring.Utils.formatDateFromUTC(temp, studioTimeZone, "medium");
-            item.index = itemDependenciesClass;
-            var $parentRow = $(agent.get('ITEM_ROW', item));
-            if(index == 0) $container.empty();
-            $container.append($parentRow);
-            item.scheduledDate = temp;
-
-            var data = "[ { uri:\"" +  item.uri + "\" }]";
-
-        });
-
-        $('.toggleDependencies').on('click', function(){
-            var $currentEl = $(this),
-                $container = $(me.getComponent('tbody')),
-                parentId = $currentEl.attr('id'),
-                $childItems = $container.find("." + parentId);
-
-            if($currentEl.attr('class') == "ttClose parent-div-widget"){
-                $childItems.hide();
-                $currentEl.attr('class', 'ttOpen parent-div-widget');
-            }else{
-                //If no deps data has been loaded - load
-                if( $currentEl.attr("data-loaded") === "false"){
-                    $currentEl.attr("data-loaded", "true");
-
-                    var callback = {
-                        success: function(response) {
-                            var response = eval("(" + response.responseText + ")")
-
-                            $.each(response.entities, function(){
-                                var currentElId = $currentEl.attr("id"),
-                                    $parentEl = $currentEl.closest("tr");
-
-                                $.each(this.dependencies, function(index, dependency){
-                                    var elem = {};
-                                    elem.uri = dependency.item;
-                                    elem.index = currentElId;
-                                    $parentEl.after(agent.get('SUBITEM_ROW', elem));
-                                });
-                            });
-                            $childItems = $container.find("." + parentId);
-
-                            $childItems.show();
-                            $currentEl.attr('class', 'ttClose parent-div-widget');
-                        },
-                        failure: function(error) {
-
-                        }
-                    };
-
-                    calculateDependencies($currentEl.attr("data-path"), callback);
-                }else{
-                    $childItems.show();
-                    $currentEl.attr('class', 'ttClose parent-div-widget');
+        this.result = {};
+        CrafterCMSNext
+            .render(
+                this.getComponent('.dependencies-display'), 
+                'DependencySelection', 
+                { 
+                    result: this.result,
+                    siteId: CStudioAuthoringContext.site,
+                    items: items
                 }
-            }
-        })
+             );
 
         $(document).on("keyup", function(e) {
             if (e.keyCode === 27) {	// esc

@@ -429,7 +429,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     deleteSubmitDialogAsSoon: "As soon as possible.",
 
     approveDialogTitle: "Approve for Publish",
-    approveDialogSubTitle: "The following checked items will go live.",
+    approveDialogSubTitle: "Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.",
     approveDialogWarning:"WARNING: The items you have selected for approval were submitted with different requested publish dates/times.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
@@ -450,6 +450,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     requestApproveDialogTitle: "Request Publish",
     requestApproveDialogSubTitle: "When would you like the checked item(s) to go live?",
     requestApproveDialogEmailMe: "Email me when items are approved for publish.",
+
+    itemsForPublish:"Items to Publish",
+    selectAll:"Select All",
+    hardDependencies:"Hard Dependencies",
+    submissionMandatory: "Submission mandatory",
+    softDependencies:"Soft Dependencies",
+    submissionOptional:"Submission optional",
+    showAllDependencies:"Show All Dependencies",
+    changesSelectioItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
+    loadingDependencies:"Loading Dependencies, please wait...",
 
     newContTypeDialogTitle: "Create Content Type",
     newContTypeDialogDisplayLabel: "Display Label",

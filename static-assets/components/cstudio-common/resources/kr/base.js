@@ -400,7 +400,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     deleteSubmitDialogAsSoon:"최대한 빨리.",
 
     approveDialogTitle: "게시에 대한 승인",
-    approveDialogSubTitle: "다음 선택 항목이 게재됩니다.",
+    approveDialogSubTitle: "선택한 파일이 게시됩니다. 엄격한 종속성이 자동으로 포함됩니다. 소프트 종속성은 선택 사항이며 포함 할 항목을 선택할 수 있습니다.",
     approveDialogWarning:"경고 : 승인을 위해 선택한 항목이 요청 된 다른 게시 날짜 / 시간과 함께 제출되었습니다.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
@@ -421,6 +421,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     requestApproveDialogTitle: "게시를 요청할",
     requestApproveDialogSubTitle: "당신이 원하는 때 체크 항목 (들)을 게재하는 방법?",
     requestApproveDialogEmailMe: "항목이 게시가 승인되면 이메일을 보내십시오.",
+
+    itemsForPublish:"게시 할 항목",
+    selectAll:"모두 선택",
+    hardDependencies:"어려운 의존성",
+    submissionMandatory: "제출 필수",
+    softDependencies:"소프트 종속성",
+    submissionOptional:"제출 옵션",
+    showAllDependencies:"S모든 종속성 표시",
+    changesSelectioItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
+    loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
 
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
     newContTypeDialogDisplayLabel: "표시 라벨",
