@@ -422,7 +422,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     requestApproveDialogSubTitle: "당신이 원하는 때 체크 항목 (들)을 게재하는 방법?",
     requestApproveDialogEmailMe: "항목이 게시가 승인되면 이메일을 보내십시오.",
 
-    itemsForPublish:"Items to Publish",
+    itemsForPublish:"게시 할 항목",
     selectAll:"모두 선택",
     hardDependencies:"어려운 의존성",
     submissionMandatory: "제출 필수",

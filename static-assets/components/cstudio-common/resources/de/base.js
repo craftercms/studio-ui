@@ -451,7 +451,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     requestApproveDialogSubTitle: "Wann sollen die ausgewählten Elemente publiziert werden?",
     requestApproveDialogEmailMe: "Benachrichtung per E-Mail erhalten, wenn die Elemente zum Publizieren freigegeben wurden.",
 
-    itemsForPublish:"Items to Publish",
+    itemsForPublish:"Zu veröffentlichende Elemente",
     selectAll:"Wählen Sie Alle",
     hardDependencies:"Harte Abhängigkeiten",
     submissionMandatory: "Vorlage obligatorisch",
