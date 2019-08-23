@@ -538,7 +538,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
 CStudioAuthoring.Messages.registerBundle("search", "de", {
     searchInput: "Suche",
     numResults: "Anzahl der Ergebnisse",
-    selectAll: "Alle auswählen,
+    selectAll: "Alle auswählen",
     filters: "Filter",
     asc: "Aufsteigend",
     desc: "Absteigend",
