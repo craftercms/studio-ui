@@ -687,8 +687,7 @@ var CStudioForms = CStudioForms || function() {
   const
     FORM_REQUEST = 'FORMS.FORM_REQUEST',
     FORM_REQUEST_FULFILMENT = 'FORMS.FORM_REQUEST_FULFILMENT',
-    FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
-    FORM_SAVE_COMPLETE = 'FORM_SAVE_COMPLETE';
+    FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST';
 
   const { fromEvent, operators } = CrafterCMSNext.rxjs;
   const { map, filter, take } = operators;
@@ -739,15 +738,14 @@ var CStudioForms = CStudioForms || function() {
 
   }
 
-  function resolvePendingComponents(doc)
-  {
+  function resolvePendingComponents(doc) {
     doc.querySelectorAll('component[pending]').forEach(component => {
       component.outerHTML = FlattenerState[component.getAttribute('id')];
     });
 
-    if(doc.querySelectorAll('component[pending]').length) {
-      resolvePendingComponents(doc);
-    }else {
+    if (doc.querySelectorAll('component[pending]').length) {
+      return resolvePendingComponents(doc);
+    } else {
       return doc.outerHTML;
     }
   }
@@ -891,11 +889,11 @@ var CStudioForms = CStudioForms || function() {
           responseXML: { documentElement: { children: [] } }
         };
 
-        Array.from(dom.querySelectorAll(`item > component`)).forEach((component) => {
-          FlattenerState[component.getAttribute('id')] = component.outerHTML;
-        });
-
-        //{ components}
+        if(!isInclude) {
+          Array.from(dom.querySelectorAll(`item > component`)).forEach((component) => {
+            FlattenerState[component.getAttribute('id')] = component.outerHTML;
+          });
+        }
 
         _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
 
