@@ -22,7 +22,7 @@
 
       <div class="actions clearfix pull-right mb10">
         <a class="btn btn-default" ng-click="createGroupDialog()" role="button"
-          style="float: right;">{{ 'admin.repositories.NEW_REPOSITORY' | translate }}</a>
+           style="float: right;">{{ 'admin.repositories.NEW_REPOSITORY' | translate }}</a>
       </div>
 
       <div class="repository-status-msg">
@@ -38,39 +38,39 @@
 
       <div class="repositories-table" ng-show="repositories.status.clean">
         <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>{{ 'admin.repositories.NAME' | translate }}</th>
-                <th>{{ 'admin.repositories.URL' | translate }}</th>
-                <th>{{ 'admin.repositories.FETCH' | translate }}</th>
-                <th>{{ 'admin.repositories.PUSH_URL' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
+          <thead>
+          <tr>
+            <th>{{ 'admin.repositories.NAME' | translate }}</th>
+            <th>{{ 'admin.repositories.URL' | translate }}</th>
+            <th>{{ 'admin.repositories.FETCH' | translate }}</th>
+            <th>{{ 'admin.repositories.PUSH_URL' | translate }}</th>
+          </tr>
+          </thead>
+          <tbody>
 
-              <tr id="repo" ng-repeat="repo in repositories.repositories.remotes track by $index">
-                <td>{{repo.name}}</td>
-                <td>{{repo.url}}</td>
-                <td>{{repo.fetch}}</td>
-                <td>{{repo.pushUrl}}</td>
-                <td>
-                  <a ng-click="pullRepo(repo)" class="btn btn-sm pull">
-                    <i class="fa fa-arrow-down" title="Pull"></i>
-                  </a>
-                </td>
-                <td>
-                  <a ng-click="pushRepo(repo)" class="btn btn-sm push">
-                    <i class="fa fa-arrow-up" title="Push"></i>
-                  </a>
-                </td>
-                <td>
-                  <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
-                    <i class="fa fa-trash-o" title="Remove"></i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <tr id="repo" ng-repeat="repo in repositories.repositories.remotes track by $index">
+            <td>{{repo.name}}</td>
+            <td>{{repo.url}}</td>
+            <td>{{repo.fetch}}</td>
+            <td>{{repo.pushUrl}}</td>
+            <td>
+              <a ng-click="pullRepo(repo)" class="btn btn-sm pull">
+                <i class="fa fa-arrow-down" title="Pull"></i>
+              </a>
+            </td>
+            <td>
+              <a ng-click="pushRepo(repo)" class="btn btn-sm push">
+                <i class="fa fa-arrow-up" title="Push"></i>
+              </a>
+            </td>
+            <td>
+              <a ng-click="removeRepo(repo)" class="btn btn-sm remove">
+                <i class="fa fa-trash-o" title="Remove"></i>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <div class="col-md-12">
@@ -85,15 +85,15 @@
               <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="" ng-click="repositories.revertAll()">
-                  {{ 'common.CONFIRM' | translate }}
-                  <p class="description">
-                    {{ 'admin.repositories.REVERT_ALL_DESCRIPTION' | translate }}
-                  </p>
-                </a></li>
+                {{ 'common.CONFIRM' | translate }}
+                <p class="description">
+                  {{ 'admin.repositories.REVERT_ALL_DESCRIPTION' | translate }}
+                </p>
+              </a></li>
             </ul>
           </div>
           <a class="btn btn-outline-success" role="button" ng-disabled="repositories.status.conflicting.length"
-            ng-click="repositories.commitResolutionModal()">
+             ng-click="repositories.commitResolutionModal()">
             {{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}
           </a>
         </div>
@@ -105,45 +105,45 @@
 
           <table class="table table-striped">
             <tbody>
-              <tr ng-repeat="file in repositories.status.conflicting track by $index">
-                <td>
-                  <p class="bold" ng-bind="repositories.getFileName('{{file}}')"></p>
-                  <p class="mb0">{{file}}</p>
-                </td>
-                <td class="tar">
-                  <div class="btn-group studio-dropdown mr10" dropdown>
-                    <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
-                      {{ 'admin.repositories.ACCEPT_REMOTE' | translate }} <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                      <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
-                      <li role="separator" class="divider"></li>
-                      <li><a href="" ng-click="repositories.resolveConflict(file, 'theirs')">
-                          {{ 'common.CONFIRM' | translate }}
-                          <p class="description">
-                            {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
-                          </p>
-                        </a></li>
-                    </ul>
-                  </div>
-                  <div class="btn-group studio-dropdown mr10" dropdown>
-                    <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
-                      {{ 'admin.repositories.KEEP_LOCAL' | translate }} <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                      <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
-                      <li role="separator" class="divider"></li>
-                      <li><a href="" ng-click="repositories.resolveConflict(file, 'ours')">
-                          {{ 'common.CONFIRM' | translate }}
-                          <p class="description">
-                            {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
-                          </p>
-                        </a></li>
-                    </ul>
-                  </div>
-                  <a class="btn btn-default" role="button" ng-click="repositories.diffContent(file)">Diff</a>
-                </td>
-              </tr>
+            <tr ng-repeat="file in repositories.status.conflicting track by $index">
+              <td>
+                <p class="bold" ng-bind="repositories.getFileName('{{file}}')"></p>
+                <p class="mb0">{{file}}</p>
+              </td>
+              <td class="tar">
+                <div class="btn-group studio-dropdown mr10" dropdown>
+                  <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
+                    {{ 'admin.repositories.ACCEPT_REMOTE' | translate }} <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="" ng-click="repositories.resolveConflict(file, 'theirs')">
+                      {{ 'common.CONFIRM' | translate }}
+                      <p class="description">
+                        {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
+                      </p>
+                    </a></li>
+                  </ul>
+                </div>
+                <div class="btn-group studio-dropdown mr10" dropdown>
+                  <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle>
+                    {{ 'admin.repositories.KEEP_LOCAL' | translate }} <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="" ng-click="repositories.resolveConflict(file, 'ours')">
+                      {{ 'common.CONFIRM' | translate }}
+                      <p class="description">
+                        {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
+                      </p>
+                    </a></li>
+                  </ul>
+                </div>
+                <a class="btn btn-default" role="button" ng-click="repositories.diffContent(file)">Diff</a>
+              </td>
+            </tr>
             </tbody>
           </table>
         </div>
@@ -152,12 +152,12 @@
 
           <table class="table table-striped">
             <tbody>
-              <tr ng-repeat="file in repositories.status.uncommittedChanges track by $index">
-                <td>
-                  <span class="bold mr10" ng-bind="repositories.getFileName('{{file}}')"></span>
-                  <span class="mb0">{{file}}</span>
-                </td>
-              </tr>
+            <tr ng-repeat="file in repositories.status.uncommittedChanges track by $index">
+              <td>
+                <span class="bold mr10" ng-bind="repositories.getFileName('{{file}}')"></span>
+                <span class="mb0">{{file}}</span>
+              </td>
+            </tr>
             </tbody>
           </table>
         </div>
@@ -167,313 +167,318 @@
 </div>
 
 <script type="text/ng-template" id="modalView.html">
-    <div class="modal-header">
-        <h3 class="modal-title">{{dialogTitle}}</h3>
+  <div class="modal-header">
+    <h3 class="modal-title">{{dialogTitle}}</h3>
+  </div>
+  <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+    <div class="modal-body clearfix">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="url">{{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
+          <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="repo.remoteName" required />
+
+          <div class="error-container"
+               ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.name.$error.required">
+              {{ 'dashboard.sites.create.NAME' | translate }} is required.
+            </small>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+          <label for="url">{{ 'dashboard.sites.create.URL' | translate }}</label>
+          <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="repo.remoteUrl" required />
+
+          <div class="error-container"
+               ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.url.$error.required">
+              {{ 'dashboard.sites.create.URL' | translate }} is required.
+            </small>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
+          <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
+          <input type="radio" id="none" name="authentication" value="none" ng-model="repo.authenticationType" ng-checked="true">
+          <label for="none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
+          <input type="radio" id="basic" name="authentication" value="basic" ng-model="repo.authenticationType">
+          <label for="basic">{{ 'dashboard.sites.create.BASIC' | translate }}</label><br/>
+          <input type="radio" id="token" name="authentication" value="token" ng-model="repo.authenticationType">
+          <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
+          <input type="radio" id="key" name="authentication" value="key" ng-model="repo.authenticationType">
+          <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
+        </div>
+
+        <div class="form-group" ng-show="repo.authenticationType == 'basic'">
+          <label for="username">{{ 'dashboard.sites.create.USERNAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.IFREQUIRED' | translate }}</span>
+          <input type="text" class="form-control" id="username" name="username" ng-model="repo.remoteUsername" ng-required="repo.authenticationType == 'basic'" />
+
+          <div class="error-container"
+               ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.username.$error.required">
+              {{ 'dashboard.sites.create.USERNAME' | translate }} is required.
+            </small>
+          </div>
+
+        </div>
+
+        <div class="form-group" ng-show="repo.authenticationType == 'basic'">
+          <label for="password">{{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
+          <input type="password" class="form-control" id="password" name="password" ng-model="repo.remotePassword" autocomplete="new-password" ng-required="repo.authenticationType == 'basic'" />
+
+          <div class="error-container"
+               ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.password.$error.required">
+              {{ 'dashboard.sites.create.PASSWORD' | translate }} is required.
+            </small>
+          </div>
+
+        </div>
+
+        <div class="form-group" ng-show="repo.authenticationType == 'token'">
+          <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label>
+          <input type="password" class="form-control" id="tokenNum" name="tokenNum" ng-model="repo.remoteToken" ng-required="repo.authenticationType == 'token'" />
+
+          <div class="error-container"
+               ng-show="(createNameForm.tokenNum.$dirty && createNameForm.password.$invalid) || (createNameForm.tokenNum.$touched && createNameForm.tokenNum.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.tokenNum.$error.required">
+              {{ 'dashboard.sites.create.TOKEN' | translate }} is required.
+            </small>
+          </div>
+
+        </div>
+
+        <div class="form-group" ng-show="repo.authenticationType == 'key'">
+          <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
+          <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
+          <textarea rows="4" cols="50" class="form-control" id="keyNum" name="keyNum" ng-model="repo.remotePrivateKey" ng-required="repo.authenticationType == 'key'" ></textarea>
+
+          <div class="error-container"
+               ng-show="(createNameForm.keyNum.$dirty && createNameForm.password.$invalid) || (createNameForm.keyNum.$touched && createNameForm.keyNum.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.keyNum.$error.required">
+              {{ 'dashboard.sites.create.KEY' | translate }} is required.
+            </small>
+          </div>
+
+        </div>
+      </div>
     </div>
-    <form name="createNameForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
-        <div class="modal-body clearfix">
-            <div class="col-md-12">
-                <div class="form-group">
-                    <label for="url">{{ 'dashboard.sites.create.NAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.NAMEEXAMPLE' | translate }}</span>
-                    <input type="text" class="form-control" id="name" name="name" maxlength="4000" ng-model="repo.remoteName" required />
 
-                    <div class="error-container"
-                         ng-show="(createNameForm.name.$dirty && createNameForm.name.$invalid) || (createNameForm.name.$touched && createNameForm.name.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.name.$error.required">
-                            {{ 'dashboard.sites.create.NAME' | translate }} is required.
-                        </small>
-                    </div>
+    <div class="modal-footer">
+      <button
+        class="btn btn-primary text-capitalize"
+        ng-click="okModalFunction(repo)"
+        ng-disabled="createNameForm.$invalid"
+      >
+        {{ 'common.' + dialogMode | translate }}
+      </button>
+      <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+    </div>
 
-                </div>
-
-                <div class="form-group">
-                    <label for="url">{{ 'dashboard.sites.create.URL' | translate }}</label>
-                    <input type="text" class="form-control" id="url" name="url" maxlength="4000" ng-model="repo.remoteUrl" required />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.url.$dirty && createNameForm.url.$invalid) || (createNameForm.url.$touched && createNameForm.url.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.url.$error.required">
-                            {{ 'dashboard.sites.create.URL' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group">
-                    <label>{{ 'dashboard.sites.create.AUTHENTICATION_TYPE' | translate }}:</label><br/>
-                    <!--<input type="text" class="form-control" id="options" name="options" maxlength="4000" ng-model="site.options" required/>-->
-                    <input type="radio" id="none" name="authentication" value="none" ng-model="repo.authenticationType" ng-checked="true">
-                    <label for="none">{{ 'dashboard.sites.create.NONE' | translate }}</label><br/>
-                    <input type="radio" id="basic" name="authentication" value="basic" ng-model="repo.authenticationType">
-                    <label for="basic">{{ 'dashboard.sites.create.BASIC' | translate }}</label><br/>
-                    <input type="radio" id="token" name="authentication" value="token" ng-model="repo.authenticationType">
-                    <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label><br/>
-                    <input type="radio" id="key" name="authentication" value="key" ng-model="repo.authenticationType">
-                    <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label><br/>
-                </div>
-
-                <div class="form-group" ng-show="repo.authenticationType == 'basic'">
-                    <label for="username">{{ 'dashboard.sites.create.USERNAME' | translate }}</label><span class="validationComment"> {{ 'dashboard.sites.create.IFREQUIRED' | translate }}</span>
-                    <input type="text" class="form-control" id="username" name="username" ng-model="repo.remoteUsername" ng-required="repo.authenticationType == 'basic'" />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.username.$dirty && createNameForm.username.$invalid) || (createNameForm.username.$touched && createNameForm.username.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.username.$error.required">
-                            {{ 'dashboard.sites.create.USERNAME' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group" ng-show="repo.authenticationType == 'basic'">
-                    <label for="password">{{ 'dashboard.sites.create.PASSWORD' | translate }}</label>
-                    <input type="password" class="form-control" id="password" name="password" ng-model="repo.remotePassword" autocomplete="new-password" ng-required="repo.authenticationType == 'basic'" />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.password.$error.required">
-                            {{ 'dashboard.sites.create.PASSWORD' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group" ng-show="repo.authenticationType == 'token'">
-                    <label for="token">{{ 'dashboard.sites.create.TOKEN' | translate }}</label>
-                    <input type="password" class="form-control" id="tokenNum" name="tokenNum" ng-model="repo.remoteToken" ng-required="repo.authenticationType == 'token'" />
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.tokenNum.$dirty && createNameForm.password.$invalid) || (createNameForm.tokenNum.$touched && createNameForm.tokenNum.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.tokenNum.$error.required">
-                            {{ 'dashboard.sites.create.TOKEN' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-
-                <div class="form-group" ng-show="repo.authenticationType == 'key'">
-                    <label for="key">{{ 'dashboard.sites.create.KEY' | translate }}</label>
-                    <!--<input type="text" class="form-control" id="keyNum" name="keyNum" ng-model="site.key" ng-required="site.authentication == 'key'" />-->
-                    <textarea rows="4" cols="50" class="form-control" id="keyNum" name="keyNum" ng-model="repo.remotePrivateKey" ng-required="repo.authenticationType == 'key'" ></textarea>
-
-                    <div class="error-container"
-                         ng-show="(createNameForm.keyNum.$dirty && createNameForm.password.$invalid) || (createNameForm.keyNum.$touched && createNameForm.keyNum.$invalid)">
-                        <small class="error"
-                               ng-show="createNameForm.keyNum.$error.required">
-                            {{ 'dashboard.sites.create.KEY' | translate }} is required.
-                        </small>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn btn-primary text-capitalize"
-                    ng-click="okModalFunction(repo)" ng-disabled="createNameForm.$invalid">{{ 'common.' + dialogMode + '_LABEL' | translate }}</button>
-            <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
-        </div>
-
-    </form>
+  </form>
 </script>
 
 <script type="text/ng-template" id="confirmationModal.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Confirmation</h3>
-    </div>
-    <div class="modal-body">
-        {{ confirmationText }}
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
-        <button class="btn btn-default" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
-    </div>
+  <div class="modal-header">
+    <h3 class="modal-title">Confirmation</h3>
+  </div>
+  <div class="modal-body">
+    {{ confirmationText }}
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ 'common.YES' | translate }}</button>
+    <button class="btn btn-default" ng-click="hideModal()">{{ 'common.NO' | translate }}</button>
+  </div>
 </script>
 
 <script type="text/ng-template" id="notificationModal.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Notification</h3>
-    </div>
-    <div class="modal-body">
-        <p class="notificationBody">
-            <span class="icon fa fa-{{ notificationType }}"></span>
-            <span class="text"> {{ notificationText }}</span>
-        </p>
-    </div>
+  <div class="modal-header">
+    <h3 class="modal-title">Notification</h3>
+  </div>
+  <div class="modal-body">
+    <p class="notificationBody">
+      <span class="icon fa fa-{{ notificationType }}"></span>
+      <span class="text"> {{ notificationText }}</span>
+    </p>
+  </div>
 </script>
 
 <script type="text/ng-template" id="messageModal.html">
-    <div class="modal-header">
-        <h3 class="modal-title">{{ messageTitle }}</h3>
-    </div>
-    <div class="modal-body">
-        <p>{{ messageText }}</p>
-        <a target="_blank" ng-show="messageLink" href="{{messageLink}}">{{ 'common.SEE_DOCUMENTATION' | translate }}</a>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="hideMessageModal()">{{ 'common.OK' | translate }}</button>
-    </div>
+  <div class="modal-header">
+    <h3 class="modal-title">{{ messageTitle }}</h3>
+  </div>
+  <div class="modal-body">
+    <p>{{ messageText }}</p>
+    <a target="_blank" ng-show="messageLink" href="{{messageLink}}">{{ 'common.SEE_DOCUMENTATION' | translate }}</a>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="hideMessageModal()">{{ 'common.OK' | translate }}</button>
+  </div>
 </script>
 
 <script type="text/ng-template" id="pushPull.html">
-    <div class="modal-header">
-        <h3 class="modal-title">{{dialogTitle}}</h3>
+  <div class="modal-header">
+    <h3 class="modal-title">{{dialogTitle}}</h3>
+  </div>
+  <form name="pullPushForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="branch">{{ confirmationText }}</label>
+        <select class="form-control" id="branch" name="branch" ng-model="branch" required>
+          <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
+        </select>
+
+        <div ng-if="repositories.repoAction == 'pull'">
+          <label class="mt15" for="branch">{{ 'admin.repositories.MERGE_STRATEGY_LABEL' | translate }}</label>
+          <select class="form-control" id="mergeStrategy" name="mergeStrategy" ng-model="repositories.mergeStrategy">
+            <option value="none">{{ 'admin.repositories.MERGE_STRATEGIES.none' | translate }}</option>
+            <option value="ours">{{ 'admin.repositories.MERGE_STRATEGIES.ours' | translate }}</option>
+            <option value="theirs">{{ 'admin.repositories.MERGE_STRATEGIES.theirs' | translate }}</option>
+          </select>
+          <div class="mt10">{{ repositories.mergeStrategyDescription }}</div>
+        </div>
+
+        <div class="error-container"
+             ng-show="(pullPushForm.branch.$dirty && pullPushForm.branch.$invalid) || (pullPushForm.branch.$touched && pullPushForm.branch.$invalid)">
+          <small class="error"
+                 ng-show="pullPushForm.branch.$error.required">
+            {{ 'admin.repositories.REMOTE_BRANCH' | translate }} is required.
+          </small>
+        </div>
+
+      </div>
     </div>
-    <form name="pullPushForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="branch">{{ confirmationText }}</label>
-                <select class="form-control" id="branch" name="branch" ng-model="branch" required>
-                    <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
-                </select>
-
-                <div ng-if="repositories.repoAction == 'pull'">
-                  <label class="mt15" for="branch">{{ 'admin.repositories.MERGE_STRATEGY_LABEL' | translate }}</label>
-                  <select class="form-control" id="mergeStrategy" name="mergeStrategy" ng-model="repositories.mergeStrategy">
-                    <option value="none">{{ 'admin.repositories.MERGE_STRATEGIES.none' | translate }}</option>
-                    <option value="ours">{{ 'admin.repositories.MERGE_STRATEGIES.ours' | translate }}</option>
-                    <option value="theirs">{{ 'admin.repositories.MERGE_STRATEGIES.theirs' | translate }}</option>
-                  </select>
-                  <div class="mt10">{{ repositories.mergeStrategyDescription }}</div>
-                </div>
-
-                <div class="error-container"
-                     ng-show="(pullPushForm.branch.$dirty && pullPushForm.branch.$invalid) || (pullPushForm.branch.$touched && pullPushForm.branch.$invalid)">
-                    <small class="error"
-                           ng-show="pullPushForm.branch.$error.required">
-                        {{ 'admin.repositories.REMOTE_BRANCH' | translate }} is required.
-                    </small>
-                </div>
-
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" ng-disabled="pullPushForm.$invalid" ng-click="confirmationAction(branch); hideModal()">{{ 'common.OK' | translate }}</button>
-            <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
-        </div>
-    </form>
+    <div class="modal-footer">
+      <button class="btn btn-primary" ng-disabled="pullPushForm.$invalid" ng-click="confirmationAction(branch); hideModal()">{{ 'common.OK' | translate }}</button>
+      <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
+    </div>
+  </form>
 </script>
 
 <script type="text/ng-template" id="commitResolution.html">
   <div class="modal-header">
-      <h3 class="modal-title">{{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}</h3>
+    <h3 class="modal-title">{{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}</h3>
   </div>
   <div class="modal-body">
-      <form name="confirmResolutionForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
-          <div class="modal-body clearfix">
-              <div class="col-md-12">
-                  <div class="form-group">
-                      <h4>{{ 'admin.repositories.COMMIT_RESOLUTION_CONFIRMATION' | translate }}</br>
-                      {{ 'admin.repositories.COMMIT_RESOLUTION_MESSAGE_REQUIREMENT' | translate }}</h4>
-                      <textarea class="form-control mt15" rows="4" required id="commitMsg" name="commitMsg"
-                                ng-model="repositories.commitMsg" style="resize: none;"></textarea>
+    <form name="confirmResolutionForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
+      <div class="modal-body clearfix">
+        <div class="col-md-12">
+          <div class="form-group">
+            <h4>{{ 'admin.repositories.COMMIT_RESOLUTION_CONFIRMATION' | translate }}</br>
+              {{ 'admin.repositories.COMMIT_RESOLUTION_MESSAGE_REQUIREMENT' | translate }}</h4>
+            <textarea class="form-control mt15" rows="4" required id="commitMsg" name="commitMsg"
+                      ng-model="repositories.commitMsg" style="resize: none;"></textarea>
 
-                      <div class="error-container"
-                              ng-show="(confirmResolutionForm.commitMsg.$dirty && confirmResolutionForm.commitMsg.$invalid) || (confirmResolutionForm.commitMsg.$touched && confirmResolutionForm.commitMsg.$invalid)">
-                          <small class="error"
-                                  ng-show="confirmResolutionForm.commitMsg.$error.required">
-                              {{ 'dashboard.sites.create.NAME' | translate }} is required.
-                          </small>
-                      </div>
+            <div class="error-container"
+                 ng-show="(confirmResolutionForm.commitMsg.$dirty && confirmResolutionForm.commitMsg.$invalid) || (confirmResolutionForm.commitMsg.$touched && confirmResolutionForm.commitMsg.$invalid)">
+              <small class="error"
+                     ng-show="confirmResolutionForm.commitMsg.$error.required">
+                {{ 'dashboard.sites.create.NAME' | translate }} is required.
+              </small>
+            </div>
 
-                      <p class="description text-muted mt20">
-                          {{ 'admin.repositories.COMMIT_RESOLUTION_INDICATIONS' | translate }}
-                      </p>
-                  </div>
-              </div>
+            <p class="description text-muted mt20">
+              {{ 'admin.repositories.COMMIT_RESOLUTION_INDICATIONS' | translate }}
+            </p>
           </div>
+        </div>
+      </div>
 
-          <div class="modal-footer">
-              <button class="btn btn-primary" ng-disabled="confirmResolutionForm.commitMsg.$error.required" ng-click="repositories.commitResolution(); hideModal()">
-                  {{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}
-              </button>
-              <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL' | translate }}</button>
-          </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" ng-disabled="confirmResolutionForm.commitMsg.$error.required" ng-click="repositories.commitResolution(); hideModal()">
+          {{ 'admin.repositories.COMMIT_RESOLUTION' | translate }}
+        </button>
+        <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CANCEL' | translate }}</button>
+      </div>
 
-      </form>
+    </form>
   </div>
 
 </script>
 
 <script type="text/ng-template" id="diffModal.html">
   <div class="modal-header diff-header p0">
-      <h4 class="modal-title inline-block p15">
-          {{ 'admin.repositories.DIFF' | translate }} `{{repositories.diffPath}}`
-      </h4>
+    <h4 class="modal-title inline-block p15">
+      {{ 'admin.repositories.DIFF' | translate }} `{{repositories.diffPath}}`
+    </h4>
 
-      <div class="tabs pull-right">
-          <button class="btn btn-link diff-tab m0"
-                  ng-class="{'active': repositories.selectedTab == 'diff'}"
-                  ng-click="repositories.selectedTab='diff'">
-              {{ 'admin.repositories.DIFF' | translate }}
-          </button>
-          <button class="btn btn-link diff-tab m0"
-                  ng-class="{'active': repositories.selectedTab == 'split'}"
-                  ng-click="repositories.selectedTab='split'">
-              {{ 'admin.repositories.SPLIT_VIEW' | translate }}
-          </button>
-      </div>
+    <div class="tabs pull-right">
+      <button class="btn btn-link diff-tab m0"
+              ng-class="{'active': repositories.selectedTab == 'diff'}"
+              ng-click="repositories.selectedTab='diff'">
+        {{ 'admin.repositories.DIFF' | translate }}
+      </button>
+      <button class="btn btn-link diff-tab m0"
+              ng-class="{'active': repositories.selectedTab == 'split'}"
+              ng-click="repositories.selectedTab='split'">
+        {{ 'admin.repositories.SPLIT_VIEW' | translate }}
+      </button>
+    </div>
   </div>
 
   <div class="modal-body diff-body clearfix">
-      <div class="col-md-12 diff-container">
-          <tabset>
-              <tab id="diffTab" active="repositories.selectedTab == 'diff'">
-                  <div class="tab-view diff-content">
-                      <pre>{{ repositories.diff.diff }}</pre>
-                  </div>
-              </tab>
-              <tab id="splitViewTab" active="repositories.selectedTab == 'split'">
-                  <div class="tab-view split-content">
-                      <div class="studio-version">
-                          <pre class="m0">{{ repositories.diff.studioVersion }}</pre>
-                      </div>
-                      <div class="remote-version">
-                          <pre class="m0">{{ repositories.diff.remoteVersion }}</pre>
-                      </div>
-                  </div>
-              </tab>
+    <div class="col-md-12 diff-container">
+      <tabset>
+        <tab id="diffTab" active="repositories.selectedTab == 'diff'">
+          <div class="tab-view diff-content">
+            <pre>{{ repositories.diff.diff }}</pre>
+          </div>
+        </tab>
+        <tab id="splitViewTab" active="repositories.selectedTab == 'split'">
+          <div class="tab-view split-content">
+            <div class="studio-version">
+              <pre class="m0">{{ repositories.diff.studioVersion }}</pre>
+            </div>
+            <div class="remote-version">
+              <pre class="m0">{{ repositories.diff.remoteVersion }}</pre>
+            </div>
+          </div>
+        </tab>
 
-          </tabset>
-      </div>
+      </tabset>
+    </div>
   </div>
 
   <div class="modal-footer">
-      <div class="btn-group studio-dropdown mr10" dropdown>
-              <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle >
-                  {{ 'admin.repositories.ACCEPT_REMOTE' | translate }}  <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                  <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="" ng-click="repositories.resolveConflict(repositories.diffPath, 'theirs'); hideModal()">
-                      {{ 'common.CONFIRM' | translate }}
-                      <p class="description">
-                          {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
-                      </p>
-                  </a></li>
-              </ul>
-          </div>
-          <div class="btn-group studio-dropdown mr10" dropdown>
-              <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle >
-                  {{ 'admin.repositories.KEEP_LOCAL' | translate }}  <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                  <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="" ng-click="repositories.resolveConflict(repositories.diffPath, 'ours'); hideModal()">
-                      {{ 'common.CONFIRM' | translate }}
-                      <p class="description">
-                          {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
-                      </p>
-                  </a></li>
-              </ul>
-          </div>
-      <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
+    <div class="btn-group studio-dropdown mr10" dropdown>
+      <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle >
+        {{ 'admin.repositories.ACCEPT_REMOTE' | translate }}  <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="" ng-click="repositories.resolveConflict(repositories.diffPath, 'theirs'); hideModal()">
+          {{ 'common.CONFIRM' | translate }}
+          <p class="description">
+            {{ 'admin.repositories.ACCEPT_REMOTE_DESCRIPTION' | translate }}
+          </p>
+        </a></li>
+      </ul>
+    </div>
+    <div class="btn-group studio-dropdown mr10" dropdown>
+      <button type="button" class="btn btn-outline-warning dropdown-toggle" dropdown-toggle >
+        {{ 'admin.repositories.KEEP_LOCAL' | translate }}  <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a href="">{{ 'common.CANCEL' | translate }}</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="" ng-click="repositories.resolveConflict(repositories.diffPath, 'ours'); hideModal()">
+          {{ 'common.CONFIRM' | translate }}
+          <p class="description">
+            {{ 'admin.repositories.KEEP_LOCAL_DESCRIPTION' | translate }}
+          </p>
+        </a></li>
+      </ul>
+    </div>
+    <button class="btn btn-default" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
   </div>
 </script>
