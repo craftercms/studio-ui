@@ -451,6 +451,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     requestApproveDialogSubTitle: "Wann sollen die ausgewählten Elemente publiziert werden?",
     requestApproveDialogEmailMe: "Benachrichtung per E-Mail erhalten, wenn die Elemente zum Publizieren freigegeben wurden.",
 
+    itemsForPublish:"Items to Publish",
+    selectAll:"Wählen Sie Alle",
+    hardDependencies:"Harte Abhängigkeiten",
+    submissionMandatory: "Vorlage obligatorisch",
+    softDependencies:"Weiche Abhängigkeiten",
+    submissionOptional:"Einreichung optional",
+    showAllDependencies:"Alle Abhängigkeiten anzeigen",
+    changesSelectioItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
+    loadingDependencies:"Abhängigkeiten werden geladen, bitte warten ...",
+
     newContTypeDialogTitle: "Neuen Content-Typ anlegen",
     newContTypeDialogDisplayLabel: "Label",
     newContTypeDialogContentTypeName: "Name",

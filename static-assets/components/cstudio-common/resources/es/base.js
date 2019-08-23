@@ -448,6 +448,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     requestApproveDialogSubTitle: "Cuando desea que los artiículos vayan en vivo?",
     requestApproveDialogEmailMe: "Enviarme un correo cuando los artículos sean aprobados para publicarse.",
 
+    itemsForPublish:"Articulos para publicar",
+    selectAll:"Seleccionar todo",
+    hardDependencies:"Dependencias fuertes",
+    submissionMandatory: "Presentación obligatoria",
+    softDependencies:"Dependencias suaves",
+    submissionOptional:"Presentación opcional",
+    showAllDependencies:"Mostrar todas las dependencias",
+    changesSelectioItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
+    loadingDependencies:"Cargando dependencias, por favor espere ...",
+
     newContTypeDialogTitle: "Crear Tipo de Contenido",
     newContTypeDialogDisplayLabel: "Etiqueta a Mostrar",
     newContTypeDialogContentTypeName: "Nombre",

@@ -422,6 +422,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     requestApproveDialogSubTitle: "당신이 원하는 때 체크 항목 (들)을 게재하는 방법?",
     requestApproveDialogEmailMe: "항목이 게시가 승인되면 이메일을 보내십시오.",
 
+    itemsForPublish:"Items to Publish",
+    selectAll:"모두 선택",
+    hardDependencies:"어려운 의존성",
+    submissionMandatory: "제출 필수",
+    softDependencies:"소프트 종속성",
+    submissionOptional:"제출 옵션",
+    showAllDependencies:"S모든 종속성 표시",
+    changesSelectioItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
+    loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
+
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
     newContTypeDialogDisplayLabel: "표시 라벨",
     newContTypeDialogContentTypeName: "콘텐츠 형식 이름",

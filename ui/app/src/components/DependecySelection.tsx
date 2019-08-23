@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Item } from '../models/Item';
 import '../styles/dependency-selection.scss';
 import { withStyles } from '@material-ui/core/styles';
@@ -37,6 +37,9 @@ const BlueCheckbox = withStyles({
   },
   checked: {},
 })(Checkbox);
+
+declare const CStudioAuthoring: any;
+declare const CStudioAuthoringContext: any;
 
 function DependecySelection(props: DependecySelectionProps) {
   const [deps, setDeps] = useState<DepsObject>();
@@ -84,14 +87,26 @@ function DependecySelection(props: DependecySelectionProps) {
   }
   setRef();
 
+  const Messages = CStudioAuthoring.Messages;
+  const bundle = Messages.getBundle('forms', CStudioAuthoringContext.lang);
+  const selectAllMessage = Messages.format(bundle, 'selectAll');
+  const hardDependencies = Messages.format(bundle, 'hardDependencies');
+  const submissionMandatory = Messages.format(bundle, 'submissionMandatory');
+  const softDependencies = Messages.format(bundle, 'softDependencies');
+  const submissionOptional = Messages.format(bundle, 'submissionOptional');
+  const itemsForPublish = Messages.format(bundle, 'itemsForPublish');
+  const showAllDependenciesMessage = Messages.format(bundle, 'showAllDependencies');
+  const changesSelectioItems = Messages.format(bundle, 'changesSelectioItems');
+  const loadingDependencies = Messages.format(bundle, 'loadingDependencies');
+
   return (
     <div>
       <div className="dependency-selection">
         <h2 className="dependency-selection--title dependency-selection--publish-title">
-          Items to Publish
+          {itemsForPublish}
         </h2>
         <button className="dependency-selection--nav-btn dependency-selection--select-all" onClick={selectAll}>
-          Select All
+          {selectAllMessage}
         </button>
         {
           items.map((item) => (
@@ -120,9 +135,9 @@ function DependecySelection(props: DependecySelectionProps) {
           deps == null ? (null) : (
               <div>
                 <h2 className="dependency-selection--subtitle" >
-                  Hard Dependencies
+                  {hardDependencies}  
                 </h2>
-                <span> • Submission mandatory</span>
+                <span> • {submissionMandatory}</span>
                 <ul className="dependency-selection--list">
                   {
                     deps && deps.hard
@@ -135,11 +150,11 @@ function DependecySelection(props: DependecySelectionProps) {
                   }
                 </ul>
                 <h2 className="dependency-selection--subtitle">
-                  Soft Dependencies
+                  {softDependencies}
                 </h2>
-                <span> • Submission optional</span>
+                <span> • {submissionOptional}</span>
                 <button className="dependency-selection--nav-btn" onClick={selectAllSoft}>
-                  Select All
+                  {selectAllMessage}
                 </button>
                 <ul className="dependency-selection--list" >
                   {
@@ -170,19 +185,19 @@ function DependecySelection(props: DependecySelectionProps) {
         {
           (deps == null && !showDepBtn) ? (
             <div className="centerCircularProgress">
-              <CenterCircularProgress /> <span className="dependency-selection--center-circular-progress-text" >Loading Dependencies, please wait...</span>
+              <CenterCircularProgress /> <span className="dependency-selection--center-circular-progress-text" >{loadingDependencies}</span>
             </div>
           ) : (
               showDepBtn ? (
                 <button className="dependency-selection--nav-btn dependency-selection--show-all" onClick={showAllDependencies}>
-                  Show All Dependencies
+                  {showAllDependenciesMessage}
                 </button>
               ) : (null)
             )
         }
         <p>
-          Changes in the selection of items to publish will require "all dependencies" to be recalculated.
-      </p>
+          {changesSelectioItems}
+        </p>
       </div>
     </div>
   );
