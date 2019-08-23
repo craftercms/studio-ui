@@ -79,7 +79,7 @@
         "BASIC_DEVELOPER_INFORMATION":"Entwickleroptionen",
         "CLONE_REMOTE_GIT":"Klonen aus einem Remote Git Repo",
         "ADITIONAL_DEVELOPER_OPTIONS":"Erweiterte Angaben",
-        "PUSH_REMOTE_GIT":"GIT Einstellungen",
+        "PUSH_REMOTE_GIT":"Git Einstellungen",
         "PUSH_SITE_TO_REMOTE_GIT":"Projekt nach Erstellung in ein Remote-Git-Repository klonen",
         "NO_PUSH_SITE_TO_REMOTE_GIT":"Projekt nach Erstellung nicht in ein Remote-Git-Repository klonen",
         "REVIEW_CREATE":"Überprüfen und erstellen",
@@ -275,8 +275,8 @@
         "MERGE_STRATEGY_LABEL": "Merge-Strategie",
         "MERGE_STRATEGIES": {
           "none": "Keine",
-          "ours": "ours",
-          "theirs": "theirs"
+          "ours": "Ours",
+          "theirs": "Theirs"
         },
         "MERGE_STRATEGY_DESCRIPTIONS": {
           "none": "",
@@ -346,10 +346,8 @@
     "SEARCH_LABEL": "Suchen",
     "CLOSE_LABEL": "Schließen",
     "ADD_LABEL": "Hinzufügen",
-    "CREATE": "create",
-    "create_LABEL": "Erstellen",
-    "EDIT": "edit",
-    "edit_LABEL": "Bearbeiten",
+    "CREATE": "Erstellen",
+    "EDIT": "Bearbeiten",
     "SAVE": "Speichern",
     "VIEW": "Ansehen",
     "IS_REQUIRED_LABEL": "ist notwendig.",
