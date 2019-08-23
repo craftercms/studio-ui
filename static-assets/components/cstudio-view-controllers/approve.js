@@ -26,7 +26,6 @@
     var Base = CStudioAuthoring.ViewController.Base,
         Dom = YAHOO.util.Dom,
         Event = YAHOO.util.Event,
-        agent = new CStudioAuthoring.TemplateHolder.TemplateAgent(CStudioAuthoring.TemplateHolder.Approve),
         each = CStudioAuthoring.Utils.each,
         genDependency = [];
         $ = jQuery;
@@ -35,9 +34,6 @@
 
         events: ['submitStart','submitComplete','submitEnd'],
         actions: ['.close-button', '.submit-button'],
-        startup: ['itemsClickedDelegation'],
-
-        itemsClickedDelegation: itemsClickedDelegation,
 
         loadItems: loadItems,
 
@@ -51,11 +47,7 @@
 
         submitButtonActionClicked: submit,
 
-        selectAllCheckActionClicked: selectAllItems,
-
         closeButtonActionClicked: closeButtonClicked,
-
-        showAllDepsActionClicked: showAllDeps,
 
         initDatePicker: initDatePicker,
 
@@ -72,43 +64,6 @@
         this.end();
     }
 
-    function itemsClickedDelegation() {
-        var me = this;
-        Event.delegate(this.cfg.getProperty('context'), "click", function(e, elem) {
-
-            var allCheck = me.getComponent('.select-all-check');
-
-            if (!elem.checked) {
-                allCheck.checked = false;
-            } else {
-
-                var allItemsChecked = true;
-                var itemChecks = me.getComponents('input[data-item-id]');
-
-                each(itemChecks, function (i, check) {
-                    if (!check.checked) {
-                        allItemsChecked = false;
-                        return false;
-                    }
-                });
-
-                allCheck.checked = allItemsChecked;
-
-            }
-
-        }, 'input.item-checkbox');
-    }
-
-    function selectAllItems(checkbox) {
-
-        var items = this.getComponents('input[data-item-id][type="checkbox"]');
-        var bool = checkbox.checked;
-
-        each(items, function (i, check) {
-            check.checked = bool;
-        });
-    }
-
     function submit() {
 
         var data = {
@@ -122,7 +77,7 @@
         var timezone = $("select.zone-picker").find(':selected').attr('data-offset');
 
         if (data.schedule === 'custom') {
-            data.scheduledDate =  getScheduledDateTimeForJson(this.getCompodialognent('[name="scheduleDate"]').value);
+            data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
             data.scheduledDate += timezone;
         }
 
@@ -257,59 +212,6 @@
             entities.entities.push({ "item": this.uri });
           });
         }
-
-        CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
-    }
-
-    function showAllDeps (el) {
-        var me = this,
-            $el = $(el),
-            loadSpinner = document.getElementById('loadSpinner');
-
-        var entities = { "entities" : [] },
-            callback = {
-                success: function(response) {
-                    var response = eval("(" + response.responseText + ")")
-                    $.each(response.entities, function(){
-                        var currentItem = this.item,
-                            $currentEl = $("[data-path='" + this.item + "']"),
-                            currentElId = $currentEl.attr("id"),
-                            $parentEl = $currentEl.closest("tr"),
-                            $container = $(me.getComponent('tbody'));
-
-                        if( $currentEl.attr("data-loaded") === "false" ){
-                            $.each(this.dependencies, function(index, dependency){
-                                var elem = {};
-                                elem.uri = dependency.item;
-                                elem.index = currentElId;
-                                $parentEl.after(agent.get('SUBITEM_ROW', elem));
-                            });
-
-                            $currentEl.attr("data-loaded", "true");
-                        }
-
-                        $childItems = $container.find("." + currentElId);
-                        $childItems.show();
-                        $currentEl.attr('class', 'ttClose parent-div-widget');
-
-                        loadSpinner.classList.add("hidden");
-                        $el.removeAttr('disabled');
-
-                    });
-                },
-                failure: function(error) {
-
-                }
-            };
-
-        $el.attr('disabled', 'true');
-        loadSpinner.classList.remove("hidden");
-
-        $.each( this.submitItems, function(){
-            entities.entities.push({ "item": this.uri });
-        })
-
-
 
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
     }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Item } from '../models/item';
+import { Item } from '../models/Item';
 import '../styles/dependency-selection.scss';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -57,11 +57,16 @@ function DependecySelection(props: DependecySelectionProps) {
       nextChecked[u] = isChecked;
     });
     setRef();
-    _setChecked(nextChecked)
+    _setChecked(nextChecked);
     setshowDepBtn(true);
     setDeps(null);
     cleanCheckedSoftDep();
   }
+
+  const paths = 
+    Object.entries({ ...checked })
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
 
   const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({});
   const setCheckedSoftDep = (uri: string[], isChecked: boolean) => {
@@ -70,12 +75,12 @@ function DependecySelection(props: DependecySelectionProps) {
       nextCheckedSoftDep[u] = isChecked;
     });
     setRef();
-    _setCheckedSoftDep(nextCheckedSoftDep)
+    _setCheckedSoftDep(nextCheckedSoftDep);
   }
   const cleanCheckedSoftDep = () => {
     const nextCheckedSoftDep = {};
     setRef();
-    _setCheckedSoftDep(nextCheckedSoftDep)
+    _setCheckedSoftDep(nextCheckedSoftDep);
   }
   setRef();
 
@@ -198,9 +203,7 @@ function DependecySelection(props: DependecySelectionProps) {
 
   function showAllDependencies() {
     setshowDepBtn(false);
-    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${Object.entries({ ...checked })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key)}`)
+    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths}`)
       .subscribe(
         (response: any) => {
           setDeps({
