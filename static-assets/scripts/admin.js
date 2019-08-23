@@ -149,7 +149,7 @@
           "usernames": [
             data.username
           ]
-        }
+        };
         return $http.post(groupsMembers(data.groupId, true), body);
       };
 
@@ -174,6 +174,28 @@
       this.pushRepository = function(data) {
         return $http.post(repositories('push_to_remote'), data);
       };
+
+      this.repositoryStatus = function(data) {
+        return $http.get(repositories('status', 'siteId=' + data));
+      }
+
+      this.resolveConflict = function(data) {
+        return $http.post(repositories('resolve_conflict'), data);
+      }
+
+      this.diffConflictedFile = function(data) {
+        return $http.get(repositories('diff_conflicted_file'), {
+          params: data
+        });
+      }
+
+      this.commitResolution = function(data) {
+        return $http.post(repositories('commit_resolution'), data);
+      }
+
+      this.cancelFailedPull = function(data) {
+        return $http.post(repositories('cancel_failed_pull'), data);
+      }
 
       //AUDIT
 
@@ -1724,16 +1746,40 @@
     function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
               $stateParams, $translate, $location, $q) {
 
-      $scope.repositories = {};
+      $scope.repositories = {
+        site: $location.search().site,
+        selectedTab: 'diff',
+        status: {
+          clean: false
+        },
+        diff: {},
+        mergeStrategy: 'none'
+      };
+
       var repositories = $scope.repositories;
-      repositories.site = $location.search().site;
-      repositories.mergeStrategy = 'none';
+      repositories.spinnerOverlay;
 
       $scope.$watch('repositories.mergeStrategy', function() {
         repositories.mergeStrategyDescription = $translate.instant('admin.repositories.MERGE_STRATEGY_DESCRIPTIONS.' + repositories.mergeStrategy);
       });
 
+      repositories.getRepositoryStatus = function() {
+        adminService.repositoryStatus($location.search().site).success(function(data){
+          repositories.status = data.repositoryStatus;
+        });
+      }
+      repositories.getFileName = function(filePath) {
+        return filePath.substr(filePath.lastIndexOf('/') + 1);
+      };
+
       this.init = function() {
+
+        $scope.showError = function(error){
+          $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${error.code}`;
+          $scope.messageText = error.remedialAction? `${error.message}. ${error.remedialAction}` : error.message + '.';
+          $scope.messageLink = error.documentationUrl;
+          $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+        }
 
         $scope.showModal = function(template, size, verticalCentered, styleClass){
           $scope.groupsError = null;
@@ -1769,10 +1815,12 @@
 
         };
 
+        repositories.getRepositoryStatus();
+
         adminService.getRepositories(repositories).success(function (data) {
           repositories.repositories = data;
-        }).error(function () {
-          //TODO: properly display error.
+        }).error(function (error) {
+          $scope.showError(error.response);
         });
 
       };
@@ -1786,7 +1834,8 @@
 
         $scope.dialogMode = 'CREATE';
         $scope.dialogTitle = $translate.instant('admin.repositories.CREATE_REPOSITORY');
-      }
+      };
+
       $scope.createRepo = function(repo) {
         repositories.spinnerOverlay = $scope.spinnerOverlay();
         repo.siteId = repositories.site;
@@ -1797,13 +1846,12 @@
           adminService.getRepositories(repositories).success(function (data) {
             repositories.repositories = data;
             repositories.spinnerOverlay.close();
-          }).error(function () {
-            //TODO: properly display error.
+          }).error(function (error) {
+            $scope.showError(error.response);
+            repositories.spinnerOverlay.close();
           });
         }).error(function(error){
-          $scope.messageTitle = $translate.instant('common.ERROR');
-          $scope.messageText = error.message;
-          $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+          $scope.showError(error.response);
           repositories.spinnerOverlay.close();
         });
 
@@ -1823,15 +1871,12 @@
             $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', null,"studioMedium");
 
           }).error(function (error) {
-            $scope.messageTitle = $translate.instant('common.ERROR');
-            $scope.messageText = error.message;
-            $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+            $scope.showError(error.response);
           });
         };
 
         $scope.confirmationAction = deleteRepo;
         $scope.confirmationText = $translate.instant('common.DELETE_QUESTION')+" " + repo.name + "?";
-
         $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
       };
 
@@ -1849,13 +1894,13 @@
           adminService.pullRepository(currentRepo).success(function (data) {
 
             repositories.spinnerOverlay.close();
+            repositories.getRepositoryStatus();
             $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', null,"studioMedium");
 
           }).error(function (error) {
+            repositories.getRepositoryStatus();
             repositories.spinnerOverlay.close();
-            $scope.messageTitle = $translate.instant('common.ERROR');
-            $scope.messageText = error.message;
-            $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+            $scope.showError(error.response);
           });
         };
 
@@ -1884,9 +1929,7 @@
 
           }).error(function (error) {
             repositories.spinnerOverlay.close();
-            $scope.messageTitle = $translate.instant('common.ERROR');
-            $scope.messageText = error.message;
-            $scope.messageModal = $scope.showModal('messageModal.html', 'sm', true, "studioMedium");
+            $scope.showError(error.response);
           });
         };
 
@@ -1897,6 +1940,59 @@
 
         $scope.adminModal = $scope.showModal('pushPull.html', 'sm', true, "studioMedium");
       };
+
+      // Repository status
+
+      repositories.commitResolutionModal = function() {
+        $scope.adminModal = $scope.showModal('commitResolution.html', 'md', true);
+      }
+
+      repositories.commitResolution = function() {
+        adminService.commitResolution({
+          siteId: repositories.site,
+          commitMessage: repositories.commitMsg
+        }).success(function(data) {
+          repositories.status = data.repositoryStatus;
+          repositories.commitMsg = '';
+        });
+      }
+
+      repositories.diffContent = function(path) {
+        repositories.diffPath = path;
+
+        adminService.diffConflictedFile({
+          siteId: repositories.site,
+          path: path
+        }).success(function(data) {
+          repositories.diff = {
+            diff: data.diff.diff,
+            studioVersion: data.diff.studioVersion,
+            remoteVersion: data.diff.remoteVersion
+          }
+
+          $scope.adminModal = $scope.showModal('diffModal.html', 'lg', true);
+        }).error(function() {
+          $scope.adminModal = $scope.showModal('diffModal.html', 'lg', true);
+        });
+      };
+
+      repositories.resolveConflict = function(path, resolution) {
+        adminService.resolveConflict({
+          siteId: repositories.site,
+          path,
+          resolution
+        }).success(function(data) {
+          repositories.status = data.repositoryStatus;
+        });
+      }
+
+      repositories.revertAll = function() {
+        adminService.cancelFailedPull({
+          siteId: repositories.site
+        }).success(function (data) {
+          repositories.status = data.repositoryStatus;
+        });
+      }
 
     }
   ]);

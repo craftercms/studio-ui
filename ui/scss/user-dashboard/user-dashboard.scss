@@ -27,6 +27,7 @@ $icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
 @import "type";
 @import "layout";
 @import "navbar";
+@import "repositories";
 
 @import "views";
 
@@ -176,6 +177,89 @@ body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   font-weight: 600;
+}
+
+// Bootstrap styles for outline buttons (no support on bootstrap 3)
+.btn-outline-danger, .btn-outline-danger:focus {
+  color: #dc3545;
+  border-color: #dc3545;
+  background-color: #fff;
+
+  &:hover {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+}
+
+.btn-outline-success, .btn-outline-success:focus {
+  color: #28a745;
+  border-color: #28a745;
+  background-color: #fff;
+
+  &:hover {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+}
+
+[class^="btn btn-outline"][disabled] {
+  border-color: #ccc;
+  color: #ccc;
+}
+
+.btn-outline-warning, .btn-outline-warning:focus {
+  color: #ffc107;
+  border-color: #ffc107;
+  background-color: #fff;
+
+  &:hover {
+    color: #fff;
+    background-color: #ffc107;
+    border-color: #ffc107;
+  }
+}
+
+// Bootstrap styles for text coloring (no support on bootstrap 3)
+.text-success {
+  color: #28a745!important;
+}
+
+.text-danger {
+  color: #dc3545!important;
+}
+
+.text-warning {
+  color: #ffc107!important;
+}
+
+.text-muted {
+  color: #6c757d!important;
+}
+
+// Studio common styles for dropdowns w/descriptions
+.studio-dropdown {
+  .dropdown-menu {
+    left: auto;
+    right: 0;
+    padding: 0;
+    width: 215px;
+
+    >li>a {
+      padding: 15px 20px;
+
+      .description {
+        word-wrap: break-word;
+        white-space: normal;
+        color: #8e8e93;
+      }
+    }
+
+    .divider {
+      margin: 0;
+    }
+  }
 }
 
 .modal-backdrop {
