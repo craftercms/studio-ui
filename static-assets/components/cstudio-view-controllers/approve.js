@@ -21,18 +21,18 @@
  * @author: Roy Art
  * @date: 12.09.2014
  **/
-(function(CStudioAuthoring){
+(function (CStudioAuthoring) {
 
     var Base = CStudioAuthoring.ViewController.Base,
         Dom = YAHOO.util.Dom,
         Event = YAHOO.util.Event,
         each = CStudioAuthoring.Utils.each,
         genDependency = [];
-        $ = jQuery;
+    $ = jQuery;
 
     Base.extend('Approve', {
 
-        events: ['submitStart','submitComplete','submitEnd'],
+        events: ['submitStart', 'submitComplete', 'submitEnd'],
         actions: ['.close-button', '.submit-button'],
 
         loadItems: loadItems,
@@ -71,13 +71,13 @@
             submissionComment: this.getComponent('.submission-comment').value,
             publishOptionComment: (this.getComponent('.publish-option-comment')) ? this.getComponent('.publish-option-comment').value : "",
             publishChannel: this.getComponent('.publish-option').value,
-            items: this.result.current
+            items: this.result
         };
 
         var timezone = $("select.zone-picker").find(':selected').attr('data-offset');
 
         if (data.schedule === 'custom') {
-            data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
+            data.scheduledDate = getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
             data.scheduledDate += timezone;
         }
 
@@ -90,25 +90,24 @@
         this.fire("submitStart");
         //var data = this.getData(),
         var _this = this,
-        data = JSON.stringify(data),
-        callback = {
-            success: function(oResponse) {
-                _this.enableActions();
-                var oResp = JSON.parse(oResponse.responseText);
-                _this.fire("submitComplete", oResp);
-                _this.fire("submitEnd", oResp);
-                loadSpinner.classList.add("hidden");
-                loadSpinnerMask.classList.add("hidden");
-            },
-            failure: function(oResponse) {
-                var oResp = JSON.parse(oResponse.responseText);
-                _this.fire("submitEnd", oResp);
-                _this.enableActions();
-            }
-        };
+            data = JSON.stringify(data),
+            callback = {
+                success: function (oResponse) {
+                    _this.enableActions();
+                    var oResp = JSON.parse(oResponse.responseText);
+                    _this.fire("submitComplete", oResp);
+                    _this.fire("submitEnd", oResp);
+                    loadSpinner.classList.add("hidden");
+                    loadSpinnerMask.classList.add("hidden");
+                },
+                failure: function (oResponse) {
+                    var oResp = JSON.parse(oResponse.responseText);
+                    _this.fire("submitEnd", oResp);
+                    _this.enableActions();
+                }
+            };
 
         CStudioAuthoring.Service.getGoLive(callback, data);
-
     }
 
     function loadItems(data) {
@@ -126,13 +125,13 @@
 
     }
 
-    function traverse (items, referenceDate) {
+    function traverse(items, referenceDate) {
         var allHaveSameDate = true,
             item, children;
 
-        for ( var i = 0, l = items.length;
-              allHaveSameDate === true && i < l;
-              ++i ) {
+        for (var i = 0, l = items.length;
+            allHaveSameDate === true && i < l;
+            ++i) {
 
             item = items[i];
             children = item.children;
@@ -142,12 +141,12 @@
             if (!allHaveSameDate) {
                 break;
             }
-/*
-            if (children.length > 0) {
-                allHaveSameDate = traverse(children, referenceDate);
-            }
-
-*/
+            /*
+                        if (children.length > 0) {
+                            allHaveSameDate = traverse(children, referenceDate);
+                        }
+            
+            */
         }
 
         return allHaveSameDate;
@@ -202,34 +201,41 @@
         CStudioAuthoring.Service.getAvailablePublishingChannels(callback);
     }
 
-    function calculateDependencies(data, callback){
-        var entities = { "entities" : [] };
+    function calculateDependencies(data, callback) {
+        var entities = { "entities": [] };
 
-        if( typeof data === 'string' || data instanceof String ){
+        if (typeof data === 'string' || data instanceof String) {
             entities.entities.push({ "item": data });
         } else {
-          $.each(data, function(){
-            entities.entities.push({ "item": this.uri });
-          });
+            $.each(data, function () {
+                entities.entities.push({ "item": this.uri });
+            });
         }
 
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
     }
 
     function renderItems(items) {
-        this.result = {};
+        this.result = [];
         CrafterCMSNext
             .render(
-                this.getComponent('.dependencies-display'), 
-                'DependencySelection', 
-                { 
-                    result: this.result,
+                this.getComponent('.dependencies-display'),
+                'DependencySelection',
+                {
+                    onChange: (result) => {
+                        if (result.length === 0) {
+                            this.$('#approveSubmit').prop('disabled', true);
+                        } else {
+                            this.$('#approveSubmit').prop('disabled', false);
+                        }
+                        this.result = result;
+                    },
                     siteId: CStudioAuthoringContext.site,
                     items: items
                 }
-             );
+            );
 
-        $(document).on("keyup", function(e) {
+        $(document).on("keyup", function (e) {
             if (e.keyCode === 27) {	// esc
                 $('.date-picker').datetimepicker('hide');
                 me.end();
@@ -238,7 +244,7 @@
             if (e.keyCode == 10 || e.keyCode == 13) {	// enter
                 var $approveBtn = $("#approveSubmit")
 
-                if(!$approveBtn.attr("disabled")) {
+                if (!$approveBtn.attr("disabled")) {
                     $approveBtn.click();
                     $(document).off("keyup");
                 }
@@ -259,17 +265,17 @@
 
         var me = this;
         var dateToday = new Date();
-        var logic = function( currentDateTime, input ){
+        var logic = function (currentDateTime, input) {
             // 'this' is jquery object datetimepicker
-            if(currentDateTime && currentDateTime.getDate() == dateToday.getDate()
+            if (currentDateTime && currentDateTime.getDate() == dateToday.getDate()
                 && currentDateTime.getMonth() == dateToday.getMonth()
-                && currentDateTime.getFullYear() == dateToday.getFullYear()){
+                && currentDateTime.getFullYear() == dateToday.getFullYear()) {
                 this.setOptions({
                     minTime: 0
                 });
-            }else {
+            } else {
                 this.setOptions({
-                    minTime:'12:00 am'
+                    minTime: '12:00 am'
                 });
             }
         };
@@ -292,7 +298,7 @@
         me.$('.date-picker').datetimepicker({
             format: 'm/d/Y h:i a',
             dateFormat: "m/d/Y",
-            formatTime:	'h:i a',
+            formatTime: 'h:i a',
             minDate: '0',
             minTime: 0,
             step: 15,
@@ -302,10 +308,10 @@
 
         me.$('.date-picker').change(function () {
             var $elem = $(this);
-            if ($elem.val() !=null && $elem.val() != "") {
+            if ($elem.val() != null && $elem.val() != "") {
                 me.$('#approveSubmit').prop('disabled', false);
                 me.$('#approveSubmitVal').hide();
-            }else{
+            } else {
                 me.$('#approveSubmit').prop('disabled', true);
                 me.$('#approveSubmitVal').show();
             }
@@ -315,18 +321,18 @@
             CStudioAuthoringContext.site,
             "/site-config.xml",
             {
-                success: function(config) {
+                success: function (config) {
                     var timeZoneText = me.$('.zone-text');
-                    timeZoneText.html("<a class='zone-link' title='Time zone can be changed through the Site Config -> Configuration -> Site Configuration'>"+config["default-timezone"] + "</a>");
-                    $( '<select class="zone-picker form-control"></select>' ).insertAfter( timeZoneText );
+                    timeZoneText.html("<a class='zone-link' title='Time zone can be changed through the Site Config -> Configuration -> Site Configuration'>" + config["default-timezone"] + "</a>");
+                    $('<select class="zone-picker form-control"></select>').insertAfter(timeZoneText);
                     var zonePicker = $('.zone-picker');
                     zonePicker.timezones();
                     zonePicker.hide();
-                    $("select.zone-picker option[value='"+config["default-timezone"]+"']").attr("selected", "selected");
-                    me.$('.zone-link').click(function() {
+                    $("select.zone-picker option[value='" + config["default-timezone"] + "']").attr("selected", "selected");
+                    me.$('.zone-link').click(function () {
                         zonePicker.show();
                     });
-                    zonePicker.change(function() {
+                    zonePicker.change(function () {
                         me.$('.zone-link').html($(this).val());
                     });
                 }
@@ -356,13 +362,13 @@
         var dateTimeTokens = dateTimeStr.split('T');
         var dateTokens = dateTimeTokens[0].split('-');
         var timeTokens = dateTimeTokens[1].split(':');
-        var dateTime = new Date(dateTokens[0], dateTokens[1]-1, dateTokens[2], timeTokens[0], timeTokens[1]);
+        var dateTime = new Date(dateTokens[0], dateTokens[1] - 1, dateTokens[2], timeTokens[0], timeTokens[1]);
 
-        var hrs = ((dateTime.getHours() %12) ? dateTime.getHours() % 12 : 12);
+        var hrs = ((dateTime.getHours() % 12) ? dateTime.getHours() % 12 : 12);
         var mnts = dateTime.getMinutes();
 
         return '' + dateTokens[1] + '/' + dateTokens[2] + '/' + dateTokens[0] + ' '
             + (hrs < 10 ? '0' + hrs : hrs) + ':' + (mnts < 10 ? '0' + mnts : mnts) + (dateTime.getHours() < 12 ? ' am' : ' pm');
     }
 
-}) (CStudioAuthoring);
+})(CStudioAuthoring);
