@@ -137,7 +137,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     wcmContentDuplicate: "Duplizieren",
     wcmContentHistory: "Verlauf",
     wcmContentPageDisabled: "Dieser Inhalt ist deaktiviert",
-    wcmContentSavedAsDraft: "Dieser Inhalt wurde als ENTWURF gespeichert. Pflichtfelder sind eventuell nicht ausgefüllt. Das zu Fehlern bei Vorschau oder Veröffentlichung führen.",
+    wcmContentSavedAsDraft: "Dieser Inhalt wurde als ENTWURF gespeichert. Pflichtfelder sind möglicherweise nicht ausgefüllt. Das kann zu Fehlern in der Vorschau und/oder Veröffentlichung führen.",
 
     InProgress: "Bearbeitet",
     Deleted: "Gelöscht",
@@ -163,7 +163,7 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     idle: "Leerlauf",
     busy: "Beschäftigt",
     stopped: "Angehalten",
-    quickCreateEmpty:"Für das schnelle Erstellen ist nichts konfiguriert. Bitten Sie Ihren Systemadministrator, die gewünschten Inhaltstypen für die schnelle Erstellung zu konfigurieren."
+    quickCreateEmpty:"Für das schnelle Erstellen sind keine Content-Typen konfiguriert. Bitten wenden Sie sich an Ihren Systemadministrator."
 
 });
 
@@ -238,12 +238,12 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "de", {
     sites: "Projekte",
     help: "Hilfe",
     documentation: "Dokumentation",
-    about: "Über",
+    about: "Über Crafter CMS",
     settings: "Einstellungen",
     signOut: "Abmelden",
     mainMenu: "Hauptmenü",
 
-    videoProcessed: 'Video wird verarbeitet, Vorschau ist verfügbar, wenn die Verarbeitung abgeschlossen ist',
+    videoProcessed: 'Das Video wird noch verarbeitet. Die Vorschau ist verfügbar sobald die Verarbeitung abgeschlossen ist.',
     quickCreate: "Schnell erstellen",
     inContextEdit: "Im-Kontext Bearbeitung"
 
@@ -301,7 +301,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "de", {
     statusSubmittedForDelete: "Zum Löschen eingereicht",
     statusAndDisabled: "und deaktiviert",
     statusProcessing: "in Bearbeitung",
-    statusInProgress: "Editier",
+    statusInProgress: "Bearbeitet",
     statusLive: "Live",
     statusAnd: "und",
     statusSubmitted: "Im Workflow",
@@ -311,8 +311,8 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "de", {
     wcmContentApprove: "Freigeben & Publizieren",
 
     notification: "Benachrichtigung",
-    previewInitiated: "Komplette Vorschau Synchronisation angestoßen.",
-    syncfromRepoInitiated: "Synchronization vom Repository angestoßen.",
+    previewInitiated: "Vollständige Synchronisation des Vorschau-Servers initialisiert.",
+    syncfromRepoInitiated: "Synchronisation aus Repository initialisiert.",
 
     lookUpItemError: "Fehler - bitte kontaktieren Sie Ihren Systemadministrator.",
     pathSameError: "Quell- und Zielverzeichnis sind identisch.",
@@ -365,7 +365,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     page: "Seite",
     loadingContents: "Lädt...",
     cut: "Ausschneiden",
-    cutDescription: "Bitte markieren Sie alle Seiten, die Sie ausschneiden möchten.<br/>Beim Einfügen bleiben die Positionen der Seiten entsprechend erhalten",
+    cutDescription: "Bitte markieren Sie alle Seiten, die Sie ausschneiden möchten.<br/>Beim Einfügen bleiben die Positionen der Seiten entsprechend erhalten.",
 
     create: "Anlegen",
     newFolderTitle: "Neues Verzeichnis anlegen",
@@ -481,12 +481,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     supportedChannelsDialogName: "Name",
     supportedChannelsDialogSize :"Größe",
 
-    setStatedDialogTitle: "Wählen Sie die Status",
+    setStatedDialogTitle: "Wählen Sie den Status",
     setStatedDialogSetStates: "Status setzen",
     setStatedDialogSystemProcessing: "Systemverarbeitung",
 
     setQueueDialogTitle: "Wählen Sie den Status",
-    setDeploymentQueue: "Deployment Warteschlange",
+    setDeploymentQueue: "Deployment Queue",
     setDeploymentEndpoints: "Deployment Ziele",
     setDeploymentJobs: "Deployment Jobs",
     setQueueDialogCancelDeployment: "Deployment abbrechen",
@@ -541,17 +541,17 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     pluginErrorSolution: "<a id='siteConfigURL'>Gehen Sie zu <a id='siteConfigURL'> [Site-Konfigurationsseite] </a> und wählen Sie in der Dropdown-Liste die Option 'Site-Konfigurations-Tools' aus, um die Datei zu bearbeiten.",
     control: "Steuerung: ",
     datasource: "Datenquelle: ",
-    propertyMessage: " eigentum fehlt.",
-    propertiesMessage: " igenschaften fehlen."
+    propertyMessage: " Eigenschaft fehlt.",
+    propertiesMessage: " Eigenschaften fehlen."
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "de", {
     searchInput: "Suche",
     numResults: "Anzahl der Ergebnisse",
-    selectAll: "Wählen Sie Alle",
+    selectAll: "Alle auswählen",
     filters: "Filter",
-    asc: "Ascending",
-    desc: "Aufsteigend",
+    asc: "Aufsteigend",
+    desc: "Absteigend",
     sortOrder: "Sortierreihenfolge",
     sortBy: "Sortiere nach",
     name: "Name",
@@ -559,28 +559,28 @@ CStudioAuthoring.Messages.registerBundle("search", "de", {
     videos: "Videos",
     width: "Breite",
     height: "Höhe",
-    "content-type": "Inhaltstyp",
-    "mime-type": "MIME Typ",
+    "content-type": "Content-Typ",
+    "mime-type": "MIME-Typ",
     "last-edit-date": "Letztes Bearbeitungsdatum",
-    size: "Inhaltsgröße",
+    size: "Größe",
     today: "heute",
-    "in-last-day": "Am letzten Tag",
+    "in-last-day": "Gestern",
     "in-last-week": "Letzte Woche",
     "over-a-month-ago": "Vor über einem Monat",
     "over-six-months-ago": "Vor über sechs Monaten",
-    "over-a-week-ago": "Über eine Woche her",
+    "over-a-week-ago": "Vor über einer Woche",
     "over-a-year-ago": "Vor über einem Jahr",
-    paginationFirst: "First",
+    paginationFirst: "Erste Seite",
     paginationPrev: "Zurück",
     paginationNext: "Weiter",
-    paginationLast: "Last",
-    seeMore: 'Mehr sehen',
-    seeLess: 'Weniger sehen',
+    paginationLast: "Letzte Seite",
+    seeMore: 'Mehr',
+    seeLess: 'Weniger',
     under: 'Unter',
-    above: 'und darüber',
+    above: 'und über',
     errorMessage: 'Bei der Suche ist ein Problem aufgetreten. Wenden Sie sich an den Administrator, falls das Problem weiterhin besteht.',
-    clear: 'klar',
-    apply: 'Sich bewerben'
+    clear: 'Zurücksetzen',
+    apply: 'Anwenden'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "de", {

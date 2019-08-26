@@ -333,15 +333,25 @@ CStudioAuthoring.Module.requireModule(
                                                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
                                                 CMgs.format(langBundle, "notification"),
                                                 CMgs.format(langBundle, "contentTypeModifiedWarn"),
-                                                [ { text:CMgs.format(formsLangBundle, "yes"),  handler:function() {
-                                                    CStudioAdminConsole.isDirty = false;
-                                                    _self.renderWorkarea();
-                                                    this.destroy();
-                                                    CStudioAdminConsole.CommandBar.hide();
-                                                    }, isDefault:false },
-                                                    { text:CMgs.format(formsLangBundle, "no"),  handler:function(){
-                                                        this.destroy();
-                                                    }, isDefault:false }],
+                                                [
+                                                  {
+                                                    text: CMgs.format(formsLangBundle, 'yes'),
+                                                    handler: function () {
+                                                      CStudioAdminConsole.isDirty = false;
+                                                      _self.renderWorkarea();
+                                                      this.destroy();
+                                                      CStudioAdminConsole.CommandBar.hide();
+                                                    },
+                                                    isDefault: false
+                                                  },
+                                                  {
+                                                    text: CMgs.format(formsLangBundle, 'no'),
+                                                    handler: function () {
+                                                      this.destroy();
+                                                    },
+                                                    isDefault: false
+                                                  }
+                                                ],
                                                 YAHOO.widget.SimpleDialog.ICON_WARN,
                                                 "studioDialog"
                                             );
