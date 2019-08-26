@@ -8,8 +8,8 @@ import { get } from '../utils/ajax';
 
 interface DependecySelectionProps {
   items: Item[];
+  onChange: Function;
   siteId: string;
-  result: { current?: any };
 }
 
 interface DepsObject {
@@ -44,7 +44,7 @@ declare const CStudioAuthoringContext: any;
 function DependecySelection(props: DependecySelectionProps) {
   const [deps, setDeps] = useState<DepsObject>();
   const [showDepBtn, setshowDepBtn] = useState(true);
-  const { items, siteId, result } = props;
+  const { items, siteId, onChange } = props;
   const [checked, _setChecked] = useState<any>(
     (items || []).reduce(
       (table: any, item) => {
@@ -54,19 +54,19 @@ function DependecySelection(props: DependecySelectionProps) {
       {}
     )
   );
+
   const setChecked = (uri: string[], isChecked: boolean) => {
     const nextChecked = { ...checked };
     (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
       nextChecked[u] = isChecked;
     });
-    setRef();
     _setChecked(nextChecked);
     setshowDepBtn(true);
     setDeps(null);
     cleanCheckedSoftDep();
   }
 
-  const paths = 
+  const paths =
     Object.entries({ ...checked })
       .filter(([key, value]) => value === true)
       .map(([key]) => key);
@@ -77,15 +77,13 @@ function DependecySelection(props: DependecySelectionProps) {
     (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
       nextCheckedSoftDep[u] = isChecked;
     });
-    setRef();
     _setCheckedSoftDep(nextCheckedSoftDep);
   }
   const cleanCheckedSoftDep = () => {
     const nextCheckedSoftDep = {};
-    setRef();
+
     _setCheckedSoftDep(nextCheckedSoftDep);
   }
-  setRef();
 
   const Messages = CStudioAuthoring.Messages;
   const bundle = Messages.getBundle('forms', CStudioAuthoringContext.lang);
@@ -98,6 +96,13 @@ function DependecySelection(props: DependecySelectionProps) {
   const showAllDependenciesMessage = Messages.format(bundle, 'showAllDependencies');
   const changesSelectioItems = Messages.format(bundle, 'changesSelectioItems');
   const loadingDependencies = Messages.format(bundle, 'loadingDependencies');
+
+  useEffect(
+    () => {
+      setRef();
+    },
+    [checked, checkedSoftDep],
+  );
 
   return (
     <div>
@@ -133,52 +138,52 @@ function DependecySelection(props: DependecySelectionProps) {
         }
         {
           deps == null ? (null) : (
-              <div>
-                <h2 className="dependency-selection--subtitle" >
-                  {hardDependencies}  
-                </h2>
-                <span> • {submissionMandatory}</span>
-                <ul className="dependency-selection--list">
-                  {
-                    deps && deps.hard
-                      ? (
-                        deps.hard.map((uri: string) => (
-                          <li className="dependency-selection--list--hard" key={uri}>{uri}</li>
-                        ))
-                      )
-                      : (null)
-                  }
-                </ul>
-                <h2 className="dependency-selection--subtitle">
-                  {softDependencies}
-                </h2>
-                <span> • {submissionOptional}</span>
-                <button className="dependency-selection--nav-btn" onClick={selectAllSoft}>
-                  {selectAllMessage}
-                </button>
-                <ul className="dependency-selection--list" >
-                  {
-                    deps && deps.soft
-                      ? (
-                        deps.soft.map((uri: string) => (
-                          <li key={uri}>
-                            <div className="dependency-selection--list--soft-checkbox" >
-                              <BlueCheckbox
-                                checked={!!checkedSoftDep[uri]}
-                                onChange={(e) => setCheckedSoftDep([uri], e.target.checked)}
-                                value={uri}
-                                color="primary"
-                              />
-                            </div>
-                            <div className="dependency-selection--list--soft-item" >{uri}</div>
-                          </li>
-                        ))
-                      )
-                      : (null)
-                  }
-                </ul>
-              </div>
-            )
+            <div>
+              <h2 className="dependency-selection--subtitle" >
+                {hardDependencies}
+              </h2>
+              <span> • {submissionMandatory}</span>
+              <ul className="dependency-selection--list">
+                {
+                  deps && deps.hard
+                    ? (
+                      deps.hard.map((uri: string) => (
+                        <li className="dependency-selection--list--hard" key={uri}>{uri}</li>
+                      ))
+                    )
+                    : (null)
+                }
+              </ul>
+              <h2 className="dependency-selection--subtitle">
+                {softDependencies}
+              </h2>
+              <span> • {submissionOptional}</span>
+              <button className="dependency-selection--nav-btn" onClick={selectAllSoft}>
+                {selectAllMessage}
+              </button>
+              <ul className="dependency-selection--list" >
+                {
+                  deps && deps.soft
+                    ? (
+                      deps.soft.map((uri: string) => (
+                        <li key={uri}>
+                          <div className="dependency-selection--list--soft-checkbox" >
+                            <BlueCheckbox
+                              checked={!!checkedSoftDep[uri]}
+                              onChange={(e) => setCheckedSoftDep([uri], e.target.checked)}
+                              value={uri}
+                              color="primary"
+                            />
+                          </div>
+                          <div className="dependency-selection--list--soft-item" >{uri}</div>
+                        </li>
+                      ))
+                    )
+                    : (null)
+                }
+              </ul>
+            </div>
+          )
         }
       </div>
       <div className="dependency-selection--bottom-section">
@@ -211,9 +216,10 @@ function DependecySelection(props: DependecySelectionProps) {
   }
 
   function setRef() {
-    result.current = Object.entries({ ...checked, ...checkedSoftDep })
+    const result = Object.entries({ ...checked, ...checkedSoftDep })
       .filter(([key, value]) => value === true)
-      .map(([key]) => key)
+      .map(([key]) => key);
+    props.onChange(result);
   }
 
   function showAllDependencies() {

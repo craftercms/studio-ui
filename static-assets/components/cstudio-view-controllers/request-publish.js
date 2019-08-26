@@ -84,7 +84,7 @@
             schedule: this.getComponent('[name="schedulingMode"]:checked').value,
             submissionComment: this.getComponent('.submission-comment').value,
             environment: this.getComponent('.publish-option').value,
-            items: this.result.current
+            items: this.result
         };
 
         if (data.schedule === 'custom') {
@@ -178,13 +178,20 @@
 
     function renderItems(items) {
         document.getElementById('loadSpinner').classList.add("hidden");
-        this.result = {};
+        this.result = [];
         CrafterCMSNext
             .render(
                 this.getComponent('.dependencies-display'), 
                 'DependencySelection', 
                 { 
-                    result: this.result,
+                    onChange: (result) => {
+                        if (result.length === 0) {
+                            this.$('#approveSubmit').prop('disabled', true);
+                        } else {
+                            this.$('#approveSubmit').prop('disabled', false);
+                        }
+                        this.result = result;
+                    },
                     siteId: CStudioAuthoringContext.site,
                     items: items
                 }
