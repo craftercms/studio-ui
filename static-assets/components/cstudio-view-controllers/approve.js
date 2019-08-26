@@ -27,8 +27,8 @@
         Dom = YAHOO.util.Dom,
         Event = YAHOO.util.Event,
         each = CStudioAuthoring.Utils.each,
-        genDependency = [];
-    $ = jQuery;
+        genDependency = [],
+        $ = jQuery;
 
     Base.extend('Approve', {
 
@@ -141,12 +141,6 @@
             if (!allHaveSameDate) {
                 break;
             }
-            /*
-                        if (children.length > 0) {
-                            allHaveSameDate = traverse(children, referenceDate);
-                        }
-            
-            */
         }
 
         return allHaveSameDate;
