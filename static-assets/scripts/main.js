@@ -1318,6 +1318,7 @@
             // View models
             $scope.site = {};
             $scope.blueprints = [];
+            $scope.isNumValid = false;
             $scope.isValid = false;
             $scope.isCollapsed = true;
             $scope.isPushChecked = false;
@@ -1384,14 +1385,24 @@
             }
 
             function isValidSite() {
+                var patt = /(^0$)|(^0[0-9]+$)/i;
+                var result = false;
                 if($scope.site.siteId) {
-                    $scope.site.siteId = $scope.site.siteId.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
+                    $scope.site.siteId = $scope.site.siteId.replace(/(^-|_$)|[^a-zA-Z0-9-_]/g, '').toLowerCase();
+                    result = $scope.site.siteId.match(patt);
+                    if(result){
+                        $scope.isNumValid = true; 
+                    }else{
+                        $scope.isNumValid = false;
+                    }
                     sitesService.exists({
                         site: $scope.site.siteId
                     }).success(function (data) {
                         $scope.isValid = data.exists;
 
                     });
+                }else{
+                    $scope.isNumValid = false;
                 }
             }
 
