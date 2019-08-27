@@ -78,7 +78,7 @@
                                     $('#historyCompareBtn').remove();
                                     compareButton.type = "button";
                                     Dom.addClass(compareButton, "compare-button btn btn-default");
-                                    compareButton.value=CMgs.format(formsLangBundle, "historyDialogCompare"); 
+                                    compareButton.value=CMgs.format(formsLangBundle, "historyDialogCompare");
                                     compareButton.setAttribute("disabled", "");
                                     compareButton.setAttribute("id", "historyCompareBtn");
                                     actionWrapper.appendChild(compareButton);
@@ -268,6 +268,233 @@
             });
         },
 
+      loadConfigurationHistory: function (selection, isWrite) {
+        var _this = this,
+          colspan = 5,
+          loadFn,
+          escaped = selection.escaped;
+
+        _this.selection = selection;
+
+        loadFn = function () {
+
+          var tbody = _this.getComponent('table.item-listing tbody');
+          tbody.innerHTML = '<tr><td colspan="5"><i>'+CMgs.format(formsLangBundle, "historyDialogLoadingWait")+'&hellip;</i></td></tr>';
+
+          CStudioAuthoring.Service.getConfigurationVersionHistory(
+            CStudioAuthoringContext.site,
+            selection, {
+              success: function (history) {
+
+                var versions = history.versions,
+                  isAsset = history.item.isAsset;
+
+                var itemStateEl = _this.getComponent('span.show-for-item');
+                Dom.addClass(itemStateEl, CStudioAuthoring.Utils.getIconFWClasses(history.item));
+                itemStateEl.innerHTML = history.item.internalName;
+
+                if (versions.length == 0) {
+                  tbody.innerHTML = '<tr><td colspan="5"><i>'+CMgs.format(formsLangBundle, "historyDialogNoVersionsFound")+'</i></td></tr>';
+                } else {
+
+                  tbody.innerHTML = '';
+
+                  if(!isAsset){
+                    var actionWrapper = _this.getComponent(".history-view .action-wrapper"),
+                      compareButton = document.createElement('input');
+                    $('#historyCompareBtn').remove();
+                    compareButton.type = "button";
+                    Dom.addClass(compareButton, "compare-button btn btn-default");
+                    compareButton.value=CMgs.format(formsLangBundle, "historyDialogCompare");
+                    compareButton.setAttribute("disabled", "");
+                    compareButton.setAttribute("id", "historyCompareBtn");
+                    actionWrapper.appendChild(compareButton);
+
+                    (function () {
+                      Event.addListener(compareButton, "click", function () {
+                        // CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, this.version);
+                        _this.compareButtonActionClicked();
+                      });
+                    })();
+                  }
+
+                  for (var i = 0; i < versions.length; i++) {
+
+                    var version = versions[i],
+                      rowEl = document.createElement("tr"),
+                      tdEl,
+                      col2El,
+                      col3El,
+                      col4El,
+                      col5El,
+                      col6El,
+                      revertActionEl,
+                      checkboxEl;
+
+                    col2El = document.createElement('div');
+                    Dom.addClass(col2El, "c8");
+
+                    col2El.innerHTML = CStudioAuthoring.Utils.formatDateFromUTC(version.lastModifiedDate, studioTimeZone, 'full');
+
+                    var versionNumber = new Date(version.lastModifiedDate);
+                    versionNumber = versionNumber.toLocaleDateString() + 'T' + versionNumber.toLocaleTimeString().replace(' ', '');
+
+                    if(!isAsset){
+                      checkboxEl = document.createElement('input');
+                      checkboxEl.maxLength = 300;
+                      checkboxEl.type = "checkbox";
+                      checkboxEl.name = "version";
+                      checkboxEl.value = version.versionNumber;
+                      checkboxEl.style.marginRight = '5px';
+                      col2El.insertBefore(checkboxEl, col2El.firstChild);
+                    }
+
+                    tdEl = document.createElement('td');
+                    tdEl.appendChild(col2El);
+                    rowEl.appendChild(tdEl);
+
+                    col4El = document.createElement('div');
+                    Dom.addClass(col4El, "c4");
+                    col4El.innerHTML = version.lastModifier;
+                    tdEl = document.createElement('td');
+                    tdEl.appendChild(col4El);
+                    rowEl.appendChild(tdEl);
+
+                    col6El = document.createElement('div');
+                    // Dom.addClass(col6El, "c6");
+                    col6El.innerHTML = (version.comment) ? version.comment : "&nbsp;";
+                    tdEl = document.createElement('td');
+                    tdEl.appendChild(col6El);
+                    rowEl.appendChild(tdEl);
+
+                    col5El = document.createElement('div');
+                    col5El.style.whiteSpace = "nowrap";
+                    Dom.addClass(col5El, "c5");
+                    tdEl = document.createElement('td');
+                    tdEl.appendChild(col5El);
+                    rowEl.appendChild(tdEl);
+
+                    if(!isAsset){
+                      var viewActionEl = document.createElement("a");
+                      viewActionEl.innerHTML = '<span id="actionView'+ version.versionNumber +'" class="action fa fa-eye"></span>';
+                      viewActionEl.version = version.versionNumber;
+                      viewActionEl.path = history.item.uri;
+                      col5El.appendChild(viewActionEl);
+                      new YAHOO.widget.Tooltip("tooltipView" + viewActionEl.version, {
+                        context: "actionView" + viewActionEl.version,
+                        container: _this.tooltipsContainer,
+                        text: CMgs.format(formsLangBundle, "historyDialogViewFileMessage"),
+                        zIndex: 104103
+                      });
+
+                      var compareActionEl = document.createElement("a");
+                      compareActionEl.innerHTML = '<span id="actionCompare' + version.versionNumber + '" class="action fa fa-files-o"></span>';
+                      compareActionEl.version = version.versionNumber;
+                      compareActionEl.path = history.item.uri;
+                      col5El.appendChild(compareActionEl);
+                      new YAHOO.widget.Tooltip("tooltipCompare" + compareActionEl.version, {
+                        context: "actionCompare" + viewActionEl.version,
+                        container: _this.tooltipsContainer,
+                        text: CMgs.format(formsLangBundle, "historyDialogCompareFileMessage"),
+                        zIndex: 104103
+                      });
+                    }
+
+                    if(isWrite){
+                      revertActionEl = document.createElement("a");
+                      revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action fa fa-reply"></span>';
+                      revertActionEl.item = selection;
+                      revertActionEl.version = version.versionNumber;
+                      new YAHOO.widget.Tooltip("tooltipRevert"+ revertActionEl.version, {
+                        context: "actionRevert" + revertActionEl.version,
+                        container: _this.tooltipsContainer,
+                        text: CMgs.format(formsLangBundle, "historyDialogRevertFileMessage"),
+                        zIndex: 104103
+                      });
+
+                      col5El.appendChild(revertActionEl);
+                    }
+
+                    (function (item) {
+                      if(isWrite) {
+                        Event.addListener(revertActionEl, "click", function () {
+                          CStudioAuthoring.Service.revertContentItem(
+                            CStudioAuthoringContext.site,
+                            item,
+                            this.version, {
+                              success: function () {
+                                if (CStudioAuthoringContext.isPreview) {
+                                  CStudioAuthoring.Operations.refreshPreview();
+                                }
+                                eventNS.data = item;
+                                document.dispatchEvent(eventNS);
+                                _this.loadHistory(_this.selection);
+                              },
+                              failure: function () {
+                                var CMgs = CStudioAuthoring.Messages;
+                                var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                  "revertError-dialog",
+                                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                  CMgs.format(langBundle, "notification"),
+                                  CMgs.format(langBundle, "revertError"),
+                                  null,
+                                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                  "studioDialog"
+                                );
+                              }
+                            });
+                        });
+                      }
+
+                      Event.addListener(viewActionEl, "click", function () {
+                        CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, history.item.uri, this.version, this.version, escaped);
+                      });
+
+                      Event.addListener(compareActionEl, "click", function () {
+                        CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, history.item.uri, this.version, null, escaped);
+                      });
+
+                      Event.addListener(checkboxEl, "change", function () {
+                        _this.validateDiffCheckboxes();
+                      });
+
+                    })(history.item);
+
+                    tbody.appendChild(rowEl);
+
+                  }
+                }
+                //set focus on submit/delete button
+                var oSubmitBtn = _this.getComponent(_this.actions[0]);
+
+                if (oSubmitBtn) {
+                  CStudioAuthoring.Utils.setDefaultFocusOn(oSubmitBtn);
+                }
+              },
+              failure: function () {
+                tbody.innerHTML = '<tr><td>'+CMgs.format(formsLangBundle, "historyDialogUnable")+' <a class="retry-dependency-load" href="javascript:">'+CMgs.format(formsLangBundle, "historyDialogTryAgain")+'</a></td></tr>';
+                Event.addListener(_this.getComponent("a.retry-dependency-load"), "click", loadFn);
+              }
+            });
+        };
+
+        var tooltipsContainer = document.createElement("div");
+        YAHOO.util.Dom.addClass(tooltipsContainer, 'tooltips-container');
+        document.querySelector('body').appendChild(tooltipsContainer);
+        this.tooltipsContainer = tooltipsContainer;
+
+        loadFn();
+
+        $(document).on("keyup", function(e) {
+          if (e.keyCode === 27) {	// esc
+            _this.end();
+            _this.destroyTooltips();
+            $(document).off("keyup");
+          }
+        });
+      },
+
         preFormatDate: function(dateTime) {
             var inZulu = new RegExp("Z$").test(dateTime),
                 convertedDate = dateTime;
@@ -285,7 +512,7 @@
             }
             return convertedDate;
         },
-        
+
         validateDiffCheckboxes: function () {
             var tbody = this.getComponent('table.item-listing tbody'),
                 selectedCheckboxes = $(tbody).find('input[name="version"]:checked'),
@@ -336,7 +563,7 @@
             var tbody = this.getComponent('table.item-listing tbody'),
                 selectedCheckboxes = $(tbody).find('input[name="version"]:checked'),
                 diffArray = [],
-                path = this.selection.uri;
+                path = this.item.uri;
 
             $.each(selectedCheckboxes, function(index) {
                 diffArray[index] = this.value;

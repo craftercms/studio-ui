@@ -208,10 +208,13 @@ CStudioAuthoring.Module.requireModule(
 
 								historyLink.onclick = function() {
 									var content = {
-										uri: elemPath,
+									  module: itemSelectEl[selectedIndex].getAttribute('module'),
+										path: itemSelectEl[selectedIndex].value,
+                    environment: environment,
+                    uri: configFilesPath + "/" + itemSelectEl[selectedIndex].getAttribute('module') + "/" + environment + "/" + itemSelectEl[selectedIndex].value,
 										escaped: true
 									};
-									CStudioAuthoring.Operations.viewContentHistory(content, true);
+									CStudioAuthoring.Operations.viewConfigurationHistory(content, true);
 								};
 
 								document.getElementById('historyEl').append(historyLink);
