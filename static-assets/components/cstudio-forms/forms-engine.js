@@ -750,6 +750,9 @@ var CStudioForms = CStudioForms || function() {
     if (doc.querySelectorAll('component:not([processed])').length) {
       return resolvePendingComponents(doc);
     } else {
+      doc.querySelectorAll('component[processed]').forEach(item => {
+        item.removeAttribute('processed');
+      })
       return doc.outerHTML;
     }
   }
