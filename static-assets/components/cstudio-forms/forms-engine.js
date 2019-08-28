@@ -825,7 +825,6 @@ var CStudioForms = CStudioForms || function() {
             }
             case FORM_UPDATE_REQUEST: {
               // Update the DOM for subsequent content request messages.
-              debugger;
               const nextComponentDOM = parseDOM(message.payload);
               const objectId = nextComponentDOM.querySelector('objectId').innerHTML;
               nextComponentDOM.setAttribute('id', objectId);
