@@ -194,6 +194,7 @@ define('guest', [
       var $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
       var iceId = $e.data('studioIce');
       var icePath = $e.data('studioIcePath');
+      var iceChildId = $e.data('childId');
 
       var position = $e.offset(),
         props = {
@@ -205,6 +206,7 @@ define('guest', [
 
       props.iceId = iceId;
       props.itemId = icePath;
+      props.childId = iceChildId;
       props.scrollTop = $window.scrollTop();
       props.scrollLeft = $window.scrollLeft();
 

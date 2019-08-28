@@ -687,7 +687,10 @@ var CStudioForms = CStudioForms || function() {
   const
     FORM_REQUEST = 'FORMS.FORM_REQUEST',
     FORM_REQUEST_FULFILMENT = 'FORMS.FORM_REQUEST_FULFILMENT',
-    FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST';
+    FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
+    FORM_PARENT_SAVE_REQUEST = 'FORMS.FORM_PARENT_SAVE_REQUEST',
+    OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
+    FORM_RDY = 'FORM_RDY';
 
   const { fromEvent, operators } = CrafterCMSNext.rxjs;
   const { map, filter, take } = operators;
@@ -739,15 +742,11 @@ var CStudioForms = CStudioForms || function() {
   }
 
   function resolvePendingComponents(doc) {
-    doc.querySelectorAll('component[pending]').forEach(component => {
-      component.outerHTML = FlattenerState[component.getAttribute('id')];
+    Object.keys(FlattenerState).forEach((id) => {
+      const component = doc.querySelector(`[id='${id}']`);
+      component.outerHTML = FlattenerState[id];
     });
-
-    if (doc.querySelectorAll('component[pending]').length) {
-      return resolvePendingComponents(doc);
-    } else {
-      return doc.outerHTML;
-    }
+    return doc.outerHTML;
   }
 
   // public methods
@@ -821,14 +820,19 @@ var CStudioForms = CStudioForms || function() {
             }
             case FORM_SAVE_REQUEST: {
               // Update the DOM for subsequent content request messages.
+              debugger;
               const nextComponentDOM = parseDOM(message.payload);
-              const objectId = nextComponentDOM.getElementsByTagName('objectId')[0].innerHTML;
+              const objectId = nextComponentDOM.querySelector('objectId').innerHTML;
               nextComponentDOM.setAttribute('id', objectId);
               FlattenerState[objectId] = nextComponentDOM.outerHTML;
-              const name = nextComponentDOM.getElementsByTagName('internal-name')[0].innerHTML;
-              CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
+              const name = nextComponentDOM.querySelector('internal-name').innerHTML;
+              CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({ }, message.editorId, objectId, name, message.draft);
               CStudioAuthoring.InContextEdit.unstackDialog(message.editorId);
+              //save
               break;
+            }
+            case FORM_PARENT_SAVE_REQUEST: {
+              cfe.engine.saveForm();
             }
           }
         });
@@ -890,7 +894,8 @@ var CStudioForms = CStudioForms || function() {
         };
 
         if(!isInclude) {
-          Array.from(dom.querySelectorAll(`item > component`)).forEach((component) => {
+          const components = Array.from(dom.querySelectorAll(`item > component`));
+          components.forEach((component) => {
             FlattenerState[component.getAttribute('id')] = component.outerHTML;
           });
         }
@@ -1547,6 +1552,29 @@ var CStudioForms = CStudioForms || function() {
         amplify.subscribe('/field/init/completed', function () {
           form.asyncFields--;
           closeAjaxOverlay();
+          messages$.subscribe((message) => {
+            switch (message.type) {
+              case OPEN_CHILD_COMPONENT: {
+                const key = message.key;
+                const contentType = parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
+                CStudioAuthoring.Operations.performSimpleIceEdit(
+                  { contentType: contentType, uri: key },
+                  null, // field
+                  true,
+                  {
+                    success: function (contentTO, editorId, name, value) {
+                      sendMessage({type: FORM_PARENT_SAVE_REQUEST});
+                    }
+                  },
+                  [],
+                  true
+                );
+              }
+            }
+          });
+          if(!me.config.isInclude) {
+            sendMessage({type: FORM_RDY});
+          }
         });
 
         if (!form.readOnly) {
@@ -2812,7 +2840,7 @@ var CStudioForms = CStudioForms || function() {
                   output += '</' + repeatKey + '>\r\n';
                 }else if( repeatItem.inline === 'true' && repeatKey === 'inline') {
                   const objId = modelItem[j]['key'];
-                  output += (FlattenerState[objId] ? FlattenerState[objId] : `<component id="${objId}" pending="true"/>`) + '\n';
+                  output += (FlattenerState[objId] ? FlattenerState[objId] : `<component id="${objId}"/>`) + '\n';
                 }
               }
               output += '\t</item>';

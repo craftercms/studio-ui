@@ -73,7 +73,19 @@
   });
 
   communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
+    var subscribeCallback = function (_message) {
+      switch (_message.type) {
+        case "FORM_RDY": {
+          amplify.unsubscribe('PARENT_FORM_MESSAGES', subscribeCallback);
+          CStudioAuthoring.InContextEdit.messageDialogs({ type: 'OPEN_CHILD_COMPONENT', key: message.childId });
+          break;
+        }
+      }
+    }
 
+    if(message.childId) {
+      amplify.subscribe('PARENT_FORM_MESSAGES', subscribeCallback);
+    }
     var isWrite = false;
     var par = [];
     var currentPath = (message.itemId) ? message.itemId : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;

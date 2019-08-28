@@ -9154,9 +9154,11 @@ CStudioAuthoring.Messages = CStudioAuthoring.Messages || {
 
 CStudioAuthoring.InContextEdit = {
   messagesSubscription: null,
-  messages$: CrafterCMSNext.rxjs.fromEvent(window, 'message'),
 
   messageDialogs: (message) => {
+    amplify.publish('PARENT_FORM_MESSAGES',
+      message
+    );
     (window.top.iceDialogs) && window.top.iceDialogs.forEach(({ iframe }) => {
       iframe &&
       iframe.contentWindow &&
