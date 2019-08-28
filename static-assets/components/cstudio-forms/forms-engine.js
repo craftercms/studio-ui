@@ -688,7 +688,7 @@ var CStudioForms = CStudioForms || function() {
     FORM_REQUEST = 'FORMS.FORM_REQUEST',
     FORM_REQUEST_FULFILMENT = 'FORMS.FORM_REQUEST_FULFILMENT',
     FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
-    PARENT_FORM_SAVE = 'FORMS.PARENT_FORM_SAVE',
+    FORM_UPDATE_REQUEST = 'FORMS.FORM_UPDATE_REQUEST',
     OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
     FORM_RDY = 'FORM_RDY';
 
@@ -823,7 +823,7 @@ var CStudioForms = CStudioForms || function() {
               }
               break;
             }
-            case FORM_SAVE_REQUEST: {
+            case FORM_UPDATE_REQUEST: {
               // Update the DOM for subsequent content request messages.
               debugger;
               const nextComponentDOM = parseDOM(message.payload);
@@ -836,7 +836,7 @@ var CStudioForms = CStudioForms || function() {
               //save
               break;
             }
-            case PARENT_FORM_SAVE: {
+            case FORM_SAVE_REQUEST: {
               cfe.engine.saveForm();
             }
           }
@@ -1273,7 +1273,7 @@ var CStudioForms = CStudioForms || function() {
 
           if (me.config.isInclude) {
             sendMessage({
-              type: FORM_SAVE_REQUEST,
+              type: FORM_UPDATE_REQUEST,
               editorId: editorId,
               payload: xml,
               preview,
@@ -1568,7 +1568,7 @@ var CStudioForms = CStudioForms || function() {
                   true,
                   {
                     success: function (contentTO, editorId, name, value) {
-                      sendMessage({type: PARENT_FORM_SAVE});
+                      sendMessage({type: FORM_SAVE_REQUEST});
                     }
                   },
                   [],
