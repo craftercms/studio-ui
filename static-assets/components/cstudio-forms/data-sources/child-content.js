@@ -24,6 +24,7 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   this.type = '';
   this.defaultEnableCreateNew = true;
   this.defaultEnableBrowseExisting = true;
+  this.defaultEnableSearchExisting = false;
   this.countOptions = 0;
 
   for (var i = 0; i < properties.length; i++) {
@@ -49,6 +50,12 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
       this.defaultEnableBrowseExisting = false;
       properties[i].value === 'true' ? this.countOptions++ : null;
     }
+
+    if(properties[i].name === "enableSearchExisting"){
+      this.enableSearchExisting = properties[i].value === "true" ? true : false;
+      this.defaultEnableSearchExisting = false;
+      properties[i].value === "true" ? this.countOptions ++ : null;
+    }
   }
 
   if (this.defaultEnableCreateNew) {
@@ -57,7 +64,9 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   if (this.defaultEnableBrowseExisting) {
     this.countOptions++;
   }
-
+  if(this.defaultEnableSearchExisting){
+    this.countOptions ++;
+  }
   return this;
 };
 
@@ -129,6 +138,28 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
     });
   },
 
+  searchExistingElementAction:function(control, _self, addContainerEl){
+    if(this.countOptions > 1) {
+      control.addContainerEl = null;
+      control.containerEl.removeChild(addContainerEl);
+    }
+
+    var searchContext = CStudioAuthoring.Service.createSearchContext();
+    searchContext.keywords = encodeURIComponent("");
+    CStudioAuthoring.Operations.openSearch(searchContext, true, {
+      success: function (searchId, selectedTOs) {
+        for (var i = 0; i < selectedTOs.length; i++) {
+          var item = selectedTOs[i];
+          var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
+          control.insertItem(item.uri, value, null, null, _self.id);
+          control._renderItems();
+        }
+      },
+      failure: function () {
+      }
+    }, null);
+  },
+
   add: function(control, onlyAppend) {
     var CMgs = CStudioAuthoring.Messages;
     var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
@@ -194,6 +225,25 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
       }
     }
 
+    if (this.enableSearchExisting || this.defaultEnableSearchExisting) {
+      if(this.countOptions > 1) {
+        addContainerEl.search = document.createElement("div");
+        addContainerEl.appendChild(addContainerEl.search);
+        YAHOO.util.Dom.addClass(addContainerEl.search, 'cstudio-form-controls-search-element');
+
+        var searchEl = document.createElement("div");
+        searchEl.innerHTML = CMgs.format(langBundle, "searchExisting") + " - " + newElTitle;
+        YAHOO.util.Dom.addClass(searchEl, 'cstudio-form-control-node-selector-add-container-item');
+        control.addContainerEl.search.appendChild(searchEl);
+        var addContainerEl = control.addContainerEl;
+        YAHOO.util.Event.on(searchEl, 'click', function () {
+          _self.searchExistingElementAction(control, _self, addContainerEl);
+        }, searchEl);
+      }else{
+        _self.searchExistingElementAction(control, _self);
+      }
+    }
+
   },
 
   edit: function(key, control) {
@@ -249,9 +299,10 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 
   getSupportedProperties: function() {
     return [
-      { label: CMgs.format(langBundle, "Enable Create New"), name: "enableCreateNew", type: "boolean", defaultValue: "true"  },
-      { label: CMgs.format(langBundle, "Enable Browse Existing"), name: "enableBrowseExisting", type: "boolean", defaultValue: "true" },
-			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
+      { label: CMgs.format(langBundle, "enableCreateNew"), name: "enableCreateNew", type: "boolean", defaultValue: "true"  },
+      { label: CMgs.format(langBundle, "enableBrowseExisting"), name: "enableBrowseExisting", type: "boolean", defaultValue: "true" },
+      { label: CMgs.format(langBundle, "enableSearchExisting"), name: "enableSearchExisting", type: "boolean", defaultValue: "false" },
+      { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
       { label: CMgs.format(langBundle, "browsePath"), name: "browsePath", type: "string" },
       { label: CMgs.format(langBundle, "defaultType"), name: "type", type: "string" }
     ];
