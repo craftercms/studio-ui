@@ -1128,6 +1128,14 @@ var nodeOpen = false,
                     searchUrl += "&page=1";
                 }
 
+                if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
+                  searchUrl += "&mode=" + searchContext.mode;
+                }
+
+                if (!CStudioAuthoring.Utils.isEmpty(searchContext.itemsPerPage)) {
+                  searchUrl += "&ipp=" + searchContext.itemsPerPage;
+                }
+
                 var childSearch = null;
 
                 if (!searchId || searchId == null || searchId == "undefined"
@@ -1135,6 +1143,7 @@ var nodeOpen = false,
                     childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
                     childSearch.openInSameWindow = openInSameWindow;
                     searchId = CStudioAuthoring.Utils.generateUUID();
+                    searchUrl += "&searchId=" + searchId;
 
                     childSearch.searchId = searchId;
                     childSearch.searchUrl = searchUrl;
