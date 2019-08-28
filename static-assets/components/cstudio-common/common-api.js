@@ -7844,12 +7844,12 @@ var nodeOpen = false,
                         "</tr>"].join("");
                 }
 
-                if(lockOwner && lockOwner != null && lockOwner.trim() != "") {
-                    toolTipMarkup +=  [
-                        "<tr>",
-                        "<td class='acn-width80'><strong>Locked by:</strong> </td>",
-                        "<td class='acn-width200'>{6}</td>",
-                        "</tr>"].join("");
+                if ((lockOwner || "").trim() !== "") {
+                  toolTipMarkup +=  [
+                      "<tr>",
+                      "<td class='acn-width80'><strong>Locked by:</strong> </td>",
+                      "<td class='acn-width200'>{6}</td>",
+                      "</tr>"].join("");
                 }
 
                 if (schedDate) {
