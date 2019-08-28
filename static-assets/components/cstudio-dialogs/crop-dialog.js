@@ -93,7 +93,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         var divIdName = "cstudio-wcm-popup-div";
         newdiv.setAttribute("id",divIdName);
         newdiv.className= "yui-pe-content";
-        newdiv.innerHTML = '<div class="contentTypePopupInner" id="crop-popup-inner">' +
+        newdiv.innerHTML = '<div class="contentTypePopupInner crop-image-dialog" id="crop-popup-inner">' +
             '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
             '<div class="contentTypePopupHeader">Crop Image</div> ' +
             '<div>'+
