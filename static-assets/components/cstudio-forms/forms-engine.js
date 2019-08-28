@@ -688,7 +688,7 @@ var CStudioForms = CStudioForms || function() {
     FORM_REQUEST = 'FORMS.FORM_REQUEST',
     FORM_REQUEST_FULFILMENT = 'FORMS.FORM_REQUEST_FULFILMENT',
     FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
-    FORM_PARENT_SAVE_REQUEST = 'FORMS.FORM_PARENT_SAVE_REQUEST',
+    PARENT_FORM_SAVE = 'FORMS.PARENT_FORM_SAVE',
     OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
     FORM_RDY = 'FORM_RDY';
 
@@ -742,11 +742,16 @@ var CStudioForms = CStudioForms || function() {
   }
 
   function resolvePendingComponents(doc) {
-    Object.keys(FlattenerState).forEach((id) => {
-      const component = doc.querySelector(`[id='${id}']`);
-      component.outerHTML = FlattenerState[id];
+    doc.querySelectorAll('component:not([processed])').forEach(component => {
+      const src =  parseDOM(FlattenerState[component.getAttribute('id')]);
+      component.innerHTML = src.innerHTML;
+      component.setAttribute('processed', 'true');
     });
-    return doc.outerHTML;
+    if (doc.querySelectorAll('component:not([processed])').length) {
+      return resolvePendingComponents(doc);
+    } else {
+      return doc.outerHTML;
+    }
   }
 
   // public methods
@@ -831,7 +836,7 @@ var CStudioForms = CStudioForms || function() {
               //save
               break;
             }
-            case FORM_PARENT_SAVE_REQUEST: {
+            case PARENT_FORM_SAVE: {
               cfe.engine.saveForm();
             }
           }
@@ -1563,7 +1568,7 @@ var CStudioForms = CStudioForms || function() {
                   true,
                   {
                     success: function (contentTO, editorId, name, value) {
-                      sendMessage({type: FORM_PARENT_SAVE_REQUEST});
+                      sendMessage({type: PARENT_FORM_SAVE});
                     }
                   },
                   [],
