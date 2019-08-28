@@ -749,6 +749,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     maxLength: "Maximale Länge",
     width: "Breite",
     height: "Höhe",
+    autoGrow: "Auto wachsen",
     allowResize: "Größenänderung zulassen",
     forceRootBlockP: "<p>-Tag als Root Blockelement erzwingen",
     forcePNewLines: "<p>-Tag als Zeilenumbruch erzwingen",

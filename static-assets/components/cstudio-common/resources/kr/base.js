@@ -697,6 +697,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     maxLength: "최대 길이s",
     width: "폭",
     height: "신장",
+    autoGrow: "자동 성장",
     allowResize: "크기 조정 허용",
     forceRootBlockP: "강제 루트 블록 p 태그",
     forcePNewLines: "강제 p는 신규 라인 태그",

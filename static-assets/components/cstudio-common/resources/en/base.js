@@ -749,6 +749,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     maxLength: "Max Length",
     width: "Width",
     height: "Height",
+    autoGrow: "Auto Grow",
     allowResize: "Allow Resize",
     forceRootBlockP: "Force Root Block p Tag",
     forcePNewLines: "Force p tags New Lines",
