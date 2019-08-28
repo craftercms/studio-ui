@@ -459,7 +459,7 @@ div[id*="expandComponentError"].yui-dialog {
 
 /*#ct_contentTypePopupInner .contentTypePopupBtn input,
 .contentTypePopupContent .contentTypePopupBtn input,
-#schedulePolicyPanel .schedulePolicySubmitButtons input,  
+#schedulePolicyPanel .schedulePolicySubmitButtons input,
 #submitPanel .acnBox .acnSubmitButtons input, *//* For confirmation dialogs *//*
 #acnVersionWrapper .acnSubmitButtons input,  *//* Applies to Delete, Reject, Schedule and GoLive *//*
 #messageOverlay .acnSubmitButtons input,
@@ -529,6 +529,10 @@ div[id*="expandComponentError"].yui-dialog {
   word-spacing: normal;
   word-break: normal;
   word-wrap: normal;
+}
+
+.yui-pe-content span.status-icon {
+  color: #fff;
 }
 
 #cstudio-wcm-popup-div select, #cstudio-wcm-popup-div-login select, #cstudio-wcm-popup-div option, #cstudio-wcm-popup-div-login option {
