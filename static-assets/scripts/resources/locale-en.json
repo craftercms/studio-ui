@@ -20,7 +20,9 @@
       "CHANGE_PASSWORD": "Change Password",
       "RECOVER_ERROR": "Please check with your sysadmin to make sure an SMTP server is configured.",
       "USER_PASSWORD_INVALID": "Invalid username or password",
-      "LOGIN_ERROR": "A system error has occurred. Please wait a few minutes or contact an administrator"
+      "LOGIN_ERROR": "A system error has occurred. Please wait a few minutes or contact an administrator",
+      "PASSWORD_REQUIREMENTS_ERROR": "User password does not fullfill requirements",
+      "PASSWORD_REQUIREMENTS_REMEDIAL": "Use password that will fullfill password requirements"
     },
     "sites": {
       "SITES_LABEL": "Sites",
@@ -37,6 +39,7 @@
       "ACCOUNT": "Account",
       "SITE_ERROR" : "is an invalid site.",
       "SITES_PER_PAGE": "Sites per page",
+      "NO_SITES_MESSAGE":"You are not a member of any site. Please contact your administrator to request access.",
 
       "create": {
         "HEADER_LABEL": "Create Site",
@@ -248,12 +251,14 @@
         "WRNINGGPBODY":" Bulk publish will force publish all items that match the pattern requested including their dependencies. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing.",
         "PUBLISHSTARTED":"Bulk Publish process has been started.",
         "PUBLISHBYCOMMITS": "Publish by Commit ID(s)",
+        "PUBLISHBYCOMMITS_SUCCESS": "Committed successfully",
         "COMMITIDS": "Commit IDs",
         "COMMENT": "Comment",
         "COMMITIDSEXAMPLE": "(e.g. bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbbb5b91fb31841303b0c428f14b0e66f8a7)"
     },
     "repositories": {
         "REPOSITORIES": "Repositories",
+        "REMOTES": "Remotes",
         "NEW_REPOSITORY":"New Repository",
         "REPOSITORIES_PER_PAGE": "Repositories per page",
         "NAME": "Name",
@@ -268,7 +273,35 @@
         "REMOTE_BRANCH_PUSH":"Remote Branch to push to ",
         "SUCCESSFULLY_PUSHED": "Successfully Pushed",
         "SUCCESSFULLY_PULLED": "Successfully Pulled",
-        "REPO_DELETED": "repository deleted"
+        "REPO_DELETED": "repository deleted",
+        "MERGE_STRATEGY_LABEL": "Merge Strategy",
+        "MERGE_STRATEGIES": {
+          "none": "None",
+          "ours": "Accept Ours",
+          "theirs": "Accept Theirs"
+        },
+        "MERGE_STRATEGY_DESCRIPTIONS": {
+          "none": "",
+          "ours": "Accept the local's version of the site and overwrite the remote version if different",
+          "theirs": "Accept the remote's version of the site and overwrite the local version if different"
+        },
+        "REPOSITORY_STATUS": "Repository Status",
+        "NO_CONFLICTS": "Local repository is free of conflicts.",
+        "CONFLICTS_EXIST": "Repository operations are disabled while conflicts exist. Please resolve conflicts.",
+        "COMMIT_RESOLUTION": "Commit Resolution",
+        "COMMIT_RESOLUTION_CONFIRMATION": "You are about to commit the conflict resolution.",
+        "COMMIT_RESOLUTION_MESSAGE_REQUIREMENT": "Please supply a message for the repository history log:",
+        "COMMIT_RESOLUTION_INDICATIONS": "After committing this resolution. you should \"push\" the changes to remote(s) to sync up the new state that you have just defined.",
+        "REVERT_ALL": "Revert All",
+        "REVERT_ALL_DESCRIPTION": "Cancel pull operation and keep what's on this repository.",
+        "CONFLICTED_FILES": "Conflicted Files",
+        "PENDING_COMMIT": "Pending Commit",
+        "ACCEPT_REMOTE": "Accept Remote",
+        "ACCEPT_REMOTE_DESCRIPTION": "Override local file with the version pulled from remote.",
+        "KEEP_LOCAL": "Keep Local",
+        "KEEP_LOCAL_DESCRIPTION": "Discard remote changes and keep the local file.",
+        "DIFF": "Diff",
+        "SPLIT_VIEW": "Split View"
     },
     "clustering": {
         "HEADER_LABEL": "Cluster",
@@ -315,10 +348,8 @@
     "SEARCH_LABEL": "Search",
     "CLOSE_LABEL": "Close",
     "ADD_LABEL": "Add",
-    "CREATE": "create",
-    "create_LABEL": "Create",
-    "EDIT": "edit",
-    "edit_LABEL": "Edit",
+    "CREATE": "Create",
+    "EDIT": "Edit",
     "SAVE": "Save",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "is required.",
@@ -326,6 +357,7 @@
     "ALL_LABEL": "All",
     "REMOVE_LABEL": "Remove",
     "CONFIRMATION": "Confirmation",
+    "CONFIRM": "Confirm",
     "YES": "Yes",
     "NO": "No",
     "OK":"Ok",
@@ -340,9 +372,12 @@
     "VALID_EMAIL": "Enter a valid email",
     "MATCH_ENTRY": "Must match the previous entry",
     "ERROR": "Error",
+    "CODE": "Code",
+    "SEE_DOCUMENTATION": "See Documentation.",
     "DELETE_QUESTION":"Do you want to delete",
     "GLOBAL_MENU": "Global Menu",
-    "MAIN_MENU": "Main Menu"
+    "MAIN_MENU": "Main Menu",
+    "RESET_PASSWORD": "Reset Password"
 
   }
 }

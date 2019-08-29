@@ -20,7 +20,9 @@
       "CHANGE_PASSWORD": "Cambiar contraseña",
       "RECOVER_ERROR": "Por favor verifique con su sysadmin para asegurarse de que un servidor SMTP esté configurado.",
       "USER_PASSWORD_INVALID": "Usuario o contraseña inválidos.",
-      "LOGIN_ERROR": "Ha ocurrido un error de sistema. Por favor espere unos minutos o contacte un administrador."
+      "LOGIN_ERROR": "Ha ocurrido un error de sistema. Por favor espere unos minutos o contacte un administrador.",
+      "PASSWORD_REQUIREMENTS_ERROR": "La contraseña no cumple con los requerimientos",
+      "PASSWORD_REQUIREMENTS_REMEDIAL": "Use una contraseña que cumpla con los requerimientos"
     },
     "sites": {
       "SITES_LABEL": "Sitios",
@@ -37,6 +39,7 @@
       "ACCOUNT": "Cuenta",
       "SITE_ERROR" : "es un sitio inválido",
       "SITES_PER_PAGE": "Sitios por página",
+      "NO_SITES_MESSAGE":"Usted no es miembro de ningún sitio. Por favor, póngase en contacto con su administrador para solicitar el acceso.",
 
       "create": {
         "HEADER_LABEL": "Crear Sitio",
@@ -247,12 +250,14 @@
         "WRNINGGPBODY":"La publicación masiva obligará a publicar todos los artículos que coincidan con el patrón solicitado, incluidas sus dependencias. Asegúrese de que todos los elementos modificados (incluido el trabajo potencialmente en progreso) estén listos para publicarse antes de continuar.",
         "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado.",
         "PUBLISHBYCOMMITS": "Públicar por id(s) de commit",
+        "PUBLISHBYCOMMITS_SUCCESS": "Publicado exitosamente",
         "COMMITIDS": "ID de commits",
         "COMMENT": "Comentario",
         "COMMITIDSEXAMPLE": "(por ejemplo, bd9f54aaf0e67aa887ea3d562caf5ccdc5f9cee7, c327bbbb5b91fb31841303b0c428f14b0e66f8a7)"
     },
     "repositories": {
         "REPOSITORIES": "Repositorios",
+        "REMOTES": "Remotos",
         "NEW_REPOSITORY":"Repositorios Nuevos",
         "REPOSITORIES_PER_PAGE": "Repositorios por página",
         "NAME": "Nombre",
@@ -267,7 +272,35 @@
         "REMOTE_BRANCH_PUSH":"Sucursal remota para empujar a ",
         "SUCCESSFULLY_PUSHED": "Empujado con éxito",
         "SUCCESSFULLY_PULLED": "Jaló con éxito",
-        "REPO_DELETED": "repositorio borrado"
+        "REPO_DELETED": "repositorio borrado",
+        "MERGE_STRATEGY_LABEL": "Estrategia de Fusión",
+        "MERGE_STRATEGIES": {
+          "none": "Ninguna",
+          "ours": "Aceptar el nuestro",
+          "theirs": "Aceptar los suyos"
+        },
+        "MERGE_STRATEGY_DESCRIPTIONS": {
+          "none": "",
+          "ours": "Acepta la versión local del sitio y sobreescribe la versión remota (si es diferente)",
+          "theirs": "Acepta la versión remota del sitio y sobreescribe la versión local (si es diferente)"
+        },
+        "REPOSITORY_STATUS": "Estado del Repositorio",
+        "NO_CONFLICTS": "Repositorio local está libre de conflictos.",
+        "CONFLICTS_EXIST": "Las operaciones de repositorios están desactivadas mientras existan conflictos. Por favor resolver los conflictos.",
+        "COMMIT_RESOLUTION": "Commit de Resolución",
+        "COMMIT_RESOLUTION_CONFIRMATION": "Usted está por hacer commit de la resolución del conflicto.",
+        "COMMIT_RESOLUTION_MESSAGE_REQUIREMENT": "Por favor suministre un mensage para el registro de historia del repositorio.",
+        "COMMIT_RESOLUTION_INDICATIONS": "Luego de hacer commit de esta resolución, usted debe hacer \"push\" de los cambios a los remotos para sincronizar el nuevo estado que usted acaba de definir",
+        "REVERT_ALL": "Revertir Todo",
+        "REVERT_ALL_DESCRIPTION": "Cancelar la operación de pull y mantener lo que hay en este repositorio.",
+        "CONFLICTED_FILES": "Archivos en Conflicto",
+        "PENDING_COMMIT": "Pendientes de Commit",
+        "ACCEPT_REMOTE": "Aceptar Remoto",
+        "ACCEPT_REMOTE_DESCRIPTION": "Sobreescribir el archivo local con la versión jalada del remoto.",
+        "KEEP_LOCAL": "Mantener Local",
+        "KEEP_LOCAL_DESCRIPTION": "Descartar los cambios remotos y mantener el archivo local.",
+        "DIFF": "Diff",
+        "SPLIT_VIEW": "Vista Dividida"
     },
     "clustering": {
         "HEADER_LABEL": "Agrupar",
@@ -314,10 +347,8 @@
     "SEARCH_LABEL": "Buscar",
     "CLOSE_LABEL": "Cerrar",
     "ADD_LABEL": "Agregar",
-    "CREATE": "create",
-    "create_LABEL": "Crear",
-    "EDIT": "edit",
-    "edit_LABEL": "Editar",
+    "CREATE": "Crear",
+    "EDIT": "Modificar",
     "SAVE": "Guardar",
     "VIEW": "view",
     "IS_REQUIRED_LABEL": "es requerido.",
@@ -325,6 +356,7 @@
     "ALL_LABEL": "Todos",
     "REMOVE_LABEL": "Eliminar",
     "CONFIRMATION": "Confirmación",
+    "CONFIRM": "Confirmar",
     "YES": "Si",
     "NO": "No",
     "OK":"Ok",
@@ -339,8 +371,11 @@
     "VALID_EMAIL": "Ingrese un correo válido",
     "MATCH_ENTRY": "Debe coincidir con la entrada anterior",
     "ERROR": "Error",
+    "CODE": "Código",
+    "SEE_DOCUMENTATION": "Ver Documentación.",
     "DELETE_QUESTION":"Quieres borrar",
     "GLOBAL_MENU": "Menu Global",
-    "MAIN_MENU": "Menu Principal"
+    "MAIN_MENU": "Menu Principal",
+    "RESET_PASSWORD": "Restablecer la contraseña"
   }
 }

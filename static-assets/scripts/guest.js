@@ -42,6 +42,7 @@ define('guest', [
 
   return {
     init: init,
+    iceRepaint: iceRepaint,
     reportNavigation: reportNavigation
   };
 
@@ -211,10 +212,6 @@ define('guest', [
 
     });
 
-    window.studioICERepaint = function () {
-      clearSetTimeout(Constants.TIME_RESIZE);
-    }
-
     $(window).resize(function (e) {
       clearSetTimeout(Constants.TIME_RESIZE);
     });
@@ -223,15 +220,35 @@ define('guest', [
       clearSetTimeout(Constants.TIME_SCROLL);
     });
 
-    loadCss(config.hostOrigin + '/' + crafter.join(config.studioContext, config.studioStaticAssets, 'styles', 'guest.css'));
+    loadCss(config.hostOrigin + crafter.join(
+      '/',
+      config.studioContext,
+      config.studioStaticAssets,
+      'styles',
+      'guest.css'
+    ));
 
-    if (!$("link[href*='font-awesome']").length) {
-      loadCss(config.hostOrigin + '/' + crafter.join(config.studioContext, config.studioStaticAssets, 'themes', 'cstudioTheme', 'css', 'font-awesome.min.css'));
+    if (!$('link[href*=\'font-awesome\']').length) {
+      loadCss(config.hostOrigin + crafter.join(
+        '/',
+        config.studioContext,
+        config.studioStaticAssets,
+        'themes',
+        'cstudioTheme',
+        'css',
+        'font-awesome.min.css'
+      ));
     }
 
     setRegionsCookie();
 
   }
+
+  function iceRepaint() {
+    clearSetTimeout(Constants.TIME_RESIZE);
+  }
+
+  window.studioICERepaint = iceRepaint;
 
   function initIceRegions_resizeIceRegions_handler(message) {
     if (!message) {
@@ -240,8 +257,8 @@ define('guest', [
       iceToolsOn = (!!message.iceOn) && (message.componentsOn != 'true');
       if (
         // TODO: REFACTOR
-      // !!(window.parent.sessionStorage.getItem('ice-on')) &&
-      // window.parent.sessionStorage.getItem('components-on') != 'true'
+        // !!(window.parent.sessionStorage.getItem('ice-on')) &&
+        // window.parent.sessionStorage.getItem('components-on') != 'true'
         iceToolsOn
       ) {
         initICERegions();

@@ -25,7 +25,7 @@
     <title>Crafter Studio</title>
     <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <#if userEmail??><script type="application/json" id="user">{"name":"${userFirstName!""}","surname":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
+    <#if userEmail??><script type="application/json" id="user">{"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
 
     </#if>
 
@@ -66,9 +66,6 @@
     <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico?version=${UIBuildId!.now?string('Mddyyyy')}">
-
-    <script> var xsrfToken = "${_csrf.token}" </script>
-
 </head>
 <body class="{{$state.current.cssClass}}">
 

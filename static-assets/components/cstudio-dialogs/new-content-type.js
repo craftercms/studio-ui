@@ -157,7 +157,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 		YEvent.on("contentTypeDisplayName", "keyup", function() {
                     YAHOO.Bubbling.fire("content-type.values.changed");
 					value = document.getElementById('contentTypeDisplayName').value;
-            
+
 					value = value.replace(/[^a-z0-9]/gi, '');
 					value = value.toLowerCase();
 
@@ -210,6 +210,8 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 			 '<file-extension>xml</file-extension>\r\n' +
 			 '<content-as-folder>'+contentAsFolder+'</content-as-folder>\r\n' +
 			 '<previewable>'+ (type == 'page') +'</previewable>\r\n' +
+             '<quickCreate>false</quickCreate>\r\n' +
+             '<quickCreatePath></quickCreatePath>\r\n' +
 			 '<noThumbnail>true</noThumbnail>\r\n' +
 			 '<image-thumbnail></image-thumbnail>\r\n' +
 			'</content-type>';
@@ -241,6 +243,8 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 							'<description></description>\r\n' +
 							'<content-type>/'+type+'/'+name+'</content-type>\r\n' +
 							'<objectType>'+type+'</objectType>\r\n' +
+                            '<quickCreate>false</quickCreate>\r\n' +
+                            '<quickCreatePath></quickCreatePath>\r\n' +
 							'<properties>\r\n' +
 								"<property>\r\n"+
 								"<name>content-type</name>\r\n"+
@@ -409,7 +413,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 	writeConfig: function(url, content, cb) {
 		YAHOO.util.Connect.setDefaultPostHeader(false);
 		YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
 		YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, content);
 	},
 

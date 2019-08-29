@@ -32,7 +32,10 @@
 
   communicator.subscribe(Topics.RESET_ICE_TOOLS_CONTENT, function (message) {
     sessionStorage.setItem("ice-tools-content", message);
-    initRegCookie && initRegCookie();
+    try {
+      // For ICE tools panel syncing.
+      window.initRegCookie();
+    } catch(e) {}
   });
 
   communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function (message) {
@@ -261,7 +264,7 @@
             page: message.url,
             site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
           },
-          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
+          studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
       setHash(params);
       amplify.publish(cstopic('GUEST_SITE_LOAD'), params);
 
@@ -614,14 +617,7 @@
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
       success: function (content) {
         CStudioAuthoring.SelectedContent.setContent(content.item);
-      }
-    });
-
-    new ResizeSensor($('.navbar-default'), function () {
-      if ($('.navbar-default').height() > 55) {
-        $('.studio-preview').css('top', 100 + "px");
-      } else {
-        $('.studio-preview').css('top', 50 + "px");
+        selectContentSet(content.item, false);
       }
     });
 
@@ -676,9 +672,22 @@
       success: function (content) {
         if(content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
+          selectContentSet(content.item, true);
         }
       }
     });
+  }
+
+  // Triggers selected content set event to update highlight
+  // item: selected item
+  // reloadTree: if needed, allows tree to be reloaded. For assets it will be false since reload is not needed.
+  function selectContentSet(item, reloadTree) {
+    window.setTimeout(function() {
+      amplify.publish("SELECTED_CONTENT_SET", {
+        contentTO: item,
+        reload: reloadTree
+      });
+    }, 0);
   }
 
   window.addEventListener("hashchange", function (e) {

@@ -326,7 +326,7 @@ div#acn-active-content {
   font-weight: 600;
   line-height: 20px;
   margin-bottom: -4px;
-  padding: 13px 25px 16.5px 8px;
+  padding: 13px 4px 16.5px 8px;
   font-size: 16px;
 }
 
@@ -392,6 +392,10 @@ div#acn-active-content {
   }
   .treenode-label {
     margin: 0 0 5px 0;
+
+    .highlighted {
+      font-weight: bold;
+    }
   }
   .acn-dropdown-toggler {
     text-decoration: none;
@@ -491,6 +495,12 @@ div#acn-active-content {
 
 .acn-dropdown-wrapper .acn-dropdown-menu div.acn-parent {
   margin: 15px 0 0 0;
+
+  .treenode-label {
+    &.highlighted {
+      font-weight: bold;
+    }
+  }
 }
 
 .acn-dropdown-wrapper .acn-dropdown-menu li.last {
@@ -505,12 +515,15 @@ div#acn-active-content {
 .acn-admin-console {
   font-size: 14px;
   line-height: 15px;
+  margin-top: 15px !important;
   color: #333333;
   cursor: pointer;
 }
 
-#admin-console {
-  margin-top: 15px; 
+#cstudio-admin-console-workarea {
+  iframe {
+    border: 0;
+  }
 }
 
 .acn-admin-console:hover {
@@ -2093,8 +2106,7 @@ div.rejectContainer{
   height: 20px;
   left: 1px;
   margin: 2px 0 0 3px;
-  _position: none;
-  position: none;
+  position: static;
   vertical-align: middle;
   width: 18px;
 }
@@ -2331,7 +2343,7 @@ div#cal1Container {
 .yui-calendar td.calcell {
   background: #fff;
   border: 0px;
-  #padding: 5px;
+  padding: 5px;
 }
 
 .yui-calendar td.calcell {
@@ -2847,6 +2859,40 @@ span.acn-canned-search {
     margin-bottom: 10px;
   }
 
+  .control-container.datetime{
+    .control-label {
+      float: left;
+    }
+
+    .date-container {
+      display: block;
+      padding-left: 100px;
+
+      .yui-calcontainer {
+        float: none;
+        position: relative;
+      }
+
+      .date-control.date {
+        margin-right: 40px;
+      }
+
+      select.date-control {
+        background-color: #fff;
+        padding: 1px;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  #targeting-container .hint {
+    visibility: hidden;
+  }
+
+  #targeting-container .control-container:hover .hint{
+    visibility: visible;
+  }
+
 }
 
 .target-btns{
@@ -3235,70 +3281,8 @@ span.acn-canned-search {
   background: repeating-linear-gradient( 45deg, #5d84a9, #5d84a9 10px, #7e9dbb 10px, #7e9dbb 20px );
 }
 
-.studio-preview ~ #controls-overlay #studioBar .navbar-right-wrapper{
+.studio-preview #studioBar .navbar-right-wrapper {
   float: right;
-
-  @media (max-width: 1320px){
-    width: 506px;
-  }
-}
-
-.cstudio-image-popup-overlay{
-  position: fixed;
-  display: none;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  margin: auto;
-  z-index: 32;
-  background: rgba(0, 0, 0, 0.6);
-  text-align: center;
-
-  .cstudio-image-pop-up {
-    display: inline-block;
-    box-sizing: content-box;
-    background: #f2f2f2;
-    border-radius: 4px;
-    padding: 5px 10px 10px;
-
-    &> div {
-      text-align: right;
-        .close {
-          float: none;
-          border: none;
-          background: transparent;
-          box-shadow: none;
-          font-size: 20px;
-          font-weight: normal;
-          padding: 0;
-          line-height: 12px;
-          padding-bottom: 7px;
-          margin-right: -4px;
-          margin-top: 1px;
-          opacity: 1;
-          border-radius: 0;
-          color: #5d5d5d;
-      }
-    }
-
-    img, video {
-      border-radius: 6px;
-        max-width: 700px;
-        background-color: #fff;
-    }
-
-          video {
-            max-width: 600px;
-          }
-  }
-
-  &:before{
-    content: "";
-      display: inline-block;
-       vertical-align: middle;
-      height: 100%;
-  }
 }
 
 .site-dashboard {
@@ -3323,3 +3307,4 @@ span.acn-canned-search {
 @import "cstudio-view";
 @import "preview";
 @import "navbar";
+@import "preview-dialog";

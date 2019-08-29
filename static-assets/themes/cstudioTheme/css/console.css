@@ -470,6 +470,10 @@ body,tbody {
     width: 94%;
 }
 
+.popover-content p{
+    padding: 0px;
+}
+
 .checkboxes .property-label {
     /*border-right: 0 none;*/
 }
@@ -844,4 +848,42 @@ html, body {
     padding-top: 12px;
     margin: 28px 20px 0px 20px;
     text-align: center;
+}
+
+.quick-create-help {
+
+}
+
+.quick-create-help th,
+.quick-create-help td {
+  vertical-align: top;
+  padding: 0 5px 5px 0;
+}
+
+.quick-create-help th {
+  text-align: right;
+}
+
+.quick-create-help__trigger {
+  border: none;
+  padding: 5px 0;
+  background: none;
+}
+
+.quick-create-help__ {
+
+}
+
+.quick-create-help__insert-btn {
+
+}
+
+.quick-create-help__popover-mask {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  position: fixed;
 }

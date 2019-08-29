@@ -120,7 +120,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 				},
 				
 				render: function() {
-				    var el, containerEl, pencilIcon, iconLabel, iceOn;
+				    var el, containerEl, pencilIcon, iceOn;
 
                     var CMgs = CStudioAuthoring.Messages;
 					var previewLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
@@ -136,6 +136,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
 					iceOn = !!(sessionStorage.getItem('ice-on'));   // cast string value to a boolean
 
                     YDom.addClass(pencilIcon, "nav-icon fa fa-pencil f18");
+                    $(pencilIcon).attr('data-title', 'inContextEdit');
 
                     if(iceOn){
                         YDom.addClass(pencilIcon, "icon-yellow");
@@ -143,12 +144,7 @@ CStudioAuthoring.ContextualNav.IceToolsMod = CStudioAuthoring.ContextualNav.IceT
                         YDom.addClass(pencilIcon, "icon-default");
                     }
 
-                    iconLabel = document.createElement("span");
-                    YDom.addClass(iconLabel, "nav-label");
-                    iconLabel.innerHTML = CMgs.format(previewLangBundle, "inContextEdit");
-
 					containerEl.appendChild(pencilIcon);
-                    containerEl.appendChild(iconLabel);
 					el.appendChild(containerEl);
 
 					containerEl.onclick = function() {

@@ -167,13 +167,13 @@
 
                         if(response.total > 0){
                             $.each(response.items, function(index, value){
-                                if( "folder" === value.mime_type ){
+                                if( "folder" === value.mimeType ){
                                     $tree.jstree('create_node', $node,
                                         {
-                                            "id": value.item_id,
-                                            "text":value.item_name,
+                                            "id": value.itemId,
+                                            "text":value.itemName,
                                             "a_attr": {
-                                                "data-path": value.item_path
+                                                "data-path": value.itemPath
                                             }
                                         },
                                         "last", false, false);
@@ -261,7 +261,7 @@
                 repoId = CStudioAuthoring.Utils.getQueryParameterByName("repoId"),
                 site = CStudioAuthoring.Utils.getQueryParameterByName("site"),
                 path = contentTO.browserUri,
-                paramsJson = {"site_id" : site, "cmis_repo_id" : repoId, "cmis_path" : path, "studio_path" : studioPath};
+                paramsJson = {"siteId" : site, "cmisRepoId" : repoId, "cmisPath" : path, "studioPath" : studioPath};
             var callbackContent = {
                 success: function(response) {
                     contentTO.clone = true;
@@ -354,12 +354,12 @@
             object;
 
         $.each(items.items, function(index, value){
-            if( "folder" === value.mime_type ){
+            if( "folder" === value.mimeType ){
                 object = {
-                    id: value.item_id,
-                    text: value.item_name,
+                    id: value.itemId,
+                    text: value.itemName,
                     a_attr: {
-                        "data-path": value.item_path
+                        "data-path": value.itemPath
                     }
                 };
 
@@ -372,13 +372,13 @@
 
     CStudioBrowseCMIS.parseItemObj = function(item) {
         var parsed = {
-            itemId: item.item_id,
+            itemId: item.itemId,
             selectMode: "",
             status: "",
-            internalName: item.item_name,
-            type: item.mime_type,
-            browserUri: item.item_path,
-            mimeType: item.mime_type
+            internalName: item.itemName,
+            type: item.mimeType,
+            browserUri: item.itemPath,
+            mimeType: item.mimeType
         };
 
         return parsed;
@@ -409,7 +409,7 @@
                 $resultsContainer.prepend($resultsWrapper);
 
                 $.each(items, function(index, value){
-                    if("folder" != value.mime_type){
+                    if("folder" != value.mimeType){
                         me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
                         filesPresent = true;
                     }
@@ -437,7 +437,7 @@
                         $resultsContainer.prepend($resultsWrapper);
 
                         $.each(items, function(index, value){
-                            if("folder" != value.mime_type){
+                            if("folder" != value.mimeType){
                                 me.renderItem(me.parseItemObj(value), $resultsWrapper, repoPath);
                                 filesPresent = true;
                             }

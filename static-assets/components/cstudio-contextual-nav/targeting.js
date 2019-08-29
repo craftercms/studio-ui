@@ -21,7 +21,7 @@
 CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.TargetingMod || {
 
 	initialized: false,
-	
+
 	/**
 	 * initialize module
 	 */
@@ -29,7 +29,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 		this.definePlugin();
 		CStudioAuthoring.ContextualNav.TargetingNav.init();
 	},
-	
+
 	definePlugin: function() {
 		var YDom = YAHOO.util.Dom,
 			YEvent = YAHOO.util.Event;
@@ -62,10 +62,10 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 						}
 					});
 				},
-				
+
 				render: function() {
 					var me = this,
-						el, containerEl, iconEl, iconLabel, ptoOn;
+						el, containerEl, iconEl, ptoOn;
 
 					var CMgs = CStudioAuthoring.Messages;
 					var previewLangBundle = CMgs.getBundle("targeting", CStudioAuthoringContext.lang);
@@ -78,13 +78,9 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
                     iconEl = document.createElement("span");
                     iconEl.id = "acn-persona-image";
                     YDom.addClass(iconEl, "nav-icon fa fa-bullseye");
-
-                    iconLabel = document.createElement("span");
-                    YDom.addClass(iconLabel, "nav-label");
-                    iconLabel.innerHTML = CMgs.format(previewLangBundle, "targeting");
+                    $(iconEl).attr('data-title', 'targeting');
 
 					containerEl.appendChild(iconEl);
-                    containerEl.appendChild(iconLabel);
 					el.appendChild(containerEl);
 
                     containerEl.onclick = function() {
@@ -107,16 +103,15 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
 					var reportContainerEl = document.createElement("div");
 					reportContainerEl.id = "cstudioPreviewTargetingOverlay";
-					YAHOO.util.Dom.addClass(reportContainerEl, "cstudio-targeting-overlay row");
+					YAHOO.util.Dom.addClass(reportContainerEl, "cstudio-targeting-overlay row yui-skin-cstudioTheme");
 
 					reportContainerEl.style.position = "fixed";
 					reportContainerEl.style.width = "800px";
 					reportContainerEl.style.height = "auto";
 					reportContainerEl.style.minHeight = "300px";
-					reportContainerEl.style.maxHeight = "445px";
+					reportContainerEl.style.maxHeight = "565px";
 					reportContainerEl.style.top = "96px";
 					reportContainerEl.style.padding = "15px 15px 50px 15px";
-					// reportContainerEl.style.paddingBottom = "50px";
 
 					var x = (window.innerWidth / 2) - (reportContainerEl.offsetWidth / 2) - 400;
 					reportContainerEl.style.left = x+"px";
@@ -132,7 +127,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var targetingContainerEl = document.createElement("div");
 					targetingContainerEl.id = "targeting-container";
 					YAHOO.util.Dom.addClass(targetingContainerEl, "col-md-10 targeting-container");
-					targetingContainerEl.style.cssText = "overflow-y: scroll; max-height: 349px;";
+					targetingContainerEl.style.cssText = "overflow-y: scroll; max-height: 467px;";
 					targetingContainerEl.innerHTML = "<h3 class='bold'>" + CMgs.format(previewLangBundle, "userProps") + "</h2>";
 
 					reportContainerEl.appendChild(targetingContainerEl);
@@ -238,7 +233,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 												input.style.width = "30%";
 												controlContainer.appendChild(input);
 
-												break;
+                        break;
+                      case 'datetime':
+
+                        me.dateTimeInit(controlContainer, currentProp);
+
+                        break;
 										}
 
 										var description = document.createElement("span");
@@ -272,7 +272,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					clearBtn.onclick = function() {
 						CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/targeting/targeting-config.xml', {
 							success: function (config) {
-								var properties = config.property,
+								var properties = Array.isArray(config.property) ? config.property : [config.property],
 									currentProp,
 									controlEl;
 
@@ -305,7 +305,21 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 											break;
 										case "input":
 											controlEl.value = currentProp.default_value;
-											break;
+                      break;
+                    case "datetime":
+                      var $controlEl = $(controlEl),
+                          $dateTimePicker = $controlEl.find('.date-picker');
+
+                      if (currentProp.default_value === '') {
+                        $dateTimePicker.val(currentProp.default_value);
+                      }else{
+                        $dateTimePicker.datetimepicker({
+                          value: new Date(currentProp.default_value)
+                        });
+                      }
+
+
+                      break;
 									}
 								}
 							}
@@ -339,8 +353,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 				updateTargeting: function(reportContainerEl) {
 					this.updateModel();
 
-					var serviceUri = "/api/1/profile/set",
-						first = true,
+					var serviceUri = "/api/1/profile/set?",
 						value,
 						key;
 
@@ -351,17 +364,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 							key = property;
 
 							if(value){
-								if(first){
-									first = false;
-									serviceUri += "?" + key + "=" + value;
-								}else{
-									serviceUri += "&" + key + "=" + value;
-								}
-							}
+                serviceUri += key + "=" + value + "&";
+              }
 						}
 					}
 
-					serviceUri = serviceUri + "&" + new Date();
+					serviceUri += new Date();
 
 					YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(encodeURI(serviceUri)), {
 						success: function() {
@@ -383,7 +391,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var me = this,
 						properties = properties;
 
-					if(!properties.forEach){	//if only 1 item - returns item, not in array		
+					if(!properties.forEach){	//if only 1 item - returns item, not in array
 						properties = [properties];
 					}
 
@@ -439,11 +447,48 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 						}else if($(element).hasClass("input")){
 							key = $(element).find("input").attr("id");
 							value = $(element).find("input").val();
-						}
+						} else if ($(element).hasClass("datetime")) {
+              var dateTimeVal = moment($(element).find('.date-picker').val(), 'YYYY-MM-DD HH:mm A');
+
+              key = $(element).find('.date-container').attr('id');
+              value = dateTimeVal.toISOString();
+            }
 
 						me.model[key] = value;
 					});
-				}
+        },
+
+        dateTimeInit: function(controlContainer, currentProp) {
+          $(controlContainer).addClass('datetime');
+
+          var timeZone = moment.tz.guess(),   //client timezone (just to display, saved in model as gmt)
+              timestamp = moment(new Date()).unix(),
+              timeZoneAbbr = moment.tz.zone(timeZone).abbr(timestamp),
+              $dateContainer = $('<div class="date-container clearfix" id="' + currentProp.name + '"/>').appendTo(controlContainer),
+              $dateTimeEl = $('<input readonly class="date-picker mr10" name="' + currentProp.name + '-control" type="datetime" />').appendTo($dateContainer),
+              $timeZone =$('<span class="mr10">' + timeZoneAbbr + '</span>').appendTo($dateContainer),
+              $setNowLink = $('<a href="#">Set Now</a>').appendTo($dateContainer);
+
+            $dateTimeEl.datetimepicker({
+              format: 'Y/m/d h:i a',
+              dateFormat: "Y/m/d",
+              formatTime:	'h:i a',
+              step: 15
+            });
+
+            if (currentProp.default_value && currentProp.default_value !== '') {
+              $dateTimeEl.datetimepicker({
+                value: new Date(currentProp.default_value)
+              });
+            }
+
+            $setNowLink.on('click', function(e) {
+              e.preventDefault();
+              $dateTimeEl.datetimepicker({
+                value: new Date()
+              })
+            });
+        }
 			}
 		});
 	}

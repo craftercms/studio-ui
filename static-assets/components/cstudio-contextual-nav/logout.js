@@ -17,11 +17,11 @@
 
 /**
  * Logout Plugin
- */ 
+ */
 CStudioAuthoring.ContextualNav.WcmLogoutMod = CStudioAuthoring.ContextualNav.WcmLogoutMod || {
 
 	initialized: false,
-	
+
 	/**
 	 * initialize module
 	 */
@@ -89,7 +89,7 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = CStudioAuthoring.ContextualNav.Wcm
 
                 YConnect.setDefaultPostHeader(false);
                 YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
+                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
                 YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
 
             };

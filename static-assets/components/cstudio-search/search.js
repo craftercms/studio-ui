@@ -34,10 +34,11 @@
         sortOrder: "asc",
         numFilters: 1,
         filtersShowing: 10,
-        currentPage: 1,	
+        currentPage: 1,
         searchInProgress: false,
         view: 'grid',
-        lastSelectedFilterSelector: '' 
+        lastSelectedFilterSelector: '',
+        selectionState: {}
     };
 
     CStudioSearch.typesMap = {
@@ -61,8 +62,8 @@
         JavaScript: { icon: 'fa-file-code-o' },
         Groovy: { icon: 'fa-file-code-o' },
         PDF: { icon: 'fa-file-pdf-o' },
-        "MS WORD": { icon: 'fa-file-word-o' },
-        "MS EXCEL": { icon: 'fa-file-excel-o' },
+        "MS Word": { icon: 'fa-file-word-o' },
+        "MS Excel": { icon: 'fa-file-excel-o' },
         "MS PowerPoint": { icon: 'fa-file-powerpoint-o' }
     }
 
@@ -82,7 +83,8 @@
     };
 
     CStudioSearch.bindEvents = function() {
-        var searchTimeout;
+        var searchTimeout,
+            filterTimeout;
 
         // Search input changes
         $('#searchInput').on('keyup', function(e){
@@ -92,7 +94,7 @@
                 CStudioSearch.clearFilters();
                 CStudioSearch.performSearch();
                 CStudioSearch.updateUrl();
-            }else{ 
+            }else{
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(function(){
                     CStudioSearch.searchContext.keywords = e.target.value;
@@ -104,10 +106,12 @@
         });
 
         $('#searchButton').on('click', function(e){
-            CStudioSearch.searchContext.keywords = $('#searchInput').val();
+          var $searchInput = $('#searchInput');
+            CStudioSearch.searchContext.keywords = $searchInput.val();
             CStudioSearch.clearFilters();
-            CStudioSearch.performSearch();
+            CStudioSearch.performSearch(true);
             CStudioSearch.updateUrl();
+            $searchInput.focus().select();
         });
 
         // Selecting an item from the results
@@ -115,14 +119,14 @@
             var path = $(this).attr('data-url'),
                 selected = $(this).is(":checked"),
                 allSelected;
-            
+
             // synchronize checkbox (grid and list view)
             $('input[type="checkbox"][data-url="' + path + '"]').prop('checked', selected);
 
             // if all checkboxes are selected/unselected -> update select all checkbox
             allSelected = $('input[type="checkbox"].search-select-item:checked').length == $('input[type="checkbox"].search-select-item').length;
             $('#searchSelectAll').prop('checked', allSelected);
-                
+
             CStudioSearch.changeSelectStatus(path, selected);
         });
 
@@ -132,7 +136,7 @@
                 $elements = $('input[type="checkbox"].search-select-item');
 
             $elements.prop('checked', selected).trigger("change");
-            
+
         });
 
         // Clicking on view icon from the results
@@ -158,9 +162,10 @@
             CStudioSearch.deleteElement(path);
         });
 
-        // Selecting a filter
-        $('.cstudio-search').on('change', '.filter-item input[type="radio"]', function(){
-            var filterName = $(this).attr('name'),
+        // Selecting a single value filter
+        $('.cstudio-search').on('change', '.filter-item input[type="radio"], .filter-item select.search-dropdown', function(){
+            var searchFilters = CStudioSearch.searchContext.filters,
+                filterName = $(this).attr('name'),
                 isRange = $(this).attr('data-range') === 'true',
                 filterValue,
                 from,
@@ -173,29 +178,68 @@
             }else{
                 filterValue = $(this).val()
             }
-            
+
             if(isAdditional){
                 if(isRange){
-                    CStudioSearch.searchContext.filters[filterName] = {
+                    searchFilters[filterName] = {
                         min: isNaN(parseInt(from)) ? null : from,
                         max: isNaN(parseInt(to)) ? null : to
-                    }; 
+                    };
+
+                    if (filterName === 'last-edit-date') {
+                        searchFilters[filterName].date = true;
+                        searchFilters[filterName].id = $(this).attr('id');
+
+                    }
                 }else{
-                    CStudioSearch.searchContext.filters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue); 
+                    searchFilters[filterName] = isNaN(parseInt(filterValue)) ? filterValue : parseInt(filterValue);
                 }
+
+                CStudioSearch.toggleFilterActionsState(filterName);
             }else{
                 CStudioSearch.searchContext[filterName] = filterValue;
             }
 
             CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
-            
+
             CStudioSearch.updateNumFilters(filterName);
             CStudioSearch.performSearch(true);
             CStudioSearch.updateUrl();
         });
 
+        // Selecting a multiple value filter
+        $('.cstudio-search').on('change', '.filter-item input[type="checkbox"]', function(){
+          var filterName = $(this).attr('name'),
+              isSelected;
+
+          isSelected = CStudioSearch.toggleFilterActionsState(filterName);
+
+          if( isSelected ) {
+            CStudioSearch.searchContext.selectionState[filterName] = { isDirty: true };
+          }
+        });
+
+        $('.cstudio-search').on('click', '.apply-selections', function(){
+          var searchFilters = CStudioSearch.searchContext.filters,
+          filterName = $(this).attr('name'),
+          filterValues = [];
+
+          $(".filter[name='" + filterName + "']:checked").each(function(){
+            filterValues.push($(this).val());
+          });
+
+          searchFilters[filterName] = filterValues;
+          CStudioSearch.searchContext.lastSelectedFilterSelector = '[href="#' + filterName + '"]';
+
+          CStudioSearch.updateNumFilters(filterName);
+          CStudioSearch.performSearch(true);
+          CStudioSearch.searchContext.selectionState[filterName].isDirty = false;
+          CStudioSearch.updateUrl();
+
+        });
+
         // Applying range to a filter
-        $('.cstudio-search').on('click', '.filter-range .apply-range', function(){ 
+        $('.cstudio-search').on('click', '.filter-range .apply-range', function(){
             var $parent = $(this).parent(),
                 filterName = $parent.attr('filter-name'),
                 rangeMin = parseInt($parent.find('.range-min').val()),
@@ -205,7 +249,7 @@
             CStudioSearch.searchContext.filters[filterName] = {
                 min: rangeMin,
                 max: rangeMax
-            }; 
+            };
 
             CStudioSearch.updateNumFilters();
             CStudioSearch.performSearch(true);
@@ -215,13 +259,18 @@
 
         // Clear filter
         $('.cstudio-search').on('click', '.filters .clear-filter', function(){
-            var filterId = $(this).parent().attr('id');
+            var filterId = $(this).parent().attr('id'),
+                selectionState = CStudioSearch.searchContext.selectionState[filterId];
             $('input[name="' + filterId + '"]').prop('checked', false);
 
-            delete CStudioSearch.searchContext.filters[filterId];
+            if( !selectionState || !selectionState.isDirty ) {
+              delete CStudioSearch.searchContext.filters[filterId];
+              CStudioSearch.performSearch(true);
+              CStudioSearch.updateUrl();
+            }
 
-            CStudioSearch.performSearch(true);
-            CStudioSearch.updateUrl();
+            CStudioSearch.toggleFilterActionsState(filterId);
+
         });
 
         // Changing results view (grid, list)
@@ -229,12 +278,12 @@
             var $resultsContainer = $('.results'),
                 newView = $(this).attr('data-view'),
                 oldView = newView === 'grid' ? 'list' : 'grid';
-            
+
             CStudioSearch.searchContext.view = newView;
             $('.view-selector button').removeClass('active');
             $(this).addClass('active');
 
-            $resultsContainer.switchClass(oldView, newView);    
+            $resultsContainer.switchClass(oldView, newView);
             CStudioSearch.updateUrl();
         });
 
@@ -249,29 +298,8 @@
                 cookieKey = type === 'Page' ? 'sitewebsite' : 'static-assets';
 
             if(treeVal){
-                treeCookieName = CStudioAuthoringContext.site + '-' + treeVal + '-opened';
-                treeCookie = CStudioAuthoring.Storage.read(treeCookieName);
-                treeCookie = treeCookie !== '' ? JSON.parse(treeCookie) : [];
 
-                // validate if is page and if has folder (ends with index.xml)
-                if(type === "Page" && (url.indexOf("index.xml") !== -1)){
-                    //remove everything after last-1 '/'
-                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
-                    parsedUrl = parsedUrl.substr(0, parsedUrl.lastIndexOf('/'));
-                }else{
-                    //remove everything after last '/'
-                    parsedUrl = url.substr(0, url.lastIndexOf('/'));
-                }
-
-                // key doesn't exist in cookie
-                if(!treeCookie[cookieKey] && parsedUrl != '/site'){
-                    treeCookie[cookieKey] = [];
-                }
-                // in entry doesn't exist in key
-                if(treeCookie[cookieKey] && !(treeCookie[cookieKey].includes(parsedUrl)) && parsedUrl != '/site'){
-                    treeCookie[cookieKey].push(parsedUrl);
-                }
-                storage.write(treeCookieName, JSON.stringify(treeCookie), 360);
+                CStudioAuthoring.Operations.updateTreeCookiePath(treeVal, cookieKey, url);
             }
             CStudioSearch.previewElement($(this).attr('data-url'));
         });
@@ -286,7 +314,7 @@
         var searchContext = CStudioSearch.searchContext;
 
         var urlParams = CStudioAuthoring.Utils.getUrlParams();
-        
+
         var queryString = document.location.search;
         var keywords = CStudioAuthoring.Utils.getQueryVariable(queryString, "keywords");
         var searchId = CStudioAuthoring.Utils.getQueryVariable(queryString, "searchId");
@@ -294,14 +322,14 @@
         var page = CStudioAuthoring.Utils.getQueryVariable(queryString, "page");
         var sortBy = CStudioAuthoring.Utils.getQueryVariable(queryString, "sortBy");
         var view = CStudioAuthoring.Utils.getQueryVariable(queryString, "view");
-    
+
         searchContext.keywords = (keywords) ? keywords : searchContext.keywords;
         searchContext.searchId = (searchId) ? searchId : null;
         searchContext.currentPage = (page) ? page : searchContext.currentPage;
         searchContext.sortBy = (sortBy) ? sortBy : searchContext.sortBy;
         searchContext.view = (view) ? view : searchContext.view;
         searchContext.itemsPerPage = (itemsPerPage) ? itemsPerPage : searchContext.itemsPerPage;
-            
+
         $.each(urlParams, function(key, value){
             var processedKey,
                 processedValue;
@@ -311,16 +339,19 @@
 
                 //csr = crafter studio range
                 if(value.indexOf("csr_") === 0){
-                    var range;
-                    processedValue = value.replace("csr_", "");
-                    range = processedValue.split('-');
+                    var rangeArray = value.split('csrID'),   //if parameter has id, separate from the rest of the param
+                        range,
+                        id = rangeArray[1];
+                    processedValue = rangeArray[0].replace("csr_", "");
+                    range = processedValue.split('csrTO');
 
                     searchContext.filters[processedKey] = {};
                     searchContext.filters[processedKey].min = range[0] === "null" ? null : range[0];
                     searchContext.filters[processedKey].max = range[1] === "null" ? null : range[1];
+                    id && (searchContext.filters[processedKey].id = id);
                 }else{
-                   processedValue = value;
-                   searchContext.filters[processedKey] = processedValue;
+                  processedValue = value;
+                  searchContext.filters[processedKey] = processedValue;
                 }
             }
         });
@@ -340,7 +371,7 @@
             view = CStudioSearch.searchContext.view;
         $resultsContainer.empty();
         $resultsContainer.addClass(view);
-    
+
         this.searchContext.facets = results.facets;     // for filters
         CStudioSearch.cleanFilters();
         this.initFilters();
@@ -402,7 +433,7 @@
             result.type === "Page"
             || result.type === "Image"
             || result.type === "Video"
-        ){  
+        ){
             result.previewable = true;
         }
 
@@ -411,7 +442,7 @@
         if(result.type !== 'Page' && result.type !== 'Component' && result.type !== 'Taxonomy' && result.type !== 'Image') {
             result.asset = true;
         }
-        result.icon = CStudioSearch.typesMap[result.type].icon;
+        result.icon = CStudioSearch.typesMap[result.type] ? CStudioSearch.typesMap[result.type].icon : CStudioSearch.typesMap["Other"].icon;
 
         var permissionsCached = cache.get(permissionsKey),
             validateAndRender = function(results) {
@@ -444,7 +475,7 @@
     }
 
     // creates a search query from searchContext
-    CStudioSearch.createSearchQuery = function() {        
+    CStudioSearch.createSearchQuery = function() {
         var searchContext = this.searchContext;
         var query = {
             "keywords": searchContext.keywords,
@@ -486,30 +517,31 @@
         // sortOrder
         var sortOrderValue = searchContext.sortOrder;
         $('#' + sortOrderValue).prop("checked", true);
+        $('select[name="sortOrder"]').val(sortOrderValue);
 
         // sortBy
-        var sortByValue = searchContext.sortBy;
+        var sortByValue = searchContext.sortBy,
+            $sortByDropdown = $('.filter-item .sort-dropdown[name="sortBy"]'),
+            optionTpl = '<option value="internalName">Name</option>';;
+
+        $sortByDropdown.empty();
+        $sortByDropdown.append(optionTpl);
         $.each(searchContext.facets, function(index, facet){
             var label = CMgs.format(langBundle, facet.name);
 
-            filterItem = {
-                name: 'sortBy',
-                value: facet.name,
-                id: facet.name,
-                label: label
-            }
+            optionTpl = '<option value="' + facet.name + '">' + label + '</option>';
+            $sortByDropdown.append(optionTpl);
 
-            html = template(filterItem);
-            $(html).appendTo($sortFilters);
         });
 
         CStudioSearch.addSeeMore($sortFilters, 'sortBy');
-        $('#sortBy' + sortByValue).prop("checked", true);
+        $('.filter-item .sort-dropdown[name="sortBy"]').val(sortByValue);
 
         // add filters
         $.each(searchContext.facets, function(index, facet){
             var groupedFacetsName = CStudioSearch.facetsMap[facet.name] ? CStudioSearch.facetsMap[facet.name] : null,
                 $container = $('#searchFilters .dropdown-menu .panel-group'),
+                multipleSelection = facet.multiple,
                 headerExists = $container.find('.dropdown-header').length > 0,
                 headerLabel = '';
 
@@ -520,11 +552,12 @@
             }
 
             headerLabel = CMgs.format(langBundle, facet.name) ? headerLabel + CMgs.format(langBundle, facet.name) : headerLabel + facet.name;
-            headerHtml = headerTemplate({ 
+            headerHtml = headerTemplate({
                 value: facet.name,
                 label: headerLabel,
                 main: !groupedFacetsName,
                 grouped: groupedFacetsName,
+                multiple: multipleSelection,
                 clear: true
             });
 
@@ -534,7 +567,7 @@
                 if($groupElems.length > 0){
                     $groupElems.last().after($(headerHtml));
                 }else{
-                    $(headerHtml).appendTo($container);    
+                    $(headerHtml).appendTo($container);
                 }
             }else{
                 $(headerHtml).appendTo($container);
@@ -548,9 +581,13 @@
                         underLabel = CMgs.format(langBundle, 'under'),
                         aboveLabel = CMgs.format(langBundle, 'above');
 
+                    if( value.from === '-Infinity') {
+                      escapedKey = 'null-' + value.to;
+                    }
+
                     // create label - if number => parseInt, if size => formatFileSize, if range => createRange
                     if(facet.range){
-                        var from = isNaN(parseInt(value.from)) ? underLabel : value.from, 
+                        var from = isNaN(parseInt(value.from)) ? underLabel : value.from,
                             to = isNaN(parseInt(value.to)) ? aboveLabel : value.to;
 
                         if(facet.name === 'size'){
@@ -558,11 +595,15 @@
                             to = to === aboveLabel ? to : CStudioAuthoring.Utils.formatFileSize(parseInt(to));
                         }
 
-                        // if both values are ints, label will have a dash
-                        if(isNaN(parseInt(from)) || isNaN(parseInt(to))){ 
-                            label = from + ' ' + to; 
-                        }else{
-                            label = from + ' - ' + to;
+                        if ( facet.date ) {
+                            label = CMgs.format(langBundle, key);
+                        } else {
+                            // if both values are ints, label will have a dash
+                            if(isNaN(parseInt(from)) || isNaN(parseInt(to))){
+                                label = from + ' ' + to;
+                            }else{
+                                label = from + ' - ' + to;
+                            }
                         }
 
                     }else{
@@ -577,7 +618,8 @@
                         name: facet.name,
                         id: isNaN(parseInt(escapedKey)) ? escapedKey : parseInt(escapedKey),
                         label: label + ' (' + count + ')',
-                        filter: true
+                        filter: true,
+                        multiple: multipleSelection
                     }
 
                     if(facet.range){
@@ -591,13 +633,13 @@
                     html = template(filterItem);
                     $(html).appendTo($('#' + facet.name + ' .panel-body'));
                 }
-                
+
             });
 
             CStudioSearch.addSeeMore($('#' + facet.name + ' .panel-body'), facet.name);
 
             // If facet is a range, add inputs for a custom range
-            if(facet.range){    
+            if(facet.range && !facet.date){
                 rangeHtml = rangeTemplate({ name: facet.name });
                 $(rangeHtml).appendTo($('#' + facet.name + ' .panel-body'));
             }
@@ -606,22 +648,40 @@
 
         // set selected filter values
         $.each(CStudioSearch.searchContext.filters, function(key, value){
-            if( typeof value === 'object' ){
-                var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
-                    $filterRadio = $('input[type="radio"][name="' + key + '"]#' + key + value.min);
-                $filterContainer.find('input[name="min"]').val(isNaN(value.min) ? '' : value.min);
-                $filterContainer.find('input[name="max"]').val(isNaN(value.max) ? '' : value.max);
+          var $filterHeader = $('.filter-header[href="#' + key + '"] .selected');
+          if ( $.isArray(value) ) {   // if value is array = multiple selections
+            $.each(value, function() {
+              var escapedValue = this.replace(/\//g, "_")
+              $filterHeader.removeClass('hide');
+              $('#' + key + escapedValue).prop('checked', true);
+            });
+          } else if ( typeof value === 'object' ) {   // if value is object = range
+              var $filterContainer = $('.filter-range[filter-name="' + key + '"]'),
+                  $filterRadio,
+                  filterRadioId;
 
-                if($filterRadio.length > 0){
-                    $filterRadio.prop("checked", true);
-                    $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
-                }
-                
-            }else{
-                var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
-                $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
-                $('.filter-header[href="#' + key + '"] .selected').removeClass('hide');
-            }
+              if (value.date === true || key === 'last-edit-date') {
+                  $filterRadio = $('input[type="radio"][name="' + key + '"]#' + value.id);
+                  $filterRadio.prop("checked", true);
+                  $filterHeader.removeClass('hide');
+              } else {
+                  filterRadioId = value.min !== null ? key + value.min : key + 'null-' + value.max;
+                  $filterRadio = $('input[type="radio"][name="' + key + '"]#' + filterRadioId);
+                  $filterContainer.find('input[name="min"]').val(isNaN(value.min) ? '' : value.min);
+                  $filterContainer.find('input[name="max"]').val(isNaN(value.max) ? '' : value.max);
+
+                  if($filterRadio.length > 0){
+                      $filterRadio.prop("checked", true);
+                      $filterHeader.removeClass('hide');
+                  }
+              }
+          } else {    // otherwise, single value
+              var escapedValue = value.replace ? value.replace(/\//g, "_") : value;
+              $('input[type="radio"][name="' + key + '"]#' + key + escapedValue).prop("checked", true);
+              $filterHeader.removeClass('hide');
+          }
+
+          CStudioSearch.toggleFilterActionsState(key);
         });
 
         // Open accordion panel from last selected filter
@@ -631,10 +691,29 @@
 
         this.updateNumFilters();
     }
-    
+
     // clear the filters applied into the searchContext
     CStudioSearch.clearFilters = function() {
         CStudioSearch.searchContext.filters = {};
+    }
+
+    // Enables/disables action buttons in filters, like apply and clear, depending on the
+    // selection of the filter's section. Returns true/false (items selected or not).
+    CStudioSearch.toggleFilterActionsState = function(filterName) {
+      var filtersSelected = $(".filter[name='" + filterName + "']:checked").length,
+          selected = false;
+
+      if (filtersSelected > 0 ) {
+        $('.apply-selections[name="'+ filterName +'"]').prop('disabled', false);
+        $('.clear-filter[name="'+ filterName +'"]').prop('disabled', false);
+        selected = true;
+      } else {
+        $('.apply-selections[name="'+ filterName +'"]').prop('disabled', true);
+        $('.clear-filter[name="'+ filterName +'"]').prop('disabled', true);
+        selected = false;
+      }
+
+      return selected;
     }
 
     CStudioSearch.addSeeMore = function($container, id) {
@@ -662,7 +741,7 @@
         }
     }
 
-    // Clear the filters html 
+    // Clear the filters html
     CStudioSearch.cleanFilters = function(){
         $('#searchFilters .dropdown-menu .panel-default.tmpl').remove();
         $('#searchFilters .dropdown-menu .panel-default .filter-item.tmpl').remove();
@@ -674,7 +753,7 @@
         $('#numFilters').text('(' + this.searchContext.numFilters + ')');
     }
 
-    // Before calling this function the searchContext needs to be updated so 
+    // Before calling this function the searchContext needs to be updated so
     // it can create an updated searchQuery
     CStudioSearch.performSearch = function(clean) {
         if(clean){
@@ -758,12 +837,12 @@
 
     CStudioSearch.previewElement = function(url){
         CStudioAuthoring.Service.lookupContentItem(
-            CStudioAuthoringContext.site, 
-            url, 
-            { success:function(to) { 
-                CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false); 
-            }, 
-            failure: function() {} 
+            CStudioAuthoringContext.site,
+            url,
+            { success:function(to) {
+                CStudioAuthoring.Operations.openPreview(to.item, 'undefined', false, false);
+            },
+            failure: function() {}
         }, false);
     }
 
@@ -778,20 +857,33 @@
         // Add search filters to url
         // csf = crafter studio filter
         // csr = crafter studio range
+        // csrTO = crafter studio range separator in URL
         if(!jQuery.isEmptyObject( searchContext.filters )) {
             $.each(searchContext.filters, function(key, value){
                 if(typeof value === 'string'){
                     newUrl += '&csf_' + key + '=' + value;
-                }else{
-                    var min = isNaN(value.min) ? 'null' : value.min,
-                        max = isNaN(value.max) ? 'null' : value.max;
-                    newUrl += '&csf_' + key + '=csr_' + min + '-' + max;
+                } else if( $.isArray(value) ) {
+                  $.each(value, function() {
+                    newUrl += '&csf_' + key + '=' + this;
+                  })
+                } else {  //is a range
+                    if (value.date) {
+                        var min = value.min,
+                            max = value.max,
+                            id = value.id;
+                        newUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max + 'csrID' + id;
+                    }else{
+                        var min = isNaN(value.min) ? 'null' : value.min,
+                            max = isNaN(value.max) ? 'null' : value.max;
+                        newUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max;
+                    }
+
                 }
             })
         }
 
         newUrl += '&keywords=' + searchContext.keywords;
-        
+
         window.history.pushState({path:newUrl},'',newUrl);
     }
 

@@ -37,47 +37,31 @@ CStudioForms.Datasources.VideoWebDAVRepo = CStudioForms.Datasources.VideoWebDAVR
 YAHOO.extend(CStudioForms.Datasources.VideoWebDAVRepo, CStudioForms.CStudioFormDatasource, {
 
     insertVideoAction: function(insertCb) {
-        var _self = this,
-            baseUrl;
+      var _self = this;
 
-        var cb = function(profiles){
-            var profiles = profiles.profile
+      var browseCb = {
+          success: function(searchId, selectedTOs) {
+              for(var i=0; i<selectedTOs.length; i++) {
+                  var item = selectedTOs[i];
+                  var uri = item.browserUri;;
+                  var fileName = item.internalName;
+                  var fileExtension = fileName.split(".").pop();
 
-            if(Array.isArray(profiles)){
-                baseUrl = profiles.find(x => x.id === _self.profileId).baseUrl;
-            }else{
-                if(profiles.id === _self.profileId){
-                    baseUrl = profiles.baseUrl;
-                }
-            }
+                  var videoData = {
+                      previewUrl : uri,
+                      relativeUrl : uri,
+                      fileExtension : fileExtension,
+                      remote : true
+                  };
 
-            var browseCb = {
-                success: function(searchId, selectedTOs) {
-                    for(var i=0; i<selectedTOs.length; i++) {
-                        var item = selectedTOs[i];
-                        var uri = item.browserUri;;
-                        var fileName = item.internalName;
-                        var fileExtension = fileName.split(".").pop();
+                  insertCb.success(videoData);
+              }
+          },
+          failure: function() {
+          }
+      };
 
-                        var videoData = {
-                            previewUrl : uri,
-                            relativeUrl : uri,
-                            fileExtension : fileExtension,
-                            remote : true
-                        };
-
-                        insertCb.success(videoData);
-                    }
-                },
-                failure: function() {
-                }
-            };
-
-            CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, baseUrl, "select", true, browseCb, 'video');
-
-        }
-
-        _self.getConfig(cb);
+      CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, "select", true, browseCb, 'video');
 
     },
 

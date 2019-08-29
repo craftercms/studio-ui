@@ -1,16 +1,19 @@
-*.class
+# IntelliJ
+.idea
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# sass
+.sass-cache
 
-#.idea/
+# node
+node_modules
+build
 
-# Package Files #
-*.jar
-*.war
-*.ear
-.idea/
-
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# builds
+static-assets/next
+static-assets/styles/guest.css
+static-assets/styles/main.css
+static-assets/styles/search.css
+static-assets/styles/temp.css
+static-assets/styles/forms-engine.css
+static-assets/styles/graphiql.css
+templates/web/common/js-next-scripts.ftl

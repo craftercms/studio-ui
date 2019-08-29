@@ -22,7 +22,7 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable = CStudioAdminConsol
 	}
 
 YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
-	render: function(value, updateFn, fName) {
+	render: function(value, updateFn, fName, itemId, defaultValue, type) {
 		var containerEl = this.containerEl;
 		var valueEl = document.createElement("input");
 		YAHOO.util.Dom.addClass(valueEl, "property-input-"+fName);
@@ -33,11 +33,45 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable, CStudi
 		if(updateFn) {
 			var updateFieldFn = function(event, el) {
 				updateFn(event, el);
+                var addPostfixes = "";
+                switch (type) {
+                    case  "dropdown":
+                    case  "image-picker":
+                    case  "video-picker":
+                    case  "label":
+                    case  "input":
+                        addPostfixes = "_s";
+                        break;
+                    case  "numeric-input":
+                        addPostfixes = "_i";
+                        break;
+                    case "textarea":
+                        addPostfixes = "_t";
+                        break;
+                    case "repeat":
+                    case "checkbox-group":
+                    case "node-selector":
+                        addPostfixes = "_o";
+                        break;
+                    case "rte":
+                    case "rte-tinymce5":
+                        addPostfixes = "_html";
+                        break;
+                    case "time":
+                        addPostfixes = "_to";
+                        break;
+                    case "date-time":
+                        addPostfixes = "_dt";
+                        break;
+                    case "checkbox":
+                        addPostfixes = "_b";
+                        break;
+                }
 				if(YDom.hasClass(this,"property-input-title") && !(YDom.hasClass(this,"no-update"))){
 					var idDatasource = YDom.getElementsByClassName("property-input-name")[0] ? YDom.getElementsByClassName("property-input-name")[0] : YDom.getElementsByClassName("property-input-id")[0];
 					if(idDatasource){
 						idDatasource.value = this.value.replace(/[^A-Za-z0-9-_]/g,"");
-						idDatasource.value = idDatasource.value.substr(0, 1).toLowerCase() + idDatasource.value.substr(1);
+						idDatasource.value = idDatasource.value.substr(0, 1).toLowerCase() + idDatasource.value.substr(1) + addPostfixes;
 
 						updateFn(event, idDatasource);
 					}
@@ -55,6 +89,10 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Variable, CStudi
 			}
 
 			YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
+            $(valueEl).change(function() {
+                updateFieldFn(event, this);
+            });
+
 
 			if( (fName == "id" || fName == "name") && value !== "" ) {
 				var titleEl = YDom.getElementsByClassName("property-input-title");

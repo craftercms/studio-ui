@@ -153,7 +153,8 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     publishStatus: "게시 상태",
     idle: "게으른",
     busy: "바쁜",
-    stopped: "중지됨"
+    stopped: "중지됨",
+    quickCreateEmpty:"빠른 작성을위한 아무 것도 구성되어 있지 않습니다. 시스템 관리자에게 문의하여 원하는 빠른 작성 컨텐츠 유형을 구성하십시오."
 
 });
 
@@ -231,7 +232,11 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "kr", {
     about: "약",
     settings: "설정",
     signOut: "로그 아웃",
-    mainMenu: "기본 메뉴"
+    mainMenu: "기본 메뉴",
+
+    videoProcessed: '동영상 처리 중, 처리가 완료되면 미리보기를 사용할 수 있습니다.',
+    quickCreate: "빠른 만들기",
+    inContextEdit: "인 - 컨텍스트 편집"
 
 });
 
@@ -360,7 +365,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     bulkPublishPathToPublish: "게시 경로",
     bulkPublishPublishingEnv: "출판 환경",
     bulkPublishPublish: "게시",
-                        
+
     historyDialogTitle: "버전 기록",
     historyDialogSubTitle: "역사에 대해 표시 :",
     historyDialogTableRowVersion: "버전 날짜 및 시간",
@@ -395,7 +400,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     deleteSubmitDialogAsSoon:"최대한 빨리.",
 
     approveDialogTitle: "게시에 대한 승인",
-    approveDialogSubTitle: "다음 선택 항목이 게재됩니다.",
+    approveDialogSubTitle: "선택한 파일이 게시됩니다. 엄격한 종속성이 자동으로 포함됩니다. 소프트 종속성은 선택 사항이며 포함 할 항목을 선택할 수 있습니다.",
     approveDialogWarning:"경고 : 승인을 위해 선택한 항목이 요청 된 다른 게시 날짜 / 시간과 함께 제출되었습니다.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
@@ -416,6 +421,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     requestApproveDialogTitle: "게시를 요청할",
     requestApproveDialogSubTitle: "당신이 원하는 때 체크 항목 (들)을 게재하는 방법?",
     requestApproveDialogEmailMe: "항목이 게시가 승인되면 이메일을 보내십시오.",
+
+    itemsForPublish:"게시 할 항목",
+    selectAll:"모두 선택",
+    hardDependencies:"어려운 의존성",
+    submissionMandatory: "제출 필수",
+    softDependencies:"소프트 종속성",
+    submissionOptional:"제출 옵션",
+    showAllDependencies:"S모든 종속성 표시",
+    changesSelectioItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
+    loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
 
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
     newContTypeDialogDisplayLabel: "표시 라벨",
@@ -480,8 +495,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     revertError: "되돌리기에 실패했습니다.",
     legacyError: "레거시 양식 서버는 더 이상 지원되지 않습니다.",
     contentTypesEmpty: "구성된 경로에서 사용할 수있는 콘텐츠 형식이 없습니다",
-    componentCategoriesError: "사용할 수있는 카테고리가 없습니다"
-
+    componentCategoriesError: "사용할 수있는 카테고리가 없습니다",
+    pluginError: "플러그인 구성에 문제가 있습니다. 다음과 같은 속성이 없습니다",
+    pluginErrorSolution: "[사이트 구성 페이지] </a>로 이동하여 드롭 다운에서“사이트 구성 도구”를 선택하여 파일을 편집하십시오.",
+    control: "제어: ",
+    datasource: "데이터 소스: ",
+    propertyMessage: " 재산이 없습니다",
+    propertiesMessage: "속성이 없습니다"
 
 });
 
@@ -501,7 +521,15 @@ CStudioAuthoring.Messages.registerBundle("search", "kr", {
     height: "신장",
     "content-type": "컨텐츠 타입",
     "mime-type": "MIME 유형",
+    "last-edit-date": "마지막 편집 날짜",
     size: "콘텐츠 크기",
+    today: "오늘",
+    "in-last-day": "마지막 날에",
+    "in-last-week": "지난 주",
+    "over-a-month-ago": "한 달 이상",
+    "over-six-months-ago": "6 개월 이상",
+    "over-a-week-ago": "1 주일 이상",
+    "over-a-year-ago": "1 년이 넘었습니다.",
     paginationFirst: "먼저",
     paginationPrev: "예전의",
     paginationNext: "다음 것",
@@ -510,7 +538,9 @@ CStudioAuthoring.Messages.registerBundle("search", "kr", {
     seeLess: '덜보기',
     under: '아래에',
     above: '위',
-    errorMessage: '검색을 완료하는 중에 문제가 발생했습니다. 문제가 지속되면 관리자에게 문의하십시오.'
+    errorMessage: '검색을 완료하는 중에 문제가 발생했습니다. 문제가 지속되면 관리자에게 문의하십시오.',
+    clear: '명확한',
+    apply: '대다'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "kr", {
@@ -606,9 +636,11 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     richTextEditor: "서식있는 텍스트 편집기s (TinyMCE 2)",
     rteTinyMCE5: "서식있는 텍스트 편집기s (TinyMCE 5)",
     input: "입력",
+    numericInput: "숫자 입력",
     uuid: "UUID",
     dropdown: "쓰러지 다",
     dateTime: "날짜 시간",
+    time: "시간",
     checkBox: "확인란",
     groupedCheckboxes: "그룹화 확인란",
     itemSelector: "항목 선택기",
@@ -638,6 +670,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     S3UploadVideo: "S3 저장소에 업로드 된 비디오",
     imageS3Repository:"S3 저장소의 이미지",
     videoS3Repository:"S3 저장소의 비디오",
+    videos3Transcoding: "S3 저장소에서 비디오 트랜스 코딩",
     fileS3Repository:"S3 저장소의 파일",
     fileUploadedS3Repository:"S3 저장소에 업로드 된 파일",
     DAMImage: "DAM 이미지 플리커 (Flickr)",
@@ -652,7 +685,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     hubspotForms: "허브 스팟 양식",
     imageFromRepository: "저장소에서 이미지",
     imageFromCMISRepository: "CMIS 저장소의 이미지",
-    CMISRepository: "CMIS 저장소",
+    CMISRepository: "CMIS 저장소의 파일",
+    CMISUpload: "CMIS 저장소에 업로드 된 파일",
+    CMISUploadImage:"CMIS 저장소에 업로드 된 이미지",
+    CMISUploadVideo:"CMIS 저장소에 업로드 된 비디오",
     salesforceCampaigns: "세일즈 포스 캠페인",
     treeContent: "트리 내용",
 
@@ -713,10 +749,17 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     taxonomyName: "분류 이름",
     defaultType: "기본 유형",
     displayTemplate: "디스플레이 템플릿",
+    noTemplateRequired: "템플릿 필요 없음",
     mergeStrategy: "전략을 병합",
     profileId: "프로필 ID",
     path: "통로",
     type: "유형",
+    quickCreate: "빠른 만들기",
+    showQuickCreate: "빠른 만들기에 표시",
+    destinationPath: "대상 경로 패턴",
+    inputProfileId: "입력 프로파일 ID",
+    outputProfileId: "출력 프로필 ID",
+    postfixes: "포스트 픽스",
 
     /*Restrictions*/
     required: "필요",
@@ -803,9 +846,28 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabCMISConfiguration: "CMIS 구성",
     confTabCMISConfigurationDesc: "이 파일은 컨텐트 작성자가 선택할 수있는 0 이상의 CMIS 가능 리포지토리를 데이터 소스로 구성합니다",
 
+    /*Postfixes*/
+    iDescription: "정수의 경우",
+    sDescription: "문자열의 경우",
+    lDescription: "긴 정수의 경우",
+    tDescription: "여러 단어 또는 토큰의 경우",
+    bDescription: "부울의 경우 (true 또는 false)",
+    fDescription: "부동 소수점 숫자",
+    dDescription: "긴 부동 소수점의 경우",
+    dtDescription: "ISO 8601 날짜 형식의 날짜",
+    toDescription: "HH 시간 : mm : ss 형식",
+    htmlDescription: "HTML 태그가있는 텍스트의 경우",
+    oDescription: "오브젝트 용",
+    enDescription: "여러 단어 또는 토큰의 경우",
+    txtDescription: "여러 단어 또는 토큰의 경우",
+
     /* Errors */
     error: "오류",
     errorTitle: ". 필드와 데이터 소스에 대한 모든 제목을 입력 해주세요.",
+    postfixError: "모델 필드에는 각각의 데이터 유형 후위가 필요합니다. ",
+    optionsPostfixError:"옵션은 ",
+    optionPostfixError:"옵션은 ",
+    andPostfixError:"과",
     errorName: ". 대한 변수 이름을 기입하십시오: ",
     contentTypeNotFound: "구성 요소의 콘텐츠 형식을 찾을 수 없습니다.",
     failConfig: "구성을로드하지 못했습니다.",
@@ -823,7 +885,16 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     delete: "지우다",
     edit: "편집하다",
     createNew: "새로 만들기",
-    browseExisting: "기존 항목 찾아보기"
+    browseExisting: "기존 항목 찾아보기",
+
+    /*help popover*/
+    pattern: "무늬",
+    objectIdPattern:"GUID를 삽입합니다.",
+    yearPattern:"현재 연도 (4 자리 연도)를 삽입합니다.",
+    monthPattern:"현재 달 (2 자리 숫자의 달)을 삽입합니다.",
+    yyyyPattern:"현재 연도 (4 자리 연도)를 삽입합니다.",
+    mmPattern:"현재 달 (2 자리 숫자의 달)을 삽입합니다.",
+    ddPattern:"현재 날짜 (2 자리 날짜)를 삽입합니다."
 });
 
 CStudioAuthoring.Messages.registerBundle("targeting", "kr", {
@@ -832,4 +903,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "kr", {
     apply: "대다",
     cancel: "취소",
     userProps: "사용자 속성"
+});
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "kr", {
+  upload: "업로드",
+  uploadSelect: "업로드 할 파일을 선택하십시오.",
+  file: "파일",
+  chooseFile: "파일을 선택",
+  noFileChosen: "선택된 파일 없음",
+  uploadBtn: "업로드",
+  cancelBtn: "취소",
+  uploading: "업로드 중"
 });

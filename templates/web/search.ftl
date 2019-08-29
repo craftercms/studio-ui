@@ -42,13 +42,12 @@
     <#include "/templates/web/common/page-fragments/context-nav.ftl" />
 
     <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>    
+    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/yui/assets/skins/sam/calendar.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
     <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/search.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
     <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
-    <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/simpleBootstrapPaginator/simple-bootstrap-paginator.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script type="text/javascript" src="/studio/static-assets/components/cstudio-search/search.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -69,7 +68,7 @@
             <div class="col-md-12">
                 <#--  <form>  -->
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" id="searchInput"/>
+                        <input type="text" class="form-control" placeholder="Search" id="searchInput" autofocus="autofocus" onfocus="this.select()"/>
                         <div class="input-group-btn">
                             <button class="btn btn-primary" id="searchButton">
                                 <span class="glyphicon glyphicon-search"></span>
@@ -96,12 +95,12 @@
                             <span class="caret"></span>
                         </button>
 
-                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="searchDropdown">
-                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <ul class="dropdown-menu dropdown-menu-right pr5 pl5" aria-labelledby="searchDropdown">
+                            <div class="panel-group mb0" id="accordion" role="tablist" aria-multiselectable="true">
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingTwo">
                                         <h4 class="panel-title">
-                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" 
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"
                                                aria-expanded="true" aria-controls="collapseTwo"
                                                data-trans="sortBy">
                                                 Sort By
@@ -111,30 +110,19 @@
                                     <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
                                     <div class="panel-body">
                                         <li class="filter-item">
-                                            <a href="#">
-                                                <input type="radio" name="sortBy" value="internalName" id="sortByinternalName">
-                                                <label for="sortByinternalName" data-trans="name">Name</label>
-                                            </a>
+                                          <select class="sort-dropdown search-dropdown" name="sortBy"></select>
                                         </li>
-                                        <div class="sort-dinam"></div>
                                     </div>
                                     <#--  Sort order  -->
-                                    <div class="panel-footer subfilter"> 
+                                    <div class="panel-footer subfilter">
                                         <h4 class="panel-title" data-trans="sortOrder">
                                             Sort Order
                                         </h4>
-
                                         <li class="filter-item">
-                                            <a href="#">
-                                                <input type="radio" name="sortOrder" value="asc" id="asc">
-                                                <label for="asc" data-trans="asc">Asc</label>
-                                            </a>
-                                        </li>
-                                        <li class="filter-item">
-                                            <a href="#">
-                                                <input type="radio" name="sortOrder" value="desc" id="desc">
-                                                <label for="desc" data-trans="desc">Desc</label>
-                                            </a>
+                                          <select class="sort-dropdown search-dropdown" name="sortOrder">
+                                            <option value="asc" data-trans="asc">Asc</option>
+                                            <option value="desc" data-trans="desc">Desc</option>
+                                          </select>
                                         </li>
                                     </div>
                                 </div>
@@ -148,13 +136,13 @@
                 <label class="checkbox-container select-all-container mb15 mr10">
                     <input type="checkbox" class="search-select-all" id="searchSelectAll" />
                     <span class="checkmark"></span>
-                </label> 
+                </label>
                 <label for="searchSelectAll" style="cursor: pointer;" data-trans="selectAll">Select All</label>
             </div>
         </div>
 
         <div class="results">
-            
+
         </div>
 
         <div class="pagination-container">
@@ -171,7 +159,7 @@
                     <span class="checkmark"></span>
                 </label>
 
-                <div class="result-preview {{#if previewUrl}}{{else}}result-asset{{/if}} {{#if previewable}}previewable{{/if}} {{#equal type 'Image'}}no-preview-background{{/equal}}" 
+                <div class="result-preview {{#if previewUrl}}{{else}}result-asset{{/if}} {{#if previewable}}previewable{{/if}} {{#equal type 'Image'}}no-preview-background{{/equal}}"
                      data-url="{{ path }}" data-type="{{ type }}">
                     {{#equal type "Image"}}
                         <div class="img-container">
@@ -219,7 +207,7 @@
                         <a class="action search-delete" href="#" data-url="{{ path }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
                         {{/if}}
                     </span>
-                    
+
                 </div>
             </div>
         </div>
@@ -232,14 +220,20 @@
     <script id="hb-filter-item" type="text/x-handlebars-template">
         <li class="filter-item tmpl" style="display: none">
             <a href="#">
-                <input type="radio" name="{{ name }}" id="{{ name }}{{ id }}" class="{{#if filter}}filter{{/if}}" 
+              {{#if multiple}}
+                <input type="checkbox" name="{{ name }}" id="{{ name }}{{ id }}" class="{{#if filter}}filter{{/if}} multiple"
+                       value="{{value}}"
+                >
+              {{else}}
+                <input type="radio" name="{{ name }}" id="{{ name }}{{ id }}" class="{{#if filter}}filter{{/if}}"
                         {{#if range}}
                             data-range="{{ range }}"
                             from="{{ from }}" to="{{ to }}"
                         {{else}}
                             value="{{value}}"
                         {{/if}}
-                >                
+                >
+              {{/if}}
                 <label for="{{ name }}{{ id }}">{{ label }}</label>
             </a>
         </li>
@@ -259,13 +253,14 @@
                 <h4 class="panel-title">
                     <a class="collapsed filter-header" role="button" data-toggle="collapse" data-parent="#accordion" href="&#x23;{{ value }}" aria-expanded="false" aria-controls="{{ value }}">
                         {{ label }} <i class="fa fa-check-circle selected hide ml5" aria-hidden="true"></i>
-                    </a>  
+                    </a>
                 </h4>
             </div>
             <div id="{{ value }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ value }}">
-                {{#if clear}}<a class="clear-filter">Clear</a>{{/if}}  
+                {{#if multiple}}<button type="button" name="{{ value }}" class="btn btn-primary apply-selections pull-right mt10 mr10" disabled="true" data-trans="apply">Apply</button>{{/if}}
+                {{#if clear}}<button type="button" class="btn btn-default clear-filter" name="{{ value }}" disabled="true" data-trans="clear">Clear</button>{{/if}}
                 <div class="panel-body">
-                    
+
                 </div>
             </div>
         </div>

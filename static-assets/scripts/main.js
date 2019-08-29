@@ -35,42 +35,46 @@
         '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
         function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
 
-            $http.defaults.headers.common['X-XSRF-TOKEN'] = xsrfToken;
-
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
 
             $rootScope.imagesDirectory = Constants.PATH_IMG;
 
             $rootScope.$on('$stateChangeStart', function (event, toState) {
-                authService.validateSession().then(
-                    function successCallback(response) {
+
+                // No need to re-check session if heading to the login page
+                // 1. Is "public"
+                // 2. Is where people authenticate
+                if (toState.name !== 'login') {
+                  authService.validateSession()
+                    .then(
+                      function (response) {
                         if (toState.name.indexOf('login') !== -1) {
-                            if (authService.getUser() && authService.getUser().authenticationType == Constants.HEADERS) {
-                                $state.go('home.globalMenu');
-                            }
+                          var user = authService.getUser() || {};
+                          if (user.authenticationType === Constants.HEADERS) {
+                            $state.go('home.globalMenu');
+                          }
                         }
-
-                    }, function errorCallback(e) {
+                      },
+                      function (e) {
                         authService.removeUser();
-
                         if (toState.name.indexOf('login') === -1 && e.status !== 500) {
-                            if (toState.name.indexOf('reset') === -1) {
-                                event.preventDefault();
-                                $state.go('login');
-                            }
+                          if (toState.name.indexOf('reset') === -1) {
+                            event.preventDefault();
+                            $state.go('login');
+                          }
                         }
-                    }
-                );
+                      }
+                    );
+                }
 
                 if(toState.name.indexOf('users') !== -1 ){
-                    // console.log('on users page');
 
                     var user = authService.getUser();
-                        var createSitePermissions = false;
 
                     if(user && user.username) {
-                        sitesService.getPermissions('', '/', user.username || user)
+                      var createSitePermissions = false;
+                      sitesService.getPermissions('', '/', user.username || user)
                             .success(function (data) {
                                 for(var i=0; i<data.permissions.length;i++){
                                     if(data.permissions[i]=='create-site'){
@@ -394,7 +398,8 @@
         HEADERS: 'headers',
         AUTH_HEADERS: "AUTH_HEADERS",
         AUDIT_TIMEZONE_COOKIE:"crafterStudioAuditTimezone",
-        AUDIT_SYSTEM: "Studio Root"
+        AUDIT_SYSTEM: "Studio Root",
+        CRAFTER_LOGO: "/studio/static-assets/images/logo.svg"
     });
 
     app.service('authService', [
@@ -472,21 +477,22 @@
             };
 
             this.forgotPassword = function (username) {
-                return $http.get(api('forgot-password'), {
+                return $http.get(userActions('/forgot_password'), {
                     params: { username : username }
                 });
             };
 
             this.recoverPassword = function (data) {
-                return $http.post(api('reset-password'), data);
+                return $http.post(userActions(user + '/reset_password'), data);
             };
 
             this.setPassword = function (data) {
-                return $http.post(api('set-password'), data);
+                return $http.post(userActions('/set_password'), data);
             };
 
             this.changePassword = function (data) {
-                return $http.post(api('change-password'), data);
+                var requestData = {username: data.username, current: data.current, new: data.new}
+                return $http.post(userActions('/me/change_password'), requestData);
             };
 
             this.validateToken = function (data){
@@ -497,16 +503,6 @@
 
             this.validateSession = function() {
                 return $http.get(security('validate-session'));
-            };
-
-            this.getLoginLogo = function() {
-                return $http.get(api('get-ui-resource-override', true), {
-                    params: { resource : 'logo.jpg' }
-                })
-            };
-
-            this.getLoginUrl = function() {
-                return api('get-ui-resource-override', true) + '?resource=logo.jpg';
             };
 
             function api(action, server, monitor) {
@@ -722,8 +718,8 @@
     ]);
 
     app.controller('AppCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location',
-        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location) {
+        '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window',
+        function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window) {
 
             $scope.langSelected = '';
             $scope.modalInstance = '';
@@ -733,6 +729,7 @@
             $rootScope.isFooter = true;
             $scope.showLogoutLink = false;
             $scope.logoutInfo = {};
+            $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
             if($location.$$search.iframe){
                 $rootScope.isFooter = false;
@@ -770,25 +767,9 @@
 
             }
 
-            function mouseOverTopMenu(evt) {
-                var elt = $(evt.target).find('.nav-label');
-                $timeout(function () {
-                    if ($("#"+elt.parent().get(0).id+':hover').length != 0) {
-                        elt.addClass('nav-label-hover');
-                        elt.removeClass('nav-label');
-                    }
-                }, 1000, false);
-            }
-
-            function mouseLeaveTopMenu(evt) {
-                var elt = $(evt.target).find('.nav-label-hover');
-                elt.addClass('nav-label');
-                elt.removeClass('nav-label-hover');
-            }
-
-
             function changePassword() {
                 $scope.data.username = $scope.user.username;
+                $translate.use($scope.langSelected);
 
                 if($scope.data.new == $scope.data.confirmation){
                     authService.changePassword($scope.data)
@@ -819,7 +800,14 @@
 
                             }
                         }, function(error){
-                            $scope.error = error.data.message;
+                            var errorResponse = error.data.response;
+
+                            if (errorResponse.code === 6003) {
+                              $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
+                                              $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL')
+                            } else {
+                              $scope.error = errorResponse.message + '. ' + errorResponse.remedialAction;
+                            }
                         });
                 }else{
                     $scope.error = "Passwords don't match.";
@@ -890,21 +878,11 @@
 
             $scope.logout = logout;
             $scope.changePassword = changePassword;
-            $scope.mouseOverTopMenu = mouseOverTopMenu;
-            $scope.mouseLeaveTopMenu = mouseLeaveTopMenu;
 
             $scope.$on(Constants.AUTH_SUCCESS, function ($event, user) {
                 $scope.user = user;
                 $scope.data.email = $scope.user.email;
             });
-
-            authService.getLoginLogo().then(
-                function successCallback(response) {
-                    $scope.crafterLogo = authService.getLoginUrl();
-                }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
-                }
-            );
 
             if(authService.getUser()) {
                 authService.getStudioInfo().then(
@@ -923,7 +901,7 @@
 
             if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
                 isChromium = true;
-            } else { 
+            } else {
                 isChromium = false;
                 var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
             }
@@ -934,7 +912,7 @@
             }
 
             $scope.reLogin = function() {
-                
+
                 var data =  {
                     "username": $scope.user.username,
                     "password": $scope.user.reLoginPass
@@ -942,8 +920,8 @@
 
                 authService.login(data)
                     .then(function success(data) {
-                        window.reLoginModalOn = false; 
-                        $scope.reLoginModal.close();  
+                        window.reLoginModalOn = false;
+                        $scope.reLoginModal.close();
                         setTimeout(function () {
                             authLoop();
                         }, $scope.authDelay);
@@ -992,7 +970,7 @@
                     authService.validateSession().then(
                         function successCallback(response) {
                             if (response.status == 200 && response.data.message == "OK") {
-                                window.reLoginModalOn = false;                                
+                                window.reLoginModalOn = false;
                                 setTimeout(function () {
                                     authLoop();
                                 }, $scope.authDelay);
@@ -1016,7 +994,7 @@
                                 }
 
                             } else {
-                                window.reLoginModalOn = false;     
+                                window.reLoginModalOn = false;
                                 setTimeout(function () {
                                     authLoop();
                                 }, $scope.authDelay);
@@ -1107,7 +1085,7 @@
 
             $scope.sitesPag = {
                 sitesPerPage: $cookies.get("crafterStudioSitesPagination") ? parseInt($cookies.get("crafterStudioSitesPagination"), 10) : 15
-            }
+            };
 
             $scope.totalSites = 0;
             $scope.defaultDelay = 500;
@@ -1120,10 +1098,10 @@
             function getSites (params) {
                 sitesService.getSitesPerUser('me',params)
                     .success(function (data) {
-                        $scope.totalSites = data.total ? data.total : null;
-                        $scope.sites = data.sites;
-                        isRemove();
-                        createSitePermission();
+                      $scope.totalSites = data.total ? data.total : null;
+                      $scope.sites = data.sites;
+                      isRemove();
+                      createSitePermission();
                     })
                     .error(function () {
                         $scope.sites = null;
@@ -1221,7 +1199,7 @@
                 $scope.adminModal = $uibModal.open({
                     templateUrl: '/studio/static-assets/ng-views/create-site.html?version='+ UIBuildId,
                     backdrop: 'static',
-                    keyboard: true,
+                    keyboard: false,
                     controller: 'SiteCtrl',
                     scope: $scope,
                     size: 'lg'
@@ -1231,17 +1209,17 @@
 
                 $scope.toggleOpen = function() {
                     $scope.bpSelectorOpen = !$scope.bpSelectorOpen;
-                }; 
+                };
 
                 $scope.trySubmit = function(e){
                     // Internet Explorer 6-11
                     var isIE = /*@cc_on!@*/false || !!document.documentMode;
-                
+
                     // Edge 20+
                     var isEdge = !isIE && !!window.StyleMedia;
-    
+
                     if(isIE || isEdge) {
-                        
+
                         if(e.keyCode == 13){
                             if($scope.bpSelectorOpen){
                                 $scope.bpSelectorOpen = false;
@@ -1460,10 +1438,10 @@
                     }
                 }else{
                     params.blueprint = $scope.site.blueprint;
+                    if($scope.site.push_sandbox_branch){
+                        params.sandbox_branch = $scope.site.push_sandbox_branch;
+                    }
                     if($scope.site.push_site){
-                        if($scope.site.push_sandbox_branch){
-                            params.sandbox_branch = $scope.site.push_sandbox_branch;
-                        }
                         params.use_remote = $scope.site.push_site;
                         params.remote_name = $scope.site.push_name;
                         params.remote_url = $scope.site.push_url;
@@ -1604,18 +1582,36 @@
                 });
             }
 
+            $scope.cancelCreateDialog = function(eve) {
+                $(document).off( "keyup");
+                $scope.adminModal.close();
+            };
+
+            $(document).on('keyup',function(evt) {
+                if(evt.which == 13) {
+                    var isRemoteGit = $scope.isRemoteGit ? "remoteGit" : "BPAvailable",
+                        elt = $scope.getStepTemplate() + "-" + isRemoteGit + "-key";
+
+                    !$("." + elt).is(':disabled') ? $("." + elt).trigger( "click") : null;
+                }
+                if(evt.which == 27) {
+                    $scope.cancelCreateDialog();
+                }
+            });
+
             // END NEW Create Site
 
         }
     ]);
 
     app.controller('LoginCtrl', [
-        '$rootScope', '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate',
-        function ($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate) {
+        '$rootScope', '$scope', '$state', 'authService', '$timeout', '$cookies', 'sitesService', '$translate', 'Constants',
+        function ($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate, Constants) {
 
             var credentials = {};
             $scope.langSelected = '';
             $rootScope.isFooter = false;
+            $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
             function login() {
 
@@ -1697,14 +1693,6 @@
 
             sitesService.getLanguages($scope);
 
-            authService.getLoginLogo().then(
-                function successCallback(response) {
-                    $scope.crafterLogo = authService.getLoginUrl();
-                }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
-                }
-            );
-
             $scope.selectAction = function(optSelected) {
                 $scope.langSelected = optSelected;
                 $translate.use($scope.langSelected);
@@ -1726,7 +1714,7 @@
                 $scope.recoverProcessing = true;
 
                 authService.forgotPassword(credentials.username).success(function(data) {
-                    if(data.message === 'OK') {
+                    if(data.response.message === 'OK') {
                         $scope.successMessage = $translate.instant('dashboard.login.EMAIL_CONFIRMATION');
                         $scope.recoverSuccess = true;
                     }
@@ -1748,20 +1736,13 @@
     ]);
 
     app.controller('ResetCtrl', [
-        '$scope', '$state', '$location', 'authService', '$timeout', '$translate',
-        function ($scope, $state, $location, authService, $timeout, $translate) {
+        '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants',
+        function ($scope, $state, $location, authService, $timeout, $translate, Constants) {
 
             var successDelay = 2500;
             $scope.user = {};
             $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
-
-            authService.getLoginLogo().then(
-                function successCallback(response) {
-                    $scope.crafterLogo = authService.getLoginUrl();
-                }, function errorCallback(response) {
-                    $scope.crafterLogo = "/studio/static-assets/images/logo.svg";
-                }
-            );
+            $scope.crafterLogo = Constants.CRAFTER_LOGO;
 
             authService.validateToken({
                 'token': $location.search().token,
@@ -1773,13 +1754,19 @@
                         'token': $location.search().token,
                         'new': $scope.user.password
                     }).success(function(data) {
-                        $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
+                      $scope.error = null;
+                      $scope.successMessage = $translate.instant('dashboard.login.PASSWORD_UPDATED');
 
-                        $timeout(function() {
-                            $state.go('login');
-                        }, successDelay);
+                      $timeout(function() {
+                        $state.go('login');
+                      }, successDelay);
                     }).error(function(error){
-                        $scope.error = error.status;
+                      if (error.response.code === 6003) {
+                        $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
+                                        $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_REMEDIAL')
+                      } else {
+                        $scope.error = error.reponse.message + '. ' + error.response.remedialAction;
+                      }
                     });
                 };
             },function(error){
@@ -1907,4 +1894,22 @@
         };
     });
 
+    app.directive("stResetSearch", function() {
+      return {
+        restrict: 'EA',
+        require: '^stTable',
+        link: function(scope, element, attrs, ctrl) {
+          return element.bind('click', function() {
+            return scope.$evalAsync(function() {
+              var tableState;
+              tableState = ctrl.tableState();
+              tableState.search.predicateObject = {};
+              tableState.pagination.start = 0;
+
+              return ctrl.pipe();
+            });
+          });
+        }
+      };
+    });
 })(angular);

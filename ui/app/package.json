@@ -1,0 +1,53 @@
+{
+  "name": "studio-ui-incremental",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/graphql": "^14.2.3",
+    "@material-ui/core": "^4.3.2",
+    "@material-ui/icons": "^4.2.1",
+    "@types/jest": "24.0.13",
+    "@types/js-cookie": "^2.2.2",
+    "@types/node": "12.0.7",
+    "@types/react": "16.8.19",
+    "@types/react-dom": "^16.8.4",
+    "@types/video.js": "^7.2.10",
+    "@videojs/http-streaming": "^1.10.3",
+    "graphiql": "^0.13.2",
+    "graphiql-explorer": "^0.4.3",
+    "graphql": "^14.4.2",
+    "js-cookie": "^2.2.0",
+    "ncp": "^2.0.0",
+    "node-sass": "^4.12.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-router": "^5.0.0",
+    "react-scripts": "3.0.1",
+    "rimraf": "^2.6.3",
+    "rxjs": "^6.5.1",
+    "typescript": "3.5.1",
+    "video.js": "^7.5.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build; node build.js",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://127.0.0.1:8080/",
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

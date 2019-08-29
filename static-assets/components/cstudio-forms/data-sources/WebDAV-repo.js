@@ -37,77 +37,61 @@ CStudioForms.Datasources.WebDAVRepo = CStudioForms.Datasources.WebDAVRepo ||
 YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDatasource, {
 
     add: function(control, multiple) {
-        var _self = this,
-            baseUrl;
+      var _self = this,
+      browseCb = {
+          success: function(searchId, selectedTOs) {
+              for(var i=0; i<selectedTOs.length; i++) {
+                  var item = selectedTOs[i];
+                  var uri = item.browserUri;
+                  var fileName = item.internalName;
+                  var fileExtension = fileName.split(".").pop();
 
-        var cb = function(profiles){
-            var profiles = profiles.profile
+                  control.insertItem(uri, uri, fileExtension);
+                  control._renderItems();
+              }
+          },
+          failure: function() {
+          }
+      };
 
-            if(Array.isArray(profiles)){
-                baseUrl = profiles.find(x => x.id === _self.profileId).baseUrl;
-            }else{
-                if(profiles.id === _self.profileId){
-                    baseUrl = profiles.baseUrl;
-                }
-            }
+      if( multiple ){
+          var addContainerEl = null;
 
-            var browseCb = {
-                success: function(searchId, selectedTOs) {
-                    for(var i=0; i<selectedTOs.length; i++) {
-                        var item = selectedTOs[i];
-                        var uri = item.browserUri;
-                        var fileName = item.internalName;
-                        var fileExtension = fileName.split(".").pop();
+          if(!control.addContainerEl){
+              addContainerEl = document.createElement("div")
+              addContainerEl.create = document.createElement("div");
+              addContainerEl.browse = document.createElement("div");
 
-                        control.insertItem(uri, uri, fileExtension);
-                        control._renderItems();
-                    }
-                },
-                failure: function() {
-                }
-            };
-
-            if( multiple ){
-                var addContainerEl = null;
-
-                if(!control.addContainerEl){
-                    addContainerEl = document.createElement("div")
-                    addContainerEl.create = document.createElement("div");
-                    addContainerEl.browse = document.createElement("div");
-
-                    addContainerEl.appendChild(addContainerEl.create);
-                    addContainerEl.appendChild(addContainerEl.browse);
-                    control.containerEl.appendChild(addContainerEl);
+              addContainerEl.appendChild(addContainerEl.create);
+              addContainerEl.appendChild(addContainerEl.browse);
+              control.containerEl.appendChild(addContainerEl);
 
 
-                    YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
-                    YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
-                    YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
+              YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-node-selector-add-container');
+              YAHOO.util.Dom.addClass(addContainerEl.create, 'cstudio-form-controls-create-element');
+              YAHOO.util.Dom.addClass(addContainerEl.browse, 'cstudio-form-controls-browse-element');
 
-                    control.addContainerEl = addContainerEl;
-                    addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
-                    addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
-                }
+              control.addContainerEl = addContainerEl;
+              addContainerEl.style.left = control.addButtonEl.offsetLeft + "px";
+              addContainerEl.style.top = control.addButtonEl.offsetTop + 22 + "px";
+          }
 
-                var newElTitle = 'WebDAV';  //TODO: check how to get DS title
+          var newElTitle = 'WebDAV';  //TODO: check how to get DS title
 
-                var createEl = document.createElement("div");
-                YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
-                createEl.innerHTML = "Browse - " + newElTitle;
-                control.addContainerEl.create.appendChild(createEl);
+          var createEl = document.createElement("div");
+          YAHOO.util.Dom.addClass(createEl, 'cstudio-form-control-node-selector-add-container-item');
+          createEl.innerHTML = "Browse - " + newElTitle;
+          control.addContainerEl.create.appendChild(createEl);
 
-                var addContainerEl = control.addContainerEl;			
-                YAHOO.util.Event.on(createEl, 'click', function() {
-                    control.addContainerEl = null;
-                    control.containerEl.removeChild(addContainerEl);
-                    CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, baseUrl, "select", true, browseCb);
-                }, createEl);
-            }else{
-                CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, baseUrl, "select", true, browseCb);
-            }            
-        }
-
-        _self.getConfig(cb);
+          var addContainerEl = control.addContainerEl;
+          YAHOO.util.Event.on(createEl, 'click', function() {
+              control.addContainerEl = null;
+              control.containerEl.removeChild(addContainerEl);
+              CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, "select", true, browseCb);
+          }, createEl);
+      }else{
+          CStudioAuthoring.Operations.openWebDAVBrowse(_self.processPathsForMacros(_self.repoPath), _self.profileId, "select", true, browseCb);
+      }
 
     },
 

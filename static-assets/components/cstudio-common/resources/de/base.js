@@ -137,8 +137,8 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     wcmContentDuplicate: "Duplizieren",
     wcmContentHistory: "Verlauf",
     wcmContentPageDisabled: "Dieser Inhalt ist deaktiviert",
-    wcmContentSavedAsDraft: "Dieser Inhalt wurde als ENTWURF gespeichert. Pflichtfelder sind eventuell nicht ausgefüllt. Das zu Fehlern bei Vorschau oder Veröffentlichung führen.",
-    
+    wcmContentSavedAsDraft: "Dieser Inhalt wurde als ENTWURF gespeichert. Pflichtfelder sind möglicherweise nicht ausgefüllt. Das kann zu Fehlern in der Vorschau und/oder Veröffentlichung führen.",
+
     InProgress: "Bearbeitet",
     Deleted: "Gelöscht",
     SubmittedforDelete: "Zum Löschen eingereicht",
@@ -148,21 +148,22 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     Scheduled: "Geplant",
 
     search: "Suche",
-    
+
     logout: "Abmelden",
     close: "Schließen",
-    
+
     variableLabel: "Beispiele für Templates",
-    
+
     networkError: "Netzwerk-Fehler. Eventuell eingeschränkte Funktionalität.",
-    
+
     notification: "Hinweis",
     noEventError: "Fehlende Ereignisbehandlung.",
 
     publishStatus: "Veröffentlichungsstatus",
     idle: "Leerlauf",
     busy: "Beschäftigt",
-    stopped: "Angehalten"
+    stopped: "Angehalten",
+    quickCreateEmpty:"Für das schnelle Erstellen sind keine Content-Typen konfiguriert. Bitten wenden Sie sich an Ihren Systemadministrator."
 
 });
 
@@ -237,10 +238,14 @@ CStudioAuthoring.Messages.registerBundle("previewTools", "de", {
     sites: "Projekte",
     help: "Hilfe",
     documentation: "Dokumentation",
-    about: "Über",
+    about: "Über Crafter CMS",
     settings: "Einstellungen",
     signOut: "Abmelden",
-    mainMenu: "Hauptmenü"
+    mainMenu: "Hauptmenü",
+
+    videoProcessed: 'Das Video wird noch verarbeitet. Die Vorschau ist verfügbar sobald die Verarbeitung abgeschlossen ist.',
+    quickCreate: "Schnell erstellen",
+    inContextEdit: "Im-Kontext Bearbeitung"
 
 });
 
@@ -296,7 +301,7 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "de", {
     statusSubmittedForDelete: "Zum Löschen eingereicht",
     statusAndDisabled: "und deaktiviert",
     statusProcessing: "in Bearbeitung",
-    statusInProgress: "Editier",
+    statusInProgress: "Bearbeitet",
     statusLive: "Live",
     statusAnd: "und",
     statusSubmitted: "Im Workflow",
@@ -306,8 +311,8 @@ CStudioAuthoring.Messages.registerBundle("siteDropdown", "de", {
     wcmContentApprove: "Freigeben & Publizieren",
 
     notification: "Benachrichtigung",
-    previewInitiated: "Komplette Vorschau Synchronisation angestoßen.",
-    syncfromRepoInitiated: "Synchronization vom Repository angestoßen.",
+    previewInitiated: "Vollständige Synchronisation des Vorschau-Servers initialisiert.",
+    syncfromRepoInitiated: "Synchronisation aus Repository initialisiert.",
 
     lookUpItemError: "Fehler - bitte kontaktieren Sie Ihren Systemadministrator.",
     pathSameError: "Quell- und Zielverzeichnis sind identisch.",
@@ -360,7 +365,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     page: "Seite",
     loadingContents: "Lädt...",
     cut: "Ausschneiden",
-    cutDescription: "Bitte markieren Sie alle Seiten, die Sie ausschneiden möchten.<br/>Beim Einfügen bleiben die Positionen der Seiten entsprechend erhalten",
+    cutDescription: "Bitte markieren Sie alle Seiten, die Sie ausschneiden möchten.<br/>Beim Einfügen bleiben die Positionen der Seiten entsprechend erhalten.",
 
     create: "Anlegen",
     newFolderTitle: "Neues Verzeichnis anlegen",
@@ -424,7 +429,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     deleteSubmitDialogAsSoon: "So schnell wie möglich.",
 
     approveDialogTitle: "Freigabe zum Publizieren",
-    approveDialogSubTitle: "Die folgenden, markierten Elemente werden publiziert.",
+    approveDialogSubTitle: "Ausgewählte Dateien werden veröffentlicht. Harte Abhängigkeiten werden automatisch berücksichtigt. Weiche Abhängigkeiten sind optional und Sie können auswählen, welche einbezogen werden sollen.",
     approveDialogWarning:"WARNUNG: Für die ausgewählten Elemente wurde bereits ein anderer Publizierungszeitpunkt definiert.",
     dependenciesDialogTitle: "Abhängigkeiten",
     dependenciesDialogSubTitle: "Die Abhängigkeiten werden angezeigt für:",
@@ -446,6 +451,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     requestApproveDialogSubTitle: "Wann sollen die ausgewählten Elemente publiziert werden?",
     requestApproveDialogEmailMe: "Benachrichtung per E-Mail erhalten, wenn die Elemente zum Publizieren freigegeben wurden.",
 
+    itemsForPublish:"Zu veröffentlichende Elemente",
+    selectAll:"Wählen Sie Alle",
+    hardDependencies:"Harte Abhängigkeiten",
+    submissionMandatory: "Vorlage obligatorisch",
+    softDependencies:"Weiche Abhängigkeiten",
+    submissionOptional:"Einreichung optional",
+    showAllDependencies:"Alle Abhängigkeiten anzeigen",
+    changesSelectioItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
+    loadingDependencies:"Abhängigkeiten werden geladen, bitte warten ...",
+
     newContTypeDialogTitle: "Neuen Content-Typ anlegen",
     newContTypeDialogDisplayLabel: "Label",
     newContTypeDialogContentTypeName: "Name",
@@ -466,12 +481,12 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     supportedChannelsDialogName: "Name",
     supportedChannelsDialogSize :"Größe",
 
-    setStatedDialogTitle: "Wählen Sie die Status",
+    setStatedDialogTitle: "Wählen Sie den Status",
     setStatedDialogSetStates: "Status setzen",
     setStatedDialogSystemProcessing: "Systemverarbeitung",
 
     setQueueDialogTitle: "Wählen Sie den Status",
-    setDeploymentQueue: "Deployment Warteschlange",
+    setDeploymentQueue: "Deployment Queue",
     setDeploymentEndpoints: "Deployment Ziele",
     setDeploymentJobs: "Deployment Jobs",
     setQueueDialogCancelDeployment: "Deployment abbrechen",
@@ -521,32 +536,51 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     revertError: "Zurücksetzen ist fehlgeschlagen.",
     legacyError: "Der alte Formular Server wird nicht mehr unterstützt.",
     contentTypesEmpty: "Es gibt keine Content-Typen, die unter dem konfigurierten Pfad angelegt werden können.",
-    componentCategoriesError: "Es sind keine Kategorien zum Anlegen verfügbar."
+    componentCategoriesError: "Es sind keine Kategorien zum Anlegen verfügbar.",
+    pluginError: "Es wurden Probleme mit Ihrer Plugin-Konfiguration gefunden. Die folgenden Eigenschaften fehlen:",
+    pluginErrorSolution: "<a id='siteConfigURL'>Gehen Sie zu <a id='siteConfigURL'> [Site-Konfigurationsseite] </a> und wählen Sie in der Dropdown-Liste die Option 'Site-Konfigurations-Tools' aus, um die Datei zu bearbeiten.",
+    control: "Steuerung: ",
+    datasource: "Datenquelle: ",
+    propertyMessage: " Eigenschaft fehlt.",
+    propertiesMessage: " Eigenschaften fehlen."
 });
 
 CStudioAuthoring.Messages.registerBundle("search", "de", {
-    defaultTitle: "Suche",
-    searchButtonLabel: "Suchen",
-    keywordsLabel: "Suchbegriffe:",
-    searchResults: "Ergebnisse",
-    showing: "({0}-{1} von {2})",
-    hideDescriptions: "Beschreibungen ausblenden",
-    showDescriptions: "Beschreibungen einblenden",
-    show: "Ergebnisse pro Seite",
-    sort: "Sortierung nach",
-    sortRelevance: "Relevanz",
-    sortAlphabetical: "Alphabetisch",
-    sortCreateDate: "Erstellungsdatum",
-    pagePrevious: "Zurück",
-    pageNext: "Weiter",
-    resultsEdited: "Bearbeitet",
-    resultsBy: "von",
-    resultsUnknownType: "Unbekannter Typ",
-    resultsTemplate: "Template",
-    errSearchFailed: "Ihre Suche ist leider fehlgeschlagen. Versuchen Sie, die Filter anzupassen. Wenn der Fehler weiterhin besteht, wenden Sie sich bitte an Ihren Administrator mit dem Fehler: {0}",
-    errNoResults: "Keine Treffer.",
-    zeroResults: "(0 Treffer)",
-    errorMessage: 'Bei der Suche ist ein Problem aufgetreten. Wenden Sie sich an den Administrator, falls das Problem weiterhin besteht.'
+    searchInput: "Suche",
+    numResults: "Anzahl der Ergebnisse",
+    selectAll: "Alle auswählen",
+    filters: "Filter",
+    asc: "Aufsteigend",
+    desc: "Absteigend",
+    sortOrder: "Sortierreihenfolge",
+    sortBy: "Sortiere nach",
+    name: "Name",
+    images: "Bilder",
+    videos: "Videos",
+    width: "Breite",
+    height: "Höhe",
+    "content-type": "Content-Typ",
+    "mime-type": "MIME-Typ",
+    "last-edit-date": "Letztes Bearbeitungsdatum",
+    size: "Größe",
+    today: "heute",
+    "in-last-day": "Gestern",
+    "in-last-week": "Letzte Woche",
+    "over-a-month-ago": "Vor über einem Monat",
+    "over-six-months-ago": "Vor über sechs Monaten",
+    "over-a-week-ago": "Vor über einer Woche",
+    "over-a-year-ago": "Vor über einem Jahr",
+    paginationFirst: "Erste Seite",
+    paginationPrev: "Zurück",
+    paginationNext: "Weiter",
+    paginationLast: "Letzte Seite",
+    seeMore: 'Mehr',
+    seeLess: 'Weniger',
+    under: 'Unter',
+    above: 'und über',
+    errorMessage: 'Bei der Suche ist ein Problem aufgetreten. Wenden Sie sich an den Administrator, falls das Problem weiterhin besteht.',
+    clear: 'Zurücksetzen',
+    apply: 'Anwenden'
 });
 
 CStudioAuthoring.Messages.registerBundle("browse", "de", {
@@ -651,11 +685,13 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     richTextEditor: "Rich Text Editor (TinyMCE 2)",
     rteTinyMCE5: "Rich Text Editor (TinyMCE 5)",
     input: "Eingabefeld",
+    numericInput: "Numerische Eingabe",
     uuid: "UUID",
     linkInput:"Link Eingabefeld",
     dropdown: "Dropdown",
     linkedDropdown:"Verlinkte Dropdown",
     dateTime: "Datum / Uhrzeit",
+    time: "Uhrzeit",
     checkBox: "Checkbox",
     groupedCheckboxes: "Gruppierte Checkboxen",
     itemSelector: "Elementauswahl",
@@ -685,6 +721,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     S3UploadVideo: "Videos in S3 Repository hochladen",
     imageS3Repository:"Bilder aus S3 Repository",
     videoS3Repository:"Videos aus S3 Repository",
+    videos3Transcoding: "Videotranscodierung aus dem S3-Repository",
     fileS3Repository:"Dateien aus S3 Repository",
     fileUploadedS3Repository:"Dateien in S3 Repository hochladen",
     DAMImage: "DAM Bild Flickr",
@@ -700,7 +737,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     hubspotForms: "Hubspot Formular",
     imageFromRepository: "Bilder aus Repository",
     imageFromCMISRepository: "Bilder aus CMIS Repository",
-    CMISRepository: "CMIS Repository",
+    CMISRepository: "Datei aus dem CMIS-Repository",
+    CMISUpload: "Datei ins CMIS-Repository hochgeladen",
+    CMISUploadImage:"Image wurde in das CMIS-Repository hochgeladen",
+    CMISUploadVideo:"In CMIS-Repository hochgeladenes Video",
     salesforceCampaigns: "Salesforce Kampagnen",
     treeContent: "Baumstruktur",
 
@@ -762,12 +802,19 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     taxonomyName: "Taxonomy Name",
     defaultType: "Standardtyp",
     displayTemplate: "Template",
+    noTemplateRequired: "Keine Vorlage erforderlich",
     mergeStrategy: "Merge Strategie",
     componentPath: "Komponenten-Pfad",
     dependsOn: "Hängt ab von",
     profileId: "Profil-ID",
     path: "Pfad",
     type: "Typ",
+    quickCreate: "Schnell erstellen",
+    showQuickCreate: "In Quick Create anzeigen",
+    destinationPath: "Zielpfadmuster",
+    inputProfileId: "Eingabeprofil-ID",
+    outputProfileId: "Ausgabeprofil-ID",
+    postfixes: "Postfixes",
 
     /*Restrictions*/
     required: "Erforderlich",
@@ -877,9 +924,28 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     fileNotImage: "Die hochgeladene Datei ist fehlerhaft oder entspricht keinem der unterstützten Bildformate",
     loadImageError:"Fehler beim Laden des Bildes. Bitte versuchen Sie es erneut oder wählen ein anderes Bild",
 
+    /*Postfixes*/
+    iDescription: "Für eine Ganzzahl",
+    sDescription: "Für die Zeichenfolge",
+    lDescription: "Für eine lange Ganzzahl",
+    tDescription: "Für mehrere Wörter oder Token",
+    bDescription: "Für Boolean (wahr oder falsch)",
+    fDescription: "Für Gleitkommazahl",
+    dDescription: "Für lange Gleitkommazahlen",
+    dtDescription: "Für Datum im Datumsformat ISO 8601",
+    toDescription: "Für die Zeit im Format HH: mm: ss",
+    htmlDescription: "Für Text mit HTML-Tags",
+    oDescription: "Zum Objekt",
+    enDescription: "Für mehrere Wörter oder Token",
+    txtDescription: "Für mehrere Wörter oder Token",
+
     /* Errors */
     error: "Fehler",
     errorTitle: ". Bitte vergeben Sie Titel für alle Attribute und Data Sources.",
+    postfixError: "Modellfelder benötigen ihren jeweiligen Datentyp postfix: ",
+    optionsPostfixError:"Optionen sind ",
+    optionPostfixError:"Option ist",
+    andPostfixError:"und",
     errorName: ". Bitte vergeben Sie einen Variablennamen für: ",
     contentTypeNotFound: "Der Content-Typ für die Komponente wurde nicht gefunden.",
     failConfig: "Fehler beim Laden der Konfiguration.",
@@ -897,7 +963,16 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     delete: "Löschen",
     edit: "Bearbeiten",
     createNew: "Neu Anlegen",
-    browseExisting: "Auswählen"
+    browseExisting: "Auswählen",
+
+    /*help popover*/
+    pattern: "Muster",
+    objectIdPattern:"Fügt eine GUID ein.",
+    yearPattern:"Fügt das aktuelle Jahr ein (4-stelliges Jahr).",
+    monthPattern:"Fügt den aktuellen Monat ein (zweistelliger Monat des Jahres).",
+    yyyyPattern:"Fügt das aktuelle Jahr ein (4-stelliges Jahr).",
+    mmPattern:"Fügt den aktuellen Monat ein (zweistelliger Monat des Jahres).",
+    ddPattern:"Fügt den aktuellen Tag ein (zweistelliger Tag des Monats)."
 });
 
 CStudioAuthoring.Messages.registerBundle("targeting", "de", {
@@ -906,4 +981,15 @@ CStudioAuthoring.Messages.registerBundle("targeting", "de", {
     apply: "Anwenden",
     cancel: "Abbrechen",
     userProps: "Benutzereigenschaften"
+});
+
+CStudioAuthoring.Messages.registerBundle("dialogs", "de", {
+  upload: "Hochladen",
+  uploadSelect: "Bitte wählen Sie eine Datei zum Hochladen aus",
+  file: "Datei",
+  chooseFile: "Datei wählen",
+  noFileChosen: "Keine Datei ausgewählt",
+  uploadBtn: "Hochladen",
+  cancelBtn: "Stornieren",
+  uploading: "Hochladen"
 });

@@ -36,54 +36,66 @@ CStudioAuthoring.Module.requireModule(
  		*/
 		YAHOO.extend(CStudioAdminConsole.Tool.AdminConfig, CStudioAdminConsole.Tool, {
 			height: 600,
-			
+
 			renderWorkarea: function() {
-				var workareaEl = document.getElementById("cstudio-admin-console-workarea");
-		
+				var workareaEl = document.getElementById("cstudio-admin-console-workarea"),
+                    self = this;
+
 				workareaEl.innerHTML =
 					"<div id='config-area'>" +
 					"</div>";
 				var actions = [];
-				CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
-				this.renderJobsList();
 
-				var historyEl = document.createElement("li");
-				historyEl.className = 'acn-link';
-				historyEl.id = 'historyEl';
+                var callback = {
+                    success: function (data) {
+                        self.environment = JSON.parse(data.responseText).environment;
+                        CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+                        self.renderJobsList();
 
-				document.getElementById('activeContentActions').appendChild(historyEl);
+                        var historyEl = document.createElement("li");
+                        historyEl.className = 'acn-link';
+                        historyEl.id = 'historyEl';
+
+                        document.getElementById('activeContentActions').appendChild(historyEl);
+                    },
+                    failure: function (data) {
+                        console.log(data.response.message);
+                    }
+                };
+
+                CStudioAuthoring.Service.getActiveEnvironment(callback);
 			},
-	
+
 			renderJobsList: function() {
-		
+
 				var containerEl = document.getElementById("config-area");
-				
-				containerEl.innerHTML = 
+
+				containerEl.innerHTML =
 					"<div class='configuration-window'>" +
-                        "<p id='activeEnvironment' class='hide'><strong>Active Environment:</strong> <span id='active-environment-value'></span></p>" +
+                        "<p id='activeEnvironment' class='hide'><strong>Active Environment:</strong> <span id='active-environment-value'>" + this.environment + "</span></p>" +
 						"<select id='config-list'>" +
 					 		" <option value='' >"+CMgs.format(langBundle, "confTabSelectConf")+"</option>" +
 						"</select>" +
-						"<div id='edit-area'>" + 
-							"<div id='menu-area'>" + 
-								"<div id='config-description'>" + 
+						"<div id='edit-area'>" +
+							"<div id='menu-area'>" +
+								"<div id='config-description'>" +
 								"</div>" +
                                 "<div id='config-buttons'>" +
                                 "</div>" +
-							"</div>" + 
+							"</div>" +
 							"<div id='content-area'>" +
-								"<div id='edit-window'>" + 
+								"<div id='edit-window'>" +
 								"</div>" +
 								"<div id='sample-window'>" +
-								"</div>" + 
-							"</div>" + 
-						"</div>" + 
+								"</div>" +
+							"</div>" +
+						"</div>" +
 					"</div>";
-				// set editor for configuration file 	
-				var editorContainerEl = document.getElementById("edit-window");	
+				// set editor for configuration file
+				var editorContainerEl = document.getElementById("edit-window");
 				var editorEl = this.setEditor(editorContainerEl, false);
-				// set editor for sample configuration file 
-				var sampleEditorContainerEl = document.getElementById("sample-window");	
+				// set editor for sample configuration file
+				var sampleEditorContainerEl = document.getElementById("sample-window");
 				var sampleEditorEl = this.setEditor(sampleEditorContainerEl, true);
 
                 // set active environment
@@ -100,36 +112,26 @@ CStudioAuthoring.Module.requireModule(
 
 				// hide display area by default
 				editAreaEl.style.display = 'none';
-		
+
 			},
 
             /*
              * populate the list of configuration files
              */
             loadActiveEnv: function (elt) {
-
-                var callback = {
-                    success: function (data) {
-                        if (data.environment){
-                            elt.parentElement.classList.remove("hide");
-                            elt.innerHTML = data.environment;
-                        }
-                    },
-                    failure: function (data) {
-                        console.log(data.response.message);
-                    }
-                };
-
-                CStudioAuthoring.Service.getActiveEnvironment(callback);
+                if (this.environment) {
+                    elt.parentElement.classList.remove("hide");
+                }
             },
-			
+
 			/*
 			* populate the list of configuration files
 			*/
 			loadConfigFiles: function (itemSelectEl, editAreaEl, editor, sampleEditor) {
+                var self = this;
 				// load configuration to get the configuration files list
 				CStudioAuthoring.Service.lookupConfigurtion(
-					CStudioAuthoringContext.site, 
+					CStudioAuthoringContext.site,
 					"/administration/config-list.xml", {
 						success: function(config) {
 							if (config.files.file && config.files.file.length) {
@@ -139,6 +141,7 @@ CStudioAuthoring.Module.requireModule(
 									var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
 									option.setAttribute("description", CMgs.format(langBundle, fileConfig.description));
 									option.setAttribute("sample", fileConfig.samplePath);
+                  option.setAttribute("module", fileConfig.module);
 									itemSelectEl.options[index++] = option;
 								}
 							} else if (config.files.file) {
@@ -146,6 +149,7 @@ CStudioAuthoring.Module.requireModule(
 								var option = new Option(CMgs.format(langBundle, fileConfig.title), fileConfig.path, false, false);
 								option.setAttribute("description", CMgs.format(langBundle, fileConfig.description));
 								option.setAttribute("sample", fileConfig.samplePath);
+                option.setAttribute("module", fileConfig.module);
 								itemSelectEl.options[1] = option;
 							}
 						},
@@ -162,13 +166,14 @@ CStudioAuthoring.Module.requireModule(
 						}
 					}
 				);
-			
+
 				// add onchange behavior to display selected
 				itemSelectEl.onchange = function() {
 					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
 						configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN,
 						selectedIndex = itemSelectEl.selectedIndex,
-                        contentArea = document.getElementById("content-area");
+                        contentArea = document.getElementById("content-area"),
+                        environment = self.environment ? self.environment : '';
 
 					$('#historyEl').empty();
 
@@ -178,12 +183,17 @@ CStudioAuthoring.Module.requireModule(
 						descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute("description");
 
 						// load configuration into editor
-						var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-							CStudioAuthoringContext.site + '&path=' + configFilesPath + itemSelectEl[selectedIndex].value,
-							elemPath = configFilesPath + itemSelectEl[selectedIndex].value;
+						var url = '/studio/api/2/configuration/get_configuration?siteId=' +
+							CStudioAuthoringContext.site + '&module=' + itemSelectEl[selectedIndex].getAttribute('module') +
+              '&path=' + itemSelectEl[selectedIndex].value,
+							elemPath =  itemSelectEl[selectedIndex].value;
+                        if(environment){
+                            url += '&environment=' + environment;
+                        }
 						var getConfigCb = {
 							success: function(response) {
-								editor.setValue(response.responseText);
+							  var responseObj = eval('(' + response.responseText + ')')
+								editor.setValue(responseObj.content);
                                 editor.clearSelection(); // This will remove the highlight over the text
                                 CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 
@@ -254,7 +264,7 @@ CStudioAuthoring.Module.requireModule(
 					}
 				}; // end of change
 			},
-			
+
 			/*
 			* create editor
 			*/
@@ -263,7 +273,7 @@ CStudioAuthoring.Module.requireModule(
 				editorEl.id = readOnly ? "sample-text" : "text-editor";
 				editorEl.className += "editor-text";
 				editorContainerEl.appendChild(editorEl);
-				
+
 				var mode = "ace/mode/xml";
 
 				var langTools = ace.require("ace/ext/language_tools");
@@ -284,8 +294,8 @@ CStudioAuthoring.Module.requireModule(
 				return aceEditor;
 
 			},
-			
-			
+
+
 			/*
 			* add save, view sample and hide sample buttons
 			*/
@@ -312,11 +322,13 @@ CStudioAuthoring.Module.requireModule(
                 var contentArea = document.getElementById("content-area");
                 var me = this,
                     configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
-					configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN;;
+					configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN;
                 hideSampleButtonEl.style.display = 'none';
 
                 var saveFn = function(){
-                    var selectedIndex = itemSelectEl.selectedIndex;
+                    var selectedIndex = itemSelectEl.selectedIndex,
+                        environment = me.environment ? me.environment : "";
+
                     var saveCb = {
                         success: function() {
                             CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
@@ -338,15 +350,18 @@ CStudioAuthoring.Module.requireModule(
                     var savePath = itemSelectEl[selectedIndex].value;
                     if (savePath != 'undefined' && savePath != '') {
 
-                        var defPath =  configFilesPath + itemSelectEl[selectedIndex].value;
+                        var defPath =  itemSelectEl[selectedIndex].value;
 
-                        var url = "/api/1/services/api/1/site/write-configuration.json" +
-                            "?site=" + CStudioAuthoringContext.site + "&path=" + defPath;
+                        var url = "/api/2/configuration/write_configuration";
 
+                        var reqObj = { siteId: CStudioAuthoringContext.site, module: itemSelectEl[selectedIndex].getAttribute("module"),
+                            path: defPath, environment: environment, content: xml };
+
+                      var requestAsString = JSON.stringify(reqObj);
                         YAHOO.util.Connect.setDefaultPostHeader(false);
-						YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-						YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CStudioAuthoringContext.xsrfToken);
-                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, xml);
+                      YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+						YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+                        YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, requestAsString);
                     } else {
                         CStudioAuthoring.Operations.showSimpleDialog(
                             "errorDialog-dialog",
@@ -375,14 +390,14 @@ CStudioAuthoring.Module.requireModule(
                 };
 
 			},
-			
+
 			expandEditor: function(editor) {
 				var editorContainer = editor.container;
 				editorContainer.style.width = this.width;
 				editorContainer.style.height = this.height;
 				editor.resize();
 			},
-			
+
 			shrinkEditor: function(editor) {
 				var editorContainer = editor.container;
 				editorContainer.style.width = this.width/2;
@@ -431,11 +446,11 @@ CStudioAuthoring.Module.requireModule(
 
                 YConnect.asyncRequest("GET", CStudioAuthoring.Service.createServiceUri(serviceUri), clearCacheCb);
             }
-			
+
 		});
 
 	CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-admin-configurations",CStudioAdminConsole.Tool.AdminConfig);
 
 }});
 
-	
+

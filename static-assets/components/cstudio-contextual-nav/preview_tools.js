@@ -86,7 +86,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
 				},
 				
 				render: function() {
-					var el, containerEl, iconEl, iconLabel, ptoOn;
+					var el, containerEl, iconEl, ptoOn;
 
 					var CMgs = CStudioAuthoring.Messages;
 					var previewLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
@@ -100,6 +100,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
                     iconEl.id = "acn-preview-tools-image";
 
                     YDom.addClass(iconEl, "nav-icon fa fa-wrench f18");
+                    $(iconEl).attr('data-title', 'previewToolsTitle');
                     ptoOn = !!(sessionStorage.getItem('pto-on'));   // cast string value to a boolean
 
                     if(ptoOn){
@@ -108,12 +109,7 @@ CStudioAuthoring.ContextualNav.PreviewToolsMod = CStudioAuthoring.ContextualNav.
                         YDom.addClass(iconEl, "icon-default");
                     }
 
-                    iconLabel = document.createElement("span");
-                    YDom.addClass(iconLabel, "nav-label");
-                    iconLabel.innerHTML = CMgs.format(previewLangBundle, "previewToolsTitle");;
-
 					containerEl.appendChild(iconEl);
-                    containerEl.appendChild(iconLabel);
 					el.appendChild(containerEl);
 
                     var cstopic = crafter.studio.preview.cstopic;

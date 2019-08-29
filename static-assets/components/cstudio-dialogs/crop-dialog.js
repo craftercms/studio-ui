@@ -65,7 +65,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             }
         }
 	},
-	
+
 	/**
 	 * hide dialog
 	 */
@@ -93,7 +93,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         var divIdName = "cstudio-wcm-popup-div";
         newdiv.setAttribute("id",divIdName);
         newdiv.className= "yui-pe-content";
-        newdiv.innerHTML = '<div class="contentTypePopupInner" id="crop-popup-inner">' +
+        newdiv.innerHTML = '<div class="contentTypePopupInner crop-image-dialog" id="crop-popup-inner">' +
             '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
             '<div class="contentTypePopupHeader">Crop Image</div> ' +
             '<div>'+
@@ -107,18 +107,18 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             '<div class="btn-group">' +
             '<button type="button" class="btn btn-primary" data-method="zoom" data-option="0.1" title="Zoom In" id="zoomIn">' +
             '<span class="docs-tooltip" data-toggle="tooltip" title="Zoom In" data-original-title="Zoom In">' +
-            '<span class="status-icon zoom-in"></span>' +
+            '<span class="status-icon fa fa-search-plus"></span>' +
             '</span>' +
             '</button>' +
             '<button type="button" class="btn btn-primary" data-method="zoom" data-option="-0.1" title="Zoom Out" id="zoomOut">' +
             '<span class="docs-tooltip" data-toggle="tooltip" title="Zoom Out" data-original-title="Zoom Out)">' +
-            '<span class="status-icon zoom-out"></span>' +
+            '<span class="status-icon fa fa-search-minus"></span>' +
             '</span>' +
             '</button>' +
             '</div>' +
             '<button type="button" class="btn btn-primary refresh" data-method="getContainerData" data-option="" id="refresh">' +
             '<span class="docs-tooltip" data-toggle="tooltip" title="Refresh" data-original-title="Refresh">' +
-            '<span class="status-icon refresh"></span>' +
+            '<span class="status-icon fa fa-refresh"></span>' +
             '</span>' +
             '</button>' +
             '<span id="zoomMessage" class="hidden">Increasing zoom creates an image which is smaller than the constraints</span>' +
@@ -447,17 +447,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
     cropPopupCancel: function(event) {
         CStudioAuthoring.Dialogs.CropDialog.closeDialog();
-        this.decreaseFormDialog();
-    },
-
-    decreaseFormDialog: function(){
-        if( window.frameElement){
-            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-            if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212){
-                $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
-            }
-        }
-
+        CStudioAuthoring.Utils.decreaseFormDialog();
     },
 
     increaseFormDialogForCrop: function(){

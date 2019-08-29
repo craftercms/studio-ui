@@ -152,6 +152,10 @@ sup {
   min-width: 1000px;
   width: 100%; }
 
+#header.cstudio-form-field-container{
+    min-width: auto;
+}
+
 #container {
   padding: 53px 30px 30px 30px; }
 

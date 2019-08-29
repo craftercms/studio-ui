@@ -19,7 +19,7 @@
 <script>
 
 	/**
-	 * contextual variables 
+	 * contextual variables
 	 * note: these are all fixed at the moment but will be dynamic
 	 */
 	CStudioAuthoringContext = {
@@ -32,7 +32,7 @@
 		baseUri: "/studio",
 		authoringAppBaseUri: "${envConfig.authoringServerUrl!'/studio'}",
 		formServerUri: "${envConfig.formServerUrl!'UNSET'}",
-		previewAppBaseUri: "${envConfig.previewServerUrl!'UNSET'}", 
+		previewAppBaseUri: "${envConfig.previewServerUrl!'UNSET'}",
 		contextMenuOffsetPage: false,
 		brandedLogoUri: "/api/1/services/api/1/content/get-content-at-path.bin?path=/configuration/app-logo.png",
 		homeUri: "/site-dashboard?site=${envConfig.site!'UNSET'}",
@@ -42,10 +42,8 @@
 		isPreview: false,
 		liveAppBaseUri:"",
 		lang: "${envConfig.language!'UNSET'}",
-		xsrfToken: "${_csrf.token}",
 		xsrfHeaderName: "${_csrf.headerName}",
 		xsrfParameterName: "${_csrf.parameterName}"
-
 	};
 
    	if(CStudioAuthoringContext.role === "") {
@@ -61,14 +59,14 @@
 
 		if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
 			isChromium = true;
-		} else { 
+		} else {
 			isChromium = false;
 			var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 		}
 
 		if(!(isChromium || isFirefox)){
 			$("body").addClass("iewarning")
-			$("body").prepend("<div class='ccms-iewarning'>Your browser is currently not supported, " + 
+			$("body").prepend("<div class='ccms-iewarning'>Your browser is currently not supported, " +
 			"please use <a style='color: #24ddff;' target='_blank' href='https://www.google.com/chrome/browser/desktop/index.html'>Chrome</a> or <a style='color: #24ddff;' target='_blank' href='https://www.mozilla.org/en-US/firefox/new/?scene=2'>Firefox</a>.</div>");
 		}
 	});

@@ -48,7 +48,14 @@
                         <td class="name">{{site.siteId}}</td>
                         <td class="preview"><a ng-click="editSite(site)">{{ 'dashboard.sites.PREVIEW' | translate }} &raquo;</a></td>
                         <td class="dashboard"><a ng-click="goToDashboard(site)">{{ 'dashboard.sites.DASHBOARD' | translate }} &raquo;</a></td>
-                        <td class="remove"><a ng-show="site.remove" ng-click="removeSiteSites(site)"><i class="fa fa-trash-o"></i></a></td>
+                        <td class="remove">
+                          <a ng-show="site.remove"
+                             ng-click="removeSiteSites(site)"
+                             tooltip-placement="bottom"
+                             uib-tooltip="{{'common.REMOVE_LABEL' | translate}}">
+                            <i class="fa fa-trash-o"></i>
+                          </a>
+                        </td>
                     </tr>
 
                 </tbody>
@@ -56,6 +63,10 @@
 
             <dir-pagination-controls id="sites-pagination" class="ml10" on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
         </div>
+    </div>
+
+    <div ng-if="(!sites || !sites.length) && !createSites">
+        <p class="site-message">{{ 'dashboard.sites.NO_SITES_MESSAGE' | translate }}</p>
     </div>
 
 </div>

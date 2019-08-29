@@ -24,6 +24,8 @@ var YEvent = YAHOO.util.Event;
 CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 
 	initialized: false,
+    CMgs: CStudioAuthoring.Messages,
+    contextNavLangBundle: CStudioAuthoring.Messages.getBundle("previewTools", CStudioAuthoringContext.lang),
 
 	/**
 	 * call out to the authoring environment for the nav content and overlay it
@@ -32,7 +34,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	hookNavOverlayFromAuthoring: function() {
 		if(!this.initialized) {
 			this.initialized = true;
-			this.updateContextualNavOverlay()
+			this.updateContextualNavOverlay();
 		}
 	},
 
@@ -51,7 +53,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				YAHOO.util.Event.onAvailable("authoringContextNavHeader", function() {
                     document.domain = CStudioAuthoringContext.cookieDomain;
 					CStudioAuthoring.Events.contextNavReady.fire();
-					me.getNavBarContent()
+					me.getNavBarContent();
 				}, this);
 			},
 			failure: function() {
@@ -65,7 +67,8 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	 */
 	addNavContent: function(navHtmlContent) {
 
-		var bar = document.createElement("div");
+		var bar = document.createElement("div"),
+            self = this;
 
 		bar.id = "controls-overlay";
 		bar.innerHTML = navHtmlContent;
@@ -93,9 +96,12 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 						});
 
 					me.context.buildModules(config, bar);
+
+                    CStudioAuthoring.Operations.createNavBarDropDown("help");
+                    CStudioAuthoring.Operations.createNavBarDropDown("quick-create");
 				});
 
-                CStudioAuthoring.Operations.createNavBarDropDown("help");
+                self.addResizeEventToNavbar();
 
 			},
 			failure: function() {},
@@ -184,30 +190,29 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	showRightModules: function(modules, barEl) {
 		var modulesMap = CStudioAuthoring.ContextualNav.RightModulesMap;
 		this.showModules(modulesMap, modules, barEl);
-        this.showLabelsRightModules();
+        this.showTooltipModules();
 	},
 
     /**
      * Shown right context nav labels
      */
-    showLabelsRightModules: function() {
-        $( "#studioBar" ).delegate( ".nav-link", "mouseenter mouseleave", function(event) {
-            if( event.type === "mouseover"  || event.type === "mouseenter" ){
-                var elt = $( this).find(".nav-label");
-                setTimeout(function () {
-                    if ($("#"+elt.parent().get(0).id+':hover').length != 0) {
-                        elt.addClass('nav-label-hover');
-                        elt.removeClass('nav-label');
-                    }
-                }, 1000, false);
+    showTooltipModules: function() {
+        var self = this;
+        $("#studioBar").tooltip({
+            selector: '.nav-icon',
+            placement: "bottom",
+            title: function () {
+                var text = $(this).attr("data-title"),
+                    textTranslated = self.CMgs.format(self.contextNavLangBundle, text);
+                $(this).attr("title", textTranslated);
+                $(this).attr("data-original-title", textTranslated);
+                return textTranslated;
             }
-            else{
-                var elt = $(this).find(".nav-label-hover");
-                elt.addClass( "nav-label" );
-                elt.removeClass( "nav-label-hover" );
-            }
-        });
 
+        })
+        $("#studioBar").delegate(".nav-icon", "click", function (event) {
+            $(this).tooltip('hide');
+        });
     },
 
 	/**
@@ -234,12 +239,37 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 			}
 
 		};
-	}
+	},
+
+    addResizeEventToNavbar: function() {
+        new ResizeSensor($('.navbar-default'), function () {
+            if ($('.navbar-default').height() > 55) {
+                $('.studio-preview').css('top', 100 + "px");
+                $('.site-dashboard').css('top', 100 + "px");
+                if ($('#admin-console').length > 0) {
+                    $('.cstudio-admin-console-item-first').css('margin-top', 110 + "px");
+                    $('#cstudio-admin-console-workarea').css('margin-top', 100 + "px");
+                    $('#content-type-tools').css('top', 50 + "px");
+                }
+
+            } else {
+                $('.studio-preview').css('top', 50 + "px");
+                $('.site-dashboard').css('top', 50 + "px");
+                if ($('#admin-console').length > 0) {
+                    $('.cstudio-admin-console-item-first').css('margin-top', 60 + "px");
+                    $('#cstudio-admin-console-workarea').css('margin-top', 0 + "px");
+                    $('#content-type-tools').css('top', 0 + "px");
+                }
+            }
+        });
+    }
+
 };
 
 CStudioAuthoring.ContextualNav.LeftModulesMap = {
 	'wcm_logo': '.navbar-brand',
 	'wcm_dropdown': '#acn-dropdown-wrapper',
+    'quick-create': '#quick-create',
 	'wcm_content': '#activeContentActions',
 	'admin_console': '#acn-admin-console'
 };
