@@ -194,7 +194,7 @@ define('guest', [
       var $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
       var iceId = $e.data('studioIce');
       var icePath = $e.data('studioIcePath');
-      var iceChildId = $e.data('childId');
+      var iceChildId = $e.data('studioChildId');
 
       var position = $e.offset(),
         props = {
