@@ -9196,9 +9196,14 @@ CStudioAuthoring.InContextEdit = {
 
   unstackDialog: function (editorId) {
     if (window.top.iceDialogs) {
-      let unStack = window.top.iceDialogs.find(dialog => dialog.key === editorId).value;
-      window.top.iceDialogs = window.top.iceDialogs.filter((dialog) => dialog.key !== editorId);
-      unStack.end();
+      let dialog = window.top.iceDialogs.find(dialog => dialog.key === editorId);
+      if(dialog) {
+        window.top.iceDialogs = window.top.iceDialogs.filter((dialog) => dialog.key !== editorId);
+        dialog.value.end();
+        return true;
+      }else {
+        return false;
+      }
     }
   },
 

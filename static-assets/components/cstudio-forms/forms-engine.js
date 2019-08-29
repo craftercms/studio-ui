@@ -833,12 +833,14 @@ var CStudioForms = CStudioForms || function() {
               nextComponentDOM.setAttribute('id', objectId);
               FlattenerState[objectId] = nextComponentDOM.outerHTML;
               const name = nextComponentDOM.querySelector('internal-name').innerHTML;
-              CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({ }, message.editorId, objectId, name, message.draft);
-              CStudioAuthoring.InContextEdit.unstackDialog(message.editorId);
+              if(CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
+                CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({ }, message.editorId, objectId, name, message.draft);
+              }
               //save
               break;
             }
             case FORM_SAVE_REQUEST: {
+              amplify.publish('UPDATE_NODE_SELECTOR', message );
               cfe.engine.saveForm();
             }
           }
@@ -1559,29 +1561,6 @@ var CStudioForms = CStudioForms || function() {
         amplify.subscribe('/field/init/completed', function () {
           form.asyncFields--;
           closeAjaxOverlay();
-          messages$.subscribe((message) => {
-            switch (message.type) {
-              case OPEN_CHILD_COMPONENT: {
-                const key = message.key;
-                const contentType = parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
-                CStudioAuthoring.Operations.performSimpleIceEdit(
-                  { contentType: contentType, uri: key },
-                  null, // field
-                  true,
-                  {
-                    success: function (contentTO, editorId, name, value) {
-                      sendMessage({type: FORM_SAVE_REQUEST});
-                    }
-                  },
-                  [],
-                  true
-                );
-              }
-            }
-          });
-          if(!me.config.isInclude) {
-            sendMessage({type: FORM_RDY});
-          }
         });
 
         if (!form.readOnly) {
@@ -1680,6 +1659,31 @@ var CStudioForms = CStudioForms || function() {
             cancelFn();
           }
         });
+
+        //render finished
+        messages$.subscribe((message) => {
+          switch (message.type) {
+            case OPEN_CHILD_COMPONENT: {
+              const key = message.key;
+              const contentType = parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
+              CStudioAuthoring.Operations.performSimpleIceEdit(
+                { contentType: contentType, uri: key },
+                null, // field
+                true,
+                {
+                  success: function (contentTO, editorId, objId, value) {
+                    sendMessage({type: FORM_SAVE_REQUEST, objId, value});
+                  }
+                },
+                [],
+                true
+              );
+            }
+          }
+        });
+        if(!me.config.isInclude) {
+          sendMessage({type: FORM_RDY});
+        }
       });
     },
 

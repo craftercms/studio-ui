@@ -41,6 +41,7 @@ CStudioForms.Controls.NodeSelector = CStudioForms.Controls.NodeSelector ||
         this.disableFlattening = false;
         this.useSingleValueFilename = false;
         amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
+        amplify.subscribe("UPDATE_NODE_SELECTOR", this, this.onIceUpdate);
 
         return this;
     }
@@ -108,6 +109,15 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     },
 
     editNode: function() {
+    },
+
+    onIceUpdate: function( data) {
+      var item = this.items.find((item) => item.key === data.objId);
+      if(item) {
+        item.value =  data.value;
+        this._renderItems();
+        this._onChangeVal(this);
+      }
     },
 
     onDatasourceLoaded: function( data ) {
