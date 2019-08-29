@@ -47,7 +47,9 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
                   var fileExtension = fileName.split(".").pop();
 
                   control.insertItem(uri, uri, fileExtension);
-                  control._renderItems();
+                  if(control._renderItems){
+                    control._renderItems();
+                  }
               }
           },
           failure: function() {

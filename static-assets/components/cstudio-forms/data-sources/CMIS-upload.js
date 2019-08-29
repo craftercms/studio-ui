@@ -64,7 +64,9 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 						fileExtension = fileData.fileExtension;
 
 					control.insertItem(item, item, fileExtension);
-					control._renderItems();
+					if(control._renderItems){
+						control._renderItems();
+					}
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
