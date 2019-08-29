@@ -752,7 +752,7 @@ var CStudioForms = CStudioForms || function() {
     } else {
       doc.querySelectorAll('component[processed]').forEach(item => {
         item.removeAttribute('processed');
-      })
+      });
       return doc.outerHTML;
     }
   }
@@ -821,7 +821,7 @@ var CStudioForms = CStudioForms || function() {
                     payload: FlattenerState[message.key]
                   });
                 } else {
-                  console.error(`FormEngine Flattener: The include \`component[key="${message.key}"]\` wasn't found.`);
+                  console.warn(`FormEngine Flattener: The include \`component[key="${message.key}"]\` wasn't found.`);
                 }
               }
               break;
