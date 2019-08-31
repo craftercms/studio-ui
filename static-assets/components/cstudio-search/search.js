@@ -473,10 +473,11 @@
             template = Handlebars.compile(source),
             html,
             editable = true,
-            permissionsKey = CStudioAuthoringContext.user;
+            permissionsKey = CStudioAuthoringContext.user,
+            isInSelectMode = (this.searchContext.mode == "select");
 
         if(
-            result.type === "Page"
+            (result.type === "Page" && !isInSelectMode)
             || result.type === "Image"
             || result.type === "Video"
         ){
@@ -490,33 +491,45 @@
         }
         result.icon = CStudioSearch.typesMap[result.type] ? CStudioSearch.typesMap[result.type].icon : CStudioSearch.typesMap["Other"].icon;
 
-        var permissionsCached = cache.get(permissionsKey),
-            validateAndRender = function(results) {
-                var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "write"),
-                    isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "delete");
-                result.editable = isWriteAllowed;
-                // set permissions for edit/delete actions to be (or not) rendered
-                result.permissions = {
-                    edit: isWriteAllowed && editable,
-                    delete: isDeleteAllowed
-                };
-
-                html = template(result);
-                $(html).appendTo($resultsContainer);
+        // when in select mode, dont give option to delete or edit
+        if (isInSelectMode) {
+            result.editable = false;
+            result.permissions = {
+                edit: false,
+                delete: false
             };
 
-        if(permissionsCached){
-            validateAndRender(permissionsCached);
-        }else{
-            CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, result.path, {
-                success: function (results) {
-                    cache.set(permissionsKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
-                    validateAndRender(results);
-                },
-                failure: function () {
-                    throw new Error('Unable to retrieve user permissions');
-                }
-            });
+            html = template(result);
+            $(html).appendTo($resultsContainer);
+        } else {
+            var permissionsCached = cache.get(permissionsKey),
+                validateAndRender = function(results) {
+                    var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "write"),
+                        isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "delete");
+                    result.editable = isWriteAllowed;
+                    // set permissions for edit/delete actions to be (or not) rendered
+                    result.permissions = {
+                        edit: isWriteAllowed && editable,
+                        delete: isDeleteAllowed
+                    };
+
+                    html = template(result);
+                    $(html).appendTo($resultsContainer);
+                };
+
+            if (permissionsCached) {
+                validateAndRender(permissionsCached);
+            } else {
+                CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, result.path, {
+                    success: function (results) {
+                        cache.set(permissionsKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
+                        validateAndRender(results);
+                    },
+                    failure: function () {
+                        throw new Error('Unable to retrieve user permissions');
+                    }
+                });
+            }
         }
     }
 
