@@ -144,8 +144,22 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
       control.containerEl.removeChild(addContainerEl);
     }
 
-    var searchContext = CStudioAuthoring.Service.createSearchContext();
-    searchContext.keywords = encodeURIComponent("");
+    var searchContext = {
+      searchId: null,
+      itemsPerPage: 12,
+      keywords: "",
+      filters: {},
+      sortBy: "internalName",      // sortBy has value by default, so numFilters starts at 1
+      sortOrder: "asc",
+      numFilters: 1,
+      filtersShowing: 10,
+      currentPage: 1,
+      searchInProgress: false,
+      view: 'grid',
+      lastSelectedFilterSelector: '',
+      mode: "select"              // open search not in default but in select mode
+    };
+
     CStudioAuthoring.Operations.openSearch(searchContext, true, {
       success: function (searchId, selectedTOs) {
         for (var i = 0; i < selectedTOs.length; i++) {
@@ -157,7 +171,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
       },
       failure: function () {
       }
-    }, null);
+    }, searchContext.searchId);
   },
 
   add: function(control, onlyAppend) {
