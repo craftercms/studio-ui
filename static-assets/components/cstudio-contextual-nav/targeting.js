@@ -103,16 +103,15 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
 					var reportContainerEl = document.createElement("div");
 					reportContainerEl.id = "cstudioPreviewTargetingOverlay";
-					YAHOO.util.Dom.addClass(reportContainerEl, "cstudio-targeting-overlay row");
+					YAHOO.util.Dom.addClass(reportContainerEl, "cstudio-targeting-overlay row yui-skin-cstudioTheme");
 
 					reportContainerEl.style.position = "fixed";
 					reportContainerEl.style.width = "800px";
 					reportContainerEl.style.height = "auto";
 					reportContainerEl.style.minHeight = "300px";
-					reportContainerEl.style.maxHeight = "445px";
+					reportContainerEl.style.maxHeight = "565px";
 					reportContainerEl.style.top = "96px";
 					reportContainerEl.style.padding = "15px 15px 50px 15px";
-					// reportContainerEl.style.paddingBottom = "50px";
 
 					var x = (window.innerWidth / 2) - (reportContainerEl.offsetWidth / 2) - 400;
 					reportContainerEl.style.left = x+"px";
@@ -128,7 +127,7 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					var targetingContainerEl = document.createElement("div");
 					targetingContainerEl.id = "targeting-container";
 					YAHOO.util.Dom.addClass(targetingContainerEl, "col-md-10 targeting-container");
-					targetingContainerEl.style.cssText = "overflow-y: scroll; max-height: 349px;";
+					targetingContainerEl.style.cssText = "overflow-y: scroll; max-height: 467px;";
 					targetingContainerEl.innerHTML = "<h3 class='bold'>" + CMgs.format(previewLangBundle, "userProps") + "</h2>";
 
 					reportContainerEl.appendChild(targetingContainerEl);
@@ -234,7 +233,12 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 												input.style.width = "30%";
 												controlContainer.appendChild(input);
 
-												break;
+                        break;
+                      case 'datetime':
+
+                        me.dateTimeInit(controlContainer, currentProp);
+
+                        break;
 										}
 
 										var description = document.createElement("span");
@@ -301,7 +305,21 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 											break;
 										case "input":
 											controlEl.value = currentProp.default_value;
-											break;
+                      break;
+                    case "datetime":
+                      var $controlEl = $(controlEl),
+                          $dateTimePicker = $controlEl.find('.date-picker');
+
+                      if (currentProp.default_value === '') {
+                        $dateTimePicker.val(currentProp.default_value);
+                      }else{
+                        $dateTimePicker.datetimepicker({
+                          value: new Date(currentProp.default_value)
+                        });
+                      }
+
+
+                      break;
 									}
 								}
 							}
@@ -429,11 +447,48 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 						}else if($(element).hasClass("input")){
 							key = $(element).find("input").attr("id");
 							value = $(element).find("input").val();
-						}
+						} else if ($(element).hasClass("datetime")) {
+              var dateTimeVal = moment($(element).find('.date-picker').val(), 'YYYY-MM-DD HH:mm A');
+
+              key = $(element).find('.date-container').attr('id');
+              value = dateTimeVal.toISOString();
+            }
 
 						me.model[key] = value;
 					});
-				}
+        },
+
+        dateTimeInit: function(controlContainer, currentProp) {
+          $(controlContainer).addClass('datetime');
+
+          var timeZone = moment.tz.guess(),   //client timezone (just to display, saved in model as gmt)
+              timestamp = moment(new Date()).unix(),
+              timeZoneAbbr = moment.tz.zone(timeZone).abbr(timestamp),
+              $dateContainer = $('<div class="date-container clearfix" id="' + currentProp.name + '"/>').appendTo(controlContainer),
+              $dateTimeEl = $('<input readonly class="date-picker mr10" name="' + currentProp.name + '-control" type="datetime" />').appendTo($dateContainer),
+              $timeZone =$('<span class="mr10">' + timeZoneAbbr + '</span>').appendTo($dateContainer),
+              $setNowLink = $('<a href="#">Set Now</a>').appendTo($dateContainer);
+
+            $dateTimeEl.datetimepicker({
+              format: 'Y/m/d h:i a',
+              dateFormat: "Y/m/d",
+              formatTime:	'h:i a',
+              step: 15
+            });
+
+            if (currentProp.default_value && currentProp.default_value !== '') {
+              $dateTimeEl.datetimepicker({
+                value: new Date(currentProp.default_value)
+              });
+            }
+
+            $setNowLink.on('click', function(e) {
+              e.preventDefault();
+              $dateTimeEl.datetimepicker({
+                value: new Date()
+              })
+            });
+        }
 			}
 		});
 	}

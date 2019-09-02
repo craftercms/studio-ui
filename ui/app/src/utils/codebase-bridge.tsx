@@ -71,8 +71,8 @@ export function createCodebaseBridge() {
 
     components: {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
-      Spinner: lazy(() => import('../components/Spinner')),
-      GraphiQL: lazy(() => import('../components/GraphiQL'))
+      GraphiQL: lazy(() => import('../components/GraphiQL')),
+      DependencySelection: lazy(() => import('../components/DependecySelection'))
     },
 
     assets: {

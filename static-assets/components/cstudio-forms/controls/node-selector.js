@@ -359,8 +359,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             this.items = [];
         }
 
-
-
         var items =  this.items;
 
         itemsContainerEl.innerHTML = "";

@@ -682,7 +682,7 @@ var nodeOpen = false,
                 var elements,
                     dataAtt = dataAtt ? dataAtt : 'data-translation';
                 if(specificSelector){
-                    elements = document.querySelectorAll(specificSelector + "[" + dataAtt + "]");
+                    elements = document.querySelectorAll(specificSelector + " [" + dataAtt + "]");
                 }else{
                     elements = document.querySelectorAll("[" + dataAtt + "]");
                 }

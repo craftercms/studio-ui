@@ -1190,7 +1190,7 @@ var CStudioForms = CStudioForms || function() {
         var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, 'editorId');
         var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
-        var saveFn = function(preview, draft, keepOpen) {
+        var saveFn = function(preview, draft) {
           showWarnMsg = false;
           var saveDraft = (draft == true) ? true : false;
 
@@ -2610,7 +2610,10 @@ var CStudioForms = CStudioForms || function() {
 
           if(repeatChild.nodeName != "#text") {
             node[child.nodeName][repeatCount] = {};
-
+            //checking if the node has the attribute 'data-source'
+            node[child.nodeName][repeatCount] = repeatChild.getAttribute('datasource') ? {
+              datasource: repeatChild.getAttribute('datasource')
+            } : {};
             var repeatChildChildren =
               (repeatChild.children) ? repeatChild.children : repeatChild.childNodes;
 

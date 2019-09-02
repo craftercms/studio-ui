@@ -237,7 +237,6 @@
         requires: [
             'viewcontroller-base',
             'component-templateagent',
-            'template-approve',
             'jquery-datetimepicker',
             'jquery-momentjs'
         ]
