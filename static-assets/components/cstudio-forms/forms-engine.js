@@ -690,7 +690,7 @@ var CStudioForms = CStudioForms || function() {
     FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
     FORM_UPDATE_REQUEST = 'FORMS.FORM_UPDATE_REQUEST',
     OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
-    FORM_RDY = 'FORM_RDY';
+    FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE';
 
   const { fromEvent, operators } = CrafterCMSNext.rxjs;
   const { map, filter, take } = operators;
@@ -1682,7 +1682,7 @@ var CStudioForms = CStudioForms || function() {
           }
         });
         if(!me.config.isInclude) {
-          sendMessage({type: FORM_RDY});
+          sendMessage({type: FORM_ENGINE_RENDER_COMPLETE});
         }
       });
     },

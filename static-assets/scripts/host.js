@@ -75,8 +75,8 @@
   communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
     var subscribeCallback = function (_message) {
       switch (_message.type) {
-        case "FORM_RDY": {
-          amplify.unsubscribe('PARENT_FORM_MESSAGES', subscribeCallback);
+        case "FORM_ENGINE_RENDER_COMPLETE": {
+          amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
           CStudioAuthoring.InContextEdit.messageDialogs({ type: 'OPEN_CHILD_COMPONENT', key: message.embeddedItemId });
           break;
         }
@@ -84,7 +84,7 @@
     }
 
     if(message.embeddedItemId) {
-      amplify.subscribe('PARENT_FORM_MESSAGES', subscribeCallback);
+      amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
     }
     var isWrite = false;
     var par = [];

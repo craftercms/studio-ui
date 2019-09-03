@@ -2388,6 +2388,11 @@ var nodeOpen = false,
 
             /**
              * edit content
+             * => openContentWebForm
+             * =>=> openContentWebFormWithPermission
+             * =>=>=> performSimpleIceEdit
+             * =>=>=>=> viewcontroller-in-context-edit.initializeContent
+             * =>=>=>=>=> constructUrlWebFormSimpleEngine
              */
             editContent: function (
               formId,
@@ -9221,9 +9226,7 @@ CStudioAuthoring.InContextEdit = {
   messagesSubscription: null,
 
   messageDialogs: (message) => {
-    amplify.publish('PARENT_FORM_MESSAGES',
-      message
-    );
+    amplify.publish('FORM_ENGINE_MESSAGE_POSTED', message);
     (window.top.iceDialogs) && window.top.iceDialogs.forEach(({ iframe }) => {
       iframe &&
       iframe.contentWindow &&

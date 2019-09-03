@@ -198,12 +198,6 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 
   edit: function(key, control) {
     var _self = this;
-    // editContent
-    // => openContentWebForm
-    // =>=> openContentWebFormWithPermission
-    // =>=>=> performSimpleIceEdit
-    // =>=>=>=> viewcontroller-in-context-edit.initializeContent
-    // =>=>=>=>=> constructUrlWebFormSimpleEngine
     CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
       success: function(contentTO) {
         CStudioAuthoring.Operations.editContent(
