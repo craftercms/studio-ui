@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properties, constraints) {
+CStudioForms.Datasources.EmbeddedContent = function (id, form, properties, constraints) {
   this.id = id;
   this.form = form;
   this.properties = properties;
@@ -33,7 +33,7 @@ CStudioForms.Datasources.ItemSpecificChildContent = function (id, form, properti
   return this;
 };
 
-YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CStudioFormDatasource, {
+YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
   createElementAction: function (control, _self, addContainerEl, onlyAppend) {
@@ -146,7 +146,7 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
   },
 
   getLabel: function () {
-    return CMgs.format(langBundle, "itemSpecificChildContent");
+    return CMgs.format(langBundle, "embeddedContent");
   },
 
   getInterface: function () {
@@ -154,7 +154,7 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
   },
 
   getName: function () {
-    return "item-specific-child-content";
+    return "embedded-content";
   },
 
   getSupportedProperties: function () {
@@ -169,4 +169,4 @@ YAHOO.extend(CStudioForms.Datasources.ItemSpecificChildContent, CStudioForms.CSt
 
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-item-specific-child-content", CStudioForms.Datasources.ItemSpecificChildContent);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-embedded-content", CStudioForms.Datasources.EmbeddedContent);
