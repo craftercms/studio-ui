@@ -77,13 +77,13 @@
       switch (_message.type) {
         case "FORM_RDY": {
           amplify.unsubscribe('PARENT_FORM_MESSAGES', subscribeCallback);
-          CStudioAuthoring.InContextEdit.messageDialogs({ type: 'OPEN_CHILD_COMPONENT', key: message.childId });
+          CStudioAuthoring.InContextEdit.messageDialogs({ type: 'OPEN_CHILD_COMPONENT', key: message.embeddedItemId });
           break;
         }
       }
     }
 
-    if(message.childId) {
+    if(message.embeddedItemId) {
       amplify.subscribe('PARENT_FORM_MESSAGES', subscribeCallback);
     }
     var isWrite = false;
