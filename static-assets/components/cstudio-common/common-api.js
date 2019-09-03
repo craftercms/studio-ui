@@ -785,6 +785,45 @@ var nodeOpen = false,
                 }, true);
             },
 
+          viewConfigurationHistory: function(contentObj, isWrite){
+            CSA.Operations._showDialogueView({
+              fn: CSA.Service.getHistoryView,
+              controller: "viewcontroller-history",
+              callback: function(dialogue) {
+
+                CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
+
+                YDom.get("historyCloseBtn").value = CMgs.format(formsLangBundle, "close");
+
+                this.loadConfigurationHistory(contentObj, isWrite);
+
+                this.on("submitComplete", function(evt, args){
+
+                  var reloadFn = function(){
+                    dialogue.destroy();
+                    eventNS.data = contentObj;
+                    eventNS.typeAction = "";
+                    eventNS.oldPath = null;
+                    document.dispatchEvent(eventNS);
+                  };
+
+                  dialogue.hideEvent.subscribe(reloadFn);
+                  dialogue.destroyEvent.subscribe(reloadFn);
+                });
+
+                // Admin version of the view does not have this events
+                // but then the call is ignored
+                this.on("hideRequest", function(evt, args){
+                  dialogue.destroy();
+                });
+
+                this.on("showRequest", function(evt, args){
+                  dialogue.show();
+                });
+              }
+            }, true);
+          },
+
             approveCommon: function (site, items, approveType) {
 
                 CSA.Operations._showDialogueView({
@@ -3329,6 +3368,7 @@ var nodeOpen = false,
             contentExistsUrl: "/api/1/services/api/1/content/content-exists.json",
             lookupContentItemServiceUri: "/api/1/services/api/1/content/get-item.json",
             getVersionHistoryServiceUrl: "/api/1/services/api/1/content/get-item-versions.json",
+            getConfigurationVersionHistoryServiceUrl: "/api/2/configuration/get_configuration_history",
             lookupContentServiceUri: "/api/1/services/api/1/content/get-items-tree.json",
             searchServiceUrl: "/api/2/search/search.json",
             writeContentServiceUrl: "/api/1/services/api/1/content/write-content.json",
@@ -4785,6 +4825,31 @@ var nodeOpen = false,
 
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
             },
+
+          /**
+           * get version history for given configuration path
+           */
+          getConfigurationVersionHistory: function(site, configurationTO, callback) {
+
+            var serviceUrl = this.getConfigurationVersionHistoryServiceUrl;
+            serviceUrl += "?siteId=" + site;
+            serviceUrl += "&module=" + configurationTO.module;
+            serviceUrl += "&path=" + configurationTO.path;
+            serviceUrl += "&environment=" + configurationTO.environment;
+            serviceUrl += "&maxhistory=100";
+
+            var serviceCallback = {
+              success: function(jsonResponse) {
+                var results = eval("(" + jsonResponse.responseText + ")");
+                callback.success(results.history);
+              },
+              failure: function(response) {
+                callback.failure(response);
+              }
+            };
+
+            YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
+          },
 
             /**
              * get current version history for given content path
