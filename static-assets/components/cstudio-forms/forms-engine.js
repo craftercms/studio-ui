@@ -1660,28 +1660,28 @@ var CStudioForms = CStudioForms || function() {
           }
         });
 
-        //render finished
-        messages$.subscribe((message) => {
-          switch (message.type) {
-            case OPEN_CHILD_COMPONENT: {
-              const key = message.key;
-              const contentType = parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
-              CStudioAuthoring.Operations.performSimpleIceEdit(
-                { contentType: contentType, uri: key },
-                null, // field
-                true,
-                {
-                  success: function (contentTO, editorId, objId, value) {
-                    sendMessage({type: FORM_SAVE_REQUEST, objId, value});
-                  }
-                },
-                [],
-                true
-              );
-            }
-          }
-        });
         if(!me.config.isInclude) {
+          //render finished
+          messages$.subscribe((message) => {
+            switch (message.type) {
+              case OPEN_CHILD_COMPONENT: {
+                const key = message.key;
+                const contentType = parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
+                CStudioAuthoring.Operations.performSimpleIceEdit(
+                  { contentType: contentType, uri: key },
+                  null, // field
+                  true,
+                  {
+                    success: function (contentTO, editorId, objId, value) {
+                      sendMessage({type: FORM_SAVE_REQUEST, objId, value});
+                    }
+                  },
+                  [],
+                  true
+                );
+              }
+            }
+          });
           sendMessage({type: FORM_ENGINE_RENDER_COMPLETE});
         }
       });
