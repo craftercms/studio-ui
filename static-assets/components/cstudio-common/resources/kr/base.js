@@ -659,6 +659,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
 
     /*Datasources */
     childContent: "자식 내용",
+    embeddedContent: "임베디드 컨텐츠",
     imageUploadedDesktop: "이미지 바탕 화면에서 업로드",
     WebDAVUploadImage: "WebDav 저장소에 업로드 된 이미지",
     WebDAVUploadVideo: "WebDav 저장소에 업로드 된 비디오",

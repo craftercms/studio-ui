@@ -710,6 +710,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
 
     /*Datasources */
     childContent: "Komponenten",
+    embeddedContent: "Eingebetteter Inhalt",
     imageUploadedDesktop: "Bilder hochladen",
     WebDAVUploadImage: "Bilder in WebDav Repository hochladen",
     WebDAVUploadVideo: "Videos in WebDav Repository hochladen",

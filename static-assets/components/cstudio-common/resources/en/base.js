@@ -710,6 +710,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
 
     /*Datasources */
     childContent: "Child Content",
+    embeddedContent: "Embedded Content",
     imageUploadedDesktop: "Image Uploaded From Desktop",
     WebDAVUploadImage: "Image Uploaded to WebDav Repository",
     WebDAVUploadVideo: "Video Uploaded to WebDav Repository",
@@ -801,6 +802,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     showKeys: "Show keys (item sel. only)",
     taxonomyName: "Taxonomy Name",
     defaultType: "Default Type",
+    contentType: "Content Type",
     displayTemplate: "Display Template",
     noTemplateRequired: "No Template Required",
     mergeStrategy: "Merge Strategy",
