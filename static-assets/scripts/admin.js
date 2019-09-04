@@ -886,7 +886,7 @@
             }
             publish.iconColor = currentIconColor;
             publish.message = data.message;
-            publish.statusText = data.status;
+            publish.statusText = (data.status === 'idle')? $translate.instant('admin.publishing.READY') : $translate.instant(`admin.publishing.${data.status.toUpperCase()}`);
           })
           .error(function (err) {
           });
