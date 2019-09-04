@@ -130,7 +130,8 @@ CStudioAuthoring.Module.requireModule(
 				{ label: CMgs.format(langBundle, "supportedChannels"), name: "supportedChannels", type: "supportedChannels" },
 				{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "generic" },
 				{ label: CMgs.format(langBundle, "imageManager"), name: "imageManager", type: "datasource:image" },
-				{ label: CMgs.format(langBundle, "videoManager"), name: "videoManager", type: "datasource:video" }
+				{ label: CMgs.format(langBundle, "videoManager"), name: "videoManager", type: "datasource:video" },
+				{ label: CMgs.format(langBundle, "fileManager"), name: "fileManager", type: "datasource:item" }
 			];
 		},
 
@@ -179,6 +180,9 @@ CStudioAuthoring.Module.requireModule(
 						break;
 					case "videoManager" :
 						this.videoManagerName = (prop.value && prop.Value != "") ? prop.value : null;
+						break;
+					case "fileManager" :
+						this.fileManagerName = (prop.value && prop.Value != "") ? prop.value : null;
 						break;
 					case "height" :					
 						this.rteHeight = (prop.value === undefined || prop.value === '') ? 300 : parseInt(prop.value, 10);
@@ -241,7 +245,7 @@ CStudioAuthoring.Module.requireModule(
 				},
 
 				automatic_uploads: true,
-				file_picker_types: 'image media',
+				file_picker_types: 'image media file',
 				file_picker_callback: function(cb, value, meta) {
 					// meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
 					_thisControl.createControl(cb, meta);
@@ -299,20 +303,37 @@ CStudioAuthoring.Module.requireModule(
 		},
 
 		createControl: function(cb, meta) {
-			var datasourcesNames,
+			var datasourcesNames = "",
 				imageManagerNames = this.imageManagerName,  // List of image datasource IDs, could be an array or a string
 				videoManagerNames = this.videoManagerName,
+				fileManagerNames = this.fileManagerName,
 				addContainerEl,
 				tinyMCEContainer = $(".tox-dialog"),
 				_self = this,
-				type = meta.filetype == 'media' ? 'video' : meta.filetype;
+				type = meta.filetype == 'media' ? 'video' : meta.filetype == 'file' ? 'item' : meta.filetype;
 
 			imageManagerNames = (!imageManagerNames) ? "" :
 								(Array.isArray(imageManagerNames)) ? imageManagerNames.join(",") : imageManagerNames;  // Turn the list into a string
 			videoManagerNames = (!videoManagerNames) ? "" :
 								(Array.isArray(videoManagerNames)) ? videoManagerNames.join(",") : videoManagerNames;
+			fileManagerNames = (!fileManagerNames) ? "" :
+								(Array.isArray(fileManagerNames)) ? fileManagerNames.join(",") : fileManagerNames;					
 
-			datasourcesNames = videoManagerNames === "" ? imageManagerNames : imageManagerNames + "," + videoManagerNames ;
+			if(videoManagerNames !== ""){
+				datasourcesNames = videoManagerNames;
+			}
+			if(imageManagerNames !== ""){
+				if(datasourcesNames !== "" ){
+					datasourcesNames += ",";
+				}
+				datasourcesNames += imageManagerNames;
+			}
+			if(fileManagerNames !== ""){
+				if(datasourcesNames !== "" ){
+					datasourcesNames += ",";
+				}
+				datasourcesNames += fileManagerNames;
+			}
 
 			if(this.addContainerEl) {
 				addContainerEl = this.addContainerEl;
@@ -322,6 +343,7 @@ CStudioAuthoring.Module.requireModule(
 				addContainerEl = document.createElement("div");
 				tinyMCEContainer.append(addContainerEl);
 				YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-form-control-image-picker-add-container');
+				YAHOO.util.Dom.addClass(addContainerEl, 'cstudio-tinymce');
 				this.addContainerEl = addContainerEl;
 
 				addContainerEl.style.position = 'absolute';
@@ -330,7 +352,17 @@ CStudioAuthoring.Module.requireModule(
 
 				var datasourceMap = this.form.datasourceMap,
 					datasourceDef = this.form.definition.datasources,
-					addFunction = type === 'image' ? _self.addManagedImage : _self.addManagedVideo;		//video or image add function
+					addFunction;		//video or image add function
+				switch(type) {
+					case 'image':
+						addFunction = _self.addManagedImage;
+					break;
+					case 'video':
+						addFunction = _self.addManagedVideo;
+						break;
+					default:
+						addFunction = _self.addManagedFile;
+				}	
 
 				var addMenuOption = function (el) {
 					// We want to avoid possible substring conflicts by using a reg exp (a simple indexOf
@@ -409,6 +441,28 @@ CStudioAuthoring.Module.requireModule(
 						);
 					}
 				});
+			}
+		},
+
+		addManagedFile(datasource, cb) {
+			if(datasource && datasource.add) {
+				datasource.add({
+					insertItem: function(fileData) {
+						var cleanUrl = fileData
+						cb(cleanUrl);
+					},
+					failure: function(message) {
+						CStudioAuthoring.Operations.showSimpleDialog(
+							"message-dialog",
+							CStudioAuthoring.Operations.simpleDialogTypeINFO,
+							CMgs.format(langBundle, "notification"),
+							message,
+							null,
+							YAHOO.widget.SimpleDialog.ICON_BLOCK,
+							"studioDialog"
+						);
+					}
+				}, false);
 			}
 		},
 

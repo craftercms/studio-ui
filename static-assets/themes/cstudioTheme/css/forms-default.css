@@ -155,6 +155,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     margin-bottom: 10px;
 }
 
+.cstudio-form-control-image-picker-add-container.cstudio-tinymce
+.cstudio-form-control-image-picker-add-container-item,
+.cstudio-form-control-image-picker-add-container.cstudio-tinymce
+.cstudio-form-control-image-picker-add-container-item:first-child{
+    margin-bottom: 5px;
+}
+
 .cstudio-form-control-node-selector-add-container-item:hover,
 .cstudio-form-control-image-picker-add-container-item:hover,
 .cstudio-form-control-flash-picker-add-container-item:hover,
