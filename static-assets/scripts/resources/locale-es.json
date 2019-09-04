@@ -240,6 +240,11 @@
     "publishing": {
         "PUBLISHING": "Publicación",
         "STATUS": "Estado",
+        "IDLE": "Desocupado",
+        "BUSY": "Ocupado",
+        "READY": "Listo",
+        "STOPPED": "Detenido",
+        "STARTED": "Empezado",
         "BULKPUBLISH": "Publicación Masiva",
         "PATHPUBLISH": "Camino a publicar",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",

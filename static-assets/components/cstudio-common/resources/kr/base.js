@@ -153,7 +153,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     publishStatus: "게시 상태",
     idle: "게으른",
     busy: "바쁜",
+    ready: "준비된",
     stopped: "중지됨",
+    started: "시작",
     quickCreateEmpty:"빠른 작성을위한 아무 것도 구성되어 있지 않습니다. 시스템 관리자에게 문의하여 원하는 빠른 작성 컨텐츠 유형을 구성하십시오."
 
 });
@@ -659,6 +661,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
 
     /*Datasources */
     childContent: "자식 내용",
+    embeddedContent: "임베디드 컨텐츠",
     imageUploadedDesktop: "이미지 바탕 화면에서 업로드",
     WebDAVUploadImage: "WebDav 저장소에 업로드 된 이미지",
     WebDAVUploadVideo: "WebDav 저장소에 업로드 된 비디오",

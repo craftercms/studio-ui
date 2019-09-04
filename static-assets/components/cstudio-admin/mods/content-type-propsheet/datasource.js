@@ -22,10 +22,10 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource =
         this.fieldName = fieldName;
         this.containerEl = containerEl;
         this.form = form;
-        this["interface"] = (type.indexOf("datasource:") != -1) ? type.split("datasource:")[1] : "" + type;
+        this["interface"] = (type.indexOf("datasource:") !== -1) ? type.split("datasource:")[1] : "" + type;
         this.fieldValue = [];
         return this;
-    }
+    };
 
 YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStudioAdminConsole.Tool.ContentTypes.PropertyType, {
 
@@ -45,7 +45,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
 
             for(var i=0; i < datasources.length; i++) {
                 var datasource = datasources[i];
-                if (datasource["interface"] == type) {
+                if (datasource["interface"] === type) {
 
                     controlEl = this.createControl(datasource, updateFn, type, itemId);
                     valuesEl.appendChild(controlEl);
@@ -83,7 +83,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
 
         var clickFn = function(){};
 
-        if(itemId == "checkboxgroup"){
+        if(itemId === "checkboxgroup"){
             cbEl.type = "radio";
             if(!this.radioGroupName){
                 this.radioGroupName = CStudioAuthoring.Utils.generateUUID();
@@ -99,7 +99,7 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource, CStu
 
             clickFn =  function() {
                 if (this.checked) {
-                    if($(this).parent().parent().find('input[type="checkbox"]:checked').length == 1){
+                    if($(this).parent().parent().find('input[type="checkbox"]:checked').length === 1){
                         _self.removeAll();
                     }
                     _self.addValue(this.id);

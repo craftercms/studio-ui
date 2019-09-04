@@ -191,7 +191,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                                     if(!nodeOpen){
                                                         eventCM.typeAction = e.typeAction;
                                                         eventCM.item = treeData.item;
-                                                        console.log(treeData.item);
                                                         document.dispatchEvent(eventCM);
 
                                                     }
@@ -747,8 +746,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                             // relevant flag, allowing document & banner to be editable from Search result
                             // allowing banner type component
                             // alowing crafter-level-descriptor.xml
-                            var rflag = ((isRelevant || content.document
-                            || ( (content.component) && ( (content.contentType.indexOf("level-descriptor") !=-1 ) ) )) && (state.indexOf("Delete") == -1));
+                            var rflag = ((isRelevant || content.document || ((content.component) && ((content.contentType.indexOf('level-descriptor') != -1)))) && (state.indexOf('Delete') == -1));
                             //if item is deleted and in the go live queue , enable edit.
                             if(state.indexOf("Submitted for Delete")>=0 || state.indexOf("Scheduled for Delete")>=0) {
                                 rflag =  true;

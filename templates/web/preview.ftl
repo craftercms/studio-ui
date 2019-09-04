@@ -37,8 +37,6 @@
         formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
         previewLangBundle = CMgs.getBundle("previewTools", CStudioAuthoringContext.lang);
         siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
-       /* window.entitlementValidator = "${applicationContext.get("crafter.entitlementValidator").getDescription()}";*/
-        /*var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };*/
     </script>
 
     <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>

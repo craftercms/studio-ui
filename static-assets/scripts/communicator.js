@@ -249,7 +249,7 @@
     function receiveMessage(event) {
       if (this.isAllowedOrigin(event.origin)) {
         var data = event.data;
-        if ('topic' in data) {
+        if (data != null && typeof data === 'object' && 'topic' in data) {
           doLocalPublish(data.topic, data.scope, data.message);
         }
       }
