@@ -56,7 +56,9 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 			success: function(fileData) {
 				if (control) {
 					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
-					control._renderItems();
+					if(control._renderItems){
+						control._renderItems();
+					}
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
@@ -138,7 +140,10 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 				if (control) {
 					control.deleteItem(key);
 					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
-					control._renderItems();
+					if(control._renderItems){
+						control._renderItems();
+					}
+					
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},

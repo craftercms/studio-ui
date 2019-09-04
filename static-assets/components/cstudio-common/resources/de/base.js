@@ -162,7 +162,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     publishStatus: "Veröffentlichungsstatus",
     idle: "Leerlauf",
     busy: "Beschäftigt",
+    ready: "Bereit",
     stopped: "Angehalten",
+    started: "Gestartet",
     quickCreateEmpty:"Für das schnelle Erstellen sind keine Content-Typen konfiguriert. Bitten wenden Sie sich an Ihren Systemadministrator."
 
 });
@@ -710,6 +712,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
 
     /*Datasources */
     childContent: "Komponenten",
+    embeddedContent: "Eingebetteter Inhalt",
     imageUploadedDesktop: "Bilder hochladen",
     WebDAVUploadImage: "Bilder in WebDav Repository hochladen",
     WebDAVUploadVideo: "Videos in WebDav Repository hochladen",

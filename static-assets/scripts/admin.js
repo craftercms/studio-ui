@@ -886,7 +886,7 @@
             }
             publish.iconColor = currentIconColor;
             publish.message = data.message;
-            publish.statusText = data.status;
+            publish.statusText = (data.status === 'idle')? $translate.instant('admin.publishing.READY') : $translate.instant(`admin.publishing.${data.status.toUpperCase()}`);
           })
           .error(function (err) {
           });
@@ -1805,7 +1805,7 @@
         $scope.notification = function(notificationText, showOnTop, styleClass){
           var verticalAlign = showOnTop ? false : true;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = 'check-circle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1868,7 +1868,7 @@
             if (index !== -1) {
               repositories.repositories.remotes.splice(index, 1);
             }
-            $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', null,"studioMedium");
+            $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', 'green');
 
           }).error(function (error) {
             $scope.showError(error.response);
@@ -1895,7 +1895,7 @@
 
             repositories.spinnerOverlay.close();
             repositories.getRepositoryStatus();
-            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', null,"studioMedium");
+            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', 'green');
 
           }).error(function (error) {
             repositories.getRepositoryStatus();
@@ -1925,7 +1925,7 @@
           adminService.pushRepository(currentRepo).success(function (data) {
 
             repositories.spinnerOverlay.close();
-            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'), '', null,"studioMedium");
+            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'), '',  'green');
 
           }).error(function (error) {
             repositories.spinnerOverlay.close();

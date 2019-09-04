@@ -60,7 +60,7 @@
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Neues Projekt wird angelegt",
         "CREATE_ERROR": "Projekt konnte nicht erstellt werden. Bitte kontaktieren Sie Ihren Systemadministrator.",
-        "SITE_ID_VALIDATION": "(Maximale Länge: 50 Zeichen, bestehend aus Kleinbuchstaben, Zahlen, Bindestrich und Unterstrich)",
+        "SITE_ID_VALIDATION": "(Maximale Länge: 50 Zeichen, bestehend aus Kleinbuchstaben, Zahlen, Bindestrich und Unterstrich, kann nicht beginnen mit: Bindestrich und Unterstrich)",
         "LENGTH_VALIDATION_4000": "(Maximal 4000 Zeichen)",
         "BRANCH_DEFAULTS": "(Standardmäßig wird 'master' als Branch gesetzt)",
         "ERROR": "Fehler:",
@@ -91,6 +91,7 @@
         "RECOMMENDED":"(Empfohlen)",
         "IS_REQUIRED":"Wird benötigt.",
         "ALREADY_EXIST":"existieren bereits.",
+        "NUMERIC_ERROR":"Wenn die Site-ID numerisch ist, kann nicht mit 0 begonnen werden",
         "CHOOSE_BLUEPRINT":"Wählen Sie einen Blueprint",
         "PREVIOUS_STEP":"Vorheriger Schritt"
       }
@@ -238,6 +239,11 @@
     "publishing": {
         "PUBLISHING": "Publizierung",
         "STATUS": "Status",
+        "IDLE": "Leerlauf",
+        "BUSY": "Beschäftigt",
+        "READY": "Bereit",
+        "STOPPED": "Angehalten",
+        "STARTED": "Gestartet",
         "BULKPUBLISH": "Massen-Publizierung",
         "PATHPUBLISH": "Pfad, der publiziert werden soll",
         "PATHEXAMPLE": "(z.B. /site/website/about/index.xml)",
