@@ -240,6 +240,11 @@
     "publishing": {
         "PUBLISHING": "출판",
         "STATUS": "지위",
+        "IDLE": "게으른",
+        "BUSY": "바쁜",
+        "READY": "준비된",
+        "STOPPED": "중지됨",
+        "STARTED": "시작",
         "BULKPUBLISH": "대량 게시",
         "PATHPUBLISH": "게시 경로",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",

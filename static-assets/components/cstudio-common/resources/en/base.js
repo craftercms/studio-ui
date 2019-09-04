@@ -162,7 +162,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     publishStatus: "Publish Status",
     idle: "Idle",
     busy: "Busy",
+    ready: "Ready",
     stopped: "Stopped",
+    started: "Started",
     quickCreateEmpty:"Nothing is configured for Quick Create. Please ask your system administrator to configure your desired quick create content types."
 
 });

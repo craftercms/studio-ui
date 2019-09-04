@@ -239,6 +239,11 @@
     "publishing": {
         "PUBLISHING": "Publizierung",
         "STATUS": "Status",
+        "IDLE": "Leerlauf",
+        "BUSY": "Beschäftigt",
+        "READY": "Bereit",
+        "STOPPED": "Angehalten",
+        "STARTED": "Gestartet",
         "BULKPUBLISH": "Massen-Publizierung",
         "PATHPUBLISH": "Pfad, der publiziert werden soll",
         "PATHEXAMPLE": "(z.B. /site/website/about/index.xml)",

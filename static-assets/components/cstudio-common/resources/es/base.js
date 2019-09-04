@@ -161,7 +161,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     publishStatus: "Estado de Publicación",
     idle: "Desocupado",
     busy: "Ocupado",
+    ready: "Listo",
     stopped: "Detenido",
+    started: "Empezado",
     quickCreateEmpty:"No existe configuración para la creación rápida. Solicite al administrador del sistema que configure los tipos de contenido de creación rápida que desee."
 
 });

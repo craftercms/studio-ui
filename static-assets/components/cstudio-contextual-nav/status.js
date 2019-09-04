@@ -175,12 +175,12 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
 
             CStudioAuthoring.Service.getPublishStatus(CStudioAuthoringContext.site, {
               success: function (response) {
-
+                let message = (response.status.toLowerCase() === 'idle')? CMgs.format(contextNavLangBundle, 'ready') : CMgs.format(contextNavLangBundle, response.status.toLowerCase());
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'status-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   CMgs.format(contextNavLangBundle, 'publishStatus'),
-                  '<span class=\'dialog-elt-text\'>' + CMgs.format(contextNavLangBundle, response.status.toLowerCase()) + '</span>',
+                  '<span class=\'dialog-elt-text\'>' + message + '</span>',
                   [{
                     text: CMgs.format(contextNavLangBundle, 'close'), handler: function () {
                       me.dialogOpen = false;
