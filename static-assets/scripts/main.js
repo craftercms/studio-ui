@@ -636,7 +636,8 @@
                 var me = this;
                 this.getAvailableLanguages()
                     .success(function (data) {
-                        var cookieLang = me.getDocumentCookie('crafterStudioLanguage');
+                        var userCookieLang = scope.user ? me.getDocumentCookie( scope.user.username + '_crafterStudioLanguage') : null,
+                            cookieLang = userCookieLang ? userCookieLang : me.getDocumentCookie( 'crafterStudioLanguage');
 
                         if(cookieLang){
                             for(var i=0; i<data.length; i++){
@@ -826,7 +827,9 @@
             $scope.setLangCookie = function() {
                 $translate.use($scope.langSelected);
                 // set max-age of language cookie to one year
+                // set both cookies, on login (on user) it will get last selected
                 sitesService.setCookie('crafterStudioLanguage', $scope.langSelected, 31536000);
+                sitesService.setCookie( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected, 31536000);
 
                 $rootScope.modalInstance = $uibModal.open({
                     templateUrl: 'settingLanguajeConfirmation.html',
@@ -1391,7 +1394,7 @@
                     $scope.site.siteId = $scope.site.siteId.replace(/(^-|_$)|[^a-zA-Z0-9-_]/g, '').toLowerCase();
                     result = $scope.site.siteId.match(patt);
                     if(result){
-                        $scope.isNumValid = true; 
+                        $scope.isNumValid = true;
                     }else{
                         $scope.isNumValid = false;
                     }
@@ -1620,9 +1623,19 @@
         function ($rootScope, $scope, $state, authService, $timeout, $cookies, sitesService, $translate, Constants) {
 
             var credentials = {};
+            $scope.credentials = credentials;
             $scope.langSelected = '';
             $rootScope.isFooter = false;
             $scope.crafterLogo = Constants.CRAFTER_LOGO;
+
+            $scope.userInputChange = function() {
+              var lang = sitesService.getDocumentCookie( credentials.username + '_crafterStudioLanguage');
+
+              if (lang) {
+                $scope.langSelect = lang;
+                $scope.selectAction(lang);
+              }
+            }
 
             function login() {
 
@@ -1636,7 +1649,9 @@
                             hideModalForm();
                             $state.go('home.globalMenu');
                             // set max-age of language cookie to one year
+                            // set both cookies, on login (on user) it will get last selected
                             sitesService.setCookie('crafterStudioLanguage', $scope.langSelected, 31536000);
+                            sitesService.setCookie(data.username + '_crafterStudioLanguage', $scope.langSelected, 31536000);
                         }
                     }, function error(response){
                         $scope.error = {};
@@ -1680,7 +1695,6 @@
             }
 
             $scope.error = null;
-            $scope.credentials = credentials;
 
             $scope.login = login;
 
