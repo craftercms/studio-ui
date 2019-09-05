@@ -729,6 +729,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     maxLength: "Tamaño Máximo",
     width: "Ancho",
     height: "Altura",
+    autoGrow: "Auto Crecimiento",
     allowResize: "Permitir Cambio de Tamaño",
     forceRootBlockP: "Forzar Etiqueta p en Bloque ",
     forcePNewLines: "Forzar Etiqueta p en Línea",
