@@ -26,8 +26,6 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   this.defaultEnableBrowseExisting = true;
   this.countOptions = 0;
 
-  debugger;
-
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name == 'repoPath') {
       this.repoPath = properties[i].value;
