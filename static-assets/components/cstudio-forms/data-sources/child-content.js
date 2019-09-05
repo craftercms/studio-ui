@@ -27,8 +27,8 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   this.countOptions = 0;
 
   for (var i = 0; i < properties.length; i++) {
-    if (properties[i].name == 'repositoryPath') {
-      this.repositoryPath = properties[i].value;
+    if (properties[i].name == 'repoPath') {
+      this.repoPath = properties[i].value;
     }
     if (properties[i].name == 'browsePath') {
       this.browsePath = properties[i].value;
@@ -72,7 +72,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
     if (_self.type === "") {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
-        _self.processPathsForMacros(_self.repositoryPath),
+        _self.processPathsForMacros(_self.repoPath),
         false, {
           success: function (formName, name, value) {
             control.insertItem(value, formName.item.internalName, null, null, _self.id);
@@ -86,7 +86,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
         _self.type,
         null,
         null,
-        _self.processPathsForMacros(_self.repositoryPath),
+        _self.processPathsForMacros(_self.repoPath),
         false,
         false,
         {
@@ -109,9 +109,9 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
       control.addContainerEl = null;
       control.containerEl.removeChild(addContainerEl);
     }
-    // if the browsePath property is set, use the property instead of the repositoryPath property
-    // otherwise continue to use the repositoryPath for both cases for backward compatibility
-    var browsePath = _self.repositoryPath;
+    // if the browsePath property is set, use the property instead of the repoPath property
+    // otherwise continue to use the repoPath for both cases for backward compatibility
+    var browsePath = _self.repoPath;
     if (_self.browsePath != undefined && _self.browsePath != '') {
       browsePath = _self.browsePath;
     }
@@ -251,7 +251,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
     return [
       { label: CMgs.format(langBundle, "Enable Create New"), name: "enableCreateNew", type: "boolean", defaultValue: "true"  },
       { label: CMgs.format(langBundle, "Enable Browse Existing"), name: "enableBrowseExisting", type: "boolean", defaultValue: "true" },
-			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repositoryPath", type: "string" },
+			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
       { label: CMgs.format(langBundle, "browsePath"), name: "browsePath", type: "string" },
       { label: CMgs.format(langBundle, "defaultType"), name: "type", type: "string" }
     ];
