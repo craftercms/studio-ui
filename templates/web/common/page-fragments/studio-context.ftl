@@ -50,13 +50,7 @@
    		document.location = CStudioAuthoringContext.baseUri;
    	}
 
-  function getDocumentCookie(name) {
-      var value = "; " + document.cookie;
-      var parts = value.split("; " + name + "=");
-      if (parts.length == 2) return parts.pop().split(";").shift();
-  };
-
-  var lang = getDocumentCookie(CStudioAuthoringContext.user + '_crafterStudioLanguage');
+  var lang = localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage');
   CStudioAuthoringContext.lang = lang;
 
 	$(function() {
