@@ -95,6 +95,7 @@
                 success: function (oResponse) {
                     _this.enableActions();
                     var oResp = JSON.parse(oResponse.responseText);
+                    oResp.deps = _this.result;
                     _this.fire("submitComplete", oResp);
                     _this.fire("submitEnd", oResp);
                     loadSpinner.classList.add("hidden");
