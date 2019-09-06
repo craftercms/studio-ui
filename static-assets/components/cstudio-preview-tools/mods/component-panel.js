@@ -218,10 +218,35 @@
                         }
                         if(isNew == true){
                           if (openForm === "false") {
-                            CStudioForms.Util.loadFormDefinition(type, {
-                              success: function (result) {
-                                console.log(result);
-                              }
+                            Promise.all([
+                              new Promise((resolve) => {
+                                CStudioForms.Util.loadFormDefinition(type, { success: resolve });
+                              }),
+                              new Promise((resolve) => {
+                                CStudioForms.Util.LoadFormConfig(type, {
+                                  success: (ctrlCls, formConfig) => resolve({
+                                    ctrlCls,
+                                    formConfig
+                                  })
+                                });
+                              }),
+                              new Promise((resolve) => {
+                                CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, type, { success: resolve });
+                              })
+                            ]).then(([formDefinition, { formConfig }, contentType]) => {
+                              const formDef = {
+                                ...formDefinition,
+                                config: formConfig,
+                                contentAsFolder: contentType.contentAsFolder
+                              };
+                              var contentMap = CStudioForms.Util.xmlModelToMap({
+                                children: [],
+                                responseXML: { documentElement: { children: [] } }
+                              });
+                              var new_component = this.getComponentModel(type, formDef, contentMap, path);
+                              var xml = CStudioForms.Util.serializeModelToXml(new_component, false);
+                              console.log('WIP Write xml');
+                              console.log(xml);
                             });
                           } else {
                             CStudioAuthoring.Operations.performSimpleIceEdit({
@@ -289,6 +314,34 @@
 
                 getPreviewPagePath: CrafterCMSNext.util.path.getPathFromPreviewURL,
 
+               /*
+               * get componentModel
+               */
+                getComponentModel: function(type, formDef, contentMap, path){
+                  var new_component = {
+                    id: type,
+                    definition: formDef,
+                    model: contentMap,
+                    dynamicFields: [],
+                    datasources: [],
+                    sections: [],
+                    pageLocation: path,
+                    pageName: ""
+                  }
+                  if(formDef.sections.length) {
+                    formDef.sections.forEach(section => {
+                      section.fields.forEach(field => {
+                        new_component.model[field.id] = field.defaultValue;
+                      })
+                    });
+                  }
+                  new_component.model.createdDate = new Date().toISOString();
+                  new_component.model.createdDate_dt = new Date().toISOString();
+                  new_component.model.lastModifiedDate = new Date().toISOString();
+                  new_component.model.lastModifiedDate_dt = new Date().toISOString();
+                  new_component.model['file-name'] = new_component.model.objectId + '.xml';
+                  return new_component;
+                },
                 /*
                  * Load the model of a page and publish it
                  * @param pagePath -path to the page

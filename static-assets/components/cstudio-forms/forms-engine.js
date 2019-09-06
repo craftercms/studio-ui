@@ -881,7 +881,6 @@ var CStudioForms = CStudioForms || function() {
           }
         })
       ]).then(([formDefinition, { ctrlCls, formConfig }, model, contentType, content]) => {
-
         const formDef = {
           ...formDefinition,
           config: formConfig,
@@ -996,6 +995,8 @@ var CStudioForms = CStudioForms || function() {
       let filename = content.getElementsByTagName('file-name')[0].innerHTML;
         path = `/${filename}`;
       }
+
+      debugger;
 
       var contentDom = content;
       var contentMap = CStudioForms.Util.xmlModelToMap(contentDom);
