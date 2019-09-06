@@ -44,15 +44,7 @@ CStudioAuthoring.Module.requireModule(
             return this;
         }
 
-        CStudioAuthoring.Service.getConfiguration(
-            CStudioAuthoringContext.site,
-            "/site-config.xml",
-            {
-                success: function(config) {
-                    CStudioAdminConsole.isPostfixAvailable = config["form-engine"] && config["form-engine"]["field-name-postfix"] === "true" ? true : false;
-                    CStudioAdminConsole.ignorePostfixFields = config["form-engine"] && config["form-engine"]["ignore-postfix-fields"] ? config["form-engine"]["ignore-postfix-fields"].field : [];
-                }
-            });
+        getPostfixData();
 
         /**
          * Overarching class that drives the content type tools
@@ -60,6 +52,9 @@ CStudioAuthoring.Module.requireModule(
         YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 
             renderWorkarea: function() {
+
+              getPostfixData();
+
                 var workareaEl = document.getElementById("cstudio-admin-console-workarea");
 
                 workareaEl.innerHTML =
@@ -98,7 +93,7 @@ CStudioAuthoring.Module.requireModule(
                         }
 
                         if( (currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '')
-                          && ( CStudioAdminConsole.ignorePostfixFields.indexOf(currentField.id) < 0 ) ) {
+                          && ( !CStudioAdminConsole.ignorePostfixFields.includes(currentField.id) ) ) {
                           postfixes = CStudioAdminConsole.renderPostfixes()[currentField.type] ?
                               CStudioAdminConsole.renderPostfixes()[currentField.type] : [];
                           for (var k = 0; k < postfixes.length; k++) {
@@ -1268,6 +1263,17 @@ CStudioAuthoring.Module.requireModule(
 
         }
 
+        function getPostfixData() {
+          CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/site-config.xml",
+            {
+              success: function(config) {
+                CStudioAdminConsole.isPostfixAvailable = config["form-engine"] && config["form-engine"]["field-name-postfix"] === "true" ? true : false;
+                CStudioAdminConsole.ignorePostfixFields = config["form-engine"] && config["form-engine"]["ignore-postfix-fields"] ? config["form-engine"]["ignore-postfix-fields"].field : [];
+              }
+            });
+        };
 
         /**
          * drag and drop controls
