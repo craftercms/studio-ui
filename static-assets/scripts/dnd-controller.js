@@ -29,7 +29,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     '<sdiv class="studio-component-search"><input type="search" placeholder="search components..." /></sdiv>',
     '<sdiv class="studio-components-container"></sdiv>',
     '</sdiv>'].join('');
-  var COMPONENT_TPL = '<sli><sa class="studio-component-drag-target" data-studio-component data-studio-component-path="%@" data-studio-component-type="%@"><span class="status-icon fa fa-puzzle-piece"></span>%@</sa></sli>';
+  var COMPONENT_TPL = '<sli><sa class="studio-component-drag-target" data-studio-component data-studio-component-path="%@" data-studio-component-type="%@" data-studio-component-open-form="%@"><span class="status-icon fa fa-puzzle-piece"></span>%@</sa></sli>';
   //var BROWSE_TPL = '<button class="btn btn-primary add-component" data-path="%@">Browse %@</button>';
   var BROWSE_TPL = '<sdiv class="studio-category"><sh2 class="studio-category-name add-existing-component pointer" id="%@" data-path="%@">Browse %@</sh2><sul></sul></sdiv>';
   var DRAGGABLE_SELECTION = '.studio-components-container .studio-component-drag-target';
@@ -385,7 +385,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
   }
 
   function componentDropped($dropZone, $component) {
-
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
@@ -395,11 +394,12 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
     var me = this,
       isNew = $component.hasClass('studio-component-drag-target'),
-      tracking, path, type, name, zones = {}, indexStructure = 0;
+      tracking, path, type, name, zones = {}, indexStructure = 0, openForm;
 
     if (isNew) {
       path = $component.attr('data-studio-component-path');
       type = $component.attr('data-studio-component-type');
+      openForm = $component.attr('data-studio-component-open-form');
       name = $component.text();
       tracking = crafter.guid();
       $component.before(
@@ -453,7 +453,8 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         zones: zones,
         trackingNumber: tracking,
         compPath: compPath,
-        conComp: (conRepeat > 1) ? true : false
+        conComp: (conRepeat > 1) ? true : false,
+        openForm: openForm
       });
 
     });
@@ -586,12 +587,14 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
       if (category.components) {
         if (category.components.length) {
           $.each(category.components, function (j, component) {
+            let openFormOnInsert = component.openFormOnInsert? component.openFormOnInsert : true;
             html.push(crafter.String(COMPONENT_TPL)
-              .fmt(component.path, component.type, component.label));
+              .fmt(component.path, component.type, openFormOnInsert, component.label));
           });
         } else {
+          let openFormOnInsert = component.openFormOnInsert? component.openFormOnInsert : true;
           html.push(crafter.String(COMPONENT_TPL)
-            .fmt(category.components.path, category.components.type, category.components.label));
+            .fmt(category.components.path, category.components.type, openFormOnInsert, category.components.label));
         }
       }
       html.push('</sul>');

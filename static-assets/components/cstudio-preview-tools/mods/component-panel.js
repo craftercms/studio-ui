@@ -193,7 +193,7 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, openForm) {
 
                     if (isNew) {
                         function isNewEvent(value, modelPath){
@@ -217,21 +217,29 @@
                             ComponentsPanel.save(isNew, zones, compPath, conComp);
                         }
                         if(isNew == true){
-                            CStudioAuthoring.Operations.performSimpleIceEdit({
-                                uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
-                                contentType: type
-                            }, null, false, {
-                                failure: CStudioAuthoring.Utils.noop,
-                                success: function (contentTO) {
-                                    amplify.publish('/operation/started');
-                                    // Use the information from the newly created component entry and use it to load the model data for the
-                                    // component placeholder in the UI. After this update, we can then proceed to save all the components
-                                    var value = (!!contentTO.item.internalName)
-                                        ? contentTO.item.internalName
-                                        : contentTO.item.uri;
-                                    isNewEvent(value, contentTO.item.uri);
-                                }
+                          if (openForm === "false") {
+                            CStudioForms.Util.loadFormDefinition(type, {
+                              success: function (result) {
+                                console.log(result);
+                              }
                             });
+                          } else {
+                            CStudioAuthoring.Operations.performSimpleIceEdit({
+                              uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
+                              contentType: type
+                            }, null, false, {
+                              failure: CStudioAuthoring.Utils.noop,
+                              success: function (contentTO) {
+                                amplify.publish('/operation/started');
+                                // Use the information from the newly created component entry and use it to load the model data for the
+                                // component placeholder in the UI. After this update, we can then proceed to save all the components
+                                var value = (!!contentTO.item.internalName)
+                                  ? contentTO.item.internalName
+                                  : contentTO.item.uri;
+                                isNewEvent(value, contentTO.item.uri);
+                              }
+                            });
+                          }
                         }else{
                             CStudioAuthoring.Service.getContent(path, "false", {
                                 success: function (model) {
