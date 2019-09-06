@@ -44,14 +44,7 @@ CStudioAuthoring.Module.requireModule(
             return this;
         }
 
-        CStudioAuthoring.Service.getConfiguration(
-            CStudioAuthoringContext.site,
-            "/site-config.xml",
-            {
-                success: function(config) {
-                    CStudioAdminConsole.isPostfixAvailable = config["form-engine"] && config["form-engine"]["field-name-postfix"] === "true" ? true : false;
-                }
-            });
+        getPostfixData();
 
         /**
          * Overarching class that drives the content type tools
@@ -59,6 +52,9 @@ CStudioAuthoring.Module.requireModule(
         YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 
             renderWorkarea: function() {
+
+              getPostfixData();
+
                 var workareaEl = document.getElementById("cstudio-admin-console-workarea");
 
                 workareaEl.innerHTML =
@@ -96,19 +92,19 @@ CStudioAuthoring.Module.requireModule(
                             idError.push(currentField.title);
                         }
 
-                        if((currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '') && (currentField.id !== "internal-name")
-                            && (currentField.id !== "placeInNav") && (currentField.id !== "disabled")) {
-                            postfixes = CStudioAdminConsole.renderPostfixes()[currentField.type] ?
-                                CStudioAdminConsole.renderPostfixes()[currentField.type] : [];
-                            for (var k = 0; k < postfixes.length; k++) {
-                                if (currentField.id.indexOf(postfixes[k]) > -1) {
-                                    postfixesFlag = true;
-                                    break;
-                                }
+                        if( (currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '')
+                          && ( !CStudioAdminConsole.ignorePostfixFields.includes(currentField.id) ) ) {
+                          postfixes = CStudioAdminConsole.renderPostfixes()[currentField.type] ?
+                              CStudioAdminConsole.renderPostfixes()[currentField.type] : [];
+                          for (var k = 0; k < postfixes.length; k++) {
+                            if (currentField.id.indexOf(postfixes[k]) > -1) {
+                                postfixesFlag = true;
+                                break;
                             }
-                            if(!postfixesFlag && postfixes.length > 0){
-                                postfixError.push({"title" : currentField.title, "type" : currentField.type});
-                            }
+                          }
+                          if(!postfixesFlag && postfixes.length > 0){
+                              postfixError.push({"title" : currentField.title, "type" : currentField.type});
+                          }
                         }
 
                         // If it's a repeating group, validate fields - We have no nested repeating groups,
@@ -1267,6 +1263,17 @@ CStudioAuthoring.Module.requireModule(
 
         }
 
+        function getPostfixData() {
+          CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/site-config.xml",
+            {
+              success: function(config) {
+                CStudioAdminConsole.isPostfixAvailable = config["form-engine"] && config["form-engine"]["field-name-postfix"] === "true" ? true : false;
+                CStudioAdminConsole.ignorePostfixFields = config["form-engine"] && config["form-engine"]["ignore-postfix-fields"] ? config["form-engine"]["ignore-postfix-fields"].field : [];
+              }
+            });
+        };
 
         /**
          * drag and drop controls
