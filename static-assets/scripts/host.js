@@ -342,8 +342,7 @@
       message.zones,
       message.compPath,
       message.conComp,
-      message.model,
-      message.openForm
+      message.model
     );
   });
 
