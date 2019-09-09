@@ -996,8 +996,6 @@ var CStudioForms = CStudioForms || function() {
         path = `/${filename}`;
       }
 
-      debugger;
-
       var contentDom = content;
       var contentMap = CStudioForms.Util.xmlModelToMap(contentDom);
       CStudioForms.Util.initAttributeObject(contentDom, "remote");

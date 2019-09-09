@@ -216,7 +216,7 @@
                             });
                             ComponentsPanel.save(isNew, zones, compPath, conComp);
                         }
-                        if(isNew == true){
+                        if(isNew == true) {
                           if (openForm === "false") {
                             Promise.all([
                               new Promise((resolve) => {
@@ -224,29 +224,43 @@
                               }),
                               new Promise((resolve) => {
                                 CStudioForms.Util.LoadFormConfig(type, {
-                                  success: (ctrlCls, formConfig) => resolve({
-                                    ctrlCls,
-                                    formConfig
-                                  })
+                                  success: (ctrlCls, formConfig) => resolve(formConfig)
                                 });
-                              }),
-                              new Promise((resolve) => {
-                                CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, type, { success: resolve });
                               })
-                            ]).then(([formDefinition, { formConfig }, contentType]) => {
-                              const formDef = {
-                                ...formDefinition,
-                                config: formConfig,
-                                contentAsFolder: contentType.contentAsFolder
-                              };
+                            ]).then(([formDefinition, formConfig]) => {
+                              const formDef = { ...formDefinition, config: formConfig };
                               var contentMap = CStudioForms.Util.xmlModelToMap({
                                 children: [],
                                 responseXML: { documentElement: { children: [] } }
                               });
                               var new_component = this.getComponentModel(type, formDef, contentMap, path);
                               var xml = CStudioForms.Util.serializeModelToXml(new_component, false);
-                              console.log('WIP Write xml');
-                              console.log(xml);
+                              var fileName = new_component.model['file-name'];
+                              var internalName = new_component.model['internal-name'];
+                              var fullPath = `${path}/${new_component.model['file-name']}`;
+                              amplify.publish('/operation/started');
+                              CStudioAuthoring.Service.writeContent(fullPath, fileName, null, xml, type,
+                                CStudioAuthoringContext.site, false, false, false, true,
+                                {
+                                  success: function () {
+                                    isNewEvent(internalName, fullPath);
+                                  },
+                                  failure: function (err) {
+                                    var message = eval("(" + err.responseText + ")");
+                                    console.log(message);
+                                    amplify.publish('/operation/failed');
+                                  }
+                                });
+                            }).catch((reason) => {
+                              CStudioAuthoring.Operations.showSimpleDialog(
+                                'loadContentError-dialog',
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(formsLangBundle, 'notification'),
+                                CMgs.format(formsLangBundle, 'errFailedToLoadContent'),
+                                null,
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                'studioDialog'
+                              );
                             });
                           } else {
                             CStudioAuthoring.Operations.performSimpleIceEdit({
