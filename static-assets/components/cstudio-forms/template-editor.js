@@ -35,23 +35,109 @@ CStudioAuthoring.Module.requireModule(
 
 
 					var CMgs = CStudioAuthoring.Messages;
-					var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
+          var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
+
+          var codeSnippets = {
+            freemarker: [
+              {label:"Content variable", value:"${contentModel.VARIABLENAME}"},
+              {label:"Request parameter", value:"${RequestParameters[\"PARAMNAME\"]!\"DEFAULT\"}"},
+              {label:"Studio support", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n\t...\r\n\t<@studio.toolSupport />"},
+              {label:"Dynamic navigation", value:"<#include \"/templates/web/navigation/navigation.ftl\">\r\n\t...\r\n\t<@renderNavigation \"/site/website\", 1 />"},
+              {label:"Transform PATH to URL", value:"${urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)}"},
+
+              {label:"Incontext editing attribute (pencil)", value:"<@studio.iceAttr iceGroup=\"ICEGROUID\"/>"},
+              {label:"Component DropZone attribute", value:"<@studio.componentContainerAttr target=\"TARGETID\" objectId=contentModel.objectId />"},
+              {label:"Component attribute", value:"<@studio.componentAttr path=contentModel.storeUrl ice=false />"},
+              {label:"Render list of components", value:"<#list contentModel.VARIABLENAME.item as module>\r\n\t<@renderComponent component=module />\r\n</#list>"},
+              {label:"Iterate over a list of items and load content item", value:"<#list contentModel.VARIABLENAME.item as myItem>\r\n\t<#assign myContentItem =  siteItemService.getSiteItem(myItem.key) />\r\n\t${myContentItem.variableName}\r\n</#list>"},
+              {label:"Iterate over repeat group", value:"<#list contentModel.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>"},
+
+
+              {label:"Freemarker value assignment", value:"<#assign imageSource = contentModel.image!\"\" />"},
+              {label:"Freemarker value IF", value:"<#if CONDITION>\r\n\t...\r\n</#if>"},
+              {label:"Freemarker value LOOP", value:"<#list ARRAY as value>\r\n\t${value_index}: ${value}\r\n</#list>"},
+              {label:"Freemarker Fragment include", value:"<#include \"/templates/PATH\" />"},
+              {label:"Freemarker Library import", value:"<#import \"/templates/PATH\" as NAMESPACE />"},
+
+              {label:"HTML Page", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<html lang=\"en\">\r\n<head>\r\n\t</head>\r\n\t<body>\r\n\t\t<h1>CONTENT HERE</h1>\r\n\t<@studio.toolSupport/>\r\n\t</body>\r\n</html>"},
+              {label:"HTML Component", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<div <@studio.componentAttr path=contentModel.storeUrl ice=false /> >\r\nCOMPONENT MARKUP</div>"},
+            ],
+            groovy: [
+              {label:"Access Content Model", value:"contentModel"},
+              {label:"Access Template Model", value:"templateModel"},
+
+              {label:"Current Site ID", value:"siteContext.siteName"},
+              {label:"Request Parameters", value:"params"},
+              {label:"Cookies", value:"cookies"},
+              {label:"HTTP Request", value:"request"},
+              {label:"HTTP Response", value:"response"},
+              {label:"Session", value:"session"},
+              {label:"Transform PATH to URL", value:"urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)"},
+
+              {label:"User Profile", value:"profile"},
+              {label:"Current Authentication", value:"authentication"},
+
+              {label:"Log an INFO", value:"logger.info('MY MESSAGE')"},
+              {label:"Log an ERROR", value:"logger.error('MY MESSAGE')"},
+
+              {label:"Search Service", value:"searchService"},
+              {label:"Site Item Service", value:"siteItemService"},
+              {label:"Profile Service", value:"profileService"},
+
+              {label:"Get Spring Bean", value:"applicationContext.get(\"SPRING_BEAN_NAME\")"}
+            ]
+          }
 
 					CStudioForms.TemplateEditor.prototype = {
 
 						render: function(templatePath, channel, onSaveCb, contentType, mode) {
+              var me = this;
 
-							var getContentCb = {
-								success: function(response) {
-									this.context.renderTemplateEditor(templatePath, response, onSaveCb, contentType, mode);
-								},
-								failure: function() {
-								},
-								context: this
-							};
+              CStudioAuthoring.Service.getConfiguration(
+                CStudioAuthoringContext.site,
+                "/code-editor-config.xml",
+                {
+                  success: function(config) {
+                    CStudioForms.TemplateEditor.config = config;
 
-							CStudioAuthoring.Service.getContent(templatePath, true, getContentCb, false);
-						},
+                    if ( config && config.snippets ) {
+                      me.addSnippets(config.snippets);
+                    }
+
+                    var getContentCb = {
+                      success: function(response) {
+                        this.context.renderTemplateEditor(templatePath, response, onSaveCb, contentType, mode);
+                      },
+                      failure: function() {
+                      },
+                      context: me
+                    };
+
+                    CStudioAuthoring.Service.getContent(templatePath, true, getContentCb, false);
+
+                  }
+                });
+            },
+
+            addSnippets: function(snippets) {
+              var snippets = snippets.snippet.length ? snippets.snippet : [snippets.snippet];
+
+              snippets.forEach(function(snippet) {
+                let category = snippet.category,
+                      obj = codeSnippets[category].find(x => x.label === snippet.label),
+                      objIndex = codeSnippets[category].indexOf(obj),
+                      entry = {
+                        label: snippet.label,
+                        value: snippet.content
+                      }
+
+                if ( objIndex !== -1 ) {
+                  codeSnippets[category].fill(obj.value = snippet.content, objIndex, objIndex++);
+                } else {
+                  codeSnippets[category].push(entry);
+                }
+              })
+            },
 
 						renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, isRead) {
 							var permsCallback = {
@@ -134,8 +220,10 @@ CStudioAuthoring.Module.requireModule(
 											}
 
 											langTools = ace.require("ace/ext/language_tools");
-											var aceEditor = ace.edit("editorPreEl"),
-												theme = CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") ? CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") : "chrome";
+                      var aceEditor = ace.edit("editorPreEl"),
+                          defaultTheme = CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.theme
+                                         && CStudioForms.TemplateEditor.config.theme === 'light' ? 'chrome' : 'tomorrow_night',
+												  theme = CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") ? CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") : defaultTheme;
 
 											aceEditor.setTheme("ace/theme/" + theme);
 											aceEditor.session.setMode(mode);
@@ -311,30 +399,7 @@ CStudioAuthoring.Module.requireModule(
 
 										if(templatePath.indexOf(".groovy") != -1) {
 											//Create array of options to be added
-											variableOpts = [
-												{label:"Access Content Model", value:"contentModel"},
-												{label:"Access Template Model", value:"templateModel"},
-
-												{label:"Current Site ID", value:"siteContext.siteName"},
-												{label:"Request Parameters", value:"params"},
-												{label:"Cookies", value:"cookies"},
-												{label:"HTTP Request", value:"request"},
-												{label:"HTTP Response", value:"response"},
-												{label:"Session", value:"session"},
-												{label:"Transform PATH to URL", value:"urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)"},
-
-												{label:"User Profile", value:"profile"},
-												{label:"Current Authentication", value:"authentication"},
-
-												{label:"Log an INFO", value:"logger.info('MY MESSAGE')"},
-												{label:"Log an ERROR", value:"logger.error('MY MESSAGE')"},
-
-												{label:"Search Service", value:"searchService"},
-												{label:"Site Item Service", value:"siteItemService"},
-												{label:"Profile Service", value:"profileService"},
-
-												{label:"Get Spring Bean", value:"applicationContext.get(\"SPRING_BEAN_NAME\")"}
-											];
+											variableOpts = codeSnippets.groovy;
 
 											langTools = ace.require("ace/ext/language_tools");
 											var customCompleter = {
@@ -353,31 +418,7 @@ CStudioAuthoring.Module.requireModule(
 											langTools.addCompleter(customCompleter);
 										}
 										else if(templatePath.indexOf(".ftl") != -1) {
-											variableOpts = [
-												{label:"Content variable", value:"${contentModel.VARIABLENAME}"},
-												{label:"Request parameter", value:"${RequestParameters[\"PARAMNAME\"]!\"DEFAULT\"}"},
-												{label:"Studio support", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n\t...\r\n\t<@studio.toolSupport />"},
-												{label:"Dynamic navigation", value:"<#include \"/templates/web/navigation/navigation.ftl\">\r\n\t...\r\n\t<@renderNavigation \"/site/website\", 1 />"},
-												{label:"Transform PATH to URL", value:"${urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)}"},
-
-												{label:"Incontext editing attribute (pencil)", value:"<@studio.iceAttr iceGroup=\"ICEGROUID\"/>"},
-												{label:"Component DropZone attribute", value:"<@studio.componentContainerAttr target=\"TARGETID\" objectId=contentModel.objectId />"},
-												{label:"Component attribute", value:"<@studio.componentAttr path=contentModel.storeUrl ice=false />"},
-												{label:"Render list of components", value:"<#list contentModel.VARIABLENAME.item as module>\r\n\t<@renderComponent component=module />\r\n</#list>"},
-												{label:"Iterate over a list of items and load content item", value:"<#list contentModel.VARIABLENAME.item as myItem>\r\n\t<#assign myContentItem =  siteItemService.getSiteItem(myItem.key) />\r\n\t${myContentItem.variableName}\r\n</#list>"},
-												{label:"Iterate over repeat group", value:"<#list contentModel.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>"},
-
-
-												{label:"Freemarker value assignment", value:"<#assign imageSource = contentModel.image!\"\" />"},
-												{label:"Freemarker value IF", value:"<#if CONDITION>\r\n\t...\r\n</#if>"},
-												{label:"Freemarker value LOOP", value:"<#list ARRAY as value>\r\n\t${value_index}: ${value}\r\n</#list>"},
-												{label:"Freemarker Fragment include", value:"<#include \"/templates/PATH\" />"},
-												{label:"Freemarker Library import", value:"<#import \"/templates/PATH\" as NAMESPACE />"},
-
-												{label:"HTML Page", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<html lang=\"en\">\r\n<head>\r\n\t</head>\r\n\t<body>\r\n\t\t<h1>CONTENT HERE</h1>\r\n\t<@studio.toolSupport/>\r\n\t</body>\r\n</html>"},
-												{label:"HTML Component", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<div <@studio.componentAttr path=contentModel.storeUrl ice=false /> >\r\nCOMPONENT MARKUP</div>"},
-
-											];
+											variableOpts = codeSnippets.freemarker;
 
 											langTools = ace.require("ace/ext/language_tools");
 											var customCompleter = {
