@@ -43,10 +43,15 @@
 
         closeButtonActionClicked: closeButtonClicked,
 
-        initDatePicker: initDatePicker
+        initDatePicker: initDatePicker,
+
+        getGenDependency: getGenDependency
 
     });
 
+    function getGenDependency(callback) {
+        calculateDependencies(currentItems, callback);
+    }
 
     function closeButtonClicked() {
         $(document).off("keyup");
@@ -127,18 +132,26 @@
                     loadSpinner.classList.add("hidden");
                     loadSpinnerMask.classList.add("hidden");
 
-                    eventNS.oldPath = currentItems.uri;
+                    if(currentItems.length > 1){
+                        var oldItems = [];
+                        for(var i = 0; i < currentItems.length; i++ ){
+                            oldItems[currentItems[i].browserUri.replace(/\//g, '')] = currentItems[i].uri;
+                        }
+                        eventNS.oldPath = oldItems;
+                    }else{
+                        eventNS.oldPath = currentItems[0].uri;
+                    }
                     var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
                     if(CStudioAuthoringContext.isPreview){
                         try{
                             var currentContentTO,
                                 URLBrowseUri = pageParameter,
-                                contentTOBrowseUri = currentItems.browserUri;
+                                contentTOBrowseUri = currentItems[0].browserUri;
 
-                            if (URLBrowseUri == contentTOBrowseUri){
+                            if (URLBrowseUri === contentTOBrowseUri){
                                 currentContentTO = null;
                             } else{
-                                currentContentTO = currentItems;
+                                currentContentTO = currentItems[0];
                             }
 
                             if(currentContentTO.isPage){
@@ -150,8 +163,26 @@
                     }
 
                     eventNS.data = currentItems;
-                    eventNS.typeAction = "edit";
-                    document.dispatchEvent(eventNS);
+                    eventNS.typeAction = "publish";
+                    _this.getGenDependency({
+                        success: function(response) {
+                          var dependenciesObj = JSON.parse(response.responseText).entities,
+                              dependencies = [];
+
+                          $.each(dependenciesObj, function(){
+                            $.each(this.dependencies, function(){
+                              dependencies.push(this.item);
+                            });
+                          });
+                          
+                          var allDeps = dependencies.concat(_this.result ? _this.result : []);
+                          dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+
+                          eventNS.dependencies = dependencies;
+                          document.dispatchEvent(eventNS);
+                          eventNS.dependencies = null;
+                        }
+                      });
                     _this.end();
                 },
                 failure: function(oResponse) {
@@ -166,11 +197,15 @@
         });
     }
 
-    function calculateDependencies(data, callback){
-        var entities = { "entities" : [] }; 
+    function calculateDependencies(data, callback) {
+        var entities = { "entities": [] };
 
-        if( typeof data === 'string' || data instanceof String ){
+        if (typeof data === 'string' || data instanceof String) {
             entities.entities.push({ "item": data });
+        } else {
+            $.each(data, function () {
+                entities.entities.push({ "item": this.uri });
+            });
         }
 
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
@@ -197,7 +232,7 @@
                 }
              );
         $("#approveSubmit").prop('disabled', false);
-        currentItems = items[0];
+        currentItems = items;
 
         $(document).on("keyup", function(e) {
             if (e.keyCode === 27) {	// esc

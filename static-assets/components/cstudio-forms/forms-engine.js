@@ -868,16 +868,16 @@ var CStudioForms = CStudioForms || function() {
           CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, formId, { success: resolve });
         }),
         new Promise((resolve) => {
-          if (isInclude) {
-            if (isEdit) {
+          if(isEdit) {
+            if(isInclude) {
               sendAndAwait(path, (message) => {
                 resolve(message.payload);
               });
-            } else {
-              resolve(null);
+            }else {
+              CStudioAuthoring.Service.getContent(path, false, { success: resolve });
             }
           } else {
-            CStudioAuthoring.Service.getContent(path, false, { success: resolve });
+            resolve(null);
           }
         })
       ]).then(([formDefinition, { ctrlCls, formConfig }, model, contentType, content]) => {
@@ -897,12 +897,12 @@ var CStudioForms = CStudioForms || function() {
           CStudioAuthoring.Service.getContent(path, true, { success: () => void null });
         }
 
-        let dom = parseDOM(content) || {
+        let dom = content? parseDOM(content) : {
           children: [],
           responseXML: { documentElement: { children: [] } }
         };
 
-        if(!isInclude) {
+        if(!isInclude && content) {
           const components = Array.from(dom.querySelectorAll(`item > component`));
           components.forEach((component) => {
             FlattenerState[component.getAttribute('id')] = component.outerHTML;
@@ -912,16 +912,16 @@ var CStudioForms = CStudioForms || function() {
         _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
 
       }).catch((reason) => {
-                                CStudioAuthoring.Operations.showSimpleDialog(
+        CStudioAuthoring.Operations.showSimpleDialog(
           'loadContentError-dialog',
-                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+          CStudioAuthoring.Operations.simpleDialogTypeINFO,
           CMgs.format(formsLangBundle, 'notification'),
           CMgs.format(formsLangBundle, 'errFailedToLoadContent'),
-                                null,
-                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+          null,
+          YAHOO.widget.SimpleDialog.ICON_BLOCK,
           'studioDialog'
-                              );
-          });
+        );
+      });
 
     },
 

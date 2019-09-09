@@ -885,6 +885,9 @@ var nodeOpen = false,
                                   dependencies.push(this.item);
                                 });
                               });
+                              
+                              var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
+                              dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
 
                               eventNS.dependencies = dependencies;
                               document.dispatchEvent(eventNS);
