@@ -51,7 +51,7 @@
    	}
 
   var lang = localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage');
-  CStudioAuthoringContext.lang = lang;
+  CStudioAuthoringContext.lang = lang ? lang : "en";
 
 	$(function() {
 		var isChromium = window.chrome,
