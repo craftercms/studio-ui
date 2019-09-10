@@ -690,7 +690,8 @@ var CStudioForms = CStudioForms || function() {
     FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
     FORM_UPDATE_REQUEST = 'FORMS.FORM_UPDATE_REQUEST',
     OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
-    FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE';
+    FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE',
+    FORM_CANCEL = 'FORM_CANCEL';
 
   const { fromEvent, operators } = CrafterCMSNext.rxjs;
   const { map, filter, take } = operators;
@@ -1465,6 +1466,8 @@ var CStudioForms = CStudioForms || function() {
         };
 
         var cancelFn = function () {
+
+          sendMessage({type: FORM_CANCEL});
 
           if (iceWindowCallback && iceWindowCallback.cancelled) {
             iceWindowCallback.cancelled();
