@@ -222,8 +222,8 @@ CStudioAuthoring.Module.requireModule(
 											langTools = ace.require("ace/ext/language_tools");
                       var aceEditor = ace.edit("editorPreEl"),
                           defaultTheme = CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.theme
-                                         && CStudioForms.TemplateEditor.config.theme === 'light' ? 'chrome' : 'tomorrow_night',
-												  theme = CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") ? CStudioAuthoring.Utils.Cookies.readCookie("templateEditorTheme") : defaultTheme;
+                                         && CStudioForms.TemplateEditor.config.theme === 'dark' ? 'tomorrow_night' : 'chrome',
+                          theme = localStorage.getItem('templateEditorTheme') ? localStorage.getItem('templateEditorTheme') : defaultTheme;
 
 											aceEditor.setTheme("ace/theme/" + theme);
 											aceEditor.session.setMode(mode);
@@ -240,7 +240,7 @@ CStudioAuthoring.Module.requireModule(
 
 											$('#themeSelector').on('change', function() {
 												aceEditor.setTheme("ace/theme/" + this.value);
-												CStudioAuthoring.Utils.Cookies.createCookie("templateEditorTheme", this.value);
+                        localStorage.setItem('templateEditorTheme', this.value);
 											})
 
 											return aceEditor;
