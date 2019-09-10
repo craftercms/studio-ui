@@ -38,104 +38,92 @@ CStudioAuthoring.Module.requireModule(
           var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
 
           var codeSnippets = {
-            freemarker: [
-              {label:"Content variable", value:"${contentModel.VARIABLENAME}"},
-              {label:"Request parameter", value:"${RequestParameters[\"PARAMNAME\"]!\"DEFAULT\"}"},
-              {label:"Studio support", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n\t...\r\n\t<@studio.toolSupport />"},
-              {label:"Dynamic navigation", value:"<#include \"/templates/web/navigation/navigation.ftl\">\r\n\t...\r\n\t<@renderNavigation \"/site/website\", 1 />"},
-              {label:"Transform PATH to URL", value:"${urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)}"},
+            freemarker: {
+              "content-variable": { label:"Content variable", value:"${contentModel.VARIABLENAME}" },
+              "request-parameter": { label:"Request parameter", value:"${RequestParameters[\"PARAMNAME\"]!\"DEFAULT\"}" },
+              "studio-support": {label:"Studio support", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n\t...\r\n\t<@studio.toolSupport />"},
+              "dynamic-navigation": {label:"Dynamic navigation", value:"<#include \"/templates/web/navigation/navigation.ftl\">\r\n\t...\r\n\t<@renderNavigation \"/site/website\", 1 />"},
+              "transform-path-to-url": {label:"Transform PATH to URL", value:"${urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)}"},
 
-              {label:"Incontext editing attribute (pencil)", value:"<@studio.iceAttr iceGroup=\"ICEGROUID\"/>"},
-              {label:"Component DropZone attribute", value:"<@studio.componentContainerAttr target=\"TARGETID\" objectId=contentModel.objectId />"},
-              {label:"Component attribute", value:"<@studio.componentAttr path=contentModel.storeUrl ice=false />"},
-              {label:"Render list of components", value:"<#list contentModel.VARIABLENAME.item as module>\r\n\t<@renderComponent component=module />\r\n</#list>"},
-              {label:"Iterate over a list of items and load content item", value:"<#list contentModel.VARIABLENAME.item as myItem>\r\n\t<#assign myContentItem =  siteItemService.getSiteItem(myItem.key) />\r\n\t${myContentItem.variableName}\r\n</#list>"},
-              {label:"Iterate over repeat group", value:"<#list contentModel.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>"},
+              "ice-attr": {label:"Incontext editing attribute (pencil)", value:"<@studio.iceAttr iceGroup=\"ICEGROUID\"/>"},
+              "component-dropzone-attr": {label:"Component DropZone attribute", value:"<@studio.componentContainerAttr target=\"TARGETID\" objectId=contentModel.objectId />"},
+              "component-attr": {label:"Component attribute", value:"<@studio.componentAttr path=contentModel.storeUrl ice=false />"},
+              "render-components-list": {label:"Render list of components", value:"<#list contentModel.VARIABLENAME.item as module>\r\n\t<@renderComponent component=module />\r\n</#list>"},
+              "iterate-items-list-load-content-item": {label:"Iterate over a list of items and load content item", value:"<#list contentModel.VARIABLENAME.item as myItem>\r\n\t<#assign myContentItem =  siteItemService.getSiteItem(myItem.key) />\r\n\t${myContentItem.variableName}\r\n</#list>"},
+              "iterate-repeat-group": {label:"Iterate over repeat group", value:"<#list contentModel.VARIABLENAME.item as row>\r\n\t${row.VARIABLENAME}\r\n</#list>"},
 
+              "freemarker-value-assignment": {label:"Freemarker value assignment", value:"<#assign imageSource = contentModel.image!\"\" />"},
+              "freemarker-if": {label:"Freemarker value IF", value:"<#if CONDITION>\r\n\t...\r\n</#if>"},
+              "freemarker-loop": {label:"Freemarker value LOOP", value:"<#list ARRAY as value>\r\n\t${value_index}: ${value}\r\n</#list>"},
+              "freemarker-fragment-include": {label:"Freemarker Fragment include", value:"<#include \"/templates/PATH\" />"},
+              "freemarker-library-import": {label:"Freemarker Library import", value:"<#import \"/templates/PATH\" as NAMESPACE />"},
 
-              {label:"Freemarker value assignment", value:"<#assign imageSource = contentModel.image!\"\" />"},
-              {label:"Freemarker value IF", value:"<#if CONDITION>\r\n\t...\r\n</#if>"},
-              {label:"Freemarker value LOOP", value:"<#list ARRAY as value>\r\n\t${value_index}: ${value}\r\n</#list>"},
-              {label:"Freemarker Fragment include", value:"<#include \"/templates/PATH\" />"},
-              {label:"Freemarker Library import", value:"<#import \"/templates/PATH\" as NAMESPACE />"},
+              "html-page": {label:"HTML Page", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<html lang=\"en\">\r\n<head>\r\n\t</head>\r\n\t<body>\r\n\t\t<h1>CONTENT HERE</h1>\r\n\t<@studio.toolSupport/>\r\n\t</body>\r\n</html>"},
+              "html-component": {label:"HTML Component", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<div <@studio.componentAttr path=contentModel.storeUrl ice=false /> >\r\nCOMPONENT MARKUP</div>"}
+            },
+            groovy: {
+              "access-content-model": {label:"Access Content Model", value:"contentModel"},
+              "access-template-model": {label:"Access Template Model", value:"templateModel"},
 
-              {label:"HTML Page", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<html lang=\"en\">\r\n<head>\r\n\t</head>\r\n\t<body>\r\n\t\t<h1>CONTENT HERE</h1>\r\n\t<@studio.toolSupport/>\r\n\t</body>\r\n</html>"},
-              {label:"HTML Component", value:"<#import \"/templates/system/common/cstudio-support.ftl\" as studio />\r\n<div <@studio.componentAttr path=contentModel.storeUrl ice=false /> >\r\nCOMPONENT MARKUP</div>"},
-            ],
-            groovy: [
-              {label:"Access Content Model", value:"contentModel"},
-              {label:"Access Template Model", value:"templateModel"},
+              "current-site-id": {label:"Current Site ID", value:"siteContext.siteName"},
+              "request-parameters": {label:"Request Parameters", value:"params"},
+              "cookies": {label:"Cookies", value:"cookies"},
+              "http-request": {label:"HTTP Request", value:"request"},
+              "http-response": {label:"HTTP Response", value:"response"},
+              "session": {label:"Session", value:"session"},
+              "transform-path-to-url": {label:"Transform PATH to URL", value:"urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)"},
 
-              {label:"Current Site ID", value:"siteContext.siteName"},
-              {label:"Request Parameters", value:"params"},
-              {label:"Cookies", value:"cookies"},
-              {label:"HTTP Request", value:"request"},
-              {label:"HTTP Response", value:"response"},
-              {label:"Session", value:"session"},
-              {label:"Transform PATH to URL", value:"urlTransformationService.transform('storeUrlToRenderUrl', STOREURL)"},
+              "user-profile": {label:"User Profile", value:"profile"},
+              "current-authentication": {label:"Current Authentication", value:"authentication"},
 
-              {label:"User Profile", value:"profile"},
-              {label:"Current Authentication", value:"authentication"},
+              "log-info": {label:"Log an INFO", value:"logger.info('MY MESSAGE')"},
+              "log-error": {label:"Log an ERROR", value:"logger.error('MY MESSAGE')"},
 
-              {label:"Log an INFO", value:"logger.info('MY MESSAGE')"},
-              {label:"Log an ERROR", value:"logger.error('MY MESSAGE')"},
+              "search-service": {label:"Search Service", value:"searchService"},
+              "site-item-service": {label:"Site Item Service", value:"siteItemService"},
+              "profile-service": {label:"Profile Service", value:"profileService"},
 
-              {label:"Search Service", value:"searchService"},
-              {label:"Site Item Service", value:"siteItemService"},
-              {label:"Profile Service", value:"profileService"},
-
-              {label:"Get Spring Bean", value:"applicationContext.get(\"SPRING_BEAN_NAME\")"}
-            ]
-          }
+              "get-spring-bean": {label:"Get Spring Bean", value:"applicationContext.get(\"SPRING_BEAN_NAME\")"}
+            }
+          };
 
 					CStudioForms.TemplateEditor.prototype = {
 
 						render: function(templatePath, channel, onSaveCb, contentType, mode) {
               var me = this;
 
-              CStudioAuthoring.Service.getConfiguration(
-                CStudioAuthoringContext.site,
-                "/code-editor-config.xml",
-                {
-                  success: function(config) {
-                    CStudioForms.TemplateEditor.config = config;
+              Promise.all([
+                new Promise((resolve) => {
+                  CStudioAuthoring.Service.getConfiguration(
+                    CStudioAuthoringContext.site,
+                    "/code-editor-config.xml",
+                    { success: resolve }
+                  );
+                }),
+                new Promise((resolve) => {
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve }, false);
+                })
+              ]).then(([config, content]) => {
+                CStudioForms.TemplateEditor.config = config;
+                if ( config && config.snippets ) {
+                  me.addSnippets(config.snippets);
+                }
 
-                    if ( config && config.snippets ) {
-                      me.addSnippets(config.snippets);
-                    }
-
-                    var getContentCb = {
-                      success: function(response) {
-                        this.context.renderTemplateEditor(templatePath, response, onSaveCb, contentType, mode);
-                      },
-                      failure: function() {
-                      },
-                      context: me
-                    };
-
-                    CStudioAuthoring.Service.getContent(templatePath, true, getContentCb, false);
-
-                  }
-                });
+                me.renderTemplateEditor(templatePath, content, onSaveCb, contentType, mode);
+              });
             },
 
-            addSnippets: function(snippets) {
+            addSnippets: (snippets) => {
               var snippets = snippets.snippet.length ? snippets.snippet : [snippets.snippet];
 
               snippets.forEach(function(snippet) {
-                let category = snippet.category,
-                      obj = codeSnippets[category].find(x => x.label === snippet.label),
-                      objIndex = codeSnippets[category].indexOf(obj),
+                const type = snippet.type,
                       entry = {
                         label: snippet.label,
                         value: snippet.content
                       }
 
-                if ( objIndex !== -1 ) {
-                  codeSnippets[category].fill(obj.value = snippet.content, objIndex, objIndex++);
-                } else {
-                  codeSnippets[category].push(entry);
-                }
+                codeSnippets[type][snippet.key] = entry;
               })
             },
 
@@ -395,7 +383,7 @@ CStudioAuthoring.Module.requireModule(
 									if(templatePath.indexOf(".ftl") != -1 || templatePath.indexOf(".groovy")) {
 
 										//Create array of options to be added
-										var variableOpts = [];
+										var variableOpts = {};
 
 										if(templatePath.indexOf(".groovy") != -1) {
 											//Create array of options to be added
@@ -440,7 +428,7 @@ CStudioAuthoring.Module.requireModule(
 										}
 
 										//Create and append select list
-										if (variableOpts.length > 0) {
+										if (Object.entries(variableOpts).length > 0) {
 											var variableLabel = document.createElement("label");
 											variableLabel.innerHTML = CMgs.format(contextNavLangBundle, "variableLabel");
 											templateEditorToolbarVarElt.appendChild(variableLabel);
@@ -449,13 +437,12 @@ CStudioAuthoring.Module.requireModule(
 											selectList.id = "variable";
 											templateEditorToolbarVarElt.appendChild(selectList);
 
-											//Create and append the options
-											for (var i = 0; i < variableOpts.length; i++) {
-												var option = document.createElement("option");
-												option.value = variableOpts[i].value;
-												option.text = variableOpts[i].label;
+                      Object.keys(variableOpts).map(function(key) {
+                        let option = document.createElement("option");
+												option.value = key;
+												option.text = variableOpts[key].label;
 												selectList.appendChild(option);
-											}
+                      });
 
 											//Create and append add button
 											var addButton = document.createElement("button");
@@ -488,10 +475,13 @@ CStudioAuthoring.Module.requireModule(
 												};
 											}
 
-											addButton.onclick = function() {
-												var cursorPosition = aceEditor.getCursorPosition();
-												// Insert text (second argument) with given position
-												aceEditor.session.insert(cursorPosition, selectList.options[selectList.selectedIndex].value);
+											addButton.onclick = () => {
+                        const cursorPosition = aceEditor.getCursorPosition(),
+                              itemKey = selectList.options[selectList.selectedIndex].value;
+                              snippet = variableOpts[itemKey].value;
+                        // Insert snippet (second argument) in given position
+                        aceEditor.session.insert(cursorPosition, snippet);
+                        aceEditor.focus();
 											};
 										}
 									}
