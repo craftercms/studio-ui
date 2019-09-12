@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {useEffect, useState} from 'react';
-import {withStyles} from '@material-ui/core/styles';
-import {get} from '../utils/ajax';
+import React, { useEffect, useState, useRef } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import { get } from '../utils/ajax';
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import Typography from '@material-ui/core/Typography';
@@ -36,39 +36,14 @@ import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
 import BluePrintForm from "./BluePrintForm";
-import ReviewBluePrint from "./ReviewBluePrint";
+import BluePrintReview from "./BluePrintReview";
 
 const CustomTabs = withStyles({
   root: {
     borderBottom: 'none',
     minHeight: 'inherit'
-  },
-  indicator: {
-    backgroundColor: '#007AFF',
-  },
+  }
 })(Tabs);
-
-const ColorButton = withStyles(theme => ({
-  root: {
-    color: '#FFFFFF',
-    backgroundColor: '#7E9DBB',
-    textTransform: 'inherit',
-    '&:hover': {
-      backgroundColor: '#7E9DBB',
-    },
-  },
-}))(Button);
-
-const DefaultButton = withStyles(theme => ({
-  root: {
-    color: '#4F4F4F',
-    backgroundColor: '#FFFFFF',
-    textTransform: 'inherit',
-    '&:hover': {
-      backgroundColor: '#FFFFFF',
-    },
-  },
-}))(Button);
 
 const dialogTitleStyles = (theme: any) => ({
   root: {
@@ -117,8 +92,13 @@ const useStyles = makeStyles((theme: any) => ({
     }
   },
   dialogContent: {
-    minHeight: '459px',
-    paddingTop: '20px'
+    padding: '20px',
+    minHeight: '570px',
+    maxHeight: '570px',
+  },
+  slide: {
+    padding: 16,
+    minHeight: '538px',
   },
   dialogActions: {
     background: '#EBEBF0',
@@ -140,34 +120,31 @@ const useStyles = makeStyles((theme: any) => ({
     marginRight: '20px',
     opacity: 1,
     '& span': {
-    textTransform: 'none',
+      textTransform: 'none',
       color: '#2F2707'
     }
   },
   tabIcon: {
     color: '#000000',
-      fontSize: '1.2rem',
-      cursor: 'pointer',
-      '&.selected': {
+    fontSize: '1.2rem',
+    cursor: 'pointer',
+    '&.selected': {
       color: '#007AFF'
     }
   }
 }));
 
-const views:any = {
-  0:{
+const views: any = {
+  0: {
     title: 'Create Site',
     subtitle: 'Choose creation strategy: start from an existing git repo or create based on the blueprint to that suits you best.'
   },
-  1:{
+  1: {
     title: 'Create Site',
     subtitle: 'Name and describe your "React" blueprint site',
     btnText: 'Finish'
   },
-  2:{
-
-  },
-  3:{
+  2: {
     title: 'Finish',
     subtitle: 'Review set up summary and crete your site',
     btnText: 'Create Site'
@@ -219,16 +196,26 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
 
 function CreateSiteDialog(props: any) {
   const [blueprints, setBlueprints] = useState([]);
+  const [blueprint, setBlueprint] = useState(null);
   const [tab, setTab] = useState(0);
   const [open, setOpen] = useState(props.open || false);
   const [searchSelected, setSearchSelected] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [inputs, setInputs] = useState({
     siteId: '',
-    description: ''
+    description: '',
+    push_site: false,
+    repo_url: '',
+    repo_authentication: 'none',
+    repo_remote_branch: '',
+    repo_name: '',
+    repo_password: '',
+    repo_token: ''
   });
-  const [selectedView, setSelectedView] = useState(3);
+  const [selectedView, setSelectedView] = useState(1);
   const classes = useStyles({});
+
+  const swipeableViews = useRef(null);
 
   useEffect(() => {
       if (blueprints.length === 0) {
@@ -247,7 +234,8 @@ function CreateSiteDialog(props: any) {
     setSearchSelected(!searchSelected);
   }
 
-  function handleBlueprintSelected(value: any, view: any) {
+  function handleBlueprintSelected(blueprint: any, view: number) {
+    setBlueprint(blueprint);
     setSelectedView(view);
   }
 
@@ -256,18 +244,23 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleBack() {
-    setSelectedView(selectedView-1);
+    setSelectedView(selectedView - 1);
   }
 
-  function handleChange(e: any, value: any) {
+  function handleChange(e: any, value: number) {
     setTab(value);
   }
 
+  function handleGoTo(step: number) {
+    setSelectedView(step);
+  }
+
   function handleFinish(e: any) {
+    e && e.preventDefault();
     setSubmitted(true);
     if (inputs.siteId !== '') {
-      if(selectedView === 1) {
-        setSelectedView(3);
+      if (selectedView === 1) {
+        setSelectedView(2);
       }
     }
   }
@@ -299,14 +292,14 @@ function CreateSiteDialog(props: any) {
             fullWidth={true} maxWidth={'md'}>
       <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={selectedView}/>
       {(selectedView === 0) && <div className={classes.tabs}>
-        <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-          <Tab label="Out of The Box" {...a11yProps(0)} className={classes.simpleTab}/>
-          <Tab label="Marketplace" {...a11yProps(1)} className={classes.simpleTab}/>
-        </CustomTabs>
-        <SearchIcon className={clsx(classes.tabIcon, searchSelected && 'selected')} onClick={handleSearchClick}/>
+          <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
+              <Tab label="Out of The Box" {...a11yProps(0)} className={classes.simpleTab}/>
+              <Tab label="Marketplace" {...a11yProps(1)} className={classes.simpleTab}/>
+          </CustomTabs>
+          <SearchIcon className={clsx(classes.tabIcon, searchSelected && 'selected')} onClick={handleSearchClick}/>
       </div>}
       <DialogContent className={classes.dialogContent}>
-        {searchSelected &&
+        {(searchSelected && selectedView === 0) &&
         <div className={classes.search}>
             <div className={classes.searchIcon}>
                 <SearchIcon/>
@@ -324,34 +317,34 @@ function CreateSiteDialog(props: any) {
         }
         <TabPanel value={tab} index={0}>
           {blueprints.length &&
-          <SwipeableViews index={selectedView} onChangeIndex={handleChangeIndex} animateHeight>
-            <div style={{padding: 16}}>
-              <Grid container spacing={3}>{renderBluePrint()}</Grid>
-            </div>
-            <div>
-              <BluePrintForm inputs={inputs} setInputs={setInputs} submitted={submitted}/>
-            </div>
-            <div>
-              AdditionalInfo
-            </div>
-            <div>
-              <ReviewBluePrint/>
-            </div>
+          <SwipeableViews
+              animateHeight
+              ref={swipeableViews}
+              index={selectedView} onChangeIndex={handleChangeIndex}>
+              <div className={classes.slide}>
+                  <Grid container spacing={3}>{renderBluePrint()}</Grid>
+              </div>
+              <div className={classes.slide}>
+                  <BluePrintForm swipeableViews={swipeableViews} inputs={inputs} setInputs={setInputs} submitted={submitted} onSubmit={handleFinish}/>
+              </div>
+              <div className={classes.slide}>
+                  <BluePrintReview onGoTo={handleGoTo} inputs={inputs} blueprint={blueprint}/>
+              </div>
           </SwipeableViews>}
         </TabPanel>
         <TabPanel value={tab} index={1}>
         </TabPanel>
       </DialogContent>
       {(selectedView !== 0) && <DialogActions className={classes.dialogActions}>
-        <DefaultButton variant="contained" className={classes.backBtn} onClick={handleBack}>
-          Back
-        </DefaultButton>
-        <DefaultButton variant="contained">
-          More Options
-        </DefaultButton>
-        <ColorButton variant="contained" color="primary" onClick={handleFinish}>
-          { views[selectedView].btnText }
-        </ColorButton>
+          <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
+              Back
+          </Button>
+          <Button variant="contained">
+              More Options
+          </Button>
+          <Button variant="contained" color="primary" onClick={handleFinish}>
+            {views[selectedView].btnText}
+          </Button>
       </DialogActions>}
     </Dialog>
   )
