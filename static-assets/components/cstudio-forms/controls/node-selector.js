@@ -40,6 +40,7 @@ CStudioForms.Controls.NodeSelector = CStudioForms.Controls.NodeSelector ||
         this.defaultValue = "";
         this.disableFlattening = false;
         this.useSingleValueFilename = false;
+        this.supportedPostFixes = ["_o"];
         amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
         amplify.subscribe("UPDATE_NODE_SELECTOR", this, this.onIceUpdate);
 
@@ -318,7 +319,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                             for(var x = 0; x < datasources.length; x++) {
                                 datasources[x].selectItemsCount = selectItemsCount;
                                 if(datasources.length > 1){
-                                    datasources[x].add(_self, true);   
+                                    datasources[x].add(_self, true);
                                 }else{
                                     datasources[x].add(_self);
                                 }
@@ -622,6 +623,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         return [
             { label: CMgs.format(langBundle, "allowDuplicate"), name: "allowDuplicates", type: "boolean" }
         ];
+    },
+
+    getSupportedPostFixes: function() {
+      return this.supportedPostFixes;
     }
 });
 

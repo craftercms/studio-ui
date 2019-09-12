@@ -29,7 +29,8 @@ function(id, form, owner, properties, constraints, readonly, pencilMode)  {
 	this.id = id;
 	this.readonly = readonly;
 	this.rteHeight = 300;
-	this.pencilMode = pencilMode;
+  this.pencilMode = pencilMode;
+  this.supportedPostFixes = ["_html"];
 
 	return this;
 }
@@ -145,6 +146,10 @@ CStudioAuthoring.Module.requireModule(
 				{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
 			];
 		},
+
+    getSupportedPostFixes: function() {
+      return this.supportedPostFixes;
+    },
 
 		/**
 		 * render and initialization of editor
