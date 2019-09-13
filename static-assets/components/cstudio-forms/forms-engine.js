@@ -2783,7 +2783,7 @@ var CStudioForms = CStudioForms || function() {
       for (var key in formModel) {
 
         var
-          attributes = [' '],
+          attributes = [],
           fieldInstruction = fieldInstructions[key],
           fieldList = fieldLists[key],
           invalidFields = [],
