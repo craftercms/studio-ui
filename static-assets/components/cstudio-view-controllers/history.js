@@ -86,7 +86,7 @@
                                     (function () {
                                         Event.addListener(compareButton, "click", function () {
                                             // CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, this.version);
-                                            _this.compareButtonActionClicked();
+                                            _this.compareButtonActionClicked(history.item.uri);
                                         });
                                     })();
                                 }
@@ -313,7 +313,7 @@
                     (function () {
                       Event.addListener(compareButton, "click", function () {
                         // CStudioAuthoring.Operations.openDiff(CStudioAuthoringContext.site, this.path, this.version, this.version);
-                        _this.compareButtonActionClicked();
+                        _this.compareButtonActionClicked(history.item.uri);
                       });
                     })();
                   }
@@ -559,11 +559,11 @@
         destroyTooltips: function () {
             $('.tooltips-container').remove();
         },
-        compareButtonActionClicked: function () {
+        compareButtonActionClicked: function (itemPath) {
             var tbody = this.getComponent('table.item-listing tbody'),
                 selectedCheckboxes = $(tbody).find('input[name="version"]:checked'),
                 diffArray = [],
-                path = this.item.uri;
+                path = itemPath;
 
             $.each(selectedCheckboxes, function(index) {
                 diffArray[index] = this.value;
