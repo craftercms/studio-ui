@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { get } from '../utils/ajax';
 import Dialog from "@material-ui/core/Dialog";
@@ -29,6 +29,7 @@ import Grid from '@material-ui/core/Grid';
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import BlueprintCard from "./BlueprintCard";
+import Spinner from "./Spinner";
 import InputBase from '@material-ui/core/InputBase';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import SwipeableViews from 'react-swipeable-views';
@@ -93,12 +94,11 @@ const useStyles = makeStyles((theme: any) => ({
   },
   dialogContent: {
     padding: '20px',
-    minHeight: '570px',
     maxHeight: '570px',
   },
   slide: {
     padding: 16,
-    minHeight: '538px',
+    minHeight: '485px',
   },
   dialogActions: {
     background: '#EBEBF0',
@@ -131,6 +131,11 @@ const useStyles = makeStyles((theme: any) => ({
     '&.selected': {
       color: '#007AFF'
     }
+  },
+  loading: {
+    position: 'relative',
+    padding: 16,
+    minHeight: '485px',
   }
 }));
 
@@ -149,7 +154,23 @@ const views: any = {
     subtitle: 'Review set up summary and crete your site',
     btnText: 'Create Site'
   }
-}
+};
+
+const inputsInitialState: any = {
+  blueprint: null,
+  siteId: '',
+  description: '',
+  push_site: false,
+  use_remote: false,
+  repo_url: '',
+  repo_authentication: 'none',
+  repo_remote_branch: '',
+  repo_remote_name: '',
+  repo_password: '',
+  repo_username: '',
+  repo_token: '',
+  repo_key: ''
+};
 
 function TabPanel(props: any) {
   const {children, value, index, ...other} = props;
@@ -165,14 +186,14 @@ function TabPanel(props: any) {
       p={3}>{children}
     </div>
   );
-}
+};
 
 function a11yProps(index: any) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
-}
+};
 
 // @ts-ignore
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
@@ -196,25 +217,13 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
 
 function CreateSiteDialog(props: any) {
   const [blueprints, setBlueprints] = useState([]);
-  const [blueprint, setBlueprint] = useState(null);
   const [tab, setTab] = useState(0);
   const [open, setOpen] = useState(props.open || false);
   const [searchSelected, setSearchSelected] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [inputs, setInputs] = useState({
-    siteId: '',
-    description: '',
-    push_site: false,
-    repo_url: '',
-    repo_authentication: 'none',
-    repo_remote_branch: '',
-    repo_name: '',
-    repo_password: '',
-    repo_token: ''
-  });
-  const [selectedView, setSelectedView] = useState(1);
+  const [inputs, setInputs] = useState(inputsInitialState);
+  const [selectedView, setSelectedView] = useState(0);
   const classes = useStyles({});
-
   const swipeableViews = useRef(null);
 
   useEffect(() => {
@@ -235,7 +244,9 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleBlueprintSelected(blueprint: any, view: number) {
-    setBlueprint(blueprint);
+    const _reset = {...inputsInitialState};
+    _reset.blueprint = blueprint;
+    setInputs(_reset);
     setSelectedView(view);
   }
 
@@ -258,10 +269,59 @@ function CreateSiteDialog(props: any) {
   function handleFinish(e: any) {
     e && e.preventDefault();
     setSubmitted(true);
-    if (inputs.siteId !== '') {
-      if (selectedView === 1) {
+    if (validateForm()) {
+      if (selectedView === 2) {
+        const params = createParams();
+        //call service
+      } else {
         setSelectedView(2);
       }
+    }
+  }
+
+  function validateForm() {
+    if (!inputs.siteId) {
+      return false;
+    } else if (inputs.push_site) {
+      if (!inputs.repo_url) return false;
+      else if (!inputs.repo_remote_name) return false;
+      else if (inputs.repo_authentication === 'basic' && (!inputs.repo_username || !inputs.repo_password)) return false;
+      else if (inputs.repo_authentication === 'token' && (!inputs.repo_username || !inputs.repo_token)) return false;
+      else if (inputs.repo_authentication === 'key' && !inputs.repo_key) return false;
+      else return true;
+    } else {
+      return true;
+    }
+  }
+
+  function createParams() {
+    const params: any = {site_id: inputs.siteId, description: inputs.description};
+    if (inputs.blueprint) {
+      if (params.blueprint !== 'git') {
+        params.blueprint = inputs.blueprint.id;
+        params.use_remote = true;
+      } else if (inputs.push_site) {
+        params.use_remote = true;
+      }
+      params.remote_name = inputs.repo_remote_name;
+      params.remote_url = inputs.repo_url;
+      params.single_branch = false;
+      params.authentication_type = inputs.repo_authentication;
+      if (inputs.repo_remote_branch) {
+        params.remote_branch = inputs.repo_remote_branch;
+        params.sandbox_branch = inputs.repo_remote_branch;
+      }
+      if (inputs.repo_authentication === 'basic') {
+        params.remote_username = inputs.repo_username;
+        params.remote_password = inputs.repo_password;
+      }
+      if (inputs.repo_authentication === 'token') {
+        params.remote_username = inputs.repo_username;
+        params.remote_token = inputs.repo_token;
+      }
+      if (inputs.repo_authentication === 'key') params.remote_private_key = inputs.repo_username;
+      params.create_option = (inputs.blueprint.id === 'GIT') ? 'clone' : 'push';
+      console.log(params);
     }
   }
 
@@ -269,7 +329,24 @@ function CreateSiteDialog(props: any) {
     get('/studio/api/2/sites/available_blueprints')
       .subscribe(
         ({response}) => {
-          setBlueprints(response.blueprints);
+          const _blueprints: any = [{
+            id: "GIT",
+            name: "Remote Git Repository",
+            description: "Create site from a existing remote git repository",
+            media: {
+              screenshots: [
+                {
+                  description: "Git logo",
+                  title: "Remote Git Repository",
+                  url: "https://www.embarcados.com.br/wp-content/uploads/2015/02/imagem-de-destaque-39.png"
+                }
+              ]
+            }
+          }];
+          response.blueprints.forEach((bp: any) => {
+            _blueprints.push(bp.plugin);
+          });
+          setBlueprints(_blueprints);
         },
         () => {
           console.log('error')
@@ -280,7 +357,7 @@ function CreateSiteDialog(props: any) {
   function renderBluePrint() {
     return blueprints.map(blueprint => {
       return (
-        <Grid item xs={12} sm={6} md={4} key={blueprint.plugin.id}>
+        <Grid item xs={12} sm={6} md={4} key={blueprint.id}>
           <BlueprintCard blueprint={blueprint} onBlueprintSelected={handleBlueprintSelected}/>
         </Grid>
       );
@@ -298,43 +375,51 @@ function CreateSiteDialog(props: any) {
           </CustomTabs>
           <SearchIcon className={clsx(classes.tabIcon, searchSelected && 'selected')} onClick={handleSearchClick}/>
       </div>}
-      <DialogContent className={classes.dialogContent}>
-        {(searchSelected && selectedView === 0) &&
-        <div className={classes.search}>
-            <div className={classes.searchIcon}>
-                <SearchIcon/>
-            </div>
-            <InputBase
-                placeholder="Search…"
-                autoFocus={true}
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-                inputProps={{'aria-label': 'search'}}
-            />
-        </div>
-        }
-        <TabPanel value={tab} index={0}>
-          {blueprints.length &&
-          <SwipeableViews
+      {blueprints.length ?
+        <DialogContent className={classes.dialogContent}>
+          {(searchSelected && selectedView === 0) &&
+          <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                  <SearchIcon/>
+              </div>
+              <InputBase
+                  placeholder="Search…"
+                  autoFocus={true}
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{'aria-label': 'search'}}
+              />
+          </div>
+          }
+          <TabPanel value={tab} index={0}>
+            <SwipeableViews
               animateHeight
               ref={swipeableViews}
               index={selectedView} onChangeIndex={handleChangeIndex}>
               <div className={classes.slide}>
-                  <Grid container spacing={3}>{renderBluePrint()}</Grid>
+                <Grid container spacing={3}>{renderBluePrint()}</Grid>
               </div>
               <div className={classes.slide}>
-                  <BluePrintForm swipeableViews={swipeableViews} inputs={inputs} setInputs={setInputs} submitted={submitted} onSubmit={handleFinish}/>
+                {inputs.blueprint &&
+                <BluePrintForm swipeableViews={swipeableViews} inputs={inputs} setInputs={setInputs}
+                               submitted={submitted} onSubmit={handleFinish} blueprint={inputs.blueprint}/>}
               </div>
               <div className={classes.slide}>
-                  <BluePrintReview onGoTo={handleGoTo} inputs={inputs} blueprint={blueprint}/>
+                {inputs.blueprint &&
+                <BluePrintReview onGoTo={handleGoTo} inputs={inputs} blueprint={inputs.blueprint}/>}
               </div>
-          </SwipeableViews>}
-        </TabPanel>
-        <TabPanel value={tab} index={1}>
-        </TabPanel>
-      </DialogContent>
+            </SwipeableViews>
+          </TabPanel>
+          <TabPanel value={tab} index={1}>
+          </TabPanel>
+        </DialogContent>
+        :
+        <div className={classes.loading}>
+          <Spinner/>
+        </div>
+      }
       {(selectedView !== 0) && <DialogActions className={classes.dialogActions}>
           <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
               Back

@@ -6,13 +6,20 @@ const useStyles = makeStyles(theme => ({
   progress: {
     margin: theme.spacing(2),
   },
+  center: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    background: '#fff',
+    transform: 'translate(-50%, -50%)',
+  }
 }));
 
 export default function Spinner() {
   // @ts-ignore
   const classes = useStyles();
   return (
-    <div className="spinner-component">
+    <div className={classes.center}>
       <CircularProgress className={classes.progress} />
     </div>
   );

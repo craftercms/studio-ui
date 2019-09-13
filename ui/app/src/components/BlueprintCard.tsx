@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
@@ -8,7 +8,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
-import {autoPlay} from 'react-swipeable-views-utils';
+import { autoPlay } from 'react-swipeable-views-utils';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
@@ -49,6 +49,9 @@ const useStyles = makeStyles(theme => ({
       color: '#2F2707'
     }
   },
+  gitOptions: {
+    height: '62px'
+  },
   options: {
     marginLeft: 'auto'
   },
@@ -61,9 +64,10 @@ function BlueprintCard(props: any) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const {onBlueprintSelected, blueprint} = props;
-  const {media, name, description, version, license, crafterCmsVersions} = blueprint.plugin;
-  const fullVersion = `${version.major}.${version.minor}.${version.patch}`;
-  const crafterCMS = `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}`;
+  const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
+  const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
+  const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
+
 
   function handleChangeIndex(value: any) {
     setIndex(value);
@@ -93,24 +97,25 @@ function BlueprintCard(props: any) {
             {description}
           </Typography>
         </CardContent>
+        {(id === "GIT") && <div className={classes.gitOptions}></div>}
       </CardActionArea>
-      <CardActions disableSpacing className={'cardActions'}>
-        <div className={classes.chip}>
-          <label>Version</label>
-          <span>{fullVersion}</span>
-        </div>
-        <div className={classes.chip}>
-          <label>License</label>
-          <span>{license.name}</span>
-        </div>
-        <div className={classes.chip}>
-          <label>CrafterCMS</label>
-          <span>{crafterCMS}</span>
-        </div>
-        <IconButton aria-label="options" className={classes.options}>
-          <MoreVertIcon/>
-        </IconButton>
-      </CardActions>
+      {(id !== "GIT") && <CardActions disableSpacing className={'cardActions'}>
+          <div className={classes.chip}>
+              <label>Version</label>
+              <span>{fullVersion}</span>
+          </div>
+          <div className={classes.chip}>
+              <label>License</label>
+              <span>{license.name}</span>
+          </div>
+          <div className={classes.chip}>
+              <label>CrafterCMS</label>
+              <span>{crafterCMS}</span>
+          </div>
+          <IconButton aria-label="options" className={classes.options}>
+              <MoreVertIcon/>
+          </IconButton>
+      </CardActions>}
     </Card>
   )
 }
