@@ -2783,7 +2783,7 @@ var CStudioForms = CStudioForms || function() {
       for (var key in formModel) {
 
         var
-          attributes = [],
+          attributes = [' '],
           fieldInstruction = fieldInstructions[key],
           fieldList = fieldLists[key],
           invalidFields = [],
@@ -2864,7 +2864,7 @@ var CStudioForms = CStudioForms || function() {
             }
             output += '</' + key + '>\r\n';
           } else {
-            output += '\t<' + key + ' ' + attributes + ' >';
+            output += '\t<' + key + ' ' + (attributes.join(' ')) + ' >';
             output += this.escapeXml(modelItem);
             output += '</' + key + '>\r\n';
           }
