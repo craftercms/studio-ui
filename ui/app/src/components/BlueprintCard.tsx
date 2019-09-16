@@ -10,6 +10,15 @@ import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import { Blueprint, Image } from "../models/Blueprint";
+
+
+interface BlueprintCard {
+  onBlueprintSelected(blueprint: Blueprint, view: number): any,
+
+  blueprint: Blueprint,
+  interval: number;
+}
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 const useStyles = makeStyles(theme => ({
@@ -60,16 +69,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function BlueprintCard(props: any) {
+function BlueprintCard(props: BlueprintCard) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
-  const {onBlueprintSelected, blueprint} = props;
+  const {onBlueprintSelected, blueprint, interval} = props;
   const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
 
-
-  function handleChangeIndex(value: any) {
+  function handleChangeIndex(value: number) {
     setIndex(value);
   }
 
@@ -79,11 +87,11 @@ function BlueprintCard(props: any) {
         <AutoPlaySwipeableViews
           index={index}
           autoplay={true}
-          interval={5000}
+          interval={interval}
           onChangeIndex={handleChangeIndex}
           enableMouseEvents
         >
-          {media.screenshots.map((step: any, index: any) => (
+          {media.screenshots.map((step: Image, index: number) => (
             <div key={index}>
               <img className={classes.carouselImg} src={step.url} alt={step.description}/>
             </div>

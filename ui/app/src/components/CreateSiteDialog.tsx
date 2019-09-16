@@ -39,6 +39,45 @@ import DialogActions from '@material-ui/core/DialogActions';
 import BluePrintForm from './BluePrintForm';
 import BluePrintReview from "./BluePrintReview";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Blueprint } from '../models/Blueprint';
+import { Site, SiteState, Views } from '../models/Site';
+
+
+const views: Views = {
+  0: {
+    title: 'Create Site',
+    subtitle: 'Choose creation strategy: start from an existing git repo or create based on the blueprint to that suits you best.'
+  },
+  1: {
+    title: 'Create Site',
+    subtitle: 'Name and describe your "React" blueprint site',
+    btnText: 'Finish'
+  },
+  2: {
+    title: 'Finish',
+    subtitle: 'Review set up summary and crete your site',
+    btnText: 'Create Site'
+  }
+};
+
+const siteInitialState: SiteState = {
+  blueprint: null,
+  siteId: '',
+  siteIdExist: false,
+  description: '',
+  push_site: false,
+  use_remote: false,
+  repo_url: '',
+  repo_authentication: 'none',
+  repo_remote_branch: '',
+  repo_remote_name: '',
+  repo_password: '',
+  repo_username: '',
+  repo_token: '',
+  repo_key: '',
+  submitted: false,
+  selectedView: 0
+};
 
 const CustomTabs = withStyles({
   root: {
@@ -47,7 +86,7 @@ const CustomTabs = withStyles({
   }
 })(Tabs);
 
-const dialogTitleStyles = (theme: any) => ({
+const dialogTitleStyles = () => ({
   root: {
     margin: 0,
     padding: '20px',
@@ -145,53 +184,17 @@ const useStyles = makeStyles((theme: any) => ({
     color: 'white',
     marginLeft: '10px'
   },
-  lodingBtn: {
+  loadingBtn: {
     backgroundColor: '#586d82',
     pointerEvents: 'none'
   },
-  creatingOverlay:{
+  creatingOverlay: {
     width: '100%',
     height: '100%',
     position: 'absolute',
     zIndex: 10
   }
 }));
-
-const views: any = {
-  0: {
-    title: 'Create Site',
-    subtitle: 'Choose creation strategy: start from an existing git repo or create based on the blueprint to that suits you best.'
-  },
-  1: {
-    title: 'Create Site',
-    subtitle: 'Name and describe your "React" blueprint site',
-    btnText: 'Finish'
-  },
-  2: {
-    title: 'Finish',
-    subtitle: 'Review set up summary and crete your site',
-    btnText: 'Create Site'
-  }
-};
-
-const siteInitialState: any = {
-  blueprint: null,
-  siteId: '',
-  siteIdExist: false,
-  description: '',
-  push_site: false,
-  use_remote: false,
-  repo_url: '',
-  repo_authentication: 'none',
-  repo_remote_branch: '',
-  repo_remote_name: '',
-  repo_password: '',
-  repo_username: '',
-  repo_token: '',
-  repo_key: '',
-  submitted: false,
-  selectedView: 0
-};
 
 // @ts-ignore
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
@@ -225,7 +228,7 @@ function CreateSiteDialog(props: any) {
   const swipeableViews = useRef(null);
 
   useEffect(() => {
-      if(swipeableViews.current) {
+      if (swipeableViews.current) {
         swipeableViews.current.updateHeight();
       }
       if (tab === 0 && blueprints === null) {
@@ -247,7 +250,7 @@ function CreateSiteDialog(props: any) {
     setSearchSelected(!searchSelected);
   }
 
-  function handleBlueprintSelected(blueprint: any, view: number) {
+  function handleBlueprintSelected(blueprint: Blueprint, view: number) {
     const _reset = {...siteInitialState};
     _reset.blueprint = blueprint;
     _reset.selectedView = view;
@@ -256,8 +259,8 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleBack() {
-    let back = site.selectedView -1;
-    setSite({...site, selectedView:back});
+    let back = site.selectedView - 1;
+    setSite({...site, selectedView: back});
   }
 
   function handleChange(e: any, value: number) {
@@ -265,13 +268,13 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleGoTo(step: number) {
-    setSite({...site, selectedView:step});
+    setSite({...site, selectedView: step});
   }
 
   function handleFinish(e: any) {
     e && e.preventDefault();
     if (site.selectedView === 1) {
-      setSite({...site, submitted:true});
+      setSite({...site, submitted: true});
     }
     if (validateForm()) {
       if (site.selectedView === 2) {
@@ -279,7 +282,7 @@ function CreateSiteDialog(props: any) {
         setCreatingSite(true);
         createSite(params);
       } else {
-        setSite({...site, selectedView:2});
+        setSite({...site, selectedView: 2});
       }
     }
   }
@@ -300,8 +303,13 @@ function CreateSiteDialog(props: any) {
   }
 
   function createParams() {
-    const params: any = {site_id: site.siteId, description: site.description};
     if (site.blueprint) {
+      const params: Site = {
+        site_id: site.siteId,
+        description: site.description,
+        single_branch: false,
+        authentication_type: site.repo_authentication
+      };
       if (site.blueprint.id !== 'GIT') {
         params.blueprint = site.blueprint.id;
         params.use_remote = site.push_site;
@@ -310,8 +318,6 @@ function CreateSiteDialog(props: any) {
       }
       if (site.repo_remote_name) params.remote_name = site.repo_remote_name;
       if (site.repo_url) params.remote_url = site.repo_url;
-      params.single_branch = false;
-      params.authentication_type = site.repo_authentication;
       if (site.repo_remote_branch) {
         params.remote_branch = site.repo_remote_branch;
         params.sandbox_branch = site.repo_remote_branch;
@@ -330,7 +336,7 @@ function CreateSiteDialog(props: any) {
     }
   }
 
-  function createSite(site: any) {
+  function createSite(site: Site) {
     post('/studio/api/1/services/api/1/site/create.json', site, {
       'X-XSRF-TOKEN': '060f063c-7812-4426-abfa-a1169d1e300c',
       'Content-Type': 'application/json'
@@ -363,7 +369,7 @@ function CreateSiteDialog(props: any) {
     get('/studio/api/2/sites/available_blueprints')
       .subscribe(
         ({response}) => {
-          const _blueprints: any = [{
+          const _blueprints: [Blueprint] = [{
             id: "GIT",
             name: "Remote Git Repository",
             description: "Create site from a existing remote git repository",
@@ -388,12 +394,12 @@ function CreateSiteDialog(props: any) {
       );
   }
 
-  function checkNameExist(e:any) {
+  function checkNameExist(e: any) {
     get(`/studio/api/1/services/api/1/site/exists.json?site=${e.target.value}`)
       .subscribe(
         ({response}) => {
-          if(response.exists) {
-            setSite({...site, siteIdExist:true});
+          if (response.exists) {
+            setSite({...site, siteIdExist: true});
           }
         },
         () => {
@@ -402,11 +408,11 @@ function CreateSiteDialog(props: any) {
       );
   }
 
-  function renderBluePrints(list:any) {
-    return list.map((item: any) => {
+  function renderBluePrints(list: [Blueprint]) {
+    return list.map((item: Blueprint) => {
       return (
         <Grid item xs={12} sm={6} md={4} key={item.id}>
-          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected}/>
+          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000}/>
         </Grid>
       );
     })
@@ -414,7 +420,7 @@ function CreateSiteDialog(props: any) {
 
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'md'} classes={{ paperScrollPaper: classes.paperScrollPaper }}>
+            fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
       {creatingSite && <div className={classes.creatingOverlay}></div>}
       <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
       {(site.selectedView === 0) && <div className={classes.tabs}>
@@ -459,7 +465,8 @@ function CreateSiteDialog(props: any) {
             <div className={classes.slide}>
               {site.blueprint &&
               <BluePrintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
-                             submitted={site.submitted} onSubmit={handleFinish} onCheckNameExist={checkNameExist} blueprint={site.blueprint}/>}
+                             onSubmit={handleFinish} onCheckNameExist={checkNameExist}
+                             blueprint={site.blueprint}/>}
             </div>
             <div className={classes.slide}>
               {site.blueprint &&
@@ -479,7 +486,8 @@ function CreateSiteDialog(props: any) {
           <Button variant="contained">
               More Options
           </Button>
-          <Button variant="contained" color="primary"  disableRipple={creatingSite} className={creatingSite? classes.lodingBtn:''} onClick={handleFinish}>
+          <Button variant="contained" color="primary" disableRipple={creatingSite}
+                  className={creatingSite ? classes.loadingBtn : ''} onClick={handleFinish}>
             {views[site.selectedView].btnText}
             {creatingSite && <CircularProgress size={20} className={classes.BtnSpinner}/>}
           </Button>

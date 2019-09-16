@@ -16,6 +16,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { SiteState } from '../models/Site';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -44,9 +45,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function GitForm(props: any) {
+interface GitForm {
+  inputs: SiteState,
+
+  handleInputChange(event: any): any,
+
+  type?: string;
+}
+
+function GitForm(props: GitForm) {
   const classes = useStyles({});
-  const {inputs, submitted, handleInputChange, type} = props;
+  const {inputs, handleInputChange, type} = props;
   const [expanded, setExpanded] = useState({
     basic: false,
     token: false,
@@ -67,9 +76,9 @@ function GitForm(props: any) {
     }
   };
 
-  const viewAuth = (type: any) => {
+  const viewAuth = (type: string) => {
     const _expanded: any = {...expanded};
-    Object.keys(expanded).map((key: any) => {
+    Object.keys(expanded).map((key: string) => {
       if (key === type) {
         return _expanded[key] = !_expanded[key];
       }
@@ -82,7 +91,7 @@ function GitForm(props: any) {
     setShowPassword(!showPassword);
   };
 
-  function renderAuth(type: any) {
+  function renderAuth(type: string) {
     return (
       <div className={classes.authBox}>
         {(type === 'basic' || type === 'token') && <TextField
@@ -93,7 +102,7 @@ function GitForm(props: any) {
             required
             value={inputs.repo_username}
             onChange={handleInputChange}
-            error={(submitted && !inputs.repo_username && inputs.push_site)}
+            error={(inputs.submitted && !inputs.repo_username && inputs.push_site)}
         />}
         {(type === 'basic') && <TextField
             id='repo_password'
@@ -104,7 +113,7 @@ function GitForm(props: any) {
             required
             value={inputs.repo_password}
             onChange={handleInputChange}
-            error={(submitted && !inputs.repo_password && inputs.push_site)}
+            error={(inputs.submitted && !inputs.repo_password && inputs.push_site)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -127,7 +136,7 @@ function GitForm(props: any) {
             label='Token'
             required
             value={inputs.repo_token}
-            error={(submitted && !inputs.repo_token && inputs.push_site)}
+            error={(inputs.submitted && !inputs.repo_token && inputs.push_site)}
             onChange={handleInputChange}
             InputProps={{
               endAdornment: (
@@ -152,7 +161,7 @@ function GitForm(props: any) {
                 multiline
                 rows="3"
                 className={classes.margin}
-                error={(submitted && !inputs.repo_key && inputs.push_site)}
+                error={(inputs.submitted && !inputs.repo_key && inputs.push_site)}
                 onChange={handleInputChange}
                 value={inputs.repo_key}
             />
@@ -164,7 +173,7 @@ function GitForm(props: any) {
   return (
     <Grid container spacing={1} className={classes.gitInfo}>
       <Grid item xs={12}>
-        <FormControl fullWidth error={(submitted && !inputs.repo_url && inputs.push_site)}>
+        <FormControl fullWidth error={(inputs.submitted && !inputs.repo_url && inputs.push_site)}>
           <InputLabel required htmlFor="repo_url">Repo URL</InputLabel>
           <Input id="repo_url" name="repo_url" onChange={handleInputChange} value={inputs.repo_url}
                  placeholder={"e.g. https://github.com/craftercms/craftercms-react-blueprint.git"}/>
@@ -205,7 +214,7 @@ function GitForm(props: any) {
         </FormControl>
       </Grid>
       <Grid item xs={12}>
-        <FormControl fullWidth error={(submitted && !inputs.repo_remote_name && inputs.push_site)}>
+        <FormControl fullWidth error={(inputs.submitted && !inputs.repo_remote_name && inputs.push_site)}>
           <InputLabel required htmlFor="repo_remote_name">Git Remote Name</InputLabel>
           <Input id="repo_remote_name" name="repo_remote_name" onChange={handleInputChange}
                  value={inputs.repo_remote_name}/>

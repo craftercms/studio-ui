@@ -10,6 +10,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from "./GitForm";
+import { Blueprint } from "../models/Blueprint";
+import { SiteState } from '../models/Site';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -19,9 +21,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function BluePrintForm(props: any) {
+interface BluePrintForm {
+  inputs: SiteState,
+
+  setInputs(state: SiteState): any,
+
+  onSubmit(event: any): any,
+
+  swipeableViews: any,
+  blueprint: Blueprint,
+
+  onCheckNameExist(event: any): any
+}
+
+function BluePrintForm(props: BluePrintForm) {
   const classes = useStyles({});
-  const {inputs, setInputs, submitted, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
+  const {inputs, setInputs, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
 
   useEffect(
     () => {
@@ -37,11 +52,11 @@ function BluePrintForm(props: any) {
   const handleInputChange = (e: any) => {
     e.persist();
     if (e.target.type === 'checkbox') {
-      setInputs((inputs: any) => ({...inputs, [e.target.name]: e.target.checked}));
-    } else if(e.target.name === 'siteId') {
-      setInputs((inputs: any) => ({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "") }));
+      setInputs({...inputs, [e.target.name]: e.target.checked});
+    } else if (e.target.name === 'siteId') {
+      setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "")});
     } else {
-      setInputs((inputs: any) => ({...inputs, [e.target.name]: e.target.value}));
+      setInputs({...inputs, [e.target.name]: e.target.value});
     }
   };
 
@@ -49,9 +64,13 @@ function BluePrintForm(props: any) {
     <form className={classes.form} onSubmit={e => onSubmit(e)}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <FormControl fullWidth error={((submitted && !inputs.siteId) || inputs.siteIdExist)}>
+          <FormControl fullWidth error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}>
             <InputLabel required htmlFor="siteId">Site ID</InputLabel>
-            <Input id="siteId" name="siteId" onBlur={e => {onCheckNameExist(e);}} onChange={ e => {handleInputChange(e);}} value={inputs.siteId}/>
+            <Input id="siteId" name="siteId" onBlur={e => {
+              onCheckNameExist(e)
+            }} onChange={e => {
+              handleInputChange(e)
+            }} value={inputs.siteId}/>
             <FormHelperText>Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and
               underscore (_)</FormHelperText>
             {inputs.siteIdExist && <FormHelperText>The name already exist.</FormHelperText>}
@@ -89,11 +108,11 @@ function BluePrintForm(props: any) {
 
         <Collapse in={inputs.push_site} timeout={300} unmountOnExit>
           {inputs.push_site &&
-          <GitForm inputs={inputs} type="push" submitted={submitted} handleInputChange={handleInputChange}/>
+          <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
           }
         </Collapse>
         {blueprint.id === 'GIT' &&
-        <GitForm type="clone" inputs={inputs} submitted={submitted} handleInputChange={handleInputChange}/>}
+        <GitForm type="clone" inputs={inputs} handleInputChange={handleInputChange}/>}
       </Grid>
     </form>
   )
