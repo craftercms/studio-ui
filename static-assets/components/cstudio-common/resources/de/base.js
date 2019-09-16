@@ -415,7 +415,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     historyDialogCompare: "Vergleichen",
 
     deleteDialogTitle: "Löschen",
-    deleteDialogSubTitle: "Die ausgewählten Elemente werden gelöscht:",
+    deleteDialogSubTitle: "Ausgewählte Elemente werden zusammen mit ihren Elementen gelöscht. Bitte überprüfen Sie abhängige Elemente vor dem Löschen, da diese mit fehlerhaften Linkverweisen enden.",
     deleteDialogSetLink: 'Setze alles auf "Jetzt"',
     deleteDialogPage: "Seite",
     deleteDialogDelete: "Löschen",
@@ -461,7 +461,14 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     submissionOptional:"Einreichung optional",
     showAllDependencies:"Alle Abhängigkeiten anzeigen",
     changesSelectioItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
-    loadingDependencies:"Abhängigkeiten werden geladen, bitte warten ...",
+    loadingDependencies:"Abhängige werden aktualisiert, bitte warten ...",
+
+    childItemsText:"Untergeordnete Elemente",
+    willGetDeleted:"Wird gelöscht",
+    dependendtItems:"Abhängige Gegenstände",
+    brokenItems:"Wird gebrochene Referenzen haben",
+    deleteItems:"Elemente löschen",
+    uploadingDepenedents:"Updating dependents, please wait...",
 
     newContTypeDialogTitle: "Neuen Content-Typ anlegen",
     newContTypeDialogDisplayLabel: "Label",

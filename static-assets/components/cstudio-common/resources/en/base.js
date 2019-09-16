@@ -415,7 +415,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     historyDialogCompare: "Compare",
 
     deleteDialogTitle: "Delete",
-    deleteDialogSubTitle: "The following checked items will be deleted:",
+    deleteDialogSubTitle: "Selected items will be deleted along with their items. Please review dependent items before deleting as these will end-up with broken link references.",
     deleteDialogSetLink: 'Set everything to "Now"',
     deleteDialogPage: "Page",
     deleteDialogDelete: "Delete",
@@ -462,6 +462,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     showAllDependencies:"Show All Dependencies",
     changesSelectioItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
     loadingDependencies:"Loading Dependencies, please wait...",
+
+    childItemsText:"Child Items",
+    willGetDeleted:"Will get deleted",
+    dependendtItems:"Dependent Items",
+    brokenItems:"Will have broken references",
+    deleteItems:"Delete Items",
+    uploadingDepenedents:"Updating dependents, please wait...",
 
     newContTypeDialogTitle: "Create Content Type",
     newContTypeDialogDisplayLabel: "Display Label",

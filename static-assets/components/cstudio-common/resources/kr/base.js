@@ -386,7 +386,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     historyDialogCompare: "비교",
 
     deleteDialogTitle:"삭제",
-    deleteDialogSubTitle:"다음 선택 항목이 삭제됩니다 :",
+    deleteDialogSubTitle:"선택한 항목이 해당 항목과 함께 삭제됩니다. 종속 항목은 삭제하기 전에 끊어진 링크 참조로 종료되므로 검토하십시오.",
     deleteDialogSetLink:'이제"모든 것을 설정',
     deleteDialogPage:"페이지",
     deleteDialogDelete:"삭제",
@@ -433,6 +433,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     showAllDependencies:"S모든 종속성 표시",
     changesSelectioItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
     loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
+
+    childItemsText:"아동 용품",
+    willGetDeleted:"삭제됩니다",
+    dependendtItems:"종속 품목",
+    brokenItems:"참조가 깨질 것입니다",
+    deleteItems:"항목 삭제",
+    uploadingDepenedents:"부양 가족 업데이트 중입니다. 잠시만 기다려주십시오.",
 
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
     newContTypeDialogDisplayLabel: "표시 라벨",

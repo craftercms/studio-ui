@@ -510,3 +510,7 @@ table.scroll-body {
 .yui-module.yui-overlay .cstudio-dialogue-body .dependencies-display {
   @import  '../app/src/styles/dependency-selection.scss';
 } 
+
+.dependencies-display.delete-display{
+  height: 380px;
+}

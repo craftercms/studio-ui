@@ -46,35 +46,8 @@
         },
 
         loadDependencies: function(selection) {
-            var _this = this,
-                loadFn;
-            loadFn = function() {
-                _this.getComponent("table.item-listing tbody").innerHTML =
-                        '<tr><td colspan="3"><i>Loading, please wait&hellip;</i></td></tr>';
-                CStudioAuthoring.Service.lookupContentDependencies(
-                    CStudioAuthoringContext.site,
-                    selection, {
-                    success: function(dependencies) {
-                        dependencies = dependencies.items;
-                        _this.renderItems(dependencies);
-                        _this.disablePageReferences(dependencies);
-                        _this.checkSelectedItems(selection);
-
-                        //set focus on submit/delete button
-                        var oSubmitBtn = _this.getComponent(_this.actions[0]);
-                        if (oSubmitBtn) {
-                            CStudioAuthoring.Utils.setDefaultFocusOn(oSubmitBtn);
-                        }
-                    },
-                    failure: function(){
-                        _this.getComponent("table.item-listing tbody").innerHTML =
-                                '<tr><td colspan="3">Unable to load dependencies. <a class="retry-dependency-load" href="javascript:">Try again</a></td></tr> ';
-                        Event.addListener(_this.getComponent("a.retry-dependency-load"), "click", loadFn);
-                    }
-                });
-            }
-            loadFn();
-
+            var _this = this;
+            _this.renderItems(selection);
             $(document).on("keyup", function(e) {
                 if (e.keyCode === 10 || e.keyCode === 13) {	// enter
                     $("#deleteBtn").click();
