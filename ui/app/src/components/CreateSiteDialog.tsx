@@ -61,6 +61,10 @@ const dialogTitleStyles = (theme: any) => ({
 });
 
 const useStyles = makeStyles((theme: any) => ({
+  paperScrollPaper: {
+    height: '100%',
+    maxHeight: '700px'
+  },
   search: {
     position: 'relative',
     marginLeft: 0,
@@ -93,12 +97,11 @@ const useStyles = makeStyles((theme: any) => ({
     }
   },
   dialogContent: {
-    padding: '20px',
-    maxHeight: '570px',
+    padding: '0',
   },
   slide: {
-    padding: 16,
-    minHeight: '485px',
+    padding: 20,
+    minHeight: '492px',
   },
   dialogActions: {
     background: '#EBEBF0',
@@ -135,7 +138,7 @@ const useStyles = makeStyles((theme: any) => ({
   loading: {
     position: 'relative',
     padding: 16,
-    minHeight: '506px',
+    flexGrow: 1
   }
 }));
 
@@ -208,8 +211,11 @@ function CreateSiteDialog(props: any) {
       if(swipeableViews.current) {
         swipeableViews.current.updateHeight();
       }
-      if (blueprints === null) {
+      if (tab === 0 && blueprints === null) {
         fetchBlueprints();
+      }
+      if (tab === 1 && marketplace === null) {
+        fetchMarketPlace();
       }
     },
     // eslint-disable-next-line
@@ -240,9 +246,6 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleChange(e: any, value: number) {
-    if (value == 1 && marketplace === null) {
-      fetchMarketPlace();
-    };
     setTab(value);
   }
 
@@ -374,7 +377,7 @@ function CreateSiteDialog(props: any) {
 
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'md'}>
+            fullWidth={true} maxWidth={'md'} classes={{ paperScrollPaper: classes.paperScrollPaper }}>
       <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={selectedView}/>
       {(selectedView === 0) && <div className={classes.tabs}>
           <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
@@ -411,9 +414,7 @@ function CreateSiteDialog(props: any) {
                   <Grid container spacing={3}>{renderBluePrints()}</Grid>
                 </div> :
                 <div>
-                  <div className={classes.loading}>
-                    <Spinner/>
-                  </div>
+                  <Grid container spacing={3}>{renderBluePrints()}</Grid>
                 </div>
               }
             </div>
