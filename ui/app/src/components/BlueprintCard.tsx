@@ -15,7 +15,6 @@ import { Blueprint, Image } from "../models/Blueprint";
 
 interface BlueprintCard {
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
-
   blueprint: Blueprint,
   interval: number;
 }

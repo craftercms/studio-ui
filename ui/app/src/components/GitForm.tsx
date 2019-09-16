@@ -47,9 +47,7 @@ const useStyles = makeStyles(theme => ({
 
 interface GitForm {
   inputs: SiteState,
-
   handleInputChange(event: any): any,
-
   type?: string;
 }
 

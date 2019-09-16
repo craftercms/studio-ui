@@ -4,6 +4,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from '@material-ui/icons/Edit';
+import { SiteState } from "../models/Site";
+import { Blueprint } from "../models/Blueprint";
 
 const useStyles = makeStyles(theme => ({
   review: {
@@ -31,7 +33,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function BluePrintReview(props: any) {
+interface BluePrintReview {
+  inputs: SiteState,
+  onGoTo(step: number): any,
+  blueprint: Blueprint,
+}
+
+function BluePrintReview(props: BluePrintReview) {
   const classes = useStyles({});
 
   const {onGoTo, inputs, blueprint} = props;
