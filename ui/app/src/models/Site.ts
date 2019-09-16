@@ -27,6 +27,10 @@ export interface Views {
   [key: number]: View,
 }
 
+export interface Labels {
+  [key: string]: any,
+}
+
 export interface SiteState {
   blueprint: Blueprint,
   siteId: string,

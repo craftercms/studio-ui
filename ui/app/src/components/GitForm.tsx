@@ -16,7 +16,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { SiteState } from '../models/Site';
+import { SiteState, Labels } from '../models/Site';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -61,7 +61,7 @@ function GitForm(props: GitForm) {
   });
   const [showPassword, setShowPassword] = useState(false);
 
-  const labels: any = {
+  const labels: Labels = {
     push: {
       repo_url_label: 'The git repository URL to push.',
       repo_remote_branch_label: 'The site will get created pushing that branch to the repo.',
@@ -71,7 +71,17 @@ function GitForm(props: GitForm) {
       repo_url_label: 'The git repository URL to clone from.',
       repo_remote_branch_label: 'The site will get created cloning that branch of the repo. You may switch between branches later too.',
       repo_remote_name_label: 'Name the remote that will refer to the source repo to pull from. Typically named “upstream” or “origin”.'
-    }
+    },
+    branch: 'Branch',
+    userName: 'Username',
+    password: 'Password',
+    token: 'Token',
+    privateKey: 'Private key',
+    repoUrl: 'Repo URL',
+    authentication: 'Authentication',
+    authenticationNoRequired: 'Authentication not required (public URL)',
+    usernameAndPassword: 'Username & password',
+    remoteName: 'Git Remote Name'
   };
 
   const viewAuth = (type: string) => {
@@ -96,18 +106,18 @@ function GitForm(props: GitForm) {
             id="repo_username"
             name="repo_username"
             className={clsx(classes.margin, classes.textField)}
-            label="Username"
+            label={labels.userName}
             required
             value={inputs.repo_username}
             onChange={handleInputChange}
             error={(inputs.submitted && !inputs.repo_username && inputs.push_site)}
         />}
         {(type === 'basic') && <TextField
-            id='repo_password'
-            name='repo_password'
+            id="repo_password"
+            name="repo_password"
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
-            label='Password'
+            label={labels.password}
             required
             value={inputs.repo_password}
             onChange={handleInputChange}
@@ -127,11 +137,11 @@ function GitForm(props: GitForm) {
             }}
         />}
         {(type === 'token') && <TextField
-            id='repo_token'
-            name='repo_token'
+            id="repo_token"
+            name="repo_token"
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
-            label='Token'
+            label={labels.token}
             required
             value={inputs.repo_token}
             error={(inputs.submitted && !inputs.repo_token && inputs.push_site)}
@@ -154,7 +164,7 @@ function GitForm(props: GitForm) {
             <TextField
                 id="repo_key"
                 name="repo_key"
-                label="Private Key"
+                label={labels.privateKey}
                 required
                 multiline
                 rows="3"
@@ -172,7 +182,7 @@ function GitForm(props: GitForm) {
     <Grid container spacing={1} className={classes.gitInfo}>
       <Grid item xs={12}>
         <FormControl fullWidth error={(inputs.submitted && !inputs.repo_url && inputs.push_site)}>
-          <InputLabel required htmlFor="repo_url">Repo URL</InputLabel>
+          <InputLabel required htmlFor="repo_url">{labels.repoUrl}</InputLabel>
           <Input id="repo_url" name="repo_url" onChange={handleInputChange} value={inputs.repo_url}
                  placeholder={"e.g. https://github.com/craftercms/craftercms-react-blueprint.git"}/>
           <FormHelperText>{labels[type].repo_url_label}</FormHelperText>
@@ -184,19 +194,19 @@ function GitForm(props: GitForm) {
           <RadioGroup aria-label="repo_authentication" name="repo_authentication"
                       value={inputs.repo_authentication} onChange={handleInputChange}>
             <FormControlLabel value="none" control={<Radio onChange={() => viewAuth('none')}/>}
-                              label="Authentication not required (public URL)"/>
+                              label={labels.authenticationNoRequired}/>
             <FormControlLabel value="basic" control={<Radio onChange={() => viewAuth('basic')}/>}
-                              label="Username & password"/>
+                              label={labels.usernameAndPassword}/>
             <Collapse in={expanded.basic} timeout={300} unmountOnExit>
               {expanded.basic && renderAuth(inputs.repo_authentication)}
             </Collapse>
             <FormControlLabel value="token" control={<Radio onChange={() => viewAuth('token')}/>}
-                              label="Token"/>
+                              label={labels.token}/>
             <Collapse in={expanded.token} timeout={300} unmountOnExit>
               {expanded.token && renderAuth(inputs.repo_authentication)}
             </Collapse>
             <FormControlLabel value="key" control={<Radio onChange={() => viewAuth('key')}/>}
-                              label="Private Key"/>
+                              label={labels.privateKey}/>
             <Collapse in={expanded.key} timeout={300} unmountOnExit>
               {expanded.key && renderAuth(inputs.repo_authentication)}
             </Collapse>
@@ -205,7 +215,7 @@ function GitForm(props: GitForm) {
       </Grid>
       <Grid item xs={12}>
         <FormControl fullWidth>
-          <InputLabel htmlFor="repo_remote_branch">Branch</InputLabel>
+          <InputLabel htmlFor="repo_remote_branch">{labels.branch}</InputLabel>
           <Input id="repo_remote_branch" name="repo_remote_branch" onChange={handleInputChange}
                  value={inputs.repo_remote_branch}/>
           <FormHelperText>{labels[type].repo_remote_branch_label}</FormHelperText>
@@ -213,7 +223,7 @@ function GitForm(props: GitForm) {
       </Grid>
       <Grid item xs={12}>
         <FormControl fullWidth error={(inputs.submitted && !inputs.repo_remote_name && inputs.push_site)}>
-          <InputLabel required htmlFor="repo_remote_name">Git Remote Name</InputLabel>
+          <InputLabel required htmlFor="repo_remote_name">{labels.remoteName}</InputLabel>
           <Input id="repo_remote_name" name="repo_remote_name" onChange={handleInputChange}
                  value={inputs.repo_remote_name}/>
           <FormHelperText>{labels[type].repo_remote_name_label}</FormHelperText>

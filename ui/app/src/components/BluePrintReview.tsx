@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from '@material-ui/icons/Edit';
-import { SiteState } from "../models/Site";
+import { Labels, SiteState } from "../models/Site";
 import { Blueprint } from "../models/Blueprint";
 
 const useStyles = makeStyles(theme => ({
@@ -44,7 +44,7 @@ function BluePrintReview(props: BluePrintReview) {
 
   const {onGoTo, inputs, blueprint} = props;
 
-  const labels: any = {
+  const labels: Labels = {
     bluePrintStrategy: 'Create from blueprint',
     gitStrategy: 'Existing remote git repo clone',
     bluePrint: 'Blueprint',
@@ -58,7 +58,10 @@ function BluePrintReview(props: BluePrintReview) {
     authentication: 'Authentication',
     userNameAndPassword: 'Username & password',
     token: 'Token',
-    privateKey: 'Private key'
+    privateKey: 'Private key',
+    siteId: 'Site Id',
+    description: 'Description',
+    noDescription: 'no description supplied',
   };
 
   function renderAuth(type:string) {
@@ -125,11 +128,11 @@ function BluePrintReview(props: BluePrintReview) {
             </IconButton>
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>Site IdL: </span> {inputs.siteId}
+            <span className={classes.bold}>{labels.siteId}: </span> {inputs.siteId}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>Description: </span> {inputs.description ? inputs.description :
-            <span className={classes.noDescription}>(no description supplied)</span>}
+            <span className={classes.bold}>{labels.description}: </span> {inputs.description ? inputs.description :
+            <span className={classes.noDescription}>({labels.noDescription})</span>}
           </Typography>
         </Grid>
         <Grid item xs={12}>

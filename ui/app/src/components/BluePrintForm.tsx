@@ -11,7 +11,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from "./GitForm";
 import { Blueprint } from "../models/Blueprint";
-import { SiteState } from '../models/Site';
+import { Labels, SiteState } from '../models/Site';
 
 const useStyles = makeStyles(theme => ({
   form: {
@@ -29,6 +29,13 @@ interface BluePrintForm {
   blueprint: Blueprint,
   onCheckNameExist(event: any): any
 }
+
+const labels: Labels = {
+  siteFormat: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)',
+  nameExist: 'The name already exist.',
+  pushSiteToRemote: 'Push the site to a remote Git repository after creation',
+  descriptionMaxLength: 'Max length: 4000 characters'
+};
 
 function BluePrintForm(props: BluePrintForm) {
   const classes = useStyles({});
@@ -67,9 +74,8 @@ function BluePrintForm(props: BluePrintForm) {
             }} onChange={e => {
               handleInputChange(e)
             }} value={inputs.siteId}/>
-            <FormHelperText>Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and
-              underscore (_)</FormHelperText>
-            {inputs.siteIdExist && <FormHelperText>The name already exist.</FormHelperText>}
+            <FormHelperText>{labels.siteFormat}</FormHelperText>
+            {inputs.siteIdExist && <FormHelperText>{labels.nameExist}</FormHelperText>}
           </FormControl>
         </Grid>
         <Grid item xs={12}>
@@ -84,7 +90,7 @@ function BluePrintForm(props: BluePrintForm) {
               onChange={handleInputChange}
               value={inputs.description}
               inputProps={{maxLength: 4000}}
-              helperText="Max length: 4000 characters"
+              helperText={labels.descriptionMaxLength}
             />
           </FormControl>
         </Grid>
@@ -98,7 +104,7 @@ function BluePrintForm(props: BluePrintForm) {
                     color="primary"
                   />
                 }
-                label="Push the site to a remote Git repository after creation"
+                label={labels.pushSiteToRemote}
             />
         </Grid>}
 

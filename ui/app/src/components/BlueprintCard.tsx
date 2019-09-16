@@ -11,6 +11,7 @@ import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Blueprint, Image } from "../models/Blueprint";
+import { Labels } from "../models/Site";
 
 
 interface BlueprintCard {
@@ -68,6 +69,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const labels: Labels = {
+  version: 'Version',
+  license: 'License',
+  crafterCms: 'CrafterCMS'
+};
+
 function BlueprintCard(props: BlueprintCard) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
@@ -108,15 +115,15 @@ function BlueprintCard(props: BlueprintCard) {
       </CardActionArea>
       {(id !== "GIT") && <CardActions disableSpacing className={'cardActions'}>
           <div className={classes.chip}>
-              <label>Version</label>
+              <label>{labels.version}</label>
               <span>{fullVersion}</span>
           </div>
           <div className={classes.chip}>
-              <label>License</label>
+              <label>{labels.license}</label>
               <span>{license.name}</span>
           </div>
           <div className={classes.chip}>
-              <label>CrafterCMS</label>
+              <label>{labels.crafterCms}</label>
               <span>{crafterCMS}</span>
           </div>
           <IconButton aria-label="options" className={classes.options}>
