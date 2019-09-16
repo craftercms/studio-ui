@@ -80,7 +80,8 @@ function BlueprintCard(props: BlueprintCard) {
   const [index, setIndex] = useState(0);
   const {onBlueprintSelected, blueprint, interval} = props;
   const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
-  const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
+  const {minor, major, patch} = version;
+  const fullVersion = version ? `${major}.${minor}.${patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
 
   function handleChangeIndex(value: number) {
@@ -111,9 +112,9 @@ function BlueprintCard(props: BlueprintCard) {
             {description}
           </Typography>
         </CardContent>
-        {(id === "GIT") && <div className={classes.gitOptions}></div>}
+        {(id === 'GIT') && <div className={classes.gitOptions}/>}
       </CardActionArea>
-      {(id !== "GIT") && <CardActions disableSpacing className={'cardActions'}>
+      {(id !== 'GIT') && <CardActions disableSpacing className={'cardActions'}>
           <div className={classes.chip}>
               <label>{labels.version}</label>
               <span>{fullVersion}</span>

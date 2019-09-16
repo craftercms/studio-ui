@@ -295,8 +295,7 @@ function CreateSiteDialog(props: any) {
       else if (!site.repo_remote_name) return false;
       else if (site.repo_authentication === 'basic' && (!site.repo_username || !site.repo_password)) return false;
       else if (site.repo_authentication === 'token' && (!site.repo_username || !site.repo_token)) return false;
-      else if (site.repo_authentication === 'key' && !site.repo_key) return false;
-      else return true;
+      else return !(site.repo_authentication === 'key' && !site.repo_key);
     } else {
       return true;
     }
@@ -342,7 +341,7 @@ function CreateSiteDialog(props: any) {
       'Content-Type': 'application/json'
     })
       .subscribe(
-        (data) => {
+        () => {
           setCreatingSite(false);
           handleClose();
         },
@@ -351,7 +350,7 @@ function CreateSiteDialog(props: any) {
           setCreatingSite(false);
         }
       )
-  };
+  }
 
   function fetchMarketPlace() {
     get('/studio/api/2/marketplace/search?type=blueprint')
@@ -370,15 +369,15 @@ function CreateSiteDialog(props: any) {
       .subscribe(
         ({response}) => {
           const _blueprints: [Blueprint] = [{
-            id: "GIT",
-            name: "Remote Git Repository",
-            description: "Create site from a existing remote git repository",
+            id: 'GIT',
+            name: 'Remote Git Repository',
+            description: 'Create site from a existing remote git repository',
             media: {
               screenshots: [
                 {
-                  description: "Git logo",
-                  title: "Remote Git Repository",
-                  url: "https://www.embarcados.com.br/wp-content/uploads/2015/02/imagem-de-destaque-39.png"
+                  description: 'Git logo',
+                  title: 'Remote Git Repository',
+                  url: 'https://www.embarcados.com.br/wp-content/uploads/2015/02/imagem-de-destaque-39.png'
                 }
               ]
             }
@@ -421,7 +420,7 @@ function CreateSiteDialog(props: any) {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {creatingSite && <div className={classes.creatingOverlay}></div>}
+      {creatingSite && <div className={classes.creatingOverlay}/>}
       <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
       {(site.selectedView === 0) && <div className={classes.tabs}>
           <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
