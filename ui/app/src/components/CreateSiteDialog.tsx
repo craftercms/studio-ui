@@ -26,18 +26,19 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
 import Grid from '@material-ui/core/Grid';
-import Tab from "@material-ui/core/Tab";
-import Tabs from "@material-ui/core/Tabs";
-import BlueprintCard from "./BlueprintCard";
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import BlueprintCard from './BlueprintCard';
 import Spinner from "./Spinner";
 import InputBase from '@material-ui/core/InputBase';
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import SwipeableViews from 'react-swipeable-views';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
-import BluePrintForm from "./BluePrintForm";
+import BluePrintForm from './BluePrintForm';
 import BluePrintReview from "./BluePrintReview";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const CustomTabs = withStyles({
   root: {
@@ -139,6 +140,20 @@ const useStyles = makeStyles((theme: any) => ({
     position: 'relative',
     padding: 16,
     flexGrow: 1
+  },
+  BtnSpinner: {
+    color: 'white',
+    marginLeft: '10px'
+  },
+  lodingBtn: {
+    backgroundColor: '#586d82',
+    pointerEvents: 'none'
+  },
+  creatingOverlay:{
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    zIndex: 10
   }
 }));
 
@@ -159,9 +174,10 @@ const views: any = {
   }
 };
 
-const inputsInitialState: any = {
+const siteInitialState: any = {
   blueprint: null,
   siteId: '',
+  siteIdExist: false,
   description: '',
   push_site: false,
   use_remote: false,
@@ -172,7 +188,9 @@ const inputsInitialState: any = {
   repo_password: '',
   repo_username: '',
   repo_token: '',
-  repo_key: ''
+  repo_key: '',
+  submitted: false,
+  selectedView: 0
 };
 
 // @ts-ignore
@@ -201,9 +219,8 @@ function CreateSiteDialog(props: any) {
   const [tab, setTab] = useState(0);
   const [open, setOpen] = useState(props.open || false);
   const [searchSelected, setSearchSelected] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [inputs, setInputs] = useState(inputsInitialState);
-  const [selectedView, setSelectedView] = useState(0);
+  const [creatingSite, setCreatingSite] = useState(false);
+  const [site, setSite] = useState(siteInitialState);
   const classes = useStyles({});
   const swipeableViews = useRef(null);
 
@@ -231,18 +248,16 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleBlueprintSelected(blueprint: any, view: number) {
-    const _reset = {...inputsInitialState};
+    const _reset = {...siteInitialState};
     _reset.blueprint = blueprint;
-    setInputs(_reset);
-    setSelectedView(view);
-  }
-
-  function handleChangeIndex() {
-    setSelectedView(selectedView);
+    _reset.selectedView = view;
+    _reset.submitted = false;
+    setSite(_reset);
   }
 
   function handleBack() {
-    setSelectedView(selectedView - 1);
+    let back = site.selectedView -1;
+    setSite({...site, selectedView:back});
   }
 
   function handleChange(e: any, value: number) {
@@ -250,31 +265,34 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleGoTo(step: number) {
-    setSelectedView(step);
+    setSite({...site, selectedView:step});
   }
 
   function handleFinish(e: any) {
     e && e.preventDefault();
-    setSubmitted(true);
+    if (site.selectedView === 1) {
+      setSite({...site, submitted:true});
+    }
     if (validateForm()) {
-      if (selectedView === 2) {
+      if (site.selectedView === 2) {
         const params = createParams();
+        setCreatingSite(true);
         createSite(params);
       } else {
-        setSelectedView(2);
+        setSite({...site, selectedView:2});
       }
     }
   }
 
   function validateForm() {
-    if (!inputs.siteId) {
+    if (!site.siteId) {
       return false;
-    } else if (inputs.push_site) {
-      if (!inputs.repo_url) return false;
-      else if (!inputs.repo_remote_name) return false;
-      else if (inputs.repo_authentication === 'basic' && (!inputs.repo_username || !inputs.repo_password)) return false;
-      else if (inputs.repo_authentication === 'token' && (!inputs.repo_username || !inputs.repo_token)) return false;
-      else if (inputs.repo_authentication === 'key' && !inputs.repo_key) return false;
+    } else if (site.push_site) {
+      if (!site.repo_url) return false;
+      else if (!site.repo_remote_name) return false;
+      else if (site.repo_authentication === 'basic' && (!site.repo_username || !site.repo_password)) return false;
+      else if (site.repo_authentication === 'token' && (!site.repo_username || !site.repo_token)) return false;
+      else if (site.repo_authentication === 'key' && !site.repo_key) return false;
       else return true;
     } else {
       return true;
@@ -282,44 +300,49 @@ function CreateSiteDialog(props: any) {
   }
 
   function createParams() {
-    const params: any = {site_id: inputs.siteId, description: inputs.description};
-    if (inputs.blueprint) {
-      if (params.blueprint !== 'git') {
-        params.blueprint = inputs.blueprint.id;
-        params.use_remote = true;
-      } else if (inputs.push_site) {
+    const params: any = {site_id: site.siteId, description: site.description};
+    if (site.blueprint) {
+      if (site.blueprint.id !== 'GIT') {
+        params.blueprint = site.blueprint.id;
+        params.use_remote = site.push_site;
+      } else {
         params.use_remote = true;
       }
-      if (inputs.repo_remote_name) params.remote_name = inputs.repo_remote_name;
-      if (inputs.repo_url) params.remote_url = inputs.repo_url;
+      if (site.repo_remote_name) params.remote_name = site.repo_remote_name;
+      if (site.repo_url) params.remote_url = site.repo_url;
       params.single_branch = false;
-      params.authentication_type = inputs.repo_authentication;
-      if (inputs.repo_remote_branch) {
-        params.remote_branch = inputs.repo_remote_branch;
-        params.sandbox_branch = inputs.repo_remote_branch;
+      params.authentication_type = site.repo_authentication;
+      if (site.repo_remote_branch) {
+        params.remote_branch = site.repo_remote_branch;
+        params.sandbox_branch = site.repo_remote_branch;
       }
-      if (inputs.repo_authentication === 'basic') {
-        params.remote_username = inputs.repo_username;
-        params.remote_password = inputs.repo_password;
+      if (site.repo_authentication === 'basic') {
+        params.remote_username = site.repo_username;
+        params.remote_password = site.repo_password;
       }
-      if (inputs.repo_authentication === 'token') {
-        params.remote_username = inputs.repo_username;
-        params.remote_token = inputs.repo_token;
+      if (site.repo_authentication === 'token') {
+        params.remote_username = site.repo_username;
+        params.remote_token = site.repo_token;
       }
-      if (inputs.repo_authentication === 'key') params.remote_private_key = inputs.repo_username;
-      params.create_option = (inputs.blueprint.id === 'GIT') ? 'clone' : 'push';
+      if (site.repo_authentication === 'key') params.remote_private_key = site.repo_username;
+      params.create_option = site.push_site ? 'push' : 'clone';
       return params;
     }
   }
 
   function createSite(site: any) {
-    post('/studio/api/1/services/api/1/site/create.json', site)
+    post('/studio/api/1/services/api/1/site/create.json', site, {
+      'X-XSRF-TOKEN': '060f063c-7812-4426-abfa-a1169d1e300c',
+      'Content-Type': 'application/json'
+    })
       .subscribe(
         (data) => {
-          console.log(data)
+          setCreatingSite(false);
+          handleClose();
         },
         (error: any) => {
-          console.log(error);
+          console.log(error.response.message);
+          setCreatingSite(false);
         }
       )
   };
@@ -328,7 +351,7 @@ function CreateSiteDialog(props: any) {
     get('/studio/api/2/marketplace/search?type=blueprint')
       .subscribe(
         ({response}) => {
-          console.log(response);
+          setMarketplace(response.plugins);
         },
         () => {
           console.log('error')
@@ -365,11 +388,25 @@ function CreateSiteDialog(props: any) {
       );
   }
 
-  function renderBluePrints() {
-    return blueprints.map((blueprint: any) => {
+  function checkNameExist(e:any) {
+    get(`/studio/api/1/services/api/1/site/exists.json?site=${e.target.value}`)
+      .subscribe(
+        ({response}) => {
+          if(response.exists) {
+            setSite({...site, siteIdExist:true});
+          }
+        },
+        () => {
+          console.log('error')
+        }
+      );
+  }
+
+  function renderBluePrints(list:any) {
+    return list.map((item: any) => {
       return (
-        <Grid item xs={12} sm={6} md={4} key={blueprint.id}>
-          <BlueprintCard blueprint={blueprint} onBlueprintSelected={handleBlueprintSelected}/>
+        <Grid item xs={12} sm={6} md={4} key={item.id}>
+          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected}/>
         </Grid>
       );
     })
@@ -378,17 +415,18 @@ function CreateSiteDialog(props: any) {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{ paperScrollPaper: classes.paperScrollPaper }}>
-      <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={selectedView}/>
-      {(selectedView === 0) && <div className={classes.tabs}>
+      {creatingSite && <div className={classes.creatingOverlay}></div>}
+      <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
+      {(site.selectedView === 0) && <div className={classes.tabs}>
           <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
               <Tab label="Out of The Box" className={classes.simpleTab}/>
               <Tab label="Marketplace" className={classes.simpleTab}/>
           </CustomTabs>
           <SearchIcon className={clsx(classes.tabIcon, searchSelected && 'selected')} onClick={handleSearchClick}/>
       </div>}
-      {blueprints ?
+      {((tab === 0 && blueprints) || (tab === 1 && marketplace)) ?
         <DialogContent className={classes.dialogContent}>
-          {(searchSelected && selectedView === 0) &&
+          {(searchSelected && site.selectedView === 0) &&
           <div className={classes.search}>
               <div className={classes.searchIcon}>
                   <SearchIcon/>
@@ -407,25 +445,25 @@ function CreateSiteDialog(props: any) {
           <SwipeableViews
             animateHeight
             ref={swipeableViews}
-            index={selectedView} onChangeIndex={handleChangeIndex}>
+            index={site.selectedView}>
             <div className={classes.slide}>
               {(tab === 0) ?
                 <div>
-                  <Grid container spacing={3}>{renderBluePrints()}</Grid>
+                  <Grid container spacing={3}>{renderBluePrints(blueprints)}</Grid>
                 </div> :
                 <div>
-                  <Grid container spacing={3}>{renderBluePrints()}</Grid>
+                  <Grid container spacing={3}>{renderBluePrints(marketplace)}</Grid>
                 </div>
               }
             </div>
             <div className={classes.slide}>
-              {inputs.blueprint &&
-              <BluePrintForm swipeableViews={swipeableViews} inputs={inputs} setInputs={setInputs}
-                             submitted={submitted} onSubmit={handleFinish} blueprint={inputs.blueprint}/>}
+              {site.blueprint &&
+              <BluePrintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
+                             submitted={site.submitted} onSubmit={handleFinish} onCheckNameExist={checkNameExist} blueprint={site.blueprint}/>}
             </div>
             <div className={classes.slide}>
-              {inputs.blueprint &&
-              <BluePrintReview onGoTo={handleGoTo} inputs={inputs} blueprint={inputs.blueprint}/>}
+              {site.blueprint &&
+              <BluePrintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
             </div>
           </SwipeableViews>
         </DialogContent>
@@ -434,15 +472,16 @@ function CreateSiteDialog(props: any) {
           <Spinner/>
         </div>
       }
-      {(selectedView !== 0) && <DialogActions className={classes.dialogActions}>
+      {(site.selectedView !== 0) && <DialogActions className={classes.dialogActions}>
           <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
               Back
           </Button>
           <Button variant="contained">
               More Options
           </Button>
-          <Button variant="contained" color="primary" onClick={handleFinish}>
-            {views[selectedView].btnText}
+          <Button variant="contained" color="primary"  disableRipple={creatingSite} className={creatingSite? classes.lodingBtn:''} onClick={handleFinish}>
+            {views[site.selectedView].btnText}
+            {creatingSite && <CircularProgress size={20} className={classes.BtnSpinner}/>}
           </Button>
       </DialogActions>}
     </Dialog>

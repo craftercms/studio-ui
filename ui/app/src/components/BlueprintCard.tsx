@@ -78,7 +78,7 @@ function BlueprintCard(props: any) {
       <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
         <AutoPlaySwipeableViews
           index={index}
-          autoplay={false}
+          autoplay={true}
           interval={5000}
           onChangeIndex={handleChangeIndex}
           enableMouseEvents

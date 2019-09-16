@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 
 function BluePrintForm(props: any) {
   const classes = useStyles({});
-  const {inputs, setInputs, submitted, onSubmit, swipeableViews, blueprint} = props;
+  const {inputs, setInputs, submitted, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
 
   useEffect(
     () => {
@@ -38,6 +38,8 @@ function BluePrintForm(props: any) {
     e.persist();
     if (e.target.type === 'checkbox') {
       setInputs((inputs: any) => ({...inputs, [e.target.name]: e.target.checked}));
+    } else if(e.target.name === 'siteId') {
+      setInputs((inputs: any) => ({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "") }));
     } else {
       setInputs((inputs: any) => ({...inputs, [e.target.name]: e.target.value}));
     }
@@ -47,11 +49,12 @@ function BluePrintForm(props: any) {
     <form className={classes.form} onSubmit={e => onSubmit(e)}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <FormControl fullWidth error={(submitted && !inputs.siteId)}>
+          <FormControl fullWidth error={((submitted && !inputs.siteId) || inputs.siteIdExist)}>
             <InputLabel required htmlFor="siteId">Site ID</InputLabel>
-            <Input id="siteId" name="siteId" onChange={handleInputChange} value={inputs.siteId}/>
+            <Input id="siteId" name="siteId" onBlur={e => {onCheckNameExist(e);}} onChange={ e => {handleInputChange(e);}} value={inputs.siteId}/>
             <FormHelperText>Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and
               underscore (_)</FormHelperText>
+            {inputs.siteIdExist && <FormHelperText>The name already exist.</FormHelperText>}
           </FormControl>
         </Grid>
         <Grid item xs={12}>
