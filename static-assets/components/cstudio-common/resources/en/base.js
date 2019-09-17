@@ -460,7 +460,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     softDependencies:"Soft Dependencies",
     submissionOptional:"Submission optional",
     showAllDependencies:"Show All Dependencies",
-    changesSelectioItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
+    changesSelectionItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
     loadingDependencies:"Loading Dependencies, please wait...",
 
     newContTypeDialogTitle: "Create Content Type",
