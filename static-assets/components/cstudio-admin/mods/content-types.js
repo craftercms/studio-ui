@@ -44,14 +44,7 @@ CStudioAuthoring.Module.requireModule(
             return this;
         }
 
-        CStudioAuthoring.Service.getConfiguration(
-            CStudioAuthoringContext.site,
-            "/site-config.xml",
-            {
-                success: function(config) {
-                    CStudioAdminConsole.isPostfixAvailable = config["form-engine"] && config["form-engine"]["field-name-postfix"] === "true" ? true : false;
-                }
-            });
+        getPostfixData();
 
         /**
          * Overarching class that drives the content type tools
@@ -59,19 +52,22 @@ CStudioAuthoring.Module.requireModule(
         YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes, CStudioAdminConsole.Tool, {
 
             renderWorkarea: function() {
-                var workareaEl = document.getElementById("cstudio-admin-console-workarea");
 
-                workareaEl.innerHTML =
-                    "<div id='content-type-canvas'>" +
-                    "</div>"+
-                    "<div id='content-type-tools'>" +
-                    "</div>";
+              getPostfixData();
 
-                var actions = [
-                    { name: CMgs.format(langBundle, "openExistingType"), context: this, method: this.onOpenExistingClick },
-                    { name: CMgs.format(langBundle, "createNewType"),    context: this, method: this.onNewClick }
-                ];
-                CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
+              var workareaEl = document.getElementById("cstudio-admin-console-workarea");
+
+              workareaEl.innerHTML =
+                  "<div id='content-type-canvas'>" +
+                  "</div>"+
+                  "<div id='content-type-tools'>" +
+                  "</div>";
+
+              var actions = [
+                  { name: CMgs.format(langBundle, "openExistingType"), context: this, method: this.onOpenExistingClick },
+                  { name: CMgs.format(langBundle, "createNewType"),    context: this, method: this.onNewClick }
+              ];
+              CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
             },
 
             titleNameValidation: function(formDef) {
@@ -96,19 +92,21 @@ CStudioAuthoring.Module.requireModule(
                             idError.push(currentField.title);
                         }
 
-                        if((currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '') && (currentField.id !== "internal-name")
-                            && (currentField.id !== "placeInNav") && (currentField.id !== "disabled")) {
-                            postfixes = CStudioAdminConsole.renderPostfixes()[currentField.type] ?
-                                CStudioAdminConsole.renderPostfixes()[currentField.type] : [];
-                            for (var k = 0; k < postfixes.length; k++) {
-                                if (currentField.id.indexOf(postfixes[k]) > -1) {
-                                    postfixesFlag = true;
-                                    break;
-                                }
+                        if( (currentField.id || currentField.id !== '') && (currentField.title && currentField.title !== '')
+                          && ( !CStudioAdminConsole.ignorePostfixFields.includes(currentField.id) ) ) {
+                          const type = currentField.type,
+                                controls = this.config.controls.control,
+
+                          postfixes = CStudioAdminConsole.getPostfixes(type, controls)
+                          for (var k = 0; k < postfixes.length; k++) {
+                            if (currentField.id.indexOf(postfixes[k]) > -1) {
+                                postfixesFlag = true;
+                                break;
                             }
-                            if(!postfixesFlag && postfixes.length > 0){
-                                postfixError.push({"title" : currentField.title, "type" : currentField.type});
-                            }
+                          }
+                          if(!postfixesFlag && postfixes.length > 0){
+                              postfixError.push({"title" : currentField.title, "type" : currentField.type});
+                          }
                         }
 
                         // If it's a repeating group, validate fields - We have no nested repeating groups,
@@ -379,23 +377,24 @@ CStudioAuthoring.Module.requireModule(
                 });
             },
 
-            postfixErrorMessage: function(postfixArray) {
-                var html = "<div class='postfixErrorContainer'>" + CMgs.format(langBundle, "postfixError") + "</br>";
-                var type, description;
-                html+= "<ul>";
-                for(var i = 0; i < postfixArray.length; i++ ){
-                    type = CStudioAdminConsole.renderPostfixes()[postfixArray[i].type];
-                    description = type.length > 1 ? CMgs.format(langBundle, "optionsPostfixError") : CMgs.format(langBundle, "optionPostfixError");
-                    html+= "<li>" +
-                        "<strong>" + postfixArray[i].title + ":</strong> " +
-                        description +
-                        type.toString().replace(/,/g, ", ").replace(/,([^,]*)$/,' and$1'); +
-                        "</li>";
-                }
-                html+= "</ul>";
-                html+= "</div>";
+            postfixErrorMessage: (postfixArray) => {
+              let html = "<div class='postfixErrorContainer'>" + CMgs.format(langBundle, "postfixError") + "</br>",
+                  controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control;
 
-                return html;
+              html+= "<ul>";
+              for(var i = 0; i < postfixArray.length; i++ ){
+                let postfixes = CStudioAdminConsole.getPostfixes(postfixArray[i].type, controls),
+                    description = postfixes.length > 1 ? CMgs.format(langBundle, "optionsPostfixError") : CMgs.format(langBundle, "optionPostfixError");
+                html+= "<li>" +
+                    "<strong>" + postfixArray[i].title + ":</strong> " +
+                    description +
+                    postfixes.toString().replace(/,/g, ", ").replace(/,([^,]*)$/,' and$1'); +
+                    "</li>";
+              }
+              html+= "</ul>";
+              html+= "</div>";
+
+              return html;
             },
 
             clearCache: function() {
@@ -506,7 +505,7 @@ CStudioAuthoring.Module.requireModule(
                 var propertiesPanelEl = document.getElementById("properties-container");
                 YAHOO.util.Dom.setStyle(propertiesPanelEl,"overflow-x","hidden");
                 YAHOO.util.Dom.setStyle(propertiesPanelEl,"overflow-y", "auto");
-                var propertySheet = new CStudioAdminConsole.PropertySheet(propertiesPanelEl, CStudioAdminConsole.Tool.ContentTypes.visualization.definition);
+                var propertySheet = new CStudioAdminConsole.PropertySheet(propertiesPanelEl, CStudioAdminConsole.Tool.ContentTypes.visualization.definition, this.config);
                 CStudioAdminConsole.Tool.ContentTypes.propertySheet = propertySheet;
 
                 var controlsPanelEl = document.getElementById("widgets-container");
@@ -590,6 +589,7 @@ CStudioAuthoring.Module.requireModule(
                                         var dd = new DragAndDropDecorator(this.controlContainerEl);
                                         tool.id = tool.getFixedId();
                                         this.controlContainerEl.prototypeField = tool;
+                                        controls[idx].supportedPostFixes = tool.getSupportedPostFixes ? tool.getSupportedPostFixes() : [];
 
                                         YDom.addClass(this.controlContainerEl, "new-control-type");
                                         YDom.addClass(this.controlContainerEl, tool.getName().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase()+"-control");
@@ -1267,6 +1267,17 @@ CStudioAuthoring.Module.requireModule(
 
         }
 
+        function getPostfixData() {
+          CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/site-config.xml",
+            {
+              success: function(config) {
+                CStudioAdminConsole.isPostfixAvailable = config["form-engine"] && config["form-engine"]["field-name-postfix"] === "true" ? true : false;
+                CStudioAdminConsole.ignorePostfixFields = config["form-engine"] && config["form-engine"]["ignore-postfix-fields"] ? config["form-engine"]["ignore-postfix-fields"].field : [];
+              }
+            });
+        };
 
         /**
          * drag and drop controls
@@ -1535,9 +1546,10 @@ CStudioAuthoring.Module.requireModule(
         });
 
 
-        CStudioAdminConsole.PropertySheet = function(containerEl, form) {
+        CStudioAdminConsole.PropertySheet = function(containerEl, form, config) {
             this.containerEl = containerEl;
             this.form = form;
+            this.config = config
         }
 
         /**
@@ -1602,26 +1614,29 @@ CStudioAuthoring.Module.requireModule(
                 }
             },
 
-            renderPostfixesVariable: function(type){
+            renderPostfixesVariable: (type) => {
 
-                var renderPostfixes = CStudioAdminConsole.renderPostfixes()[type] ?
-                        CStudioAdminConsole.renderPostfixes()[type] : [],
-                    identifier = ".label-name-variable-name",
-                    xml = '<table class="quick-create-help">';
+              let controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
+                  renderPostfixes = CStudioAdminConsole.getPostfixes(type, controls),
+                  identifier = ".label-name-variable-name",
+                  xml = '<table class="quick-create-help">';
 
-                for(var i = 0; i < renderPostfixes.length ; i ++){
-                    xml += /**/'<tr>' +
-                        /****/'<th>' + renderPostfixes[i] + '</th>' +
-                        /****/'<td>' + CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]] + '</td>' +
-                        /****/'<td>' +
-                        /******/'<button onclick="CStudioAdminConsole.cleanPostfix(\''+ identifier + '\', \''+ type + '\'); CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="' + renderPostfixes[i] + '" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">' +
-                        /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>' +
-                        /******/'</button>' +
-                        /****/'</td>' +
-                        /**/'</tr>';
-                }
-                xml += '</table>';
-                return xml;
+              for(var i = 0; i < renderPostfixes.length ; i ++){
+                let postfixDescription = CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]] ?
+                    CStudioAdminConsole.renderPostfixDescriptions()[renderPostfixes[i]] : '';
+
+                  xml += /**/'<tr>' +
+                      /****/'<th>' + renderPostfixes[i] + '</th>' +
+                      /****/'<td>' + postfixDescription + '</td>' +
+                      /****/'<td>' +
+                      /******/'<button onclick="CStudioAdminConsole.cleanPostfix(\''+ identifier + '\', \''+ type + '\'); CStudioAdminConsole.helpInsert(this, \''+ identifier + '\')" data-insert="' + renderPostfixes[i] + '" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">' +
+                      /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>' +
+                      /******/'</button>' +
+                      /****/'</td>' +
+                      /**/'</tr>';
+              }
+              xml += '</table>';
+              return xml;
 
             },
 
@@ -1914,6 +1929,9 @@ CStudioAuthoring.Module.requireModule(
 
                 if(item.id == undefined){item.id = "";}
 
+                const itemPostFixes = CStudioAdminConsole.getPostfixes(item.type),
+                      showPostFixes = ( itemPostFixes && itemPostFixes.length > 0 && ( !CStudioAdminConsole.ignorePostfixFields.includes(item.id)));
+
                 this.createRowHeading("Repeat Group Basics", sheetEl);
                 this.createRowFn(CMgs.format(langBundle, "title"), "title", item.title, "",  "variable", sheetEl, function(e, el) {
                     CStudioAdminConsole.isDirty = true;
@@ -1926,7 +1944,8 @@ CStudioAuthoring.Module.requireModule(
                 this.createRowFn(CMgs.format(langBundle, "variableName"),
                     "id", item.id,  "", "variable", sheetEl,
                     function(e, el) { item.id = el.value; CStudioAdminConsole.isDirty = true;},
-                        CStudioAdminConsole.renderPostfixes()[item.type] && item.id !== "internal-name" ? true : false, "Postfixes",
+                    showPostFixes,
+                    "Postfixes",
                     this.renderPostfixesVariable(item.type));
 
                 this.createRowFn(CMgs.format(langBundle, "iceGroup"), "iceGroup", item.iceId,  "", "string", sheetEl,  function(e, el) { item.iceId = el.value; CStudioAdminConsole.isDirty = true;});
@@ -1935,79 +1954,82 @@ CStudioAuthoring.Module.requireModule(
                 this.createRowFn(CMgs.format(langBundle, "maxOccurs"), "maxOccurs", item.properties[1].value, "*", "string",  sheetEl,  function(e, el) { item.properties[1].value = el.value; CStudioAdminConsole.isDirty = true;});
             },
 
-            renderFieldPropertySheet: function(item, sheetEl) {
+            renderFieldPropertySheet: function (item, sheetEl){
+              const controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
+                    itemPostFixes = CStudioAdminConsole.getPostfixes(item.type, controls),
+                    showPostFixes = ( itemPostFixes && itemPostFixes.length > 0 && ( !CStudioAdminConsole.ignorePostfixFields.includes(item.id)));
 
-                this.itemId = item.id;
+              this.itemId = item.id;
+              this.createRowHeading(CMgs.format(langBundle, "fieldBasics"), sheetEl);
+              this.createRowFn(CMgs.format(langBundle, "title"), "title", item.title,  "", "variable", sheetEl, function(e, el) {
+                  CStudioAdminConsole.isDirty = true;
+                  if(YDom.hasClass(el,"property-input-title")) {
+                      item.title = el.value;
+                  }else{
+                      item.id = el.value;
+                  }
+              }, false, null, null, item.type );
+              this.createRowFn(CMgs.format(langBundle, "variableName"),
+                  "id", item.id,  "", "variable", sheetEl,
+                  function(e, el) { item.id = el.value; CStudioAdminConsole.isDirty = true;},
+                  showPostFixes,
+                  "Postfixes",
+                  this.renderPostfixesVariable(item.type));
+              this.createRowFn(CMgs.format(langBundle, "iceGroup"), "iceGroup", item.iceId,  "", "string", sheetEl,  function(e, el) { item.iceId = el.value; CStudioAdminConsole.isDirty = true;});
+              this.createRowFn(CMgs.format(langBundle, "description"), "description", item.description, "",  "string", sheetEl,  function(e, el) { item.description = el.value; CStudioAdminConsole.isDirty = true;});
+              this.createRowFn(CMgs.format(langBundle, "defaultValue"), "defaultValue", item.defaultValue, "", "string", sheetEl,  function(e, el) { item.defaultValue = el.value; CStudioAdminConsole.isDirty = true;});
+              this.createRowFn(CMgs.format(langBundle, "help"), "help", item.help, "",  "richText",  sheetEl,  function(e, el) { item.help = el.value; CStudioAdminConsole.isDirty = true;});
 
-                this.createRowHeading(CMgs.format(langBundle, "fieldBasics"), sheetEl);
-                this.createRowFn(CMgs.format(langBundle, "title"), "title", item.title,  "", "variable", sheetEl, function(e, el) {
-                    CStudioAdminConsole.isDirty = true;
-                    if(YDom.hasClass(el,"property-input-title")) {
-                        item.title = el.value;
-                    }else{
-                        item.id = el.value;
-                    }
-                }, false, null, null, item.type );
-                this.createRowFn(CMgs.format(langBundle, "variableName"),
-                    "id", item.id,  "", "variable", sheetEl,
-                    function(e, el) { item.id = el.value; CStudioAdminConsole.isDirty = true;},
-                        CStudioAdminConsole.renderPostfixes()[item.type] && item.id !== "internal-name" ? true : false, "Postfixes",
-                    this.renderPostfixesVariable(item.type));
-                this.createRowFn(CMgs.format(langBundle, "iceGroup"), "iceGroup", item.iceId,  "", "string", sheetEl,  function(e, el) { item.iceId = el.value; CStudioAdminConsole.isDirty = true;});
-                this.createRowFn(CMgs.format(langBundle, "description"), "description", item.description, "",  "string", sheetEl,  function(e, el) { item.description = el.value; CStudioAdminConsole.isDirty = true;});
-                this.createRowFn(CMgs.format(langBundle, "defaultValue"), "defaultValue", item.defaultValue, "", "string", sheetEl,  function(e, el) { item.defaultValue = el.value; CStudioAdminConsole.isDirty = true;});
-                this.createRowFn(CMgs.format(langBundle, "help"), "help", item.help, "",  "richText",  sheetEl,  function(e, el) { item.help = el.value; CStudioAdminConsole.isDirty = true;});
 
+              //////////////////////
+              this.createRowHeading(CMgs.format(langBundle, "properties"), sheetEl);
+              var type = CStudioAdminConsole.Tool.ContentTypes.types[item.type];
+              var properties = type.getSupportedProperties(),
+                  property, itemProperty, value;
 
-                //////////////////////
-                this.createRowHeading(CMgs.format(langBundle, "properties"), sheetEl);
-                var type = CStudioAdminConsole.Tool.ContentTypes.types[item.type];
-                var properties = type.getSupportedProperties(),
-                    property, itemProperty, value;
+              for (var i = 0; i < properties.length; i++) {
+                  // Loop through the properties supported by the content type
+                  property = properties[i];
 
-                for (var i = 0; i < properties.length; i++) {
-                    // Loop through the properties supported by the content type
-                    property = properties[i];
+                  for (var j = item.properties.length - 1; j >= 0; j--) {
+                      itemProperty = null;
 
-                    for (var j = item.properties.length - 1; j >= 0; j--) {
-                        itemProperty = null;
+                      // Loop through the properties of the corresponding model instance to find the current property value
+                      if(item.properties[j].name == property.name) {
+                          itemProperty = item.properties[j];
+                          break;
+                      }
+                  }
 
-                        // Loop through the properties of the corresponding model instance to find the current property value
-                        if(item.properties[j].name == property.name) {
-                            itemProperty = item.properties[j];
-                            break;
-                        }
-                    }
+                  if (itemProperty != null) {
+                      value = itemProperty.value ? itemProperty.value : "";
+                  } else {
+                      // The property does not currently exist in the model instance => probably a new property added to the content type
+                      // Add it to the model instance, using the property's default values
+                      value = property.defaultValue ? property.defaultValue : "";
+                      item.properties[item.properties.length] = { name: property.name,
+                          value: value,
+                          type: property.type };
+                  }
 
-                    if (itemProperty != null) {
-                        value = itemProperty.value ? itemProperty.value : "";
-                    } else {
-                        // The property does not currently exist in the model instance => probably a new property added to the content type
-                        // Add it to the model instance, using the property's default values
-                        value = property.defaultValue ? property.defaultValue : "";
-                        item.properties[item.properties.length] = { name: property.name,
-                            value: value,
-                            type: property.type };
-                    }
+                  var updatePropertyFn = function(name, value) {
+                      for(var l = item.properties.length - 1; l >= 0; l--) {
+                          if(item.properties[l].name === name) {
+                              CStudioAdminConsole.isDirty = true;
+                              item.properties[l].value = (typeof value == "object" && !Array.isArray(value)) ? JSON.stringify(value) : value;
+                              break;
+                          }
+                      }
+                  }
 
-                    var updatePropertyFn = function(name, value) {
-                        for(var l = item.properties.length - 1; l >= 0; l--) {
-                            if(item.properties[l].name === name) {
-                                CStudioAdminConsole.isDirty = true;
-                                item.properties[l].value = (typeof value == "object" && !Array.isArray(value)) ? JSON.stringify(value) : value;
-                                break;
-                            }
-                        }
-                    }
-
-                    this.createRowFn(
-                        CMgs.format(langBundle, property.label),
-                        property.name,
-                        value,
-                        property.defaultValue,
-                        property.type,
-                        sheetEl,
-                        function(e, el) { updatePropertyFn(el.fieldName, el.value); });
+                  this.createRowFn(
+                      CMgs.format(langBundle, property.label),
+                      property.name,
+                      value,
+                      property.defaultValue,
+                      property.type,
+                      sheetEl,
+                      function(e, el) { updatePropertyFn(el.fieldName, el.value); });
                 }
 
                 //////////////////////////////////////////////////////
@@ -2879,13 +2901,14 @@ CStudioAuthoring.Module.requireModule(
             $input.change();
         };
 
-        CStudioAdminConsole.cleanPostfix = function(identifier, type) {
-            var $input = $(identifier).siblings('input');
-            var currentPostfix = "_" + $input.val().split("_").pop();
-            var postfixes = CStudioAdminConsole.renderPostfixes()[type] ?
-                CStudioAdminConsole.renderPostfixes()[type] : [];
-            var replace = currentPostfix+"([^"+currentPostfix+"]*)$";
-            var re = new RegExp(replace, "i");
+        CStudioAdminConsole.cleanPostfix = (identifier, type) => {
+            const $input = $(identifier).siblings('input'),
+                  currentPostfix = "_" + $input.val().split("_").pop(),
+                  controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
+                  postfixes = CStudioAdminConsole.getPostfixes(type, controls),
+                  replace = currentPostfix+"([^"+currentPostfix+"]*)$",
+                  re = new RegExp(replace, "i");
+
             for (var k = 0; k <= postfixes.length; k++) {
                 if (currentPostfix.indexOf(postfixes[k]) > -1) {
                     $input.val($input.val().replace(re, ""));
@@ -2893,49 +2916,39 @@ CStudioAuthoring.Module.requireModule(
             }
         },
 
-            CStudioAdminConsole.renderPostfixes = function(){
-                var renderPostfixes =
-                {
-                    "repeat": ["_o"],
-                    "input": ["_s", "_t"],
-                    "numeric-input": ["_i", "_l", "_f", "_d"],
-                    "textarea": ["_s", "_t"],
-                    "rte": ["_html"],
-                    "rte-tinymce5": ["_html"],
-                    "dropdown": ["_s"],
-                    "time": ["_to"],
-                    "date-time": ["_dt"],
-                    "checkbox": ["_b"],
-                    "checkbox-group": ["_o"],
-                    "node-selector": ["_o"],
-                    "image-picker": ["_s"],
-                    "video-picker": ["_s"],
-                    "label": ["_s"]
-                }
+        CStudioAdminConsole.getPostfixes = (type, controls) => {
+          let postfixes = [];
 
-                return renderPostfixes;
-            },
+          if (type === 'repeat') {
+            postfixes = ["_o"];
+          }else{
+            postfixes = controls && controls.find( x => x.name === type ) ?
+                        controls.find( x => x.name === type ).supportedPostFixes: [];
+          }
 
-            CStudioAdminConsole.renderPostfixDescriptions = function(){
-                var renderPostfixDescriptions =
-                {
-                    "_i": CMgs.format(langBundle, "iDescription"),
-                    "_s": CMgs.format(langBundle, "sDescription"),
-                    "_l": CMgs.format(langBundle, "lDescription"),
-                    "_t": CMgs.format(langBundle, "tDescription"),
-                    "_b": CMgs.format(langBundle, "bDescription"),
-                    "_f": CMgs.format(langBundle, "fDescription"),
-                    "_d": CMgs.format(langBundle, "dDescription"),
-                    "_dt": CMgs.format(langBundle, "dtDescription"),
-                    "_to": CMgs.format(langBundle, "toDescription"),
-                    "_html": CMgs.format(langBundle, "htmlDescription"),
-                    "_o": CMgs.format(langBundle, "oDescription"),
-                    "_en": CMgs.format(langBundle, "enDescription"),
-                    "_txt": CMgs.format(langBundle, "txtDescription")
-                }
+          return postfixes;
+        },
 
-                return renderPostfixDescriptions;
-            },
+        CStudioAdminConsole.renderPostfixDescriptions = function(){
+            var renderPostfixDescriptions =
+            {
+                "_i": CMgs.format(langBundle, "iDescription"),
+                "_s": CMgs.format(langBundle, "sDescription"),
+                "_l": CMgs.format(langBundle, "lDescription"),
+                "_t": CMgs.format(langBundle, "tDescription"),
+                "_b": CMgs.format(langBundle, "bDescription"),
+                "_f": CMgs.format(langBundle, "fDescription"),
+                "_d": CMgs.format(langBundle, "dDescription"),
+                "_dt": CMgs.format(langBundle, "dtDescription"),
+                "_to": CMgs.format(langBundle, "toDescription"),
+                "_html": CMgs.format(langBundle, "htmlDescription"),
+                "_o": CMgs.format(langBundle, "oDescription"),
+                "_en": CMgs.format(langBundle, "enDescription"),
+                "_txt": CMgs.format(langBundle, "txtDescription")
+            }
 
-            CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types",CStudioAdminConsole.Tool.ContentTypes);
+            return renderPostfixDescriptions;
+        },
+
+        CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types",CStudioAdminConsole.Tool.ContentTypes);
     }} );

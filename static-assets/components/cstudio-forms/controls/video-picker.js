@@ -32,6 +32,7 @@ CStudioForms.Controls.VideoPicker = CStudioForms.Controls.VideoPicker ||
     this.validExtensions = ["MOV", "mov", "MP4", "mp4", "wmv", "WMV", "webm"];
     this.readonly = readonly;
     this.external = null;
+    this.supportedPostFixes = ["_s"];
 
     return this;
   }
@@ -609,6 +610,10 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     return [
       { label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
     ];
+  },
+
+  getSupportedPostFixes: function() {
+    return this.supportedPostFixes;
   }
 });
 

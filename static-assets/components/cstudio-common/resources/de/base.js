@@ -890,6 +890,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     confTabRTEConfDesc: "Konfiguriert Profile für Rich Text Editoren",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) konfiguration",
     confTabRTEtMCE5ConfDesc: "Definiert Rich Text Editors-Konfigurationen im Formular",
+    confTabCodeEditorConf: "Konfiguration des Code-Editors",
+    confTabCodeEditorConfDesc: "Definiert Code-Editor-Konfigurationen",
     confTabPreviewAssetConf: "Vorschau von Elementen",
     confTabPreviewAssetConfDesc: "Definiert eine Liste von editierbaren Elementen basierend auf XML",
     confTabPreviewComponentsConf: "Vorschau von Komponenten",

@@ -125,7 +125,7 @@ define('guest', [
     });
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function (message) {
-      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '=' + message.region + ']')[0];
+      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
       if (elt) {
         elt.scrollIntoView();
         window.scrollBy(0, -150);

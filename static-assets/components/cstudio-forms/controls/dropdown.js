@@ -19,7 +19,7 @@ CStudioForms.Controls.Dropdown = CStudioForms.Controls.Dropdown ||
 function(id, form, owner, properties, constraints, readonly)  {
 	this.owner = owner;
 	this.owner.registerField(this);
-	this.errors = []; 
+	this.errors = [];
 	this.properties = properties;
 	this.constraints = constraints;
 	this.inputEl = null;
@@ -29,7 +29,8 @@ function(id, form, owner, properties, constraints, readonly)  {
 	this.form = form;
 	this.id = id;
 	this.readonly = readonly;
-	
+  this.supportedPostFixes = ["_s"];
+
 	amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
 
 	return this;
@@ -81,25 +82,25 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 		// we need to make the general layout of a control inherit from common
 		// you should be able to override it -- but most of the time it wil be the same
 		containerEl.id = this.id;
-		
+
 		var datasource = null;
 		var showEmptyValue = false;
 		var _self = this;
 
 			for(var i=0; i<config.properties.length; i++) {
 				var prop = config.properties[i];
-				
+
 				if(prop.name == "datasource") {
 					if(prop.value && prop.value != "") {
 						this.datasourceName = (Array.isArray(prop.value)) ? prop.value[0] : prop.value;
 						this.datasourceName = this.datasourceName.replace("[\"","").replace("\"]","");
 					}
 				}
-				
+
 				if(prop.name == "emptyvalue"){
 					showEmptyValue = eval(prop.value);
 				}
-				
+
 				if(prop.name == "readonly" && prop.value == "true"){
 					this.readonly = true;
 				}
@@ -210,13 +211,13 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 		    }else{
 		    	this.callback = cb;
 		    }
-					
+
 	},
 
 	getValue: function() {
 		return this.value;
 	},
-	
+
 	setValue: function(value) {
 		this.value = value;
         if(this.inputEl)
@@ -224,13 +225,13 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 		this._onChange(null, this);
         this.edited = false;
 	},
-	
+
 	getName: function() {
 		return "dropdown";
 	},
-	
+
 	getSupportedProperties: function() {
-		return [ 
+		return [
 		   	{ label: CMgs.format(langBundle, "datasource"), name: "datasource", type: "datasource:item" },
 		    { label: CMgs.format(langBundle, "allowEmptyValue"), name: "emptyvalue", type: "boolean" },
 			{ label: CMgs.format(langBundle, "readonly"), name: "readonly", type: "boolean" }
@@ -241,7 +242,11 @@ YAHOO.extend(CStudioForms.Controls.Dropdown, CStudioForms.CStudioFormField, {
 		return [
 			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
 		];
-	}
+  },
+
+  getSupportedPostFixes: function() {
+    return this.supportedPostFixes;
+  }
 
 });
 

@@ -194,57 +194,66 @@
                 },
 
                 ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP) {
-
-                    if (isNew) {
-                        function isNewEvent(value, modelPath){
-                            var modelData = {
-                                value: value,
-                                key: modelPath,
-                                include: modelPath
-                            };
-                            $.each(zones, function (key, array) {
-                                $.each(array, function (i, item) {
-                                    if (item === tracking) {
-                                        zones[key][i] = modelData;
-                                    }
-                                });
-                            });
-                            ComponentsPanel.contentModelMap[tracking] = modelData;
-                            amplify.publish(cstopic('DND_COMPONENT_MODEL_LOAD'), {
-                                model: modelData,
-                                trackingNumber: tracking
-                            });
-                            ComponentsPanel.save(isNew, zones, compPath, conComp);
-                        }
-                        if(isNew == true){
-                            CStudioAuthoring.Operations.performSimpleIceEdit({
-                                uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
-                                contentType: type
-                            }, null, false, {
-                                failure: CStudioAuthoring.Utils.noop,
-                                success: function (contentTO) {
-                                    amplify.publish('/operation/started');
-                                    // Use the information from the newly created component entry and use it to load the model data for the
-                                    // component placeholder in the UI. After this update, we can then proceed to save all the components
-                                    var value = (!!contentTO.item.internalName)
-                                        ? contentTO.item.internalName
-                                        : contentTO.item.uri;
-                                    isNewEvent(value, contentTO.item.uri);
-                                }
-                            });
-                        }else{
-                            CStudioAuthoring.Service.getContent(path, "false", {
-                                success: function (model) {
-                                    isNewEvent($(model).find("internal-name").text(), path);
-                                },
-                                failure: function (err) {
-                                }
-                            });
-                        }
-
-                    } else {
-                        ComponentsPanel.save(isNew, zones, compPath, conComp);
+                  if (isNew) {
+                    function isNewEvent(value, modelPath) {
+                      var modelData = {
+                        value: value,
+                        key: modelPath,
+                        include: modelPath
+                      };
+                      $.each(zones, function (key, array) {
+                        $.each(array, function (i, item) {
+                          if (item === tracking) {
+                            zones[key][i] = modelData;
+                          }
+                        });
+                      });
+                      ComponentsPanel.contentModelMap[tracking] = modelData;
+                      amplify.publish(cstopic('DND_COMPONENT_MODEL_LOAD'), {
+                        model: modelData,
+                        trackingNumber: tracking
+                      });
+                      ComponentsPanel.save(isNew, zones, compPath, conComp);
                     }
+
+                    if (isNew == true) {
+                      var subscribeCallback = function (_message) {
+                        switch (_message.type) {
+                          case "FORM_CANCEL": {
+                            amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
+                            amplify.publish(cstopic('REFRESH_PREVIEW'));
+                          }
+                        }
+                      }
+                      amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
+                      CStudioAuthoring.Operations.performSimpleIceEdit({
+                        uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
+                        contentType: type
+                      }, null, false, {
+                        failure: CStudioAuthoring.Utils.noop,
+                        success: function (contentTO) {
+                          amplify.publish('/operation/started');
+                          // Use the information from the newly created component entry and use it to load the model data for the
+                          // component placeholder in the UI. After this update, we can then proceed to save all the components
+                          var value = (!!contentTO.item.internalName)
+                            ? contentTO.item.internalName
+                            : contentTO.item.uri;
+                          isNewEvent(value, contentTO.item.uri);
+                        }
+                      });
+                    } else {
+                      CStudioAuthoring.Service.getContent(path, "false", {
+                        success: function (model) {
+                          isNewEvent($(model).find("internal-name").text(), path);
+                        },
+                        failure: function (err) {
+                        }
+                      });
+                    }
+
+                  } else {
+                    ComponentsPanel.save(isNew, zones, compPath, conComp);
+                  }
                 },
 
                 save: function (isNew, zones, compPath, conComp){
