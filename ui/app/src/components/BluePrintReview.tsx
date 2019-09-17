@@ -4,8 +4,9 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from '@material-ui/icons/Edit';
-import { Labels, SiteState } from "../models/Site";
+import { SiteState } from "../models/Site";
 import { Blueprint } from "../models/Blueprint";
+import { defineMessages, useIntl } from "react-intl";
 
 const useStyles = makeStyles(() => ({
   review: {
@@ -39,38 +40,89 @@ interface BluePrintReview {
   blueprint: Blueprint,
 }
 
+const messages = defineMessages({
+  bluePrintStrategy: {
+    id: 'CreateSiteDialog.bluePrintStrategy',
+    defaultMessage: 'Create from blueprint'
+  },
+  gitStrategy: {
+    id: 'CreateSiteDialog.gitStrategy',
+    defaultMessage: 'Existing remote git repo clone'
+  },
+  creationStrategy: {
+    id: 'CreateSiteDialog.creationStrategy',
+    defaultMessage: 'Creation Strategy'
+  },
+  additionalOptions: {
+    id: 'CreateSiteDialog.additionalOptions',
+    defaultMessage: 'Additional Options'
+  },
+  pushSite: {
+    id: 'CreateSiteDialog.pushSite',
+    defaultMessage: 'Push the site to a remote Git repository after creation'
+  },
+  noPushSite: {
+    id: 'CreateSiteDialog.noPushSite',
+    defaultMessage: 'Don\'t push the site to a remote Git repository after creation'
+  },
+  remoteName: {
+    id: 'CreateSiteDialog.remoteName',
+    defaultMessage: 'Remote Name'
+  },
+  remoteURL: {
+    id: 'CreateSiteDialog.remoteURL',
+    defaultMessage: 'URL'
+  },
+  remoteBranch: {
+    id: 'CreateSiteDialog.remoteBranch',
+    defaultMessage: 'Branch'
+  },
+  siteId: {
+    id: 'CreateSiteDialog.siteId',
+    defaultMessage: 'Site ID'
+  },
+  userNameAndPassword: {
+    id: 'common.userNameAndPassword',
+    defaultMessage: 'Username & Password'
+  },
+  token: {
+    id: 'common.token',
+    defaultMessage: 'Token'
+  },
+  privateKey: {
+    id: 'common.privateKey',
+    defaultMessage: 'Private Key'
+  },
+  authentication: {
+    id: 'common.authentication',
+    defaultMessage: 'Authentication'
+  },
+  noDescription: {
+    id: 'common.noDescription',
+    defaultMessage: 'No description supplied'
+  },
+  description: {
+    id: 'common.description',
+    defaultMessage: 'Description'
+  },
+  bluePrint: {
+    id: 'common.bluePrint',
+    defaultMessage: 'Blueprint'
+  }
+});
+
 function BluePrintReview(props: BluePrintReview) {
   const classes = useStyles({});
-
   const {onGoTo, inputs, blueprint} = props;
-
-  const labels: Labels = {
-    bluePrintStrategy: 'Create from blueprint',
-    gitStrategy: 'Existing remote git repo clone',
-    bluePrint: 'Blueprint',
-    creationStrategy: 'Creation Strategy',
-    additionalOptions: 'Additional Options',
-    pushSite: 'Push the site to a remote Git repository after creation',
-    noPushSite: 'Don\'t push the site to a remote Git repository after creation',
-    remoteName: 'Remote name',
-    remoteURL: 'URL',
-    remoteBranch: 'Branch',
-    authentication: 'Authentication',
-    userNameAndPassword: 'Username & password',
-    token: 'Token',
-    privateKey: 'Private key',
-    siteId: 'Site Id',
-    description: 'Description',
-    noDescription: 'no description supplied',
-  };
+  const { formatMessage } = useIntl();
 
   function renderAuth(type:string) {
     if(type === 'basic') {
-      return labels.userNameAndPassword;
+      return formatMessage(messages.userNameAndPassword);
     }else if (type === 'token'){
-      return labels.token;
+      return formatMessage(messages.token);
     }else {
-      return labels.privateKey;
+      return formatMessage(messages.privateKey);
     }
   }
 
@@ -79,25 +131,25 @@ function BluePrintReview(props: BluePrintReview) {
         {
           inputs.repo_url &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{labels.remoteURL}: </span> {inputs.repo_url}
+            <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repo_url}
           </Typography>
         }
         {
           inputs.repo_remote_name &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{labels.remoteName}: </span> {inputs.repo_remote_name}
+            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repo_remote_name}
           </Typography>
         }
         {
           inputs.repo_remote_branch &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{labels.remoteBranch}: </span> {inputs.repo_remote_branch}
+            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repo_remote_branch}
           </Typography>
         }
         {
           inputs.repo_authentication !== 'none' &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{labels.authentication}: </span> {renderAuth(inputs.repo_authentication)}
+            <span className={classes.bold}>{formatMessage(messages.authentication)}: </span> {renderAuth(inputs.repo_authentication)}
           </Typography>
         }
       </div>
@@ -109,7 +161,7 @@ function BluePrintReview(props: BluePrintReview) {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
-            {labels.creationStrategy}
+            {formatMessage(messages.creationStrategy)}
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(0)}>
               <EditIcon/>
             </IconButton>
@@ -118,16 +170,16 @@ function BluePrintReview(props: BluePrintReview) {
             (blueprint.id !== "GIT") ?
             <div>
               <Typography variant="body2" gutterBottom>
-                {labels.bluePrintStrategy}
+                {formatMessage(messages.bluePrintStrategy)}
               </Typography>
               <Typography variant="body2" gutterBottom>
-                <span className={classes.bold}>{labels.bluePrint}: </span> {blueprint && blueprint.name}
+                <span className={classes.bold}>{formatMessage(messages.bluePrint)}: </span> {blueprint && blueprint.name}
               </Typography>
             </div>
             :
             <div>
               <Typography variant="body2" gutterBottom>
-                {labels.gitStrategy}
+                {formatMessage(messages.gitStrategy)}
               </Typography>
               {renderGitOptions()}
             </div>
@@ -141,18 +193,18 @@ function BluePrintReview(props: BluePrintReview) {
             </IconButton>
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{labels.siteId}: </span> {inputs.siteId}
+            <span className={classes.bold}>{formatMessage(messages.siteId)}: </span> {inputs.siteId}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{labels.description}: </span> {inputs.description ? inputs.description :
-            <span className={classes.noDescription}>({labels.noDescription})</span>}
+            <span className={classes.bold}>{formatMessage(messages.description)}: </span> {inputs.description ? inputs.description :
+            <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>}
           </Typography>
         </Grid>
         {
           (blueprint.id !== "GIT") &&
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom className={classes.section}>
-              {labels.additionalOptions}
+              {formatMessage(messages.additionalOptions)}
               <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
                 <EditIcon/>
               </IconButton>
@@ -160,12 +212,12 @@ function BluePrintReview(props: BluePrintReview) {
             {inputs.push_site ?
               <div>
                 <Typography variant="body2" gutterBottom>
-                  {labels.pushSite}
+                  {formatMessage(messages.pushSite)}
                 </Typography>
                 {renderGitOptions()}
               </div> :
               <Typography variant="body2" gutterBottom>
-                {labels.noPushSite}
+                {formatMessage(messages.noPushSite)}
               </Typography>
             }
           </Grid>

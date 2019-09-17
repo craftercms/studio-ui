@@ -40,8 +40,8 @@ import BluePrintForm from './BluePrintForm';
 import BluePrintReview from "./BluePrintReview";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Blueprint } from '../models/Blueprint';
-import { Labels, Site, SiteState, Views } from '../models/Site';
-
+import { Site, SiteState, Views } from '../models/Site';
+import { defineMessages, useIntl } from 'react-intl';
 
 const views: Views = {
   0: {
@@ -216,22 +216,35 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
   );
 });
 
-const labels: Labels = {
-  buildIn: 'Build in',
-  marketplace: 'Marketplace',
-  back: 'Back'
-};
+const messages = defineMessages({
+  buildIn: {
+    id: 'CreateSiteDialog.buildIn',
+    defaultMessage: 'Build-in'
+  },
+  marketplace: {
+    id: 'common.marketplace',
+    defaultMessage: 'Marketplace'
+  },
+  back: {
+    id: 'common.back',
+    defaultMessage: 'Back'
+  }
+});
 
 function CreateSiteDialog(props: any) {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
   const [open, setOpen] = useState(props.open || false);
-  const [searchSelected, setSearchSelected] = useState(false);
   const [creatingSite, setCreatingSite] = useState(false);
+  const [search, setSearch] = useState({
+    searchKey: '',
+    searchSelected: false
+  });
   const [site, setSite] = useState(siteInitialState);
   const classes = useStyles({});
   const swipeableViews = useRef(null);
+  const { formatMessage } = useIntl();
 
   useEffect(() => {
       if (swipeableViews.current) {
@@ -253,7 +266,7 @@ function CreateSiteDialog(props: any) {
   }
 
   function handleSearchClick() {
-    setSearchSelected(!searchSelected);
+    setSearch({...search, searchSelected: !search.searchSelected, searchKey: ''});
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
@@ -400,18 +413,20 @@ function CreateSiteDialog(props: any) {
   }
 
   function checkNameExist(e: any) {
-    get(`/studio/api/1/services/api/1/site/exists.json?site=${e.target.value}`)
-      .subscribe(
-        ({response}) => {
-          setSite({...site, siteIdExist: response.exists});
-        },
-        () => {
-          console.log('error')
-        }
-      );
+    if(e.target.value) {
+      get(`/studio/api/1/services/api/1/site/exists.json?site=${e.target.value}`)
+        .subscribe(
+          ({response}) => {
+            setSite({...site, siteIdExist: response.exists});
+          },
+          () => {
+            console.log('error')
+          }
+        );
+    }
   }
 
-  function renderBluePrints(list: [Blueprint]) {
+  function renderBluePrints(list: Blueprint[]) {
     return list.map((item: Blueprint) => {
       return (
         <Grid item xs={12} sm={6} md={4} key={item.id}>
@@ -420,6 +435,16 @@ function CreateSiteDialog(props: any) {
       );
     })
   }
+
+  function filterBlueprints(blueprints: Blueprint[], searchKey:string) {
+    searchKey = searchKey.toLowerCase();
+    return searchKey && blueprints
+      ? blueprints.filter(blueprint => blueprint.name.toLowerCase().includes(searchKey))
+      : blueprints;
+  }
+
+  const filteredBlueprints:Blueprint[] = filterBlueprints(blueprints, search.searchKey);
+  const filteredMarketplace:Blueprint[] = filterBlueprints(marketplace, search.searchKey);
 
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
@@ -430,17 +455,17 @@ function CreateSiteDialog(props: any) {
         (site.selectedView === 0) &&
         <div className={classes.tabs}>
           <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-              <Tab label={labels.buildIn} className={classes.simpleTab}/>
-              <Tab label={labels.marketplace} className={classes.simpleTab}/>
+              <Tab label={formatMessage(messages.buildIn)} className={classes.simpleTab}/>
+              <Tab label={formatMessage(messages.marketplace)} className={classes.simpleTab}/>
           </CustomTabs>
-          <SearchIcon className={clsx(classes.tabIcon, searchSelected && 'selected')} onClick={handleSearchClick}/>
+          <SearchIcon className={clsx(classes.tabIcon, search.searchSelected && 'selected')} onClick={handleSearchClick}/>
       </div>
       }
       {
         ((tab === 0 && blueprints) || (tab === 1 && marketplace)) ?
         <DialogContent className={classes.dialogContent}>
           {
-            (searchSelected && site.selectedView === 0) &&
+            (search.searchSelected && site.selectedView === 0) &&
             <div className={classes.search}>
                 <div className={classes.searchIcon}>
                     <SearchIcon/>
@@ -452,6 +477,8 @@ function CreateSiteDialog(props: any) {
                       root: classes.inputRoot,
                       input: classes.inputInput,
                     }}
+                    value={search.searchKey}
+                    onChange={e => setSearch({ ...search, searchKey: e.target.value})}
                     inputProps={{'aria-label': 'search'}}
                 />
             </div>
@@ -464,10 +491,10 @@ function CreateSiteDialog(props: any) {
               {
                 (tab === 0) ?
                 <div>
-                  <Grid container spacing={3}>{renderBluePrints(blueprints)}</Grid>
+                  <Grid container spacing={3}>{renderBluePrints(filteredBlueprints)}</Grid>
                 </div> :
                 <div>
-                  <Grid container spacing={3}>{renderBluePrints(marketplace)}</Grid>
+                  <Grid container spacing={3}>{renderBluePrints(filteredMarketplace)}</Grid>
                 </div>
               }
             </div>
@@ -494,7 +521,7 @@ function CreateSiteDialog(props: any) {
         (site.selectedView !== 0) &&
         <DialogActions className={classes.dialogActions}>
           <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
-              {labels.back}
+              {formatMessage(messages.back)}
           </Button>
           <Button variant="contained" color="primary" disableRipple={creatingSite}
                   className={creatingSite ? classes.loadingBtn : ''} onClick={handleFinish}>

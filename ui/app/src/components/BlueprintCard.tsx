@@ -11,7 +11,7 @@ import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Blueprint, Image } from "../models/Blueprint";
-import { Labels } from "../models/Site";
+import { defineMessages, useIntl } from "react-intl";
 
 
 interface BlueprintCard {
@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
   carouselImg: {
     width: '100%',
     height: '200px',
+    objectFit: 'cover'
   },
   chip: {
     fontSize: '12px',
@@ -69,11 +70,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const labels: Labels = {
-  version: 'Version',
-  license: 'License',
-  crafterCms: 'CrafterCMS'
-};
+const messages = defineMessages({
+  version: {
+    id: 'common.version',
+    defaultMessage: 'Version'
+  },
+  license: {
+    id: 'common.license',
+    defaultMessage: 'License'
+  },
+  crafterCms: {
+    id: 'common.crafterCMS',
+    defaultMessage: 'CrafterCMS'
+  }
+});
 
 function BlueprintCard(props: BlueprintCard) {
   const classes = useStyles({});
@@ -82,6 +92,7 @@ function BlueprintCard(props: BlueprintCard) {
   const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
+  const { formatMessage } = useIntl();
 
   function handleChangeIndex(value: number) {
     setIndex(value);
@@ -120,15 +131,15 @@ function BlueprintCard(props: BlueprintCard) {
         (id !== 'GIT') &&
         <CardActions disableSpacing className={'cardActions'}>
           <div className={classes.chip}>
-              <label>{labels.version}</label>
+              <label>{formatMessage(messages.version)}</label>
               <span>{fullVersion}</span>
           </div>
           <div className={classes.chip}>
-              <label>{labels.license}</label>
+              <label>{formatMessage(messages.license)}</label>
               <span>{license.name}</span>
           </div>
           <div className={classes.chip}>
-              <label>{labels.crafterCms}</label>
+              <label>{formatMessage(messages.crafterCms)}</label>
               <span>{crafterCMS}</span>
           </div>
           <IconButton aria-label="options" className={classes.options}>

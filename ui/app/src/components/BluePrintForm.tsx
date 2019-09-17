@@ -7,7 +7,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from "./GitForm";
 import { Blueprint } from "../models/Blueprint";
-import { Labels, SiteState } from '../models/Site';
+import { SiteState } from '../models/Site';
+import { defineMessages, useIntl } from "react-intl";
 
 const useStyles = makeStyles(() => ({
   form: {
@@ -30,18 +31,37 @@ interface BluePrintForm {
   onCheckNameExist(event: any): any
 }
 
-const labels: Labels = {
-  siteId: 'Side ID',
-  description: 'Description',
-  siteFormat: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)',
-  nameExist: 'The name already exist.',
-  pushSiteToRemote: 'Push the site to a remote Git repository after creation',
-  descriptionMaxLength: 'Max length: 4000 characters'
-};
+const messages = defineMessages({
+  siteId: {
+    id: 'CreateSiteDialog.siteId',
+    defaultMessage: 'Side ID'
+  },
+  description: {
+    id: 'CreateSiteDialog.description',
+    defaultMessage: 'Description'
+  },
+  siteFormat: {
+    id: 'CreateSiteDialog.siteFormat',
+    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)'
+  },
+  nameExist: {
+    id: 'CreateSiteDialog.nameExist',
+    defaultMessage: 'The name already exist'
+  },
+  pushSiteToRemote: {
+    id: 'CreateSiteDialog.pushSiteToRemote',
+    defaultMessage: 'Push the site to a remote Git repository after creation'
+  },
+  descriptionMaxLength: {
+    id: 'CreateSiteDialog.descriptionMaxLength',
+    defaultMessage: 'Max length: 4000 characters'
+  },
+});
 
 function BluePrintForm(props: BluePrintForm) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
+  const { formatMessage } = useIntl();
 
   useEffect(
     () => {
@@ -67,12 +87,12 @@ function BluePrintForm(props: BluePrintForm) {
 
   return (
     <form className={classes.form} onSubmit={e => onSubmit(e)}>
-      <Grid container spacing={1}>
+      <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
             id="siteId"
             name="siteId"
-            label={labels.siteId}
+            label={formatMessage(messages.siteId)}
             variant="outlined"
             required
             fullWidth
@@ -80,7 +100,7 @@ function BluePrintForm(props: BluePrintForm) {
             onChange={handleInputChange}
             value={inputs.siteId}
             error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
-            helperText={!inputs.siteIdExist ? labels.siteFormat : labels.nameExist}
+            helperText={!inputs.siteIdExist ? formatMessage(messages.siteFormat) : formatMessage(messages.nameExist)}
           />
         </Grid>
         <Grid item xs={12}>
@@ -88,14 +108,13 @@ function BluePrintForm(props: BluePrintForm) {
             id="description"
             fullWidth
             name="description"
-            label={labels.description}
+            label={formatMessage(messages.description)}
             variant="outlined"
             multiline
-            margin="normal"
             onChange={handleInputChange}
             value={inputs.description}
             inputProps={{maxLength: 4000}}
-            helperText={labels.descriptionMaxLength}
+            helperText={formatMessage(messages.descriptionMaxLength)}
           />
         </Grid>
         {
@@ -110,7 +129,7 @@ function BluePrintForm(props: BluePrintForm) {
                       color="primary"
                     />
                   }
-                  label={labels.pushSiteToRemote}
+                  label={formatMessage(messages.pushSiteToRemote)}
               />
           </Grid>
         }

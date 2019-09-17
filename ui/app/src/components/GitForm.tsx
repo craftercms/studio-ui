@@ -13,7 +13,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { Labels, SiteState } from '../models/Site';
+import { SiteState } from '../models/Site';
+import { defineMessages, useIntl } from "react-intl";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -26,7 +27,10 @@ const useStyles = makeStyles(theme => ({
     }
   },
   gitInfo: {
-    width: '100%'
+    width: '100%',
+    '& .MuiGrid-item':{
+      padding: '12px'
+    }
   },
   margin: {
     margin: theme.spacing(1),
@@ -50,28 +54,78 @@ interface GitForm {
   type?: string;
 }
 
-const labels: Labels = {
-  push: {
-    repo_url_label: 'The git repository URL to push.',
-    repo_remote_branch_label: 'The site will get created pushing that branch to the repo.',
-    repo_remote_name_label: 'Name the remote that will refer to the source repo to push. Typically named “upstream” or “origin”.'
+const pushMessages = defineMessages({
+  push_url_label: {
+    id: 'CreateSiteDialog.push_url_label',
+    defaultMessage: 'The git repository URL to push.'
   },
-  clone: {
-    repo_url_label: 'The git repository URL to clone from.',
-    repo_remote_branch_label: 'The site will get created cloning that branch of the repo. You may switch between branches later too.',
-    repo_remote_name_label: 'Name the remote that will refer to the source repo to pull from. Typically named “upstream” or “origin”.'
+  push_remote_branch_label: {
+    id: 'CreateSiteDialog.push_remote_branch_label',
+    defaultMessage: 'The site will get created pushing that branch to the repo.'
   },
-  branch: 'Branch',
-  userName: 'Username',
-  password: 'Password',
-  token: 'Token',
-  privateKey: 'Private key',
-  repoUrl: 'Repo URL',
-  authentication: 'Authentication',
-  authenticationNoRequired: 'Authentication not required (public URL)',
-  usernameAndPassword: 'Username & password',
-  remoteName: 'Git Remote Name'
-};
+  push_remote_name_label: {
+    id: 'CreateSiteDialog.push_remote_name_label',
+    defaultMessage: 'Name the remote that will refer to the source repo to push. Typically named “upstream” or “origin”.'
+  },
+});
+
+const cloneMessages = defineMessages({
+  clone_url_label: {
+    id: 'CreateSiteDialog.clone_url_label',
+    defaultMessage: 'The git repository URL to clone from.'
+  },
+  clone_remote_branch_label: {
+    id: 'CreateSiteDialog.clone_remote_branch_label',
+    defaultMessage: 'The site will get created cloning that branch of the repo. You may switch between branches later too.'
+  },
+  clone_remote_name_label: {
+    id: 'CreateSiteDialog.clone_remote_name_label',
+    defaultMessage: 'Name the remote that will refer to the source repo to pull from. Typically named “upstream” or “origin”.'
+  },
+});
+
+const messages = defineMessages({
+  branch: {
+    id: 'CreateSiteDialog.branch',
+    defaultMessage: 'Branch'
+  },
+  userName: {
+    id: 'common.userName',
+    defaultMessage: 'Username'
+  },
+  password: {
+    id: 'common.password',
+    defaultMessage: 'Password'
+  },
+  token: {
+    id: 'common.token',
+    defaultMessage: 'Token'
+  },
+  privateKey: {
+    id: 'common.privateKey',
+    defaultMessage: 'Private Key'
+  },
+  repoUrl: {
+    id: 'CreateSiteDialog.repoUrl',
+    defaultMessage: 'Repo URL'
+  },
+  authentication: {
+    id: 'common.authentication',
+    defaultMessage: 'Authentication'
+  },
+  authenticationNoRequired: {
+    id: 'CreateSiteDialog.authenticationNoRequired',
+    defaultMessage: 'Authentication not required (public URL)'
+  },
+  usernameAndPassword: {
+    id: 'common.usernameAndPassword',
+    defaultMessage: 'Username & Password'
+  },
+  remoteName: {
+    id: 'common.remoteName',
+    defaultMessage: 'Git Remote Name'
+  },
+});
 
 function GitForm(props: GitForm) {
   const classes = useStyles({});
@@ -82,6 +136,7 @@ function GitForm(props: GitForm) {
     key: false,
   });
   const [showPassword, setShowPassword] = useState(false);
+  const { formatMessage } = useIntl();
 
   const viewAuth = (type: string) => {
     const _expanded: any = {...expanded};
@@ -107,7 +162,7 @@ function GitForm(props: GitForm) {
             id="repo_username"
             name="repo_username"
             className={clsx(classes.margin, classes.textField)}
-            label={labels.userName}
+            label={formatMessage(messages.userName)}
             variant="outlined"
             required
             value={inputs.repo_username}
@@ -122,7 +177,7 @@ function GitForm(props: GitForm) {
             name="repo_password"
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
-            label={labels.password}
+            label={formatMessage(messages.password)}
             variant="outlined"
             required
             value={inputs.repo_password}
@@ -150,7 +205,7 @@ function GitForm(props: GitForm) {
             name="repo_token"
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
-            label={labels.token}
+            label={formatMessage(messages.token)}
             variant="outlined"
             required
             value={inputs.repo_token}
@@ -176,7 +231,7 @@ function GitForm(props: GitForm) {
           <TextField
               id="repo_key"
               name="repo_key"
-              label={labels.privateKey}
+              label={formatMessage(messages.privateKey)}
               variant="outlined"
               required
               fullWidth
@@ -192,12 +247,12 @@ function GitForm(props: GitForm) {
   }
 
   return (
-    <Grid container spacing={3} className={classes.gitInfo}>
+    <Grid container spacing={0} className={classes.gitInfo}>
       <Grid item xs={12}>
         <TextField
           id="repo_url"
           name="repo_url"
-          label={labels.repoUrl}
+          label={formatMessage(messages.repoUrl)}
           variant="outlined"
           required
           fullWidth
@@ -205,7 +260,7 @@ function GitForm(props: GitForm) {
           onChange={handleInputChange}
           value={inputs.repo_url}
           error={(inputs.submitted && !inputs.repo_url && inputs.push_site)}
-          helperText={labels[type].repo_url_label}
+          helperText={type === 'push'? formatMessage(pushMessages.push_url_label) : formatMessage(cloneMessages.clone_url_label)}
         />
       </Grid>
       <Grid item xs={12}>
@@ -214,19 +269,19 @@ function GitForm(props: GitForm) {
           <RadioGroup aria-label="repo_authentication" name="repo_authentication"
                       value={inputs.repo_authentication} onChange={handleInputChange}>
             <FormControlLabel value="none" control={<Radio color="primary" onChange={() => viewAuth('none')}/>}
-                              label={labels.authenticationNoRequired}/>
+                              label={formatMessage(messages.authenticationNoRequired)}/>
             <FormControlLabel value="basic" control={<Radio color="primary" onChange={() => viewAuth('basic')}/>}
-                              label={labels.usernameAndPassword}/>
+                              label={formatMessage(messages.usernameAndPassword)}/>
             <Collapse in={expanded.basic} timeout={300} unmountOnExit>
               {expanded.basic && renderAuth(inputs.repo_authentication)}
             </Collapse>
             <FormControlLabel value="token" control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
-                              label={labels.token}/>
+                              label={formatMessage(messages.token)}/>
             <Collapse in={expanded.token} timeout={300} unmountOnExit>
               {expanded.token && renderAuth(inputs.repo_authentication)}
             </Collapse>
             <FormControlLabel value="key" control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
-                              label={labels.privateKey}/>
+                              label={formatMessage(messages.privateKey)}/>
             <Collapse in={expanded.key} timeout={300} unmountOnExit>
               {expanded.key && renderAuth(inputs.repo_authentication)}
             </Collapse>
@@ -237,26 +292,26 @@ function GitForm(props: GitForm) {
         <TextField
           id="repo_remote_branch"
           name="repo_remote_branch"
-          label={labels.branch}
+          label={formatMessage(messages.branch)}
           variant="outlined"
-          required
           fullWidth
           onChange={handleInputChange}
           value={inputs.repo_remote_branch}
-          helperText={labels[type].repo_remote_branch_label}
+          helperText={type === 'push'? formatMessage(pushMessages.push_remote_branch_label) : formatMessage(cloneMessages.clone_remote_branch_label)}
         />
       </Grid>
       <Grid item xs={12}>
         <TextField
           id="repo_remote_name"
           name="repo_remote_name"
-          label={labels.remoteName}
+          label={formatMessage(messages.remoteName)}
           variant="outlined"
           required
           fullWidth
           onChange={handleInputChange}
           value={inputs.repo_remote_name}
-          helperText={labels[type].repo_remote_name_label}
+          error={(inputs.submitted && !inputs.repo_remote_name && inputs.push_site)}
+          helperText={type === 'push'? formatMessage(pushMessages.push_remote_name_label) : formatMessage(cloneMessages.clone_remote_name_label)}
         />
       </Grid>
     </Grid>
