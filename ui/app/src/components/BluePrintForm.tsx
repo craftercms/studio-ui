@@ -1,10 +1,6 @@
 import React, { useEffect } from 'react';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from '@material-ui/core/Grid';
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -13,7 +9,7 @@ import GitForm from "./GitForm";
 import { Blueprint } from "../models/Blueprint";
 import { Labels, SiteState } from '../models/Site';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   form: {
     maxWidth: '600px',
     margin: 'auto',
@@ -23,14 +19,20 @@ const useStyles = makeStyles(theme => ({
 
 interface BluePrintForm {
   inputs: SiteState,
+
   setInputs(state: SiteState): any,
+
   onSubmit(event: any): any,
+
   swipeableViews: any,
   blueprint: Blueprint,
+
   onCheckNameExist(event: any): any
 }
 
 const labels: Labels = {
+  siteId: 'Side ID',
+  description: 'Description',
   siteFormat: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)',
   nameExist: 'The name already exist.',
   pushSiteToRemote: 'Push the site to a remote Git repository after creation',
@@ -67,54 +69,61 @@ function BluePrintForm(props: BluePrintForm) {
     <form className={classes.form} onSubmit={e => onSubmit(e)}>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <FormControl fullWidth error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}>
-            <InputLabel required htmlFor="siteId">Site ID</InputLabel>
-            <Input id="siteId" name="siteId" onBlur={e => {
-              onCheckNameExist(e)
-            }} onChange={e => {
-              handleInputChange(e)
-            }} value={inputs.siteId}/>
-            <FormHelperText>{labels.siteFormat}</FormHelperText>
-            {inputs.siteIdExist && <FormHelperText>{labels.nameExist}</FormHelperText>}
-          </FormControl>
+          <TextField
+            id="siteId"
+            name="siteId"
+            label={labels.siteId}
+            variant="outlined"
+            required
+            fullWidth
+            onBlur={onCheckNameExist}
+            onChange={handleInputChange}
+            value={inputs.siteId}
+            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
+            helperText={!inputs.siteIdExist ? labels.siteFormat : labels.nameExist}
+          />
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth>
-            <TextField
-              id="description"
-              name="description"
-              label="Description"
-              multiline
-              rows="4"
-              margin="normal"
-              onChange={handleInputChange}
-              value={inputs.description}
-              inputProps={{maxLength: 4000}}
-              helperText={labels.descriptionMaxLength}
-            />
-          </FormControl>
+          <TextField
+            id="description"
+            fullWidth
+            name="description"
+            label={labels.description}
+            variant="outlined"
+            multiline
+            margin="normal"
+            onChange={handleInputChange}
+            value={inputs.description}
+            inputProps={{maxLength: 4000}}
+            helperText={labels.descriptionMaxLength}
+          />
         </Grid>
-        {blueprint.id !== 'GIT' && <Grid item xs={12}>
-            <FormControlLabel
-                control={
-                  <Checkbox
-                    name="push_site"
-                    checked={inputs.push_site}
-                    onChange={handleInputChange}
-                    color="primary"
-                  />
-                }
-                label={labels.pushSiteToRemote}
-            />
-        </Grid>}
-
+        {
+          (blueprint.id !== 'GIT') &&
+          <Grid item xs={12}>
+              <FormControlLabel
+                  control={
+                    <Checkbox
+                      name="push_site"
+                      checked={inputs.push_site}
+                      onChange={handleInputChange}
+                      color="primary"
+                    />
+                  }
+                  label={labels.pushSiteToRemote}
+              />
+          </Grid>
+        }
         <Collapse in={inputs.push_site} timeout={300} unmountOnExit>
-          {inputs.push_site &&
-          <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
+          {
+            inputs.push_site &&
+            <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
           }
         </Collapse>
-        {blueprint.id === 'GIT' &&
-        <GitForm type="clone" inputs={inputs} handleInputChange={handleInputChange}/>}
+        {
+          (blueprint.id === 'GIT') &&
+          <GitForm type="clone" inputs={inputs} handleInputChange={handleInputChange}/>
+        }
       </Grid>
     </form>
   )

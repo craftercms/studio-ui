@@ -111,9 +111,14 @@ function BlueprintCard(props: BlueprintCard) {
             {description}
           </Typography>
         </CardContent>
-        {(id === 'GIT') && <div className={classes.gitOptions}/>}
+        {
+          (id === 'GIT') &&
+          <div className={classes.gitOptions}/>
+        }
       </CardActionArea>
-      {(id !== 'GIT') && <CardActions disableSpacing className={'cardActions'}>
+      {
+        (id !== 'GIT') &&
+        <CardActions disableSpacing className={'cardActions'}>
           <div className={classes.chip}>
               <label>{labels.version}</label>
               <span>{fullVersion}</span>
@@ -129,7 +134,8 @@ function BlueprintCard(props: BlueprintCard) {
           <IconButton aria-label="options" className={classes.options}>
               <MoreVertIcon/>
           </IconButton>
-      </CardActions>}
+      </CardActions>
+      }
     </Card>
   )
 }

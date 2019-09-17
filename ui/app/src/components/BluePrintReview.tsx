@@ -7,7 +7,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Labels, SiteState } from "../models/Site";
 import { Blueprint } from "../models/Blueprint";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   review: {
     paddingTop: '40px',
     maxWidth: '600px',
@@ -76,18 +76,30 @@ function BluePrintReview(props: BluePrintReview) {
 
   function renderGitOptions() {
     return (<div>
-        {inputs.repo_url && <Typography variant="body2" gutterBottom>
+        {
+          inputs.repo_url &&
+          <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{labels.remoteURL}: </span> {inputs.repo_url}
-        </Typography>}
-        {inputs.repo_remote_name && <Typography variant="body2" gutterBottom>
+          </Typography>
+        }
+        {
+          inputs.repo_remote_name &&
+          <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{labels.remoteName}: </span> {inputs.repo_remote_name}
-        </Typography>}
-        {inputs.repo_remote_branch && <Typography variant="body2" gutterBottom>
+          </Typography>
+        }
+        {
+          inputs.repo_remote_branch &&
+          <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{labels.remoteBranch}: </span> {inputs.repo_remote_branch}
-        </Typography>}
-        {inputs.repo_authentication !== 'none' && <Typography variant="body2" gutterBottom>
+          </Typography>
+        }
+        {
+          inputs.repo_authentication !== 'none' &&
+          <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{labels.authentication}: </span> {renderAuth(inputs.repo_authentication)}
-        </Typography>}
+          </Typography>
+        }
       </div>
     )
   }
@@ -102,7 +114,8 @@ function BluePrintReview(props: BluePrintReview) {
               <EditIcon/>
             </IconButton>
           </Typography>
-          {blueprint.id !== "GIT" ?
+          {
+            (blueprint.id !== "GIT") ?
             <div>
               <Typography variant="body2" gutterBottom>
                 {labels.bluePrintStrategy}
@@ -135,25 +148,28 @@ function BluePrintReview(props: BluePrintReview) {
             <span className={classes.noDescription}>({labels.noDescription})</span>}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom className={classes.section}>
-            {labels.additionalOptions}
-            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
-              <EditIcon/>
-            </IconButton>
-          </Typography>
-          {inputs.push_site ?
-            <div>
-              <Typography variant="body2" gutterBottom>
-                {labels.pushSite}
-              </Typography>
-              {renderGitOptions()}
-            </div> :
-            <Typography variant="body2" gutterBottom>
-              {labels.noPushSite}
+        {
+          (blueprint.id !== "GIT") &&
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom className={classes.section}>
+              {labels.additionalOptions}
+              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
+                <EditIcon/>
+              </IconButton>
             </Typography>
-          }
-        </Grid>
+            {inputs.push_site ?
+              <div>
+                <Typography variant="body2" gutterBottom>
+                  {labels.pushSite}
+                </Typography>
+                {renderGitOptions()}
+              </div> :
+              <Typography variant="body2" gutterBottom>
+                {labels.noPushSite}
+              </Typography>
+            }
+          </Grid>
+        }
       </Grid>
     </div>
   )
