@@ -19,7 +19,7 @@ CStudioForms.Controls.Textarea = CStudioForms.Controls.Textarea ||
 function(id, form, owner, properties, constraints, readonly)  {
 	this.owner = owner;
 	this.owner.registerField(this);
-	this.errors = []; 
+	this.errors = [];
 	this.properties = properties;
 	this.constraints = constraints;
 	this.inputEl = null;
@@ -28,8 +28,9 @@ function(id, form, owner, properties, constraints, readonly)  {
 	this.value = "_not-set";
 	this.form = form;
 	this.id = id;
-	this.readonly = readonly;
-	
+  this.readonly = readonly;
+  this.supportedPostFixes = ["_s", "_t"];
+
 	return this;
 }
 
@@ -37,10 +38,10 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     getLabel: function() {
         return CMgs.format(langBundle, "textArea");
     },
-    
+
 	_onChange: function(evt, obj) {
 		obj.value = obj.inputEl.value;
-		
+
 		if(obj.required) {
 			if(obj.inputEl.value == "") {
 				obj.setError("required", "Field is Required");
@@ -53,7 +54,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 		}
 		else {
 			obj.renderValidation(false, true);
-		}			
+		}
 
 		obj.owner.notifyValidation();
 		obj.form.updateModel(obj.id, obj.getValue());
@@ -72,10 +73,10 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 		// 'this' is the input box
 	    el = (el) ? el : this;
 	    var text = el.value;
-	    
+
 	    var charCount = ((text.length) ? text.length : ((el.textLength) ? el.textLength : 0));
 	    var maxlength = (el.maxlength && el.maxlength != '') ? el.maxlength : -1;
-	    
+
 	    if(maxlength != -1) {
 		    if (charCount > el.maxlength) {
 				// truncate if exceeds max chars
@@ -83,8 +84,8 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 				  this.value = text.substr (0, el.maxlength);
 				  charCount = el.maxlength;
 			    }
-	      
-	      		
+
+
 				if (evt && evt != null
 				&& evt.keyCode!=8 && evt.keyCode!=46 && evt.keyCode!=37
 				&& evt.keyCode!=38 && evt.keyCode!=39 && evt.keyCode!=40	// arrow keys
@@ -96,25 +97,25 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 	       		}
 			}
 	    }
-	    
+
         if (maxlength != -1) {
         	countEl.innerHTML = charCount + ' / ' + el.maxlength;
-        } 
+        }
         else {
         	countEl.innerHTML = charCount;
         }
     },
-    	
+
 	render: function(config, containerEl) {
 		// we need to make the general layout of a control inherit from common
 		// you should be able to override it -- but most of the time it wil be the same
 		containerEl.id = this.id;
-		
+
 		var titleEl = document.createElement("span");
 
   		    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
 			titleEl.innerHTML = config.title;
-		
+
 		var controlWidgetContainerEl = document.createElement("div");
 		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
 
@@ -170,12 +171,12 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 			if(prop.name == "maxlength") {
 				inputEl.maxlength = prop.value;
 			}
-			
+
 			if(prop.name == "readonly" && prop.value == "true"){
 				this.readonly = true;
 			}
 		}
-		
+
 			if(this.readonly == true){
 				inputEl.disabled = true;
 			}
@@ -193,7 +194,7 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 	getValue: function() {
 		return this.value;
 	},
-	
+
 	setValue: function(value) {
 		this.value = value;
 		this.inputEl.value = value;
@@ -201,11 +202,11 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 		this._onChange(null, this);
         this.edited = false;
 	},
-		
+
 	getName: function() {
 		return "textarea";
 	},
-	
+
 	getSupportedProperties: function() {
 		return [
 			{ label: CMgs.format(langBundle, "columns"), name: "cols", type: "int", defaultValue: "50" },
@@ -220,7 +221,11 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 		return [
 			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" },
 		];
-	}
+  },
+
+  getSupportedPostFixes: function() {
+    return this.supportedPostFixes;
+  }
 
 });
 

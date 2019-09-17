@@ -5,11 +5,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { get } from '../utils/ajax';
+import { FormattedMessage } from 'react-intl';
 
-interface DependecySelectionProps {
+interface DependencySelectionProps {
   items: Item[];
-  onChange: Function;
   siteId: string;
+  onChange: Function;
 }
 
 interface DepsObject {
@@ -32,19 +33,20 @@ const BlueCheckbox = withStyles({
     color: '#7e9dbb',
     padding: '2px',
     '&$checked': {
-      color: '#7e9dbb',
-    },
+      color: '#7e9dbb'
+    }
   },
-  checked: {},
+  checked: {}
 })(Checkbox);
 
-declare const CStudioAuthoring: any;
-declare const CStudioAuthoringContext: any;
+function DependencySelection(props: DependencySelectionProps) {
 
-function DependecySelection(props: DependecySelectionProps) {
   const [deps, setDeps] = useState<DepsObject>();
-  const [showDepBtn, setshowDepBtn] = useState(true);
-  const { items, siteId, onChange } = props;
+
+  const [showDepsButton, setShowDepsButton] = useState(true);
+
+  const { items, siteId } = props;
+
   const [checked, _setChecked] = useState<any>(
     (items || []).reduce(
       (table: any, item) => {
@@ -61,57 +63,53 @@ function DependecySelection(props: DependecySelectionProps) {
       nextChecked[u] = isChecked;
     });
     _setChecked(nextChecked);
-    setshowDepBtn(true);
+    setShowDepsButton(true);
     setDeps(null);
     cleanCheckedSoftDep();
-  }
+  };
 
-  const paths =
+  const paths = (
     Object.entries({ ...checked })
       .filter(([key, value]) => value === true)
-      .map(([key]) => key);
+      .map(([key]) => key)
+  );
 
   const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({});
+
   const setCheckedSoftDep = (uri: string[], isChecked: boolean) => {
     const nextCheckedSoftDep = { ...checkedSoftDep };
     (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
       nextCheckedSoftDep[u] = isChecked;
     });
     _setCheckedSoftDep(nextCheckedSoftDep);
-  }
+  };
+
   const cleanCheckedSoftDep = () => {
     const nextCheckedSoftDep = {};
-
     _setCheckedSoftDep(nextCheckedSoftDep);
-  }
-
-  const Messages = CStudioAuthoring.Messages;
-  const bundle = Messages.getBundle('forms', CStudioAuthoringContext.lang);
-  const selectAllMessage = Messages.format(bundle, 'selectAll');
-  const hardDependencies = Messages.format(bundle, 'hardDependencies');
-  const submissionMandatory = Messages.format(bundle, 'submissionMandatory');
-  const softDependencies = Messages.format(bundle, 'softDependencies');
-  const submissionOptional = Messages.format(bundle, 'submissionOptional');
-  const itemsForPublish = Messages.format(bundle, 'itemsForPublish');
-  const showAllDependenciesMessage = Messages.format(bundle, 'showAllDependencies');
-  const changesSelectioItems = Messages.format(bundle, 'changesSelectioItems');
-  const loadingDependencies = Messages.format(bundle, 'loadingDependencies');
+  };
 
   useEffect(
     () => {
       setRef();
     },
-    [checked, checkedSoftDep],
+    [checked, checkedSoftDep]
   );
 
   return (
-    <div>
+    <>
       <div className="dependency-selection">
         <h2 className="dependency-selection--title dependency-selection--publish-title">
-          {itemsForPublish}
+          <FormattedMessage
+            id="publishDialog.itemsToPublish"
+            defaultMessage={`Items To Publish`}
+          />
         </h2>
         <button className="dependency-selection--nav-btn dependency-selection--select-all" onClick={selectAll}>
-          {selectAllMessage}
+          <FormattedMessage
+            id="common.selectAll"
+            defaultMessage={`Select All`}
+          />
         </button>
         {
           items.map((item) => (
@@ -124,7 +122,7 @@ function DependecySelection(props: DependecySelectionProps) {
                     e.preventDefault();
                     setChecked([item.uri], !checked[item.uri])
                   }}
-                  onChange={(e) => { }}
+                  onChange={(e) => void 0}
                   value={item.uri}
                   color="primary"
                 />
@@ -139,47 +137,64 @@ function DependecySelection(props: DependecySelectionProps) {
         {
           deps == null ? (null) : (
             <div>
-              <h2 className="dependency-selection--subtitle" >
-                {hardDependencies}
+              <h2 className="dependency-selection--subtitle">
+                <FormattedMessage
+                  id="publishDialog.hardDependencies"
+                  defaultMessage={`Hard Dependencies`}
+                />
               </h2>
-              <span> • {submissionMandatory}</span>
+              <span>
+                {` • `}
+                <FormattedMessage
+                  id="publishDialog.submissionMandatory"
+                  defaultMessage={`Submission Mandatory`}
+                />
+              </span>
               <ul className="dependency-selection--list">
                 {
-                  deps && deps.hard
-                    ? (
-                      deps.hard.map((uri: string) => (
-                        <li className="dependency-selection--list--hard" key={uri}>{uri}</li>
-                      ))
-                    )
-                    : (null)
+                  deps && deps.hard ? (
+                    deps.hard.map((uri: string) => (
+                      <li className="dependency-selection--list--hard" key={uri}>{uri}</li>
+                    ))
+                  ) : (null)
                 }
               </ul>
               <h2 className="dependency-selection--subtitle">
-                {softDependencies}
+                <FormattedMessage
+                  id="publishDialog.softDependencies"
+                  defaultMessage={`Soft Dependencies`}
+                />
               </h2>
-              <span> • {submissionOptional}</span>
+              <span>
+                {` • `}
+                <FormattedMessage
+                  id="publishDialog.submissionOptional"
+                  defaultMessage={`Submission Optional`}
+                />
+              </span>
               <button className="dependency-selection--nav-btn" onClick={selectAllSoft}>
-                {selectAllMessage}
+                <FormattedMessage
+                  id="common.selectAll"
+                  defaultMessage={`Select All`}
+                />
               </button>
-              <ul className="dependency-selection--list" >
+              <ul className="dependency-selection--list">
                 {
-                  deps && deps.soft
-                    ? (
-                      deps.soft.map((uri: string) => (
-                        <li key={uri}>
-                          <div className="dependency-selection--list--soft-checkbox" >
-                            <BlueCheckbox
-                              checked={!!checkedSoftDep[uri]}
-                              onChange={(e) => setCheckedSoftDep([uri], e.target.checked)}
-                              value={uri}
-                              color="primary"
-                            />
-                          </div>
-                          <div className="dependency-selection--list--soft-item" >{uri}</div>
-                        </li>
-                      ))
-                    )
-                    : (null)
+                  deps && deps.soft ? (
+                    deps.soft.map((uri: string) => (
+                      <li key={uri}>
+                        <div className="dependency-selection--list--soft-checkbox">
+                          <BlueCheckbox
+                            checked={!!checkedSoftDep[uri]}
+                            onChange={(e) => setCheckedSoftDep([uri], e.target.checked)}
+                            value={uri}
+                            color="primary"
+                          />
+                        </div>
+                        <div className="dependency-selection--list--soft-item">{uri}</div>
+                      </li>
+                    ))
+                  ) : (null)
                 }
               </ul>
             </div>
@@ -188,23 +203,39 @@ function DependecySelection(props: DependecySelectionProps) {
       </div>
       <div className="dependency-selection--bottom-section">
         {
-          (deps == null && !showDepBtn) ? (
+          (deps == null && !showDepsButton) ? (
             <div className="centerCircularProgress">
-              <CenterCircularProgress /> <span className="dependency-selection--center-circular-progress-text" >{loadingDependencies}</span>
+              <CenterCircularProgress/>
+              <span className="dependency-selection--center-circular-progress-text">
+                <FormattedMessage
+                  id="publishDialog.loadingDependencies"
+                  defaultMessage={`Loading Dependencies, please wait{ellipsis}`}
+                  values={{ ellipsis: '&hellip;' }}
+                />
+              </span>
             </div>
           ) : (
-              showDepBtn ? (
-                <button className="dependency-selection--nav-btn dependency-selection--show-all" onClick={showAllDependencies}>
-                  {showAllDependenciesMessage}
-                </button>
-              ) : (null)
-            )
+            showDepsButton ? (
+              <button
+                className="dependency-selection--nav-btn dependency-selection--show-all"
+                onClick={showAllDependencies}
+              >
+                <FormattedMessage
+                  id="publishDialog.showAllDependencies"
+                  defaultMessage={`Show All Dependencies`}
+                />
+              </button>
+            ) : (null)
+          )
         }
         <p>
-          {changesSelectioItems}
+          <FormattedMessage
+            id="publishDialog.info.changesInSelection"
+            defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
+          />
         </p>
       </div>
-    </div>
+    </>
   );
 
   function selectAll() {
@@ -216,14 +247,16 @@ function DependecySelection(props: DependecySelectionProps) {
   }
 
   function setRef() {
-    const result = Object.entries({ ...checked, ...checkedSoftDep })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key);
+    const result = (
+      Object.entries({ ...checked, ...checkedSoftDep })
+        .filter(([key, value]) => value === true)
+        .map(([key]) => key)
+    );
     props.onChange(result);
   }
 
   function showAllDependencies() {
-    setshowDepBtn(false);
+    setShowDepsButton(false);
     get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths}`)
       .subscribe(
         (response: any) => {
@@ -243,4 +276,4 @@ function DependecySelection(props: DependecySelectionProps) {
 
 }
 
-export default DependecySelection;
+export default DependencySelection;

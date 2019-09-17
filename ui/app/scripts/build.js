@@ -20,7 +20,7 @@ const
   ncp = require('ncp').ncp,
   rimraf = require('rimraf'),
 
-  APP_DIR = __dirname,
+  APP_DIR = (__dirname).replace('/scripts', ''),
   PATH_BUILD = `${APP_DIR}/build`,
   TEMPLATES = `../../templates`,
   DEST = `../../static-assets/next`,

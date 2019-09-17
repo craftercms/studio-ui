@@ -142,7 +142,8 @@ CStudioForms.Controls.DateTime = CStudioForms.Controls.DateTime ||
 			{key: 'Pacific/Tongatapu', value: '(GMT+13:00) Nuku\'alofa'},
 			{key: 'Pacific/Apia', value: '(GMT-11:00) Samoa'}
 		];
-		this.timezones = this.defaultTimezones;
+    this.timezones = this.defaultTimezones;
+    this.supportedPostFixes = ["_dt"];
 
 		return this;
 	}
@@ -170,15 +171,15 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				valid = true;
 			}
 		} else {
-			// Date check: if show and date fields are present, the time value is populated, 
-			// but the date value isn't, then give an error.  
+			// Date check: if show and date fields are present, the time value is populated,
+			// but the date value isn't, then give an error.
 			if (dateCheck && obj.showDate && obj.showTime && timeValue != "" && dateValue == "") {
 				obj.displayMessage("Date field must be filled in.", "date-required", "warning");
 				obj.setError("required", "Field is Required");
 				obj.renderValidation(true);
 				valid = false;
 			}
-			// Date check: if show and date fields are present, and the date value is populated, 
+			// Date check: if show and date fields are present, and the date value is populated,
 			// OR if show and date fields are present, and the date and the time values are empty
 			// then clear any previos errors
 			else if (dateCheck && obj.showDate && obj.showTime && dateValue != "" ||
@@ -218,8 +219,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
 		if (this.validate(null, this)) {
 
-			// If dateValue == "", then it must be because only the date field is 
-			// displayed; otherwise, validation should not have allowed the user get this far 
+			// If dateValue == "", then it must be because only the date field is
+			// displayed; otherwise, validation should not have allowed the user get this far
 			dateVal = (dateValue != "") ? dateValue : nowObj.date;
 
 			if (timeValue != "") {
@@ -245,7 +246,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				return "";	// The date/time fields are empty
 			}
 		}
-		// If the form doesn't validate, it should trigger errors when the fields are blurred so 
+		// If the form doesn't validate, it should trigger errors when the fields are blurred so
 		// in theory, it should never reach this point (because this function -getFieldValue- should be called on beforeSave).
 		return false;
 	},
@@ -289,9 +290,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 	},
 
 	// TO-DO: improvement
-	// Currently this is making a synchronous call to get the UTC representation of a date. The size of the transfer of 
-	// information made through this call is small so it shouldn't affect UX considerably. This call is synchronous because 
-	// we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to 
+	// Currently this is making a synchronous call to get the UTC representation of a date. The size of the transfer of
+	// information made through this call is small so it shouldn't affect UX considerably. This call is synchronous because
+	// we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to
 	// register "beforeSave" callbacks, but these are assumed to be synchronous (forms-engine.js, onBeforeSave method)
 
    convertDateTime: function(date, time, newTimeZone, toUTC, callback){
@@ -1114,7 +1115,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 			dateVal, timeVal, emptyDate, emptyTime, refDateVal, refTimeVal, dtValues, timezoneNowObj, cb;
 
 		if (value != "" && value != "_not-set") {
-			// If a value already exists for the date/time field, then convert this value (in UTC) to the site's timezone	
+			// If a value already exists for the date/time field, then convert this value (in UTC) to the site's timezone
 			cb = {
 				success: function(response) {
 					//Set date and time values in the UI
@@ -1166,8 +1167,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				timeVal = dtValues[1];
 			} else {
 				// Backwards compatibility
-				// Previous method of storing values. This method allowed storing only the date or only the time. 
-				// The problem with this is that if one of the fields was missing, the other one risked being 
+				// Previous method of storing values. This method allowed storing only the date or only the time.
+				// The problem with this is that if one of the fields was missing, the other one risked being
 				// calculated incorrectly.
 				refDateVal = nowObj.date;
 				refTimeVal = "00:00:00";
@@ -1416,7 +1417,11 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 		return [
 			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
 		];
-	}
+  },
+
+  getSupportedPostFixes: function() {
+    return this.supportedPostFixes;
+  }
 });
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-date-time", CStudioForms.Controls.DateTime);

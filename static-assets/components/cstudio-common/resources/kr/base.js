@@ -431,7 +431,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     softDependencies:"소프트 종속성",
     submissionOptional:"제출 옵션",
     showAllDependencies:"S모든 종속성 표시",
-    changesSelectioItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
+    changesSelectionItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
     loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
 
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
@@ -822,6 +822,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabRTEConfDesc: "서식있는 텍스트 편집기는 형태로 구성을 정의",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) 구성",
     confTabRTEtMCE5Desc: "서식있는 텍스트 편집기는 형태로 구성을 정의",
+    confTabCodeEditorConf: "코드 편집기 구성",
+    confTabCodeEditorConfDesc: "코드 편집기 구성을 정의합니다",
     confTabPreviewAssetConf: "자산 미리 구성",
     confTabPreviewAssetConfDesc: "XML 컨텐츠와 연관된 편집 자산 목록을 정의",
     confTabPreviewComponentsConf: "구성 요소 구성 미리보기",

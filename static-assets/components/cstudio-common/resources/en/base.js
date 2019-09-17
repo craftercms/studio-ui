@@ -460,7 +460,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     softDependencies:"Soft Dependencies",
     submissionOptional:"Submission optional",
     showAllDependencies:"Show All Dependencies",
-    changesSelectioItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
+    changesSelectionItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
     loadingDependencies:"Loading Dependencies, please wait...",
 
     newContTypeDialogTitle: "Create Content Type",
@@ -891,6 +891,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabRTEConfDesc: "Defines Rich Text Editors configurations in form",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) Configuration",
     confTabRTEtMCE5ConfDesc: "Defines Rich Text Editors configurations in form",
+    confTabCodeEditorConf: "Code Editor Configuration",
+    confTabCodeEditorConfDesc: "Defines Code Editor configurations",
     confTabPreviewAssetConf: "Preview Asset Configuration",
     confTabPreviewAssetConfDesc: "Defines a list of editable assets associated with XML contents",
     confTabPreviewComponentsConf: "Preview Components Configuration",

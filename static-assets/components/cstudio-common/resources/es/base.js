@@ -457,7 +457,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     softDependencies:"Dependencias suaves",
     submissionOptional:"Presentación opcional",
     showAllDependencies:"Mostrar todas las dependencias",
-    changesSelectioItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
+    changesSelectionItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
     loadingDependencies:"Cargando dependencias, por favor espere ...",
 
     newContTypeDialogTitle: "Crear Tipo de Contenido",
@@ -852,6 +852,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabRTEConfDesc: "Define la configuraciones de editores de texto enriquecido en formularios",
     confTabRTEtMCE5Conf: "Configuración RTE (TinyMCE 5)",
     confTabRTEtMCE5Desc: "Define la configuraciones de editores de texto enriquecido en formularios",
+    confTabCodeEditorConf: "Configuración de Editor de Código",
+    confTabCodeEditorConfDesc: "Define las configuraciones del Editor de Código",
     confTabPreviewAssetConf: "Configuración de Vista Previa de Activos",
     confTabPreviewAssetConfDesc: "Define una lista de activos editables asociados con contenido XML",
     confTabPreviewComponentsConf: "Configuración de los Componentes de Vista Previa",
