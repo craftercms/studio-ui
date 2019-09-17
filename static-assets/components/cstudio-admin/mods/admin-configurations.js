@@ -68,7 +68,8 @@ CStudioAuthoring.Module.requireModule(
 
 			renderJobsList: function() {
 
-				var containerEl = document.getElementById("config-area");
+        var self = this,
+            containerEl = document.getElementById("config-area");
 
 				containerEl.innerHTML =
 					"<div class='configuration-window'>" +
@@ -98,17 +99,29 @@ CStudioAuthoring.Module.requireModule(
 				var sampleEditorContainerEl = document.getElementById("sample-window");
 				var sampleEditorEl = this.setEditor(sampleEditorContainerEl, true);
 
-                // set active environment
-                var activeEnvironmentElt = document.getElementById("active-environment-value");
-                this.loadActiveEnv(activeEnvironmentElt);
+        // set active environment
+        var activeEnvironmentElt = document.getElementById("active-environment-value");
+        this.loadActiveEnv(activeEnvironmentElt);
 
-                var itemSelectEl = document.getElementById("config-list");
+        var itemSelectEl = document.getElementById("config-list");
 				// add action buttons
                 var buttonAreaEl = document.getElementById("config-buttons");
 				this.addButtons(buttonAreaEl, itemSelectEl, editorEl);
 				// set configuration dropdown
-				var editAreaEl = document.getElementById("edit-area");
-				this.loadConfigFiles(itemSelectEl, editAreaEl, editorEl, sampleEditorEl);
+        var editAreaEl = document.getElementById("edit-area");
+
+        this.configInfo = {
+          itemSelectEl,
+          editAreaEl,
+          editor: editorEl,
+          sampleEditor: sampleEditorEl
+        }
+
+        this.loadConfigFiles();
+
+        amplify.subscribe("HISTORY_REVERT", function() {
+          self.loadSelectedConfig();
+        })
 
 				// hide display area by default
 				editAreaEl.style.display = 'none';
@@ -127,8 +140,9 @@ CStudioAuthoring.Module.requireModule(
 			/*
 			* populate the list of configuration files
 			*/
-			loadConfigFiles: function (itemSelectEl, editAreaEl, editor, sampleEditor) {
-                var self = this;
+			loadConfigFiles: function () {
+        var self = this,
+            itemSelectEl = this.configInfo.itemSelectEl;
 				// load configuration to get the configuration files list
 				CStudioAuthoring.Service.lookupConfigurtion(
 					CStudioAuthoringContext.site,
@@ -168,105 +182,115 @@ CStudioAuthoring.Module.requireModule(
 				);
 
 				// add onchange behavior to display selected
-				itemSelectEl.onchange = function() {
-					var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
+				this.configInfo.itemSelectEl.onchange = function() {
+          self.loadSelectedConfig();
+				}; // end of change
+      },
+
+      loadSelectedConfig: function() {
+        const self = this,
+              itemSelectEl = this.configInfo.itemSelectEl,
+              editAreaEl = this.configInfo.editAreaEl,
+              editor = this.configInfo.editor,
+              sampleEditor = this.configInfo.sampleEditor;
+
+        var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH_ADMIN,
 						configSampleFilesPath = CStudioAuthoring.Constants.CONFIG_SAMPLE_FILES_PATH_ADMIN,
 						selectedIndex = itemSelectEl.selectedIndex,
                         contentArea = document.getElementById("content-area"),
                         environment = self.environment ? self.environment : '';
 
-					$('#historyEl').empty();
+        $('#historyEl').empty();
 
-					if(selectedIndex != 0) {
-						editAreaEl.style.display = 'block';
-						var descriptionEl = document.getElementById("config-description");
-						descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute("description");
+        if(selectedIndex != 0) {
+          editAreaEl.style.display = 'block';
+          var descriptionEl = document.getElementById("config-description");
+          descriptionEl.innerHTML = itemSelectEl[selectedIndex].getAttribute("description");
 
-						// load configuration into editor
-						var url = '/studio/api/2/configuration/get_configuration?siteId=' +
-							CStudioAuthoringContext.site + '&module=' + itemSelectEl[selectedIndex].getAttribute('module') +
-              '&path=' + itemSelectEl[selectedIndex].value,
-							elemPath =  itemSelectEl[selectedIndex].value;
-                        if(environment){
-                            url += '&environment=' + environment;
-                        }
-						var getConfigCb = {
-							success: function(response) {
-							  var responseObj = eval('(' + response.responseText + ')')
-								editor.setValue(responseObj.content);
-                                editor.clearSelection(); // This will remove the highlight over the text
-                                CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
+          // load configuration into editor
+          var url = '/studio/api/2/configuration/get_configuration?siteId=' +
+            CStudioAuthoringContext.site + '&module=' + itemSelectEl[selectedIndex].getAttribute('module') +
+            '&path=' + itemSelectEl[selectedIndex].value,
+            elemPath =  itemSelectEl[selectedIndex].value;
+                      if(environment){
+                          url += '&environment=' + environment;
+                      }
+          var getConfigCb = {
+            success: function(response) {
+              var responseObj = eval('(' + response.responseText + ')')
+              editor.setValue(responseObj.content);
+                              editor.clearSelection(); // This will remove the highlight over the text
+                              CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditorParent(contentArea);
 
-								//add history
+              //add history
 
-								var siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
+              var siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
 
-								var historyLink = document.createElement("a");
-								historyLink.className = 'cursor';
-								var textnode = document.createTextNode(CMgs.format(siteDropdownLangBundle, "history"));         // Create a text node
-								historyLink.appendChild(textnode);
+              var historyLink = document.createElement("a");
+              historyLink.className = 'cursor';
+              var textnode = document.createTextNode(CMgs.format(siteDropdownLangBundle, "history"));         // Create a text node
+              historyLink.appendChild(textnode);
 
-								historyLink.onclick = function() {
-									var content = {
-									  module: itemSelectEl[selectedIndex].getAttribute('module'),
-										path: itemSelectEl[selectedIndex].value,
-                    environment: environment,
-                    uri: configFilesPath + "/" + itemSelectEl[selectedIndex].getAttribute('module') + "/" + environment + "/" + itemSelectEl[selectedIndex].value,
-										escaped: true
-									};
-									CStudioAuthoring.Operations.viewConfigurationHistory(content, true);
-								};
+              historyLink.onclick = function() {
+                var content = {
+                  module: itemSelectEl[selectedIndex].getAttribute('module'),
+                  path: itemSelectEl[selectedIndex].value,
+                  environment: environment,
+                  uri: configFilesPath + "/" + itemSelectEl[selectedIndex].getAttribute('module') + "/" + environment + "/" + itemSelectEl[selectedIndex].value,
+                  escaped: true
+                };
+                CStudioAuthoring.Operations.viewConfigurationHistory(content, true);
+              };
 
-								document.getElementById('historyEl').append(historyLink);
+              document.getElementById('historyEl').append(historyLink);
 
-							},
-							failure: function() {
-								editor.setValue("");
-								CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditor(editor);
-							}
-						};
-						YAHOO.util.Connect.asyncRequest('GET', url, getConfigCb);
+            },
+            failure: function() {
+              editor.setValue("");
+              CStudioAdminConsole.Tool.AdminConfig.prototype.expandEditor(editor);
+            }
+          };
+          YAHOO.util.Connect.asyncRequest('GET', url, getConfigCb);
 
-						//sample
-						var sampleTextEl = document.getElementById("sample-text");
+          //sample
+          var sampleTextEl = document.getElementById("sample-text");
 
-						// load sample configuration into view sample area
-						var samplePath = itemSelectEl[selectedIndex].getAttribute("sample");
-						var viewSampleButtonEl = document.getElementById("view-sample-button");
-						if (samplePath != 'undefined' && samplePath != '') {
-							var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=' +
-								configSampleFilesPath + '/' + itemSelectEl[selectedIndex].getAttribute("sample");
+          // load sample configuration into view sample area
+          var samplePath = itemSelectEl[selectedIndex].getAttribute("sample");
+          var viewSampleButtonEl = document.getElementById("view-sample-button");
+          if (samplePath != 'undefined' && samplePath != '') {
+            var url = '/studio/api/1/services/api/1/content/get-content-at-path.bin?path=' +
+              configSampleFilesPath + '/' + itemSelectEl[selectedIndex].getAttribute("sample");
 
-							var getSampleCb = {
-								success: function(response) {
-									var sampleAreaEl = document.getElementById("sample-window");
-									sampleAreaEl.style.display = 'inline';
-									sampleEditor.setValue(response.responseText);
-									sampleEditor.clearSelection(); // This will remove the highlight over the text
-									CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(sampleEditor);
-                                    CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(editor);
-									viewSampleButtonEl.style.display = 'inline';
-									var hideSampleButtonEl = document.getElementById("hide-sample-button");
-									hideSampleButtonEl.style.display = 'none';
-									sampleAreaEl.style.display = 'none';
-								},
-								failure: function() {
-									viewSampleButtonEl.style.display = 'none';
-								}
-							};
-							YAHOO.util.Connect.asyncRequest('GET', url, getSampleCb);
-						} else {
-							viewSampleButtonEl.style.display = 'none';
-						}
+            var getSampleCb = {
+              success: function(response) {
+                var sampleAreaEl = document.getElementById("sample-window");
+                sampleAreaEl.style.display = 'inline';
+                sampleEditor.setValue(response.responseText);
+                sampleEditor.clearSelection(); // This will remove the highlight over the text
+                CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(sampleEditor);
+                                  CStudioAdminConsole.Tool.AdminConfig.prototype.shrinkEditor(editor);
+                viewSampleButtonEl.style.display = 'inline';
+                var hideSampleButtonEl = document.getElementById("hide-sample-button");
+                hideSampleButtonEl.style.display = 'none';
+                sampleAreaEl.style.display = 'none';
+              },
+              failure: function() {
+                viewSampleButtonEl.style.display = 'none';
+              }
+            };
+            YAHOO.util.Connect.asyncRequest('GET', url, getSampleCb);
+          } else {
+            viewSampleButtonEl.style.display = 'none';
+          }
 
-                        CStudioAdminConsole.CommandBar.show();
+                      CStudioAdminConsole.CommandBar.show();
 
-					} else {
-						editAreaEl.style.display = 'none';
-                        CStudioAdminConsole.CommandBar.hide();
-					}
-				}; // end of change
-			},
+        } else {
+          editAreaEl.style.display = 'none';
+                      CStudioAdminConsole.CommandBar.hide();
+        }
+      },
 
 			/*
 			* create editor
