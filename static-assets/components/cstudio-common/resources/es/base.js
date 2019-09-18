@@ -457,7 +457,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     softDependencies:"Dependencias suaves",
     submissionOptional:"Presentación opcional",
     showAllDependencies:"Mostrar todas las dependencias",
-    changesSelectioItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
+    changesSelectionItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
     loadingDependencies:"Cargando dependencias, por favor espere ...",
 
     newContTypeDialogTitle: "Crear Tipo de Contenido",
