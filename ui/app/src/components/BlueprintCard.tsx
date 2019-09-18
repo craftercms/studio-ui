@@ -12,6 +12,7 @@ import { autoPlay } from 'react-swipeable-views-utils';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Blueprint, Image } from "../models/Blueprint";
 import { defineMessages, useIntl } from "react-intl";
+import MobileStepper from "./MobileStepper";
 
 
 interface BlueprintCard {
@@ -34,7 +35,8 @@ const useStyles = makeStyles(theme => ({
     },
     '& .cardContent': {
       height: '6rem',
-      paddingBottom: '0'
+      paddingBottom: '0',
+      position: 'relative'
     },
     '& .cardActions': {
       paddingTop: '0'
@@ -67,6 +69,24 @@ const useStyles = makeStyles(theme => ({
   },
   dialogContent: {
     display: 'flex'
+  },
+  imgWrapper: {
+    position: 'relative'
+  },
+  dots: {
+    position: 'absolute',
+    background: 'none',
+    left: '50%',
+    transform: 'translate(-50%)',
+    top: '-30px',
+    zIndex: 0,
+    '& .MuiMobileStepper-dot': {
+      padding: '2px',
+      margin: '3px',
+      '&:hover':{
+        background: 'gray'
+      }
+    }
   }
 }));
 
@@ -98,6 +118,12 @@ function BlueprintCard(props: BlueprintCard) {
     setIndex(value);
   }
 
+  function onDotClick(e:any, step: number) {
+    e.stopPropagation();
+    setIndex(step);
+  }
+  const steps = media.screenshots.length;
+
   return (
     <Card className={classes.card}>
       <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
@@ -115,6 +141,7 @@ function BlueprintCard(props: BlueprintCard) {
           ))}
         </AutoPlaySwipeableViews>
         <CardContent className={'cardContent'}>
+          {steps > 1 && <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'} activeStep={index}/>}
           <Typography gutterBottom variant="subtitle1" component="h2" className={'cardTitle'}>
             {name}
           </Typography>

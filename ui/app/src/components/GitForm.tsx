@@ -56,37 +56,37 @@ interface GitForm {
 
 const pushMessages = defineMessages({
   push_url_label: {
-    id: 'CreateSiteDialog.push_url_label',
+    id: 'createSiteDialog.push_url_label',
     defaultMessage: 'The git repository URL to push.'
   },
   push_remote_branch_label: {
-    id: 'CreateSiteDialog.push_remote_branch_label',
+    id: 'createSiteDialog.push_remote_branch_label',
     defaultMessage: 'The site will get created pushing that branch to the repo.'
   },
   push_remote_name_label: {
-    id: 'CreateSiteDialog.push_remote_name_label',
+    id: 'createSiteDialog.push_remote_name_label',
     defaultMessage: 'Name the remote that will refer to the source repo to push. Typically named “upstream” or “origin”.'
   },
 });
 
 const cloneMessages = defineMessages({
   clone_url_label: {
-    id: 'CreateSiteDialog.clone_url_label',
+    id: 'createSiteDialog.clone_url_label',
     defaultMessage: 'The git repository URL to clone from.'
   },
   clone_remote_branch_label: {
-    id: 'CreateSiteDialog.clone_remote_branch_label',
+    id: 'createSiteDialog.clone_remote_branch_label',
     defaultMessage: 'The site will get created cloning that branch of the repo. You may switch between branches later too.'
   },
   clone_remote_name_label: {
-    id: 'CreateSiteDialog.clone_remote_name_label',
+    id: 'createSiteDialog.clone_remote_name_label',
     defaultMessage: 'Name the remote that will refer to the source repo to pull from. Typically named “upstream” or “origin”.'
   },
 });
 
 const messages = defineMessages({
   branch: {
-    id: 'CreateSiteDialog.branch',
+    id: 'createSiteDialog.branch',
     defaultMessage: 'Branch'
   },
   userName: {
@@ -106,7 +106,7 @@ const messages = defineMessages({
     defaultMessage: 'Private Key'
   },
   repoUrl: {
-    id: 'CreateSiteDialog.repoUrl',
+    id: 'createSiteDialog.repoUrl',
     defaultMessage: 'Repo URL'
   },
   authentication: {
@@ -114,7 +114,7 @@ const messages = defineMessages({
     defaultMessage: 'Authentication'
   },
   authenticationNoRequired: {
-    id: 'CreateSiteDialog.authenticationNoRequired',
+    id: 'createSiteDialog.authenticationNoRequired',
     defaultMessage: 'Authentication not required (public URL)'
   },
   usernameAndPassword: {

@@ -218,7 +218,7 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
 
 const messages = defineMessages({
   buildIn: {
-    id: 'CreateSiteDialog.buildIn',
+    id: 'createSiteDialog.buildIn',
     defaultMessage: 'Build-in'
   },
   marketplace: {
@@ -244,6 +244,7 @@ function CreateSiteDialog(props: any) {
   const [site, setSite] = useState(siteInitialState);
   const classes = useStyles({});
   const swipeableViews = useRef(null);
+
   const { formatMessage } = useIntl();
 
   useEffect(() => {

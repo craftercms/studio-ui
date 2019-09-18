@@ -42,43 +42,43 @@ interface BluePrintReview {
 
 const messages = defineMessages({
   bluePrintStrategy: {
-    id: 'CreateSiteDialog.bluePrintStrategy',
+    id: 'createSiteDialog.bluePrintStrategy',
     defaultMessage: 'Create from blueprint'
   },
   gitStrategy: {
-    id: 'CreateSiteDialog.gitStrategy',
+    id: 'createSiteDialog.gitStrategy',
     defaultMessage: 'Existing remote git repo clone'
   },
   creationStrategy: {
-    id: 'CreateSiteDialog.creationStrategy',
+    id: 'createSiteDialog.creationStrategy',
     defaultMessage: 'Creation Strategy'
   },
   additionalOptions: {
-    id: 'CreateSiteDialog.additionalOptions',
+    id: 'createSiteDialog.additionalOptions',
     defaultMessage: 'Additional Options'
   },
   pushSite: {
-    id: 'CreateSiteDialog.pushSite',
+    id: 'createSiteDialog.pushSite',
     defaultMessage: 'Push the site to a remote Git repository after creation'
   },
   noPushSite: {
-    id: 'CreateSiteDialog.noPushSite',
+    id: 'createSiteDialog.noPushSite',
     defaultMessage: 'Don\'t push the site to a remote Git repository after creation'
   },
   remoteName: {
-    id: 'CreateSiteDialog.remoteName',
+    id: 'createSiteDialog.remoteName',
     defaultMessage: 'Remote Name'
   },
   remoteURL: {
-    id: 'CreateSiteDialog.remoteURL',
+    id: 'createSiteDialog.remoteURL',
     defaultMessage: 'URL'
   },
   remoteBranch: {
-    id: 'CreateSiteDialog.remoteBranch',
+    id: 'createSiteDialog.remoteBranch',
     defaultMessage: 'Branch'
   },
   siteId: {
-    id: 'CreateSiteDialog.siteId',
+    id: 'createSiteDialog.siteId',
     defaultMessage: 'Site ID'
   },
   userNameAndPassword: {

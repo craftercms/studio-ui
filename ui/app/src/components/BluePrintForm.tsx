@@ -33,27 +33,27 @@ interface BluePrintForm {
 
 const messages = defineMessages({
   siteId: {
-    id: 'CreateSiteDialog.siteId',
+    id: 'createSiteDialog.siteId',
     defaultMessage: 'Side ID'
   },
   description: {
-    id: 'CreateSiteDialog.description',
+    id: 'createSiteDialog.description',
     defaultMessage: 'Description'
   },
   siteFormat: {
-    id: 'CreateSiteDialog.siteFormat',
+    id: 'createSiteDialog.siteFormat',
     defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)'
   },
   nameExist: {
-    id: 'CreateSiteDialog.nameExist',
+    id: 'createSiteDialog.nameExist',
     defaultMessage: 'The name already exist'
   },
   pushSiteToRemote: {
-    id: 'CreateSiteDialog.pushSiteToRemote',
+    id: 'createSiteDialog.pushSiteToRemote',
     defaultMessage: 'Push the site to a remote Git repository after creation'
   },
   descriptionMaxLength: {
-    id: 'CreateSiteDialog.descriptionMaxLength',
+    id: 'createSiteDialog.descriptionMaxLength',
     defaultMessage: 'Max length: 4000 characters'
   },
 });
