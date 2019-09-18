@@ -564,9 +564,9 @@ var nodeOpen = false,
                                     view = new Controller({ context: dialogueId });
                                     view.on("end", function(){ dialogue.destroy(); });
                                 }
+                                ApproveType = ApproveTypeParam;
                                 oRequest.callback && oRequest.callback.call(view, dialogue);
                                 dialogue.centreY();
-                                ApproveType = ApproveTypeParam;
                             }
                         },
                         fixedcenter: true,
