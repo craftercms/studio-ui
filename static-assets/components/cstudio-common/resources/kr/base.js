@@ -771,6 +771,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     inputProfileId: "입력 프로파일 ID",
     outputProfileId: "출력 프로필 ID",
     postfixes: "포스트 픽스",
+    useSearch: "검색 사용",
 
     /*Restrictions*/
     required: "필요",

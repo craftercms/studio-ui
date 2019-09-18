@@ -827,6 +827,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     inputProfileId: "Input Profile Id",
     outputProfileId: "Output Profile Id",
     postfixes: "Postfixes",
+    useSearch: "Use Search",
 
     /*Restrictions*/
     required: "Required",

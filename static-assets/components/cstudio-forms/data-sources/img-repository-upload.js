@@ -21,11 +21,15 @@ function(id, form, properties, constraints)  {
    	this.form = form;
    	this.properties = properties;
    	this.constraints = constraints;
+    this.useSearch = false;
 
-   	for(var i=0; i<properties.length; i++) {
-   		if(properties[i].name == "repoPath") {
- 			this.repoPath = properties[i].value;
-   		}
+    for(let property of properties)
+      if(property.name === "repoPath") {
+        this.repoPath = properties[i].value;
+      }
+      else if(property.name === "useSearch"){
+        this.useSearch = properties[i].value === "true";
+      }
    	} 
    		
 	return this;
@@ -43,22 +47,58 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
 	insertImageAction: function(insertCb) {
 		var _self = this;
 
-		CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(_self.repoPath), "1", "select", true, { 
-			success: function(searchId, selectedTOs) {
-				var imageData = {};
-				var path = selectedTOs[0].uri;
-				var url = this.context.createPreviewUrl(path);
-				imageData.previewUrl = url;
-				imageData.relativeUrl = path;
-				imageData.fileExtension = path.substring(path.lastIndexOf(".")+1);
+    if (this.useSearch) {
+      var searchContext = {
+        searchId: null,
+        itemsPerPage: 12,
+        keywords: "",
+        filters:  {"mime-type": ["image/jpeg", "image/png", "image/gif", "image/tiff", "image/bmp"]},
+        sortBy: "internalName",      // sortBy has value by default, so numFilters starts at 1
+        sortOrder: "asc",
+        numFilters: 1,
+        filtersShowing: 10,
+        currentPage: 1,
+        searchInProgress: false,
+        view: "grid",
+        lastSelectedFilterSelector: "",
+        mode: "select"              // open search not in default but in select mode
+      };
+
+      CStudioAuthoring.Operations.openSearch(searchContext, true, {
+        success: function (searchId, selectedTOs) {
+          var imageData = {};
+          var path = selectedTOs[0].uri;
+          var url = this.context.createPreviewUrl(path);
+          imageData.previewUrl = url;
+          imageData.relativeUrl = path;
+          imageData.fileExtension = path.substring(path.lastIndexOf(".") + 1);
+
+          insertCb.success(imageData, true);
+        },
+        failure: function () {
+
+        },
+        context: _self
+      }, null);
+    }
+    else {
+      CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(_self.repoPath), "1", "select", true, {
+        success: function(searchId, selectedTOs) {
+          var imageData = {};
+          var path = selectedTOs[0].uri;
+          var url = this.context.createPreviewUrl(path);
+          imageData.previewUrl = url;
+          imageData.relativeUrl = path;
+          imageData.fileExtension = path.substring(path.lastIndexOf(".")+1);
 
 				insertCb.success(imageData, true);
 			}, 
 			failure: function() {
 
-			},
-			context: _self
-		});
+        },
+        context: _self
+      });
+    }
 	},
 	
 	/**
@@ -99,7 +139,8 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
 	
 	getSupportedProperties: function() {
 		return [
-			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" }
+			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
+      { label: CMgs.format(langBundle, "useSearch"), name: "useSearch", type: "boolean", defaultValue: "false" }
 		];
 	},
 
