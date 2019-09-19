@@ -723,7 +723,7 @@
         $scope.logs.detailsModal = $uibModal.open({
           templateUrl: '/studio/static-assets/ng-views/log-details.html',
           backdrop: 'static',
-          keyboard: false,
+          keyboard: true,
           scope: $scope,
           size: 'lg'
         });

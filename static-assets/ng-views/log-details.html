@@ -3,6 +3,9 @@
     <h3 class="modal-title">{{ 'admin.logconsole.LOG_DETAILS' | translate }}</h3>
   </div>
   <div class="modal-body">
+    <div><label>{{ 'admin.logconsole.LEVEL' | translate }}: </label> {{logs.selectedLog.level}}</div>
+    <div><label>{{ 'admin.logconsole.TIMESTAMP' | translate }}: </label> {{logs.selectedLog.timestamp}}</div>
+    <div><label>{{ 'admin.logconsole.THREAD' | translate }}: </label> {{logs.selectedLog.thread}}</div>
     <div><label>{{ 'admin.logconsole.SITE' | translate }}: </label> {{logs.selectedLog.site}}</div>
     <div><label>{{ 'admin.logconsole.MESSAGE' | translate }}: </label> {{logs.selectedLog.message}}</div>
     <blockquote class="blockquote exception">
