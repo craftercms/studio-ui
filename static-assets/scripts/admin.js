@@ -691,8 +691,8 @@
   ]);
 
   app.controller('LogConsoleCtrl', [
-    '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', 'logType',
-    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType) {
+    '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', 'logType', '$uibModal',
+    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType, $uibModal) {
       $scope.logs = {
         entries: [],
         running: true,
@@ -716,6 +716,21 @@
         if (angular.isDefined(logs.timer)) {
           $interval.cancel(logs.timer);
         }
+      };
+
+      logs.logDetails = function(log){
+        $scope.logs.selectedLog = log;
+        $scope.logs.detailsModal = $uibModal.open({
+          templateUrl: '/studio/static-assets/ng-views/log-details.html',
+          backdrop: 'static',
+          keyboard: false,
+          scope: $scope,
+          size: 'lg'
+        });
+      };
+
+      logs.closeDetails = function() {
+        $scope.logs.detailsModal.close();
       };
 
       logs.getLogs = function(since) {
