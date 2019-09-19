@@ -31,8 +31,8 @@
                     <td class="timestamp">{{log.timestamp}}</td>
                     <td class="thread">{{log.thread}}</td>
                     <td class="site">{{log.site}}</td>
-                    <td class="message">{{log.message}}</td>
-                    <td class="details"><i class="fa fa-eye details-icon" tooltip-placement="bottom" uib-tooltip="{{ 'admin.logconsole.DETAILS' | translate }}" aria-label="{{ 'admin.logconsole.DETAILS' | translate }}" ng-show="log.exception" ng-click="logs.logDetails(log)"></i></td>
+                    <td class="message">{{ log.message.length > 200 ? ((log.message | limitTo:200) + "...") : log.message }}</td>
+                    <td class="details"><i class="fa fa-eye details-icon" tooltip-placement="bottom" uib-tooltip="{{ 'admin.logconsole.DETAILS' | translate }}" aria-label="{{ 'admin.logconsole.DETAILS' | translate }}" ng-click="logs.logDetails(log)"></i></td>
                 </tr>
             </tbody>
         </table>
