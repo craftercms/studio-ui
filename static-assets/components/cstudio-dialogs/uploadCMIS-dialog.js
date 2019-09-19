@@ -89,25 +89,22 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
             '<div class="contentTypePopupHeader">Upload</div> ' +
             '<div><form id="asset_upload_form">' +
             '<div class="contentTypeOuter">'+
-            '<div class="formDesc">Please select a file to upload</div> ' +
+            '<div id="uploadContainer"></div>' +
             '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
             '<td><input type="hidden" name="cmisPath" value="' + path + '"/></td></tr>' +
             '<td><input type="hidden" name="cmisRepoId" value="' + repositoryId + '"/></td></tr>' +
-            '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
             '</table></div>' +
             '</div>' +
             '<div class="contentTypePopupBtn"> ' +
-            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
             '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
             '</form></div>' +
-            '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' +
             '</div> ' +
             '</div>';
 
         // Instantiate the Dialog
         upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
-            { width : "360px",
-                height : "242px",
+            { width : "410px",
+                height : "255px",
                 effect:{
                     effect: YAHOO.widget.ContainerEffect.FADE,
                     duration: 0.25
@@ -139,125 +136,25 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
             }
         });
 
+        var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
+        url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+
+        CrafterCMSNext.render(
+          document.getElementById('uploadContainer'),
+          'SingleFileUpload',
+          {
+            formTarget: '#asset_upload_form',
+            url: url,
+            onComplete: function(result) {
+              let uploaded = result.successful[0].response.body.item;
+
+              me.callback.success(uploaded);
+              CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
+            }
+          }
+        );
+
         return upload_dialog;
-    },
-
-    /**
-     * event fired when the uploadFileNameId is changed
-     */
-    uploadFileEvent: function(event) {
-        var uploadButton = document.getElementById("uploadButton");
-        if(this.value != ""){
-            uploadButton.disabled = false;
-        }else{
-            uploadButton.disabled = true;
-        }
-
-    },
-
-    /**
-     * event fired when the ok is pressed - checks if the file already exists and has edit permission or not
-     * by using the getPermissions Service call
-     */
-    uploadPopupSubmit: function(event, args) {
-        var path = args.self.path;
-        var filename = document.getElementById("uploadFileNameId").value.replace('C:\\fakepath\\',"");
-        if(filename.split("\\").length > 1){
-            filename = filename.split("\\")[filename.split("\\").length-1];
-        }
-        var basePath = path;
-        path= basePath ? basePath+"/"+filename : filename;
-
-        CStudioAuthoring.Dialogs.UploadCMISDialog.uploadFile(args);
-
-        YAHOO.util.Dom.setStyle('indicator', 'visibility', 'visible');
-    },
-
-    /**
-     * upload file when upload pressed
-     */
-    uploadFile: function(args) {
-        var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
-        var form = $('#asset_upload_form')[0];
-        var data = new FormData(form);
-
-        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
-        $.ajax({
-            enctype: 'multipart/form-data',
-            processData: false,  // Important!
-            contentType: false,
-            cache: false,
-            type: "POST",
-            url: serviceUri,
-            data: data,
-            success: function(response)
-            {
-                var r = response.item;
-                CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
-                args.self.callback.success(r);
-            },
-            error: function(err){
-                var r = eval('(' + err.responseText + ')');
-                CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
-                CStudioAuthoring.Operations.showSimpleDialog(
-                    "error-dialog",
-                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                    "Notification",
-                    r.message,
-                    null,
-                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    "studioDialog"
-                );
-            }
-        });
-
-    },
-
-    /**
-     *
-     */
-    overwritePopupSubmit: function (event, args) {
-        var callback = {
-            success: function (response) {
-                var serviceUri = CStudioAuthoring.Service.createServiceUri(args.self.serviceUri);
-                var form = $('#asset_upload_form')[0];
-                var data = new FormData(form);
-
-                serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
-
-                $.ajax({
-                    enctype: 'multipart/form-data',
-                    processData: false,  // Important!
-                    contentType: false,
-                    cache: false,
-                    type: "POST",
-                    url: serviceUri,
-                    data: data,
-                    success: function (item) {
-                        CStudioAuthoring.Operations.showSimpleDialog(
-                            "upload-dialog",
-                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                            "Notification",
-                            item.response.message,
-                            null,
-                            YAHOO.widget.SimpleDialog.ICON_INFO,
-                            "success studioDialog"
-                        );
-                    },
-                    error: function (err) {
-                        CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
-                        args.self.callback.success(err.item);
-                    }
-                });
-
-            },
-
-            failure: function () {
-            }
-        };
-
-        CStudioAuthoring.Service.deleteContentForPathService(args.self.site, args.self.path, callback);
-
     },
 
     /**

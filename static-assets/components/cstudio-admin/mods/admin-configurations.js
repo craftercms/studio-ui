@@ -363,7 +363,7 @@ CStudioAuthoring.Module.requireModule(
                       var requestAsString = JSON.stringify(reqObj);
                         YAHOO.util.Connect.setDefaultPostHeader(false);
                       YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-						YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+						YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, util.storage.getRequestForgeryToken());
                         YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), saveCb, requestAsString);
                     } else {
                         CStudioAuthoring.Operations.showSimpleDialog(

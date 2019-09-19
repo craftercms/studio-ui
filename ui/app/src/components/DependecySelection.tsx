@@ -44,7 +44,7 @@ declare const CStudioAuthoringContext: any;
 function DependecySelection(props: DependecySelectionProps) {
   const [deps, setDeps] = useState<DepsObject>();
   const [showDepBtn, setshowDepBtn] = useState(true);
-  const { items, siteId, onChange } = props;
+  const { items, siteId } = props;
   const [checked, _setChecked] = useState<any>(
     (items || []).reduce(
       (table: any, item) => {

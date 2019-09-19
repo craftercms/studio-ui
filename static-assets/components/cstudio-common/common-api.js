@@ -885,9 +885,9 @@ var nodeOpen = false,
                                   dependencies.push(this.item);
                                 });
                               });
-                              
+
                               var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
-                              dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+                              dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos});
 
                               eventNS.dependencies = dependencies;
                               document.dispatchEvent(eventNS);
@@ -3401,8 +3401,10 @@ var nodeOpen = false,
             writeCMISContentUri: "/api/2/cmis/upload",
 
             //WEBDAV
-            getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
-            writeWebDAVContentUri: "/api/1/services/api/1/webdav/upload.json",
+            // getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
+            // writeWebDAVContentUri: "/api/1/services/api/1/webdav/upload.json",
+            getWebDAVContentByBrowseUri: "/api/2/webdav/list",
+            writeWebDAVContentUri: "/api/2/webdav/upload",
 
             //S3
             getS3ContentByBrowseUri: "/api/2/aws/s3/list",
@@ -5914,7 +5916,7 @@ var nodeOpen = false,
             },
 
             getWebDAVContentByBrowser: function(site, profileId, path, callback, filter) {
-                var serviceUri = this.getWebDAVContentByBrowseUri + "?site_id=" + site + "&profile=" + profileId + "&path=" + path;
+                var serviceUri = this.getWebDAVContentByBrowseUri + "?siteId=" + site + "&profileId=" + profileId + "&path=" + path;
 
                 if(filter){
                     serviceUri += "&type=" + filter;

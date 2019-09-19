@@ -88,18 +88,19 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
                            '<div class="contentTypePopupHeader">Upload</div> ' +
 						   '<div><form id="asset_upload_form">' +
                                 '<div class="contentTypeOuter">'+
-                                    '<div class="formDesc">Please select a file to upload</div> ' +
-                                    '<div><table><tr><td><input type="hidden" name="site" value="' + site + '"/></td>' +
+                                  '<div id="uploadContainer"></div>' +
+                                    // '<div class="formDesc">Please select a file to upload</div> ' +
+                                    '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
                                     '<td><input type="hidden" name="path" value="' + path + '"/></td></tr>' +
-                                    '<td><input type="hidden" name="profile" value="' + profileId + '"/></td></tr>' +
-						            '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
+                                    '<td><input type="hidden" name="profileId" value="' + profileId + '"/></td></tr>' +
+						            // '<tr><td>File:</td><td><input type="file" name="file" id="uploadFileNameId"/></td></tr>' +
 						            '</table></div>' +
                                 '</div>' +
 						        '<div class="contentTypePopupBtn"> ' +
-						            '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
+						            // '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="uploadButton" value="Upload" disabled />' +
                                     '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
 						        '</form></div>' +
-						   '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' +
+						  //  '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator">Uploading...</div>' +
                            '</div> ' +
                            '</div>';
 
@@ -108,8 +109,8 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 
 		 // Instantiate the Dialog
 		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
-								{ width : "360px",
-								  height : "242px",
+								{ width : "410px",
+								  height : "255px",
                                   effect:{
                                       effect: YAHOO.widget.ContainerEffect.FADE,
                                       duration: 0.25
@@ -141,6 +142,26 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
                 $("#cstudio-wcm-popup-div").off("keyup");
             }
         });
+
+    var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
+    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+
+    CrafterCMSNext.render(
+      document.getElementById('uploadContainer'),
+      'SingleFileUpload',
+      {
+        formTarget: '#asset_upload_form',
+        url: url,
+        onComplete: function(result) {
+          console.log("RESULT",result);
+          let item = result.successful[0].response.body.item,
+              uploaded = item.url ? item.url : item;    // Will return only url
+
+          me.callback.success(uploaded);
+          CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
+        }
+      }
+    );
 
 		return upload_dialog;
 	},
