@@ -8,9 +8,9 @@
     <div><label>{{ 'admin.logconsole.THREAD' | translate }}: </label> {{logs.selectedLog.thread}}</div>
     <div><label>{{ 'admin.logconsole.SITE' | translate }}: </label> {{logs.selectedLog.site}}</div>
     <div><label>{{ 'admin.logconsole.MESSAGE' | translate }}: </label> {{logs.selectedLog.message}}</div>
-    <blockquote class="blockquote exception">
+    <samp class="exception" ng-show="logs.selectedLog.exception">
       {{logs.selectedLog.exception}}
-    </blockquote>
+    </samp>
   </div>
   <div class="modal-footer">
     <button class="btn btn-default" ng-click="logs.closeDetails()">{{ 'common.CLOSE' | translate }}</button>
