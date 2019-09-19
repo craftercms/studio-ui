@@ -207,11 +207,12 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 }
                             }
 
-                            if(!(e.data.treeNodeTO.isAsset)){
-                                if (typeof WcmDashboardWidgetCommon != 'undefined'){
-                                    WcmDashboardWidgetCommon.refreshAllDashboards();
-                                    _this.drawNav();
-                                }
+                            if (typeof WcmDashboardWidgetCommon != 'undefined'){
+                                WcmDashboardWidgetCommon.refreshAllDashboards();
+                                _this.drawNav();
+                            }
+                            // wcm_content should not be refreshed in site-config page
+                            if ( window.location.pathname !== '/studio/site-config' ) {
                                 lookupSiteContent(CStudioAuthoring.SelectedContent.getSelectedContent()[0]);
                             }
                         }, false);
