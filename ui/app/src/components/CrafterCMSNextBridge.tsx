@@ -18,12 +18,15 @@
 import '../styles/index.scss';
 
 import React, { Suspense } from 'react';
+import { IntlProvider } from 'react-intl';
 
 function CrafterCMSNextBridge(props: any) {
   return (
-    <Suspense fallback={'Loading...'}>
-      {props.children}
-    </Suspense>
+    <IntlProvider locale="en">
+      <Suspense fallback={'Loading...'}>
+        {props.children}
+      </Suspense>
+    </IntlProvider>
   );
 }
 

@@ -72,8 +72,8 @@ export function createCodebaseBridge() {
     components: {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
-      DependencySelection: lazy(() => import('../components/DependecySelection')),
-      SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
+      DependencySelection: lazy(() => import('../components/DependencySelection')),
+      SingleFileUpload: lazy(() => import('../components/SingleFileUpload'))
     },
 
     assets: {
@@ -99,7 +99,7 @@ export function createCodebaseBridge() {
       ) {
         throw new Error('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        throw new Error('The supplied component name is not a know component of CrafterCMSNext.');
+        throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       if (typeof container === 'string') {
