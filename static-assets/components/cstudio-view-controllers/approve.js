@@ -61,15 +61,15 @@
   function translateUI() {
 
     const
-      Next = CrafterCMSNext,
-      formatMessage = Next.i18n.intl.formatMessage,
-      messages = Next.i18n.messages.approveDialogMessages;
+      i18n = CrafterCMSNext.i18n,
+      formatMessage = i18n.intl.formatMessage,
+      messages = i18n.messages.approveDialogMessages;
 
     // Imperative programmatic translation
     this.getComponent('.view-title').innerText = formatMessage(messages.approveForPublish);
 
     // Translate the whole UI via the codebase next utility
-    Next.i18n.translateElements(
+    i18n.translateElements(
       this.getComponents('[data-i18n]'),
       messages,
       {
