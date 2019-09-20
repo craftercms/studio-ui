@@ -345,7 +345,9 @@
       "LEVEL": "수평",
       "THREAD": "실",
       "SITE": "대지",
-      "EXCEPTION": "예외"
+      "EXCEPTION": "예외",
+      "DETAILS": "세부",
+      "LOG_DETAILS": "로그 세부 사항"
     }
   },
   "common": {
