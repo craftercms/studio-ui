@@ -28,8 +28,7 @@
         Event = YAHOO.util.Event,
         each = CStudioAuthoring.Utils.each,
         genDependency = [],
-        $ = jQuery,
-        isValidateCommentOn = false;
+        $ = jQuery;
 
     Base.extend('Approve', {
 
@@ -38,7 +37,7 @@
 
         loadItems: loadItems,
 
-        initApprove: initApprove,
+        startup: ['initDatePicker'],
 
         loadPublishingChannels: loadPublishingChannels,
 
@@ -51,8 +50,6 @@
         closeButtonActionClicked: closeButtonClicked,
 
         initDatePicker: initDatePicker,
-
-        initValidation: initValidation,
 
         getGenDependency: getGenDependency
 
@@ -123,9 +120,10 @@
         var items = data;
         loadSpinner.classList.add("hidden");
         me.submitItems = items;
-        $("#approveSubmit").prop('disabled', false);
         me.renderItems(items);
+        $("#approveSubmit").prop('disabled', false);
         verifyMixedSchedules(items);
+
     }
 
     function traverse(items, referenceDate) {
@@ -213,33 +211,25 @@
     }
 
     function renderItems(items) {
-        var me = this;
         this.result = [];
         CrafterCMSNext
             .render(
-                me.getComponent('.dependencies-display'),
+                this.getComponent('.dependencies-display'),
                 'DependencySelection',
                 {
                     onChange: (result) => {
-                        if (result.length > 0 
-                            && ((isValidateCommentOn && me.getComponent('.submission-comment').value !== '') || !isValidateCommentOn) 
-                            && ((me.$('[name="schedulingMode"]:checked').val() !== 'now' && me.$('.date-picker').val() !== '') || 
-                            me.$('[name="schedulingMode"]:checked').val() === 'now')) {
-                                me.$('#approveSubmit').prop('disabled', false);
+                        if (result.length === 0) {
+                            this.$('#approveSubmit').prop('disabled', true);
                         } else {
-                            me.$('#approveSubmit').prop('disabled', true);
+                            this.$('#approveSubmit').prop('disabled', false);
                         }
-                        me.result = result;
+                        this.result = result;
                     },
                     siteId: CStudioAuthoringContext.site,
                     items: items
                 }
             );
 
-        console.log('(*)'+isValidateCommentOn);
-        if(isValidateCommentOn){
-            this.$('#approveDialogSubmissionComment').append(" (*)");
-        }
         $(document).on("keyup", function (e) {
             if (e.keyCode === 27) {	// esc
                 $('.date-picker').datetimepicker('hide');
@@ -266,39 +256,6 @@
         }
     }
 
-    function initApprove(callback) {
-        var me =  this;
-        CStudioAuthoring.Service.getConfiguration(
-            CStudioAuthoringContext.site,
-            "/site-config.xml",
-            {
-                success: function (config) {
-                    isValidateCommentOn = config["submission-settings"] ? 
-                        (config["submission-settings"]["comment-required"] === "true" ? true : false) 
-                        : false;
-                    console.log(isValidateCommentOn);
-                    me.initDatePicker();
-                    me.initValidation();
-                    var timeZoneText = me.$('.zone-text');
-                    timeZoneText.html("<a class='zone-link' title='Time zone can be changed through the Site Config -> Configuration -> Site Configuration'>" + config["default-timezone"] + "</a>");
-                    $('<select class="zone-picker form-control"></select>').insertAfter(timeZoneText);
-                    var zonePicker = $('.zone-picker');
-                    zonePicker.timezones();
-                    zonePicker.hide();
-                    $("select.zone-picker option[value='" + config["default-timezone"] + "']").attr("selected", "selected");
-                    me.$('.zone-link').click(function () {
-                        zonePicker.show();
-                    });
-                    zonePicker.change(function () {
-                        me.$('.zone-link').html($(this).val());
-                    });
-                    if(callback){
-                        callback();
-                    }
-                }
-            });
-    }
-
     function initDatePicker() {
 
         var me = this;
@@ -323,10 +280,8 @@
             if ($elem.val() === 'now') {
                 me.$('.date-picker-control').hide();
                 me.$('.date-picker').val('');
+                me.$('#approveSubmit').prop('disabled', false);
                 me.$('#approveSubmitVal').hide;
-                if((isValidateCommentOn && me.getComponent('.submission-comment').value !== '' || !isValidateCommentOn) && me.result.length > 0 ){
-                    me.$('#approveSubmit').prop('disabled', false); 
-                 }
             } else {
                 me.$('.date-picker-control').show();
                 me.$('.date-picker').select();
@@ -349,31 +304,35 @@
         me.$('.date-picker').change(function () {
             var $elem = $(this);
             if ($elem.val() != null && $elem.val() != "") {
-                if((isValidateCommentOn && me.getComponent('.submission-comment').value !== '' || !isValidateCommentOn) && me.result.length > 0 ){
-                   me.$('#approveSubmit').prop('disabled', false); 
-                }
+                me.$('#approveSubmit').prop('disabled', false);
                 me.$('#approveSubmitVal').hide();
             } else {
                 me.$('#approveSubmit').prop('disabled', true);
                 me.$('#approveSubmitVal').show();
             }
         });
-    }
 
-    function initValidation() {
-        var self = this;
-        this.$('.submission-comment').focusout(function () {
-            if(isValidateCommentOn && $(this).get(0).value === ""){
-                self.$('#submissionCommentVal').show();
-                self.$('#approveSubmit').prop('disabled', true);
-            }else{
-                self.$('#submissionCommentVal').hide();
-                if((self.result.length > 0) && ((self.$('[name="schedulingMode"]:checked').val() !== 'now' && self.$('.date-picker').val() !== '') || 
-                self.$('[name="schedulingMode"]:checked').val() === 'now')){
-                    self.$('#approveSubmit').prop('disabled', false);
+        CStudioAuthoring.Service.getConfiguration(
+            CStudioAuthoringContext.site,
+            "/site-config.xml",
+            {
+                success: function (config) {
+                    var timeZoneText = me.$('.zone-text');
+                    timeZoneText.html("<a class='zone-link' title='Time zone can be changed through the Site Config -> Configuration -> Site Configuration'>" + config["default-timezone"] + "</a>");
+                    $('<select class="zone-picker form-control"></select>').insertAfter(timeZoneText);
+                    var zonePicker = $('.zone-picker');
+                    zonePicker.timezones();
+                    zonePicker.hide();
+                    $("select.zone-picker option[value='" + config["default-timezone"] + "']").attr("selected", "selected");
+                    me.$('.zone-link').click(function () {
+                        zonePicker.show();
+                    });
+                    zonePicker.change(function () {
+                        me.$('.zone-link').html($(this).val());
+                    });
                 }
-            }
-        });
+            });
+
     }
 
     function getScheduledDateTimeForJson(dateTimeValue) {
