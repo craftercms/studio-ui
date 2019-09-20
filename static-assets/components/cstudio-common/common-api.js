@@ -819,7 +819,7 @@ var nodeOpen = false,
                                         currentContentTO = items[0];
                                     }
 
-                                    if(currentContentTO.isPage){
+                                    if(currentContentTO && currentContentTO.isPage){
                                         CStudioAuthoring.Operations.refreshPreview(currentContentTO);
                                     }else{
                                         CStudioAuthoring.Operations.refreshPreview();
