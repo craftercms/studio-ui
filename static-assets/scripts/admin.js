@@ -258,9 +258,10 @@
         return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
       };
 
-      this.bulkGoLive = function(site, path, environmet) {
+      this.bulkGoLive = function(site, path, environmet, submissionComment) {
         environmet = environmet ? environmet : Constants.BULK_ENVIRONMENT;
-        return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet));
+        submissionComment = submissionComment ? submissionComment : '';
+        return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet + "&comment=" + submissionComment));
       };
 
       //COMMITSPUBLISH
@@ -851,12 +852,17 @@
       publish.startDisabled = false;
       publish.site = $location.search().site;
       publish.timeZone;
+      publish.isValidateCommentOn = false;
 
       adminService.getTimeZone({
         "site" : publish.site,
         "path" : "/site-config.xml"
       }).success(function (data) {
         publish.timeZone = data["default-timezone"];
+        publish.isValidateCommentOn = config["submission-settings"] ? 
+          (config["submission-settings"]["comment-required"] === "true" || config["submission-settings"]["bulk-comment-required"] === "true" ? 
+          true : false) 
+          : false;
       });
 
       publish.getPublish = function () {
@@ -968,7 +974,7 @@
         publish.disable = true;
         spinnerOverlay = $scope.spinnerOverlay();
 
-        adminService.bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel)
+        adminService.bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
           .success(function (data) {
             publish.disable = false;
             spinnerOverlay.close();

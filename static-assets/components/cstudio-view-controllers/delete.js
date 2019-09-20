@@ -275,7 +275,7 @@
                     url: CStudioAuthoring.Service.createServiceUri(
                         CStudioAuthoring.Service.deleteContentUrl +
                             "?deletedep=true&site=" +CStudioAuthoringContext.site+
-                            "&user="+CStudioAuthoringContext.user),
+                            "&user="+CStudioAuthoringContext.user + "&comment="+ _this.getComponent("#deleteSubmissionComment").value),
                     callback: {
                         success: function(oResponse) {
                             _this.showProcessingOverlay(false);
