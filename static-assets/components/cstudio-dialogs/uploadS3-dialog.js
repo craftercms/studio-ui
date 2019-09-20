@@ -166,12 +166,13 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
       {
         formTarget: '#asset_upload_form',
         url: url,
+        cancelBtnSelector: '#uploadCancelButton',
         onComplete: function(result) {
           let item = result.successful[0].response.body.item,
               uploaded = item.url ? item.url : item;    // Will return only url
 
           me.callback.success(uploaded);
-          // CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
+          CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
         }
       }
     );

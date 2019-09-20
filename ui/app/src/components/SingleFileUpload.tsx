@@ -17,6 +17,7 @@
 
 import React, { useEffect } from 'react';
 import { Core, FileInput, XHRUpload, ProgressBar, Form } from 'uppy';
+import { FormattedMessage } from 'react-intl';
 
 import 'uppy/src/style.scss';
 
@@ -24,7 +25,8 @@ interface UppyProps {
   formTarget: string;
   url: string;
   onComplete?(result: any): void;
-  onCancel?(): void;
+  cancelBtnSelector?: string;
+  fileTypes?: [string];
 }
 
 function SingleFileUpload(props: UppyProps) {
@@ -34,9 +36,26 @@ function SingleFileUpload(props: UppyProps) {
       url,
       formTarget,
       onComplete,
-      onCancel
-    } = props,
-    uppy = Core({ autoProceed: true });
+      cancelBtnSelector,
+      fileTypes
+    } = props;
+    let uppyConfig: Object = {
+      autoProceed: true
+    };
+
+  if (fileTypes) {
+    uppyConfig = {
+      ...uppyConfig,
+      restrictions: {
+        allowedFileTypes: fileTypes
+      }
+    }
+  }
+
+  const uppy = Core(uppyConfig);
+  let uploadBtn: HTMLInputElement,
+      isUploading: boolean = false,
+      uploadingFile: any;   //TODO: update type
 
   useEffect(
     () => {
@@ -45,7 +64,7 @@ function SingleFileUpload(props: UppyProps) {
         replaceTargetContent: false,
         locale: {
           strings: {
-            chooseFiles: 'Choose File'
+            chooseFiles: 'Choose File',
           }
         }
       })
@@ -66,20 +85,37 @@ function SingleFileUpload(props: UppyProps) {
         fieldName: 'file'
       })
       uppy.on('file-added', (file) => {
+        isUploading = true;
+        uploadingFile = file;
+        uploadBtn = document.querySelector('.uppy-FileInput-btn');
         document.querySelector('.uploaded-files .description').innerHTML = 'Uploading File:';
         document.querySelector('.uploaded-files ol').innerHTML +=
-          `<li><a href="${file.name}" target="_blank">${file.name}</a></li>`
+          `<li><a href="${file.name}" target="_blank">${file.name}</a></li>`;
+        uploadBtn.disabled = true;
       })
       uppy.on('upload-success', (file) => {
         document.querySelector('.uploaded-files .description').innerHTML = 'Uploaded File:';
+        uploadBtn.disabled = false;
       })
       uppy.on('complete', (result) => {
+        isUploading = false;
         onComplete(result);
       });
 
       // Move to CSS file
       let selectFileBtnEl: HTMLElement = document.querySelector('.uppy-FileInput-container');
       selectFileBtnEl.style.display = 'inline-block';
+
+      if (cancelBtnSelector) {
+        let cancelBtn = document.querySelector(cancelBtnSelector);
+        cancelBtn.addEventListener('click', () => {
+          if (isUploading) {
+            uppy.cancelAll();
+            uploadBtn.disabled = false;
+            document.querySelector(`[href='${uploadingFile.name}']`).parentElement.remove();
+          }
+        });
+      }
     },
     [formTarget, onComplete, uppy, url]
   );
@@ -89,7 +125,12 @@ function SingleFileUpload(props: UppyProps) {
       <div className="UppyProgressBar"></div>
 
       <div className="uploaded-files" style={{ marginTop: '5px' }}>
-        <h5 className="description" style={{ display: 'inline-block' }}>Please select a file to upload</h5>
+        <h5 className="description" style={{ display: 'inline-block' }}>
+          <FormattedMessage
+            id="fileUpload.selectFileMessage"
+            defaultMessage={`Please select a file to upload`}
+          />
+        </h5>
         <div className="uppy-file-input-container" style={{ float: 'right'}}></div>
         <ol></ol>
       </div>
