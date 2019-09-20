@@ -859,10 +859,12 @@
         "path" : "/site-config.xml"
       }).success(function (data) {
         publish.timeZone = data["default-timezone"];
-        publish.isValidateCommentOn = config["submission-settings"] ? 
-          (config["submission-settings"]["comment-required"] === "true" || config["submission-settings"]["bulk-comment-required"] === "true" ? 
+        publish.isValidateCommentOn = data["submission-settings"] ? 
+          ((data["submission-settings"]["comment-required"] === "true" && data["submission-settings"]["bulk-comment-required"] !== "false" )
+          || data["submission-settings"]["bulk-comment-required"] === "true" ? 
           true : false) 
           : false;
+          console.log(publish.isValidateCommentOn);
       });
 
       publish.getPublish = function () {
