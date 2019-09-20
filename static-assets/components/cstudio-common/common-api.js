@@ -564,9 +564,9 @@ var nodeOpen = false,
                                     view = new Controller({ context: dialogueId });
                                     view.on("end", function(){ dialogue.destroy(); });
                                 }
-                                ApproveType = ApproveTypeParam;
                                 oRequest.callback && oRequest.callback.call(view, dialogue);
                                 dialogue.centreY();
+                                ApproveType = ApproveTypeParam;
                             }
                         },
                         fixedcenter: true,
@@ -832,7 +832,7 @@ var nodeOpen = false,
                     callback: function(dialogue) {
                         var self = this;
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                        this.initApprove( function(){ self.loadItems(items) });
+                        this.loadItems(items);
                         this.loadPublishingChannels();
                         CStudioAuthoring.Utils.removeLoadingIcon();
 
@@ -920,14 +920,13 @@ var nodeOpen = false,
             },
 
             submitContent: function(site, contentItems) {
-                
+
                 CSA.Operations._showDialogueView({
                     fn: CSA.Service.getRequestPublishView,
                     controller: 'viewcontroller-requestpublish',
                     callback: function(dialog) {
-                        var self =  this;
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                        this.initApprove( function(){ self.renderItems(contentItems) });
+                        this.renderItems(contentItems);
                         this.loadPublishingChannels();
                     }
                 }, true, '800px');
