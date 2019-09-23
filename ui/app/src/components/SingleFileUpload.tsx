@@ -103,7 +103,7 @@ function SingleFileUpload(props: UppyProps) {
         uploadBtn = document.querySelector('.uppy-FileInput-btn');
         document.querySelector('.uploaded-files .description').innerHTML = `${formatMessage(messages.uploadingFile)}:`;
         document.querySelector('.uploaded-files ol').innerHTML +=
-          `<li><a href="${file.name}" target="_blank">${file.name}</a></li>`;
+          `<li><a>${file.name}</a></li>`;
         uploadBtn.disabled = true;
 
         onUploadStart();

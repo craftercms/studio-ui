@@ -44,6 +44,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
     this.serviceUri = serviceUri;
     this.fileTypes = fileTypes;
     this.callback = callback;
+    this.uploadingFile = false;
     this.dialog = this.createDialog(path, site, repositoryId, serviceUri);
     this.dialog.show();
     document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
@@ -132,7 +133,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
     YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
 
     $("body").on("keyup", "#cstudio-wcm-popup-div", function (e) {
-      if (e.keyCode === 27) {	// esc
+      if (e.keyCode === 27 && !me.uploadingFile) {	// esc
         me.closeDialog();
       }
     });
@@ -147,8 +148,15 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
         formTarget: '#asset_upload_form',
         url: url,
         fileTypes: me.fileTypes,
+        onUploadStart: function() {
+          me.uploadingFile = true;
+          $('#uploadCancelButton').attr('disabled', true);
+        },
         onComplete: function (result) {
           let uploaded = result.successful[0].response.body.item;
+
+          $('#uploadCancelButton').attr('disabled', false);
+          me.uploadingFile = false;
 
           me.callback.success(uploaded);
           CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();

@@ -45,6 +45,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     this.serviceUri = serviceUri;
     this.fileTypes = params && params.fileTypes ? params.fileTypes : null;
     this.callback = callback;
+    this.uploadingFile = false;
     this.dialog = this.createDialog(path, site, profileId, serviceUri, params);
     this.dialog.show();
     document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
@@ -149,7 +150,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
 
     $("body").on("keyup", "#cstudio-wcm-popup-div", function (e) {
-      if (e.keyCode === 27) {	// esc
+      if (e.keyCode === 27 && !me.uploadingFile) {	// esc
         me.closeDialog();
         $("#cstudio-wcm-popup-div").off("keyup");
       }
@@ -165,9 +166,16 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
         formTarget: '#asset_upload_form',
         url: url,
         fileTypes: me.fileTypes,
+        onUploadStart: function() {
+          me.uploadingFile = true;
+          $('#uploadCancelButton').attr('disabled', true);
+        },
         onComplete: function (result) {
           let item = result.successful[0].response.body.item,
-            uploaded = item.url ? item.url : item;    // Will return only url
+              uploaded = item.url ? item.url : item;    // Will return only url
+
+          $('#uploadCancelButton').attr('disabled', false);
+          me.uploadingFile = false;
 
           me.callback.success(uploaded);
           CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
