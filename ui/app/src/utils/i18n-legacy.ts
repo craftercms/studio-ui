@@ -32,7 +32,7 @@ const approveDialogMessages = defineMessages({
   },
   differentPublishDateWarning: {
     id: 'publishDialog.differentPublishDateWarning',
-    defaultMessage: '<strong>Warning</strong> The items {name} you have selected for approval were submitted with different requested publish dates/times.'
+    defaultMessage: '<strong>Warning</strong> The items you have selected for approval were submitted with different requested publish dates/times.'
   },
   publishingScheduleTitle: {
     id: 'publishDialog.publishingScheduleTitle',
