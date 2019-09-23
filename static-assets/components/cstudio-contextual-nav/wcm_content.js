@@ -73,7 +73,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         CStudioAuthoring.Events.contentSelected.subscribe(function(evtName, contentTO) {
                             var selectedContent,
-                                callback;   
+                                callback;
 
                             if (contentTO[0] && contentTO[0].path) {
                                 selectedContent = CStudioAuthoring.SelectedContent.getSelectedContent();
@@ -103,7 +103,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             var currentContent;
                                             for(var s=0; s<selectedContent.length; s++) {
                                                 currentContent = selectedContent[s];
-                                                
+
                                                 var noticeEls = YDom.getElementsByClassName("acnDraftContent", null, _this.containerEl.parentNode.parentNode);
                                                 if(currentContent.savedAsDraft == true) {
                                                     saveDraftFlag = true;
@@ -136,7 +136,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                         document.addEventListener('crafter.create.contenMenu', function (e) {
                         if(e.item && CStudioAuthoring.SelectedContent.getSelectedContent()[0]) {
-                            if(!(CStudioAuthoringContext.isPreview && !(e.item.isPage))){
+                            if(CStudioAuthoringContext.isPreview && (e.item.isPage || e.item.isAsset)){
                                 CStudioAuthoring.SelectedContent.clear();
                                 CStudioAuthoring.SelectedContent.setContent(e.item);
                             }
@@ -675,7 +675,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
 
                                     if(contentTO.updatedModel && contentTO.initialModel &&
                                     contentTO.updatedModel.orderDefault_f != contentTO.initialModel.orderDefault_f){
-                
+
                                         if(CStudioAuthoring.ContextualNav.WcmRootFolder) {
                                             eventYS.data = contentTO.item;
                                             eventYS.typeAction = "edit";
@@ -687,14 +687,14 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             eventNS.draft = draft;
                                             document.dispatchEvent(eventNS);
                                         }
-                                    
+
                                     }else{
                                         eventNS.data = contentTO.item;
                                         eventNS.typeAction = "edit";
                                         eventNS.draft = draft;
                                         document.dispatchEvent(eventNS);
                                     }
-                                    
+
                                     if(!CStudioAuthoringContext.isPreview) {
                                         if(draft) {
                                             //console.log(CStudioAuthoring.Utils.Cookies.readCookie("dashboard-selected"));
@@ -741,7 +741,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                             false,
                                             editCallback);
                                     }
-                            }; 
+                            };
 
                             // relevant flag, allowing document & banner to be editable from Search result
                             // allowing banner type component
@@ -937,7 +937,7 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                         }
                                     }
                                 }
-                                
+
                                 var renderFlag = true;
                                 if(option.name == "Schedule") {
                                     for(var i=0; i<items.length; i++) {
@@ -1013,9 +1013,9 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                         render: function(option, isBulk, isAdmin, state, isRelevant, isWrite, perms) {
                             if(CStudioAuthoring.Service.isPublishAllowed(perms)) {
                                  isRelevant = false;
-                                if ( (state.indexOf("Submitted") != -1 
-                                || state.indexOf("Scheduled") != -1 
-                                || state.indexOf("In Workflow") != -1 
+                                if ( (state.indexOf("Submitted") != -1
+                                || state.indexOf("Scheduled") != -1
+                                || state.indexOf("In Workflow") != -1
                                 || state.indexOf("Deleted") != -1)) {
                                     isRelevant = true;
                                 }
