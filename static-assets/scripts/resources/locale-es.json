@@ -345,7 +345,9 @@
       "LEVEL": "Nivel",
       "THREAD": "Hilo",
       "SITE": "Sitio",
-      "EXCEPTION": "Excepción"
+      "EXCEPTION": "Excepción",
+      "DETAILS": "Detalles",
+      "LOG_DETAILS": "Detalles de Registro"
     }
   },
   "common": {
