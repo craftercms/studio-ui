@@ -4,7 +4,7 @@ import { intl } from '../components/CrafterCMSNextBridge';
 export function translateElements(
   elements: Element[],
   messages: { [key: string]: MessageDescriptor },
-  formats: any
+  formats: any = {}
 ) {
   messages = Object.entries(messages)
     .reduce(
