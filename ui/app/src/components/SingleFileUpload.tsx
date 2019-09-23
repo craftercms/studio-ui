@@ -18,14 +18,30 @@
 import React, { useEffect } from 'react';
 import { Core, FileInput, XHRUpload, ProgressBar, Form } from 'uppy';
 import { FormattedMessage } from 'react-intl';
+import { defineMessages, useIntl } from "react-intl";
 
 import 'uppy/src/style.scss';
+
+const messages = defineMessages({
+  chooseFile: {
+    id: 'fileUpload.chooseFile',
+    defaultMessage: 'Choose File'
+  },
+  uploadingFile: {
+    id: 'fileUpload.uploadingFile',
+    defaultMessage: 'Uploading File'
+  },
+  uploadedFile: {
+    id: 'fileUpload.uploadedFile',
+    defaultMessage: 'Uploaded File'
+  }
+});
 
 interface UppyProps {
   formTarget: string;
   url: string;
+  onUploadStart?(): void;
   onComplete?(result: any): void;
-  cancelBtnSelector?: string;
   fileTypes?: [string];
 }
 
@@ -35,8 +51,8 @@ function SingleFileUpload(props: UppyProps) {
     {
       url,
       formTarget,
+      onUploadStart,
       onComplete,
-      cancelBtnSelector,
       fileTypes
     } = props;
     let uppyConfig: Object = {
@@ -53,9 +69,8 @@ function SingleFileUpload(props: UppyProps) {
   }
 
   const uppy = Core(uppyConfig);
-  let uploadBtn: HTMLInputElement,
-      isUploading: boolean = false,
-      uploadingFile: any;   //TODO: update type
+  const { formatMessage } = useIntl();
+  let uploadBtn: HTMLInputElement;
 
   useEffect(
     () => {
@@ -64,7 +79,7 @@ function SingleFileUpload(props: UppyProps) {
         replaceTargetContent: false,
         locale: {
           strings: {
-            chooseFiles: 'Choose File',
+            chooseFiles: formatMessage(messages.chooseFile),
           }
         }
       })
@@ -85,37 +100,25 @@ function SingleFileUpload(props: UppyProps) {
         fieldName: 'file'
       })
       uppy.on('file-added', (file) => {
-        isUploading = true;
-        uploadingFile = file;
         uploadBtn = document.querySelector('.uppy-FileInput-btn');
-        document.querySelector('.uploaded-files .description').innerHTML = 'Uploading File:';
+        document.querySelector('.uploaded-files .description').innerHTML = `${formatMessage(messages.uploadingFile)}:`;
         document.querySelector('.uploaded-files ol').innerHTML +=
           `<li><a href="${file.name}" target="_blank">${file.name}</a></li>`;
         uploadBtn.disabled = true;
+
+        onUploadStart();
       })
       uppy.on('upload-success', (file) => {
-        document.querySelector('.uploaded-files .description').innerHTML = 'Uploaded File:';
+        document.querySelector('.uploaded-files .description').innerHTML = `${formatMessage(messages.uploadedFile)}:`;
         uploadBtn.disabled = false;
       })
       uppy.on('complete', (result) => {
-        isUploading = false;
         onComplete(result);
       });
 
       // Move to CSS file
       let selectFileBtnEl: HTMLElement = document.querySelector('.uppy-FileInput-container');
       selectFileBtnEl.style.display = 'inline-block';
-
-      if (cancelBtnSelector) {
-        let cancelBtn = document.querySelector(cancelBtnSelector);
-        cancelBtn.addEventListener('click', () => {
-          if (isUploading) {
-            uppy.cancelAll();
-            uploadBtn.disabled = false;
-            document.querySelector(`[href='${uploadingFile.name}']`).parentElement.remove();
-          }
-        });
-      }
     },
     [formTarget, onComplete, uppy, url]
   );

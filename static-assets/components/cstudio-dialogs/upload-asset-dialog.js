@@ -31,125 +31,127 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
 	/**
 	 * initialize module
 	 */
-	initialize: function(config) {
-	},
+  initialize: function (config) {
+  },
 
 	/**
 	 * show dialog
 	 */
-	showDialog: function(site, path, serviceUri, callback, isUploadOverwrite) {
-		this._self = this;
+  showDialog: function (site, path, serviceUri, callback, isUploadOverwrite, fileTypes) {
+    this._self = this;
 
-		this.dialog = this.createDialog(path, site, serviceUri, isUploadOverwrite);
+    this.site = site;
+    this.path = path;
+    this.asPopup = true;
+    this.serviceUri = serviceUri;
+    this.callback = callback;
+    this.isUploadOverwrite = isUploadOverwrite;
+    this.fileTypes = fileTypes;
+    this.uploadingFile = false;
+    this.dialog = this.createDialog(path, site, serviceUri, isUploadOverwrite);
+    this.dialog.show();
+    document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
 
-		this.site = site;
-		this.path = path;
-		this.asPopup = true;
-		this.serviceUri = serviceUri;
-		this.callback = callback;
-		this.isUploadOverwrite = isUploadOverwrite;
-		this.dialog.show();
-		document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
-
-        if(window.frameElement){
-            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-			var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
-			var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
-            var formSize = getFormSizeVal(id);
-            if(formSize < 320){
-				setFormSizeVal(320, id);
-				$($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease', true);
-            }
-		}
-	},
+    if (window.frameElement) {
+      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+      var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
+      var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
+      var formSize = getFormSizeVal(id);
+      if (formSize < 320) {
+        setFormSizeVal(320, id);
+        $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease', true);
+      }
+    }
+  },
 
 	/**
 	 * hide dialog
 	 */
-    closeDialog:function() {
-        this.dialog.destroy();
-    },
+  closeDialog: function () {
+    this.dialog.destroy();
+  },
 
-    /**
-	 * create dialog
-	 */
-	createDialog: function(path, site, serviceUri, isUploadOverwrite) {
-		var me = this;
-		YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
+  /**
+ * create dialog
+ */
+  createDialog: function (path, site, serviceUri, isUploadOverwrite) {
+    var me = this;
+    YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
 
-		if (isUploadOverwrite == "overwrite") {
-			path = path.substring(0, path.lastIndexOf("/"));
-		}
+    if (isUploadOverwrite == "overwrite") {
+      path = path.substring(0, path.lastIndexOf("/"));
+    }
 
-		var newdiv = YDom.get("cstudio-wcm-popup-div");
-		if (newdiv == undefined) {
-			newdiv = document.createElement("div");
-			document.body.appendChild(newdiv);
-		}
+    var newdiv = YDom.get("cstudio-wcm-popup-div");
+    if (newdiv == undefined) {
+      newdiv = document.createElement("div");
+      document.body.appendChild(newdiv);
+    }
 
-		var divIdName = "cstudio-wcm-popup-div";
-		newdiv.setAttribute("id",divIdName);
-		newdiv.className= "yui-pe-content";
-        newdiv.innerHTML =
-        '<div class="contentTypePopupInner" id="upload-popup-inner">' +
-          '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-            '<div class="contentTypePopupHeader">Upload</div> ' +
-              '<div><form id="asset_upload_form">' +
-                  '<div class="contentTypeOuter">'+
-                    '<div id="uploadContainer"></div>' +
-                      '<div>' +
-                        '<table><tr><td><input type="hidden" name="site" value="' + site + '"/></td>' +
-                            '<td><input type="hidden" name="path" value="' + path + '"/></td></tr>' +
-                        '</table>' +
-                      '</div>' +
-                  '</div>' +
-                  '<div class="contentTypePopupBtn"> ' +
-                    '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Close"  /></div>' +
-                '</form></div>' +
-                '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator"></div>' +
-              '</div> ' +
-            '</div>';
+    var divIdName = "cstudio-wcm-popup-div";
+    newdiv.setAttribute("id", divIdName);
+    newdiv.className = "yui-pe-content";
+    newdiv.innerHTML =
+      '<div class="contentTypePopupInner" id="upload-popup-inner">' +
+      '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
+      '<div class="contentTypePopupHeader">Upload</div> ' +
+      '<div><form id="asset_upload_form">' +
+      '<div class="contentTypeOuter">' +
+      '<div id="uploadContainer"></div>' +
+      '<div>' +
+      '<table><tr><td><input type="hidden" name="site" value="' + site + '"/></td>' +
+      '<td><input type="hidden" name="path" value="' + path + '"/></td></tr>' +
+      '</table>' +
+      '</div>' +
+      '</div>' +
+      '<div class="contentTypePopupBtn"> ' +
+      '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Close"  /></div>' +
+      '</form></div>' +
+      '<div><div  style="visibility:hidden; margin-bottom:1.5em;" id="indicator"></div>' +
+      '</div> ' +
+      '</div>';
 
-		document.getElementById("upload-popup-inner").style.width = "350px";
-		document.getElementById("upload-popup-inner").style.height = "180px";
+    document.getElementById("upload-popup-inner").style.width = "350px";
+    document.getElementById("upload-popup-inner").style.height = "180px";
 
-		 // Instantiate the Dialog
-		upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", {
-      width : "410px",
-      height : "255px",
-      effect:{
+    // Instantiate the Dialog
+    upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", {
+      width: "410px",
+      height: "255px",
+      effect: {
         effect: YAHOO.widget.ContainerEffect.FADE,
         duration: 0.25
       },
-      fixedcenter : true,
-      visible : false,
-      modal:true,
-      close:false,
-      constraintoviewport : true,
-      underlay:"none"
+      fixedcenter: true,
+      visible: false,
+      modal: true,
+      close: false,
+      constraintoviewport: true,
+      underlay: "none"
     });
 
-		// Render the Dialog
-		upload_dialog.render();
+    // Render the Dialog
+    upload_dialog.render();
 
-		var eventParams = {
-			self: this
-		};
+    var eventParams = {
+      self: this
+    };
 
-		YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
+    YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
 
-		$("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
-      if (e.keyCode === 27) {	// esc
-          me.closeDialog();
-          $("#cstudio-wcm-popup-div").off("keyup");
+    $("body").on("keyup", "#cstudio-wcm-popup-div", function (e) {
+      e.stopPropagation();
+      if (e.keyCode === 27 && !me.uploadingFile) {	// esc
+        me.closeDialog();
+        $("#cstudio-wcm-popup-div").off("keyup");
       }
     });
 
     var serviceUri = CStudioAuthoring.Service.createServiceUri("/asset-upload"),
-    url = serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+      url = serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
 
     var checkPermissionsCb = {
-      success: function(results) {
+      success: function (results) {
         var isWrite = CStudioAuthoring.Service.isWrite(results.permissions);
         if (isWrite == true) {
           CrafterCMSNext.render(
@@ -158,10 +160,13 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
             {
               formTarget: '#asset_upload_form',
               url: url,
-              onComplete: function(result) {
+              fileTypes: me.fileTypes,
+              onUploadStart: function() {
+                me.uploadingFile = true;
+                $('#uploadCancelButton').attr('disabled', true);
+              },
+              onComplete: function (result) {
                 let uploaded = result.successful[0];
-
-                console.log(uploaded);
 
                 if (!uploaded.fileExtension) {
                   uploaded.fileExtension = uploaded.extension;
@@ -169,6 +174,9 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
                 if (!uploaded.fileName) {
                   uploaded.fileName = uploaded.name;
                 }
+
+                $('#uploadCancelButton').attr('disabled', false);
+                me.uploadingFile = false;
 
                 me.callback.success(uploaded);
                 CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
@@ -183,24 +191,24 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
     };
     CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, checkPermissionsCb);
 
-		return upload_dialog;
-	},
+    return upload_dialog;
+  },
 
 	/**
 	 * event fired when the ok is pressed
 	 */
-	uploadPopupCancel: function(event) {
-		CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
-        if(window.frameElement){
-            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-            if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212 &&
-				$($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease')) {
+  uploadPopupCancel: function (event) {
+    CStudioAuthoring.Dialogs.UploadDialog.closeDialog();
+    if (window.frameElement) {
+      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+      if ($('#ice-body').length > 0 && $($(".studio-ice-container-" + id, parent.document)[0]).height() > 212 &&
+        $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease')) {
 
-				$($(".studio-ice-container-"+id,parent.document)[0]).height(212);
-            }
-        }
+        $($(".studio-ice-container-" + id, parent.document)[0]).height(212);
+      }
+    }
 
-	}
+  }
 
 
 };

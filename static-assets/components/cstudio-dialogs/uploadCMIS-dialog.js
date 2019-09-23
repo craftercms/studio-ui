@@ -25,153 +25,155 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
  */
 CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISDialog || {
 
-    /**
-     * initialize module
-     */
-    initialize: function(config) {
-    },
+  /**
+   * initialize module
+   */
+  initialize: function (config) {
+  },
 
-    /**
-     * show dialog
-     */
-    showDialog: function(site, path, repositoryId, serviceUri, callback) {
-        this._self = this;
+  /**
+   * show dialog
+   */
+  showDialog: function (site, path, repositoryId, serviceUri, callback, fileTypes) {
+    this._self = this;
 
-        this.dialog = this.createDialog(path, site, repositoryId, serviceUri);
+    this.site = site;
+    this.path = path;
+    this.profile = repositoryId;
+    this.asPopup = true;
+    this.serviceUri = serviceUri;
+    this.fileTypes = fileTypes;
+    this.callback = callback;
+    this.dialog = this.createDialog(path, site, repositoryId, serviceUri);
+    this.dialog.show();
+    document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
 
-        this.site = site;
-        this.path = path;
-        this.profile = repositoryId;
-        this.asPopup = true;
-        this.serviceUri = serviceUri;
-        this.callback = callback;
-        this.dialog.show();
-        document.getElementById("cstudio-wcm-popup-div_h").style.display = "none";
-
-        if(window.frameElement){
-            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-            var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
-            var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
-            var formSize = getFormSizeVal(id);
-            if(formSize < 320){
-                setFormSizeVal(320, id);
-                $($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease', true);
-            }
-        }
-    },
-
-    /**
-     * hide dialog
-     */
-    closeDialog:function() {
-        this.dialog.destroy();
-        $("#cstudio-wcm-popup-div").off("keyup");
-    },
-
-    /**
-     * create dialog
-     */
-    createDialog: function(path, site, repositoryId, serviceUri) {
-        var me = this;
-        YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
-
-        var newdiv = YDom.get("cstudio-wcm-popup-div");
-        if (newdiv == undefined) {
-            newdiv = document.createElement("div");
-            document.body.appendChild(newdiv);
-        }
-
-        var divIdName = "cstudio-wcm-popup-div";
-        newdiv.setAttribute("id",divIdName);
-        newdiv.className= "yui-pe-content";
-        newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
-            '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-            '<div class="contentTypePopupHeader">Upload</div> ' +
-            '<div><form id="asset_upload_form">' +
-            '<div class="contentTypeOuter">'+
-            '<div id="uploadContainer"></div>' +
-            '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
-            '<td><input type="hidden" name="cmisPath" value="' + path + '"/></td></tr>' +
-            '<td><input type="hidden" name="cmisRepoId" value="' + repositoryId + '"/></td></tr>' +
-            '</table></div>' +
-            '</div>' +
-            '<div class="contentTypePopupBtn"> ' +
-            '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
-            '</form></div>' +
-            '</div> ' +
-            '</div>';
-
-        // Instantiate the Dialog
-        upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
-            { width : "410px",
-                height : "255px",
-                effect:{
-                    effect: YAHOO.widget.ContainerEffect.FADE,
-                    duration: 0.25
-                },
-                fixedcenter : true,
-                visible : false,
-                modal:true,
-                close:false,
-                constraintoviewport : true,
-                underlay:"none"
-            });
-
-        // Render the Dialog
-        upload_dialog.render();
-
-        var filenameInput = document.getElementById("uploadFileNameId");
-        YAHOO.util.Event.addListener(filenameInput, "change", this.uploadFileEvent);
-
-        var eventParams = {
-            self: this
-        };
-
-        YAHOO.util.Event.addListener("uploadButton", "click", this.uploadPopupSubmit, eventParams);
-        YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
-
-        $("body").on("keyup", "#cstudio-wcm-popup-div", function(e) {
-            if (e.keyCode === 27) {	// esc
-                me.closeDialog();
-            }
-        });
-
-        var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-        url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
-
-        CrafterCMSNext.render(
-          document.getElementById('uploadContainer'),
-          'SingleFileUpload',
-          {
-            formTarget: '#asset_upload_form',
-            url: url,
-            onComplete: function(result) {
-              let uploaded = result.successful[0].response.body.item;
-
-              me.callback.success(uploaded);
-              CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
-            }
-          }
-        );
-
-        return upload_dialog;
-    },
-
-    /**
-     * event fired when the ok is pressed
-     */
-    uploadPopupCancel: function(event) {
-        CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
-        if(window.frameElement){
-            var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-            if($('#ice-body').length > 0 && $($(".studio-ice-container-"+id,parent.document)[0]).height() > 212 &&
-                $($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease')) {
-
-                $($(".studio-ice-container-"+id,parent.document)[0]).height(212);
-            }
-        }
-
+    if (window.frameElement) {
+      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+      var getFormSizeVal = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
+      var setFormSizeVal = typeof setFormSize === 'function' ? setFormSize : parent.setFormSize;
+      var formSize = getFormSizeVal(id);
+      if (formSize < 320) {
+        setFormSizeVal(320, id);
+        $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease', true);
+      }
     }
+  },
+
+  /**
+   * hide dialog
+   */
+  closeDialog: function () {
+    this.dialog.destroy();
+    $("#cstudio-wcm-popup-div").off("keyup");
+  },
+
+  /**
+   * create dialog
+   */
+  createDialog: function (path, site, repositoryId, serviceUri) {
+    var me = this;
+    YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
+
+    var newdiv = YDom.get("cstudio-wcm-popup-div");
+    if (newdiv == undefined) {
+      newdiv = document.createElement("div");
+      document.body.appendChild(newdiv);
+    }
+
+    var divIdName = "cstudio-wcm-popup-div";
+    newdiv.setAttribute("id", divIdName);
+    newdiv.className = "yui-pe-content";
+    newdiv.innerHTML = '<div class="contentTypePopupInner" id="upload-popup-inner">' +
+      '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
+      '<div class="contentTypePopupHeader">Upload</div> ' +
+      '<div><form id="asset_upload_form">' +
+      '<div class="contentTypeOuter">' +
+      '<div id="uploadContainer"></div>' +
+      '<div><table><tr><td><input type="hidden" name="siteId" value="' + site + '"/></td>' +
+      '<td><input type="hidden" name="cmisPath" value="' + path + '"/></td></tr>' +
+      '<td><input type="hidden" name="cmisRepoId" value="' + repositoryId + '"/></td></tr>' +
+      '</table></div>' +
+      '</div>' +
+      '<div class="contentTypePopupBtn"> ' +
+      '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
+      '</form></div>' +
+      '</div> ' +
+      '</div>';
+
+    // Instantiate the Dialog
+    upload_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div",
+      {
+        width: "410px",
+        height: "255px",
+        effect: {
+          effect: YAHOO.widget.ContainerEffect.FADE,
+          duration: 0.25
+        },
+        fixedcenter: true,
+        visible: false,
+        modal: true,
+        close: false,
+        constraintoviewport: true,
+        underlay: "none"
+      });
+
+    // Render the Dialog
+    upload_dialog.render();
+
+    var filenameInput = document.getElementById("uploadFileNameId");
+    YAHOO.util.Event.addListener(filenameInput, "change", this.uploadFileEvent);
+
+    var eventParams = {
+      self: this
+    };
+
+    YAHOO.util.Event.addListener("uploadButton", "click", this.uploadPopupSubmit, eventParams);
+    YAHOO.util.Event.addListener("uploadCancelButton", "click", this.uploadPopupCancel);
+
+    $("body").on("keyup", "#cstudio-wcm-popup-div", function (e) {
+      if (e.keyCode === 27) {	// esc
+        me.closeDialog();
+      }
+    });
+
+    var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
+    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+
+    CrafterCMSNext.render(
+      document.getElementById('uploadContainer'),
+      'SingleFileUpload',
+      {
+        formTarget: '#asset_upload_form',
+        url: url,
+        fileTypes: me.fileTypes,
+        onComplete: function (result) {
+          let uploaded = result.successful[0].response.body.item;
+
+          me.callback.success(uploaded);
+          CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
+        }
+      }
+    );
+
+    return upload_dialog;
+  },
+
+  /**
+   * event fired when the ok is pressed
+   */
+  uploadPopupCancel: function (event) {
+    CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
+    if (window.frameElement) {
+      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
+      if ($('#ice-body').length > 0 && $($(".studio-ice-container-" + id, parent.document)[0]).height() > 212 &&
+        $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease')) {
+
+        $($(".studio-ice-container-" + id, parent.document)[0]).height(212);
+      }
+    }
+
+  }
 
 
 };
