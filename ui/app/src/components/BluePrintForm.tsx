@@ -20,14 +20,10 @@ const useStyles = makeStyles(() => ({
 
 interface BluePrintForm {
   inputs: SiteState,
-
   setInputs(state: SiteState): any,
-
   onSubmit(event: any): any,
-
   swipeableViews: any,
   blueprint: Blueprint,
-
   onCheckNameExist(event: any): any
 }
 
@@ -93,7 +89,6 @@ function BluePrintForm(props: BluePrintForm) {
             id="siteId"
             name="siteId"
             label={formatMessage(messages.siteId)}
-            variant="outlined"
             required
             fullWidth
             onBlur={onCheckNameExist}
@@ -109,7 +104,6 @@ function BluePrintForm(props: BluePrintForm) {
             fullWidth
             name="description"
             label={formatMessage(messages.description)}
-            variant="outlined"
             multiline
             onChange={handleInputChange}
             value={inputs.description}

@@ -13,6 +13,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Blueprint, Image } from "../models/Blueprint";
 import { defineMessages, useIntl } from "react-intl";
 import MobileStepper from "./MobileStepper";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 interface BlueprintCard {
@@ -82,7 +84,7 @@ const useStyles = makeStyles(theme => ({
     zIndex: 10,
     '& .MuiMobileStepper-dot': {
       padding: '3px',
-      margin: '4px',
+      margin: '2px',
       '&:hover':{
         background: 'gray'
       }
@@ -109,6 +111,7 @@ function BlueprintCard(props: BlueprintCard) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const {onBlueprintSelected, blueprint, interval} = props;
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
@@ -116,6 +119,14 @@ function BlueprintCard(props: BlueprintCard) {
 
   function handleChangeIndex(value: number) {
     setIndex(value);
+  }
+
+  function handleClick(event: any) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
   }
 
   function onDotClick(e:any, step: number) {
@@ -169,9 +180,18 @@ function BlueprintCard(props: BlueprintCard) {
               <label>{formatMessage(messages.crafterCms)}</label>
               <span>{crafterCMS}</span>
           </div>
-          <IconButton aria-label="options" className={classes.options}>
+          <IconButton aria-label="options" aria-controls="simple-menu" aria-haspopup="true" className={classes.options} onClick={handleClick}>
               <MoreVertIcon/>
           </IconButton>
+            <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={handleClose}>Details</MenuItem>
+            </Menu>
       </CardActions>
       }
     </Card>

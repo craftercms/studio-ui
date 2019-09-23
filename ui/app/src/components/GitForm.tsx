@@ -163,7 +163,6 @@ function GitForm(props: GitForm) {
             name="repo_username"
             className={clsx(classes.margin, classes.textField)}
             label={formatMessage(messages.userName)}
-            variant="outlined"
             required
             value={inputs.repo_username}
             onChange={handleInputChange}
@@ -178,7 +177,6 @@ function GitForm(props: GitForm) {
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
             label={formatMessage(messages.password)}
-            variant="outlined"
             required
             value={inputs.repo_password}
             onChange={handleInputChange}
@@ -206,7 +204,6 @@ function GitForm(props: GitForm) {
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
             label={formatMessage(messages.token)}
-            variant="outlined"
             required
             value={inputs.repo_token}
             error={(inputs.submitted && !inputs.repo_token && inputs.push_site)}
@@ -232,7 +229,6 @@ function GitForm(props: GitForm) {
               id="repo_key"
               name="repo_key"
               label={formatMessage(messages.privateKey)}
-              variant="outlined"
               required
               fullWidth
               multiline
@@ -253,7 +249,6 @@ function GitForm(props: GitForm) {
           id="repo_url"
           name="repo_url"
           label={formatMessage(messages.repoUrl)}
-          variant="outlined"
           required
           fullWidth
           placeholder={"e.g. https://github.com/craftercms/craftercms-react-blueprint.git"}
@@ -293,7 +288,6 @@ function GitForm(props: GitForm) {
           id="repo_remote_branch"
           name="repo_remote_branch"
           label={formatMessage(messages.branch)}
-          variant="outlined"
           fullWidth
           onChange={handleInputChange}
           value={inputs.repo_remote_branch}
@@ -305,7 +299,6 @@ function GitForm(props: GitForm) {
           id="repo_remote_name"
           name="repo_remote_name"
           label={formatMessage(messages.remoteName)}
-          variant="outlined"
           required
           fullWidth
           onChange={handleInputChange}
