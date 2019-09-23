@@ -39,6 +39,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import BluePrintForm from './BluePrintForm';
 import BluePrintReview from "./BluePrintReview";
 import CreateSiteLoading from "./CreateSiteLoading";
+import CreateSiteError from "./CreateSiteError";
 import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
@@ -227,7 +228,11 @@ function CreateSiteDialog(props: any) {
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
   const [open, setOpen] = useState(props.open || false);
-  const [creatingSite, setCreatingSite] = useState(true);
+  const [ apiState, setApiState ] = useState({
+    creatingSite: false,
+    error: false,
+    errorResponse: null
+  });
   const [search, setSearch] = useState({
     searchKey: '',
     searchSelected: false
@@ -290,7 +295,7 @@ function CreateSiteDialog(props: any) {
     if (validateForm()) {
       if (site.selectedView === 2) {
         const params = createParams();
-        setCreatingSite(true);
+        setApiState({ ...apiState, creatingSite: true });
         createSite(params);
       } else {
         setSite({...site, selectedView: 2});
@@ -353,12 +358,13 @@ function CreateSiteDialog(props: any) {
     })
       .subscribe(
         () => {
-          setCreatingSite(false);
+          setApiState({ ...apiState, creatingSite: false });
           handleClose();
+          setCookie('crafterSite', site.site_id);
+          window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
-        (error: any) => {
-          console.log(error.response.message);
-          setCreatingSite(false);
+        ({response}) => {
+          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
         }
       )
   }
@@ -369,8 +375,8 @@ function CreateSiteDialog(props: any) {
         ({response}) => {
           setMarketplace(response.plugins);
         },
-        () => {
-          console.log('error')
+        ({response}) => {
+          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
         }
       );
   }
@@ -398,10 +404,20 @@ function CreateSiteDialog(props: any) {
           });
           setBlueprints(_blueprints);
         },
-        () => {
-          console.log('error')
+        ({response}) => {
+          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
         }
       );
+  }
+
+  function setCookie(cookieGenName:string, value:string, maxAge?:any) {
+    //$cookies[cookieName] = site.siteId;
+    const domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
+    if (maxAge != null) {
+      document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal, "; max-age=", maxAge].join("");
+    } else {
+      document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal].join("");
+    }
   }
 
   function checkNameExist(e: any) {
@@ -441,7 +457,7 @@ function CreateSiteDialog(props: any) {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {creatingSite ? <CreateSiteLoading/> :
+      {( apiState.creatingSite || apiState.error) ? (apiState.creatingSite && <CreateSiteLoading/>) || <CreateSiteError error={apiState.errorResponse}/> :
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {

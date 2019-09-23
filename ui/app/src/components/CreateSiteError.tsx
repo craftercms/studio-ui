@@ -17,31 +17,36 @@ const useStyles = makeStyles((theme: any) => ({
     justifyContent: 'center'
   },
   title: {
-    marginTop: '40px'
+    marginTop: '60px',
+    marginBottom: '10px'
   },
   paragraph: {
     marginBottom: '10px'
-  },
-  footerText: {
-    marginBottom: '60px'
   }
 }));
 
-export default function CreateSiteLoading() {
+interface CreateSiteError {
+  error: {
+    code: string,
+    documentationUrl?: string,
+    message: string,
+    remedialAction: string
+  },
+}
+
+export default function CreateSiteError(props: CreateSiteError) {
   const classes = useStyles({});
+  const { code, documentationUrl, message, remedialAction } = props.error;
   return (
     <div className={classes.loadingView}>
       <Typography variant="h5" component="h1" className={classes.title}>
-        Creating Site
+        Error {code}
       </Typography>
       <Typography variant="subtitle1" component="p" className={classes.paragraph}>
-        Please wait while your site is being created..
+        {message}
       </Typography>
-      <div className={classes.gearContainer}>
-        <Gears width={'250px'} />
-      </div>
-      <Typography variant="subtitle1" component="p" className={classes.footerText}>
-        CREATE IN BACKGROUND
+      <Typography variant="subtitle1" component="p" className={classes.paragraph}>
+        {remedialAction}
       </Typography>
     </div>
   )
