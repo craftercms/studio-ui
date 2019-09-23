@@ -267,14 +267,6 @@ div[id*="expandComponentError"].yui-dialog {
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
-/* -- Preview Toolbar -- * /
-#controls-overlay { display: block; position: absolute; left:0; z-index: 99999; }
-#controls-overlay div, #controls-overlay span, #controls-overlay select, #controls-overlay option, #controls-overlay a, #controls-overlay table td {
-    cursor: auto; direction: ltr; font: normal normal normal 12px/normal arial, sans-serif; font-size-adjust: none; font-stretch: normal;
-    letter-spacing: normal; line-height: normal; text-align: left; text-indent: 0; text-justify: auto; text-outline: none; text-shadow: none;
-    text-transform: none; white-space: normal; word-spacing: normal; word-break: normal; word-wrap: normal;
-}
-
 /* -- Go Live and Schedule Overlay -- */
 #acnVersionWrapper div, #acnVersionWrapper span,
 #acnVersionWrapper label, #acnVersionWrapper h1, #acnVersionWrapper h2, #acnVersionWrapper h3, #acnVersionWrapper h4,
@@ -457,41 +449,6 @@ div[id*="expandComponentError"].yui-dialog {
   text-align: center;
 }
 
-/*#ct_contentTypePopupInner .contentTypePopupBtn input,
-.contentTypePopupContent .contentTypePopupBtn input,
-#schedulePolicyPanel .schedulePolicySubmitButtons input,  
-#submitPanel .acnBox .acnSubmitButtons input, *//* For confirmation dialogs *//*
-#acnVersionWrapper .acnSubmitButtons input,  *//* Applies to Delete, Reject, Schedule and GoLive *//*
-#messageOverlay .acnSubmitButtons input,
-.acn-submit-buttons button {
-	background-color: #C0C0C0;
-	border: 1px solid #002185;
-	color: #000000;
-	font: normal 12px Arial, Helvetica;
-	border-radius:3px;
-	padding: 5px 10px;
-	min-width: 6em;
-}
-
-#ct_contentTypePopupInner .contentTypePopupBtn input:hover,
-.contentTypePopupContent .contentTypePopupBtn input:hover,
-#schedulePolicyPanel .schedulePolicySubmitButtons input:hover,
-#submitPanel .acnBox .acnSubmitButtons input:hover,
-#acnVersionWrapper .acnSubmitButtons input:hover,
-#messageOverlay .acnSubmitButtons input:hover,
-.acn-submit-buttons button:hover {
-	cursor: pointer;
-	color: #FFFFFF;
-	background-color: #6C88A2;
-}
-
-#cstudio-wcm-popup-div .contentTypePopupContent .contentTypePopupBtn input[disabled] {
-    background-color: #D3D3D3;
-    color: #818181;
-    border: 1px solid #838DAD;
-    cursor: default;
-}*/
-
 #acnVersionWrapper .publishing-channels .show {
   display: block;
 }
@@ -529,6 +486,10 @@ div[id*="expandComponentError"].yui-dialog {
   word-spacing: normal;
   word-break: normal;
   word-wrap: normal;
+}
+
+.crop-image-dialog span.status-icon {
+  color: #fff;
 }
 
 #cstudio-wcm-popup-div select, #cstudio-wcm-popup-div-login select, #cstudio-wcm-popup-div option, #cstudio-wcm-popup-div-login option {

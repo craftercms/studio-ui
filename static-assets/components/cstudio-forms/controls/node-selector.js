@@ -40,7 +40,9 @@ CStudioForms.Controls.NodeSelector = CStudioForms.Controls.NodeSelector ||
         this.defaultValue = "";
         this.disableFlattening = false;
         this.useSingleValueFilename = false;
+        this.supportedPostFixes = ["_o"];
         amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
+        amplify.subscribe("UPDATE_NODE_SELECTOR", this, this.onIceUpdate);
 
         return this;
     }
@@ -108,6 +110,15 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     },
 
     editNode: function() {
+    },
+
+    onIceUpdate: function( data) {
+      var item = this.items.find((item) => item.key === data.objId);
+      if(item) {
+        item.value =  data.value;
+        this._renderItems();
+        this._onChangeVal(this);
+      }
     },
 
     onDatasourceLoaded: function( data ) {
@@ -278,7 +289,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
         var datasource = datasources[0];
 
-        if( datasource && this.readonly == false ){
+        if (datasource && !this.readonly) {
             this.datasource = datasource;
 
             if(!this.addButtonEl.disabled){
@@ -307,9 +318,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                         }else{
                             for(var x = 0; x < datasources.length; x++) {
                                 datasources[x].selectItemsCount = selectItemsCount;
-                                
                                 if(datasources.length > 1){
-                                    datasources[x].add(_self, true);   
+                                    datasources[x].add(_self, true);
                                 }else{
                                     datasources[x].add(_self);
                                 }
@@ -494,13 +504,15 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             }
 
             item.datasource = datasource;
-
             this.items[this.items.length] = item
 
-            if(this.datasource.itemsAreContentReferences) {
-                if(key.indexOf(".xml") != -1) {
+            if(this.form.datasourceMap[datasource].itemsAreContentReferences) {
+                if(key.indexOf('.xml') != -1) {
                     item.include = key;
                     item.disableFlattening = this.disableFlattening;
+                } else if (this.form.datasourceMap[datasource].flattened) {
+                  item.key = key;
+                  item.inline = 'true';
                 }
             }
 
@@ -560,7 +572,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         this.items = value;
         this.edited = false;
 
-
         if((typeof this.items) == "string") {
             //Check if the current value is the default value, split it by comma and load it using key/value pair
             if(this.items === this.defaultValue && this.items != ""){
@@ -612,6 +623,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         return [
             { label: CMgs.format(langBundle, "allowDuplicate"), name: "allowDuplicates", type: "boolean" }
         ];
+    },
+
+    getSupportedPostFixes: function() {
+      return this.supportedPostFixes;
     }
 });
 

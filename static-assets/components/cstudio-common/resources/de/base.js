@@ -162,7 +162,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     publishStatus: "Veröffentlichungsstatus",
     idle: "Leerlauf",
     busy: "Beschäftigt",
+    ready: "Bereit",
     stopped: "Angehalten",
+    started: "Gestartet",
     quickCreateEmpty:"Für das schnelle Erstellen sind keine Content-Typen konfiguriert. Bitten wenden Sie sich an Ihren Systemadministrator."
 
 });
@@ -429,7 +431,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     deleteSubmitDialogAsSoon: "So schnell wie möglich.",
 
     approveDialogTitle: "Freigabe zum Publizieren",
-    approveDialogSubTitle: "Die folgenden, markierten Elemente werden publiziert.",
+    approveDialogSubTitle: "Ausgewählte Dateien werden veröffentlicht. Harte Abhängigkeiten werden automatisch berücksichtigt. Weiche Abhängigkeiten sind optional und Sie können auswählen, welche einbezogen werden sollen.",
     approveDialogWarning:"WARNUNG: Für die ausgewählten Elemente wurde bereits ein anderer Publizierungszeitpunkt definiert.",
     dependenciesDialogTitle: "Abhängigkeiten",
     dependenciesDialogSubTitle: "Die Abhängigkeiten werden angezeigt für:",
@@ -450,6 +452,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     requestApproveDialogTitle: "Publizierung anfordern",
     requestApproveDialogSubTitle: "Wann sollen die ausgewählten Elemente publiziert werden?",
     requestApproveDialogEmailMe: "Benachrichtung per E-Mail erhalten, wenn die Elemente zum Publizieren freigegeben wurden.",
+
+    itemsForPublish:"Zu veröffentlichende Elemente",
+    selectAll:"Wählen Sie Alle",
+    hardDependencies:"Harte Abhängigkeiten",
+    submissionMandatory: "Vorlage obligatorisch",
+    softDependencies:"Weiche Abhängigkeiten",
+    submissionOptional:"Einreichung optional",
+    showAllDependencies:"Alle Abhängigkeiten anzeigen",
+    changesSelectionItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
+    loadingDependencies:"Abhängigkeiten werden geladen, bitte warten ...",
 
     newContTypeDialogTitle: "Neuen Content-Typ anlegen",
     newContTypeDialogDisplayLabel: "Label",
@@ -700,6 +712,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
 
     /*Datasources */
     childContent: "Komponenten",
+    embeddedContent: "Eingebetteter Inhalt",
     imageUploadedDesktop: "Bilder hochladen",
     WebDAVUploadImage: "Bilder in WebDav Repository hochladen",
     WebDAVUploadVideo: "Videos in WebDav Repository hochladen",
@@ -739,6 +752,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     maxLength: "Maximale Länge",
     width: "Breite",
     height: "Höhe",
+    autoGrow: "Auto wachsen",
     allowResize: "Größenänderung zulassen",
     forceRootBlockP: "<p>-Tag als Root Blockelement erzwingen",
     forcePNewLines: "<p>-Tag als Zeilenumbruch erzwingen",
@@ -876,6 +890,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     confTabRTEConfDesc: "Konfiguriert Profile für Rich Text Editoren",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) konfiguration",
     confTabRTEtMCE5ConfDesc: "Definiert Rich Text Editors-Konfigurationen im Formular",
+    confTabCodeEditorConf: "Konfiguration des Code-Editors",
+    confTabCodeEditorConfDesc: "Definiert Code-Editor-Konfigurationen",
     confTabPreviewAssetConf: "Vorschau von Elementen",
     confTabPreviewAssetConfDesc: "Definiert eine Liste von editierbaren Elementen basierend auf XML",
     confTabPreviewComponentsConf: "Vorschau von Komponenten",

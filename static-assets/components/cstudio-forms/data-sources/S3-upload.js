@@ -64,8 +64,9 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
 						fileExtension = fileName.split(".").pop();
 
 					control.insertItem(item, item, fileExtension);
-					control._renderItems();
-                    console.log('test');
+					if(control._renderItems){
+						control._renderItems();
+					}
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},

@@ -18,13 +18,15 @@
 import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
+import CrafterCMSNextBridge, { intl } from '../components/CrafterCMSNextBridge';
 import string from './string';
 import ajax from './ajax';
 import path from './path';
 import storage from './storage';
 import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
+import { IntlShape } from 'react-intl/src/types';
+import messages, { translateElements } from './i18n-legacy';
 
 /**
  *
@@ -53,6 +55,11 @@ interface CodebaseBridge {
   util: object;
   render: Function;
   rxjs: object;
+  i18n: {
+    intl: IntlShape;
+    messages: object;
+    translateElements: Function;
+  }
 }
 
 export function createCodebaseBridge() {
@@ -71,7 +78,8 @@ export function createCodebaseBridge() {
 
     components: {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
-      GraphiQL: lazy(() => import('../components/GraphiQL'))
+      GraphiQL: lazy(() => import('../components/GraphiQL')),
+      DependencySelection: lazy(() => import('../components/DependencySelection'))
     },
 
     assets: {
@@ -83,6 +91,12 @@ export function createCodebaseBridge() {
       path,
       string,
       storage
+    },
+
+    i18n: {
+      intl,
+      messages,
+      translateElements
     },
 
     // Mechanics
@@ -97,7 +111,7 @@ export function createCodebaseBridge() {
       ) {
         throw new Error('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        throw new Error('The supplied component name is not a know component of CrafterCMSNext.');
+        throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       if (typeof container === 'string') {

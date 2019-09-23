@@ -196,6 +196,14 @@
     position: absolute;
     top: 48%;
     left: 48%;
+    z-index: 110038!important;
+    color: #3f66a0;
+
+  }
+
+  #loadSpinnerMask{
+        z-index: 110037!important;
+        display: block;
   }
 
 }
@@ -388,7 +396,7 @@ table.scroll-body {
   border: 1px solid #e7e7e7;
   border-bottom-left-radius: $border-radius-base;
   border-bottom-right-radius: $border-radius-base;
-  transition: height .5s, transform .5s;
+  transition: height .25s, transform .25s;
   > .bd {
 
     &.overlay:before {
@@ -481,3 +489,24 @@ table.scroll-body {
 .studio-view .navbar-fixed-top {
   z-index: 100;
 }
+
+#approve-dialog, #requestDialog{ 
+  .aprove-subtitle{
+    font-size: 15px;
+  }
+  .action-wrapper{
+    margin-top: 20px;
+  }
+}
+
+.submission-comment{
+  height: 111px!important;
+}
+
+.dependencies-display{
+  height: 444px;
+}
+
+.yui-module.yui-overlay .cstudio-dialogue-body .dependencies-display {
+  @import  '../app/src/styles/dependency-selection.scss';
+} 

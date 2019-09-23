@@ -37,6 +37,7 @@ CStudioForms.Controls.ImagePicker = CStudioForms.Controls.ImagePicker ||
         this.previewBoxHeight = 100;
         this.previewBoxWidth = 300;
         this.external = null;
+        this.supportedPostFixes = ["_s"];
 
         return this;
     }
@@ -358,7 +359,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
                                             self.setImageData(imagePicker, imageData);
                                             CStudioAuthoring.Utils.decreaseFormDialog();
                                         }
-                                    }                                    
+                                    }
                                 }
                             };
                             image.addEventListener('load', imageLoaded, false);
@@ -788,6 +789,10 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
         return [
             { label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
         ];
+    },
+
+    getSupportedPostFixes: function() {
+      return this.supportedPostFixes;
     }
 });
 

@@ -161,7 +161,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     publishStatus: "Estado de Publicación",
     idle: "Desocupado",
     busy: "Ocupado",
+    ready: "Listo",
     stopped: "Detenido",
+    started: "Empezado",
     quickCreateEmpty:"No existe configuración para la creación rápida. Solicite al administrador del sistema que configure los tipos de contenido de creación rápida que desee."
 
 });
@@ -426,7 +428,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     deleteSubmitDialogAsSoon:"Lo antes posible.",
 
     approveDialogTitle: "Aprobar para Publicar",
-    approveDialogSubTitle: "Los siguientes elementos seleccionados estarán en vivo.",
+    approveDialogSubTitle: "Los archivos seleccionados serán publicados. Las dependencias fuertes se incluyen automáticamente. Las dependencias suaves son opcionales y puede elegir cuál incluir.",
     approveDialogWarning:"ADVERTENCIA: los elementos que ha seleccionado para su aprobación se enviaron con diferentes fechas/horas de publicación solicitadas.",
     dependenciesDialogTitle: "Dependencias",
     dependenciesDialogSubTitle: "Dependencias mostradas para:",
@@ -447,6 +449,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     requestApproveDialogTitle: "Solicitud de Publicación",
     requestApproveDialogSubTitle: "Cuando desea que los artiículos vayan en vivo?",
     requestApproveDialogEmailMe: "Enviarme un correo cuando los artículos sean aprobados para publicarse.",
+
+    itemsForPublish:"Articulos para publicar",
+    selectAll:"Seleccionar todo",
+    hardDependencies:"Dependencias fuertes",
+    submissionMandatory: "Presentación obligatoria",
+    softDependencies:"Dependencias suaves",
+    submissionOptional:"Presentación opcional",
+    showAllDependencies:"Mostrar todas las dependencias",
+    changesSelectionItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
+    loadingDependencies:"Cargando dependencias, por favor espere ...",
 
     newContTypeDialogTitle: "Crear Tipo de Contenido",
     newContTypeDialogDisplayLabel: "Etiqueta a Mostrar",
@@ -677,7 +689,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     publishStarted:"Se ha iniciado el proceso de publicación.",
 
     /*Datasources */
-    childContent: "Contenido Hijos",
+    childContent: "Contenido Hijo",
+    embeddedContent: "Contenido Empotrado",
     imageUploadedDesktop: "Imagen Subida Desde El Escritorio",
     WebDAVUploadImage: "Imagen cargada en el repositorio de WebDav",
     WebDAVUploadVideo: "Video cargado en el repositorio de WebDav",
@@ -716,6 +729,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     maxLength: "Tamaño Máximo",
     width: "Ancho",
     height: "Altura",
+    autoGrow: "Auto Crecimiento",
     allowResize: "Permitir Cambio de Tamaño",
     forceRootBlockP: "Forzar Etiqueta p en Bloque ",
     forcePNewLines: "Forzar Etiqueta p en Línea",
@@ -838,6 +852,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabRTEConfDesc: "Define la configuraciones de editores de texto enriquecido en formularios",
     confTabRTEtMCE5Conf: "Configuración RTE (TinyMCE 5)",
     confTabRTEtMCE5Desc: "Define la configuraciones de editores de texto enriquecido en formularios",
+    confTabCodeEditorConf: "Configuración de Editor de Código",
+    confTabCodeEditorConfDesc: "Define las configuraciones del Editor de Código",
     confTabPreviewAssetConf: "Configuración de Vista Previa de Activos",
     confTabPreviewAssetConfDesc: "Define una lista de activos editables asociados con contenido XML",
     confTabPreviewComponentsConf: "Configuración de los Componentes de Vista Previa",

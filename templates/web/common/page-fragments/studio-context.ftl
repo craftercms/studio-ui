@@ -41,7 +41,7 @@
 		openSiteDropdown: ${envConfig.openSiteDropdown!"false"},
 		isPreview: false,
 		liveAppBaseUri:"",
-		lang: "${envConfig.language!'UNSET'}",
+
 		xsrfHeaderName: "${_csrf.headerName}",
 		xsrfParameterName: "${_csrf.parameterName}"
 	};
@@ -50,6 +50,8 @@
    		document.location = CStudioAuthoringContext.baseUri;
    	}
 
+  var lang = localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage');
+  CStudioAuthoringContext.lang = lang ? lang : "en";
 
 	$(function() {
 		var isChromium = window.chrome,

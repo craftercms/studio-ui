@@ -64,7 +64,9 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
 						fileExtension = fileName.split(".").pop();
 
 					control.insertItem(item, item, fileExtension);
-					control._renderItems();
+					if(control._renderItems){
+						control._renderItems();
+					}
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},

@@ -138,7 +138,8 @@ CStudioForms.Controls.Time = CStudioForms.Controls.Time ||
 			{key: 'Pacific/Tongatapu', value: '(GMT+13:00) Nuku\'alofa'},
 			{key: 'Pacific/Apia', value: '(GMT-11:00) Samoa'}
 		];
-		this.timezones = this.defaultTimezones;
+    this.timezones = this.defaultTimezones;
+    this.supportedPostFixes = ["_to"];
 
 		return this;
 	}
@@ -214,7 +215,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
                 return "";	// The date/time fields are empty
             }
 		}
-		// If the form doesn't validate, it should trigger errors when the fields are blurred so 
+		// If the form doesn't validate, it should trigger errors when the fields are blurred so
 		// in theory, it should never reach this point (because this function -getFieldValue- should be called on beforeSave).
 		return false;
 	},
@@ -228,9 +229,9 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     },
 
 	// TO-DO: improvement
-	// Currently this is making a synchronous call to get the UTC representation of a date. The size of the transfer of 
-	// information made through this call is small so it shouldn't affect UX considerably. This call is synchronous because 
-	// we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to 
+	// Currently this is making a synchronous call to get the UTC representation of a date. The size of the transfer of
+	// information made through this call is small so it shouldn't affect UX considerably. This call is synchronous because
+	// we want to store the UTC representation of a date before the form closes. The form engine offers the possibility to
 	// register "beforeSave" callbacks, but these are assumed to be synchronous (forms-engine.js, onBeforeSave method)
 
    convertDateTime: function(date, time, newTimeZone, toUTC, callback){
@@ -982,7 +983,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 			dateVal, timeVal, emptyDate, emptyTime, refDateVal, refTimeVal, dtValues, timezoneNowObj, cb;
 
 		if (value != "" && value != "_not-set") {
-			// If a value already exists for the date/time field, then convert this value (in UTC) to the site's timezone	
+			// If a value already exists for the date/time field, then convert this value (in UTC) to the site's timezone
 			cb = {
 				success: function(response) {
 					//Set date and time values in the UI
@@ -1235,7 +1236,11 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
 		return [
 			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
 		];
-	}
+  },
+
+  getSupportedPostFixes: function() {
+    return this.supportedPostFixes;
+  }
 });
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-time", CStudioForms.Controls.Time);

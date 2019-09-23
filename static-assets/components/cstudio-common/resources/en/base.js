@@ -162,7 +162,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     publishStatus: "Publish Status",
     idle: "Idle",
     busy: "Busy",
+    ready: "Ready",
     stopped: "Stopped",
+    started: "Started",
     quickCreateEmpty:"Nothing is configured for Quick Create. Please ask your system administrator to configure your desired quick create content types."
 
 });
@@ -429,7 +431,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     deleteSubmitDialogAsSoon: "As soon as possible.",
 
     approveDialogTitle: "Approve for Publish",
-    approveDialogSubTitle: "The following checked items will go live.",
+    approveDialogSubTitle: "Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.",
     approveDialogWarning:"WARNING: The items you have selected for approval were submitted with different requested publish dates/times.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
@@ -450,6 +452,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     requestApproveDialogTitle: "Request Publish",
     requestApproveDialogSubTitle: "When would you like the checked item(s) to go live?",
     requestApproveDialogEmailMe: "Email me when items are approved for publish.",
+
+    itemsForPublish:"Items to Publish",
+    selectAll:"Select All",
+    hardDependencies:"Hard Dependencies",
+    submissionMandatory: "Submission mandatory",
+    softDependencies:"Soft Dependencies",
+    submissionOptional:"Submission optional",
+    showAllDependencies:"Show All Dependencies",
+    changesSelectionItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
+    loadingDependencies:"Loading Dependencies, please wait...",
 
     newContTypeDialogTitle: "Create Content Type",
     newContTypeDialogDisplayLabel: "Display Label",
@@ -700,6 +712,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
 
     /*Datasources */
     childContent: "Child Content",
+    embeddedContent: "Embedded Content",
     imageUploadedDesktop: "Image Uploaded From Desktop",
     WebDAVUploadImage: "Image Uploaded to WebDav Repository",
     WebDAVUploadVideo: "Video Uploaded to WebDav Repository",
@@ -739,6 +752,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     maxLength: "Max Length",
     width: "Width",
     height: "Height",
+    autoGrow: "Auto Grow",
     allowResize: "Allow Resize",
     forceRootBlockP: "Force Root Block p Tag",
     forcePNewLines: "Force p tags New Lines",
@@ -791,6 +805,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     showKeys: "Show keys (item sel. only)",
     taxonomyName: "Taxonomy Name",
     defaultType: "Default Type",
+    contentType: "Content Type",
     displayTemplate: "Display Template",
     noTemplateRequired: "No Template Required",
     mergeStrategy: "Merge Strategy",
@@ -876,6 +891,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabRTEConfDesc: "Defines Rich Text Editors configurations in form",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) Configuration",
     confTabRTEtMCE5ConfDesc: "Defines Rich Text Editors configurations in form",
+    confTabCodeEditorConf: "Code Editor Configuration",
+    confTabCodeEditorConfDesc: "Defines Code Editor configurations",
     confTabPreviewAssetConf: "Preview Asset Configuration",
     confTabPreviewAssetConfDesc: "Defines a list of editable assets associated with XML contents",
     confTabPreviewComponentsConf: "Preview Components Configuration",

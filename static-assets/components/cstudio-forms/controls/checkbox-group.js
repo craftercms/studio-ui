@@ -33,6 +33,7 @@ CStudioForms.Controls.CheckBoxGroup = CStudioForms.Controls.CheckBoxGroup ||
         this.hiddenEl = null;
         // Stores the type of data the control is now working with (this value is fetched from the datasource controller)
         this.dataType = null;
+        this.supportedPostFixes = ["_o"];
 
         amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
 
@@ -470,6 +471,10 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
         return [
             { label:CMgs.format(langBundle, "minimumSelection"), name:"minSize", type: "int"}
         ];
+    },
+
+    getSupportedPostFixes: function() {
+      return this.supportedPostFixes;
     }
 
 });

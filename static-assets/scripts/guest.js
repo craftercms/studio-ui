@@ -125,7 +125,7 @@ define('guest', [
     });
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function (message) {
-      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '=' + message.region + ']')[0];
+      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
       if (elt) {
         elt.scrollIntoView();
         window.scrollBy(0, -150);
@@ -194,6 +194,7 @@ define('guest', [
       var $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
       var iceId = $e.data('studioIce');
       var icePath = $e.data('studioIcePath');
+      var iceEmbeddedItemId = $e.data('studioEmbeddedItemId');
 
       var position = $e.offset(),
         props = {
@@ -205,6 +206,7 @@ define('guest', [
 
       props.iceId = iceId;
       props.itemId = icePath;
+      props.embeddedItemId = iceEmbeddedItemId;
       props.scrollTop = $window.scrollTop();
       props.scrollLeft = $window.scrollLeft();
 

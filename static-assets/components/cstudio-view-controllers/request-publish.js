@@ -25,34 +25,11 @@
 
     var Base = CStudioAuthoring.ViewController.Base,
         $ = jQuery,
-        currentItems,
-        tpl = [
-            '<tr>',
-            '<td class="small">' +
-                '<input type="checkbox" class="select-all-check" data-item-id="_URI_" checked/>' +
-            '</td> ' +
-            '<td class="large">' +
-                '<div class="in"> ' +
-                    '<span id="_INDEX_" class="toggleDependencies ttOpen parent-div-widget" style="margin-right:17px; margin-bottom: -2px; float: left;" ' +
-                    'data-loaded="false" data-path="_PATH_"></span>' + 
-                    '<span style="overflow:hidden; display: block;">_INTERNALNAME_ _URI_</span>' +
-                '</div>' +
-            '</td>' +
-            ' <td class="medium">_SCHEDULE_</td> ' +
-            '</tr>'].join(),
-        depTpl = [
-            '<tr class="_INDEX_" style="display:none;">',
-                '<td style="width:5%;"></td>',
-                // '<td class="text-center small" style="padding-left: 25px;width: 1%;"><input type="checkbox" class="item-checkbox" data-item-id="{uri}" checked/></td>', //TODO: checkbox to remove dependencies publish
-                '<td class="text-center small" style="padding-left: 25px;width: 5%;"></td>',
-                '<td class="name large"><div class="in">_URI_</div></div></td>',
-            '</tr>'
-        ].join();
-
+        currentItems;
 
     Base.extend('RequestPublish', {
 
-        actions: ['.close-button', '.submit-button', '.show-all-deps'],
+        actions: ['.close-button', '.submit-button'],
 
         startup: ['initDatePicker'],
 
@@ -66,12 +43,15 @@
 
         closeButtonActionClicked: closeButtonClicked,
 
-        showAllDepsActionClicked: showAllDeps,
+        initDatePicker: initDatePicker,
 
-        initDatePicker: initDatePicker
+        getGenDependency: getGenDependency
 
     });
 
+    function getGenDependency(callback) {
+        calculateDependencies(currentItems, callback);
+    }
 
     function closeButtonClicked() {
         $(document).off("keyup");
@@ -109,13 +89,8 @@
             schedule: this.getComponent('[name="schedulingMode"]:checked').value,
             submissionComment: this.getComponent('.submission-comment').value,
             environment: this.getComponent('.publish-option').value,
-            items: []
+            items: this.result
         };
-
-        var checked = this.getComponents('tbody input[type="checkbox"]:checked');
-        $.each(checked, function (i, check) {
-            data.items.push(check.getAttribute('data-item-id'));
-        });
 
         if (data.schedule === 'custom') {
             data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
@@ -134,11 +109,13 @@
         }
 
         var loadSpinner = document.getElementById('loadSpinner');
+        var loadSpinnerMask = document.getElementById('loadSpinnerMask');
 
         //this.showProcessingOverlay(true);
         this.disableActions();
         this.fire("submitStart");
         loadSpinner.classList.remove("hidden");
+        loadSpinnerMask.classList.remove("hidden");
         //var data = this.getData(),
         var _this = this;
         CStudioAuthoring.Service.request({
@@ -153,19 +130,28 @@
                     _this.fire("submitComplete", oResp);
                     _this.fire("submitEnd", oResp);
                     loadSpinner.classList.add("hidden");
+                    loadSpinnerMask.classList.add("hidden");
 
-                    eventNS.oldPath = currentItems.uri;
+                    if(currentItems.length > 1){
+                        var oldItems = [];
+                        for(var i = 0; i < currentItems.length; i++ ){
+                            oldItems[currentItems[i].browserUri.replace(/\//g, '')] = currentItems[i].uri;
+                        }
+                        eventNS.oldPath = oldItems;
+                    }else{
+                        eventNS.oldPath = currentItems[0].uri;
+                    }
                     var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
                     if(CStudioAuthoringContext.isPreview){
                         try{
                             var currentContentTO,
                                 URLBrowseUri = pageParameter,
-                                contentTOBrowseUri = currentItems.browserUri;
+                                contentTOBrowseUri = currentItems[0].browserUri;
 
-                            if (URLBrowseUri == contentTOBrowseUri){
+                            if (URLBrowseUri === contentTOBrowseUri){
                                 currentContentTO = null;
                             } else{
-                                currentContentTO = currentItems;
+                                currentContentTO = currentItems[0];
                             }
 
                             if(currentContentTO.isPage){
@@ -177,8 +163,26 @@
                     }
 
                     eventNS.data = currentItems;
-                    eventNS.typeAction = "edit";
-                    document.dispatchEvent(eventNS);
+                    eventNS.typeAction = "publish";
+                    _this.getGenDependency({
+                        success: function(response) {
+                          var dependenciesObj = JSON.parse(response.responseText).entities,
+                              dependencies = [];
+
+                          $.each(dependenciesObj, function(){
+                            $.each(this.dependencies, function(){
+                              dependencies.push(this.item);
+                            });
+                          });
+                          
+                          var allDeps = dependencies.concat(_this.result ? _this.result : []);
+                          dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+
+                          eventNS.dependencies = dependencies;
+                          document.dispatchEvent(eventNS);
+                          eventNS.dependencies = null;
+                        }
+                      });
                     _this.end();
                 },
                 failure: function(oResponse) {
@@ -193,149 +197,42 @@
         });
     }
 
-    function calculateDependencies(data, callback){
-        var entities = { "entities" : [] }; 
+    function calculateDependencies(data, callback) {
+        var entities = { "entities": [] };
 
-        if( typeof data === 'string' || data instanceof String ){
+        if (typeof data === 'string' || data instanceof String) {
             entities.entities.push({ "item": data });
+        } else {
+            $.each(data, function () {
+                entities.entities.push({ "item": this.uri });
+            });
         }
 
         CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
     }
 
-    function showAllDeps(el) {
-        var me = this,
-            $el = $(el),
-            loadSpinner = document.getElementById('loadSpinner');
-
-        var entities = { "entities" : [] },
-            callback = {
-                success: function(response) {
-                    var response = eval("(" + response.responseText + ")")
-                    $.each(response.entities, function(){
-                        var currentItem = this.item,
-                            $currentEl = $("[data-path='" + this.item + "']"),
-                            currentElId = $currentEl.attr("id"),
-                            $parentEl = $currentEl.closest("tr"),
-                            $container = $(me.getComponent('tbody'));
-
-                        if( $currentEl.attr("data-loaded") === "false" ){
-                            $.each(this.dependencies, function(index, dependency){
-                                var elem = {};
-                                elem.uri = dependency.item;
-                                elem.index = currentElId;
-                                                                
-                                $parentEl.after(depTpl
-                                    .replace('_INDEX_', elem.index)
-                                    .replace('_URI_', elem.uri));
-                            }); 
-
-                            $currentEl.attr("data-loaded", "true");
-                        }
-
-                        $childItems = $container.find("." + currentElId);
-                        $childItems.show();
-                        $currentEl.attr('class', 'ttClose parent-div-widget');
-
-                        loadSpinner.classList.add("hidden");
-                        $el.removeAttr('disabled');
-
-                    });
-                },
-                failure: function(error) {
-                    
-                }
-            };
-
-        $el.attr('disabled', 'true');
-        loadSpinner.classList.remove("hidden");
-
-        $.each( this.submitItems, function(){
-            entities.entities.push({ "item": this.uri });
-        })
-
-        CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
-    }
-
     function renderItems(items) {
-        currentItems = items[0];
-        var me = this,
-            loadSpinner = document.getElementById('loadSpinner'),
-            $container = this.$('.item-listing tbody');
-
-        me.submitItems = items;
-
-        loadSpinner.classList.add("hidden");
-        $.each(items, function (index, item) {
-            var itemDependenciesClass = "toggle-deps-" + index,
-                $parentRow;
-
-            item.index = itemDependenciesClass;
-            $parentRow = $(tpl
-                .replace('_INDEX_', item.index)
-                .replace('_URI_', item.uri)
-                .replace('_PATH_', item.uri)
-                .replace('_INTERNALNAME_', item.internalName)
-                .replace('_SCHEDULE_', item.scheduledDate ? item.scheduledDate : "")
-                .replace('_URI_', item.uri));
-
-            if(index == 0) $container.empty();
-            $container.append($parentRow);
-
-        });
-
-        //enable submit button after loading items
-        $("#approveSubmit").prop('disabled', false);
-
-        $('.toggleDependencies').on('click', function(){
-            var $currentEl = $(this),
-                $container = $(me.getComponent('tbody')),
-                parentId = $currentEl.attr('id'),
-                $childItems = $container.find("." + parentId);
-
-            if($currentEl.attr('class') == "ttClose parent-div-widget"){
-                $childItems.hide();
-                $currentEl.attr('class', 'ttOpen parent-div-widget');
-            }else{
-                //If no deps data has been loaded - load
-                if( $currentEl.attr("data-loaded") === "false"){
-                    $currentEl.attr("data-loaded", "true");
-                    
-                    var callback = {
-                        success: function(response) {
-                            var response = eval("(" + response.responseText + ")")
-
-                            $.each(response.entities, function(){
-                                var currentElId = $currentEl.attr("id"),
-                                    $parentEl = $currentEl.closest("tr");
-        
-                                $.each(this.dependencies, function(index, dependency){
-                                    var elem = {};
-                                    elem.uri = dependency.item;
-                                    elem.index = currentElId;
-                                    
-                                    $parentEl.after(depTpl
-                                        .replace('_INDEX_', elem.index)
-                                        .replace('_URI_', elem.uri));
-                                });                            
-                            });
-                            $childItems = $container.find("." + parentId);
-
-                            $childItems.show();
-                            $currentEl.attr('class', 'ttClose parent-div-widget');
-                        },
-                        failure: function(error) {
-                            
+        document.getElementById('loadSpinner').classList.add("hidden");
+        this.result = [];
+        CrafterCMSNext
+            .render(
+                this.getComponent('.dependencies-display'), 
+                'DependencySelection', 
+                { 
+                    onChange: (result) => {
+                        if (result.length === 0) {
+                            this.$('#approveSubmit').prop('disabled', true);
+                        } else {
+                            this.$('#approveSubmit').prop('disabled', false);
                         }
-                    };
-
-                    calculateDependencies($currentEl.attr("data-path"), callback);
-                }else{
-                    $childItems.show();
-                    $currentEl.attr('class', 'ttClose parent-div-widget');
+                        this.result = result;
+                    },
+                    siteId: CStudioAuthoringContext.site,
+                    items: items
                 }
-            }
-        })
+             );
+        $("#approveSubmit").prop('disabled', false);
+        currentItems = items;
 
         $(document).on("keyup", function(e) {
             if (e.keyCode === 27) {	// esc

@@ -153,7 +153,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     publishStatus: "게시 상태",
     idle: "게으른",
     busy: "바쁜",
+    ready: "준비된",
     stopped: "중지됨",
+    started: "시작",
     quickCreateEmpty:"빠른 작성을위한 아무 것도 구성되어 있지 않습니다. 시스템 관리자에게 문의하여 원하는 빠른 작성 컨텐츠 유형을 구성하십시오."
 
 });
@@ -400,7 +402,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     deleteSubmitDialogAsSoon:"최대한 빨리.",
 
     approveDialogTitle: "게시에 대한 승인",
-    approveDialogSubTitle: "다음 선택 항목이 게재됩니다.",
+    approveDialogSubTitle: "선택한 파일이 게시됩니다. 엄격한 종속성이 자동으로 포함됩니다. 소프트 종속성은 선택 사항이며 포함 할 항목을 선택할 수 있습니다.",
     approveDialogWarning:"경고 : 승인을 위해 선택한 항목이 요청 된 다른 게시 날짜 / 시간과 함께 제출되었습니다.",
     dependenciesDialogTitle: "Dependencies",
     dependenciesDialogSubTitle: "Dependencies shown for:",
@@ -421,6 +423,16 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     requestApproveDialogTitle: "게시를 요청할",
     requestApproveDialogSubTitle: "당신이 원하는 때 체크 항목 (들)을 게재하는 방법?",
     requestApproveDialogEmailMe: "항목이 게시가 승인되면 이메일을 보내십시오.",
+
+    itemsForPublish:"게시 할 항목",
+    selectAll:"모두 선택",
+    hardDependencies:"어려운 의존성",
+    submissionMandatory: "제출 필수",
+    softDependencies:"소프트 종속성",
+    submissionOptional:"제출 옵션",
+    showAllDependencies:"S모든 종속성 표시",
+    changesSelectionItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
+    loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
 
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
     newContTypeDialogDisplayLabel: "표시 라벨",
@@ -649,6 +661,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
 
     /*Datasources */
     childContent: "자식 내용",
+    embeddedContent: "임베디드 컨텐츠",
     imageUploadedDesktop: "이미지 바탕 화면에서 업로드",
     WebDAVUploadImage: "WebDav 저장소에 업로드 된 이미지",
     WebDAVUploadVideo: "WebDav 저장소에 업로드 된 비디오",
@@ -687,6 +700,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     maxLength: "최대 길이s",
     width: "폭",
     height: "신장",
+    autoGrow: "자동 성장",
     allowResize: "크기 조정 허용",
     forceRootBlockP: "강제 루트 블록 p 태그",
     forcePNewLines: "강제 p는 신규 라인 태그",
@@ -808,6 +822,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabRTEConfDesc: "서식있는 텍스트 편집기는 형태로 구성을 정의",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) 구성",
     confTabRTEtMCE5Desc: "서식있는 텍스트 편집기는 형태로 구성을 정의",
+    confTabCodeEditorConf: "코드 편집기 구성",
+    confTabCodeEditorConfDesc: "코드 편집기 구성을 정의합니다",
     confTabPreviewAssetConf: "자산 미리 구성",
     confTabPreviewAssetConfDesc: "XML 컨텐츠와 연관된 편집 자산 목록을 정의",
     confTabPreviewComponentsConf: "구성 요소 구성 미리보기",
