@@ -919,15 +919,79 @@ var nodeOpen = false,
 
             },
 
-            submitContent: function(site, contentItems) {
+            submitContent: function(site, items) {
 
                 CSA.Operations._showDialogueView({
                     fn: CSA.Service.getRequestPublishView,
                     controller: 'viewcontroller-requestpublish',
-                    callback: function(dialog) {
+                    callback: function(dialogue) {
+                        var self = this;
                         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                        this.renderItems(contentItems);
+                        this.loadItems(items);
                         this.loadPublishingChannels();
+
+                        CStudioAuthoring.Utils.removeLoadingIcon();
+
+                        this.on("submitComplete", function(evt, args){
+                          if (!CStudioAuthoringContext.isPreview) { // clear only while on dashboard
+                                CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
+                          }
+
+                          if(items.length > 1){
+                              var oldItems = [];
+                              for(var i = 0; i < items.length; i++ ){
+                                  oldItems[items[i].browserUri.replace(/\//g, '')] = items[i].uri;
+                              }
+                              eventNS.oldPath = oldItems;
+                          }else{
+                              eventNS.oldPath = items[0].uri;
+                          }
+                          var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+                          if(CStudioAuthoringContext.isPreview){
+                              try{
+                                  var currentContentTO,
+                                      URLBrowseUri = pageParameter,
+                                      contentTOBrowseUri = items[0].browserUri;
+
+                                  if (URLBrowseUri === contentTOBrowseUri){
+                                      currentContentTO = null;
+                                  } else{
+                                      currentContentTO = items[0];
+                                  }
+
+                                  if(currentContentTO.isPage){
+                                      CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+                                  }else{
+                                      CStudioAuthoring.Operations.refreshPreview();
+                                  }
+                              }catch(err) {}
+                          }
+
+
+                          dialogue.destroy();
+                          eventNS.data = items;
+                          eventNS.typeAction = "publish";
+                          self.getGenDependency({
+                            success: function(response) {
+                              var dependenciesObj = JSON.parse(response.responseText).entities,
+                                  dependencies = [];
+
+                              $.each(dependenciesObj, function(){
+                                $.each(this.dependencies, function(){
+                                  dependencies.push(this.item);
+                                });
+                              });
+                              
+                              var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
+                              dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+
+                              eventNS.dependencies = dependencies;
+                              document.dispatchEvent(eventNS);
+                              eventNS.dependencies = null;
+                            }
+                          });
+
+                        });
                     }
                 }, true, '800px');
 

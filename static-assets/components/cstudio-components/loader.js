@@ -232,10 +232,17 @@
 
     Loader.addModule({
         type: 'js',
+        name:'dialog-util',
+        path: 'components/cstudio-view-controllers/dialog-util.js?version=' + CStudioAuthoring.UIBuildId
+    });
+
+    Loader.addModule({
+        type: 'js',
         name:'viewcontroller-approve',
         path: 'components/cstudio-view-controllers/approve.js?version=' + CStudioAuthoring.UIBuildId,
         requires: [
             'viewcontroller-base',
+            'dialog-util',
             'component-templateagent',
             'jquery-datetimepicker',
             'jquery-momentjs'
@@ -281,7 +288,7 @@
         type: 'js',
         name:'viewcontroller-requestpublish',
         path: 'components/cstudio-view-controllers/request-publish.js?version=' + CStudioAuthoring.UIBuildId,
-        requires: ['viewcontroller-base', 'jquery-datetimepicker', 'jquery-momentjs']
+        requires: ['viewcontroller-base', 'dialog-util', 'jquery-datetimepicker', 'jquery-momentjs']
     });
 
     Loader.addModule({
