@@ -38,7 +38,7 @@ import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
 import BluePrintForm from './BluePrintForm';
 import BluePrintReview from "./BluePrintReview";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CreateSiteLoading from "./CreateSiteLoading";
 import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
@@ -136,6 +136,11 @@ const useStyles = makeStyles((theme: any) => ({
       boxShadow: '0px 0px 3px rgba(65, 69, 73, 0.15), 0px 4px 4px rgba(65, 69, 73, 0.15)'
     }
   },
+  dialogContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%'
+  },
   dialogContent: {
     padding: '0',
   },
@@ -179,20 +184,6 @@ const useStyles = makeStyles((theme: any) => ({
     position: 'relative',
     padding: 16,
     flexGrow: 1
-  },
-  BtnSpinner: {
-    color: 'white',
-    marginLeft: '10px'
-  },
-  loadingBtn: {
-    backgroundColor: '#586d82',
-    pointerEvents: 'none'
-  },
-  creatingOverlay: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    zIndex: 10
   }
 }));
 
@@ -236,7 +227,7 @@ function CreateSiteDialog(props: any) {
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
   const [open, setOpen] = useState(props.open || false);
-  const [creatingSite, setCreatingSite] = useState(false);
+  const [creatingSite, setCreatingSite] = useState(true);
   const [search, setSearch] = useState({
     searchKey: '',
     searchSelected: false
@@ -245,7 +236,7 @@ function CreateSiteDialog(props: any) {
   const classes = useStyles({});
   const swipeableViews = useRef(null);
 
-  const { formatMessage } = useIntl();
+  const {formatMessage} = useIntl();
 
   useEffect(() => {
       if (swipeableViews.current) {
@@ -414,7 +405,7 @@ function CreateSiteDialog(props: any) {
   }
 
   function checkNameExist(e: any) {
-    if(e.target.value) {
+    if (e.target.value) {
       get(`/studio/api/1/services/api/1/site/exists.json?site=${e.target.value}`)
         .subscribe(
           ({response}) => {
@@ -437,100 +428,101 @@ function CreateSiteDialog(props: any) {
     })
   }
 
-  function filterBlueprints(blueprints: Blueprint[], searchKey:string) {
+  function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
     searchKey = searchKey.toLowerCase();
     return searchKey && blueprints
       ? blueprints.filter(blueprint => blueprint.name.toLowerCase().includes(searchKey))
       : blueprints;
   }
 
-  const filteredBlueprints:Blueprint[] = filterBlueprints(blueprints, search.searchKey);
-  const filteredMarketplace:Blueprint[] = filterBlueprints(marketplace, search.searchKey);
+  const filteredBlueprints: Blueprint[] = filterBlueprints(blueprints, search.searchKey);
+  const filteredMarketplace: Blueprint[] = filterBlueprints(marketplace, search.searchKey);
 
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {creatingSite && <div className={classes.creatingOverlay}/>}
-      <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
-      {
-        (site.selectedView === 0) &&
-        <div className={classes.tabs}>
-          <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-              <Tab label={formatMessage(messages.buildIn)} className={classes.simpleTab}/>
-              <Tab label={formatMessage(messages.marketplace)} className={classes.simpleTab}/>
-          </CustomTabs>
-          <SearchIcon className={clsx(classes.tabIcon, search.searchSelected && 'selected')} onClick={handleSearchClick}/>
-      </div>
-      }
-      {
-        ((tab === 0 && blueprints) || (tab === 1 && marketplace)) ?
-        <DialogContent className={classes.dialogContent}>
+      {creatingSite ? <CreateSiteLoading/> :
+        <div className={classes.dialogContainer}>
+          <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {
-            (search.searchSelected && site.selectedView === 0) &&
-            <div className={classes.search}>
-                <div className={classes.searchIcon}>
-                    <SearchIcon/>
-                </div>
-                <InputBase
-                    placeholder="Search…"
-                    autoFocus={true}
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    value={search.searchKey}
-                    onChange={e => setSearch({ ...search, searchKey: e.target.value})}
-                    inputProps={{'aria-label': 'search'}}
-                />
+            (site.selectedView === 0) &&
+            <div className={classes.tabs}>
+                <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
+                    <Tab label={formatMessage(messages.buildIn)} className={classes.simpleTab}/>
+                    <Tab label={formatMessage(messages.marketplace)} className={classes.simpleTab}/>
+                </CustomTabs>
+                <SearchIcon className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
+                            onClick={handleSearchClick}/>
             </div>
           }
-          <SwipeableViews
-            animateHeight
-            ref={swipeableViews}
-            index={site.selectedView}>
-            <div className={classes.slide}>
-              {
-                (tab === 0) ?
-                <div>
-                  <Grid container spacing={3}>{renderBluePrints(filteredBlueprints)}</Grid>
-                </div> :
-                <div>
-                  <Grid container spacing={3}>{renderBluePrints(filteredMarketplace)}</Grid>
-                </div>
-              }
-            </div>
-            <div className={classes.slide}>
-              {
-                site.blueprint &&
-                <BluePrintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
-                             onSubmit={handleFinish} onCheckNameExist={checkNameExist}
-                             blueprint={site.blueprint}/>
-              }
-            </div>
-            <div className={classes.slide}>
-              {site.blueprint &&
-              <BluePrintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
-            </div>
-          </SwipeableViews>
-        </DialogContent>
-        :
-        <div className={classes.loading}>
-          <Spinner/>
-        </div>
-      }
-      {
-        (site.selectedView !== 0) &&
-        <DialogActions className={classes.dialogActions}>
-          <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
-              {formatMessage(messages.back)}
-          </Button>
-          <Button variant="contained" color="primary" disableRipple={creatingSite}
-                  className={creatingSite ? classes.loadingBtn : ''} onClick={handleFinish}>
-            {views[site.selectedView].btnText}
-            {creatingSite && <CircularProgress size={20} className={classes.BtnSpinner}/>}
-          </Button>
-        </DialogActions>
-      }
+          {
+            ((tab === 0 && blueprints) || (tab === 1 && marketplace)) ?
+              <DialogContent className={classes.dialogContent}>
+                {
+                  (search.searchSelected && site.selectedView === 0) &&
+                  <div className={classes.search}>
+                      <div className={classes.searchIcon}>
+                          <SearchIcon/>
+                      </div>
+                      <InputBase
+                          placeholder="Search…"
+                          autoFocus={true}
+                          classes={{
+                            root: classes.inputRoot,
+                            input: classes.inputInput,
+                          }}
+                          value={search.searchKey}
+                          onChange={e => setSearch({...search, searchKey: e.target.value})}
+                          inputProps={{'aria-label': 'search'}}
+                      />
+                  </div>
+                }
+                <SwipeableViews
+                  animateHeight
+                  ref={swipeableViews}
+                  index={site.selectedView}>
+                  <div className={classes.slide}>
+                    {
+                      (tab === 0) ?
+                        <div>
+                          <Grid container spacing={3}>{renderBluePrints(filteredBlueprints)}</Grid>
+                        </div> :
+                        <div>
+                          <Grid container spacing={3}>{renderBluePrints(filteredMarketplace)}</Grid>
+                        </div>
+                    }
+                  </div>
+                  <div className={classes.slide}>
+                    {
+                      site.blueprint &&
+                      <BluePrintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
+                                     onSubmit={handleFinish} onCheckNameExist={checkNameExist}
+                                     blueprint={site.blueprint}/>
+                    }
+                  </div>
+                  <div className={classes.slide}>
+                    {site.blueprint &&
+                    <BluePrintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
+                  </div>
+                </SwipeableViews>
+              </DialogContent>
+              :
+              <div className={classes.loading}>
+                <Spinner/>
+              </div>
+          }
+          {
+            (site.selectedView !== 0) &&
+            <DialogActions className={classes.dialogActions}>
+                <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
+                  {formatMessage(messages.back)}
+                </Button>
+                <Button variant="contained" color="primary" onClick={handleFinish}>
+                  {views[site.selectedView].btnText}
+                </Button>
+            </DialogActions>
+          }
+        </div>}
     </Dialog>
   )
 }
