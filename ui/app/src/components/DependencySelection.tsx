@@ -230,7 +230,7 @@ function DependencySelection(props: DependencySelectionProps) {
         }
         <p>
           <FormattedMessage
-            id="publishDialog.info.changesInSelection"
+            id="publishDialog.changesInSelection"
             defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
           />
         </p>

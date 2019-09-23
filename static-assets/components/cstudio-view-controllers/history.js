@@ -48,6 +48,7 @@
                 escaped = selection.escaped;
 
             _this.selection = selection;
+            _this.isWrite = _this.isWrite ? _this.isWrite : isWrite;
 
             loadFn = function () {
 
@@ -173,7 +174,7 @@
                                         });
                                     }
 
-                                    if(isWrite){
+                                    if(_this.isWrite){
                                         revertActionEl = document.createElement("a");
                                         revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action fa fa-reply"></span>';
                                         revertActionEl.item = selection;
@@ -189,7 +190,7 @@
                                     }
 
                                     (function (item) {
-                                        if(isWrite) {
+                                        if(_this.isWrite) {
                                             Event.addListener(revertActionEl, "click", function () {
                                                 CStudioAuthoring.Service.revertContentItem(
                                                     CStudioAuthoringContext.site,
@@ -275,6 +276,7 @@
           escaped = selection.escaped;
 
         _this.selection = selection;
+        _this.isWrite = _this.isWrite ? _this.isWrite : isWrite;
 
         loadFn = function () {
 
@@ -400,7 +402,7 @@
                       });
                     }
 
-                    if(isWrite){
+                    if(_this.isWrite){
                       revertActionEl = document.createElement("a");
                       revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action fa fa-reply"></span>';
                       revertActionEl.item = selection;
@@ -416,7 +418,7 @@
                     }
 
                     (function (item) {
-                      if(isWrite) {
+                      if(_this.isWrite) {
                         Event.addListener(revertActionEl, "click", function () {
                           CStudioAuthoring.Service.revertContentItem(
                             CStudioAuthoringContext.site,
@@ -428,7 +430,9 @@
                                 }
                                 eventNS.data = item;
                                 document.dispatchEvent(eventNS);
+
                                 _this.loadHistory(_this.selection);
+                                amplify.publish('HISTORY_REVERT');
                               },
                               failure: function () {
                                 var CMgs = CStudioAuthoring.Messages;
