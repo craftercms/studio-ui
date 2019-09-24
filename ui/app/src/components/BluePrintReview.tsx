@@ -7,8 +7,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import { SiteState } from "../models/Site";
 import { Blueprint } from "../models/Blueprint";
 import { defineMessages, useIntl } from "react-intl";
+import { Theme } from "@material-ui/core/styles/createMuiTheme";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   review: {
     paddingTop: '40px',
     maxWidth: '600px',
@@ -24,7 +25,7 @@ const useStyles = makeStyles(() => ({
     display: 'inline'
   },
   edit: {
-    color: '#7E9DBB',
+    color: theme.palette.primary.main,
     '& svg': {
       fontSize: '1.2rem'
     }

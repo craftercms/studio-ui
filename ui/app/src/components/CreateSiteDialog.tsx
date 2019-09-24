@@ -43,6 +43,7 @@ import CreateSiteError from "./CreateSiteError";
 import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
+import { Theme } from "@material-ui/core/styles/createMuiTheme";
 
 const views: Views = {
   0: {
@@ -101,7 +102,7 @@ const dialogTitleStyles = () => ({
   }
 });
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   paperScrollPaper: {
     height: '100%',
     maxHeight: '700px'
@@ -178,7 +179,7 @@ const useStyles = makeStyles((theme: any) => ({
     fontSize: '1.2rem',
     cursor: 'pointer',
     '&.selected': {
-      color: '#007AFF'
+      color: theme.palette.primary.main
     }
   },
   loading: {
@@ -260,6 +261,10 @@ function CreateSiteDialog(props: any) {
 
   function handleClose() {
     setOpen(false);
+  }
+
+  function handleErrorBack() {
+    setApiState({ ...apiState, error: false });
   }
 
   function handleSearchClick() {
@@ -376,7 +381,9 @@ function CreateSiteDialog(props: any) {
           setMarketplace(response.plugins);
         },
         ({response}) => {
-          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+          if(response) {
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+          }
         }
       );
   }
@@ -405,7 +412,9 @@ function CreateSiteDialog(props: any) {
           setBlueprints(_blueprints);
         },
         ({response}) => {
-          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+          if(response) {
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+          }
         }
       );
   }
@@ -457,7 +466,7 @@ function CreateSiteDialog(props: any) {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {( apiState.creatingSite || apiState.error) ? (apiState.creatingSite && <CreateSiteLoading/>) || <CreateSiteError error={apiState.errorResponse}/> :
+      {( apiState.creatingSite || apiState.error) ? (apiState.creatingSite && <CreateSiteLoading/>) || <CreateSiteError error={apiState.errorResponse} onBack={handleErrorBack}/> :
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {

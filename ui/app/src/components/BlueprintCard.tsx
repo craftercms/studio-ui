@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
     left: '50%',
     transform: 'translate(-50%)',
     top: '-30px',
-    zIndex: 10,
+    zIndex: 999,
     '& .MuiMobileStepper-dot': {
       padding: '3px',
       margin: '2px',

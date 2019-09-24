@@ -1,9 +1,10 @@
 import React from "react";
+import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import Gears  from "./Gears";
 
-const useStyles = makeStyles((theme: any) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   loadingView: {
     height: '100%',
     background: '#EBEBF0',
