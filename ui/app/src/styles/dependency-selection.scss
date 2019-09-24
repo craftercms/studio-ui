@@ -40,6 +40,11 @@
 }
 
 .dependency-selection--information--internal-name,
+.dependency-selection--information--uri {
+  cursor: pointer;
+}
+
+.dependency-selection--information--internal-name,
 .dependency-selection--information--uri,
 .dependency-selection--list--soft-item{
   white-space: nowrap;

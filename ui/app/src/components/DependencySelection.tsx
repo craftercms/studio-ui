@@ -127,8 +127,16 @@ function DependencySelection(props: DependencySelectionProps) {
                   color="primary"
                 />
               </div>
-              <div className="dependency-selection--information">
-                <div className="dependency-selection--information--internal-name">{item.internalName}</div>
+              <div
+                className="dependency-selection--information"
+                onClick={(e: any) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setChecked([item.uri], !checked[item.uri])
+                }}>
+                <div className="dependency-selection--information--internal-name">
+                  {item.internalName}
+                </div>
                 <div className="dependency-selection--information--uri">&nbsp;{item.uri}</div>
               </div>
             </div>
