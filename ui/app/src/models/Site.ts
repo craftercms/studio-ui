@@ -43,7 +43,8 @@ export interface SiteState {
   repo_token: string,
   repo_key: string,
   submitted: boolean,
-  selectedView: number
+  selectedView: number,
+  details: Blueprint
 }
 
 export interface Site {

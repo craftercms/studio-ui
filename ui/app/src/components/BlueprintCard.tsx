@@ -19,6 +19,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 interface BlueprintCard {
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
+  onDetails(blueprint: Blueprint): any,
   blueprint: Blueprint,
   interval: number;
 }
@@ -110,7 +111,7 @@ const messages = defineMessages({
 function BlueprintCard(props: BlueprintCard) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
-  const {onBlueprintSelected, blueprint, interval} = props;
+  const {onBlueprintSelected, blueprint, interval, onDetails} = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
@@ -125,8 +126,9 @@ function BlueprintCard(props: BlueprintCard) {
     setAnchorEl(event.currentTarget);
   }
 
-  function handleClose() {
+  function handleClose(blueprint: Blueprint) {
     setAnchorEl(null);
+    onDetails(blueprint);
   }
 
   function onDotClick(e:any, step: number) {
@@ -190,7 +192,7 @@ function BlueprintCard(props: BlueprintCard) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleClose}>Details</MenuItem>
+                <MenuItem onClick={() => handleClose(blueprint)}>Details</MenuItem>
             </Menu>
       </CardActions>
       }

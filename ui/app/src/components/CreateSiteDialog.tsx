@@ -44,6 +44,7 @@ import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
+import CreateSiteDetails from "./CreateSiteDetails";
 
 const views: Views = {
   0: {
@@ -78,7 +79,8 @@ const siteInitialState: SiteState = {
   repo_token: '',
   repo_key: '',
   submitted: false,
-  selectedView: 0
+  selectedView: 0,
+  details: null
 };
 
 const CustomTabs = withStyles({
@@ -232,7 +234,7 @@ function CreateSiteDialog(props: any) {
   const [ apiState, setApiState ] = useState({
     creatingSite: false,
     error: false,
-    errorResponse: null
+    errorResponse: null,
   });
   const [search, setSearch] = useState({
     searchKey: '',
@@ -375,7 +377,7 @@ function CreateSiteDialog(props: any) {
   }
 
   function fetchMarketPlace() {
-    get('/studio/api/2/marketplace/search?type=blueprint')
+    get('/studio/api/2/marketplace/search?type=blueprint&limit=1000')
       .subscribe(
         ({response}) => {
           setMarketplace(response.plugins);
@@ -443,11 +445,15 @@ function CreateSiteDialog(props: any) {
     }
   }
 
+  function onDetails(blueprint: Blueprint) {
+    setSite({...site, details:blueprint })
+  }
+
   function renderBluePrints(list: Blueprint[]) {
     return list.map((item: Blueprint) => {
       return (
         <Grid item xs={12} sm={6} md={4} key={item.id}>
-          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000}/>
+          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000} onDetails={onDetails}/>
         </Grid>
       );
     })
@@ -466,7 +472,10 @@ function CreateSiteDialog(props: any) {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {( apiState.creatingSite || apiState.error) ? (apiState.creatingSite && <CreateSiteLoading/>) || <CreateSiteError error={apiState.errorResponse} onBack={handleErrorBack}/> :
+      {( apiState.creatingSite || apiState.error || site.details) ?
+        (apiState.creatingSite && <CreateSiteLoading/>) ||
+        (apiState.error && <CreateSiteError error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
+        (site.details && <CreateSiteDetails blueprint={site.details}/>):
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {
