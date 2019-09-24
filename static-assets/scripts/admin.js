@@ -1098,7 +1098,13 @@
         getResultsPage(1);
 
         users.pagination = {
-          current: 1
+          current: 1,
+          goToLast: () => {
+            const total = users.totalLogs,
+                  itemsPerPage = users.itemsPerPage,
+                  lastPage = Math.ceil(total/itemsPerPage);
+            users.pagination.current = lastPage;
+          }
         };
 
         users.pageChanged = function(newPage) {
@@ -1162,6 +1168,9 @@
           $scope.hideModal();
           user = data.user;
           $scope.usersCollection.push(user);
+          $scope.users.totalLogs++;
+          $scope.users.pagination.goToLast();
+
           $scope.notification('\''+ user.username + '\' created.','','studioMedium');
         }).error(function(response){
           var response = response.response,
@@ -1279,6 +1288,7 @@
             var index = $scope.usersCollection.indexOf(user);
             if (index !== -1) {
               $scope.usersCollection.splice(index, 1);
+              $scope.users.totalLogs--;
             }
 
             $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
@@ -1446,7 +1456,13 @@
         getResultsPage(1);
 
         groups.pagination = {
-          current: 1
+          current: 1,
+          goToLast: () => {
+            const total = groups.totalLogs,
+                  itemsPerPage = groups.itemsPerPage,
+                  lastPage = Math.ceil(total/itemsPerPage);
+            groups.pagination.current = lastPage;
+          }
         };
 
         groups.pageChanged = function(newPage) {
@@ -1512,6 +1528,8 @@
         adminService.createGroup(group).success(function (data) {
           $scope.hideModal();
           $scope.groupsCollection.push(data.group);
+          $scope.groups.totalLogs++;
+          $scope.groups.pagination.goToLast();
           $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
         }).error(function(error){
           $scope.groupsError = error.response.message;
@@ -1555,6 +1573,7 @@
             var index = $scope.groupsCollection.indexOf(group);
             if (index !== -1) {
               $scope.groupsCollection.splice(index, 1);
+              $scope.groups.totalLogs--;
             }
 
             $scope.usersFromGroupCollection = [];
