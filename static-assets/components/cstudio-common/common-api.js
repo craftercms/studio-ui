@@ -564,9 +564,9 @@ var nodeOpen = false,
                                     view = new Controller({ context: dialogueId });
                                     view.on("end", function(){ dialogue.destroy(); });
                                 }
+                                ApproveType = ApproveTypeParam;
                                 oRequest.callback && oRequest.callback.call(view, dialogue);
                                 dialogue.centreY();
-                                ApproveType = ApproveTypeParam;
                             }
                         },
                         fixedcenter: true,
@@ -863,7 +863,7 @@ var nodeOpen = false,
                                       currentContentTO = items[0];
                                   }
 
-                                  if(currentContentTO.isPage){
+                                  if(currentContentTO && currentContentTO.isPage){
                                       CStudioAuthoring.Operations.refreshPreview(currentContentTO);
                                   }else{
                                       CStudioAuthoring.Operations.refreshPreview();
@@ -885,9 +885,9 @@ var nodeOpen = false,
                                   dependencies.push(this.item);
                                 });
                               });
-                              
+
                               var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
-                              dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+                              dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos});
 
                               eventNS.dependencies = dependencies;
                               document.dispatchEvent(eventNS);

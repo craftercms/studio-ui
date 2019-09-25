@@ -460,8 +460,8 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     softDependencies:"Weiche Abhängigkeiten",
     submissionOptional:"Einreichung optional",
     showAllDependencies:"Alle Abhängigkeiten anzeigen",
-    changesSelectioItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
-    loadingDependencies:"Abhängige werden aktualisiert, bitte warten ...",
+    changesSelectionItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
+    loadingDependencies:"Abhängigkeiten werden geladen, bitte warten ...",
 
     childItemsText:"Untergeordnete Elemente",
     willGetDeleted:"Wird gelöscht",

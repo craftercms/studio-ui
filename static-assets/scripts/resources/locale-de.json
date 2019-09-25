@@ -344,7 +344,9 @@
       "LEVEL": "Level",
       "THREAD": "Thread",
       "SITE": "Projekt",
-      "EXCEPTION": "Exception"
+      "EXCEPTION": "Exception",
+      "DETAILS": "Einzelheiten",
+      "LOG_DETAILS": "Protokolldetails"
     }
   },
   "common": {

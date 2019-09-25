@@ -431,7 +431,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     softDependencies:"소프트 종속성",
     submissionOptional:"제출 옵션",
     showAllDependencies:"S모든 종속성 표시",
-    changesSelectioItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
+    changesSelectionItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
     loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
 
     childItemsText:"아동 용품",

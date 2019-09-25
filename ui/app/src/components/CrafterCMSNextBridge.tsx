@@ -18,12 +18,22 @@
 import '../styles/index.scss';
 
 import React, { Suspense } from 'react';
+import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
+
+const cache = createIntlCache();
+
+export const intl = createIntl({
+  locale: 'en',
+  messages: {}
+}, cache);
 
 function CrafterCMSNextBridge(props: any) {
   return (
-    <Suspense fallback={'Loading...'}>
-      {props.children}
-    </Suspense>
+    <RawIntlProvider value={intl}>
+      <Suspense fallback={'Loading...'}>
+        {props.children}
+      </Suspense>
+    </RawIntlProvider>
   );
 }
 
