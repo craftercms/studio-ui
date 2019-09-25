@@ -68,6 +68,12 @@ function DependencySelection(props: DependencySelectionProps) {
     cleanCheckedSoftDep();
   };
 
+  const onClickSetChecked = (e: any, item: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setChecked([item.uri], !checked[item.uri])
+  };
+
   const paths = (
     Object.entries({ ...checked })
       .filter(([key, value]) => value === true)
@@ -117,11 +123,7 @@ function DependencySelection(props: DependencySelectionProps) {
               <div className="dependency-selection--checkbox">
                 <BlueCheckbox
                   checked={!!checked[item.uri]}
-                  onClick={(e: any) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setChecked([item.uri], !checked[item.uri])
-                  }}
+                  onClick={(e: any) => { onClickSetChecked(e, item); }}
                   onChange={(e) => void 0}
                   value={item.uri}
                   color="primary"
@@ -129,11 +131,7 @@ function DependencySelection(props: DependencySelectionProps) {
               </div>
               <div
                 className="dependency-selection--information"
-                onClick={(e: any) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setChecked([item.uri], !checked[item.uri])
-                }}>
+                onClick={(e: any) => { onClickSetChecked(e, item); }}>
                 <div className="dependency-selection--information--internal-name">
                   {item.internalName}
                 </div>
@@ -199,7 +197,11 @@ function DependencySelection(props: DependencySelectionProps) {
                             color="primary"
                           />
                         </div>
-                        <div className="dependency-selection--list--soft-item">{uri}</div>
+                        <div
+                          className="dependency-selection--list--soft-item"
+                          onClick={(e: any) => { setCheckedSoftDep([uri], !checkedSoftDep[uri]) }}>
+                          {uri}
+                        </div>
                       </li>
                     ))
                   ) : (null)
