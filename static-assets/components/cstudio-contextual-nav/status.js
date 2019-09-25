@@ -255,12 +255,9 @@ CStudioAuthoring.ContextualNav.StatusNavMod = CStudioAuthoring.ContextualNav.Sta
           }
 
         },
-        
+
         getStatusMessage: function (contextNavLangBundle, status) {
-          return CMgs.format(
-            contextNavLangBundle,
-            (status.toLowerCase() === 'idle') ? 'ready' : status.toLowerCase()
-          );
+          return CMgs.format( contextNavLangBundle,status.toLowerCase() );
         }
       }
     });
