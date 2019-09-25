@@ -4,8 +4,9 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Fab from "@material-ui/core/Fab";
-import crack from "../assets/crack.svg";
+import crack from "../assets/full-crack.svg";
 import { defineMessages, useIntl } from "react-intl";
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 const useStyles = makeStyles((theme: Theme) => ({
   loadingView: {
@@ -14,10 +15,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    backgroundImage:`url(${crack})`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: '50%',
-    backgroundPosition: '101% 101%'
+    justifyContent: 'center',
   },
   gearContainer: {
     flexGrow: 1,
@@ -25,18 +23,25 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center'
   },
   title: {
-    marginTop: '60px',
+    marginTop: '20px',
     marginBottom: '10px'
   },
   paragraph: {
-    marginBottom: '10px'
+    marginTop: '10px',
+  },
+  link: {
+    color: theme.palette.text.secondary,
+    '& svg': {
+      verticalAlign: 'sub',
+      fontSize: '1.3rem'
+    }
   },
   circleBtn: {
     color: '#4F4F4F',
     backgroundColor: '#FFFFFF',
     position: 'absolute',
     left: '40px',
-    bottom: '40px',
+    top: '35px',
     '&:hover': {
       backgroundColor: '#FFFFFF',
     },
@@ -54,9 +59,9 @@ interface CreateSiteError {
 }
 
 const messages = defineMessages({
-  documentation: {
-    id: 'common.documentation',
-    defaultMessage: 'Documentation'
+  moreInfo: {
+    id: 'common.moreInfo',
+    defaultMessage: 'More info'
   }
 });
 
@@ -69,15 +74,19 @@ export default function CreateSiteError(props: CreateSiteError) {
 
   return (
     <div className={classes.loadingView}>
-      <Typography variant="h5" component="h1" className={classes.title}>
+      <img src={crack} alt="error"/>
+      <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
         Error {code}
       </Typography>
-      <Typography variant="subtitle1" component="p" className={classes.paragraph}>
+      <Typography variant="subtitle1" component="p" color={'textSecondary'}>
         {message}. {remedialAction}
       </Typography>
-      {documentationUrl && <Typography variant="subtitle1" component="p" className={classes.paragraph}>
-         <a href={documentationUrl}>{formatMessage(messages.documentation)}</a>
-      </Typography>}
+      {
+        documentationUrl &&
+        <Typography variant="subtitle1" component="p" className={classes.paragraph}>
+           <a className={classes.link} href={documentationUrl} target={'blank'}>{formatMessage(messages.moreInfo)} <OpenInNewIcon/></a>
+        </Typography>
+      }
       <Fab aria-label="back" className={classes.circleBtn} onClick={onBack} >
         <ArrowBackIcon />
       </Fab>

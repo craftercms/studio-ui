@@ -11,7 +11,6 @@ import { Theme } from "@material-ui/core/styles/createMuiTheme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   review: {
-    paddingTop: '40px',
     maxWidth: '600px',
     margin: 'auto'
   },

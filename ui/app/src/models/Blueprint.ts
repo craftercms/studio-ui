@@ -51,4 +51,7 @@ export interface Blueprint {
   crafterCmsVersions?: [Version],
   description: string,
   media: Media
+  developer?:  any,
+  website?: any,
+  searchEngine?: string
 }

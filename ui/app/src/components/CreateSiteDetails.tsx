@@ -12,29 +12,28 @@ import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from "@material-ui/core/Grid";
-import Link from '@material-ui/core/Link';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import { Blueprint } from "../models/Blueprint";
 
 const useStyles = makeStyles((theme: Theme) => ({
   detailsView: {
     height: '100%',
     background: '#FFFFFF',
-    display: 'flex',
-    flexDirection: 'column',
     overflow: 'auto'
   },
   topBar: {
     display: 'flex',
-    padding: '30px 20px',
-    justifyContent: 'space-between'
+    padding: '20px',
+    alignItems: 'center'
   },
   carouselImg: {
     width: '100%',
-    height: '300px',
+    height: '340px',
     objectFit: 'cover'
   },
   detailsContainer: {
     position: 'relative',
-    padding: '40px 20px'
+    padding: '20px'
   },
   dots: {
     position: 'absolute',
@@ -43,6 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     transform: 'translate(-50%)',
     top: '-40px',
     zIndex: 999,
+    cursor: 'pointer',
     '& .MuiMobileStepper-dot': {
       padding: '3px',
       margin: '2px',
@@ -51,18 +51,26 @@ const useStyles = makeStyles((theme: Theme) => ({
       }
     }
   },
+  useBtn: {
+    marginLeft: 'auto',
+    maxHeight: '36px'
+  },
   circleBtn: {
     color: '#4F4F4F',
     backgroundColor: '#FFFFFF',
-    position: 'absolute',
-    left: '40px',
-    bottom: '40px',
+    marginRight: '30px',
     '&:hover': {
       backgroundColor: '#FFFFFF',
     },
   },
   section: {
-    marginBottom: '20px'
+    marginBottom: '5px'
+  },
+  sectionChips: {
+    display: 'flex',
+    padding: 0,
+    alignitems: 'center',
+    marginTop: '10px'
   },
   bold: {
     fontWeight: 'bold'
@@ -71,27 +79,37 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100% !important',
     height: '300px !important'
   },
+  chip: {
+    fontSize: '12px',
+    color: 'gray',
+    marginRight: theme.spacing(1),
+    backgroundColor: '#f5f5f5',
+    padding: '5px',
+    borderRadius: '5px',
+    '& label': {
+      display: 'block'
+    },
+    '& span': {
+      color: '#2F2707'
+    }
+  },
   viewContainer: {
-    height: '300px'
-  }
+    //height: '300px'
+  },
+  link: {
+    color: theme.palette.text.secondary,
+    '& svg': {
+      verticalAlign: 'sub',
+      fontSize: '1.1rem'
+    }
+  },
 }));
 
-interface CreateSiteError {
-  onBack(event: any): any,
-
-  error: {
-    code: string,
-    documentationUrl?: string,
-    message: string,
-    remedialAction: string
-  },
-}
-
 const messages = defineMessages({
-  use: {
-    id: 'common.use',
-    defaultMessage: 'Use'
-  },
+    use: {
+      id: 'common.use',
+      defaultMessage: 'Use'
+    },
   version: {
     id: 'common.version',
     defaultMessage: 'Version'
@@ -111,16 +129,27 @@ const messages = defineMessages({
   craftercms: {
     id: 'common.craftercms',
     defaultMessage: 'crafterCMS'
+  },
+  searchEngine: {
+    id: 'common.searchEngine',
+    defaultMessage: 'Search Engine'
   }
 });
 
+interface CreateSiteDetails {
+  onCloseDetails(event: any): any,
+  onBlueprintSelected(blueprint: Blueprint, view: number): any,
+  blueprint: Blueprint,
+  interval: number
+}
+
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-export default function CreateSiteDetails(props: any) {
+export default function CreateSiteDetails(props: CreateSiteDetails) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const {blueprint, interval, onBlueprintSelected, onCloseDetails} = props;
-  const {media, name, description, version, license, crafterCmsVersions, developer, website} = blueprint;
+  const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
 
@@ -135,15 +164,19 @@ export default function CreateSiteDetails(props: any) {
     setIndex(step);
   }
 
-  const steps = blueprint.media.screenshots.length + 1;
+  //const steps = blueprint.media.screenshots.length + 1;
+  const steps = blueprint.media.screenshots.length;
 
   return (
     <div className={classes.detailsView}>
       <div className={classes.topBar}>
+        <Fab aria-label="back" className={classes.circleBtn} onClick={onCloseDetails}>
+          <ArrowBackIcon/>
+        </Fab>
         <Typography variant="h5" component="h1">
           {name}
         </Typography>
-        <Button variant="contained" color="primary" onClick={() => onBlueprintSelected(blueprint, 1)}>
+        <Button variant="contained" color="primary" className={classes.useBtn} onClick={() => onBlueprintSelected(blueprint, 1)}>
           {formatMessage(messages.use)}
         </Button>
       </div>
@@ -153,17 +186,18 @@ export default function CreateSiteDetails(props: any) {
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
+        slideStyle={{ height: '350px'}}
       >
-        <div className={classes.viewContainer}>
-          <video controls className={classes.video}>
-            <source src="http://techslides.com/demos/sample-videos/small.mp4" type="video/mp4"/>
-            Your browser does not support the video tag.
-          </video>
-        </div>
+        {/*<div className={classes.viewContainer}>*/}
+        {/*  <video controls className={classes.video}>*/}
+        {/*    <source src="http://techslides.com/demos/sample-videos/small.mp4" type="video/mp4"/>*/}
+        {/*    Your browser does not support the video tag.*/}
+        {/*  </video>*/}
+        {/*</div>*/}
         {media.screenshots.map((step: Image, index: number) => (
-          <div key={index} className={classes.viewContainer}>
-            <img className={classes.carouselImg} src={step.url} alt={step.description}/>
-          </div>
+          //<div key={index} className={classes.viewContainer}>
+            <img key={index}  className={classes.carouselImg} src={step.url} alt={step.description}/>
+          // </div>
         ))}
       </AutoPlaySwipeableViews>
       <div className={classes.detailsContainer}>
@@ -180,14 +214,20 @@ export default function CreateSiteDetails(props: any) {
             <div className={classes.section}>
               {
                 developer &&
-                <Typography variant="subtitle2" className={classes.bold}>
+                <Typography variant="subtitle2" className={classes.bold} >
                   {formatMessage(messages.developer)}
                 </Typography>
               }
               {
                 developer.company &&
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" color={'textSecondary'}>
                     {developer.company.name}
+                </Typography>
+              }
+              {
+                developer.people &&
+                <Typography variant="subtitle2" color={'textSecondary'}>
+                  {developer.people.name}
                 </Typography>
               }
             </div>
@@ -200,47 +240,39 @@ export default function CreateSiteDetails(props: any) {
               }
               {
                 website.name &&
-                <Link href={website.url}>
-                  {website.name}
-                </Link>
+                <Typography variant="subtitle2" component="p">
+                    <a className={classes.link} href={website.url} target={'blank'}>{website.name} <OpenInNewIcon/></a>
+                </Typography>
               }
             </div>
-            { fullVersion &&
-              <div className={classes.section}>
-                <Typography variant="subtitle2" className={classes.bold}>
-                  {formatMessage(messages.version)}
-                </Typography>
-                  <Typography variant="subtitle2">
-                  {fullVersion}
-                </Typography>
+              {
+                searchEngine &&
+                  <div className={classes.section}>
+                  <Typography variant="subtitle2" className={classes.bold} >
+                    {formatMessage(messages.searchEngine)}
+                  </Typography>
+                  <Typography variant="subtitle2" color={'textSecondary'}>
+                    {searchEngine}
+                  </Typography>
+                </div>
+              }
+            <div className={classes.sectionChips}>
+              <div className={classes.chip}>
+                <label>{formatMessage(messages.version)}</label>
+                <span>{fullVersion}</span>
               </div>
-            }
-            { license &&
-            <div className={classes.section}>
-                <Typography variant="subtitle2" className={classes.bold}>
-                  {formatMessage(messages.license)}
-                </Typography>
-                <Typography variant="subtitle2">
-                  {license.name}
-                </Typography>
+              <div className={classes.chip}>
+                <label>{formatMessage(messages.license)}</label>
+                <span>{license.name}</span>
+              </div>
+              <div className={classes.chip}>
+                <label>{formatMessage(messages.craftercms)}</label>
+                <span>{crafterCMS}</span>
+              </div>
             </div>
-            }
-            { crafterCMS &&
-            <div className={classes.section}>
-                <Typography variant="subtitle2" className={classes.bold}>
-                  {formatMessage(messages.craftercms)}
-                </Typography>
-                <Typography variant="subtitle2">
-                  {crafterCMS}
-                </Typography>
-            </div>
-            }
           </Grid>
         </Grid>
       </div>
-      <Fab aria-label="back" className={classes.circleBtn} onClick={onCloseDetails}>
-        <ArrowBackIcon/>
-      </Fab>
     </div>
   )
 }

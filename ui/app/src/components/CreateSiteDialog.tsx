@@ -45,6 +45,7 @@ import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import CreateSiteDetails from "./CreateSiteDetails";
+import Empty from "./Empty";
 
 const views: Views = {
   0: {
@@ -126,15 +127,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     zIndex: 1
   },
-  inputRoot: {
+  searchRoot: {
     color: 'inherit',
     width: '100%'
   },
-  inputInput: {
+  searchInput: {
     padding: theme.spacing(1, 1, 1, 7),
     width: '100%',
     backgroundColor: '#EBEBF0',
     borderRadius: '5px',
+    border: 0,
     '&:focus': {
       backgroundColor: '#FFFFFF',
       boxShadow: '0px 0px 3px rgba(65, 69, 73, 0.15), 0px 4px 4px rgba(65, 69, 73, 0.15)'
@@ -150,7 +152,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   slide: {
     padding: 20,
-    minHeight: '492px',
+    minHeight: '490px',
+    display: 'flex'
+  },
+  slideBP: {
+    padding: 20,
+    minHeight: '460px',
+    display: 'flex'
   },
   dialogActions: {
     background: '#EBEBF0',
@@ -223,6 +231,14 @@ const messages = defineMessages({
   back: {
     id: 'common.back',
     defaultMessage: 'Back'
+  },
+  noBlueprints: {
+    id: 'createSiteDialog.noBlueprints',
+    defaultMessage: 'No Blueprints Where Found'
+  },
+  changeQuery: {
+    id: 'createSiteDialog.changeQuery',
+    defaultMessage: 'Try changing your query or browse the full catalog.'
   }
 });
 
@@ -246,19 +262,29 @@ function CreateSiteDialog(props: any) {
 
   const {formatMessage} = useIntl();
 
+  function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
+    searchKey = searchKey.toLowerCase();
+    return searchKey && blueprints
+      ? blueprints.filter(blueprint => blueprint.name.toLowerCase().includes(searchKey))
+      : blueprints;
+  }
+
+  const filteredBlueprints: Blueprint[] = filterBlueprints(blueprints, search.searchKey);
+  const filteredMarketplace: Blueprint[] = filterBlueprints(marketplace, search.searchKey);
+
   useEffect(() => {
-      if (swipeableViews.current) {
+      if (swipeableViews.current && !apiState.error) {
         swipeableViews.current.updateHeight();
       }
-      if (tab === 0 && blueprints === null) {
+      if (tab === 0 && blueprints === null && !apiState.error) {
         fetchBlueprints();
       }
-      if (tab === 1 && marketplace === null) {
+      if (tab === 1 && marketplace === null && !apiState.error) {
         fetchMarketPlace();
       }
     },
     // eslint-disable-next-line
-    [tab],
+    [tab, filteredBlueprints, filteredMarketplace],
   );
 
   function handleClose() {
@@ -453,6 +479,11 @@ function CreateSiteDialog(props: any) {
   }
 
   function renderBluePrints(list: Blueprint[]) {
+    if(list.length === 0 ) {
+      return (
+        <Empty title={formatMessage(messages.noBlueprints)} subtitle={formatMessage(messages.changeQuery)}/>
+      )
+    }
     return list.map((item: Blueprint) => {
       return (
         <Grid item xs={12} sm={6} md={4} key={item.id}>
@@ -461,16 +492,6 @@ function CreateSiteDialog(props: any) {
       );
     })
   }
-
-  function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
-    searchKey = searchKey.toLowerCase();
-    return searchKey && blueprints
-      ? blueprints.filter(blueprint => blueprint.name.toLowerCase().includes(searchKey))
-      : blueprints;
-  }
-
-  const filteredBlueprints: Blueprint[] = filterBlueprints(blueprints, search.searchKey);
-  const filteredMarketplace: Blueprint[] = filterBlueprints(marketplace, search.searchKey);
 
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
@@ -505,8 +526,8 @@ function CreateSiteDialog(props: any) {
                           placeholder="Search…"
                           autoFocus={true}
                           classes={{
-                            root: classes.inputRoot,
-                            input: classes.inputInput,
+                            root: classes.searchRoot,
+                            input: classes.searchInput,
                           }}
                           value={search.searchKey}
                           onChange={e => setSearch({...search, searchKey: e.target.value})}
@@ -518,15 +539,12 @@ function CreateSiteDialog(props: any) {
                   animateHeight
                   ref={swipeableViews}
                   index={site.selectedView}>
-                  <div className={classes.slide}>
+                  <div className={classes.slideBP}>
                     {
                       (tab === 0) ?
-                        <div>
                           <Grid container spacing={3}>{renderBluePrints(filteredBlueprints)}</Grid>
-                        </div> :
-                        <div>
+                        :
                           <Grid container spacing={3}>{renderBluePrints(filteredMarketplace)}</Grid>
-                        </div>
                     }
                   </div>
                   <div className={classes.slide}>
