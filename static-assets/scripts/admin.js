@@ -858,10 +858,11 @@
         "site" : publish.site,
         "path" : "/site-config.xml"
       }).success(function (data) {
+        var publishing =  data["publishing"];
         publish.timeZone = data["default-timezone"];
-        publish.isValidateCommentOn = data["submission-settings"] ? 
-          ((data["submission-settings"]["comment-required"] === "true" && data["submission-settings"]["bulk-comment-required"] !== "false" )
-          || data["submission-settings"]["bulk-comment-required"] === "true" ? 
+        publish.isValidateCommentOn = publishing && publishing["comments"] ? 
+          ((publishing["comments"]["required"] === "true" && publishing["comments"]["bulk-publish-required"] !== "false" )
+          || publishing["comments"]["bulk-publish-required"] === "true" ? 
           true : false) 
           : false;
           console.log(publish.isValidateCommentOn);

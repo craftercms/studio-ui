@@ -24,6 +24,7 @@
 (function(CStudioAuthoring){
 
     var Base = CStudioAuthoring.ViewController.Base,
+        publishUtil = CStudioAuthoring.Env.ModuleMap.get("publish-util"),
         $ = jQuery,
         currentItems;
 
@@ -35,29 +36,29 @@
 
         startup: ['fetchPublishingSettings', 'initDatePicker', 'initValidation', 'translateUI'],
 
-        loadItems: loadItems,
+        loadItems: publishUtil.loadItems,
 
-        renderItems: renderItems,
+        renderItems: publishUtil.renderItems,
 
-        loadPublishingChannels: loadPublishingChannels,
+        loadPublishingChannels: publishUtil.loadPublishingChannels,
 
-        populatePublishingOptions: populatePublishingOptions,
+        populatePublishingOptions: publishUtil.populatePublishingOptions,
 
         submitButtonActionClicked: submit,
 
-        closeButtonActionClicked: closeButtonClicked,
+        closeButtonActionClicked: publishUtil.closeButtonClicked,
 
-        initDatePicker: initDatePicker,
+        initDatePicker: publishUtil.initDatePicker,
 
-        fetchPublishingSettings,
+        fetchPublishingSettings: publishUtil.fetchPublishingSettings,
 
-        initValidation,
+        initValidation: publishUtil.initValidation,
 
-        publishValidation,
+        publishValidation: publishUtil.publishValidation,
         
-        translateUI,
+        translateUI: publishUtil.translateUI,
 
-        getGenDependency: getGenDependency
+        getGenDependency: publishUtil.getGenDependency
 
     });
 

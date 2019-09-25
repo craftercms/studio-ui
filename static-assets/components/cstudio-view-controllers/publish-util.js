@@ -197,8 +197,9 @@ function fetchPublishingSettings() {
     "/site-config.xml",
     {
       success: function (config) {
-        isValidateCommentOn = config["submission-settings"] ?
-          (config["submission-settings"]["comment-required"] === "true" ? true : false)
+        var publishing =  config["publishing"];
+        isValidateCommentOn = publishing && publishing["comments"] ?
+          (publishing["comments"]["required"] === "true" ? true : false)
           : false;
         if(isValidateCommentOn){
           me.getComponent('.approveDialogSubmissionComment').append(" (*)");
@@ -331,3 +332,22 @@ function getScheduledDateTimeFromJson(dateTimeStr) {
   return '' + dateTokens[1] + '/' + dateTokens[2] + '/' + dateTokens[0] + ' '
     + (hrs < 10 ? '0' + hrs : hrs) + ':' + (mnts < 10 ? '0' + mnts : mnts) + (dateTime.getHours() < 12 ? ' am' : ' pm');
 }
+
+CStudioAuthoring.Env.ModuleMap.map("publish-util", {
+  loadItems,
+  closeButtonClicked,
+  getGenDependency,
+  translateUI,
+  verifyMixedSchedules,
+  loadPublishingChannels,
+  calculateDependencies,
+  renderItems,
+  populatePublishingOptions,
+  fetchPublishingSettings,
+  initDatePicker,
+  publishValidation,
+  initValidation,
+  getScheduledDateTimeForJson,
+  traverse,
+  getScheduledDateTimeFromJson
+}); 

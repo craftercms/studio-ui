@@ -25,6 +25,7 @@
 
   var
     Base = CStudioAuthoring.ViewController.Base,
+    publishUtil = CStudioAuthoring.Env.ModuleMap.get("publish-util");
     Dom = YAHOO.util.Dom,
     Event = YAHOO.util.Event,
     each = CStudioAuthoring.Utils.each,
@@ -38,31 +39,31 @@
     
     actions: ['.close-button', '.submit-button'],
 
-    loadItems: loadItems,
+    loadItems: publishUtil.loadItems,
 
     startup: ['fetchPublishingSettings', 'initDatePicker', 'initValidation', 'translateUI'],
 
-    loadPublishingChannels: loadPublishingChannels,
+    loadPublishingChannels: publishUtil.loadPublishingChannels,
 
-    renderItems: renderItems,
+    renderItems: publishUtil.renderItems,
 
-    populatePublishingOptions: populatePublishingOptions,
+    populatePublishingOptions: publishUtil.populatePublishingOptions,
 
     submitButtonActionClicked: submit,
 
-    closeButtonActionClicked: closeButtonClicked,
+    closeButtonActionClicked: publishUtil.closeButtonClicked,
 
-    initDatePicker: initDatePicker,
+    initDatePicker: publishUtil.initDatePicker,
 
-    fetchPublishingSettings,
+    fetchPublishingSettings: publishUtil.fetchPublishingSettings,
 
-    initValidation,
+    initValidation: publishUtil.initValidation,
 
-    publishValidation,
+    publishValidation: publishUtil.publishValidation,
     
-    translateUI,
+    translateUI: publishUtil.translateUI,
 
-    getGenDependency: getGenDependency
+    getGenDependency: publishUtil.getGenDependency
 
   });
 
