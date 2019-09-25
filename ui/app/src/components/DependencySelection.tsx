@@ -123,7 +123,7 @@ function DependencySelection(props: DependencySelectionProps) {
               <div className="dependency-selection--checkbox">
                 <BlueCheckbox
                   checked={!!checked[item.uri]}
-                  onClick={(e: any) => { onClickSetChecked(e, item); }}
+                  onClick={(e) => onClickSetChecked(e, item)}
                   onChange={(e) => void 0}
                   value={item.uri}
                   color="primary"
@@ -131,7 +131,7 @@ function DependencySelection(props: DependencySelectionProps) {
               </div>
               <div
                 className="dependency-selection--information"
-                onClick={(e: any) => { onClickSetChecked(e, item); }}>
+                onClick={(e) => onClickSetChecked(e, item)}>
                 <div className="dependency-selection--information--internal-name">
                   {item.internalName}
                 </div>
@@ -199,7 +199,7 @@ function DependencySelection(props: DependencySelectionProps) {
                         </div>
                         <div
                           className="dependency-selection--list--soft-item"
-                          onClick={(e: any) => { setCheckedSoftDep([uri], !checkedSoftDep[uri]) }}>
+                          onClick={(e) => setCheckedSoftDep([uri], !checkedSoftDep[uri])}>
                           {uri}
                         </div>
                       </li>
