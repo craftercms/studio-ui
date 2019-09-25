@@ -265,6 +265,10 @@ function CreateSiteDialog(props: any) {
     setOpen(false);
   }
 
+  function handleCloseDetails() {
+    setSite({...site, details: null});
+  }
+
   function handleErrorBack() {
     setApiState({ ...apiState, error: false });
   }
@@ -422,7 +426,6 @@ function CreateSiteDialog(props: any) {
   }
 
   function setCookie(cookieGenName:string, value:string, maxAge?:any) {
-    //$cookies[cookieName] = site.siteId;
     const domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
     if (maxAge != null) {
       document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal, "; max-age=", maxAge].join("");
@@ -475,7 +478,7 @@ function CreateSiteDialog(props: any) {
       {( apiState.creatingSite || apiState.error || site.details) ?
         (apiState.creatingSite && <CreateSiteLoading/>) ||
         (apiState.error && <CreateSiteError error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
-        (site.details && <CreateSiteDetails blueprint={site.details}/>):
+        (site.details && <CreateSiteDetails blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {
