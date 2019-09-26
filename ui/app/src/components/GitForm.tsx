@@ -299,11 +299,9 @@ function GitForm(props: GitForm) {
           id="repo_remote_name"
           name="repo_remote_name"
           label={formatMessage(messages.remoteName)}
-          required
           fullWidth
           onChange={handleInputChange}
           value={inputs.repo_remote_name}
-          error={(inputs.submitted && !inputs.repo_remote_name && inputs.push_site)}
           helperText={type === 'push'? formatMessage(pushMessages.push_remote_name_label) : formatMessage(cloneMessages.clone_remote_name_label)}
         />
       </Grid>

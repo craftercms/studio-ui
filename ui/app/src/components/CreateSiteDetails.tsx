@@ -7,13 +7,12 @@ import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import MobileStepper from "./MobileStepper";
 import { defineMessages, useIntl } from "react-intl";
-import { Image } from "../models/Blueprint";
+import { Blueprint } from "../models/Blueprint";
 import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from "@material-ui/core/Grid";
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { Blueprint } from "../models/Blueprint";
 
 const useStyles = makeStyles((theme: Theme) => ({
   detailsView: {
@@ -76,8 +75,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 'bold'
   },
   video: {
-    width: '100% !important',
-    height: '300px !important'
+    width: '100%',
+    height: '300px',
+    outline: 'none',
+    background: '#ebebf1'
   },
   chip: {
     fontSize: '12px',
@@ -92,9 +93,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& span': {
       color: '#2F2707'
     }
-  },
-  viewContainer: {
-    //height: '300px'
   },
   link: {
     color: theme.palette.text.secondary,
@@ -148,6 +146,7 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 export default function CreateSiteDetails(props: CreateSiteDetails) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
+  const [play, setPlay] = useState(false);
   const {blueprint, interval, onBlueprintSelected, onCloseDetails} = props;
   const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
@@ -164,8 +163,38 @@ export default function CreateSiteDetails(props: CreateSiteDetails) {
     setIndex(step);
   }
 
-  //const steps = blueprint.media.screenshots.length + 1;
-  const steps = blueprint.media.screenshots.length;
+  function handlePlay() {
+    setPlay(true);
+  }
+
+  function handleEnded() {
+    setPlay(false);
+  }
+
+  function renderMedias(){
+    let videos:any = media.videos? {...media.videos, type: 'video'} : [];
+    videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
+    const merged = [...videos, ...media.screenshots];
+    return merged.map((item, index) => {
+      if(item.type !== 'video') {
+        return (
+          <div key={index}>
+            <img className={classes.carouselImg} src={item.url} alt={item.description}/>
+          </div>
+        )
+      }else {
+        return (
+          <video key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay} onEnded={handleEnded}>
+            <source src={item.url} type="video/mp4"/>
+            Your browser does not support the video tag.
+          </video>
+        )
+      }
+    })
+  }
+
+  let steps = blueprint.media.screenshots? blueprint.media.screenshots.length : 0;
+  steps += blueprint.media.videos? blueprint.media.videos.length : 0;
 
   return (
     <div className={classes.detailsView}>
@@ -182,23 +211,13 @@ export default function CreateSiteDetails(props: CreateSiteDetails) {
       </div>
       <AutoPlaySwipeableViews
         index={index}
-        autoplay={false}
+        autoplay={!play}
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
         slideStyle={{ height: '350px'}}
       >
-        {/*<div className={classes.viewContainer}>*/}
-        {/*  <video controls className={classes.video}>*/}
-        {/*    <source src="http://techslides.com/demos/sample-videos/small.mp4" type="video/mp4"/>*/}
-        {/*    Your browser does not support the video tag.*/}
-        {/*  </video>*/}
-        {/*</div>*/}
-        {media.screenshots.map((step: Image, index: number) => (
-          //<div key={index} className={classes.viewContainer}>
-            <img key={index}  className={classes.carouselImg} src={step.url} alt={step.description}/>
-          // </div>
-        ))}
+        {renderMedias()}
       </AutoPlaySwipeableViews>
       <div className={classes.detailsContainer}>
         {steps > 1 &&

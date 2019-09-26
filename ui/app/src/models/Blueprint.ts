@@ -29,7 +29,7 @@ export interface Video {
 
 interface Media {
   screenshots: [Image],
-  videos?: [Video]
+  videos?: [Video] | []
 }
 
 interface Version {

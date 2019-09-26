@@ -10,7 +10,7 @@ import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Blueprint, Image } from "../models/Blueprint";
+import { Blueprint } from "../models/Blueprint";
 import { defineMessages, useIntl } from "react-intl";
 import MobileStepper from "./MobileStepper";
 import Menu from '@material-ui/core/Menu';
@@ -49,6 +49,12 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: '200px',
     objectFit: 'cover'
+  },
+  video: {
+    width: '100%',
+    height: '200px',
+    outline: 'none',
+    background: '#ebebf1'
   },
   chip: {
     fontSize: '12px',
@@ -111,6 +117,7 @@ const messages = defineMessages({
 function BlueprintCard(props: BlueprintCard) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
+  const [play, setPlay] = useState(false);
   const {onBlueprintSelected, blueprint, interval, onDetails} = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
@@ -135,23 +142,51 @@ function BlueprintCard(props: BlueprintCard) {
     e.stopPropagation();
     setIndex(step);
   }
-  const steps = media.screenshots.length;
+
+  function handlePlay() {
+    setPlay(true);
+  }
+
+  function handleEnded() {
+    setPlay(false);
+  }
+
+  function renderMedias(){
+    let videos:any = media.videos? {...media.videos, type: 'video'} : [];
+    videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
+    const merged = [...videos, ...media.screenshots];
+    return merged.map((item, index) => {
+      if(item.type !== 'video') {
+        return (
+          <div key={index}>
+            <img className={classes.carouselImg} src={item.url} alt={item.description}/>
+          </div>
+        )
+      }else {
+        return (
+          <video key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay} onEnded={handleEnded}>
+            <source src={item.url} type="video/mp4"/>
+            Your browser does not support the video tag.
+          </video>
+        )
+      }
+    })
+  }
+
+  let steps = blueprint.media.screenshots? blueprint.media.screenshots.length : 0;
+  steps += blueprint.media.videos? blueprint.media.videos.length : 0;
 
   return (
     <Card className={classes.card}>
       <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
         <AutoPlaySwipeableViews
           index={index}
-          autoplay={true}
+          autoplay={!play}
           interval={interval}
           onChangeIndex={handleChangeIndex}
           enableMouseEvents
         >
-          {media.screenshots.map((step: Image, index: number) => (
-            <div key={index}>
-              <img className={classes.carouselImg} src={step.url} alt={step.description}/>
-            </div>
-          ))}
+          {renderMedias()}
         </AutoPlaySwipeableViews>
         <CardContent className={'cardContent'}>
           {steps > 1 && <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'} activeStep={index}/>}

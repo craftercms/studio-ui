@@ -345,7 +345,6 @@ function CreateSiteDialog(props: any) {
       return false;
     } else if (site.push_site) {
       if (!site.repo_url) return false;
-      else if (!site.repo_remote_name) return false;
       else if (site.repo_authentication === 'basic' && (!site.repo_username || !site.repo_password)) return false;
       else if (site.repo_authentication === 'token' && (!site.repo_username || !site.repo_token)) return false;
       else return !(site.repo_authentication === 'key' && !site.repo_key);
@@ -435,7 +434,8 @@ function CreateSiteDialog(props: any) {
                   title: 'Remote Git Repository',
                   url: 'https://www.embarcados.com.br/wp-content/uploads/2015/02/imagem-de-destaque-39.png'
                 }
-              ]
+              ],
+              videos: []
             }
           }];
           response.blueprints.forEach((bp: any) => {
