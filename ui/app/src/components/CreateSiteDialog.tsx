@@ -81,7 +81,8 @@ const siteInitialState: SiteState = {
   repo_key: '',
   submitted: false,
   selectedView: 0,
-  details: null
+  details: null,
+  blueprintFields: {}
 };
 
 const CustomTabs = withStyles({
@@ -340,6 +341,18 @@ function CreateSiteDialog(props: any) {
     }
   }
 
+  function checkAdditionalFields() {
+    let valid = true;
+    if(site.blueprint.parameters) {
+      site.blueprint.parameters.forEach(parameter => {
+        if(parameter.required && !site.blueprintFields[parameter.name]) {
+          valid = false;
+        }
+      });
+    }
+    return valid;
+  }
+
   function validateForm() {
     if (!site.siteId || site.siteIdExist) {
       return false;
@@ -349,7 +362,7 @@ function CreateSiteDialog(props: any) {
       else if (site.repo_authentication === 'token' && (!site.repo_username || !site.repo_token)) return false;
       else return !(site.repo_authentication === 'key' && !site.repo_key);
     } else {
-      return true;
+      return checkAdditionalFields();
     }
   }
 
@@ -361,11 +374,17 @@ function CreateSiteDialog(props: any) {
         single_branch: false,
         authentication_type: site.repo_authentication
       };
-      if (site.blueprint.id !== 'GIT') {
+      console.log(site.blueprint);
+      if (site.blueprint.id !== 'GIT' && site.blueprint.source !== 'GIT') {
         params.blueprint = site.blueprint.id;
         params.use_remote = site.push_site;
       } else {
         params.use_remote = true;
+      }
+      //it is from marketplace
+      if(site.blueprint.source === 'GIT') {
+        params.remote_url = site.blueprint.url;
+        params.remote_branch = site.blueprint.ref;
       }
       if (site.repo_remote_name) params.remote_name = site.repo_remote_name;
       if (site.repo_url) params.remote_url = site.repo_url;
@@ -382,6 +401,7 @@ function CreateSiteDialog(props: any) {
         params.remote_token = site.repo_token;
       }
       if (site.repo_authentication === 'key') params.remote_private_key = site.repo_username;
+      if (site.blueprintFields) params.site_params = site.blueprintFields;
       params.create_option = site.push_site ? 'push' : 'clone';
       return params;
     }

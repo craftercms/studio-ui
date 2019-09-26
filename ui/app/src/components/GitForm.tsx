@@ -288,6 +288,8 @@ function GitForm(props: GitForm) {
           id="repo_remote_branch"
           name="repo_remote_branch"
           label={formatMessage(messages.branch)}
+          InputLabelProps={{shrink: true}}
+          placeholder="master"
           fullWidth
           onChange={handleInputChange}
           value={inputs.repo_remote_branch}
@@ -299,6 +301,8 @@ function GitForm(props: GitForm) {
           id="repo_remote_name"
           name="repo_remote_name"
           label={formatMessage(messages.remoteName)}
+          InputLabelProps={{shrink: true}}
+          placeholder="origin"
           fullWidth
           onChange={handleInputChange}
           value={inputs.repo_remote_name}

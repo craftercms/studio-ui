@@ -9,6 +9,7 @@ import GitForm from "./GitForm";
 import { Blueprint } from "../models/Blueprint";
 import { SiteState } from '../models/Site';
 import { defineMessages, useIntl } from "react-intl";
+import FormBuilder from "./FormBuilder";
 
 const useStyles = makeStyles(() => ({
   form: {
@@ -70,12 +71,15 @@ function BluePrintForm(props: BluePrintForm) {
     [inputs.push_site, inputs.repo_authentication],
   );
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: any, type?:string) => {
     e.persist();
     if (e.target.type === 'checkbox') {
       setInputs({...inputs, [e.target.name]: e.target.checked});
     } else if (e.target.name === 'siteId') {
       setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "")});
+    } else if (type === 'blueprintFields') {
+      let parameters = {...inputs.blueprintFields, [e.target.name]: e.target.value };
+      setInputs({...inputs, blueprintFields: parameters});
     } else {
       setInputs({...inputs, [e.target.name]: e.target.value});
     }
@@ -92,7 +96,7 @@ function BluePrintForm(props: BluePrintForm) {
             required
             fullWidth
             onBlur={onCheckNameExist}
-            onChange={handleInputChange}
+            onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
             error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
             helperText={!inputs.siteIdExist ? formatMessage(messages.siteFormat) : formatMessage(messages.nameExist)}
@@ -105,21 +109,25 @@ function BluePrintForm(props: BluePrintForm) {
             name="description"
             label={formatMessage(messages.description)}
             multiline
-            onChange={handleInputChange}
+            onChange={(event) => handleInputChange(event)}
             value={inputs.description}
             inputProps={{maxLength: 4000}}
             helperText={formatMessage(messages.descriptionMaxLength)}
           />
         </Grid>
         {
-          (blueprint.id !== 'GIT') &&
+          blueprint.parameters &&
+          <FormBuilder parameters={blueprint.parameters} handleInputChange={handleInputChange} inputs={inputs}/>
+        }
+        {
+          (blueprint.id !== 'GIT' && blueprint.source !== 'GIT') &&
           <Grid item xs={12}>
               <FormControlLabel
                   control={
                     <Checkbox
                       name="push_site"
                       checked={inputs.push_site}
-                      onChange={handleInputChange}
+                      onChange={(event) => handleInputChange(event)}
                       color="primary"
                     />
                   }
@@ -129,7 +137,7 @@ function BluePrintForm(props: BluePrintForm) {
         }
         <Collapse in={inputs.push_site} timeout={300} unmountOnExit>
           {
-            inputs.push_site &&
+            (inputs.push_site && blueprint.source !== 'GIT') &&
             <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
           }
         </Collapse>
