@@ -38,8 +38,8 @@ function translateUI() {
 
 }
 
-function getGenDependency(callback) {
-  calculateDependencies(this.submitItems, callback);
+function getGenDependency(callback, items) {
+  calculateDependencies(items, callback);
 }
 
 function closeButtonClicked() {
@@ -47,7 +47,7 @@ function closeButtonClicked() {
   this.end();
 }
 
-function loadItems(data) {
+function loadItems(data, dialogue) {
   var me = this;
 
   var loadSpinner = document.getElementById('loadSpinner');
@@ -55,10 +55,12 @@ function loadItems(data) {
 
   var items = data;
   loadSpinner.classList.add('hidden');
-  me.submitItems = items;
   me.renderItems(items);
   $('#approveSubmit').prop('disabled', false);
   verifyMixedSchedules(items);
+  this.on("submitComplete", function(evt, args){
+    submitComplete(items, dialogue, args);
+  });
 
 }
 
@@ -164,6 +166,7 @@ function renderItems(items) {
       }
     );
 
+  CStudioAuthoring.Utils.removeLoadingIcon();  
   const me = this;
   $(document).on('keyup', function (e) {
     if (e.keyCode === 27) {	// esc
@@ -290,13 +293,16 @@ function publishValidation() {
 }
 
 function initValidation() {
-  var self = this;
+  var self = this,
+      submissionCommentVal = this.getComponent('.submissionCommentVal');
   this.publishValidation();
   this.$('.submission-comment').focusout(function () {
     if (isValidateCommentOn && $(this).get(0).value === "") {
-      self.$('#submissionCommentVal').show();
+      submissionCommentVal.classList.remove("hide");
     } else {
-      self.$('#submissionCommentVal').hide();
+      submissionCommentVal.classList.contains("hide") === false
+      ? submissionCommentVal.classList.add("hide")
+      : null;
     }
     self.publishValidation();
   });
@@ -332,6 +338,64 @@ function getScheduledDateTimeFromJson(dateTimeStr) {
   return '' + dateTokens[1] + '/' + dateTokens[2] + '/' + dateTokens[0] + ' '
     + (hrs < 10 ? '0' + hrs : hrs) + ':' + (mnts < 10 ? '0' + mnts : mnts) + (dateTime.getHours() < 12 ? ' am' : ' pm');
 }
+
+function submitComplete(items, dialogue, args){
+  var self = this;
+  if(items.length > 1){
+      var oldItems = [];
+      for(var i = 0; i < items.length; i++ ){
+          oldItems[items[i].browserUri.replace(/\//g, '')] = items[i].uri;
+      }
+      eventNS.oldPath = oldItems;
+  }else{
+      eventNS.oldPath = items[0].uri;
+  }
+  var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
+  if(CStudioAuthoringContext.isPreview){
+      try{
+          var currentContentTO,
+              URLBrowseUri = pageParameter,
+              contentTOBrowseUri = items[0].browserUri;
+
+          if (URLBrowseUri === contentTOBrowseUri){
+              currentContentTO = null;
+          } else{
+              currentContentTO = items[0];
+          }
+          if(currentContentTO && currentContentTO.isPage){
+              CStudioAuthoring.Operations.refreshPreview(currentContentTO);
+          }
+      }catch(error) {
+        console.error(error.message);
+      }
+  }else{ // clear only while on dashboard
+    CStudioAuthoring.SelectedContent.clear(); // clear selected contents after publish
+  }
+
+  dialogue.destroy();
+  eventNS.data = items;
+  eventNS.typeAction = "publish";
+  self.getGenDependency({
+    success: function(response) {
+      var dependenciesObj = JSON.parse(response.responseText).entities,
+          dependencies = [];
+
+      $.each(dependenciesObj, function(){
+        $.each(this.dependencies, function(){
+          dependencies.push(this.item);
+        });
+      });
+      
+      var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
+      dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+
+      eventNS.dependencies = dependencies;
+      document.dispatchEvent(eventNS);
+      eventNS.dependencies = null;
+    }
+  }, items);
+
+};
 
 CStudioAuthoring.Env.ModuleMap.map("publish-util", {
   loadItems,

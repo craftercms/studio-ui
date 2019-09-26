@@ -41,7 +41,7 @@
 
     loadItems: publishUtil.loadItems,
 
-    startup: ['fetchPublishingSettings', 'initDatePicker', 'initValidation', 'translateUI'],
+    startup: ['fetchPublishingSettings', 'loadPublishingChannels', 'initDatePicker', 'initValidation', 'translateUI'],
 
     loadPublishingChannels: publishUtil.loadPublishingChannels,
 

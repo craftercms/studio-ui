@@ -860,12 +860,13 @@
       }).success(function (data) {
         var publishing =  data["publishing"];
         publish.timeZone = data["default-timezone"];
-        publish.isValidateCommentOn = publishing && publishing["comments"] ? 
-          ((publishing["comments"]["required"] === "true" && publishing["comments"]["bulk-publish-required"] !== "false" )
-          || publishing["comments"]["bulk-publish-required"] === "true" ? 
-          true : false) 
-          : false;
-          console.log(publish.isValidateCommentOn);
+        publish.isValidateCommentOn = publishing && publishing["comments"] 
+        ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["bulk-publish-required"] !== "false" )
+          || publishing["comments"]["bulk-publish-required"] === "true" 
+          ? true 
+          : false) 
+        : false;
+        
       });
 
       publish.getPublish = function () {

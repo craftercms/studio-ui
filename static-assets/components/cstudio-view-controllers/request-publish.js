@@ -25,8 +25,7 @@
 
     var Base = CStudioAuthoring.ViewController.Base,
         publishUtil = CStudioAuthoring.Env.ModuleMap.get("publish-util"),
-        $ = jQuery,
-        currentItems;
+        $ = jQuery;
 
     Base.extend('RequestPublish', {
 
@@ -34,7 +33,7 @@
         
         actions: ['.close-button', '.submit-button'],
 
-        startup: ['fetchPublishingSettings', 'initDatePicker', 'initValidation', 'translateUI'],
+        startup: ['fetchPublishingSettings', 'loadPublishingChannels' ,'initDatePicker', 'initValidation', 'translateUI'],
 
         loadItems: publishUtil.loadItems,
 
