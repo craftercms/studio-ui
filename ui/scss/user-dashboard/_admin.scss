@@ -172,7 +172,7 @@ table {
 
     }
   }
-  
+
   .error.ng-binding {
     color: red;
   }
@@ -197,7 +197,7 @@ table {
       width: calc( 100% - 35px );
       display: inline-block;
     }
-    
+
     .add-user {
       border: 1px solid #ccc;
       padding: 4px 4px 5px 5px;
@@ -321,7 +321,7 @@ table {
       width: 83%;
       border-top-left-radius:initial;
       border-bottom-left-radius:initial;
-      
+
       &.dateFrom{
         position: relative;
         right: 3px;
@@ -380,6 +380,18 @@ table {
 
 }
 
+.log-details-view {
+  .exception {
+    padding: 20px;
+    max-height: 400px;
+    overflow: auto;
+    margin-bottom: 0;
+    margin-top: 10px;
+    display: block;
+    background: #f8f9fa;
+  }
+}
+
 .logging-levels-view, .log-console-view {
   .actions {
     button {
@@ -401,6 +413,12 @@ table {
       .log {
         .thread {
           min-width: 142px;
+        }
+        .details {
+          .details-icon {
+            cursor: pointer;
+            color: #7e9dbb;
+          }
         }
         .message {
           word-break: break-all;
@@ -744,7 +762,7 @@ table {
   .wizard-item{
     margin-right: 10px;
   }
-  
+
  .wizard-item.ng-hide-add.ng-hide-add-active,
  .wizard-item.ng-hide-remove.ng-hide-remove-active{
    position:absolute; left:30px; right:30px;
@@ -829,7 +847,7 @@ table {
       &.list-gallery{
         height: 258px;
       }
-      
+
       &.list-image{
         height: auto;
       }

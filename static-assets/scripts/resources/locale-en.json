@@ -347,7 +347,9 @@
       "LEVEL": "Level",
       "THREAD": "Thread",
       "SITE": "Site",
-      "EXCEPTION": "Exception"
+      "EXCEPTION": "Exception",
+      "DETAILS": "Details",
+      "LOG_DETAILS": "Log Details"
     }
   },
   "common": {
@@ -384,7 +386,7 @@
     "DELETE_QUESTION":"Do you want to delete",
     "GLOBAL_MENU": "Global Menu",
     "MAIN_MENU": "Main Menu",
-    "RESET_PASSWORD": "Reset Password"
-
+    "RESET_PASSWORD": "Reset Password",
+    "CLOSE": "Close"
   }
 }

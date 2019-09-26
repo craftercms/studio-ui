@@ -692,8 +692,8 @@
   ]);
 
   app.controller('LogConsoleCtrl', [
-    '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', 'logType',
-    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType) {
+    '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', 'logType', '$uibModal',
+    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType, $uibModal) {
       $scope.logs = {
         entries: [],
         running: true,
@@ -717,6 +717,21 @@
         if (angular.isDefined(logs.timer)) {
           $interval.cancel(logs.timer);
         }
+      };
+
+      logs.logDetails = function(log){
+        $scope.logs.selectedLog = log;
+        $scope.logs.detailsModal = $uibModal.open({
+          templateUrl: '/studio/static-assets/ng-views/log-details.html',
+          backdrop: 'static',
+          keyboard: true,
+          scope: $scope,
+          size: 'lg'
+        });
+      };
+
+      logs.closeDetails = function() {
+        $scope.logs.detailsModal.close();
       };
 
       logs.getLogs = function(since) {
@@ -896,7 +911,7 @@
             }
             publish.iconColor = currentIconColor;
             publish.message = data.message;
-            publish.statusText = (data.status === 'idle')? $translate.instant('admin.publishing.READY') : $translate.instant(`admin.publishing.${data.status.toUpperCase()}`);
+            publish.statusText = $translate.instant(`admin.publishing.${data.status.toUpperCase()}`);
           })
           .error(function (err) {
           });
@@ -1093,7 +1108,13 @@
         getResultsPage(1);
 
         users.pagination = {
-          current: 1
+          current: 1,
+          goToLast: () => {
+            const total = users.totalLogs,
+                  itemsPerPage = users.itemsPerPage,
+                  lastPage = Math.ceil(total/itemsPerPage);
+            users.pagination.current = lastPage;
+          }
         };
 
         users.pageChanged = function(newPage) {
@@ -1157,6 +1178,9 @@
           $scope.hideModal();
           user = data.user;
           $scope.usersCollection.push(user);
+          $scope.users.totalLogs++;
+          $scope.users.pagination.goToLast();
+
           $scope.notification('\''+ user.username + '\' created.','','studioMedium');
         }).error(function(response){
           var response = response.response,
@@ -1274,6 +1298,7 @@
             var index = $scope.usersCollection.indexOf(user);
             if (index !== -1) {
               $scope.usersCollection.splice(index, 1);
+              $scope.users.totalLogs--;
             }
 
             $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
@@ -1441,7 +1466,13 @@
         getResultsPage(1);
 
         groups.pagination = {
-          current: 1
+          current: 1,
+          goToLast: () => {
+            const total = groups.totalLogs,
+                  itemsPerPage = groups.itemsPerPage,
+                  lastPage = Math.ceil(total/itemsPerPage);
+            groups.pagination.current = lastPage;
+          }
         };
 
         groups.pageChanged = function(newPage) {
@@ -1507,6 +1538,8 @@
         adminService.createGroup(group).success(function (data) {
           $scope.hideModal();
           $scope.groupsCollection.push(data.group);
+          $scope.groups.totalLogs++;
+          $scope.groups.pagination.goToLast();
           $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
         }).error(function(error){
           $scope.groupsError = error.response.message;
@@ -1550,6 +1583,7 @@
             var index = $scope.groupsCollection.indexOf(group);
             if (index !== -1) {
               $scope.groupsCollection.splice(index, 1);
+              $scope.groups.totalLogs--;
             }
 
             $scope.usersFromGroupCollection = [];
