@@ -88,7 +88,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Transcoding, CStudioForms.CStudioFo
       inputProfileId: me.inputProfileId
     }
 
-    CStudioAuthoring.Operations.uploadS3Asset(site, path, profiles, callback, params);
+    CStudioAuthoring.Operations.uploadS3Asset(site, path, profiles, callback, params, ["video/*"]);
   },
 
   getLabel: function () {

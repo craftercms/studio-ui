@@ -30,7 +30,7 @@ function(id, form, properties, constraints)  {
             this.profileId = properties[i].value;
         }
     }
-	
+
 	return this;
 }
 
@@ -78,7 +78,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
             context: this
         };
 
-        CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback);
+        CStudioAuthoring.Operations.uploadS3Asset(site, path, me.profileId, callback, { fileTypes: ["video/*"] });
 
 	},
 
