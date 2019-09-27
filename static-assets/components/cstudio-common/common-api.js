@@ -887,7 +887,9 @@ var nodeOpen = false,
                               });
 
                               var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
-                              dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos});
+                              dependencies = allDeps.filter(function (item, pos) {
+                                return allDeps.indexOf(item) == pos
+                              });
 
                               eventNS.dependencies = dependencies;
                               document.dispatchEvent(eventNS);
@@ -3403,8 +3405,6 @@ var nodeOpen = false,
             writeCMISContentUri: "/api/2/cmis/upload",
 
             //WEBDAV
-            // getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
-            // writeWebDAVContentUri: "/api/1/services/api/1/webdav/upload.json",
             getWebDAVContentByBrowseUri: "/api/2/webdav/list",
             writeWebDAVContentUri: "/api/2/webdav/upload",
 
