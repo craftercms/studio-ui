@@ -4,7 +4,7 @@
         <div class="actions" style="float: right;">
             <div class="btn-group">
                 <button type="button" class="btn btn-default" ng-click="logs.togglePlayPause()">
-                    <i ng-class="(logs.running) ? 'fa fa-pause': 'fa fa-play'" aria-hidden="true"></i> 
+                    <i ng-class="(logs.running) ? 'fa fa-pause': 'fa fa-play'" aria-hidden="true"></i>
                 </button>
                 <button type="button" class="btn btn-default"
                         ng-click="logs.clearLogs()">{{ 'admin.logconsole.CLEAR' | translate }}</button>
@@ -12,7 +12,7 @@
 
         </div>
     </header>
-    
+
     <div class="logs {{logs.logType}}" id="logConsoleContainer">
         <table class="table table-striped">
             <thead>
@@ -21,8 +21,8 @@
                     <th>{{ 'admin.logconsole.TIMESTAMP' | translate }}</th>
                     <th>{{ 'admin.logconsole.THREAD' | translate }}</th>
                     <th>{{ 'admin.logconsole.SITE' | translate }}</th>
-                    <th>{{ 'admin.logconsole.MESSAGE' | translate }}</th> 
-                    <th>{{ 'admin.logconsole.EXCEPTION' | translate }}</th>                   
+                    <th>{{ 'admin.logconsole.MESSAGE' | translate }}</th>
+                    <th>{{ 'admin.logconsole.DETAILS' | translate }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,8 +31,8 @@
                     <td class="timestamp">{{log.timestamp}}</td>
                     <td class="thread">{{log.thread}}</td>
                     <td class="site">{{log.site}}</td>
-                    <td class="message">{{log.message}}</td>
-                    <td class="exception">{{log.exception}}</td>
+                    <td class="message">{{ log.message.length > 200 ? ((log.message | limitTo:200) + "...") : log.message }}</td>
+                    <td class="details"><i class="fa fa-eye details-icon" tooltip-placement="bottom" uib-tooltip="{{ 'admin.logconsole.DETAILS' | translate }}" aria-label="{{ 'admin.logconsole.DETAILS' | translate }}" ng-click="logs.logDetails(log)"></i></td>
                 </tr>
             </tbody>
         </table>

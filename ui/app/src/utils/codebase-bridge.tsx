@@ -18,13 +18,15 @@
 import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
+import CrafterCMSNextBridge, { intl } from '../components/CrafterCMSNextBridge';
 import string from './string';
 import ajax from './ajax';
 import path from './path';
 import storage from './storage';
 import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
+import { IntlShape } from 'react-intl/src/types';
+import messages, { translateElements } from './i18n-legacy';
 
 /**
  *
@@ -53,6 +55,11 @@ interface CodebaseBridge {
   util: object;
   render: Function;
   rxjs: object;
+  i18n: {
+    intl: IntlShape;
+    messages: object;
+    translateElements: Function;
+  }
 }
 
 export function createCodebaseBridge() {
@@ -85,6 +92,12 @@ export function createCodebaseBridge() {
       path,
       string,
       storage
+    },
+
+    i18n: {
+      intl,
+      messages,
+      translateElements
     },
 
     // Mechanics

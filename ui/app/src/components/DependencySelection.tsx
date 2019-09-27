@@ -68,6 +68,12 @@ function DependencySelection(props: DependencySelectionProps) {
     cleanCheckedSoftDep();
   };
 
+  const onClickSetChecked = (e: any, item: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setChecked([item.uri], !checked[item.uri])
+  };
+
   const paths = (
     Object.entries({ ...checked })
       .filter(([key, value]) => value === true)
@@ -117,18 +123,18 @@ function DependencySelection(props: DependencySelectionProps) {
               <div className="dependency-selection--checkbox">
                 <BlueCheckbox
                   checked={!!checked[item.uri]}
-                  onClick={(e: any) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setChecked([item.uri], !checked[item.uri])
-                  }}
+                  onClick={(e) => onClickSetChecked(e, item)}
                   onChange={(e) => void 0}
                   value={item.uri}
                   color="primary"
                 />
               </div>
-              <div className="dependency-selection--information">
-                <div className="dependency-selection--information--internal-name">{item.internalName}</div>
+              <div
+                className="dependency-selection--information"
+                onClick={(e) => onClickSetChecked(e, item)}>
+                <div className="dependency-selection--information--internal-name">
+                  {item.internalName}
+                </div>
                 <div className="dependency-selection--information--uri">&nbsp;{item.uri}</div>
               </div>
             </div>
@@ -191,7 +197,11 @@ function DependencySelection(props: DependencySelectionProps) {
                             color="primary"
                           />
                         </div>
-                        <div className="dependency-selection--list--soft-item">{uri}</div>
+                        <div
+                          className="dependency-selection--list--soft-item"
+                          onClick={(e) => setCheckedSoftDep([uri], !checkedSoftDep[uri])}>
+                          {uri}
+                        </div>
                       </li>
                     ))
                   ) : (null)
@@ -230,7 +240,7 @@ function DependencySelection(props: DependencySelectionProps) {
         }
         <p>
           <FormattedMessage
-            id="publishDialog.info.changesInSelection"
+            id="publishDialog.changesInSelection"
             defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
           />
         </p>
