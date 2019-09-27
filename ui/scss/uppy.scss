@@ -2551,6 +2551,10 @@ a.uppy-Dashboard-poweredBy {
 
 .uploaded-files {
   margin-top: 5px;
+
+  em {
+    display: block;
+  }
 }
 
 .single-file-upload--description {

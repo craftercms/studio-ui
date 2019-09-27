@@ -17,7 +17,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Core, FileInput, XHRUpload, ProgressBar, Form } from 'uppy';
-import { FormattedMessage } from 'react-intl';
 import { defineMessages, useIntl } from "react-intl";
 
 import 'uppy/src/style.scss';
@@ -34,6 +33,10 @@ const messages = defineMessages({
   uploadedFile: {
     id: 'fileUpload.uploadedFile',
     defaultMessage: 'Uploaded File'
+  },
+  selectFileMessage: {
+    id: 'fileUpload.selectFileMessage',
+    defaultMessage: 'Please select a file to upload'
   }
 });
 
@@ -55,12 +58,12 @@ function SingleFileUpload(props: UppyProps) {
       onComplete,
       fileTypes
     } = props;
-  
+
   const uppyConfig: object = {
     autoProceed: true,
     ...(
-      (fileTypes) 
-        ? { restrictions: { allowedFileTypes: fileTypes } } 
+      (fileTypes)
+        ? { restrictions: { allowedFileTypes: fileTypes } }
         : {}
     )
   };
@@ -68,18 +71,15 @@ function SingleFileUpload(props: UppyProps) {
   const uppy = Core(uppyConfig);
   const { formatMessage } = useIntl();
   const [description, setDescription] = useState(
-    <FormattedMessage
-      id="fileUpload.selectFileMessage"
-      defaultMessage={`Please select a file to upload`}
-    />
+    formatMessage(messages.selectFileMessage)
   );
   const [fileName, setFileName] = useState();
-  
+
   let uploadBtn: HTMLInputElement;
 
   useEffect(
     () => {
-      const instance = uppy
+      const instance =uppy
         .use(FileInput, {
           target: '.uppy-file-input-container',
           replaceTargetContent: false,
@@ -117,13 +117,15 @@ function SingleFileUpload(props: UppyProps) {
           uploadBtn.disabled = false;
         })
         uppy.on('complete', onComplete);
-      
+
       return () => {
-        instance.destroy();
+        // https://uppy.io/docs/uppy/#uppy-close
+        instance.reset();
+        instance.close();
       }
-      
+
     },
-    [formTarget, onComplete, uppy, url]
+    [formTarget, onComplete, url]
   );
 
   return (
@@ -135,7 +137,7 @@ function SingleFileUpload(props: UppyProps) {
         </h5>
         <div className="uppy-file-input-container"></div>
         {
-          fileName && 
+          fileName &&
           <em className="single-file-upload--file-name">{fileName}</em>
         }
       </div>
