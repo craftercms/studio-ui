@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Core, XHRUpload, Dashboard, Form } from 'uppy';
 
 import 'uppy/src/style.scss';
@@ -36,13 +36,14 @@ function MultipleFileUpload(props: MultipleFileUploadProps) {
       formTarget,
       onComplete
     } = props,
-    uppy = Core()
+    uppy = Core();
 
-  useEffect(
-    () => {
-      uppy.use(Dashboard, {
+  const elementRef = (node) => {
+    
+    uppy
+      .use(Dashboard, {
         inline: true,
-        target: `#${elementId}`
+        target: node
       })
       .use(Form, {
         target: formTarget,
@@ -60,17 +61,16 @@ function MultipleFileUpload(props: MultipleFileUploadProps) {
           site: 'editorial',
           path: '/static-assets/images'
         }
-      })
-
-      uppy.on('complete', (result) => {
-        onComplete(result);
       });
-    },
-    [elementId, onComplete, uppy, url]
-  );
+
+    uppy.on('complete', (result) => {
+      onComplete(result);
+    });
+
+  };
 
   return (
-    <div id={elementId}></div>
+    <div ref={elementRef}></div>
   );
 }
 

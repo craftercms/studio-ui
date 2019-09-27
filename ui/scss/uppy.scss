@@ -2332,7 +2332,19 @@ a.uppy-Dashboard-poweredBy {
   color: #2275d7; }
 
 .uppy-FileInput-container {
-  margin-bottom: 15px; }
+  margin-bottom: 15px;
+}
+
+.single-file-upload--file-name {
+  font-style: normal;
+}
+
+.uppy-file-input-container {
+  float: right;
+  .uppy-FileInput-container {
+    display: inline-block;
+  }
+}
 
 .uppy-FileInput-btn {
   background: none;
@@ -2536,3 +2548,12 @@ a.uppy-Dashboard-poweredBy {
   height: 75px;
   color: #bbb;
   margin-bottom: 30px; }
+
+.uploaded-files {
+  margin-top: 5px;
+}
+
+.single-file-upload--description {
+  display: inline-block;
+}
+
