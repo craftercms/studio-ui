@@ -59,12 +59,12 @@ const pushMessages = defineMessages({
     id: 'createSiteDialog.push_url_label',
     defaultMessage: 'The git repository URL to push.'
   },
-  push_remote_branch_label: {
-    id: 'createSiteDialog.push_remote_branch_label',
+  push_remoteBranch_label: {
+    id: 'createSiteDialog.push_remoteBranch_label',
     defaultMessage: 'The site will get created pushing that branch to the repo.'
   },
-  push_remote_name_label: {
-    id: 'createSiteDialog.push_remote_name_label',
+  push_remoteName_label: {
+    id: 'createSiteDialog.push_remoteName_label',
     defaultMessage: 'Name the remote that will refer to the source repo to push. Typically named “upstream” or “origin”.'
   },
 });
@@ -74,12 +74,12 @@ const cloneMessages = defineMessages({
     id: 'createSiteDialog.clone_url_label',
     defaultMessage: 'The git repository URL to clone from.'
   },
-  clone_remote_branch_label: {
-    id: 'createSiteDialog.clone_remote_branch_label',
+  clone_remoteBranch_label: {
+    id: 'createSiteDialog.clone_remoteBranch_label',
     defaultMessage: 'The site will get created cloning that branch of the repo. You may switch between branches later too.'
   },
-  clone_remote_name_label: {
-    id: 'createSiteDialog.clone_remote_name_label',
+  clone_remoteName_label: {
+    id: 'createSiteDialog.clone_remoteName_label',
     defaultMessage: 'Name the remote that will refer to the source repo to pull from. Typically named “upstream” or “origin”.'
   },
 });
@@ -159,28 +159,28 @@ function GitForm(props: GitForm) {
         {
           (type === 'basic' || type === 'token') &&
           <TextField
-            id="repo_username"
-            name="repo_username"
+            id="repoUsername"
+            name="repoUsername"
             className={clsx(classes.margin, classes.textField)}
             label={formatMessage(messages.userName)}
             required
-            value={inputs.repo_username}
+            value={inputs.repoUsername}
             onChange={handleInputChange}
-            error={(inputs.submitted && !inputs.repo_username && inputs.push_site)}
+            error={(inputs.submitted && !inputs.repoUsername && inputs.pushSite)}
           />
         }
         {
           (type === 'basic') &&
           <TextField
-            id="repo_password"
-            name="repo_password"
+            id="repoPassword"
+            name="repoPassword"
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
             label={formatMessage(messages.password)}
             required
-            value={inputs.repo_password}
+            value={inputs.repoPassword}
             onChange={handleInputChange}
-            error={(inputs.submitted && !inputs.repo_password && inputs.push_site)}
+            error={(inputs.submitted && !inputs.repoPassword && inputs.pushSite)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -199,14 +199,14 @@ function GitForm(props: GitForm) {
         {
           (type === 'token') &&
           <TextField
-            id="repo_token"
-            name="repo_token"
+            id="repoToken"
+            name="repoToken"
             className={clsx(classes.margin, classes.textField)}
             type={showPassword ? 'text' : 'password'}
             label={formatMessage(messages.token)}
             required
-            value={inputs.repo_token}
-            error={(inputs.submitted && !inputs.repo_token && inputs.push_site)}
+            value={inputs.repoToken}
+            error={(inputs.submitted && !inputs.repoToken && inputs.pushSite)}
             onChange={handleInputChange}
             InputProps={{
               endAdornment: (
@@ -226,16 +226,16 @@ function GitForm(props: GitForm) {
         {
           (type === 'key') &&
           <TextField
-              id="repo_key"
-              name="repo_key"
+              id="repoKey"
+              name="repoKey"
               label={formatMessage(messages.privateKey)}
               required
               fullWidth
               multiline
               className={classes.margin}
-              error={(inputs.submitted && !inputs.repo_key && inputs.push_site)}
+              error={(inputs.submitted && !inputs.repoKey && inputs.pushSite)}
               onChange={handleInputChange}
-              value={inputs.repo_key}
+              value={inputs.repoKey}
           />
         }
       </div>
@@ -246,67 +246,67 @@ function GitForm(props: GitForm) {
     <Grid container spacing={0} className={classes.gitInfo}>
       <Grid item xs={12}>
         <TextField
-          id="repo_url"
-          name="repo_url"
+          id="repoUrl"
+          name="repoUrl"
           label={formatMessage(messages.repoUrl)}
           required
           fullWidth
           placeholder={"e.g. https://github.com/craftercms/craftercms-react-blueprint.git"}
           onChange={handleInputChange}
-          value={inputs.repo_url}
-          error={(inputs.submitted && !inputs.repo_url && inputs.push_site)}
+          value={inputs.repoUrl}
+          error={(inputs.submitted && !inputs.repoUrl && inputs.pushSite)}
           helperText={type === 'push'? formatMessage(pushMessages.push_url_label) : formatMessage(cloneMessages.clone_url_label)}
         />
       </Grid>
       <Grid item xs={12}>
         <FormControl component="fieldset" className={classes.formControl}>
           <FormLabel component="legend">Authentication</FormLabel>
-          <RadioGroup aria-label="repo_authentication" name="repo_authentication"
-                      value={inputs.repo_authentication} onChange={handleInputChange}>
+          <RadioGroup aria-label="repoAuthentication" name="repoAuthentication"
+                      value={inputs.repoAuthentication} onChange={handleInputChange}>
             <FormControlLabel value="none" control={<Radio color="primary" onChange={() => viewAuth('none')}/>}
                               label={formatMessage(messages.authenticationNoRequired)}/>
             <FormControlLabel value="basic" control={<Radio color="primary" onChange={() => viewAuth('basic')}/>}
                               label={formatMessage(messages.usernameAndPassword)}/>
             <Collapse in={expanded.basic} timeout={300} unmountOnExit>
-              {expanded.basic && renderAuth(inputs.repo_authentication)}
+              {expanded.basic && renderAuth(inputs.repoAuthentication)}
             </Collapse>
             <FormControlLabel value="token" control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
                               label={formatMessage(messages.token)}/>
             <Collapse in={expanded.token} timeout={300} unmountOnExit>
-              {expanded.token && renderAuth(inputs.repo_authentication)}
+              {expanded.token && renderAuth(inputs.repoAuthentication)}
             </Collapse>
             <FormControlLabel value="key" control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
                               label={formatMessage(messages.privateKey)}/>
             <Collapse in={expanded.key} timeout={300} unmountOnExit>
-              {expanded.key && renderAuth(inputs.repo_authentication)}
+              {expanded.key && renderAuth(inputs.repoAuthentication)}
             </Collapse>
           </RadioGroup>
         </FormControl>
       </Grid>
       <Grid item xs={12}>
         <TextField
-          id="repo_remote_branch"
-          name="repo_remote_branch"
+          id="repoRemoteBranch"
+          name="repoRemoteBranch"
           label={formatMessage(messages.branch)}
           InputLabelProps={{shrink: true}}
           placeholder="master"
           fullWidth
           onChange={handleInputChange}
-          value={inputs.repo_remote_branch}
-          helperText={type === 'push'? formatMessage(pushMessages.push_remote_branch_label) : formatMessage(cloneMessages.clone_remote_branch_label)}
+          value={inputs.repoRemoteBranch}
+          helperText={type === 'push'? formatMessage(pushMessages.push_remoteBranch_label) : formatMessage(cloneMessages.clone_remoteBranch_label)}
         />
       </Grid>
       <Grid item xs={12}>
         <TextField
-          id="repo_remote_name"
-          name="repo_remote_name"
+          id="repoRemoteName"
+          name="repoRemoteName"
           label={formatMessage(messages.remoteName)}
           InputLabelProps={{shrink: true}}
           placeholder="origin"
           fullWidth
           onChange={handleInputChange}
-          value={inputs.repo_remote_name}
-          helperText={type === 'push'? formatMessage(pushMessages.push_remote_name_label) : formatMessage(cloneMessages.clone_remote_name_label)}
+          value={inputs.repoRemoteName}
+          helperText={type === 'push'? formatMessage(pushMessages.push_remoteName_label) : formatMessage(cloneMessages.clone_remoteName_label)}
         />
       </Grid>
     </Grid>

@@ -129,27 +129,27 @@ function BluePrintReview(props: BluePrintReview) {
   function renderGitOptions() {
     return (<div>
         {
-          inputs.repo_url &&
+          inputs.repoUrl &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repo_url}
+            <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repoUrl}
           </Typography>
         }
         {
-          inputs.repo_remote_name &&
+          inputs.repoRemoteName &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repo_remote_name}
+            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repoRemoteName}
           </Typography>
         }
         {
-          inputs.repo_remote_branch &&
+          inputs.repoRemoteBranch &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repo_remote_branch}
+            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch}
           </Typography>
         }
         {
-          inputs.repo_authentication !== 'none' &&
+          inputs.repoAuthentication !== 'none' &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.authentication)}: </span> {renderAuth(inputs.repo_authentication)}
+            <span className={classes.bold}>{formatMessage(messages.authentication)}: </span> {renderAuth(inputs.repoAuthentication)}
           </Typography>
         }
       </div>
@@ -209,7 +209,7 @@ function BluePrintReview(props: BluePrintReview) {
                 <EditIcon/>
               </IconButton>
             </Typography>
-            {inputs.push_site ?
+            {inputs.pushSite ?
               <div>
                 <Typography variant="body2" gutterBottom>
                   {formatMessage(messages.pushSite)}

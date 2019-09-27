@@ -46,6 +46,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import CreateSiteDetails from "./CreateSiteDetails";
 import Empty from "./Empty";
+import { underscore } from '../utils/string';
 
 const views: Views = {
   0: {
@@ -69,16 +70,16 @@ const siteInitialState: SiteState = {
   siteId: '',
   siteIdExist: false,
   description: '',
-  push_site: false,
-  use_remote: false,
-  repo_url: '',
-  repo_authentication: 'none',
-  repo_remote_branch: '',
-  repo_remote_name: '',
-  repo_password: '',
-  repo_username: '',
-  repo_token: '',
-  repo_key: '',
+  pushSite: false,
+  useRemote: false,
+  repoUrl: '',
+  repoAuthentication: 'none',
+  repoRemoteBranch: '',
+  repoRemoteName: '',
+  repoPassword: '',
+  repoUsername: '',
+  repoToken: '',
+  repoKey: '',
   submitted: false,
   selectedView: 0,
   details: null,
@@ -333,6 +334,7 @@ function CreateSiteDialog(props: any) {
     if (validateForm()) {
       if (site.selectedView === 2) {
         const params = createParams();
+        console.log(params);
         setApiState({ ...apiState, creatingSite: true });
         createSite(params);
       } else {
@@ -356,11 +358,11 @@ function CreateSiteDialog(props: any) {
   function validateForm() {
     if (!site.siteId || site.siteIdExist) {
       return false;
-    } else if (site.push_site) {
-      if (!site.repo_url) return false;
-      else if (site.repo_authentication === 'basic' && (!site.repo_username || !site.repo_password)) return false;
-      else if (site.repo_authentication === 'token' && (!site.repo_username || !site.repo_token)) return false;
-      else return !(site.repo_authentication === 'key' && !site.repo_key);
+    } else if (site.pushSite) {
+      if (!site.repoUrl) return false;
+      else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword)) return false;
+      else if (site.repoAuthentication === 'token' && (!site.repoUsername || !site.repoToken)) return false;
+      else return !(site.repoAuthentication === 'key' && !site.repoKey);
     } else {
       return checkAdditionalFields();
     }
@@ -369,55 +371,61 @@ function CreateSiteDialog(props: any) {
   function createParams() {
     if (site.blueprint) {
       const params: Site = {
-        site_id: site.siteId,
+        siteId: site.siteId,
         description: site.description,
-        single_branch: false,
-        authentication_type: site.repo_authentication
+        singleBranch: false,
+        authenticationType: site.repoAuthentication
       };
-      console.log(site.blueprint);
       if (site.blueprint.id !== 'GIT' && site.blueprint.source !== 'GIT') {
         params.blueprint = site.blueprint.id;
-        params.use_remote = site.push_site;
+        params.useRemote = site.pushSite;
       } else {
-        params.use_remote = true;
+        params.useRemote = true;
       }
       //it is from marketplace
       if(site.blueprint.source === 'GIT') {
-        params.remote_url = site.blueprint.url;
-        params.remote_branch = site.blueprint.ref;
+        params.remoteUrl = site.blueprint.url;
+        params.remoteBranch = site.blueprint.ref;
+        params.remoteName = 'origin';
       }
-      if (site.repo_remote_name) params.remote_name = site.repo_remote_name;
-      if (site.repo_url) params.remote_url = site.repo_url;
-      if (site.repo_remote_branch) {
-        params.remote_branch = site.repo_remote_branch;
-        params.sandbox_branch = site.repo_remote_branch;
+      if (site.repoRemoteName) params.remoteName = site.repoRemoteName;
+      if (site.repoUrl) params.remoteUrl = site.repoUrl;
+      if (site.repoRemoteBranch) {
+        params.remoteBranch = site.repoRemoteBranch;
+        params.sandboxBranch = site.repoRemoteBranch;
       }
-      if (site.repo_authentication === 'basic') {
-        params.remote_username = site.repo_username;
-        params.remote_password = site.repo_password;
+      if (site.repoAuthentication === 'basic') {
+        params.remoteUsername = site.repoUsername;
+        params.remotePassword = site.repoPassword;
       }
-      if (site.repo_authentication === 'token') {
-        params.remote_username = site.repo_username;
-        params.remote_token = site.repo_token;
+      if (site.repoAuthentication === 'token') {
+        params.remoteUsername = site.repoUsername;
+        params.remoteToken = site.repoToken;
       }
-      if (site.repo_authentication === 'key') params.remote_private_key = site.repo_username;
-      if (site.blueprintFields) params.site_params = site.blueprintFields;
-      params.create_option = site.push_site ? 'push' : 'clone';
-      return params;
+      if (site.repoAuthentication === 'key') params.remotePrivateKey = site.repoUsername;
+      if (site.blueprintFields) params.siteParams = site.blueprintFields;
+      params.createOption = site.pushSite ? 'push' : 'clone';
+
+      //TODO# remove this when change to Api2
+      let _params:any = {};
+      Object.keys(params).forEach(key => {
+        _params[underscore(key)] = params[key];
+      });
+      return _params;
     }
   }
 
   function createSite(site: Site) {
     post('/studio/api/1/services/api/1/site/create.json', site, {
-      'X-XSRF-TOKEN': '060f063c-7812-4426-abfa-a1169d1e300c',
+      'X-XSRF-TOKEN': '30214936-e11c-4f20-bcab-2048dde6ade1',
       'Content-Type': 'application/json'
     })
       .subscribe(
         () => {
           setApiState({ ...apiState, creatingSite: false });
           handleClose();
-          setCookie('crafterSite', site.site_id);
-          window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
+          setCookie('crafterSite', site.siteId);
+          window.location.href = '/studio/preview/#/?page=/&site=' + site.siteId;
         },
         ({response}) => {
           setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });

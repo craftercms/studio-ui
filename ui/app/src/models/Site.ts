@@ -32,16 +32,16 @@ export interface SiteState {
   siteId: string;
   siteIdExist: boolean;
   description: string;
-  push_site: boolean;
-  use_remote: boolean;
-  repo_url: string;
-  repo_authentication: string;
-  repo_remote_branch: string;
-  repo_remote_name: string;
-  repo_password: string;
-  repo_username: string;
-  repo_token: string;
-  repo_key: string;
+  pushSite: boolean;
+  useRemote: boolean;
+  repoUrl: string;
+  repoAuthentication: string;
+  repoRemoteBranch: string;
+  repoRemoteName: string;
+  repoPassword: string;
+  repoUsername: string;
+  repoToken: string;
+  repoKey: string;
   submitted: boolean;
   selectedView: number;
   details: Blueprint;
@@ -51,23 +51,24 @@ export interface SiteState {
 }
 
 export interface Site {
-  site_id: string;
+  [key:string]: any;
+  siteId: string;
   description: string;
-  single_branch: boolean;
-  authentication_type: string;
+  singleBranch: boolean;
+  authenticationType: string;
   blueprint?: string;
-  use_remote?: boolean;
-  repo_remote_name?: string;
-  remote_url?: string;
-  remote_name?: string;
-  remote_branch? : string;
-  sandbox_branch? : string;
-  remote_username?: string;
-  remote_password?: string;
-  remote_token?: string;
-  remote_private_key?: string;
-  create_option?: string;
-  site_params?: {
+  useRemote?: boolean;
+  repoRemoteName?: string;
+  remoteUrl?: string;
+  remoteName?: string;
+  remoteBranch? : string;
+  sandboxBranch? : string;
+  remoteUsername?: string;
+  remotePassword?: string;
+  remoteToken?: string;
+  remotePrivateKey?: string;
+  createOption?: string;
+  siteParams?: {
     [key: string]: string;
   }
 }

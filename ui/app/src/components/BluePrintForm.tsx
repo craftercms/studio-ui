@@ -68,7 +68,7 @@ function BluePrintForm(props: BluePrintForm) {
       }
     },
     // eslint-disable-next-line
-    [inputs.push_site, inputs.repo_authentication],
+    [inputs.pushSite, inputs.repoAuthentication],
   );
 
   const handleInputChange = (e: any, type?:string) => {
@@ -125,8 +125,8 @@ function BluePrintForm(props: BluePrintForm) {
               <FormControlLabel
                   control={
                     <Checkbox
-                      name="push_site"
-                      checked={inputs.push_site}
+                      name="pushSite"
+                      checked={inputs.pushSite}
                       onChange={(event) => handleInputChange(event)}
                       color="primary"
                     />
@@ -135,9 +135,9 @@ function BluePrintForm(props: BluePrintForm) {
               />
           </Grid>
         }
-        <Collapse in={inputs.push_site} timeout={300} unmountOnExit>
+        <Collapse in={inputs.pushSite} timeout={300} unmountOnExit>
           {
-            (inputs.push_site && blueprint.source !== 'GIT') &&
+            (inputs.pushSite && blueprint.source !== 'GIT') &&
             <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
           }
         </Collapse>
