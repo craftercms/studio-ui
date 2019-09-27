@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Core, FileInput, XHRUpload, ProgressBar, Form } from 'uppy';
 import { FormattedMessage } from 'react-intl';
 import { defineMessages, useIntl } from "react-intl";
@@ -55,89 +55,91 @@ function SingleFileUpload(props: UppyProps) {
       onComplete,
       fileTypes
     } = props;
-    let uppyConfig: Object = {
-      autoProceed: true
-    };
-
-  if (fileTypes) {
-    uppyConfig = {
-      ...uppyConfig,
-      restrictions: {
-        allowedFileTypes: fileTypes
-      }
-    }
-  }
+  
+  const uppyConfig: object = {
+    autoProceed: true,
+    ...(
+      (fileTypes) 
+        ? { restrictions: { allowedFileTypes: fileTypes } } 
+        : {}
+    )
+  };
 
   const uppy = Core(uppyConfig);
   const { formatMessage } = useIntl();
+  const [description, setDescription] = useState(
+    <FormattedMessage
+      id="fileUpload.selectFileMessage"
+      defaultMessage={`Please select a file to upload`}
+    />
+  );
+  const [fileName, setFileName] = useState();
+  
   let uploadBtn: HTMLInputElement;
 
   useEffect(
     () => {
-      uppy.use(FileInput, {
-        target: '.uppy-file-input-container',
-        replaceTargetContent: false,
-        locale: {
-          strings: {
-            chooseFiles: formatMessage(messages.chooseFile),
+      const instance = uppy
+        .use(FileInput, {
+          target: '.uppy-file-input-container',
+          replaceTargetContent: false,
+          locale: {
+            strings: {
+              chooseFiles: formatMessage(messages.chooseFile),
+            }
           }
-        }
-      })
-      .use(Form, {
-        target: formTarget,
-        getMetaFromForm: true,
-        addResultToForm: true,
-        submitOnSuccess: false,
-        triggerUploadOnSubmit: false
-      })
-      .use(ProgressBar, {
-        target: '.UppyProgressBar',
-        hideAfterFinish: false
-      })
-      .use(XHRUpload, {
-        endpoint: url,
-        formData: true,
-        fieldName: 'file'
-      })
-      uppy.on('file-added', (file) => {
-        uploadBtn = document.querySelector('.uppy-FileInput-btn');
-        document.querySelector('.uploaded-files .description').innerHTML = `${formatMessage(messages.uploadingFile)}:`;
-        document.querySelector('.uploaded-files ol').innerHTML +=
-          `<li><a>${file.name}</a></li>`;
-        uploadBtn.disabled = true;
-
-        onUploadStart();
-      })
-      uppy.on('upload-success', (file) => {
-        document.querySelector('.uploaded-files .description').innerHTML = `${formatMessage(messages.uploadedFile)}:`;
-        uploadBtn.disabled = false;
-      })
-      uppy.on('complete', (result) => {
-        onComplete(result);
-      });
-
-      // Move to CSS file
-      let selectFileBtnEl: HTMLElement = document.querySelector('.uppy-FileInput-container');
-      selectFileBtnEl.style.display = 'inline-block';
+        })
+        .use(Form, {
+          target: formTarget,
+          getMetaFromForm: true,
+          addResultToForm: true,
+          submitOnSuccess: false,
+          triggerUploadOnSubmit: false
+        })
+        .use(ProgressBar, {
+          target: '.uppy-progress-bar',
+          hideAfterFinish: false
+        })
+        .use(XHRUpload, {
+          endpoint: url,
+          formData: true,
+          fieldName: 'file'
+        })
+        uppy.on('file-added', (file) => {
+          uploadBtn = document.querySelector('.uppy-FileInput-btn');
+          setDescription(`${formatMessage(messages.uploadingFile)}:`);
+          setFileName(file.name);
+          uploadBtn.disabled = true;
+          onUploadStart();
+        })
+        uppy.on('upload-success', (file) => {
+          setDescription(`${formatMessage(messages.uploadedFile)}:`);
+          uploadBtn.disabled = false;
+        })
+        uppy.on('complete', onComplete);
+      
+      return () => {
+        instance.destroy();
+      }
+      
     },
     [formTarget, onComplete, uppy, url]
   );
 
   return (
-    <div>
-      <div className="UppyProgressBar"></div>
-
-      <div className="uploaded-files" style={{ marginTop: '5px' }}>
-        <h5 className="description" style={{ display: 'inline-block' }}>
-          <FormattedMessage
-            id="fileUpload.selectFileMessage"
-            defaultMessage={`Please select a file to upload`}
-          />
+    <>
+      <div className="uppy-progress-bar"/>
+      <div className="uploaded-files">
+        <h5 className="single-file-upload--description">
+          {description}
         </h5>
-        <div className="uppy-file-input-container" style={{ float: 'right'}}></div>
-        <ol></ol>
+        <div className="uppy-file-input-container"></div>
+        {
+          fileName && 
+          <em className="single-file-upload--file-name">{fileName}</em>
+        }
       </div>
-    </div>
+    </>
   );
 }
 
