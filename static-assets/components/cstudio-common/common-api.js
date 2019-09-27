@@ -3028,7 +3028,11 @@ var nodeOpen = false,
              */
             openS3UploadDialog: function(site, path, profileId, callback, params) {
               var params = params ? params : {};
-                  serviceUri = (params && params.transcode) ? CStudioAuthoring.Service.videoTranscode : CStudioAuthoring.Service.writeS3ContentUri;
+                  serviceUri = (
+                    (params && params.transcode) 
+                      ? CStudioAuthoring.Service.videoTranscode 
+                      : CStudioAuthoring.Service.writeS3ContentUri
+                   );
 
               var openUploadDialogCb = {
                   moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
