@@ -166,7 +166,7 @@
                     $resultsContainer.empty();
                     $resultsActions.empty();
                 }
-            
+
                 CStudioBrowseWebDAV.getContent("browse", {
                     success: function(response) {
                         var subFolders = false;
@@ -414,7 +414,7 @@
                 var pathToUpload = options.$trigger.attr('data-path'),
                     basePath =  CStudioAuthoring.Utils.getQueryParameterByName("path");
                 pathToUpload = pathToUpload === 'webdav-root' ? basePath : pathToUpload;
-               
+
                 var upload = me.uploadContent(CStudioAuthoringContext.site, pathToUpload);
                 upload.then(function(){
                     me.refreshContent(pathToUpload);
@@ -436,16 +436,16 @@
 
         var callbackContent = {
             success: function(response) {
-                cb.success(response);
+                cb.success(response.items);
             },
             failure: function(response){
                 var message = (CMgs.format(browseLangBundle, "" + response.status + ""));
                 var error = JSON.parse(response.responseText),
                     errorMessage = error.errors[0];
-                
+
                 message += "</br></br><div id='errorCode' style='display: none; padding-left: 26px; width: calc(100% - 26px);'>" + errorMessage + "</div>";
 
-                message += "<div style='margin-left: 26px;'><a style='color: #4F81A0;' href='#' data-open='false' class='show-more-toggle'>Show More" + 
+                message += "<div style='margin-left: 26px;'><a style='color: #4F81A0;' href='#' data-open='false' class='show-more-toggle'>Show More" +
                 "<i class='fa fa-chevron-right' aria-hidden='true' style='font-size: 10px;margin-left: 5px;'></i></span></div>";
 
                 CStudioAuthoring.Operations.showSimpleDialog(
@@ -476,7 +476,7 @@
                 });
             }
         }
-            
+
         CStudioAuthoring.Service.getWebDAVContentByBrowser(site, profileId, path, callbackContent, filter);
 
     };

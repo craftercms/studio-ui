@@ -2797,19 +2797,20 @@ var nodeOpen = false,
 
             },
 
-            uploadAsset: function(site, path, isUploadOverwrite, uploadCb) {
-                CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb);                  },
+            uploadAsset: function(site, path, isUploadOverwrite, uploadCb, fileTypes) {
+              CStudioAuthoring.Operations.openUploadDialog(site, path, isUploadOverwrite, uploadCb, fileTypes);
+            },
 
             /**
              *  opens a dialog to upload an asset
              */
-            openUploadDialog: function(site, path, isUploadOverwrite, callback) {
+            openUploadDialog: function(site, path, isUploadOverwrite, callback, fileTypes) {
 
                 var serviceUri = CStudioAuthoring.Service.writeContentServiceUrl;
 
                 var openUploadDialogCb = {
                     moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
-                        dialogClass.showDialog(moduleConfig.site, moduleConfig.path, moduleConfig.serviceUri, moduleConfig.callback, moduleConfig.isUploadOverwrite);
+                        dialogClass.showDialog(moduleConfig.site, moduleConfig.path, moduleConfig.serviceUri, moduleConfig.callback, moduleConfig.isUploadOverwrite, moduleConfig.fileTypes);
                     }
                 };
 
@@ -2817,6 +2818,7 @@ var nodeOpen = false,
                     path: encodeURI(path),
                     site: site,
                     serviceUri: serviceUri,
+                    fileTypes: fileTypes,
                     callback: callback,
                     isUploadOverwrite: isUploadOverwrite
                 }
@@ -2862,14 +2864,14 @@ var nodeOpen = false,
                 CStudioAuthoring.Module.requireModule("jquery-cropper", "/static-assets/libs/cropper/dist/cropper.js");
             },
 
-            uploadWebDAVAsset: function(site, path, profileId, uploadCb) {
-                CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb);
+            uploadWebDAVAsset: function(site, path, profileId, uploadCb, fileTypes) {
+                CStudioAuthoring.Operations.openWebDAVUploadDialog(site, path, profileId, uploadCb, fileTypes);
             },
 
             /**
              *  opens a dialog to upload an asset
              */
-            openWebDAVUploadDialog: function(site, path, profileId, callback) {
+            openWebDAVUploadDialog: function(site, path, profileId, callback, fileTypes) {
 
                 var serviceUri = CStudioAuthoring.Service.writeWebDAVContentUri;
 
@@ -2880,7 +2882,8 @@ var nodeOpen = false,
                             moduleConfig.path,
                             moduleConfig.profile,
                             moduleConfig.serviceUri,
-                            moduleConfig.callback);
+                            moduleConfig.callback,
+                            moduleConfig.fileTypes);
                     }
                 };
 
@@ -2888,6 +2891,7 @@ var nodeOpen = false,
                     path: encodeURI(path),
                     site: site,
                     profile: profileId,
+                    fileTypes: fileTypes,
                     serviceUri: serviceUri,
                     callback: callback
                 }
@@ -2897,14 +2901,14 @@ var nodeOpen = false,
                 CStudioAuthoring.Module.requireModule("upload-webdav-dialog", "/static-assets/components/cstudio-dialogs/uploadWebDAV-dialog.js", moduleConfig, openUploadDialogCb);
             },
 
-            uploadCMISAsset: function(site, path, repositoryId, uploadCb) {
-                CStudioAuthoring.Operations.openCMISUploadDialog(site, path, repositoryId, uploadCb);
+            uploadCMISAsset: function(site, path, repositoryId, uploadCb, fileTypes) {
+                CStudioAuthoring.Operations.openCMISUploadDialog(site, path, repositoryId, uploadCb, fileTypes);
             },
 
             /**
              *  opens a dialog to upload an asset
              */
-            openCMISUploadDialog: function(site, path, repositoryId, callback) {
+            openCMISUploadDialog: function(site, path, repositoryId, callback, fileTypes) {
 
                 var serviceUri = CStudioAuthoring.Service.writeCMISContentUri;
 
@@ -2915,7 +2919,8 @@ var nodeOpen = false,
                             moduleConfig.path,
                             moduleConfig.repo,
                             moduleConfig.serviceUri,
-                            moduleConfig.callback);
+                            moduleConfig.callback,
+                            moduleConfig.fileTypes);
                     }
                 };
 
@@ -2924,6 +2929,7 @@ var nodeOpen = false,
                     site: site,
                     repo: repositoryId,
                     serviceUri: serviceUri,
+                    fileTypes: fileTypes,
                     callback: callback
                 }
 
@@ -2940,8 +2946,12 @@ var nodeOpen = false,
              *  opens a dialog to upload an asset
              */
             openS3UploadDialog: function(site, path, profileId, callback, params) {
-              var transcode = params && params.transcode ? params.transcode : false;
-                  serviceUri = transcode ? CStudioAuthoring.Service.videoTranscode : CStudioAuthoring.Service.writeS3ContentUri;
+              var params = params ? params : {};
+                  serviceUri = (
+                    (params && params.transcode) 
+                      ? CStudioAuthoring.Service.videoTranscode 
+                      : CStudioAuthoring.Service.writeS3ContentUri
+                   );
 
               var openUploadDialogCb = {
                   moduleLoaded: function(moduleName, dialogClass, moduleConfig) {
@@ -2961,11 +2971,7 @@ var nodeOpen = false,
                   profile: profileId,
                   serviceUri: serviceUri,
                   callback: callback,
-                  params: {}
-              }
-
-              if ( transcode ) {
-                moduleConfig.params.transcode = true;
+                  params: params
               }
 
               CSA.Utils.addCss('/static-assets/themes/cstudioTheme/css/icons.css');
@@ -3322,8 +3328,8 @@ var nodeOpen = false,
             writeCMISContentUri: "/api/2/cmis/upload",
 
             //WEBDAV
-            getWebDAVContentByBrowseUri: "/api/1/services/api/1/webdav/list.json",
-            writeWebDAVContentUri: "/api/1/services/api/1/webdav/upload.json",
+            getWebDAVContentByBrowseUri: "/api/2/webdav/list",
+            writeWebDAVContentUri: "/api/2/webdav/upload",
 
             //S3
             getS3ContentByBrowseUri: "/api/2/aws/s3/list",
@@ -5835,7 +5841,7 @@ var nodeOpen = false,
             },
 
             getWebDAVContentByBrowser: function(site, profileId, path, callback, filter) {
-                var serviceUri = this.getWebDAVContentByBrowseUri + "?site_id=" + site + "&profile=" + profileId + "&path=" + path;
+                var serviceUri = this.getWebDAVContentByBrowseUri + "?siteId=" + site + "&profileId=" + profileId + "&path=" + path;
 
                 if(filter){
                     serviceUri += "&type=" + filter;
