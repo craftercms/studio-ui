@@ -10,6 +10,7 @@ const
     { input: 'user-dashboard/user-dashboard', output: 'main' },
     'search',
     'graphiql',
+    'uppy',
     { input: 'guest/guest', output: 'guest' }
   ];
 

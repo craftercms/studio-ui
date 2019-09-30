@@ -24,6 +24,11 @@ $split-view-size: $diff-modal-size / 2;
       display: inline-block;
     }
   }
+
+  .repositories-table {
+    overflow-x: scroll;
+    margin-bottom: 17px;
+  }
 }
 
 .diff-header {
