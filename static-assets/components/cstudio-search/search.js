@@ -26,6 +26,7 @@
 
     /* default search context */
     CStudioSearch.searchContext = {
+        query: "",
         searchId: null,
         itemsPerPage: 20,
         keywords: "",
@@ -356,6 +357,7 @@
         var sortBy = CStudioAuthoring.Utils.getQueryVariable(queryString, "sortBy");
         var view = CStudioAuthoring.Utils.getQueryVariable(queryString, "view");
         var mode = CStudioAuthoring.Utils.getQueryVariable(queryString, "mode");
+        var query = CStudioAuthoring.Utils.getQueryVariable(queryString, "query");
 
         searchContext.keywords = (keywords) ? keywords : searchContext.keywords;
         searchContext.searchId = (searchId) ? searchId : null;
@@ -364,6 +366,7 @@
         searchContext.view = (view) ? view : searchContext.view;
         searchContext.itemsPerPage = (itemsPerPage) ? itemsPerPage : searchContext.itemsPerPage;
         searchContext.mode = (mode) ? mode : searchContext.mode;
+        searchContext.query = (query) ? query : searchContext.query;
 
         $.each(urlParams, function(key, value){
             var processedKey,
@@ -525,6 +528,7 @@
     CStudioSearch.createSearchQuery = function() {
         var searchContext = this.searchContext;
         var query = {
+            "query": searchContext.query,
             "keywords": searchContext.keywords,
             "offset": (searchContext.currentPage - 1) * searchContext.itemsPerPage,
             "limit": searchContext.itemsPerPage,
@@ -980,6 +984,7 @@
         newUrl += '&sortBy=' + searchContext.sortBy;
         newUrl += '&view=' + searchContext.view;
         newUrl += '&mode=' + searchContext.mode;
+        newUrl += '&query=' + searchContext.query;
 
         // Add search filters to url
         // csf = crafter studio filter

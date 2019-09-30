@@ -160,6 +160,14 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
       mode: "select"              // open search not in default but in select mode
     };
 
+    // use browsePath for querying content under that folder only
+    if (_self.browsePath != undefined && _self.browsePath != '') {
+      var browsePath =  _self.browsePath.replace(/\//gi, "\\/");
+      browsePath = "localId:" + browsePath + "*";
+      browsePath = encodeURI(browsePath);
+      searchContext.query = browsePath;
+    }
+
     CStudioAuthoring.Operations.openSearch(searchContext, true, {
       success: function (searchId, selectedTOs) {
         for (var i = 0; i < selectedTOs.length; i++) {

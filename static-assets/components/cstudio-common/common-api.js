@@ -1136,6 +1136,10 @@ var nodeOpen = false,
                   searchUrl += "&ipp=" + searchContext.itemsPerPage;
                 }
 
+                if (!CStudioAuthoring.Utils.isEmpty(searchContext.query)) {
+                    searchUrl += "&query=" + searchContext.query;
+                }
+
                 var childSearch = null;
 
                 if (!searchId || searchId == null || searchId == "undefined"
