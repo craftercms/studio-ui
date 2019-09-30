@@ -428,7 +428,8 @@ function CreateSiteDialog(props: any) {
           window.location.href = '/studio/preview/#/?page=/&site=' + site.siteId;
         },
         ({response}) => {
-          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+          const _response = {...response,code: '', documentationUrl: '', remedialAction: '' };
+          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response });
         }
       )
   }
