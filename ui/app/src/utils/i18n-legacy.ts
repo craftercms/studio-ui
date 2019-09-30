@@ -42,8 +42,8 @@ const approveDialogMessages = defineMessages({
     id: 'publishDialog.introductoryText',
     defaultMessage: 'Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.'
   },
-  submissionCommentValText: {
-    id: 'publishDialog.submissionCommentValText',
+  submissionCommentFieldError: {
+    id: 'publishDialog.submissionCommentFieldError',
     defaultMessage: 'Please write submission comment.'
   }
 });
