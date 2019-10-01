@@ -1199,43 +1199,12 @@
             }
 
             $scope.createSitesDialog = function() {
-                $scope.adminModal = $uibModal.open({
-                    templateUrl: '/studio/static-assets/ng-views/create-site.html?version='+ UIBuildId,
-                    backdrop: 'static',
-                    keyboard: false,
-                    controller: 'SiteCtrl',
-                    scope: $scope,
-                    size: 'lg'
-                });
-
-                $scope.bpSelectorOpen = false;
-
-                $scope.toggleOpen = function() {
-                    $scope.bpSelectorOpen = !$scope.bpSelectorOpen;
-                };
-
-                $scope.trySubmit = function(e){
-                    // Internet Explorer 6-11
-                    var isIE = /*@cc_on!@*/false || !!document.documentMode;
-
-                    // Edge 20+
-                    var isEdge = !isIE && !!window.StyleMedia;
-
-                    if(isIE || isEdge) {
-
-                        if(e.keyCode == 13){
-                            if($scope.bpSelectorOpen){
-                                $scope.bpSelectorOpen = false;
-                            }else{
-                                $timeout(function(){
-                                    $("form[name='createNameForm'] button[type='submit']").click();
-                                });
-                            }
-                        }
-
-                    }
-                };
-            }
+              // CrafterCMSNext
+              //   .render(
+              //     this.getComponent('.mainContainer'),
+              //     'CreateSiteDialog'
+              //   );
+            };
 
             if($scope.siteValidation){
                 $scope.adminModal = $uibModal.open({

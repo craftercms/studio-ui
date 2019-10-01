@@ -18,9 +18,15 @@
 import '../styles/index.scss';
 
 import React, { Suspense } from 'react';
-import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
+import { createIntl, createIntlCache, IntlProvider, RawIntlProvider } from 'react-intl';
+import cookies from "js-cookie";
+import { setGlobalHeaders } from "../utils/ajax";
+import ThemeProvider from "@material-ui/styles/ThemeProvider/ThemeProvider";
+import { theme } from "../styles/theme";
 
 const cache = createIntlCache();
+const token = cookies.get('XSRF-TOKEN');
+setGlobalHeaders({'X-XSRF-TOKEN': token});
 
 export const intl = createIntl({
   locale: 'en',
@@ -30,9 +36,11 @@ export const intl = createIntl({
 function CrafterCMSNextBridge(props: any) {
   return (
     <RawIntlProvider value={intl}>
-      <Suspense fallback={'Loading...'}>
-        {props.children}
-      </Suspense>
+      <ThemeProvider theme={theme}>
+        <Suspense fallback={'Loading...'}>
+          {props.children}
+        </Suspense>
+      </ThemeProvider>
     </RawIntlProvider>
   );
 }

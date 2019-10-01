@@ -417,7 +417,6 @@ function CreateSiteDialog() {
 
   function createSite(site: Site) {
     post('/studio/api/1/services/api/1/site/create.json', site, {
-      'X-XSRF-TOKEN': '30214936-e11c-4f20-bcab-2048dde6ade1',
       'Content-Type': 'application/json'
     })
       .subscribe(
