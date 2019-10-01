@@ -85,7 +85,7 @@ export default function CreateSiteError(props: CreateSiteError) {
       {
         documentationUrl &&
         <Typography variant="subtitle1" component="p" className={classes.paragraph}>
-           <a className={classes.link} href={documentationUrl} target={'blank'}>{formatMessage(messages.moreInfo)} <OpenInNewIcon/></a>
+           <a className={classes.link} href={documentationUrl} target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/></a>
         </Typography>
       }
       <Fab aria-label="back" className={classes.circleBtn} onClick={onBack} >

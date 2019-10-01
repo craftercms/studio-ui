@@ -1199,11 +1199,11 @@
             }
 
             $scope.createSitesDialog = function() {
-              // CrafterCMSNext
-              //   .render(
-              //     this.getComponent('.mainContainer'),
-              //     'CreateSiteDialog'
-              //   );
+              CrafterCMSNext
+                .render(
+                  document.getElementsByClassName('mainContainer')[0],
+                  'CreateSiteDialog'
+                );
             };
 
             if($scope.siteValidation){

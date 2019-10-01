@@ -18,13 +18,14 @@
 import '../styles/index.scss';
 
 import React, { Suspense } from 'react';
-import { createIntl, createIntlCache, IntlProvider, RawIntlProvider } from 'react-intl';
+import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import cookies from "js-cookie";
 import { setGlobalHeaders } from "../utils/ajax";
-import ThemeProvider from "@material-ui/styles/ThemeProvider/ThemeProvider";
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from "../styles/theme";
 
 const cache = createIntlCache();
+
 const token = cookies.get('XSRF-TOKEN');
 setGlobalHeaders({'X-XSRF-TOKEN': token});
 

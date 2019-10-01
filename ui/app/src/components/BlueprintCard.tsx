@@ -39,7 +39,8 @@ const useStyles = makeStyles(theme => ({
     '& .cardContent': {
       height: '6rem',
       paddingBottom: '0',
-      position: 'relative'
+      position: 'relative',
+      boxSizing: 'initial',
     },
     '& .cardActions': {
       paddingTop: '0'
@@ -64,14 +65,16 @@ const useStyles = makeStyles(theme => ({
     padding: '5px',
     borderRadius: '5px',
     '& label': {
-      display: 'block'
+      display: 'block',
+      marginBottom: 0,
+      fontWeight: 400,
     },
     '& span': {
       color: '#2F2707'
     }
   },
   gitOptions: {
-    height: '62px'
+    height: '4.3rem'
   },
   options: {
     marginLeft: 'auto'

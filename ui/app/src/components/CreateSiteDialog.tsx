@@ -334,7 +334,6 @@ function CreateSiteDialog() {
     if (validateForm()) {
       if (site.selectedView === 2) {
         const params = createParams();
-        console.log(params);
         setApiState({ ...apiState, creatingSite: true });
         createSite(params);
       } else {
@@ -423,8 +422,9 @@ function CreateSiteDialog() {
         () => {
           setApiState({ ...apiState, creatingSite: false });
           handleClose();
-          setCookie('crafterSite', site.siteId);
-          window.location.href = '/studio/preview/#/?page=/&site=' + site.siteId;
+          //TODO# change to site.siteId when create site is on api2
+          setCookie('crafterSite', site.site_id);
+          window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
         ({response}) => {
           const _response = {...response,code: '', documentationUrl: '', remedialAction: '' };

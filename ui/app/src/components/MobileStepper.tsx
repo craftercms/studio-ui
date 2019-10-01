@@ -47,6 +47,7 @@ export const styles = (theme: Theme) => ({
     width: 8,
     height: 8,
     margin: '0 2px',
+    boxSizing: 'initial'
   },
   /* Styles applied to a dot if `variant="dots"` and this is the active step. */
   dotActive: {

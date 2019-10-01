@@ -88,7 +88,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '5px',
     borderRadius: '5px',
     '& label': {
-      display: 'block'
+      display: 'block',
+      marginBottom: 0,
+      fontWeight: 400,
     },
     '& span': {
       color: '#2F2707'
@@ -233,7 +235,7 @@ export default function CreateSiteDetails(props: CreateSiteDetails) {
             <div className={classes.section}>
               {
                 developer &&
-                <Typography variant="subtitle2" className={classes.bold} >
+                <Typography variant="subtitle2">
                   {formatMessage(messages.developer)}
                 </Typography>
               }
@@ -253,7 +255,7 @@ export default function CreateSiteDetails(props: CreateSiteDetails) {
             <div className={classes.section}>
               {
                 website &&
-                <Typography variant="subtitle2" className={classes.bold}>
+                <Typography variant="subtitle2">
                   {formatMessage(messages.website)}
                 </Typography>
               }
@@ -267,7 +269,7 @@ export default function CreateSiteDetails(props: CreateSiteDetails) {
               {
                 searchEngine &&
                   <div className={classes.section}>
-                  <Typography variant="subtitle2" className={classes.bold} >
+                  <Typography variant="subtitle2">
                     {formatMessage(messages.searchEngine)}
                   </Typography>
                   <Typography variant="subtitle2" color={'textSecondary'}>
