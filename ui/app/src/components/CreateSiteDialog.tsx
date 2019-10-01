@@ -244,11 +244,11 @@ const messages = defineMessages({
   }
 });
 
-function CreateSiteDialog(props: any) {
+function CreateSiteDialog() {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
-  const [open, setOpen] = useState(props.open || false);
+  const [open, setOpen] = useState(true);
   const [ apiState, setApiState ] = useState({
     creatingSite: false,
     error: false,

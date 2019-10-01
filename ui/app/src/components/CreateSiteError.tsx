@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '40px'
   },
   gearContainer: {
     flexGrow: 1,

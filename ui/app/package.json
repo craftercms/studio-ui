@@ -19,7 +19,7 @@
     "graphiql-explorer": "^0.4.4",
     "graphql": "^14.5.4",
     "intl-messageformat": "^7.2.1",
-    "js-cookie": "^2.2.0",
+    "js-cookie": "^2.2.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-intl": "^3.2.1",
