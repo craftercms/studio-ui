@@ -275,8 +275,6 @@ function CreateSiteDialog() {
   const filteredBlueprints: Blueprint[] = filterBlueprints(blueprints, search.searchKey);
   const filteredMarketplace: Blueprint[] = filterBlueprints(marketplace, search.searchKey);
 
-  updateToken();
-
   useEffect(() => {
       if (swipeableViews.current && !apiState.error) {
         swipeableViews.current.updateHeight();

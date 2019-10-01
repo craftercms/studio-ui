@@ -296,6 +296,7 @@
                             });
 
                             $rootScope.loginModal.result.finally(function () {
+                                CrafterCMSNext.util.token();
                                 $rootScope.loginModal = null;
                                 // $state.go('home.sites');
                             });
