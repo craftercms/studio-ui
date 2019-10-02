@@ -56,14 +56,8 @@
                     'DependecySelectionDelete',
                     {
                         onChange: (result) => {
-                            if (result.length === 0) {
-                                this.$('#deleteBtn').prop('disabled', true);
-                                this.$('.items-feedback').show();
-                            } else {
-                                this.$('#deleteBtn').prop('disabled', false);
-                                this.$('.items-feedback').hide();
-                            }
                             this.result = result;
+                            this.deleteValidation();
                         },
                         siteId: CStudioAuthoringContext.site,
                         items: items
@@ -118,7 +112,8 @@
                     url: CStudioAuthoring.Service.createServiceUri(
                         CStudioAuthoring.Service.deleteContentUrl +
                             "?deletedep=true&site=" +CStudioAuthoringContext.site+
-                            "&user="+CStudioAuthoringContext.user),
+                            "&user="+CStudioAuthoringContext.user + "&submissionComment="+ 
+                            _this.getComponent(".delete-submission-comment").value),
                     callback: {
                         success: function(oResponse) {
                             _this.showProcessingOverlay(false);
