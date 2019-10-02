@@ -53,10 +53,7 @@
             const
                 i18n = CrafterCMSNext.i18n,
                 formatMessage = i18n.intl.formatMessage,
-                messages = i18n.messages.approveDialogMessages;
-
-            // Imperative programmatic translation
-            this.getComponent('.view-title').innerText = formatMessage(messages.approveForPublish);
+                messages = i18n.messages.deleteDialogMessages;
 
             // Translate the whole UI via the codebase next utility
             i18n.translateElements(

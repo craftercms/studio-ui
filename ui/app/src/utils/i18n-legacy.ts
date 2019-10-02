@@ -48,6 +48,14 @@ const approveDialogMessages = defineMessages({
   }
 });
 
+const deleteDialogMessages = defineMessages({
+  submissionCommentFieldError: {
+    id: 'deleteDialog.submissionCommentFieldError',
+    defaultMessage: 'Please write submission comment.'
+  }
+});
+
 export default {
-  approveDialogMessages
+  approveDialogMessages,
+  deleteDialogMessages
 };
