@@ -76,7 +76,7 @@ function BluePrintForm(props: BluePrintForm) {
     if (e.target.type === 'checkbox') {
       setInputs({...inputs, [e.target.name]: e.target.checked});
     } else if (e.target.name === 'siteId') {
-      setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "")});
+      setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "").toLowerCase()});
     } else if (type === 'blueprintFields') {
       let parameters = {...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({...inputs, blueprintFields: parameters});
