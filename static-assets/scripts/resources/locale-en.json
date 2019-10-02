@@ -250,6 +250,7 @@
         "PATHPUBLISH": "Path to Publish",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "Environment",
+        "PUBLISHINGSUBMISSIONCOMMENT": "Submission Comment",
         "PUBLISH": "Publish",
         "PATH":"Path",
         "CHANNEL":"Channel",

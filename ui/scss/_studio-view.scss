@@ -491,7 +491,7 @@ table.scroll-body {
 }
 
 #approve-dialog, #requestDialog{ 
-  .aprove-subtitle{
+  .approve-subtitle{
     font-size: 15px;
   }
   .action-wrapper{
@@ -501,6 +501,10 @@ table.scroll-body {
 
 .submission-comment{
   height: 111px!important;
+}
+
+.delete-submission-comment{
+  height: 65px!important;
 }
 
 .dependencies-display{

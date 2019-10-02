@@ -78,6 +78,18 @@
                                         </small>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label for="submissionComment" class="control-label">{{ 'admin.publishing.PUBLISHINGSUBMISSIONCOMMENT' | translate }}</label>
+                                    <textarea class="form-control submission-comment" id="submissionComment" name="submissionComment" ng-model="publish.submissionComment" ng-required="publish.isValidateCommentOn">
+                                    </textarea>
+                                    <div class="error-container"
+                                         ng-show="(bulkOperationForm.submissionComment.$dirty && bulkOperationForm.submissionComment.$invalid) || (bulkOperationForm.submissionComment.$touched && bulkOperationForm.submissionComment.$invalid)">
+                                        <small class="error"
+                                               ng-show="bulkOperationForm.submissionComment.$error.required">
+                                            {{ 'admin.publishing.PUBLISHINGSUBMISSIONCOMMENT' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                                        </small> 
+                                    </div>
+                                </div>
 
                             </div>
                         </div>

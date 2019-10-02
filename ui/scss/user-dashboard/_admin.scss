@@ -478,7 +478,7 @@ table {
   }
 
   .bulkContainer, .commitsContainer{
-    input, select{
+    input, select, textarea{
       max-width: 500px;
     }
     .error.ng-binding{
