@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import makeStyles from '@material-ui/styles/makeStyles';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import FormGroup from '@material-ui/core/FormGroup';
@@ -6,6 +6,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
+import { get } from '../utils/ajax';
 
 const messages = defineMessages({
   selectAll: {
@@ -16,20 +17,11 @@ const messages = defineMessages({
     id: 'publishingQueue.cancelSelected',
     defaultMessage: 'Cancel Selected'
   },
-  cancel: {
-    id: 'publishingQueue.cancel',
-    defaultMessage: 'Cancel'
-  },
   filters: {
     id: 'publishingQueue.filters',
     defaultMessage: 'Filters'
-  },
-  fetchPackagesFiles: {
-    id: 'publishingQueue.fetchPackagesFiles',
-    defaultMessage: 'Fetch Packages Files'
   }
 });
-
 
 const useStyles = makeStyles((theme: Theme) => ({
   publishingQueue: {
@@ -79,9 +71,38 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+
 function PublishingQueue() {
   const classes = useStyles({});
+  const [packages, setPackages] = useState(null);
   const {formatMessage} = useIntl();
+
+  useEffect(
+    () => {
+      if(packages === null) {
+        fetchPackages('editorial');
+      }
+
+    },
+    []
+  );
+
+  function renderPackages(){
+
+  }
+
+  function fetchPackages(siteId:string) {
+    get(`/studio/api/2/publish/packages?siteId=${siteId}`, {'X-XSRF-TOKEN': '060f063c-7812-4426-abfa-a1169d1e300c'})
+      .subscribe(
+        ({response}) => {
+          setPackages(response.packages);
+        },
+        ({response}) => {
+          console.log(response);
+        }
+      );
+  }
+
   return (
     <div className={classes.publishingQueue}>
       <div className={classes.topBar}>
@@ -99,32 +120,7 @@ function PublishingQueue() {
         </Button>
       </div>
       <div className={classes.queueList}>
-        <div className={classes.package}>
-          <div className={'name'}>
-            <FormGroup className={classes.selectAll}>
-              <FormControlLabel
-                control={<Checkbox/>}
-                label="Package 848484h284hc738341bn71b47748-3486n8234"
-              />
-            </FormGroup>
-            <Button variant="outlined" color={"secondary"} className={classes.button}>
-              {formatMessage(messages.cancel)}
-            </Button>
-          </div>
-          <div className='status'>
-            <div>Scheduled for 2019-08-31 04:15:00 by admin</div>
-            <div>Status is Ready for Live @ Staging enviroment</div>
-          </div>
-          <div className='comment'>
-            <div>Comment</div>
-            <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</div>
-          </div>
-          <div className='files'>
-            <Button variant="outlined" className={classes.button}>
-              {formatMessage(messages.fetchPackagesFiles)}
-            </Button>
-          </div>
-        </div>
+
       </div>
     </div>
   )
