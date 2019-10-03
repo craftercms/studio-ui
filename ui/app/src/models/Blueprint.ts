@@ -48,6 +48,7 @@ export interface Parameter {
   name: string;
   required: boolean;
   type: string;
+  description: string;
 }
 
 export interface Blueprint {

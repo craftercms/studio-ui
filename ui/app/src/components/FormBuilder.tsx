@@ -39,6 +39,7 @@ export default function FormBuilder(props: FormBuilder) {
             onChange={(event) => handleInputChange(event, 'blueprintFields')}
             value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
             error={(parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name])}
+            helperText={parameter.description? parameter.description : ''}
           />
         </Grid>
       )
