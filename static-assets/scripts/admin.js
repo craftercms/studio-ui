@@ -1027,7 +1027,7 @@
           .success(function (data) {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
-            publish.notification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'), '', null,"studioMedium");
+            publish.notification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'), '', null, 'studioMedium green');
           })
           .error(function (err) {
             publish.error = err.message;
@@ -1086,7 +1086,7 @@
         $scope.notification = function(notificationText, showOnTop, styleClass){
           var verticalAlign = showOnTop ? false : true;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = 'check-circle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1181,7 +1181,7 @@
           $scope.users.totalLogs++;
           $scope.users.pagination.goToLast();
 
-          $scope.notification('\''+ user.username + '\' created.','','studioMedium');
+          $scope.notification('\''+ user.username + '\' created.','','studioMedium green');
         }).error(function(response){
           var response = response.response,
             error = {
@@ -1212,7 +1212,7 @@
           "username" : user.username,
           "new" : user.newPassword
         }).success(function(){
-          $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+          $scope.notification('\''+ user.username + '\' edited.','','studioMedium green');
           $scope.hideModal();
         }).error(function(error){
           $scope.usersError = {
@@ -1259,7 +1259,7 @@
           }
 
           $scope.hideModal();
-          $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+          $scope.notification('\''+ user.username + '\' edited.','','studioMedium green');
         }).error(function(error){
           $scope.usersError = {
             message: error.response.message,
@@ -1301,7 +1301,7 @@
               $scope.users.totalLogs--;
             }
 
-            $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
+            $scope.notification('\''+ user.username + '\' deleted.','','studioMedium green');
           }).error(function (data) {
             $scope.error = data.response.message;
             $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
@@ -1438,11 +1438,11 @@
           $scope.adminModal.close();
         };
 
-        $scope.notification = function(notificationText, showOnTop, time, styleClass){
+        $scope.notification = function(notificationText, showOnTop, time, styleClass, icon){
           var verticalAlign = showOnTop ? false : true,
             timer = time ? time : 1500;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = icon ? icon : 'exclamation-triangle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1540,7 +1540,7 @@
           $scope.groupsCollection.push(data.group);
           $scope.groups.totalLogs++;
           $scope.groups.pagination.goToLast();
-          $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
+          $scope.notification('\''+ group.name + '\' created.', '', null, 'studioMedium green', 'check-circle');
         }).error(function(error){
           $scope.groupsError = error.response.message;
         });
@@ -1566,7 +1566,7 @@
         //group.site_id = groups.site;
 
         adminService.editGroup(group).success(function (data) {
-          $scope.notification('\''+ group.name + '\' edited.', '', null, "studioMedium");
+          $scope.notification('\''+ group.name + '\' edited.', '', null, 'studioMedium green', 'check-circle');
         }).error(function(error){
           if("Unauthorized" === error.response.message) {
             $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
@@ -1589,7 +1589,7 @@
             $scope.usersFromGroupCollection = [];
             $scope.noGroupSelected = true;
 
-            $scope.notification('\''+ group.name + '\' group deleted.', '', null,"studioMedium");
+            $scope.notification('\''+ group.name + '\' group deleted.', '', null, 'studioMedium green', 'check-circle');
 
           }).error(function (error) {
             if("Unauthorized" === error.response.message) {
@@ -1655,7 +1655,7 @@
         });
 
         $q.all(calls).then(function() {
-          $scope.notification('Users successfully added.', false, null, "studioMedium");
+          $scope.notification('Users successfully added.', false, null, 'studioMedium green', 'check-circle');
         });
 
         groups.usersToAdd = [];
@@ -1754,7 +1754,7 @@
         var removeUserFromGroup = function() {
           adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
             $scope.getGroupMembers(group);
-            $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, "studioMedium");
+            $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, 'studioMedium green', 'check-circle');
           }).error(function (error) {
             $scope.errorTitle = $translate.instant('admin.users.DELETE_ERROR');
             $scope.error = error.response.message;
