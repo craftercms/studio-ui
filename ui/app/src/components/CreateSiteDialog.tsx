@@ -17,7 +17,6 @@
 
 import React, { useEffect, useRef, useState, MouseEvent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { get, post } from '../utils/ajax';
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import Typography from '@material-ui/core/Typography';
@@ -48,7 +47,8 @@ import PluginDetailsView from "./PluginDetailsView";
 import EmptyState from "./EmptyState";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
-import { fetchBlueprints, fetchMarketPlace } from "../services/marketplace";
+import { fetchBlueprints, createSite, exist } from "../services/sites";
+import { fetchMarketPlace } from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 
 const views: Views = {
@@ -350,7 +350,7 @@ function CreateSiteDialog() {
       if (site.selectedView === 2) {
         const params = createParams();
         setApiState({ ...apiState, creatingSite: true });
-        createSite(params);
+        createNewSite(params);
       } else {
         setSite({...site, selectedView: 2});
       }
@@ -429,10 +429,8 @@ function CreateSiteDialog() {
     }
   }
 
-  function createSite(site: Site) {
-    post('/studio/api/1/services/api/1/site/create.json', site, {
-      'Content-Type': 'application/json'
-    })
+  function createNewSite(site: Site) {
+    createSite(site)
       .subscribe(
         () => {
           setApiState({ ...apiState, creatingSite: false });
@@ -506,7 +504,7 @@ function CreateSiteDialog() {
 
   function checkNameExist(e: any) {
     if (e.target.value) {
-      get(`/studio/api/1/services/api/1/site/exists.json?site=${e.target.value}`)
+      exist(e.target.value)
         .subscribe(
           ({response}) => {
             setSite({...site, siteIdExist: response.exists});
