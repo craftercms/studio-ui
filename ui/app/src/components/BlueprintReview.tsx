@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface BluePrintReview {
+interface BlueprintReview {
   inputs: SiteState,
   onGoTo(step: number): any,
   blueprint: Blueprint,
@@ -111,7 +111,7 @@ const messages = defineMessages({
   }
 });
 
-function BluePrintReview(props: BluePrintReview) {
+function BlueprintReview(props: BlueprintReview) {
   const classes = useStyles({});
   const {onGoTo, inputs, blueprint} = props;
   const { formatMessage } = useIntl();
@@ -227,4 +227,4 @@ function BluePrintReview(props: BluePrintReview) {
   )
 }
 
-export default BluePrintReview;
+export default BlueprintReview;

@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-interface BluePrintForm {
+interface BlueprintForm {
   inputs: SiteState,
   setInputs(state: SiteState): any,
   onSubmit(event: any): any,
@@ -55,7 +55,7 @@ const messages = defineMessages({
   },
 });
 
-function BluePrintForm(props: BluePrintForm) {
+function BlueprintForm(props: BlueprintForm) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
   const { formatMessage } = useIntl();
@@ -150,4 +150,4 @@ function BluePrintForm(props: BluePrintForm) {
   )
 }
 
-export default BluePrintForm;
+export default BlueprintForm;

@@ -136,7 +136,7 @@ const messages = defineMessages({
   }
 });
 
-interface CreateSiteDetails {
+interface PluginDetailsView {
   onCloseDetails(event: any): any,
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
   blueprint: Blueprint,
@@ -145,7 +145,7 @@ interface CreateSiteDetails {
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-export default function CreateSiteDetails(props: CreateSiteDetails) {
+export default function PluginDetailsView(props: PluginDetailsView) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);

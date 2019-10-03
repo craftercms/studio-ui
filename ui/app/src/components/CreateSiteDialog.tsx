@@ -36,15 +36,15 @@ import SwipeableViews from 'react-swipeable-views';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
-import BluePrintForm from './BluePrintForm';
-import BluePrintReview from "./BluePrintReview";
+import BlueprintForm from './BlueprintForm';
+import BlueprintReview from "./BlueprintReview";
 import CreateSiteLoading from "./CreateSiteLoading";
 import CreateSiteError from "./CreateSiteError";
 import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import CreateSiteDetails from "./CreateSiteDetails";
+import PluginDetailsView from "./PluginDetailsView";
 import Empty from "./Empty";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
@@ -509,7 +509,7 @@ function CreateSiteDialog() {
     setSite({...site, details:blueprint })
   }
 
-  function renderBluePrints(list: Blueprint[]) {
+  function renderBlueprints(list: Blueprint[]) {
     if(list.length === 0 ) {
       return (
         <Empty title={formatMessage(messages.noBlueprints)} subtitle={formatMessage(messages.changeQuery)}/>
@@ -530,7 +530,7 @@ function CreateSiteDialog() {
       {( apiState.creatingSite || apiState.error || site.details) ?
         (apiState.creatingSite && <CreateSiteLoading/>) ||
         (apiState.error && <CreateSiteError error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
-        (site.details && <CreateSiteDetails blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
+        (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {
@@ -573,22 +573,22 @@ function CreateSiteDialog() {
                   <div className={classes.slideBP}>
                     {
                       (tab === 0) ?
-                          <Grid container spacing={3}>{renderBluePrints(filteredBlueprints)}</Grid>
+                          <Grid container spacing={3}>{renderBlueprints(filteredBlueprints)}</Grid>
                         :
-                          <Grid container spacing={3}>{renderBluePrints(filteredMarketplace)}</Grid>
+                          <Grid container spacing={3}>{renderBlueprints(filteredMarketplace)}</Grid>
                     }
                   </div>
                   <div className={classes.slide}>
                     {
                       site.blueprint &&
-                      <BluePrintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
+                      <BlueprintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
                                      onSubmit={handleFinish} onCheckNameExist={checkNameExist}
                                      blueprint={site.blueprint}/>
                     }
                   </div>
                   <div className={classes.slide}>
                     {site.blueprint &&
-                    <BluePrintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
+                    <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
                   </div>
                 </SwipeableViews>
               </DialogContent>
