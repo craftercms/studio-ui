@@ -48,6 +48,7 @@ import PluginDetailsView from "./PluginDetailsView";
 import Empty from "./Empty";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
+import { fetchBlueprints, fetchMarketPlace } from "../services/marketplace";
 
 const views: Views = {
   0: {
@@ -282,10 +283,10 @@ function CreateSiteDialog() {
         swipeableViews.current.updateHeight();
       }
       if (tab === 0 && blueprints === null && !apiState.error) {
-        fetchBlueprints();
+        getBlueprints();
       }
       if (tab === 1 && marketplace === null && !apiState.error) {
-        fetchMarketPlace();
+        getMarketPlace()
       }
     },
     // eslint-disable-next-line
@@ -436,8 +437,8 @@ function CreateSiteDialog() {
       )
   }
 
-  function fetchMarketPlace() {
-    get('/studio/api/2/marketplace/search?type=blueprint&limit=1000')
+  function getMarketPlace() {
+    fetchMarketPlace()
       .subscribe(
         ({response}) => {
           setMarketplace(response.plugins);
@@ -450,8 +451,8 @@ function CreateSiteDialog() {
       );
   }
 
-  function fetchBlueprints() {
-    get('/studio/api/2/sites/available_blueprints')
+  function getBlueprints() {
+    fetchBlueprints()
       .subscribe(
         ({response}) => {
           const _blueprints: [Blueprint] = [{
