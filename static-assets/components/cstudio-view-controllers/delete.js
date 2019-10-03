@@ -62,7 +62,10 @@
                         siteId: CStudioAuthoringContext.site,
                         items: items
                     }
-                );
+                )
+                .then(() => {
+                    this.getComponent(".delete-display").style.height = 'auto';
+                });
         },
 
         getData: function() {

@@ -55,7 +55,28 @@ const deleteDialogMessages = defineMessages({
   }
 });
 
+const usersAdminMessages = defineMessages({
+  maxLengthError: {
+    id: 'usersAdmin.maxLengthError',
+    defaultMessage: '{field} can\'t be longer than {size} characters'
+  },
+  userName: {
+    id: 'usersAdmin.userName',
+    defaultMessage: 'User Name'
+  },
+  firstName: {
+    id: 'usersAdmin.firstName',
+    defaultMessage: 'First Name'
+  },
+  lastName: {
+    id: 'usersAdmin.lastName',
+    defaultMessage: 'Last Name'
+
+  }
+});
+
 export default {
   approveDialogMessages,
-  deleteDialogMessages
+  deleteDialogMessages,
+  usersAdminMessages
 };

@@ -39,10 +39,6 @@
         actions: [".cancel"],
         events: ["submitComplete","submitStart","submitEnd","itemRender"],
         startup: ["fetchPublishingSettings", "initValidation", "translateUI", "extend"],
-        fetchPublishingSettings: this.fetchPublishingSettings,
-        initValidation: this.initValidation,
-        deleteValidation: this.deleteValidation,
-        translateUI: this.translateUI,
         extend: function() {
             this.events = this.events.concat(this.constructor.superclass.events);
             this.actions = this.actions.concat(this.constructor.superclass.actions);
