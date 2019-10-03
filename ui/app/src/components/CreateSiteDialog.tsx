@@ -204,10 +204,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-// @ts-ignore
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
   const {classes, onClose, selectedView} = props;
-  // @ts-ignore
   const {title, subtitle} = views[selectedView];
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
