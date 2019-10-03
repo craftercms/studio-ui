@@ -321,11 +321,11 @@ function CreateSiteDialog() {
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
-    const _reset = {...siteInitialState};
-    _reset.blueprint = blueprint;
-    _reset.selectedView = view;
-    _reset.submitted = false;
-    setSite(_reset);
+    const reset = {...siteInitialState};
+    reset.blueprint = blueprint;
+    reset.selectedView = view;
+    reset.submitted = false;
+    setSite(reset);
   }
 
   function handleBack() {
