@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, MouseEvent } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { get, post } from '../utils/ajax';
 import Dialog from "@material-ui/core/Dialog";
@@ -333,7 +333,7 @@ function CreateSiteDialog() {
     setSite({...site, selectedView: back});
   }
 
-  function handleChange(e: any, value: number) {
+  function handleChange(e: Object, value: number) {
     setTab(value);
   }
 
@@ -341,7 +341,7 @@ function CreateSiteDialog() {
     setSite({...site, selectedView: step});
   }
 
-  function handleFinish(e: any) {
+  function handleFinish(e: MouseEvent) {
     e && e.preventDefault();
     if (site.selectedView === 1) {
       setSite({...site, submitted: true});
@@ -437,11 +437,12 @@ function CreateSiteDialog() {
         () => {
           setApiState({ ...apiState, creatingSite: false });
           handleClose();
-          //TODO# change to site.siteId when create site is on api2
+          //TODO# Change to site.siteId when create site is on API2
           setCookie('crafterSite', site.site_id);
           window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
         ({response}) => {
+          //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
           const _response = {...response,code: '', documentationUrl: '', remedialAction: '' };
           setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response });
         }
