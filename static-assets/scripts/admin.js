@@ -20,6 +20,10 @@
 
   var app = angular.module('studio');
 
+  const i18n = CrafterCMSNext.i18n,
+        formatMessage = i18n.intl.formatMessage,
+        messages = i18n.messages.usersAdminMessages;
+
   app.service('adminService', [
     '$http', 'Constants', '$cookies', '$timeout', '$window',
     function ($http, Constants, $cookies, $timeout, $window) {
@@ -875,13 +879,13 @@
       }).success(function (data) {
         var publishing =  data["publishing"];
         publish.timeZone = data["default-timezone"];
-        publish.isValidateCommentOn = publishing && publishing["comments"] 
+        publish.isValidateCommentOn = publishing && publishing["comments"]
         ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["bulk-publish-required"] !== "false" )
-          || publishing["comments"]["bulk-publish-required"] === "true" 
-          ? true 
-          : false) 
+          || publishing["comments"]["bulk-publish-required"] === "true"
+          ? true
+          : false)
         : false;
-        
+
       });
 
       publish.getPublish = function () {
@@ -1046,7 +1050,25 @@
     function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
               $stateParams, $translate, $location) {
 
-      $scope.users = {};
+      const maxInputLength = 32;
+
+      $scope.users = {
+        maxInputLength: maxInputLength,
+        messages: {
+          userNameMaxLength: formatMessage(messages.maxLengthError, {
+            field: formatMessage(messages.userName),
+            size: maxInputLength
+          }),
+          firstNameMaxLength: formatMessage(messages.maxLengthError, {
+            field: formatMessage(messages.firstName),
+            size: maxInputLength
+          }),
+          lastNameMaxLength: formatMessage(messages.maxLengthError, {
+            field: formatMessage(messages.lastName),
+            size: maxInputLength
+          })
+        }
+      };
       var users = $scope.users;
       $scope.user.enabled = true;
 
