@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   circleBtn: {
-    color: '#4F4F4F',
+    color: theme.palette.primary.main,
     backgroundColor: '#FFFFFF',
     position: 'absolute',
     left: '40px',

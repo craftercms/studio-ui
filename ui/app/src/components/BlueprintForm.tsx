@@ -51,7 +51,7 @@ const messages = defineMessages({
   },
   descriptionMaxLength: {
     id: 'createSiteDialog.descriptionMaxLength',
-    defaultMessage: 'Max length: 4000 characters'
+    defaultMessage: 'Max length: {maxLength} characters'
   },
 });
 
@@ -59,6 +59,7 @@ function BlueprintForm(props: BlueprintForm) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
   const { formatMessage } = useIntl();
+  const maxLength = 4000;
 
   useEffect(
     () => {
@@ -111,8 +112,8 @@ function BlueprintForm(props: BlueprintForm) {
             multiline
             onChange={(event) => handleInputChange(event)}
             value={inputs.description}
-            inputProps={{maxLength: 4000}}
-            helperText={formatMessage(messages.descriptionMaxLength)}
+            inputProps={{maxLength: maxLength}}
+            helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength})}
           />
         </Grid>
         {
