@@ -9,7 +9,7 @@ import { defineMessages, useIntl } from "react-intl";
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  loadingView: {
+  errorView: {
     height: '100%',
     background: '#EBEBF0',
     display: 'flex',
@@ -49,8 +49,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface CreateSiteError {
+interface ErrorState {
   onBack(event: any): any,
+
   error: {
     code: string,
     documentationUrl?: string,
@@ -67,14 +68,14 @@ const messages = defineMessages({
 });
 
 
-export default function CreateSiteError(props: CreateSiteError) {
+export default function ErrorState(props: ErrorState) {
   const classes = useStyles({});
-  const { error, onBack } = props;
+  const {error, onBack} = props;
   const {formatMessage} = useIntl();
-  const { code, documentationUrl, message, remedialAction } = error;
+  const {code, documentationUrl, message, remedialAction} = error;
 
   return (
-    <div className={classes.loadingView}>
+    <div className={classes.errorView}>
       <img src={crack} alt="error"/>
       <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
         Error {code}
@@ -85,11 +86,12 @@ export default function CreateSiteError(props: CreateSiteError) {
       {
         documentationUrl &&
         <Typography variant="subtitle1" component="p" className={classes.paragraph}>
-           <a className={classes.link} href={documentationUrl} target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/></a>
+            <a className={classes.link} href={documentationUrl}
+               target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/></a>
         </Typography>
       }
-      <Fab aria-label="back" className={classes.circleBtn} onClick={onBack} >
-        <ArrowBackIcon />
+      <Fab aria-label="back" className={classes.circleBtn} onClick={onBack}>
+        <ArrowBackIcon/>
       </Fab>
     </div>
   )

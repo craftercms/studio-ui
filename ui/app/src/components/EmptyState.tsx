@@ -28,29 +28,29 @@ const messages = defineMessages({
   },
 });
 
-interface Empty {
+interface EmptyState {
   image?: string,
   imageAlt?: string
   title: string
   subtitle: string
 }
 
-export default function Empty(props: Empty) {
+export default function EmptyState(props: EmptyState) {
   const classes = useStyles({});
-  const { image, imageAlt, title, subtitle } = props;
+  const {image, imageAlt, title, subtitle} = props;
   const {formatMessage} = useIntl();
 
   return (
     <div className={classes.emptyContainer}>
       {
-        image?
+        image ?
           <img src={image} alt={imageAlt}/> :
           <img src={emptyIGM} alt={formatMessage(messages.defaultAlt)}/>
       }
       {
         title &&
         <Typography variant="h5" component="h1" className={'title'} color={'textSecondary'}>
-            {title}
+          {title}
         </Typography>
       }
       {

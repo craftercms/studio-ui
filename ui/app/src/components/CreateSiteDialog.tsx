@@ -38,14 +38,14 @@ import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from "./BlueprintReview";
-import CreateSiteLoading from "./CreateSiteLoading";
-import CreateSiteError from "./CreateSiteError";
+import LoadingState from "./LoadingState";
+import ErrorState from "./ErrorState";
 import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import PluginDetailsView from "./PluginDetailsView";
-import Empty from "./Empty";
+import EmptyState from "./EmptyState";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
 import { fetchBlueprints, fetchMarketPlace } from "../services/marketplace";
@@ -244,6 +244,18 @@ const messages = defineMessages({
   changeQuery: {
     id: 'createSiteDialog.changeQuery',
     defaultMessage: 'Try changing your query or browse the full catalog.'
+  },
+  creatingSite: {
+    id: 'createSiteDialog.creatingSite',
+    defaultMessage: 'Creating Site'
+  },
+  pleaseWait: {
+    id: 'createSiteDialog.pleaseWait',
+    defaultMessage: 'Please wait while your site is being created..'
+  },
+  createInBackground: {
+    id: 'createSiteDialog.createInBackground',
+    defaultMessage: 'Create in Background'
   }
 });
 
@@ -514,7 +526,7 @@ function CreateSiteDialog() {
   function renderBlueprints(list: Blueprint[]) {
     if(list.length === 0 ) {
       return (
-        <Empty title={formatMessage(messages.noBlueprints)} subtitle={formatMessage(messages.changeQuery)}/>
+        <EmptyState title={formatMessage(messages.noBlueprints)} subtitle={formatMessage(messages.changeQuery)}/>
       )
     }
     return list.map((item: Blueprint) => {
@@ -530,8 +542,8 @@ function CreateSiteDialog() {
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
       {( apiState.creatingSite || apiState.error || site.details) ?
-        (apiState.creatingSite && <CreateSiteLoading/>) ||
-        (apiState.error && <CreateSiteError error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
+        (apiState.creatingSite && <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)} subtitle2={formatMessage(messages.createInBackground)}/>) ||
+        (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
         (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
