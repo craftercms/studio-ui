@@ -21,9 +21,8 @@ import ReactDOM from 'react-dom';
 import CrafterCMSNextBridge, { intl } from '../components/CrafterCMSNextBridge';
 import string from './string';
 import ajax from './ajax';
-import token from './token';
 import path from './path';
-import storage from './storage';
+import auth from './auth';
 import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
@@ -93,8 +92,7 @@ export function createCodebaseBridge() {
       ajax,
       path,
       string,
-      storage,
-      token
+      auth,
     },
 
     i18n: {

@@ -47,7 +47,7 @@ import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import CreateSiteDetails from "./CreateSiteDetails";
 import Empty from "./Empty";
 import { underscore } from '../utils/string';
-import updateToken from "../utils/token";
+import { setRequestForgeryToken } from '../utils/auth';
 
 const views: Views = {
   0: {
@@ -275,7 +275,7 @@ function CreateSiteDialog() {
   const filteredBlueprints: Blueprint[] = filterBlueprints(blueprints, search.searchKey);
   const filteredMarketplace: Blueprint[] = filterBlueprints(marketplace, search.searchKey);
 
-  updateToken();
+  setRequestForgeryToken();
 
   useEffect(() => {
       if (swipeableViews.current && !apiState.error) {

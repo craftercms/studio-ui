@@ -296,9 +296,8 @@
                             });
 
                             $rootScope.loginModal.result.finally(function () {
-                                CrafterCMSNext.util.token();
+                                CrafterCMSNext.util.auth.setRequestForgeryToken();
                                 $rootScope.loginModal = null;
-                                // $state.go('home.sites');
                             });
 
                         }

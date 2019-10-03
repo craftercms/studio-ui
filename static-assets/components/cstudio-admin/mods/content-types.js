@@ -227,7 +227,7 @@ CStudioAuthoring.Module.requireModule(
                                                         YAHOO.util.Connect.resetFormState();
                                                         YAHOO.util.Connect.setDefaultPostHeader(false);
                                                         YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                                                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+                                                        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
                                                         YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), callBack, xmlConfig);
 
                                                     },
@@ -255,7 +255,7 @@ CStudioAuthoring.Module.requireModule(
                                                 YAHOO.util.Connect.resetFormState();
                                                 YAHOO.util.Connect.setDefaultPostHeader(false);
                                                 YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-                                                YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+                                                YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
                                                 YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, xmlFormDef);
 
                                                 document.getElementById("cstudio-admin-console-command-bar").children[1].value = CMgs.format(langBundle, "close");
