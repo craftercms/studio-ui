@@ -49,6 +49,7 @@ import Empty from "./Empty";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
 import { fetchBlueprints, fetchMarketPlace } from "../services/marketplace";
+import gitLogo from "../assets/git-logo.svg";
 
 const views: Views = {
   0: {
@@ -464,7 +465,7 @@ function CreateSiteDialog() {
                 {
                   description: 'Git logo',
                   title: 'Remote Git Repository',
-                  url: 'https://www.embarcados.com.br/wp-content/uploads/2015/02/imagem-de-destaque-39.png'
+                  url: gitLogo
                 }
               ],
               videos: []

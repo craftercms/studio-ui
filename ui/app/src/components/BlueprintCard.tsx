@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   carouselImg: {
     width: '100%',
     height: '200px',
-    objectFit: 'cover'
+    objectFit: 'contain'
   },
   video: {
     width: '100%',
