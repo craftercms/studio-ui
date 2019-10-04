@@ -20,6 +20,10 @@
 
   var app = angular.module('studio');
 
+  const i18n = CrafterCMSNext.i18n,
+        formatMessage = i18n.intl.formatMessage,
+        messages = i18n.messages.usersAdminMessages;
+
   app.service('adminService', [
     '$http', 'Constants', '$cookies', '$timeout', '$window',
     function ($http, Constants, $cookies, $timeout, $window) {
@@ -258,9 +262,10 @@
         return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
       };
 
-      this.bulkGoLive = function(site, path, environmet) {
+      this.bulkGoLive = function(site, path, environmet, submissionComment) {
         environmet = environmet ? environmet : Constants.BULK_ENVIRONMENT;
-        return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet));
+        submissionComment = submissionComment ? submissionComment : '';
+        return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet + "&comment=" + submissionComment));
       };
 
       //COMMITSPUBLISH
@@ -866,12 +871,21 @@
       publish.startDisabled = false;
       publish.site = $location.search().site;
       publish.timeZone;
+      publish.isValidateCommentOn = false;
 
       adminService.getTimeZone({
         "site" : publish.site,
         "path" : "/site-config.xml"
       }).success(function (data) {
+        var publishing =  data["publishing"];
         publish.timeZone = data["default-timezone"];
+        publish.isValidateCommentOn = publishing && publishing["comments"]
+        ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["bulk-publish-required"] !== "false" )
+          || publishing["comments"]["bulk-publish-required"] === "true"
+          ? true
+          : false)
+        : false;
+
       });
 
       publish.getPublish = function () {
@@ -983,7 +997,7 @@
         publish.disable = true;
         spinnerOverlay = $scope.spinnerOverlay();
 
-        adminService.bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel)
+        adminService.bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
           .success(function (data) {
             publish.disable = false;
             spinnerOverlay.close();
@@ -1017,7 +1031,7 @@
           .success(function (data) {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
-            publish.notification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'), '', null,"studioMedium");
+            publish.notification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'), '', null, 'studioMedium green');
           })
           .error(function (err) {
             publish.error = err.message;
@@ -1036,7 +1050,25 @@
     function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
               $stateParams, $translate, $location) {
 
-      $scope.users = {};
+      const maxInputLength = 32;
+
+      $scope.users = {
+        maxInputLength: maxInputLength,
+        messages: {
+          userNameMaxLength: formatMessage(messages.maxLengthError, {
+            field: formatMessage(messages.userName),
+            size: maxInputLength
+          }),
+          firstNameMaxLength: formatMessage(messages.maxLengthError, {
+            field: formatMessage(messages.firstName),
+            size: maxInputLength
+          }),
+          lastNameMaxLength: formatMessage(messages.maxLengthError, {
+            field: formatMessage(messages.lastName),
+            size: maxInputLength
+          })
+        }
+      };
       var users = $scope.users;
       $scope.user.enabled = true;
 
@@ -1076,7 +1108,7 @@
         $scope.notification = function(notificationText, showOnTop, styleClass){
           var verticalAlign = showOnTop ? false : true;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = 'check-circle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1171,7 +1203,7 @@
           $scope.users.totalLogs++;
           $scope.users.pagination.goToLast();
 
-          $scope.notification('\''+ user.username + '\' created.','','studioMedium');
+          $scope.notification('\''+ user.username + '\' created.','','studioMedium green');
         }).error(function(response){
           var response = response.response,
             error = {
@@ -1202,7 +1234,7 @@
           "username" : user.username,
           "new" : user.newPassword
         }).success(function(){
-          $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+          $scope.notification('\''+ user.username + '\' edited.','','studioMedium green');
           $scope.hideModal();
         }).error(function(error){
           $scope.usersError = {
@@ -1249,7 +1281,7 @@
           }
 
           $scope.hideModal();
-          $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+          $scope.notification('\''+ user.username + '\' edited.','','studioMedium green');
         }).error(function(error){
           $scope.usersError = {
             message: error.response.message,
@@ -1291,7 +1323,7 @@
               $scope.users.totalLogs--;
             }
 
-            $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
+            $scope.notification('\''+ user.username + '\' deleted.','','studioMedium green');
           }).error(function (data) {
             $scope.error = data.response.message;
             $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
@@ -1428,11 +1460,11 @@
           $scope.adminModal.close();
         };
 
-        $scope.notification = function(notificationText, showOnTop, time, styleClass){
+        $scope.notification = function(notificationText, showOnTop, time, styleClass, icon){
           var verticalAlign = showOnTop ? false : true,
             timer = time ? time : 1500;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = icon ? icon : 'exclamation-triangle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1530,7 +1562,7 @@
           $scope.groupsCollection.push(data.group);
           $scope.groups.totalLogs++;
           $scope.groups.pagination.goToLast();
-          $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
+          $scope.notification('\''+ group.name + '\' created.', '', null, 'studioMedium green', 'check-circle');
         }).error(function(error){
           $scope.groupsError = error.response.message;
         });
@@ -1556,7 +1588,7 @@
         //group.site_id = groups.site;
 
         adminService.editGroup(group).success(function (data) {
-          $scope.notification('\''+ group.name + '\' edited.', '', null, "studioMedium");
+          $scope.notification('\''+ group.name + '\' edited.', '', null, 'studioMedium green', 'check-circle');
         }).error(function(error){
           if("Unauthorized" === error.response.message) {
             $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
@@ -1579,7 +1611,7 @@
             $scope.usersFromGroupCollection = [];
             $scope.noGroupSelected = true;
 
-            $scope.notification('\''+ group.name + '\' group deleted.', '', null,"studioMedium");
+            $scope.notification('\''+ group.name + '\' group deleted.', '', null, 'studioMedium green', 'check-circle');
 
           }).error(function (error) {
             if("Unauthorized" === error.response.message) {
@@ -1645,7 +1677,7 @@
         });
 
         $q.all(calls).then(function() {
-          $scope.notification('Users successfully added.', false, null, "studioMedium");
+          $scope.notification('Users successfully added.', false, null, 'studioMedium green', 'check-circle');
         });
 
         groups.usersToAdd = [];
@@ -1744,7 +1776,7 @@
         var removeUserFromGroup = function() {
           adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
             $scope.getGroupMembers(group);
-            $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, "studioMedium");
+            $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, 'studioMedium green', 'check-circle');
           }).error(function (error) {
             $scope.errorTitle = $translate.instant('admin.users.DELETE_ERROR');
             $scope.error = error.response.message;
