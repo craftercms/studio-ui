@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import PublishingPackage from "./PublishingPackage";
 import { fetchPackages } from '../services/publishing';
 import { Package } from "../models/publishing";
+import SelectButton from "./SelectButton";
 
 const messages = defineMessages({
   selectAll: {
@@ -18,6 +19,18 @@ const messages = defineMessages({
   cancelSelected: {
     id: 'publishingQueue.cancelSelected',
     defaultMessage: 'Cancel Selected'
+  },
+  cancel: {
+    id: 'publishingQueue.cancel',
+    defaultMessage: 'Cancel'
+  },
+  confirm: {
+    id: 'publishingQueue.confirm',
+    defaultMessage: 'Confirm'
+  },
+  confirmAllHelper: {
+    id: 'publishingQueue.confirmHelper',
+    defaultMessage: 'Set the state for all selected items to "Cancelled"'
   },
   filters: {
     id: 'publishingQueue.filters',
@@ -106,18 +119,26 @@ function PublishingQueue() {
       );
   }
 
+  function handleCancelAll() {
+    console.log('cancel all')
+  }
+
   return (
     <div className={classes.publishingQueue}>
       <div className={classes.topBar}>
         <FormGroup className={classes.selectAll}>
           <FormControlLabel
-            control={<Checkbox/>}
+            control={<Checkbox color="primary"/>}
             label={formatMessage(messages.selectAll)}
           />
         </FormGroup>
-        <Button variant="outlined" color={"secondary"} className={classes.button}>
-          {formatMessage(messages.cancelSelected)}
-        </Button>
+        <SelectButton
+          text={formatMessage(messages.cancelSelected)}
+          cancelText={formatMessage(messages.cancel)}
+          confirmText={formatMessage(messages.confirm)}
+          confirmHelperText={formatMessage(messages.confirmAllHelper)}
+          onConfirm={handleCancelAll}
+        />
         <Button variant="outlined" className={classes.button}>
           {formatMessage(messages.filters)}
         </Button>

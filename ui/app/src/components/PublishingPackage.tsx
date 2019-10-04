@@ -6,6 +6,8 @@ import React from "react";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
 import { Package } from "../models/publishing";
+import SelectButton from "./SelectButton";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles(() => ({
   package: {
@@ -42,9 +44,25 @@ const messages = defineMessages({
     id: 'publishingQueue.cancel',
     defaultMessage: 'Cancel'
   },
+  confirm: {
+    id: 'publishingQueue.confirm',
+    defaultMessage: 'Confirm'
+  },
+  confirmHelper: {
+    id: 'publishingQueue.confirmHelper',
+    defaultMessage: 'Set the state for the item to "Cancelled"'
+  },
   fetchPackagesFiles: {
     id: 'publishingQueue.fetchPackagesFiles',
     defaultMessage: 'Fetch Packages Files'
+  },
+  scheduled: {
+    id: 'publishingQueue.scheduled',
+    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>',
+  },
+  status: {
+    id: 'publishingQueue.status',
+    defaultMessage: 'Status is {state} for {environment} environment'
   }
 });
 
@@ -60,22 +78,51 @@ export default function PublishingPackage(props: PublishingPackage) {
 
   console.log(props.package);
 
+  function handleCancel(item: Package) {
+    console.log('cancel')
+  }
+
   return (
     <div className={classes.package}>
       <div className={'name'}>
         <FormGroup className={classes.checkbox}>
           <FormControlLabel
-            control={<Checkbox/>}
+            control={<Checkbox color="primary"/>}
             label={id}
           />
         </FormGroup>
-        <Button variant="outlined" color={"secondary"}>
-          {formatMessage(messages.cancel)}
-        </Button>
+        <SelectButton
+          text={formatMessage(messages.cancel)}
+          cancelText={formatMessage(messages.cancel)}
+          confirmText={formatMessage(messages.confirm)}
+          confirmHelperText={formatMessage(messages.confirmHelper)}
+          onConfirm={()=> handleCancel(props.package)}
+        />
       </div>
       <div className='status'>
-        <div>Scheduled for {schedule} by {approver}</div>
-        <div>Status is {state} for {environment} enviroment</div>
+        <Typography variant="body2">
+          {
+            formatMessage(
+              messages.scheduled,
+              {
+                schedule: new Date(schedule),
+                approver: approver,
+                b: (content) => <strong key={content}>{content}</strong>
+              }
+            )
+          }
+        </Typography>
+        <Typography variant="body2">
+          {
+            formatMessage(
+              messages.status,
+              {
+                  state: <strong key={state}>{state}</strong>,
+                  environment: <strong key={environment}>{environment}</strong>,
+                }
+            )
+          }
+        </Typography>
       </div>
       <div className='comment'>
         <div>Comment</div>
