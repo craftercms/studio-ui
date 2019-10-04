@@ -9,7 +9,7 @@ import { Package } from "../models/publishing";
 
 const useStyles = makeStyles(() => ({
   package: {
-    padding: '20px',
+    padding: '20px 8px 20px 0',
     '& .name': {
       display: 'flex',
       justifyContent: 'space-between',

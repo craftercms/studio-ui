@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   topBar: {
     display: 'flex',
-    padding: '0 20px',
+    padding: '0 0 0 0',
     alignItems: 'center',
     borderTop: '1px solid #dedede',
     borderBottom: '1px solid #dedede',
