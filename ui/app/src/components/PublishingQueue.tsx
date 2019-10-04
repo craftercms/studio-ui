@@ -6,7 +6,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import Button from '@material-ui/core/Button';
-import { get } from '../utils/ajax';
+import PublishingPackage from "./PublishingPackage";
+import { fetchPackages } from '../services/publishing';
+import { Package } from "../models/publishing";
 
 const messages = defineMessages({
   selectAll: {
@@ -71,7 +73,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-
 function PublishingQueue() {
   const classes = useStyles({});
   const [packages, setPackages] = useState(null);
@@ -80,7 +81,7 @@ function PublishingQueue() {
   useEffect(
     () => {
       if(packages === null) {
-        fetchPackages('editorial');
+        getPackages('editorial');
       }
 
     },
@@ -88,11 +89,13 @@ function PublishingQueue() {
   );
 
   function renderPackages(){
-
+    return packages.map((item: Package, index: number) => {
+      return <PublishingPackage package={item} key={index}/>
+    })
   }
 
-  function fetchPackages(siteId:string) {
-    get(`/studio/api/2/publish/packages?siteId=${siteId}`, {'X-XSRF-TOKEN': '060f063c-7812-4426-abfa-a1169d1e300c'})
+  function getPackages(siteId:string) {
+    fetchPackages(siteId)
       .subscribe(
         ({response}) => {
           setPackages(response.packages);
@@ -120,7 +123,7 @@ function PublishingQueue() {
         </Button>
       </div>
       <div className={classes.queueList}>
-
+        {packages && renderPackages()}
       </div>
     </div>
   )
