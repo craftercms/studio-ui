@@ -47,7 +47,7 @@ import PluginDetailsView from "./PluginDetailsView";
 import EmptyState from "./EmptyState";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
-import { createSite, checkHandleAvailability, fetchBlueprints as fetchSiteBlueprints } from "../services/sites";
+import { createSite, checkHandleAvailability, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
 import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 import Cookies from 'js-cookie';
@@ -463,7 +463,7 @@ function CreateSiteDialog() {
   }
 
   function getBlueprints() {
-    fetchSiteBlueprints()
+    fetchBuiltInBlueprints()
       .subscribe(
         ({response}) => {
           const _blueprints: [Blueprint] = [{
