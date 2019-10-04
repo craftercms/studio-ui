@@ -36,7 +36,7 @@ const checkState = (items: Item[]) => {
     },
     {}
   )
-}
+};
 
 const updateCheckedList = (uri: string[], isChecked: boolean, checked: any) => {
   const nextChecked = { ...checked };
@@ -44,7 +44,7 @@ const updateCheckedList = (uri: string[], isChecked: boolean, checked: any) => {
     nextChecked[u] = isChecked;
   });
   return nextChecked;
-}
+};
 
 const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
   e.stopPropagation();
@@ -52,15 +52,15 @@ const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any
   setChecked([item.uri], !checked[item.uri])
 };
 
-const paths = (checked: any) => {
-    return Object.entries({ ...checked })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key);
-}
+const paths = (checked: any) => (
+  Object.entries({ ...checked })
+    .filter(([key, value]) => value === true)
+    .map(([key]) => key);
+);
 
 const selectAll = (setChecked: Function, items: Item[]) => {
   setChecked(items.map(i => i.uri), true);
-}
+};
 
 export function DependencySelection(props: DependencySelectionProps) {
 
