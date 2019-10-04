@@ -2,7 +2,6 @@ import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import emptyIGM from "../assets/desert.svg";
-import { defineMessages, useIntl } from "react-intl";
 
 const useStyles = makeStyles(() => ({
   emptyContainer: {
@@ -21,32 +20,19 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const messages = defineMessages({
-  defaultAlt: {
-    id: 'common.defaultAlt',
-    defaultMessage: 'Empty'
-  },
-});
-
 interface EmptyState {
   image?: string,
-  imageAlt?: string
   title: string
   subtitle: string
 }
 
 export default function EmptyState(props: EmptyState) {
   const classes = useStyles({});
-  const {image, imageAlt, title, subtitle} = props;
-  const {formatMessage} = useIntl();
+  const {image, title, subtitle} = props;
 
   return (
     <div className={classes.emptyContainer}>
-      {
-        image ?
-          <img src={image} alt={imageAlt}/> :
-          <img src={emptyIGM} alt={formatMessage(messages.defaultAlt)}/>
-      }
+      <img src={image ? image : emptyIGM} alt=""/>
       {
         title &&
         <Typography variant="h5" component="h1" className={'title'} color={'textSecondary'}>

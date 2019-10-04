@@ -76,7 +76,7 @@ export default function ErrorState(props: ErrorState) {
 
   return (
     <div className={classes.errorView}>
-      <img src={crack} alt="error"/>
+      <img src={crack} alt=""/>
       <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
         Error {code}
       </Typography>

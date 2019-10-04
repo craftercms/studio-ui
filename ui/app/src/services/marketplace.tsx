@@ -1,5 +1,5 @@
 import { get } from "../utils/ajax";
 
-export function fetchMarketPlace() {
+export function fetchBlueprints() {
   return get('/studio/api/2/marketplace/search?type=blueprint&limit=1000');
 }

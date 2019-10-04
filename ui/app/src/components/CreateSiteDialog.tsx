@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState, MouseEvent } from 'react';
+import React, { MouseEvent, useEffect, useRef, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -47,9 +47,10 @@ import PluginDetailsView from "./PluginDetailsView";
 import EmptyState from "./EmptyState";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
-import { fetchBlueprints, createSite, exist } from "../services/sites";
-import { fetchMarketPlace } from "../services/marketplace";
+import { createSite, checkHandleAvailability, fetchBlueprints as fetchSiteBlueprints } from "../services/sites";
+import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
+import Cookies from 'js-cookie';
 
 const views: Views = {
   0: {
@@ -436,7 +437,7 @@ function CreateSiteDialog() {
           setApiState({ ...apiState, creatingSite: false });
           handleClose();
           //TODO# Change to site.siteId when create site is on API2
-          setCookie('crafterSite', site.site_id);
+          Cookies.set('crafterSite', site.site_id);
           window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
         ({response}) => {
@@ -448,7 +449,7 @@ function CreateSiteDialog() {
   }
 
   function getMarketPlace() {
-    fetchMarketPlace()
+    fetchMarketplaceBlueprints()
       .subscribe(
         ({response}) => {
           setMarketplace(response.plugins);
@@ -462,7 +463,7 @@ function CreateSiteDialog() {
   }
 
   function getBlueprints() {
-    fetchBlueprints()
+    fetchSiteBlueprints()
       .subscribe(
         ({response}) => {
           const _blueprints: [Blueprint] = [{
@@ -493,24 +494,17 @@ function CreateSiteDialog() {
       );
   }
 
-  function setCookie(cookieGenName:string, value:string, maxAge?:any) {
-    const domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
-    if (maxAge != null) {
-      document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal, "; max-age=", maxAge].join("");
-    } else {
-      document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal].join("");
-    }
-  }
-
   function checkNameExist(e: any) {
     if (e.target.value) {
-      exist(e.target.value)
+      checkHandleAvailability(e.target.value)
         .subscribe(
           ({response}) => {
             setSite({...site, siteIdExist: response.exists});
           },
-          () => {
-            console.log('error')
+          ({response}) => {
+            //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
+            const _response = {...response,code: '', documentationUrl: '', remedialAction: '' };
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response });
           }
         );
     }
