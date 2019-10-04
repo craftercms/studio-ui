@@ -190,6 +190,15 @@
                         }
                     }
                 })
+              .state('home.globalMenu.globalConfig', {
+                url: '/global-config',
+                views: {
+                  contentTab: {
+                    templateUrl: '/studio/static-assets/ng-views/global-config.html',
+                    controller: 'GlobalConfigCtrl'
+                  }
+                }
+              })
                 .state('home.sites', {
                     url: 'sites',
                     views: {
@@ -437,16 +446,6 @@
                 });
             };
 
-            /*this.logout = function (info) {
-                $http({
-                    method: info.method,
-                    url: info.url
-                });
-                user = null;
-
-                $cookies['userSession'] = null;
-            };*/
-
             this.logout = function () {
                 $http.post(security('logout'), null);
                 user = null;
@@ -567,7 +566,6 @@
             }
 
             this.setCookie = function(cookieGenName, value, maxAge) {
-                //$cookies[cookieName] = site.siteId;
                 var domainVal = (document.location.hostname.indexOf(".") > -1) ? "domain=" + document.location.hostname : "";
                 if (maxAge != null) {
                     document.cookie = [cookieGenName, "=", value, "; path=/; ", domainVal, "; max-age=", maxAge].join("");
@@ -888,13 +886,10 @@
             });
 
             if(authService.getUser()) {
-                authService.getStudioInfo().then(
-                    function successCallback(response) {
-                        $scope.aboutStudio = response.data.version;
-                        $scope.versionNumber = response.data.version.packageVersion + "-" + response.data.version.packageBuild.substring(0, 6);
-                    }, function errorCallback(response) {
-                    }
-                );
+              authService.getStudioInfo().then(function (response) {
+                $scope.aboutStudio = response.data.version;
+                $scope.versionNumber = response.data.version.packageVersion + "-" + response.data.version.packageBuild.substring(0, 6);
+              });
             }
 
             var isChromium = window.chrome,
@@ -919,7 +914,7 @@
                 var data =  {
                     "username": $scope.user.username,
                     "password": $scope.user.reLoginPass
-                }
+                };
 
                 authService.login(data)
                     .then(function success(data) {
@@ -1038,12 +1033,18 @@
             sitesService.getGlobalMenu()
                 .success(function (data) {
                     $scope.entities = data.menuItems;
-                    //$scope.entities = [{"id":"home.globalMenu.sites","label":"Sites","icon":"fa-sitemap"}];
+
+                    // TODO: Temp. Remove when global menu does return.
+                    $scope.entities.unshift({
+                      'id': 'home.globalMenu.globalConfig',
+                      'label': 'Global Config',
+                      'icon': 'fa-globe'
+                    });
 
                     if($scope.entities.length > 1){
                         $scope.entities.forEach(function(entry, i) {
                             entry.tabName = 'tab'+ entry.label.replace(/ /g,'').toLocaleLowerCase();
-                            if (i<1){
+                            if (i < 1) {
                                 $scope.view_tab = entry.tabName;
                                 $state.go(entry.id);
                             }
@@ -1053,7 +1054,6 @@
                             $state.go(data.menuItems[0].id.replace("globalMenu.", ""));
                         }
                     }
-
 
                 })
                 .error(function (er) {
@@ -1252,6 +1252,134 @@
         }
 
     ]);
+
+  app.controller('GlobalConfigCtrl', [
+    '$scope', '$element', '$http', '$timeout', '$uibModal',
+    function ($scope, $element, $http, $timeout, $uibModal) {
+
+      $scope.uiEnabled = false;
+      let defaultValue = '';
+      let sampleValue = '';
+
+      const aceEditor = ace.edit('globalConfigAceEditor');
+
+      aceEditor.setOptions({
+        readOnly: true,
+        value: defaultValue,
+        mode: 'ace/mode/yaml',
+        theme: 'ace/theme/textmate',
+      });
+
+      // TODO: Temp. Replace the mock-up promise with the actual call - when BE is ready.
+      // $http.get('/studio/api/2/configuration/get_configuration', {
+      //   params: {
+      //     siteId: 'studioRoot',
+      //     module: 'studio',
+      //     'path': 'studio-config-override.yaml'
+      //   }
+      // })
+      new Promise((resolve) => {
+        $timeout(() => resolve({ data: { content: null } }), 700);
+      })
+        .then((data) => {
+          aceEditor.setValue(data.content || defaultValue);
+          enableUI(true, true);
+        });
+
+      // Differ the loading of the sample config file to the "background"
+      setTimeout(() => {
+        // TODO: Temp. Replace mock-up.
+        // $http.get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
+        //   params: { path: '/configuration/samples/studio-config-override.yaml' }
+        // })
+        new Promise((resolve) => {
+          $timeout(() => resolve(
+            `##################################################
+##       Studio Core Configuration File         ##
+##################################################
+
+##################################################
+##     Location of Override Config File         ##
+##################################################
+# Load override configuration files (to override what's defined here)
+studio.config.overrideConfig: crafter/studio/extension/studio-config-override.yaml
+# Load override configuration files (to override what's defined here)
+studio.config.globalRepoOverrideConfig: configuration/studio-config-override.yaml`
+          ), 400);
+        })
+          .then((content) => sampleValue = content);
+      });
+
+      $scope.save = function () {
+        enableUI(false);
+        const value = aceEditor.getValue();
+        // TODO: Temp. Replace mock-up promise with actual BE call when ready.
+        // $http.post('', { params: { value } })
+        new Promise((resolve) => {
+          $timeout(resolve, 1000);
+        }).then((response) => {
+          enableUI(true, true);
+          $element.notify('Config saved successfully.', { position: 'top left', className: 'success' });
+          defaultValue = value;
+        }).catch(() => {
+          $element.notify('Save failed. Please retry momentarily.', { position: 'top left', className: 'error' });
+        });
+      };
+
+      $scope.reset = function () {
+        aceEditor.setValue(defaultValue);
+      };
+
+      $scope.sample = function () {
+        $uibModal.open({
+          ariaLabelledBy: 'modal-title',
+          ariaDescribedBy: 'modal-body',
+          templateUrl: 'sampleModal.html',
+          controller: 'SampleGlobalConfigCtrl',
+          controllerAs: '$ctrl',
+          size: 'lg',
+          resolve: { sample: () => sampleValue }
+        }).result.then(function ({ mode, sample }) {
+          aceEditor.setValue(
+            (mode === 'replace')
+              ? sample
+              : `${aceEditor.getValue()}\n\n${sample}`
+          );
+        });
+      };
+
+      function enableUI(enable = true, digest = false) {
+        aceEditor.setReadOnly(!enable);
+        $scope.uiEnabled = enable;
+        digest && $scope.$apply();
+      }
+
+    }
+  ]);
+
+    app.controller('SampleGlobalConfigCtrl', function ($uibModalInstance, sample) {
+
+      let editor;
+      let $ctrl = this;
+
+      $uibModalInstance.rendered.then(() => {
+        editor = ace.edit('sampleFileEditor');
+        editor.setOptions({
+          readOnly: false,
+          value: sample,
+          mode: 'ace/mode/yaml',
+          theme: 'ace/theme/textmate'
+        });
+      });
+
+      $ctrl.use = function (mode) {
+        $uibModalInstance.close({ mode, sample });
+      };
+      $ctrl.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+      };
+
+    });
 
     app.controller('RemoveSiteCtrl', [
         '$scope', '$state', 'sitesService', '$modalInstance', 'siteToRemove',
