@@ -1271,30 +1271,32 @@
       });
 
       // TODO: Temp. Replace the mock-up promise with the actual call - when BE is ready.
-      // $http.get('/studio/api/2/configuration/get_configuration', {
-      //   params: {
-      //     siteId: 'studioRoot',
-      //     module: 'studio',
-      //     'path': 'studio-config-override.yaml'
-      //   }
-      // })
-      new Promise((resolve) => {
-        $timeout(() => resolve({ data: { content: null } }), 700);
-      })
-        .then((data) => {
-          aceEditor.setValue(data.content || defaultValue);
-          enableUI(true, true);
-        });
+      (
+        // $http.get('/studio/api/2/configuration/get_configuration', {
+        //   params: {
+        //     siteId: 'studioRoot',
+        //     module: 'studio',
+        //     'path': 'studio-config-override.yaml'
+        //   }
+        // })
+        new Promise((resolve) => {
+          $timeout(() => resolve({ data: { content: null } }), 700);
+        })
+      ).then((data) => {
+        aceEditor.setValue(data.content || defaultValue);
+        enableUI(true, true);
+      });
 
       // Differ the loading of the sample config file to the "background"
       setTimeout(() => {
         // TODO: Temp. Replace mock-up.
-        // $http.get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
-        //   params: { path: '/configuration/samples/studio-config-override.yaml' }
-        // })
-        new Promise((resolve) => {
-          $timeout(() => resolve(
-            `##################################################
+        (
+          // $http.get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
+          //   params: { path: '/configuration/samples/studio-config-override.yaml' }
+          // })
+          new Promise((resolve) => {
+            $timeout(() => resolve(
+              `##################################################
 ##       Studio Core Configuration File         ##
 ##################################################
 
@@ -1305,9 +1307,9 @@
 studio.config.overrideConfig: crafter/studio/extension/studio-config-override.yaml
 # Load override configuration files (to override what's defined here)
 studio.config.globalRepoOverrideConfig: configuration/studio-config-override.yaml`
-          ), 400);
-        })
-          .then((content) => sampleValue = content);
+            ), 400);
+          })
+        ).then((content) => sampleValue = content);
       });
 
       $scope.save = function () {
