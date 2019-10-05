@@ -55,7 +55,7 @@ const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any
 const paths = (checked: any) => (
   Object.entries({ ...checked })
     .filter(([key, value]) => value === true)
-    .map(([key]) => key);
+    .map(([key]) => key)
 );
 
 const selectAll = (setChecked: Function, items: Item[]) => {
