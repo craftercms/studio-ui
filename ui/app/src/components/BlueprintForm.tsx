@@ -75,21 +75,10 @@ const messages = defineMessages({
 
 function BlueprintForm(props: BlueprintForm) {
   const classes = useStyles({});
-  const {inputs, setInputs, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
+  const {inputs, setInputs, onSubmit, blueprint, onCheckNameExist} = props;
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
   const maxLength = 4000;
-
-  useEffect(
-    () => {
-      if (swipeableViews) {
-        const timer = setTimeout(() => swipeableViews.current.updateHeight(), 300);
-        return () => clearTimeout(timer);
-      }
-    },
-    // eslint-disable-next-line
-    [inputs.pushSite, inputs.repoAuthentication],
-  );
 
   useEffect(
     () => {

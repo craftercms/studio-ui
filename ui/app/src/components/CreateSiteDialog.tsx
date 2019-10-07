@@ -119,8 +119,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   search: {
     position: 'relative',
     width: 'calc(100% - 40px)',
-    margin: 'auto',
-    marginTop: '20px',
+    margin: '20px auto',
   },
   searchIcon: {
     width: theme.spacing(7),
@@ -158,13 +157,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   slide: {
     padding: 20,
-    minHeight: '490px',
+    height: '492px',
+    overflow: 'auto',
     display: 'flex'
   },
   slideBP: {
-    padding: 20,
-    minHeight: '460px',
-    display: 'flex'
+    padding: '20px',
+    height: '510px',
+    overflow: 'auto',
+    display: 'flex',
+    '&.selected': {
+      padding: '1px 20px 20px 20px',
+      height: '455px',
+    }
   },
   dialogActions: {
     background: '#EBEBF0',
@@ -303,7 +308,7 @@ function CreateSiteDialog() {
       }
     },
     // eslint-disable-next-line
-    [tab, filteredBlueprints, filteredMarketplace],
+    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected],
   );
 
   function handleClose() {
@@ -574,7 +579,7 @@ function CreateSiteDialog() {
                   animateHeight
                   ref={swipeableViews}
                   index={site.selectedView}>
-                  <div className={classes.slideBP}>
+                  <div className={clsx(classes.slideBP, search.searchSelected && 'selected')}>
                     {
                       (tab === 0) ?
                           <Grid container spacing={3}>{renderBlueprints(filteredBlueprints)}</Grid>
