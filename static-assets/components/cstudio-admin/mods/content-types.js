@@ -649,6 +649,7 @@ CStudioAuthoring.Module.requireModule(
                                         YDom.addClass(this.dsourceContainerEl, "new-datasource-type");
                                         this.dsourceContainerEl.innerHTML = datasource.getLabel();
                                         YDom.addClass(this.dsourceContainerEl, datasource.getLabel().replace(/\//g, '').replace(/\s+/g, '-').toLowerCase());
+                                        $(this.dsourceContainerEl).attr('data-item-id', datasource.getName());
 
 
                                         var dd = new DragAndDropDecorator(this.dsourceContainerEl);
@@ -1401,15 +1402,56 @@ CStudioAuthoring.Module.requireModule(
                                     }
                                 }
 
-                                if (form != null) {
+                                if (form != null && srcEl.prototypeDatasource.getName() !== 'child-content') {
                                     item = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.insertNewDatasource(form, srcEl.prototypeDatasource);
                                 }
                                 handled = true;
                             }
 
                             if(handled == true) {
-                                CStudioAdminConsole.Tool.ContentTypes.visualization.render();
-                                CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(item);
+                                if(srcEl.prototypeDatasource && srcEl.prototypeDatasource.getName() === 'child-content'){
+                                    CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+                                    CStudioAuthoring.Operations.showSimpleDialog(
+                                        "child-content-deprecated-dialog",
+                                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                        formatMessage(contentTypesMessages.notice),
+                                        this.contentChildDeprecatedMessage(),
+                                        [
+                                            {
+                                              text: formatMessage(contentTypesMessages.useSharedContent),
+                                              handler: function () {
+                                                this.destroy();
+                                                CStudioAdminConsole.Tool.ContentTypes.propertySheet.renderNewItem(form, $("[data-item-id='shared-content']").get(0).prototypeDatasource);
+                                              },
+                                              isDefault: false
+                                            },
+                                            {
+                                              text: formatMessage(contentTypesMessages.useEmbeddedContent),
+                                              handler: function () {
+                                                this.destroy();
+                                                CStudioAdminConsole.Tool.ContentTypes.propertySheet.renderNewItem(form, $("[data-item-id='embedded-content']").get(0).prototypeDatasource);
+                                              },
+                                              isDefault: false
+                                            },
+                                            {
+                                                text: formatMessage(contentTypesMessages.useChildContent),
+                                                handler: function () {
+                                                  this.destroy();
+                                                  CStudioAdminConsole.Tool.ContentTypes.propertySheet.renderNewItem(form, srcEl.prototypeDatasource);
+                                                },
+                                                isDefault: true
+                                            }
+                                          ],
+                                        YAHOO.widget.SimpleDialog.ICON_WARN,
+                                        "studioDialog",
+                                        "600px"
+                                    );
+                                }else{
+                                    if(item){
+                                        CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+                                        CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(item); 
+                                    }
+                                }
                             }
 
                             destDD.isEmpty = false;
@@ -1540,8 +1582,12 @@ CStudioAuthoring.Module.requireModule(
                         }
                     }
                 }
-            }
+            },
 
+            contentChildDeprecatedMessage: () => {
+                let html = " <div>" + formatMessage(contentTypesMessages.contenTypeWarningMessage) + "</div>";
+                return html;
+              },
 
         });
 
@@ -2167,7 +2213,17 @@ CStudioAuthoring.Module.requireModule(
                         '/static-assets/components/cstudio-admin/mods/content-type-propsheet/' + propType + '.js',
                     {},
                     propTypeCb);
+            },
+
+            /**
+             * render a property sheet heading
+             */
+            renderNewItem: function(form, prototypeDatasource) {
+                var item = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.insertNewDatasource(form, prototypeDatasource);
+                CStudioAdminConsole.Tool.ContentTypes.visualization.render();
+                CStudioAdminConsole.Tool.ContentTypes.propertySheet.render(item);
             }
+
         }
 
         CStudioAdminConsole.Tool.ContentTypes.PropertyType = {

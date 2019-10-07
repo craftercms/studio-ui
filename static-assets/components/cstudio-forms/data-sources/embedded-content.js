@@ -146,7 +146,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
   },
 
   getLabel: function () {
-    return CMgs.format(langBundle, "embeddedContent");
+    return formatMessage(embeddedContentDSMessages.embeddedContent);
   },
 
   getInterface: function () {

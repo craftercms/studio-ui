@@ -53,6 +53,12 @@
         CMgs = CStudioAuthoring.Messages;
         langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
         formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+        const i18n = CrafterCMSNext.i18n,
+              formatMessage = i18n.intl.formatMessage,
+              sharedContentDSMessages = i18n.messages.sharedContentDSMessages,
+              embeddedContentDSMessages = i18n.messages.embeddedContentDSMessages,
+              childContentDSMessages = i18n.messages.childContentDSMessages,
+              contentTypesMessages = i18n.messages.contentTypesMessages;
     </script>
 
     <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>

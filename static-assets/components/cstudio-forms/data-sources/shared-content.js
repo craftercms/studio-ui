@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.ChildContent = function (id, form, properties, constraints) {
+CStudioForms.Datasources.SharedContent = function (id, form, properties, constraints) {
   this.id = id;
   this.form = form;
   this.properties = properties;
@@ -61,7 +61,7 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   return this;
 };
 
-YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormDatasource, {
+YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
   createElementAction:function(control, _self, addContainerEl){
@@ -236,7 +236,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
   },
 
   getLabel: function() {
-    return formatMessage(childContentDSMessages.childContent);
+    return formatMessage(sharedContentDSMessages.sharedContent);
   },
 
   getInterface: function() {
@@ -244,7 +244,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
   },
 
   getName: function() {
-    return "child-content";
+    return "shared-content";
   },
 
   getSupportedProperties: function() {
@@ -264,4 +264,4 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-child-content", CStudioForms.Datasources.ChildContent);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-shared-content", CStudioForms.Datasources.SharedContent);

@@ -859,6 +859,19 @@ body.yui-skin-cstudioTheme .mask {
     font-style: italic;
 }
 
+#child-content-deprecated-dialog .button-group{
+  overflow: hidden;
+  padding: 3px 0 3px 8px;
+}
+
+#child-content-deprecated-dialog .button-group > span{
+  float: left;
+}
+
+#child-content-deprecated-dialog .button-group > span.default{
+  float: right;
+}
+
 .yui-overlay.yui-panel .ft {
   background-color: white;
   padding: 0px 10px 10px;

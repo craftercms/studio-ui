@@ -595,7 +595,7 @@ var nodeOpen = false,
             simpleDialogTypeWARN: "WARN",
             simpleDialogTypeERROR: "ERROR",
 
-            showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className) {
+            showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width) {
 
                 var dialogId = id;
 
@@ -606,7 +606,7 @@ var nodeOpen = false,
                 };
 
                 var dialog = new YAHOO.widget.SimpleDialog(dialogId,
-                    {   width: "400px",
+                    {   width: width ? width :"400px",
                         fixedcenter: true,
                         visible: false,
                         draggable: false,
