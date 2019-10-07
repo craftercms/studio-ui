@@ -48,6 +48,13 @@ const approveDialogMessages = defineMessages({
   }
 });
 
+const deleteDialogMessages = defineMessages({
+  submissionCommentFieldError: {
+    id: 'deleteDialog.submissionCommentFieldError',
+    defaultMessage: 'Please write submission comment.'
+  }
+});
+
 const usersAdminMessages = defineMessages({
   maxLengthError: {
     id: 'usersAdmin.maxLengthError',
@@ -64,6 +71,7 @@ const usersAdminMessages = defineMessages({
   lastName: {
     id: 'usersAdmin.lastName',
     defaultMessage: 'Last Name'
+
   }
 });
 
@@ -114,6 +122,7 @@ const contentTypesMessages = defineMessages({
 
 export default {
   approveDialogMessages,
+  deleteDialogMessages,
   usersAdminMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,

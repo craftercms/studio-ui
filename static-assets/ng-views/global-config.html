@@ -1,0 +1,60 @@
+<div style="display: flex; place-content: center space-between" class="mb20">
+  <h1 class="mb0 mt0">Global Config</h1>
+  <div>
+    <button class="btn btn-default" ng-disabled="!uiEnabled" ng-click="sample()">
+      View Sample
+    </button>
+  </div>
+</div>
+
+<div class="form-group" ng-style="{ opacity: uiEnabled ? 1 : 0.4 }">
+  <div
+    id="globalConfigAceEditor"
+    style="
+      min-height: 400px;
+      height: calc(100vh - 350px);
+      box-shadow: 0 0 5px rgba(0, 0, 0, .25);"
+  ></div>
+</div>
+<div class="form-group">
+  <div class="btn-group" uib-dropdown>
+    <button id="globalConfigSaveButton" ng-disabled="!uiEnabled" type="button" class="btn btn-primary" uib-dropdown-toggle ng-disabled="disabled">
+      Save
+    </button>
+    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="globalConfigSaveButton" style="top: -150%">
+      <li role="menuitem"><a ng-click="save()">Confirm save?</a></li>
+      <li role="menuitem"><a>Cancel</a></li>
+    </ul>
+  </div>
+  <div class="btn-group" uib-dropdown>
+    <button ng-disabled="!uiEnabled" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+      Reset
+    </button>
+    <ul class="dropdown-menu" uib-dropdown-menu role="menu" style="top: -150%">
+      <li role="menuitem"><a ng-click="reset()">Confirm reset?</a></li>
+      <li role="menuitem"><a>Cancel</a></li>
+    </ul>
+  </div>
+</div>
+
+<script type="text/ng-template" id="sampleModal.html">
+  <div class="modal-header">
+    <h3 class="modal-title">Sample File</h3>
+  </div>
+  <div class="modal-body">
+    <div id="sampleFileEditor" style="height: 500px"></div>
+  </div>
+  <div class="modal-footer">
+    <div class="btn-group" uib-dropdown>
+      <button type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+        Use Sample Content
+      </button>
+      <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+        <li role="menuitem"><a ng-click="$ctrl.use('replace')">Replace current value on background editor?</a></li>
+        <li role="menuitem"><a ng-click="$ctrl.use('append')">Append sample on to background editor?</a></li>
+        <li role="menuitem"><a>Cancel</a></li>
+      </ul>
+    </div>
+    <button class="btn btn-default" type="button" ng-click="$ctrl.cancel()">Close</button>
+  </div>
+</script>
