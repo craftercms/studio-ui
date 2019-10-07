@@ -157,18 +157,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   slide: {
     padding: 20,
-    height: '492px',
+    height: '532px',
     overflow: 'auto',
     display: 'flex'
   },
   slideBP: {
     padding: '20px',
-    height: '510px',
+    height: '550px',
     overflow: 'auto',
     display: 'flex',
     '&.selected': {
       padding: '1px 20px 20px 20px',
-      height: '455px',
+      height: '474px',
     }
   },
   dialogActions: {

@@ -17,8 +17,6 @@
 
 import React, { useState } from 'react';
 import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
@@ -32,13 +30,11 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { SiteState } from '../models/Site';
 import { defineMessages, useIntl } from "react-intl";
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
     width: '100%',
-    '& legend': {
-      marginBottom: '16px'
-    },
     '& .MuiFormGroup-root': {
       marginLeft: '10px'
     }
@@ -278,8 +274,10 @@ function GitForm(props: GitForm) {
         />
       </Grid>
       <Grid item xs={12}>
-        <FormControl component="fieldset" className={classes.formControl}>
-          <FormLabel component="legend">Authentication</FormLabel>
+        <Typography variant="subtitle1" color={'textSecondary'}>
+          {formatMessage(messages.authentication)}
+        </Typography>
+        <div className={classes.formControl}>
           <RadioGroup aria-label="repoAuthentication" name="repoAuthentication"
                       value={inputs.repoAuthentication} onChange={handleInputChange}>
             <FormControlLabel value="none" control={<Radio color="primary" onChange={() => viewAuth('none')}/>}
@@ -300,7 +298,7 @@ function GitForm(props: GitForm) {
               {expanded.key && renderAuth(inputs.repoAuthentication)}
             </Collapse>
           </RadioGroup>
-        </FormControl>
+        </div>
       </Grid>
       <Grid item xs={12}>
         <TextField

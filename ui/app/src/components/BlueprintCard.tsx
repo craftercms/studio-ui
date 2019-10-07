@@ -57,7 +57,6 @@ const useStyles = makeStyles(theme => ({
       height: '6rem',
       paddingBottom: '0',
       position: 'relative',
-      boxSizing: 'initial',
     },
     '& .cardActions': {
       paddingTop: '0'
