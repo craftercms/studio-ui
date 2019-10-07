@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface ErrorState {
-  onBack(event: any): any,
+  onBack?(event: any): any,
 
   error: {
     code: string,
@@ -107,9 +107,12 @@ export default function ErrorState(props: ErrorState) {
                target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/></a>
         </Typography>
       }
-      <Fab aria-label="back" className={classes.circleBtn} onClick={onBack}>
-        <ArrowBackIcon/>
-      </Fab>
+      {
+        onBack &&
+        <Fab aria-label="back" className={classes.circleBtn} onClick={onBack}>
+            <ArrowBackIcon/>
+        </Fab>
+      }
     </div>
   )
 }

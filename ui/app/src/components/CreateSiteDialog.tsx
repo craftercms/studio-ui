@@ -266,6 +266,7 @@ function CreateSiteDialog() {
   const [ apiState, setApiState ] = useState({
     creatingSite: false,
     error: false,
+    global: false,
     errorResponse: null,
   });
   const [search, setSearch] = useState({
@@ -314,7 +315,7 @@ function CreateSiteDialog() {
   }
 
   function handleErrorBack() {
-    setApiState({ ...apiState, error: false });
+    setApiState({ ...apiState, error: false, global: false });
   }
 
   function handleSearchClick() {
@@ -322,11 +323,7 @@ function CreateSiteDialog() {
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
-    const reset = {...siteInitialState};
-    reset.blueprint = blueprint;
-    reset.selectedView = view;
-    reset.submitted = false;
-    setSite(reset);
+    setSite({...site, selectedView: view, submitted: false, blueprint: blueprint});
   }
 
   function handleBack() {
@@ -372,6 +369,8 @@ function CreateSiteDialog() {
 
   function validateForm() {
     if (!site.siteId || site.siteIdExist) {
+      return false;
+    } else if (!site.repoUrl && site.blueprint.id === 'GIT') {
       return false;
     } else if (site.pushSite) {
       if (!site.repoUrl) return false;
@@ -443,7 +442,7 @@ function CreateSiteDialog() {
         ({response}) => {
           //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
           const _response = {...response,code: '', documentationUrl: '', remedialAction: '' };
-          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response });
+          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response, global: true });
         }
       )
   }
@@ -532,7 +531,7 @@ function CreateSiteDialog() {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {( apiState.creatingSite || apiState.error || site.details) ?
+      {( apiState.creatingSite || apiState.error && apiState.global || site.details) ?
         (apiState.creatingSite && <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)} subtitle2={formatMessage(messages.createInBackground)}/>) ||
         (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
         (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
@@ -597,7 +596,7 @@ function CreateSiteDialog() {
                   </div>
                 </SwipeableViews>
               </DialogContent>
-              :
+              : apiState.error? <ErrorState error={apiState.errorResponse}/> :
               <div className={classes.loading}>
                 <Spinner/>
               </div>

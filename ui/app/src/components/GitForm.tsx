@@ -266,12 +266,14 @@ function GitForm(props: GitForm) {
           id="repoUrl"
           name="repoUrl"
           label={formatMessage(messages.repoUrl)}
+          InputLabelProps={{shrink: true}}
+          autoFocus={type === 'push'}
           required
           fullWidth
           placeholder={"e.g. https://github.com/craftercms/craftercms-react-blueprint.git"}
           onChange={handleInputChange}
           value={inputs.repoUrl}
-          error={(inputs.submitted && !inputs.repoUrl && inputs.pushSite)}
+          error={(inputs.submitted && !inputs.repoUrl && (inputs.pushSite || type === 'clone'))}
           helperText={type === 'push'? formatMessage(pushMessages.push_url_label) : formatMessage(cloneMessages.clone_url_label)}
         />
       </Grid>
