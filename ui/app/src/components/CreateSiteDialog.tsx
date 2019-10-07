@@ -87,7 +87,7 @@ const siteInitialState: SiteState = {
   submitted: false,
   selectedView: 0,
   details: null,
-  blueprintFields: {}
+  blueprintFields: {},
 };
 
 const CustomTabs = withStyles({

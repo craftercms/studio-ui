@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -27,6 +27,7 @@ import { Blueprint } from "../models/Blueprint";
 import { SiteState } from '../models/Site';
 import { defineMessages, useIntl } from "react-intl";
 import FormBuilder from "./FormBuilder";
+import { fetchSites } from '../services/sites';
 
 const useStyles = makeStyles(() => ({
   form: {
@@ -37,12 +38,12 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface BlueprintForm {
-  inputs: SiteState,
-  setInputs(state: SiteState): any,
-  onSubmit(event: any): any,
-  swipeableViews: any,
-  blueprint: Blueprint,
-  onCheckNameExist(event: any): any
+  inputs: SiteState;
+  setInputs(state: SiteState): any;
+  onSubmit(event: any): any;
+  swipeableViews: any;
+  blueprint: Blueprint;
+  onCheckNameExist(event: any): any;
 }
 
 const messages = defineMessages({
@@ -75,6 +76,7 @@ const messages = defineMessages({
 function BlueprintForm(props: BlueprintForm) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, swipeableViews, blueprint, onCheckNameExist} = props;
+  const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
   const maxLength = 4000;
 
@@ -87,6 +89,21 @@ function BlueprintForm(props: BlueprintForm) {
     },
     // eslint-disable-next-line
     [inputs.pushSite, inputs.repoAuthentication],
+  );
+
+  useEffect(
+    () => {
+      if(sites === null) {
+        fetchSites()
+          .subscribe(
+            ({response}) => {
+              setSites(response.sites);
+            }
+          );
+      }
+    },
+    // eslint-disable-next-line
+    []
   );
 
   const handleInputChange = (e: any, type?:string) => {
@@ -103,6 +120,12 @@ function BlueprintForm(props: BlueprintForm) {
     }
   };
 
+  function checkSites(event:any) {
+    if(sites.find((site:any) => site.siteId === event.target.value)){
+      setInputs({...inputs, siteIdExist: true});
+    }
+  }
+
   return (
     <form className={classes.form} onSubmit={e => onSubmit(e)}>
       <Grid container spacing={3}>
@@ -114,6 +137,7 @@ function BlueprintForm(props: BlueprintForm) {
             required
             fullWidth
             onBlur={onCheckNameExist}
+            onKeyUp={event => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
             error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
