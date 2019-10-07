@@ -8,8 +8,9 @@ import { defineMessages, useIntl } from "react-intl";
 import { Package } from "../models/publishing";
 import SelectButton from "./SelectButton";
 import Typography from "@material-ui/core/Typography";
+import { Theme } from "@material-ui/core/styles/createMuiTheme";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   package: {
     padding: '20px 8px 20px 0',
     '& .name': {
@@ -25,9 +26,12 @@ const useStyles = makeStyles(() => ({
     },
     '& .comment': {
       display: 'flex',
-      '& div:first-child': {
+      '& p:first-child': {
         marginRight: '20px',
         marginBottom: '10px'
+      },
+      '& span': {
+        color: theme.palette.text.secondary
       }
     },
     '& .files': {
@@ -63,6 +67,14 @@ const messages = defineMessages({
   status: {
     id: 'publishingQueue.status',
     defaultMessage: 'Status is {state} for {environment} environment'
+  },
+  comment: {
+    id: 'publishingQueue.comment',
+    defaultMessage: 'Comment'
+  },
+  commentNotProvided: {
+    id: 'publishingQueue.commentNotProvided',
+    defaultMessage: '(submission comment not provided)'
   }
 });
 
@@ -88,7 +100,7 @@ export default function PublishingPackage(props: PublishingPackage) {
         <FormGroup className={classes.checkbox}>
           <FormControlLabel
             control={<Checkbox color="primary"/>}
-            label={id}
+            label={<strong>{id}</strong>}
           />
         </FormGroup>
         <SelectButton
@@ -125,8 +137,12 @@ export default function PublishingPackage(props: PublishingPackage) {
         </Typography>
       </div>
       <div className='comment'>
-        <div>Comment</div>
-        <div>{comment? comment : '(submission comment not provided)'}</div>
+        <Typography variant="body2">
+          {formatMessage(messages.comment)}
+        </Typography>
+        <Typography variant="body2">
+          {comment? comment :  <span>{formatMessage(messages.commentNotProvided)}</span>}
+        </Typography>
       </div>
       <div className='files'>
         <Button variant="outlined">

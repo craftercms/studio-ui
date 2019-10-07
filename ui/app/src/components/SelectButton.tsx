@@ -22,12 +22,19 @@ const ColorButton = withStyles(() => ({
 const useStyles = makeStyles(() => ({
   paper: {
     width: '215px',
-   '& li:first-child': {
+    '& ul': {
+      padding: 0
+    },
+    '& li:first-child': {
       borderBottom: '1px solid #dedede'
-   }
+    },
+    '& li': {
+      paddingTop: '10px',
+      paddingBottom: '10px',
+    }
   },
   helperText: {
-    padding: '4px 16px'
+    padding: '0px 16px 10px 16px'
   }
 }));
 
