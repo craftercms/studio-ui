@@ -531,7 +531,7 @@ function CreateSiteDialog() {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {( apiState.creatingSite || apiState.error && apiState.global || site.details) ?
+      {( apiState.creatingSite || (apiState.error && apiState.global) || site.details) ?
         (apiState.creatingSite && <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)} subtitle2={formatMessage(messages.createInBackground)}/>) ||
         (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
         (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):

@@ -69,11 +69,11 @@ const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any
   setChecked([item.uri], !checked[item.uri])
 };
 
-const paths = (checked: any) => (
+const paths = (checked: any) => {
   Object.entries({ ...checked })
     .filter(([key, value]) => value === true)
     .map(([key]) => key);
-);
+};
 
 const selectAll = (setChecked: Function, items: Item[]) => {
   setChecked(items.map(i => i.uri), true);
@@ -329,7 +329,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
       {
         (resultItems == null) ? (
           <div className="centerCircularProgress">
-            <CenterCircularProgress /> 
+            <CenterCircularProgress />
             <span className="dependency-selection--center-circular-progress-text" >
               <FormattedMessage
                 id="deleteDialog.uploadingDepenedents"
