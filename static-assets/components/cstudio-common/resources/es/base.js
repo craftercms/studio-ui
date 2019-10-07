@@ -412,7 +412,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     historyDialogCompare: "Comparar",
 
     deleteDialogTitle:"Eliminar",
-    deleteDialogSubTitle:"Los siguientes elementos seleccionados serán eliminados:",
+    deleteDialogSubTitle:"Los elementos seleccionados se eliminarán junto con sus elementos. Revise los elementos dependientes antes de eliminarlos, ya que estos terminarán con referencias de enlaces rotos.",
     deleteDialogSetLink:'Establecer todo para "Ahora"',
     deleteDialogPage:"Página",
     deleteDialogDelete:"Eliminar",
@@ -459,6 +459,13 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     showAllDependencies:"Mostrar todas las dependencias",
     changesSelectionItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
     loadingDependencies:"Cargando dependencias, por favor espere ...",
+
+    childItemsText:"Artículos hijos",
+    willGetDeleted:"Será eliminado",
+    dependendtItems:"Artículos dependientes",
+    brokenItems:"Habrá referencias rotas",
+    deleteItems:"Eliminar ítems",
+    uploadingDepenedents:"Updating dependents, please wait...",
 
     newContTypeDialogTitle: "Crear Tipo de Contenido",
     newContTypeDialogDisplayLabel: "Etiqueta a Mostrar",
