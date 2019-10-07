@@ -109,7 +109,7 @@ const useStyles = makeStyles(theme => ({
     top: '-30px',
     zIndex: 999,
     '& .MuiMobileStepper-dot': {
-      padding: '3px',
+      padding: '6px',
       margin: '2px',
       '&:hover':{
         background: 'gray'
