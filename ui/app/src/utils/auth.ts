@@ -15,30 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import '../styles/index.scss';
+import Cookies from 'js-cookie';
+import { setGlobalHeaders } from "./ajax";
 
-import React, { Suspense } from 'react';
-import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
-import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import { theme } from "../styles/theme";
-
-const cache = createIntlCache();
-
-export const intl = createIntl({
-  locale: 'en',
-  messages: {}
-}, cache);
-
-function CrafterCMSNextBridge(props: any) {
-  return (
-    <RawIntlProvider value={intl}>
-      <ThemeProvider theme={theme}>
-        <Suspense fallback={'Loading...'}>
-          {props.children}
-        </Suspense>
-      </ThemeProvider>
-    </RawIntlProvider>
-  );
+export function getRequestForgeryToken() {
+  return Cookies.get('XSRF-TOKEN');
 }
 
-export default CrafterCMSNextBridge;
+export function setRequestForgeryToken() {
+  const token = Cookies.get('XSRF-TOKEN');
+  setGlobalHeaders({'X-XSRF-TOKEN': token});
+}
+
+
+export default {
+  getRequestForgeryToken,
+  setRequestForgeryToken
+};
