@@ -20,7 +20,6 @@ import '../styles/index.scss';
 import React, { Suspense } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import { theme } from "../styles/theme";
 
 const cache = createIntlCache();
@@ -34,7 +33,6 @@ function CrafterCMSNextBridge(props: any) {
   return (
     <RawIntlProvider value={intl}>
       <ThemeProvider theme={theme}>
-        <CssBaseline/>
         <Suspense fallback={'Loading...'}>
           {props.children}
         </Suspense>

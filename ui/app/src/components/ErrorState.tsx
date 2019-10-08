@@ -86,7 +86,7 @@ const messages = defineMessages({
 
 
 export default function ErrorState(props: ErrorState) {
-  const classes = useStyles({background: props.background || '#EBEBF0'});
+  const classes = useStyles({background: props.background || 'inherit'});
   const {error, onBack} = props;
   const {formatMessage} = useIntl();
   const {code, documentationUrl, message, remedialAction} = error;

@@ -328,7 +328,7 @@ function CreateSiteDialog() {
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
-    if(blueprint.id === 'GIT'){
+    if(blueprint.id === 'GIT' || blueprint.source === 'GIT'){
       setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false});
     } else {
       setSite({...site, selectedView: view, submitted: false, blueprint: blueprint});
@@ -542,7 +542,7 @@ function CreateSiteDialog() {
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
       {( apiState.creatingSite || (apiState.error && apiState.global) || site.details) ?
         (apiState.creatingSite && <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)} subtitle2={formatMessage(messages.createInBackground)}/>) ||
-        (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack}/>) ||
+        (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack} background={'#EBEBF0'}/>) ||
         (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
@@ -605,7 +605,7 @@ function CreateSiteDialog() {
                   </div>
                 </SwipeableViews>
               </DialogContent>
-              : apiState.error? <ErrorState error={apiState.errorResponse} background={"#FFFFFF"}/> :
+              : apiState.error? <ErrorState error={apiState.errorResponse}/> :
               <div className={classes.loading}>
                 <Spinner/>
               </div>
