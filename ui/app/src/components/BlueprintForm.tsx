@@ -98,7 +98,7 @@ function BlueprintForm(props: BlueprintForm) {
   const handleInputChange = (e: any, type?:string) => {
     e.persist();
     if (e.target.type === 'checkbox') {
-      setInputs({...inputs, [e.target.name]: e.target.checked});
+      setInputs({...inputs, [e.target.name]: e.target.checked, submitted: false});
     } else if (e.target.name === 'siteId') {
       setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "").toLowerCase()});
     } else if (type === 'blueprintFields') {
