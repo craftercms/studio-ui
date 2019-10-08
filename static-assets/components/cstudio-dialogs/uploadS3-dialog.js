@@ -157,7 +157,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     });
 
     var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
     CrafterCMSNext.render(
       document.getElementById('uploadContainer'),
@@ -225,7 +225,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     var form = $('#asset_upload_form')[0];
     var data = new FormData(form);
 
-    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
     $.ajax({
       enctype: 'multipart/form-data',
       processData: false,  // Important!
@@ -269,7 +269,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
         var form = $('#asset_upload_form')[0];
         var data = new FormData(form);
 
-        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
         $.ajax({
           enctype: 'multipart/form-data',

@@ -148,7 +148,7 @@ CStudioAuthoring.Dialogs.UploadDialog = CStudioAuthoring.Dialogs.UploadDialog ||
     });
 
     var serviceUri = CStudioAuthoring.Service.createServiceUri("/asset-upload"),
-      url = serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+      url = serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
     var checkPermissionsCb = {
       success: function (results) {
