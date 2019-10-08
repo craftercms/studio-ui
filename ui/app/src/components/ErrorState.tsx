@@ -28,7 +28,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 const useStyles = makeStyles((theme: Theme) => ({
   errorView: {
     height: '100%',
-    background: '#EBEBF0',
+    background: (props:any) => props.background,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface ErrorState {
   onBack?(event: any): any,
-
+  background?: string,
   error: {
     code: string,
     documentationUrl?: string,
@@ -86,7 +86,7 @@ const messages = defineMessages({
 
 
 export default function ErrorState(props: ErrorState) {
-  const classes = useStyles({});
+  const classes = useStyles({background: props.background || '#EBEBF0'});
   const {error, onBack} = props;
   const {formatMessage} = useIntl();
   const {code, documentationUrl, message, remedialAction} = error;

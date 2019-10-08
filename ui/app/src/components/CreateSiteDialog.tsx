@@ -328,7 +328,11 @@ function CreateSiteDialog() {
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
-    setSite({...site, selectedView: view, submitted: false, blueprint: blueprint});
+    if(blueprint.id === 'GIT'){
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false});
+    } else {
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint});
+    }
   }
 
   function handleBack() {
@@ -601,7 +605,7 @@ function CreateSiteDialog() {
                   </div>
                 </SwipeableViews>
               </DialogContent>
-              : apiState.error? <ErrorState error={apiState.errorResponse}/> :
+              : apiState.error? <ErrorState error={apiState.errorResponse} background={"#FFFFFF"}/> :
               <div className={classes.loading}>
                 <Spinner/>
               </div>

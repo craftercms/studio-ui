@@ -112,6 +112,8 @@ function BlueprintForm(props: BlueprintForm) {
   function checkSites(event:any) {
     if(sites.find((site:any) => site.siteId === event.target.value)){
       setInputs({...inputs, siteIdExist: true});
+    } else {
+      setInputs({...inputs, siteIdExist: false});
     }
   }
 
