@@ -2,13 +2,17 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
-import React from "react";
+import React, { useState } from "react";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
 import { Package } from "../models/publishing";
 import SelectButton from "./SelectButton";
 import Typography from "@material-ui/core/Typography";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
+import { fetchPackage } from "../services/publishing";
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -41,6 +45,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   checkbox: {
     marginRight: 'auto'
   },
+  list: {
+
+  }
 }));
 
 const messages = defineMessages({
@@ -79,19 +86,33 @@ const messages = defineMessages({
 });
 
 interface PublishingPackage {
-  package: Package
+  package: Package;
+  siteId: string;
 }
 
 export default function PublishingPackage(props: PublishingPackage) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-
-  const {id, approver, schedule, state, comment, environment} = props.package;
+  const {package: pack, siteId} = props;
+  const [files, setFiles] = useState(null);
+  const {id, approver, schedule, state, comment, environment} = pack;
 
   console.log(props.package);
 
   function handleCancel(item: Package) {
     console.log('cancel')
+  }
+
+  function onFetchPackages(packageId: string) {
+    fetchPackage(siteId, packageId)
+      .subscribe(
+        ({response}) => {
+          setFiles(response.package.items);
+        },
+        ({response}) => {
+          console.log(response);
+        }
+      );
   }
 
   return (
@@ -108,7 +129,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           cancelText={formatMessage(messages.cancel)}
           confirmText={formatMessage(messages.confirm)}
           confirmHelperText={formatMessage(messages.confirmHelper)}
-          onConfirm={()=> handleCancel(props.package)}
+          onConfirm={() => handleCancel(props.package)}
         />
       </div>
       <div className='status'>
@@ -129,9 +150,9 @@ export default function PublishingPackage(props: PublishingPackage) {
             formatMessage(
               messages.status,
               {
-                  state: <strong key={state}>{state}</strong>,
-                  environment: <strong key={environment}>{environment}</strong>,
-                }
+                state: <strong key={state}>{state}</strong>,
+                environment: <strong key={environment}>{environment}</strong>,
+              }
             )
           }
         </Typography>
@@ -141,11 +162,17 @@ export default function PublishingPackage(props: PublishingPackage) {
           {formatMessage(messages.comment)}
         </Typography>
         <Typography variant="body2">
-          {comment? comment :  <span>{formatMessage(messages.commentNotProvided)}</span>}
+          {comment ? comment : <span>{formatMessage(messages.commentNotProvided)}</span>}
         </Typography>
       </div>
       <div className='files'>
-        <Button variant="outlined">
+        {
+          files &&
+          <List aria-label="files list" className={classes.list}>
+            {files.map((file:any, index:number) => <ListItem key={index}>file</ListItem>)}
+          </List>
+        }
+        <Button variant="outlined" onClick={() => onFetchPackages(id)}>
           {formatMessage(messages.fetchPackagesFiles)}
         </Button>
       </div>

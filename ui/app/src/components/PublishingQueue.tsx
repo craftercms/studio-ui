@@ -103,7 +103,7 @@ function PublishingQueue() {
 
   function renderPackages(){
     return packages.map((item: Package, index: number) => {
-      return <PublishingPackage package={item} key={index}/>
+      return <PublishingPackage package={item} key={index} siteId={'editorial'}/>
     })
   }
 
