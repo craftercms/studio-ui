@@ -25,6 +25,9 @@ CStudioForms.Datasources.SharedContent = function (id, form, properties, constra
   this.defaultEnableCreateNew = true;
   this.defaultEnableBrowseExisting = true;
   this.countOptions = 0;
+  const i18n = CrafterCMSNext.i18n;
+  this.formatMessage = i18n.intl.formatMessage,
+  this.sharedContentDSMessages = i18n.messages.sharedContentDSMessages;
 
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name == 'repoPath') {
@@ -236,7 +239,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
   },
 
   getLabel: function() {
-    return formatMessage(sharedContentDSMessages.sharedContent);
+    return this.formatMessage(this.sharedContentDSMessages.sharedContent);
   },
 
   getInterface: function() {

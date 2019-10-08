@@ -115,7 +115,7 @@ const contentTypesMessages = defineMessages({
   },
   useChildContent: {
     id: 'contentType.useChildContent',
-    defaultMessage: 'Use Child Content Anyway'
+    defaultMessage: 'Use Deprecated Control Anyway'
   }
 
 });
