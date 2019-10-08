@@ -42,7 +42,7 @@ interface BlueprintCard {
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1,
   },
@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
       position: 'relative',
     },
     '& .cardActions': {
-      paddingTop: '0'
+      paddingTop: '0',
     }
   },
   carouselImg: {
@@ -76,7 +76,7 @@ const useStyles = makeStyles(theme => ({
   chip: {
     fontSize: '12px',
     color: 'gray',
-    margin: theme.spacing(1),
+    marginRight: '8px',
     backgroundColor: '#f5f5f5',
     padding: '5px',
     borderRadius: '5px',
