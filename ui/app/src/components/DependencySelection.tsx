@@ -1,11 +1,28 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Item } from '../models/Item';
-import SelectionList from './SelectionList';
 import '../styles/dependency-selection.scss';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { get } from '../utils/ajax';
 import { FormattedMessage } from 'react-intl';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface DependencySelectionProps {
   items: Item[];
@@ -13,10 +30,33 @@ interface DependencySelectionProps {
   onChange: Function;
 }
 
-interface resultObject {
+interface ResultObject {
   items1: [],
   items2: []
 }
+
+interface SelectionListProps {
+  title: any;
+  subtitle?: any;
+  items?: Item[];
+  uris?: [];
+  onItemClicked?: Function;
+  onSelectAllClicked?: Function;
+  displayItemTitle: boolean;
+  checked?: any;
+  setChecked?: Function;
+}
+
+const BlueCheckbox = withStyles({
+  root: {
+    color: '#7e9dbb',
+    padding: '2px',
+    '&$checked': {
+      color: '#7e9dbb'
+    }
+  },
+  checked: {}
+})(Checkbox);
 
 const CenterCircularProgress = withStyles({
   root: {
@@ -64,7 +104,7 @@ const selectAll = (setChecked: Function, items: Item[]) => {
 
 export function DependencySelection(props: DependencySelectionProps) {
 
-  const [deps, setDeps] = useState<resultObject>();
+  const [deps, setDeps] = useState<ResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
   const { items, siteId } = props;
   const [checked, _setChecked] = useState<any>(
@@ -115,7 +155,7 @@ export function DependencySelection(props: DependencySelectionProps) {
           onSelectAllClicked={selectAll}
           displayItemTitle={true}
           checked={checked}
-          setChecked= {setChecked}
+          setChecked={setChecked}
         />
         {
           deps == null ? (null) : (
@@ -154,7 +194,7 @@ export function DependencySelection(props: DependencySelectionProps) {
                 onSelectAllClicked={selectAllSoft}
                 displayItemTitle={false}
                 checked={checkedSoftDep}
-                setChecked= {setChecked}
+                setChecked={setChecked}
               />
             </>
           )
@@ -164,7 +204,7 @@ export function DependencySelection(props: DependencySelectionProps) {
         {
           (deps == null && !showDepsButton) ? (
             <div className="centerCircularProgress">
-              <CenterCircularProgress />
+              <CenterCircularProgress/>
               <span className="dependency-selection--center-circular-progress-text">
                 <FormattedMessage
                   id="publishDialog.loadingDependencies"
@@ -174,18 +214,18 @@ export function DependencySelection(props: DependencySelectionProps) {
               </span>
             </div>
           ) : (
-              showDepsButton ? (
-                <button
-                  className="dependency-selection--nav-btn dependency-selection--show-all"
-                  onClick={showAllDependencies}
-                >
-                  <FormattedMessage
-                    id="publishDialog.showAllDependencies"
-                    defaultMessage={`Show All Dependencies`}
-                  />
-                </button>
-              ) : (null)
-            )
+            showDepsButton ? (
+              <button
+                className="dependency-selection--nav-btn dependency-selection--show-all"
+                onClick={showAllDependencies}
+              >
+                <FormattedMessage
+                  id="publishDialog.showAllDependencies"
+                  defaultMessage={`Show All Dependencies`}
+                />
+              </button>
+            ) : (null)
+          )
         }
         <p>
           <FormattedMessage
@@ -232,7 +272,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 }
 
 export function DependencySelectionDelete(props: DependencySelectionProps) {
-  const [resultItems, setResultItems] = useState<resultObject>();
+  const [resultItems, setResultItems] = useState<ResultObject>();
   const { items, siteId } = props;
   const [checked, _setChecked] = useState<any>(
     checkState(items)
@@ -248,14 +288,14 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
       showAllDependencies();
       setRef();
     },
-    [checked],
+    [checked]
   );
 
   return (
     <>
-    <div className="dependency-selection">
+      <div className="dependency-selection">
 
-    <SelectionList
+        <SelectionList
           title={
             <FormattedMessage
               id="deleteDialog.deleteItems"
@@ -265,30 +305,30 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
           items={items}
           onItemClicked={onClickSetChecked}
           onSelectAllClicked={selectAll}
-          displayItemTitle= {true}
-          checked= {checked}
-          setChecked= {setChecked}
-      />
-      {
-        resultItems == null ? (null) : (
-          <>
-            <SelectionList
+          displayItemTitle={true}
+          checked={checked}
+          setChecked={setChecked}
+        />
+        {
+          resultItems == null ? (null) : (
+            <>
+              <SelectionList
                 title={
                   <FormattedMessage
                     id="deleteDialog.childItemsText"
                     defaultMessage={`Child Items`}
                   />
                 }
-                subtitle= {
+                subtitle={
                   <FormattedMessage
                     id="deleteDialog.willGetDeleted"
                     defaultMessage={` Will get deleted`}
                   />
                 }
-                uris= {resultItems.items1}
+                uris={resultItems.items1}
                 displayItemTitle={false}
               />
-            <SelectionList
+              <SelectionList
                 title={
                   <FormattedMessage
                     id="deleteDialog.dependendtItems"
@@ -302,28 +342,28 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
                   />
                 }
                 uris={resultItems.items2}
-                displayItemTitle= {false}
+                displayItemTitle={false}
               />
-          </>
-        )
-      }
-    </div>
-    <div className="dependency-selection--bottom-section">
-      {
-        (resultItems == null) ? (
-          <div className="centerCircularProgress">
-            <CenterCircularProgress /> 
-            <span className="dependency-selection--center-circular-progress-text" >
-              <FormattedMessage
-                id="deleteDialog.uploadingDepenedents"
-                defaultMessage={`Updating dependents, please wait...`}
-              />
-            </span>
-          </div>
-        ) : (null)
-      }
-    </div>
-  </>
+            </>
+          )
+        }
+      </div>
+      <div className="dependency-selection--bottom-section">
+        {
+          (resultItems == null) ? (
+            <div className="centerCircularProgress">
+              <CenterCircularProgress/>
+              <span className="dependency-selection--center-circular-progress-text">
+                <FormattedMessage
+                  id="deleteDialog.uploadingDepenedents"
+                  defaultMessage={`Updating dependents, please wait...`}
+                />
+              </span>
+            </div>
+          ) : (null)
+        }
+      </div>
+    </>
 
   );
 
@@ -351,6 +391,103 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
         }
       );
   }
+
+}
+
+function SelectionList(props: SelectionListProps) {
+
+  const { title, subtitle, items, uris, onItemClicked, onSelectAllClicked, displayItemTitle, checked, setChecked } = props;
+
+  return (
+    <div>
+      <h2 className="dependency-selection--title dependency-selection--publish-title">
+        {title}
+      </h2>
+      {
+        subtitle ? (
+          <span>
+            {` • `}
+            {subtitle}
+          </span>
+        ) : (null)
+      }
+      {
+        onSelectAllClicked ? (
+          <button className="dependency-selection--nav-btn dependency-selection--select-all"
+                  onClick={() => onSelectAllClicked(setChecked, items)}>
+            <FormattedMessage
+              id="common.selectAll"
+              defaultMessage={`Select All`}
+            />
+          </button>
+        ) : (null)
+      }
+      {
+        items ? (
+          items.map((item) => (
+            <div className="dependency-selection--section-dependencies" key={item.uri}>
+              {
+                onItemClicked ? (
+                  <div className="dependency-selection--checkbox">
+                    <BlueCheckbox
+                      checked={!!checked[item.uri]}
+                      onClick={(e) =>
+                        onItemClicked(e, item, setChecked, checked)
+                      }
+                      onChange={(e) => void 0}
+                      value={item.uri}
+                      color="primary"
+                    />
+                  </div>
+                ) : (null)
+              }
+              <div
+                className="dependency-selection--information"
+                onClick={(e) => onItemClicked(e, item, setChecked, checked)}>
+                {
+                  displayItemTitle ? (
+                    <div className="dependency-selection--information--internal-name">
+                      {item.internalName}
+                    </div>
+                  ) : (null)
+                }
+                <div className="dependency-selection--information--uri">&nbsp;{item.uri}</div>
+              </div>
+            </div>
+          ))
+        ) : (null)
+      }
+      {
+        uris ? (
+          <ul className="dependency-selection--list">
+            {
+              uris.map((uri: string) => (
+                onItemClicked ? (
+                  <li key={uri}>
+                    <div className="dependency-selection--list--soft-checkbox">
+                      <BlueCheckbox
+                        checked={!!checked[uri]}
+                        onChange={(e) => onItemClicked([uri], e.target.checked, setChecked, checked)}
+                        value={uri}
+                        color="primary"
+                      />
+                    </div>
+                    <div
+                      className="dependency-selection--list--soft-item"
+                      onClick={(e) => onItemClicked([uri], !checked[uri], setChecked, checked)}>
+                      {uri}
+                    </div>
+                  </li>
+                ) : (
+                  <li className="dependency-selection--list--hard" key={uri}>{uri}</li>
+                )
+              ))
+            }
+          </ul>
+        ) : (null)
+      }
+    </div>
+  );
 
 }
 

@@ -15,12 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Cookies from 'js-cookie';
+import { get, post } from "../utils/ajax";
+import { Site } from "../models/Site";
 
-export function getRequestForgeryToken() {
-  return Cookies.get('XSRF-TOKEN');
+export function fetchBlueprints() {
+  return get('/studio/api/2/sites/available_blueprints');
+}
+export function fetchSites() {
+  return get('/studio/api/2/users/me/sites');
 }
 
-export default {
-  getRequestForgeryToken
-};
+export function createSite(site: Site) {
+  return post('/studio/api/1/services/api/1/site/create.json', site, {
+    'Content-Type': 'application/json'
+  })
+}
+
+export function checkHandleAvailability(name:string) {
+  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
+}
+

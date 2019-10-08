@@ -22,7 +22,7 @@ import CrafterCMSNextBridge, { intl } from '../components/CrafterCMSNextBridge';
 import string from './string';
 import ajax from './ajax';
 import path from './path';
-import storage from './storage';
+import auth from './auth';
 import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
@@ -79,9 +79,15 @@ export function createCodebaseBridge() {
     components: {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
+      SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
       DependencySelection: lazy(() => import('../components/DependencySelection')),
-      DependecySelectionDelete: lazy(() => import('../components/DependencySelection').then(DependencySelection => ({ default: DependencySelection.DependencySelectionDelete }))),
-      SingleFileUpload: lazy(() => import('../components/SingleFileUpload'))
+      DependecySelectionDelete: lazy(() => (
+        import('../components/DependencySelection')
+          .then(module => ({ 
+            default: module.DependencySelectionDelete 
+          }))
+      )),
+      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog'))
     },
 
     assets: {
@@ -92,7 +98,7 @@ export function createCodebaseBridge() {
       ajax,
       path,
       string,
-      storage
+      auth,
     },
 
     i18n: {

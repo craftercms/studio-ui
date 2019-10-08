@@ -15,30 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import '../styles/index.scss';
+import { get } from "../utils/ajax";
 
-import React, { Suspense } from 'react';
-import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
-import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import { theme } from "../styles/theme";
-
-const cache = createIntlCache();
-
-export const intl = createIntl({
-  locale: 'en',
-  messages: {}
-}, cache);
-
-function CrafterCMSNextBridge(props: any) {
-  return (
-    <RawIntlProvider value={intl}>
-      <ThemeProvider theme={theme}>
-        <Suspense fallback={'Loading...'}>
-          {props.children}
-        </Suspense>
-      </ThemeProvider>
-    </RawIntlProvider>
-  );
+export function fetchBlueprints() {
+  return get('/studio/api/2/marketplace/search?type=blueprint&limit=1000');
 }
-
-export default CrafterCMSNextBridge;
