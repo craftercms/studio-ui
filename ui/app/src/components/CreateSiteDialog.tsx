@@ -55,16 +55,16 @@ import Cookies from 'js-cookie';
 const views: Views = {
   0: {
     title: 'Create Site',
-    subtitle: 'Choose creation strategy: start from an existing git repo or create based on the blueprint to that suits you best.'
+    subtitle: 'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
   },
   1: {
     title: 'Create Site',
-    subtitle: 'Name and describe your blueprint site',
+    subtitle: 'Name and describe your site',
     btnText: 'Finish'
   },
   2: {
     title: 'Finish',
-    subtitle: 'Review set up summary and crete your site',
+    subtitle: 'Review set up summary and create your site',
     btnText: 'Create Site'
   }
 };
@@ -229,9 +229,9 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
 });
 
 const messages = defineMessages({
-  buildIn: {
-    id: 'createSiteDialog.buildIn',
-    defaultMessage: 'Build-in'
+  builtIn: {
+    id: 'createSiteDialog.builtIn',
+    defaultMessage: 'Built-in'
   },
   marketplace: {
     id: 'common.marketplace',
@@ -550,7 +550,7 @@ function CreateSiteDialog() {
             (site.selectedView === 0) &&
             <div className={classes.tabs}>
                 <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                    <Tab label={formatMessage(messages.buildIn)} className={classes.simpleTab}/>
+                    <Tab label={formatMessage(messages.builtIn)} className={classes.simpleTab}/>
                     <Tab label={formatMessage(messages.marketplace)} className={classes.simpleTab}/>
                 </CustomTabs>
                 <SearchIcon className={clsx(classes.tabIcon, search.searchSelected && 'selected')}

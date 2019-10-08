@@ -49,7 +49,7 @@ interface BlueprintForm {
 const messages = defineMessages({
   siteId: {
     id: 'createSiteDialog.siteId',
-    defaultMessage: 'Side ID'
+    defaultMessage: 'Site ID'
   },
   description: {
     id: 'createSiteDialog.description',
