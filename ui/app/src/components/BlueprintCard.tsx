@@ -201,6 +201,7 @@ function BlueprintCard(props: BlueprintCard) {
         <AutoPlaySwipeableViews
           index={index}
           interval={interval}
+          autoplay={false}
           onChangeIndex={handleChangeIndex}
           enableMouseEvents
         >
