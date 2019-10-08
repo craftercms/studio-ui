@@ -329,9 +329,9 @@ function CreateSiteDialog() {
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
     if(blueprint.id === 'GIT' || blueprint.source === 'GIT'){
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false});
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, details: null});
     } else {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint});
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, details: null});
     }
   }
 
