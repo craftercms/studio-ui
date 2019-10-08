@@ -34,7 +34,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build; node scripts/build.js",
+    "build": "yarn; react-scripts build; node scripts/build.js",
     "test": "react-scripts test",
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
     "i18n:manage": "node scripts/i18n.js"
