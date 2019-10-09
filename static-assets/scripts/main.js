@@ -1034,13 +1034,6 @@
                 .success(function (data) {
                     $scope.entities = data.menuItems;
 
-                    // TODO: Temp. Remove when global menu does return.
-                    $scope.entities.unshift({
-                      'id': 'home.globalMenu.globalConfig',
-                      'label': 'Global Config',
-                      'icon': 'fa-globe'
-                    });
-
                     if($scope.entities.length > 1){
                         $scope.entities.forEach(function(entry, i) {
                             entry.tabName = 'tab'+ entry.label.replace(/ /g,'').toLocaleLowerCase();
@@ -1239,57 +1232,38 @@
         theme: 'ace/theme/textmate',
       });
 
-      // TODO: Temp. Replace the mock-up promise with the actual call - when BE is ready.
       (
-        // $http.get('/studio/api/2/configuration/get_configuration', {
-        //   params: {
-        //     siteId: 'studioRoot',
-        //     module: 'studio',
-        //     'path': 'studio-config-override.yaml'
-        //   }
-        // })
-        new Promise((resolve) => {
-          $timeout(() => resolve({ data: { content: null } }), 700);
-        })
+         $http.get('/studio/api/2/configuration/get_configuration', {
+           params: {
+             siteId: 'studio_root',
+             module: 'studio',
+             'path': '/configuration/studio-config-override.yaml'
+           }
+         })
       ).then((data) => {
-        aceEditor.setValue(data.content || defaultValue);
+        aceEditor.setValue(data.data.content || defaultValue);
         enableUI(true, true);
       });
 
       // Differ the loading of the sample config file to the "background"
       setTimeout(() => {
-        // TODO: Temp. Replace mock-up.
         (
-          // $http.get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
-          //   params: { path: '/configuration/samples/studio-config-override.yaml' }
-          // })
-          new Promise((resolve) => {
-            $timeout(() => resolve(
-              `##################################################
-##       Studio Core Configuration File         ##
-##################################################
-
-##################################################
-##     Location of Override Config File         ##
-##################################################
-# Load override configuration files (to override what's defined here)
-studio.config.overrideConfig: crafter/studio/extension/studio-config-override.yaml
-# Load override configuration files (to override what's defined here)
-studio.config.globalRepoOverrideConfig: configuration/studio-config-override.yaml`
-            ), 400);
-          })
-        ).then((content) => sampleValue = content);
+           $http.get('/studio/api/1/services/api/1/content/get-content-at-path.bin', {
+             params: { site: 'studio_root', path: '/configuration/samples/sample-studio-config-override.yaml' }
+           })
+        ).then((content) => sampleValue = content.data);
       });
 
       $scope.save = function () {
         enableUI(false);
         const value = aceEditor.getValue();
-        // TODO: Temp. Replace mock-up promise with actual BE call when ready.
-        // $http.post('', { params: { value } })
-        new Promise((resolve) => {
-          $timeout(resolve, 1000);
+        $http.post('/studio/api/2/configuration/write_configuration', { 
+          'siteId': 'studio_root', 
+          'module': 'studio', 
+          'path': '/configuration/studio-config-override.yaml', 
+          'content': value 
         }).then((response) => {
-          enableUI(true, true);
+          enableUI(true, false);
           $element.notify('Config saved successfully.', { position: 'top left', className: 'success' });
           defaultValue = value;
         }).catch(() => {
