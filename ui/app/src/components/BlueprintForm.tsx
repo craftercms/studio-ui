@@ -89,6 +89,11 @@ function BlueprintForm(props: BlueprintForm) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, blueprint, onCheckNameExist} = props;
   const [sites, setSites] = useState(null);
+  const [expanded, setExpanded] = useState({
+    basic: false,
+    token: false,
+    key: false,
+  });
   const { formatMessage } = useIntl();
   const maxLength = 4000;
 
@@ -220,15 +225,15 @@ function BlueprintForm(props: BlueprintForm) {
               />
           </Grid>
         }
-        <Collapse in={inputs.pushSite} timeout={300} unmountOnExit>
+        <Collapse in={inputs.pushSite} timeout={300}>
           {
             (inputs.pushSite && blueprint.source !== 'GIT') &&
-            <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
+            <GitForm inputs={inputs} expanded={expanded} setExpanded={setExpanded} type="push" handleInputChange={handleInputChange}/>
           }
         </Collapse>
         {
           (blueprint.id === 'GIT') &&
-          <GitForm type="clone" inputs={inputs} handleInputChange={handleInputChange}/>
+          <GitForm type="clone" inputs={inputs} expanded={expanded} setExpanded={setExpanded} handleInputChange={handleInputChange}/>
         }
       </Grid>
     </form>

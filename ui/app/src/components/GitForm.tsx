@@ -61,9 +61,17 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+interface Expanded {
+  basic: boolean;
+  token: boolean;
+  key: boolean;
+}
+
 interface GitForm {
-  inputs: SiteState,
-  handleInputChange(event: any): any,
+  inputs: SiteState;
+  handleInputChange(event: any): any;
+  setExpanded(expanded: Expanded): any;
+  expanded: Expanded;
   type?: string;
 }
 
@@ -146,12 +154,7 @@ const messages = defineMessages({
 
 function GitForm(props: GitForm) {
   const classes = useStyles({});
-  const {inputs, handleInputChange, type} = props;
-  const [expanded, setExpanded] = useState({
-    basic: false,
-    token: false,
-    key: false,
-  });
+  const {inputs, handleInputChange, type, expanded, setExpanded} = props;
   const [showPassword, setShowPassword] = useState(false);
   const { formatMessage } = useIntl();
 
@@ -300,7 +303,7 @@ function GitForm(props: GitForm) {
                               label={formatMessage(messages.authenticationNoRequired)}/>
             <FormControlLabel value="basic" control={<Radio color="primary" onChange={() => viewAuth('basic')}/>}
                               label={formatMessage(messages.usernameAndPassword)}/>
-            <Collapse in={expanded.basic} timeout={300} unmountOnExit>
+            <Collapse in={expanded.basic} timeout={300}>
               {expanded.basic && renderAuth(inputs.repoAuthentication)}
             </Collapse>
             <FormControlLabel value="token" control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
