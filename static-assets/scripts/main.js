@@ -1257,7 +1257,12 @@
       $scope.save = function () {
         enableUI(false);
         const value = aceEditor.getValue();
-        $http.post('/studio/api/2/configuration/write_configuration', { siteId: 'studio_root', 'module': 'studio', path: '/configuration/studio-config-override.yaml', content: value }).then((response) => {
+        $http.post('/studio/api/2/configuration/write_configuration', { 
+          'siteId': 'studio_root', 
+          'module': 'studio', 
+          'path': '/configuration/studio-config-override.yaml', 
+          'content': value 
+        }).then((response) => {
           enableUI(true, false);
           $element.notify('Config saved successfully.', { position: 'top left', className: 'success' });
           defaultValue = value;
