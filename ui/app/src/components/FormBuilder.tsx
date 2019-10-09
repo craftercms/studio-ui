@@ -43,7 +43,7 @@ const useStyles = makeStyles(() => ({
 const messages = defineMessages({
   required: {
     id: 'createSiteDialog.required',
-    defaultMessage: '{name} is required'
+    defaultMessage: '{name} is required.'
   },
 });
 

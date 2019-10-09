@@ -31,6 +31,7 @@ export interface SiteState {
   blueprint: Blueprint;
   siteId: string;
   siteIdExist: boolean;
+  invalidSiteId: boolean;
   description: string;
   pushSite: boolean;
   useRemote: boolean;

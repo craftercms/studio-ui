@@ -57,11 +57,11 @@ const messages = defineMessages({
   },
   siteFormat: {
     id: 'createSiteDialog.siteFormat',
-    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)'
+    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_).'
   },
   nameExist: {
     id: 'createSiteDialog.nameExist',
-    defaultMessage: 'The name already exist'
+    defaultMessage: 'The name already exist.'
   },
   pushSiteToRemote: {
     id: 'createSiteDialog.pushSiteToRemote',
@@ -69,12 +69,16 @@ const messages = defineMessages({
   },
   descriptionMaxLength: {
     id: 'createSiteDialog.descriptionMaxLength',
-    defaultMessage: 'Max length: {maxLength} characters'
+    defaultMessage: 'Max length: {maxLength} characters.'
   },
   required: {
     id: 'createSiteDialog.required',
-    defaultMessage: '{name} is required'
+    defaultMessage: '{name} is required.'
   },
+  cantStart: {
+    id: 'createSiteDialog.cantStart',
+    defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
+  }
 });
 
 function BlueprintForm(props: BlueprintForm) {
@@ -104,7 +108,12 @@ function BlueprintForm(props: BlueprintForm) {
     if (e.target.type === 'checkbox') {
       setInputs({...inputs, [e.target.name]: e.target.checked, submitted: false});
     } else if (e.target.name === 'siteId') {
-      setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "").toLowerCase()});
+      const invalidSiteId = (e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_'));
+      setInputs({
+        ...inputs,
+        [e.target.name]: e.target.value.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase(),
+        invalidSiteId: invalidSiteId
+      });
     } else if (type === 'blueprintFields') {
       let parameters = {...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({...inputs, blueprintFields: parameters});
@@ -122,6 +131,9 @@ function BlueprintForm(props: BlueprintForm) {
   }
 
   function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean, siteIdExist: boolean) {
+    if(value.startsWith('0') || value.startsWith('-') || value.startsWith('_')){
+      return formatMessage(messages.cantStart)
+    }
     if(siteIdExist){
       return formatMessage(messages.nameExist)
     } else if(required && !value && submitted) {
@@ -145,7 +157,8 @@ function BlueprintForm(props: BlueprintForm) {
             onKeyUp={event => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
-            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
+            inputProps={{maxLength: 50}}
+            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist || inputs.invalidSiteId)}
             helperText={
               renderHelperText(
                 formatMessage(messages.siteId),

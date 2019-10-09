@@ -73,6 +73,7 @@ const siteInitialState: SiteState = {
   blueprint: null,
   siteId: '',
   siteIdExist: false,
+  invalidSiteId: false,
   description: '',
   pushSite: false,
   useRemote: false,
@@ -377,7 +378,7 @@ function CreateSiteDialog() {
   }
 
   function validateForm() {
-    if (!site.siteId || site.siteIdExist) {
+    if (!site.siteId || site.siteIdExist || site.invalidSiteId) {
       return false;
     } else if (!site.repoUrl && site.blueprint.id === 'GIT') {
       return false;
