@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.ChildContent = function (id, form, properties, constraints) {
+CStudioForms.Datasources.SharedContent = function (id, form, properties, constraints) {
   this.id = id;
   this.form = form;
   this.properties = properties;
@@ -26,9 +26,8 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   this.defaultEnableBrowseExisting = true;
   this.countOptions = 0;
   const i18n = CrafterCMSNext.i18n;
-  this.formatMessage = i18n.intl.formatMessage;
-  this.childContentDSMessages = i18n.messages.childContentDSMessages;
-
+  this.formatMessage = i18n.intl.formatMessage,
+  this.sharedContentDSMessages = i18n.messages.sharedContentDSMessages;
 
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name == 'repoPath') {
@@ -65,7 +64,7 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   return this;
 };
 
-YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormDatasource, {
+YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDatasource, {
   itemsAreContentReferences: true,
 
   createElementAction:function(control, _self, addContainerEl){
@@ -240,7 +239,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
   },
 
   getLabel: function() {
-    return this.formatMessage(this.childContentDSMessages.childContent);
+    return this.formatMessage(this.sharedContentDSMessages.sharedContent);
   },
 
   getInterface: function() {
@@ -248,7 +247,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
   },
 
   getName: function() {
-    return "child-content";
+    return "shared-content";
   },
 
   getSupportedProperties: function() {
@@ -268,4 +267,4 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
 
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-child-content", CStudioForms.Datasources.ChildContent);
+CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-shared-content", CStudioForms.Datasources.SharedContent);
