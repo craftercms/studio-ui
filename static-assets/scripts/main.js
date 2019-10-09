@@ -1034,13 +1034,6 @@
                 .success(function (data) {
                     $scope.entities = data.menuItems;
 
-                    // TODO: Temp. Remove when global menu does return.
-                    /*$scope.entities.unshift({
-                      'id': 'home.globalMenu.globalConfig',
-                      'label': 'Global Config',
-                      'icon': 'fa-globe'
-                    });*/
-
                     if($scope.entities.length > 1){
                         $scope.entities.forEach(function(entry, i) {
                             entry.tabName = 'tab'+ entry.label.replace(/ /g,'').toLocaleLowerCase();
