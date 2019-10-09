@@ -78,6 +78,10 @@ const messages = defineMessages({
   cantStart: {
     id: 'createSiteDialog.cantStart',
     defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
+  },
+  sandboxBranch: {
+    id: 'createSiteDialog.sandboxBranch',
+    defaultMessage: 'Sandbox Branch'
   }
 });
 
@@ -168,6 +172,19 @@ function BlueprintForm(props: BlueprintForm) {
                 inputs.submitted,
                 inputs.siteIdExist)
             }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            id="sandboxBranch"
+            name="sandboxBranch"
+            label={formatMessage(messages.sandboxBranch)}
+            fullWidth
+            onKeyUp={event => checkSites(event)}
+            onChange={(event) => handleInputChange(event)}
+            InputLabelProps={{shrink: true}}
+            placeholder={"master"}
+            value={inputs.sandboxBranch}
           />
         </Grid>
         <Grid item xs={12}>

@@ -38,6 +38,7 @@ export interface SiteState {
   repoUrl: string;
   repoAuthentication: string;
   repoRemoteBranch: string;
+  sandboxBranch: string;
   repoRemoteName: string;
   repoPassword: string;
   repoUsername: string;

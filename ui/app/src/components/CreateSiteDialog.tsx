@@ -80,6 +80,7 @@ const siteInitialState: SiteState = {
   repoUrl: '',
   repoAuthentication: 'none',
   repoRemoteBranch: '',
+  sandboxBranch: '',
   repoRemoteName: '',
   repoPassword: '',
   repoUsername: '',
@@ -416,8 +417,8 @@ function CreateSiteDialog() {
       if (site.repoUrl) params.remoteUrl = site.repoUrl;
       if (site.repoRemoteBranch) {
         params.remoteBranch = site.repoRemoteBranch;
-        params.sandboxBranch = site.repoRemoteBranch;
       }
+      if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
       if (site.repoAuthentication === 'basic') {
         params.remoteUsername = site.repoUsername;
         params.remotePassword = site.repoPassword;

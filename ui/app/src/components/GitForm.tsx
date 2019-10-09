@@ -100,7 +100,7 @@ const cloneMessages = defineMessages({
 const messages = defineMessages({
   branch: {
     id: 'createSiteDialog.branch',
-    defaultMessage: 'Branch'
+    defaultMessage: 'Git Branch'
   },
   userName: {
     id: 'common.userName',
@@ -120,7 +120,7 @@ const messages = defineMessages({
   },
   repoUrl: {
     id: 'createSiteDialog.repoUrl',
-    defaultMessage: 'Repo URL'
+    defaultMessage: 'Git Repo URL'
   },
   authentication: {
     id: 'common.authentication',

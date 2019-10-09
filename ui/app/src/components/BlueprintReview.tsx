@@ -84,19 +84,23 @@ const messages = defineMessages({
   },
   remoteName: {
     id: 'createSiteDialog.remoteName',
-    defaultMessage: 'Remote Name'
+    defaultMessage: 'Git Remote Name'
   },
   remoteURL: {
     id: 'createSiteDialog.remoteURL',
-    defaultMessage: 'URL'
+    defaultMessage: 'Git Repo URL'
   },
   remoteBranch: {
     id: 'createSiteDialog.remoteBranch',
-    defaultMessage: 'Branch'
+    defaultMessage: 'Git Branch'
   },
   siteId: {
     id: 'createSiteDialog.siteId',
     defaultMessage: 'Site ID'
+  },
+  sandboxBranch: {
+    id: 'createSiteDialog.sandboxBranch',
+    defaultMessage: 'Sandbox Branch'
   },
   userNameAndPassword: {
     id: 'common.userNameAndPassword',
@@ -151,18 +155,12 @@ function BlueprintReview(props: BlueprintReview) {
             <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repoUrl}
           </Typography>
         }
-        {
-          inputs.repoRemoteName &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repoRemoteName}
+            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repoRemoteName? inputs.repoRemoteName : 'origin'}
           </Typography>
-        }
-        {
-          inputs.repoRemoteBranch &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch}
+            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch? inputs.repoRemoteBranch : 'master'}
           </Typography>
-        }
         {
           inputs.repoAuthentication !== 'none' &&
           <Typography variant="body2" gutterBottom>
@@ -226,6 +224,10 @@ function BlueprintReview(props: BlueprintReview) {
                 <EditIcon/>
               </IconButton>
             </Typography>
+              <Typography variant="body2" gutterBottom>
+                  <span
+                      className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span> {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
+              </Typography>
             {inputs.pushSite ?
               <div>
                 <Typography variant="body2" gutterBottom>
