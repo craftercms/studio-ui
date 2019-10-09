@@ -116,6 +116,10 @@ const contentTypesMessages = defineMessages({
   useChildContent: {
     id: 'contentType.useChildContent',
     defaultMessage: 'Use Deprecated Control Anyway'
+  },
+  fileNameErrorMessage: {
+    id: 'contentType.fileNameErrorMessage',
+    defaultMessage: 'Content types require a file name. Please add file name or auto file name control to your content type.'
   }
 
 });
