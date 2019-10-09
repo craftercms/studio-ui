@@ -71,6 +71,10 @@ const messages = defineMessages({
     id: 'createSiteDialog.descriptionMaxLength',
     defaultMessage: 'Max length: {maxLength} characters'
   },
+  required: {
+    id: 'createSiteDialog.required',
+    defaultMessage: '{name} is required'
+  },
 });
 
 function BlueprintForm(props: BlueprintForm) {
@@ -117,6 +121,16 @@ function BlueprintForm(props: BlueprintForm) {
     }
   }
 
+  function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean, siteIdExist: boolean) {
+    if(siteIdExist){
+      return formatMessage(messages.nameExist)
+    } else if(required && !value && submitted) {
+      return formatMessage(messages.required, {name: name})
+    } else {
+      return helperText;
+    }
+  }
+
   return (
     <form className={classes.form} onSubmit={e => onSubmit(e)}>
       <Grid container spacing={3}>
@@ -132,7 +146,15 @@ function BlueprintForm(props: BlueprintForm) {
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
             error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
-            helperText={!inputs.siteIdExist ? formatMessage(messages.siteFormat) : formatMessage(messages.nameExist)}
+            helperText={
+              renderHelperText(
+                formatMessage(messages.siteId),
+                inputs.siteId,
+                formatMessage(messages.siteFormat),
+                true,
+                inputs.submitted,
+                inputs.siteIdExist)
+            }
           />
         </Grid>
         <Grid item xs={12}>

@@ -22,8 +22,6 @@ import Paper from "@material-ui/core/Paper";
 import { capitalize } from "@material-ui/core/utils";
 import { LinearProgress } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
-import { audit } from "rxjs/operators";
-
 
 export const styles = (theme: Theme) => ({
   /* Styles applied to the root element. */
@@ -98,7 +96,7 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
       square
       elevation={0}
       className={clsx(classes.root, classes[`position${capitalize(position)}`], className)}
-      onClick={(e)=> {e.stopPropagation()}}
+      onClick={(e)=> e.stopPropagation()}
       ref={ref}
       {...other}
     >

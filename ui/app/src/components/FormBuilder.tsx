@@ -21,6 +21,7 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { SiteState } from "../models/Site";
+import { defineMessages, useIntl } from "react-intl";
 
 interface FormBuilder {
   parameters: [Parameter],
@@ -39,9 +40,25 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+const messages = defineMessages({
+  required: {
+    id: 'createSiteDialog.required',
+    defaultMessage: '{name} is required'
+  },
+});
+
 export default function FormBuilder(props: FormBuilder) {
   const classes = useStyles({});
   const {parameters, handleInputChange, inputs} = props;
+  const { formatMessage } = useIntl();
+
+  function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean) {
+    if(required && !value && submitted) {
+      return formatMessage(messages.required, {name: name})
+    } else {
+      return helperText;
+    }
+  }
 
   function renderParameters(parameters: [Parameter]) {
     return parameters.map((parameter, index) => {
@@ -56,7 +73,7 @@ export default function FormBuilder(props: FormBuilder) {
             onChange={(event) => handleInputChange(event, 'blueprintFields')}
             value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
             error={(parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name])}
-            helperText={parameter.description? parameter.description : ''}
+            helperText={renderHelperText(parameter.label, inputs.blueprintFields[parameter.name], parameter.description, parameter.required, inputs.submitted)}
           />
         </Grid>
       )

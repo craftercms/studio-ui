@@ -138,6 +138,10 @@ const messages = defineMessages({
     id: 'common.remoteName',
     defaultMessage: 'Git Remote Name'
   },
+  required: {
+    id: 'createSiteDialog.required',
+    defaultMessage: '{name} is required'
+  },
 });
 
 function GitForm(props: GitForm) {
@@ -166,6 +170,14 @@ function GitForm(props: GitForm) {
     setShowPassword(!showPassword);
   };
 
+  function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean, pushSite: boolean) {
+    if(required && !value && submitted && pushSite) {
+      return formatMessage(messages.required, {name: name})
+    } else {
+      return helperText;
+    }
+  }
+
   function renderAuth(type: string) {
     return (
       <div className={classes.authBox}>
@@ -180,6 +192,7 @@ function GitForm(props: GitForm) {
             value={inputs.repoUsername}
             onChange={handleInputChange}
             error={(inputs.submitted && !inputs.repoUsername && inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.userName), inputs.repoUsername, "",true, inputs.submitted, inputs.pushSite)}
           />
         }
         {
@@ -194,6 +207,7 @@ function GitForm(props: GitForm) {
             value={inputs.repoPassword}
             onChange={handleInputChange}
             error={(inputs.submitted && !inputs.repoPassword && inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.password), inputs.repoPassword, "",true, inputs.submitted, inputs.pushSite)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -220,6 +234,7 @@ function GitForm(props: GitForm) {
             required
             value={inputs.repoToken}
             error={(inputs.submitted && !inputs.repoToken && inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, "",true, inputs.submitted, inputs.pushSite)}
             onChange={handleInputChange}
             InputProps={{
               endAdornment: (
@@ -247,6 +262,7 @@ function GitForm(props: GitForm) {
               multiline
               className={classes.margin}
               error={(inputs.submitted && !inputs.repoKey && inputs.pushSite)}
+              helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, "",true, inputs.submitted, inputs.pushSite)}
               onChange={handleInputChange}
               value={inputs.repoKey}
           />

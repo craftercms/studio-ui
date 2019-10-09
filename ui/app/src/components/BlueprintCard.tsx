@@ -58,6 +58,12 @@ const useStyles = makeStyles(() => ({
       paddingBottom: '0',
       position: 'relative',
     },
+    '& .description': {
+      overflow: 'hidden',
+      display: '-webkit-box',
+      '-webkit-line-clamp': 2,
+      '-webkit-box-orient': 'vertical',
+    },
     '& .cardActions': {
       paddingTop: '0',
     }
@@ -212,7 +218,7 @@ function BlueprintCard(props: BlueprintCard) {
           <Typography gutterBottom variant="subtitle1" component="h2" className={'cardTitle'}>
             {name}
           </Typography>
-          <Typography variant="body2" component="p">
+          <Typography variant="body2" component="p" className={'description'}>
             {description}
           </Typography>
         </CardContent>
