@@ -2,17 +2,17 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
 import { Package } from "../models/publishing";
 import SelectButton from "./SelectButton";
 import Typography from "@material-ui/core/Typography";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import { fetchPackage } from "../services/publishing";
+import { fetchPackage, cancelPackage } from "../services/publishing";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -46,7 +46,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: 'auto'
   },
   list: {
-
+    '& li': {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
+    '& li:nth-child(odd)':{
+      background: '#f9f9f9',
+      borderBottom: '1px solid #dedede'
+    }
+  },
+  spinner: {
+    marginRight: '10px',
+    color: theme.palette.text.secondary
   }
 }));
 
@@ -95,15 +106,33 @@ export default function PublishingPackage(props: PublishingPackage) {
   const {formatMessage} = useIntl();
   const {package: pack, siteId} = props;
   const [files, setFiles] = useState(null);
+  const [loading, setLoading] = useState(null);
+  const [selected, setSelected] = useState([]);
   const {id, approver, schedule, state, comment, environment} = pack;
 
-  console.log(props.package);
+  function onSelect(event: ChangeEvent, id: string) {
+    setSelected([...selected, id]);
+    console.log(selected)
+  }
 
-  function handleCancel(item: Package) {
-    console.log('cancel')
+  function onSelectAll() {
+
+  }
+
+  function handleCancel(packageId: string) {
+    cancelPackage(siteId, [packageId])
+      .subscribe(
+        ({response}) => {
+          console.log(response);
+        },
+        ({response}) => {
+          console.log(response);
+        }
+      );
   }
 
   function onFetchPackages(packageId: string) {
+    setLoading(true);
     fetchPackage(siteId, packageId)
       .subscribe(
         ({response}) => {
@@ -115,12 +144,27 @@ export default function PublishingPackage(props: PublishingPackage) {
       );
   }
 
+  function renderFiles() {
+    return files.map((file:any, index:number) => {
+      return (
+        <ListItem key={index}>
+          <Typography variant="body2">
+            {file.path}
+          </Typography>
+          <Typography variant="body2">
+            {file.contentTypeClass}
+          </Typography>
+        </ListItem>
+      )
+    })
+  }
+
   return (
     <div className={classes.package}>
       <div className={'name'}>
         <FormGroup className={classes.checkbox}>
           <FormControlLabel
-            control={<Checkbox color="primary"/>}
+            control={<Checkbox color="primary" checked={!!selected.find((item:string) => item === id)} onChange={(event) => onSelect(event, id)}/>}
             label={<strong>{id}</strong>}
           />
         </FormGroup>
@@ -129,7 +173,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           cancelText={formatMessage(messages.cancel)}
           confirmText={formatMessage(messages.confirm)}
           confirmHelperText={formatMessage(messages.confirmHelper)}
-          onConfirm={() => handleCancel(props.package)}
+          onConfirm={() => handleCancel(id)}
         />
       </div>
       <div className='status'>
@@ -169,12 +213,19 @@ export default function PublishingPackage(props: PublishingPackage) {
         {
           files &&
           <List aria-label="files list" className={classes.list}>
-            {files.map((file:any, index:number) => <ListItem key={index}>file</ListItem>)}
+            {renderFiles()}
           </List>
         }
-        <Button variant="outlined" onClick={() => onFetchPackages(id)}>
-          {formatMessage(messages.fetchPackagesFiles)}
-        </Button>
+        {
+          (files === null) &&
+          <Button variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading}>
+            {
+              loading &&
+              <CircularProgress size={14} className={classes.spinner} color={'inherit'}/>
+            }
+            {formatMessage(messages.fetchPackagesFiles)}
+          </Button>
+        }
       </div>
     </div>
   )

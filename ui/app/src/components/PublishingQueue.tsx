@@ -45,7 +45,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '800px',
     height: '600px',
     padding: '40px',
-    border: '1px solid #dedede'
+    border: '1px solid #dedede',
+    display: 'flex',
+    flexDirection: 'column'
   },
   topBar: {
     display: 'flex',
@@ -56,7 +58,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
   },
   queueList: {
-
+    overflow: 'auto'
   },
   package: {
     padding: '20px',
