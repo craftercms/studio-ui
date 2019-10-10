@@ -427,7 +427,7 @@ function CreateSiteDialog() {
         params.remoteUsername = site.repoUsername;
         params.remoteToken = site.repoToken;
       }
-      if (site.repoAuthentication === 'key') params.remotePrivateKey = site.repoUsername;
+      if (site.repoAuthentication === 'key') params.remotePrivateKey = site.repoKey;
       if (site.blueprintFields) params.siteParams = site.blueprintFields;
       params.createOption = site.pushSite ? 'push' : 'clone';
 

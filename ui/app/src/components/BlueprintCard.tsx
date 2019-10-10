@@ -135,7 +135,7 @@ const messages = defineMessages({
   },
   crafterCms: {
     id: 'common.crafterCMS',
-    defaultMessage: 'CrafterCMS'
+    defaultMessage: 'Crafter CMS'
   }
 });
 
