@@ -75,8 +75,61 @@ const usersAdminMessages = defineMessages({
   }
 });
 
+const sharedContentDSMessages = defineMessages({
+  sharedContent: {
+    id: 'sharedContentDS.sharedContent',
+    defaultMessage: 'Shared Content'
+  },
+});
+
+const embeddedContentDSMessages = defineMessages({
+  embeddedContent: {
+    id: 'embeddedContentDS.embeddedContent',
+    defaultMessage: 'Embedded Content'
+  },
+});
+
+const childContentDSMessages = defineMessages({
+  childContent: {
+    id: 'childContentDS.childContent',
+    defaultMessage: 'Child Content (Deprecated)'
+  },
+});
+
+const contentTypesMessages = defineMessages({
+  notice: {
+    id: 'contentType.notice',
+    defaultMessage: 'Notice'
+  },
+  contenTypeWarningMessage: {
+    id: 'contentType.contenTypeWarningMessage',
+    defaultMessage: 'Please note Child Content datasource is being phased out of Crafter CMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
+  },
+  useSharedContent: {
+    id: 'contentType.useSharedContent',
+    defaultMessage: 'Use Shared Content'
+  },
+  useEmbeddedContent: {
+    id: 'contentType.useEmbeddedContent',
+    defaultMessage: 'Use Embedded Content'
+  },
+  useChildContent: {
+    id: 'contentType.useChildContent',
+    defaultMessage: 'Use Deprecated Control Anyway'
+  },
+  fileNameErrorMessage: {
+    id: 'contentType.fileNameErrorMessage',
+    defaultMessage: 'Content types require a file name. Please add either a "File Name" or "Auto Filename" control to this content type definition.'
+  }
+
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
-  usersAdminMessages
+  usersAdminMessages,
+  sharedContentDSMessages,
+  embeddedContentDSMessages,
+  childContentDSMessages,
+  contentTypesMessages
 };

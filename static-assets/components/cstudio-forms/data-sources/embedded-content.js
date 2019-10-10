@@ -23,6 +23,9 @@ CStudioForms.Datasources.EmbeddedContent = function (id, form, properties, const
   this.selectItemsCount = -1;
   this.contentType = '';
   this.flattened = true;
+  const i18n = CrafterCMSNext.i18n;
+  this.formatMessage = i18n.intl.formatMessage,
+  this.embeddedContentDSMessages = i18n.messages.embeddedContentDSMessages;
 
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name === 'contentType') {
@@ -146,7 +149,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
   },
 
   getLabel: function () {
-    return CMgs.format(langBundle, "embeddedContent");
+    return this.formatMessage(this.embeddedContentDSMessages.embeddedContent);
   },
 
   getInterface: function () {

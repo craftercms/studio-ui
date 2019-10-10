@@ -60,7 +60,7 @@ function Graphi(props: GraphiQLProps) {
   }
 
   function graphQLFetcher(graphQLParams: any) {
-    var url: string = props.url ? props.url : window.location.origin + '/api/1/site/graphql',
+    var url: string = props.url ? props.url : (window.location.origin + '/api/1/site/graphql'),
         method: string = (props.method || 'post').toLowerCase();
 
     if('get' === method){

@@ -38,33 +38,14 @@ YAHOO.extend(CStudioAdminConsole.Tool.GraphiQL, CStudioAdminConsole.Tool, {
 		var site = CStudioAuthoringContext.site,
 			actions = [];
 
-		CStudioAuthoring.Service.lookupConfigurtion(
-			CStudioAuthoringContext.site,
-			'/environment/environment-config.xml', {
-				success: function(config) {
-          const graphServerUrl = config['graphql-server-url'];
-          CrafterCMSNext.render(
-            document.getElementById('graphContainer'),
-            'GraphiQL',
-            {
-              url: `${graphServerUrl}/api/1/site/graphql`,
-              storageKey: site
-            }
-          );
-				},
-				failure: function() {
-					CStudioAuthoring.Operations.showSimpleDialog(
-						'errorDialog-dialog',
-						CStudioAuthoring.Operations.simpleDialogTypeINFO,
-						CMgs.format(langBundle, 'notification'),
-						CMgs.format(langBundle, 'failConfig'),
-						null, // use default button
-						YAHOO.widget.SimpleDialog.ICON_BLOCK,
-						'studioDialog'
-					);
-				}
-			}
-		);
+    CrafterCMSNext.render(
+      document.getElementById('graphContainer'),
+      'GraphiQL',
+      {
+        url: CStudioAuthoringContext.graphQLBaseURI,
+        storageKey: site
+      }
+    );
 
 		CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
 	}
