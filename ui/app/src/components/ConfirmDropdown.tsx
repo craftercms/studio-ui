@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-interface SelectButton {
+interface ConfirmDropdown {
   onConfirm(): any,
   text: string,
   cancelText: string,
@@ -47,7 +47,7 @@ interface SelectButton {
 }
 
 
-export default function SelectButton(props: SelectButton) {
+export default function SelectButton(props: ConfirmDropdown) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
   const {onConfirm, text, cancelText, confirmText, confirmHelperText} = props;

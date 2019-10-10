@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -5,14 +22,14 @@ import Button from "@material-ui/core/Button";
 import React, { ChangeEvent, useState } from "react";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
-import { Package } from "../models/publishing";
-import SelectButton from "./SelectButton";
+import SelectButton from "./ConfirmDropdown";
 import Typography from "@material-ui/core/Typography";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import { fetchPackage, cancelPackage } from "../services/publishing";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { setRequestForgeryToken } from "../utils/auth";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -97,8 +114,13 @@ const messages = defineMessages({
 });
 
 interface PublishingPackage {
-  package: Package;
   siteId: string;
+  id: string;
+  schedule: string;
+  approver: string;
+  state: string;
+  environment: string;
+  comment: string
   selected: any;
   setSelected(selected: any): any
 }
@@ -106,10 +128,9 @@ interface PublishingPackage {
 export default function PublishingPackage(props: PublishingPackage) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {package: pack, siteId, selected, setSelected} = props;
+  const {id, approver, schedule, state, comment, environment, siteId, selected, setSelected} = props;
   const [files, setFiles] = useState(null);
   const [loading, setLoading] = useState(null);
-  const {id, approver, schedule, state, comment, environment} = pack;
 
   function onSelect(event: ChangeEvent, id: string, checked: boolean) {
     let list = [...selected];
@@ -161,11 +182,14 @@ export default function PublishingPackage(props: PublishingPackage) {
     })
   }
 
+  setRequestForgeryToken();
+
   const checked = !!selected.find((item:string) => item === id);
+
 
   return (
     <div className={classes.package}>
-      <div className={'name'}>
+      <div className={"name"}>
         <FormGroup className={classes.checkbox}>
           <FormControlLabel
             control={<Checkbox color="primary" checked={checked} onChange={(event) => onSelect(event, id, checked)}/>}
@@ -180,7 +204,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           onConfirm={() => handleCancel(id)}
         />
       </div>
-      <div className='status'>
+      <div className="status">
         <Typography variant="body2">
           {
             formatMessage(
@@ -205,7 +229,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           }
         </Typography>
       </div>
-      <div className='comment'>
+      <div className="comment">
         <Typography variant="body2">
           {formatMessage(messages.comment)}
         </Typography>
@@ -213,7 +237,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           {comment ? comment : <span>{formatMessage(messages.commentNotProvided)}</span>}
         </Typography>
       </div>
-      <div className='files'>
+      <div className="files">
         {
           files &&
           <List aria-label="files list" className={classes.list}>
@@ -225,7 +249,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           <Button variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading}>
             {
               loading &&
-              <CircularProgress size={14} className={classes.spinner} color={'inherit'}/>
+              <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
             }
             {formatMessage(messages.fetchPackagesFiles)}
           </Button>
