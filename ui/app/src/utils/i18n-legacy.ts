@@ -119,7 +119,7 @@ const contentTypesMessages = defineMessages({
   },
   fileNameErrorMessage: {
     id: 'contentType.fileNameErrorMessage',
-    defaultMessage: 'Content types require a file name. Please add file name or auto file name control to your content type.'
+    defaultMessage: 'Content types require a file name. Please add either a "File Name" or "Auto Filename" control to this content type definition.'
   }
 
 });
