@@ -49,7 +49,7 @@ interface BlueprintForm {
 const messages = defineMessages({
   siteId: {
     id: 'createSiteDialog.siteId',
-    defaultMessage: 'Side ID'
+    defaultMessage: 'Site ID'
   },
   description: {
     id: 'createSiteDialog.description',
@@ -57,11 +57,11 @@ const messages = defineMessages({
   },
   siteFormat: {
     id: 'createSiteDialog.siteFormat',
-    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)'
+    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_).'
   },
   nameExist: {
     id: 'createSiteDialog.nameExist',
-    defaultMessage: 'The name already exist'
+    defaultMessage: 'The name already exist.'
   },
   pushSiteToRemote: {
     id: 'createSiteDialog.pushSiteToRemote',
@@ -69,14 +69,31 @@ const messages = defineMessages({
   },
   descriptionMaxLength: {
     id: 'createSiteDialog.descriptionMaxLength',
-    defaultMessage: 'Max length: {maxLength} characters'
+    defaultMessage: 'Max length: {maxLength} characters.'
   },
+  required: {
+    id: 'createSiteDialog.required',
+    defaultMessage: '{name} is required.'
+  },
+  cantStart: {
+    id: 'createSiteDialog.cantStart',
+    defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
+  },
+  sandboxBranch: {
+    id: 'createSiteDialog.sandboxBranch',
+    defaultMessage: 'Sandbox Branch'
+  }
 });
 
 function BlueprintForm(props: BlueprintForm) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, blueprint, onCheckNameExist} = props;
   const [sites, setSites] = useState(null);
+  const [expanded, setExpanded] = useState({
+    basic: false,
+    token: false,
+    key: false,
+  });
   const { formatMessage } = useIntl();
   const maxLength = 4000;
 
@@ -100,7 +117,12 @@ function BlueprintForm(props: BlueprintForm) {
     if (e.target.type === 'checkbox') {
       setInputs({...inputs, [e.target.name]: e.target.checked, submitted: false});
     } else if (e.target.name === 'siteId') {
-      setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "").toLowerCase()});
+      const invalidSiteId = (e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_'));
+      setInputs({
+        ...inputs,
+        [e.target.name]: e.target.value.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase(),
+        invalidSiteId: invalidSiteId
+      });
     } else if (type === 'blueprintFields') {
       let parameters = {...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({...inputs, blueprintFields: parameters});
@@ -114,6 +136,19 @@ function BlueprintForm(props: BlueprintForm) {
       setInputs({...inputs, siteIdExist: true});
     } else {
       setInputs({...inputs, siteIdExist: false});
+    }
+  }
+
+  function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean, siteIdExist: boolean) {
+    if(value.startsWith('0') || value.startsWith('-') || value.startsWith('_')){
+      return formatMessage(messages.cantStart)
+    }
+    if(siteIdExist){
+      return formatMessage(messages.nameExist)
+    } else if(required && !value && submitted) {
+      return formatMessage(messages.required, {name: name})
+    } else {
+      return helperText;
     }
   }
 
@@ -131,8 +166,30 @@ function BlueprintForm(props: BlueprintForm) {
             onKeyUp={event => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
-            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
-            helperText={!inputs.siteIdExist ? formatMessage(messages.siteFormat) : formatMessage(messages.nameExist)}
+            inputProps={{maxLength: 50}}
+            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist || inputs.invalidSiteId)}
+            helperText={
+              renderHelperText(
+                formatMessage(messages.siteId),
+                inputs.siteId,
+                formatMessage(messages.siteFormat),
+                true,
+                inputs.submitted,
+                inputs.siteIdExist)
+            }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            id="sandboxBranch"
+            name="sandboxBranch"
+            label={formatMessage(messages.sandboxBranch)}
+            fullWidth
+            onKeyUp={event => checkSites(event)}
+            onChange={(event) => handleInputChange(event)}
+            InputLabelProps={{shrink: true}}
+            placeholder={"master"}
+            value={inputs.sandboxBranch}
           />
         </Grid>
         <Grid item xs={12}>
@@ -168,15 +225,15 @@ function BlueprintForm(props: BlueprintForm) {
               />
           </Grid>
         }
-        <Collapse in={inputs.pushSite} timeout={300} unmountOnExit>
+        <Collapse in={inputs.pushSite} timeout={300}>
           {
             (inputs.pushSite && blueprint.source !== 'GIT') &&
-            <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
+            <GitForm inputs={inputs} expanded={expanded} setExpanded={setExpanded} type="push" handleInputChange={handleInputChange}/>
           }
         </Collapse>
         {
           (blueprint.id === 'GIT') &&
-          <GitForm type="clone" inputs={inputs} handleInputChange={handleInputChange}/>
+          <GitForm type="clone" inputs={inputs} expanded={expanded} setExpanded={setExpanded} handleInputChange={handleInputChange}/>
         }
       </Grid>
     </form>

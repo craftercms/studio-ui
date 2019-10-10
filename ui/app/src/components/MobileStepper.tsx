@@ -23,7 +23,6 @@ import { capitalize } from "@material-ui/core/utils";
 import { LinearProgress } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 
-
 export const styles = (theme: Theme) => ({
   /* Styles applied to the root element. */
   root: {
@@ -33,6 +32,7 @@ export const styles = (theme: Theme) => ({
     alignItems: 'center',
     background: theme.palette.background.default,
     padding: 8,
+    width: '100%'
   },
   /* Styles applied to the root element if `position="bottom"`. */
   positionBottom: {
@@ -56,6 +56,7 @@ export const styles = (theme: Theme) => ({
   dots: {
     display: 'flex',
     flexDirection: 'row',
+    margin: 'auto'
   },
   /* Styles applied to each dot if `variant="dots"`. */
   dot: {
@@ -95,6 +96,7 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
       square
       elevation={0}
       className={clsx(classes.root, classes[`position${capitalize(position)}`], className)}
+      onClick={(e)=> e.stopPropagation()}
       ref={ref}
       {...other}
     >

@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     zIndex: 999,
     cursor: 'pointer',
     '& .MuiMobileStepper-dot': {
-      padding: '3px',
+      padding: '6px',
       margin: '2px',
       '&:hover': {
         background: 'gray'
@@ -145,7 +145,7 @@ const messages = defineMessages({
   },
   craftercms: {
     id: 'common.craftercms',
-    defaultMessage: 'crafterCMS'
+    defaultMessage: 'Crafter CMS'
   },
   searchEngine: {
     id: 'common.searchEngine',

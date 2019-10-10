@@ -31,12 +31,14 @@ export interface SiteState {
   blueprint: Blueprint;
   siteId: string;
   siteIdExist: boolean;
+  invalidSiteId: boolean;
   description: string;
   pushSite: boolean;
   useRemote: boolean;
   repoUrl: string;
   repoAuthentication: string;
   repoRemoteBranch: string;
+  sandboxBranch: string;
   repoRemoteName: string;
   repoPassword: string;
   repoUsername: string;
