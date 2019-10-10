@@ -91,6 +91,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 function PublishingQueue() {
   const classes = useStyles({});
   const [packages, setPackages] = useState(null);
+  const [selected, setSelected] = useState([]);
   const {formatMessage} = useIntl();
 
   useEffect(
@@ -105,7 +106,7 @@ function PublishingQueue() {
 
   function renderPackages(){
     return packages.map((item: Package, index: number) => {
-      return <PublishingPackage package={item} key={index} siteId={'editorial'}/>
+      return <PublishingPackage package={item} key={index} siteId={'editorial'} selected={selected} setSelected={setSelected}/>
     })
   }
 
@@ -125,12 +126,21 @@ function PublishingQueue() {
     console.log('cancel all')
   }
 
+  function handleSelectAll(event: any) {
+    if(event.target.checked) {
+      let list = packages.map((item: Package) => item.id);
+      setSelected(list);
+    }else {
+      setSelected([]);
+    }
+  }
+
   return (
     <div className={classes.publishingQueue}>
       <div className={classes.topBar}>
         <FormGroup className={classes.selectAll}>
           <FormControlLabel
-            control={<Checkbox color="primary"/>}
+            control={<Checkbox color="primary" onClick={(event) => handleSelectAll(event)}/>}
             label={formatMessage(messages.selectAll)}
           />
         </FormGroup>

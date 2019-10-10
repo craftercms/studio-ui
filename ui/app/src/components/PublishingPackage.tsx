@@ -99,24 +99,26 @@ const messages = defineMessages({
 interface PublishingPackage {
   package: Package;
   siteId: string;
+  selected: any;
+  setSelected(selected: any): any
 }
 
 export default function PublishingPackage(props: PublishingPackage) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {package: pack, siteId} = props;
+  const {package: pack, siteId, selected, setSelected} = props;
   const [files, setFiles] = useState(null);
   const [loading, setLoading] = useState(null);
-  const [selected, setSelected] = useState([]);
   const {id, approver, schedule, state, comment, environment} = pack;
 
-  function onSelect(event: ChangeEvent, id: string) {
-    setSelected([...selected, id]);
-    console.log(selected)
-  }
-
-  function onSelectAll() {
-
+  function onSelect(event: ChangeEvent, id: string, checked: boolean) {
+    let list = [...selected];
+    if(checked) {
+      list = list.filter(item => item !== id);
+    } else {
+      list.push(id);
+    }
+    setSelected(list);
   }
 
   function handleCancel(packageId: string) {
@@ -159,12 +161,14 @@ export default function PublishingPackage(props: PublishingPackage) {
     })
   }
 
+  const checked = !!selected.find((item:string) => item === id);
+
   return (
     <div className={classes.package}>
       <div className={'name'}>
         <FormGroup className={classes.checkbox}>
           <FormControlLabel
-            control={<Checkbox color="primary" checked={!!selected.find((item:string) => item === id)} onChange={(event) => onSelect(event, id)}/>}
+            control={<Checkbox color="primary" checked={checked} onChange={(event) => onSelect(event, id, checked)}/>}
             label={<strong>{id}</strong>}
           />
         </FormGroup>
