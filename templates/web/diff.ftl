@@ -120,7 +120,7 @@
 
             $('#cancelBtn').on('click', function() {
                 parent.$('body').trigger('diff-end');
-            })
+            });
 
             $(document).on("keyup", function(e) {
                 if (e.keyCode === 27) {	// esc
@@ -128,6 +128,8 @@
                     $(document).off("keyup");
                 }
             });
+
+            $(window).focus();
         })
     </script>
 
