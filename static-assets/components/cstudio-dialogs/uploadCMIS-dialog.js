@@ -139,7 +139,7 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
     });
 
     var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
     CrafterCMSNext.render(
       document.getElementById('uploadContainer'),

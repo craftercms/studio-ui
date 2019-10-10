@@ -142,7 +142,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
     });
 
     var url = CStudioAuthoring.Service.createServiceUri(serviceUri);
-    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+    url += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
 
     CrafterCMSNext.render(
       document.getElementById('uploadContainer'),
@@ -239,7 +239,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
     //the second argument of setForm is crucial,
     //which tells Connection Manager this is an file upload form
     YAHOO.util.Connect.setForm('asset_upload_form', true);
-    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+    serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
     YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
   },
 
@@ -276,7 +276,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         //the second argument of setForm is crucial,
         //which tells Connection Manager this is an file upload form
         YAHOO.util.Connect.setForm('asset_upload_form', true);
-        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.storage.getRequestForgeryToken();
+        serviceUri += "&" + CStudioAuthoringContext.xsrfParameterName + "=" + CrafterCMSNext.util.auth.getRequestForgeryToken();
         YAHOO.util.Connect.asyncRequest('POST', serviceUri, uploadHandler);
       },
 

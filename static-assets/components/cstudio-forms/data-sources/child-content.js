@@ -25,6 +25,10 @@ CStudioForms.Datasources.ChildContent = function (id, form, properties, constrai
   this.defaultEnableCreateNew = true;
   this.defaultEnableBrowseExisting = true;
   this.countOptions = 0;
+  const i18n = CrafterCMSNext.i18n;
+  this.formatMessage = i18n.intl.formatMessage;
+  this.childContentDSMessages = i18n.messages.childContentDSMessages;
+
 
   for (var i = 0; i < properties.length; i++) {
     if (properties[i].name == 'repoPath') {
@@ -236,7 +240,7 @@ YAHOO.extend(CStudioForms.Datasources.ChildContent, CStudioForms.CStudioFormData
   },
 
   getLabel: function() {
-    return CMgs.format(langBundle, "childContent");
+    return this.formatMessage(this.childContentDSMessages.childContent);
   },
 
   getInterface: function() {

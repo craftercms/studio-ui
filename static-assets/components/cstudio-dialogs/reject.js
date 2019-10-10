@@ -184,7 +184,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 								}
 								YConnect.setDefaultPostHeader(false);
 								YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+                                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
 								// call go-live
 								YConnect.asyncRequest(
 										'POST',
@@ -416,7 +416,7 @@ CStudioAuthoring.Module.requireModule("publish-dialog",
 								}
 								YConnect.setDefaultPostHeader(false);
 								YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
-								YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+								YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
 								YConnect.asyncRequest('POST', dependencyUrl, serviceCallback, xmlString);
 
 							} else {

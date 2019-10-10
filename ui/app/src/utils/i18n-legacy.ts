@@ -48,6 +48,84 @@ const approveDialogMessages = defineMessages({
   }
 });
 
+const deleteDialogMessages = defineMessages({
+  submissionCommentFieldError: {
+    id: 'deleteDialog.submissionCommentFieldError',
+    defaultMessage: 'Please write submission comment.'
+  }
+});
+
+const usersAdminMessages = defineMessages({
+  maxLengthError: {
+    id: 'usersAdmin.maxLengthError',
+    defaultMessage: '{field} can\'t be longer than {size} characters'
+  },
+  userName: {
+    id: 'usersAdmin.userName',
+    defaultMessage: 'User Name'
+  },
+  firstName: {
+    id: 'usersAdmin.firstName',
+    defaultMessage: 'First Name'
+  },
+  lastName: {
+    id: 'usersAdmin.lastName',
+    defaultMessage: 'Last Name'
+
+  }
+});
+
+const sharedContentDSMessages = defineMessages({
+  sharedContent: {
+    id: 'sharedContentDS.sharedContent',
+    defaultMessage: 'Shared Content'
+  },
+});
+
+const embeddedContentDSMessages = defineMessages({
+  embeddedContent: {
+    id: 'embeddedContentDS.embeddedContent',
+    defaultMessage: 'Embedded Content'
+  },
+});
+
+const childContentDSMessages = defineMessages({
+  childContent: {
+    id: 'childContentDS.childContent',
+    defaultMessage: 'Child Content (Deprecated)'
+  },
+});
+
+const contentTypesMessages = defineMessages({
+  notice: {
+    id: 'contentType.notice',
+    defaultMessage: 'Notice'
+  },
+  contenTypeWarningMessage: {
+    id: 'contentType.contenTypeWarningMessage',
+    defaultMessage: 'Please note Child Content datasource is being phased out of Crafter CMS. For components that need to be shared across pages or components, please use Shared Content instead. For components that belong exclusively to this content object, please use Embedded Content.'
+  },
+  useSharedContent: {
+    id: 'contentType.useSharedContent',
+    defaultMessage: 'Use Shared Content'
+  },
+  useEmbeddedContent: {
+    id: 'contentType.useEmbeddedContent',
+    defaultMessage: 'Use Embedded Content'
+  },
+  useChildContent: {
+    id: 'contentType.useChildContent',
+    defaultMessage: 'Use Deprecated Control Anyway'
+  }
+
+});
+
 export default {
-  approveDialogMessages
+  approveDialogMessages,
+  deleteDialogMessages,
+  usersAdminMessages,
+  sharedContentDSMessages,
+  embeddedContentDSMessages,
+  childContentDSMessages,
+  contentTypesMessages
 };

@@ -19,6 +19,8 @@ import '../styles/index.scss';
 
 import React, { Suspense } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
+import { theme } from "../styles/theme";
 
 const cache = createIntlCache();
 
@@ -30,9 +32,11 @@ export const intl = createIntl({
 function CrafterCMSNextBridge(props: any) {
   return (
     <RawIntlProvider value={intl}>
-      <Suspense fallback={'Loading...'}>
-        {props.children}
-      </Suspense>
+      <ThemeProvider theme={theme}>
+        <Suspense fallback={'Loading...'}>
+          {props.children}
+        </Suspense>
+      </ThemeProvider>
     </RawIntlProvider>
   );
 }
