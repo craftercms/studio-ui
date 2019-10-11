@@ -179,7 +179,8 @@ function BlueprintCard(props: BlueprintCard) {
   function renderMedias(){
     let videos:any = media.videos? {...media.videos, type: 'video'} : [];
     videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
-    const merged = [...videos, ...media.screenshots];
+    let screenshots:any = media.screenshots? media.screenshots : [];
+    const merged = [...videos, ...screenshots];
     return merged.map((item, index) => {
       if(item.type !== 'video') {
         return (
