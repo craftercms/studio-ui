@@ -259,7 +259,8 @@ var nodeOpen = false,
             HEADERS: "headers",
             AUTH_HEADERS: "AUTH_HEADERS",
             DATASOURCE_URL: "/static-assets/components/cstudio-forms/data-sources/",
-            CONTROL_URL: "/static-assets/components/cstudio-forms/controls/"
+            CONTROL_URL: "/static-assets/components/cstudio-forms/controls/",
+            GETALLCONTENTTYPES: "getAllContentType"
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -2175,7 +2176,7 @@ var nodeOpen = false,
              * opens a dialog if needed or goes directly to the form if no
              * template selection is require (only one option
              */
-            createNewContent: function(site, path, asPopup, formSaveCb, childForm, isFlattenedInclude) {
+            createNewContent: function(site, path, asPopup, formSaveCb, childForm, isFlattenedInclude, filter) {
                 var auxParams = [];
                 if(childForm && childForm == true) {
                     auxParams = [ { name: "childForm", value: "true" }];
@@ -2183,6 +2184,15 @@ var nodeOpen = false,
 
                 var callback = {
                     success: function(contentTypes) {
+                        if (filter) {
+                            var currentContentTypes = [];
+                            for(var i = 0;  i < contentTypes.length; i++){
+                                if (contentTypes[i].type == filter){
+                                    currentContentTypes.push(contentTypes[i]);
+                                }
+                            }
+                            contentTypes = currentContentTypes;
+                        } 
                         if (contentTypes.length == 0) {
                             var dialogEl = document.getElementById("errMissingRequirements");
                             if(!dialogEl){
@@ -2223,7 +2233,7 @@ var nodeOpen = false,
                                         selectedTemplate,
                                         null,
                                         null,
-                                        path,
+                                        path == CStudioAuthoring.Constants.GETALLCONTENTTYPES ? "" : path,
                                         false,
                                         this.asPopup,
                                         this.formSaveCb,
@@ -5414,10 +5424,12 @@ var nodeOpen = false,
                 var CMgs = CStudioAuthoring.Messages;
                 var formsLangBundle = CStudioAuthoring.Messages.getBundle("forms", CStudioAuthoringContext.lang);
 
+                var serviceUri = this.allowedContentTypesForPath + "?site=" + site;
 
-                if (!path.match(".xml$")) path = path + "/";
-
-                var serviceUri = this.allowedContentTypesForPath + "?site=" + site + "&path=" + path;
+                if (path != CStudioAuthoring.Constants.GETALLCONTENTTYPES){
+                    if (!path.match(".xml$")) path = path + "/";
+                    serviceUri+= "&path=" + path;
+                }
 
                 var serviceCallback = {
                     success: function(oResponse) {

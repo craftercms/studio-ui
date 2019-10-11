@@ -48,7 +48,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     if (_self.contentType === "") {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
-        "",
+        CStudioAuthoring.Constants.GETALLCONTENTTYPES,
         false, {
           success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);
@@ -56,7 +56,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
           },
           failure: function () {
           }
-        }, true, true);
+        }, true, true, "component");
     } else {
       CStudioAuthoring.Operations.openContentWebForm(
         _self.contentType,
