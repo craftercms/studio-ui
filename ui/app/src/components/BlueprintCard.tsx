@@ -197,9 +197,9 @@ function BlueprintCard(props: BlueprintCard) {
       }
     })
   }
-
-  let steps = blueprint.media.screenshots? blueprint.media.screenshots.length : 0;
-  steps += blueprint.media.videos? blueprint.media.videos.length : 0;
+  let steps = 0;
+  (blueprint.media && blueprint.media.screenshots)? steps = blueprint.media.screenshots.length : steps = 0;
+  (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
 
   return (
     <Card className={classes.card}>

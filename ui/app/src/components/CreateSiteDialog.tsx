@@ -60,7 +60,7 @@ const views: Views = {
   1: {
     title: 'Create Site',
     subtitle: 'Name and describe your site',
-    btnText: 'Finish'
+    btnText: 'Review'
   },
   2: {
     title: 'Finish',
