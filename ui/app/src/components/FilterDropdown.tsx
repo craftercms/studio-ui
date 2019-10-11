@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const messages = defineMessages({
+const messages: any = defineMessages({
   pathExpression: {
     id: 'publishing.pathExpression',
     defaultMessage: 'Path Expression'
@@ -48,20 +48,32 @@ const messages = defineMessages({
     id: 'publishing.all',
     defaultMessage: 'All'
   },
-  live: {
-    id: 'publishing.live',
-    defaultMessage: 'Live'
+  READY_FOR_LIVE: {
+    id: 'publishing.READY_FOR_LIVE',
+    defaultMessage: 'Ready for Live'
   },
-  staging: {
-    id: 'publishing.staging',
-    defaultMessage: 'Staging'
+  PROCESSING: {
+    id: 'publishing.PROCESSING',
+    defaultMessage: 'Processing'
+  },
+  COMPLETED: {
+    id: 'publishing.COMPLETED',
+    defaultMessage: 'Completed'
+  },
+  CANCELLED: {
+    id: 'publishing.CANCELLED',
+    defaultMessage: 'Cancelled'
+  },
+  BLOCKED: {
+    id: 'publishing.BLOCKED',
+    defaultMessage: 'Blocked'
   }
 });
 
 export default function FilterDropdown(props: any) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
-  const {text, className} = props;
+  const {text, className, currentFilters, setCurrentFilters, filters} = props;
   const {formatMessage} = useIntl();
 
   const handleClick = (event: any) => {
@@ -71,6 +83,22 @@ export default function FilterDropdown(props: any) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleInputChange = (event: any) => {
+    console.log(event.target.name);
+    event.persist();
+    if (event.target.type === 'checkbox') {
+      const states = {...currentFilters.states};
+      states[event.target.name] = event.target.checked;
+      //state
+      setCurrentFilters({...currentFilters, states: states});
+    } else {
+      setCurrentFilters({...currentFilters, environments: event.target.value});
+    }
+
+  };
+
+  console.log(currentFilters);
 
   return (
     <div>
@@ -102,13 +130,13 @@ export default function FilterDropdown(props: any) {
           </header>
           <div className={classes.body}>
             <TextField
-              id="testing"
-              name="testing"
+              id="path"
+              name="path"
               InputLabelProps={{shrink: true}}
               fullWidth
               placeholder={"e.g. /SOME/PATH/*"}
-              //onChange={handleInputChange}
-              //value={inputs.repoUrl}
+              onChange={handleInputChange}
+              value={currentFilters.path}
             />
           </div>
         </section>
@@ -119,14 +147,17 @@ export default function FilterDropdown(props: any) {
             </Typography>
           </header>
           <div className={classes.formControl}>
-            <RadioGroup aria-label="testing" name="testing"
-                        value={'all'}>
-              <FormControlLabel value="all" control={<Radio color="primary"/>}
+            <RadioGroup aria-label="environment" name="environment"
+                        value={currentFilters.environments} onChange={handleInputChange}>
+              <FormControlLabel value={"all"} control={<Radio color="primary"/>}
                                 label={formatMessage(messages.all)}/>
-              <FormControlLabel value="live" control={<Radio color="primary"/>}
-                                label={formatMessage(messages.live)}/>
-              <FormControlLabel value="staging" control={<Radio color="primary"/>}
-                                label={formatMessage(messages.staging)}/>
+              {
+                filters.environments &&
+                filters.environments.map((filter: string, index: number) => {
+                  return <FormControlLabel key={index} value={filter} control={<Radio color="primary"/>}
+                                           label={filter}/>
+                })
+              }
             </RadioGroup>
           </div>
         </section>
@@ -138,20 +169,14 @@ export default function FilterDropdown(props: any) {
           </header>
           <div className={classes.formControl}>
             <FormGroup>
-              <FormControlLabel
-                control={<Checkbox checked={true} value="gilad" color="primary"/>}
-                label="Gilad Gray"
-              />
-              <FormControlLabel
-                control={<Checkbox checked={false} value="jason" color="primary"/>}
-                label="Jason Killian"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox checked={true} value="antoine" color="primary"/>
-                }
-                label="Antoine Llorca"
-              />
+              {
+                filters.states.map((filter: string, index: number) => {
+                  return <FormControlLabel
+                    key={index}
+                    control={<Checkbox checked={currentFilters.states[filter]} name={filter} value={filter} color="primary" onChange={handleInputChange}/>}
+                    label={formatMessage(messages[filter])}/>
+                })
+              }
             </FormGroup>
           </div>
         </section>

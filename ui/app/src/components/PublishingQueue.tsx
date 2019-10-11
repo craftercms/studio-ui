@@ -23,10 +23,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from "./PublishingPackage";
-import { cancelPackage, fetchPackages } from '../services/publishing';
+import { cancelPackage, fetchPackages, fetchEnvironments } from '../services/publishing';
 import { Package } from "../models/publishing";
 import ConfirmDropdown from "./ConfirmDropdown";
 import FilterDropdown from "./FilterDropdown";
+import { setRequestForgeryToken } from "../utils/auth";
 
 const messages = defineMessages({
   selectAll: {
@@ -107,12 +108,32 @@ function PublishingQueue() {
   const [packages, setPackages] = useState(null);
   const [selected, setSelected] = useState([]);
   const [pending, setPending] = useState({});
+  const [filters, setFilters] = useState({
+    environments: null,
+    states: ['READY_FOR_LIVE', 'PROCESSING', 'COMPLETED', 'CANCELLED', 'BLOCKED']
+  });
+  const [currentFilters, setCurrentFilters] = useState({
+    environments: 'all',
+    path: '',
+    states: {
+      READY_FOR_LIVE: false,
+      PROCESSING: false,
+      COMPLETED: false,
+      CANCELLED: false,
+      BLOCKED: false
+    }
+  });
   const {formatMessage} = useIntl();
+
+  setRequestForgeryToken();
 
   useEffect(
     () => {
       if (packages === null) {
         getPackages('editorial');
+      }
+      if (filters.environments === null){
+        getEnvironments('editorial');
       }
 
     },
@@ -136,6 +157,22 @@ function PublishingQueue() {
         getPackages={getPackages}
         setSelected={setSelected}/>
     })
+  }
+
+  function getEnvironments(siteId: string) {
+    fetchEnvironments(siteId)
+      .subscribe(
+        ({response}) => {
+          let channels: string[] = [];
+          response.availablePublishChannels.forEach((channel:any) => {
+            channels.push(channel.name);
+          });
+          setFilters({...filters, environments: channels });
+        },
+        ({response}) => {
+          console.log(response);
+        }
+      );
   }
 
   function getPackages(siteId: string) {
@@ -187,7 +224,8 @@ function PublishingQueue() {
           confirmHelperText={formatMessage(messages.confirmAllHelper)}
           onConfirm={handleCancelAll}
         />
-        <FilterDropdown className={classes.button} text={formatMessage(messages.filters)}/>
+        <FilterDropdown className={classes.button} text={formatMessage(messages.filters)} currentFilters={currentFilters}
+                        setCurrentFilters={setCurrentFilters} filters={filters}/>
       </div>
       <div className={classes.queueList}>
         {packages && renderPackages()}

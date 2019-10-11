@@ -19,19 +19,19 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
 import SelectButton from "./ConfirmDropdown";
 import Typography from "@material-ui/core/Typography";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import { fetchPackage, cancelPackage } from "../services/publishing";
+import { cancelPackage, fetchPackage } from "../services/publishing";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { setRequestForgeryToken } from "../utils/auth";
 import "../styles/animations.scss";
 import clsx from "clsx";
+import { delay } from "rxjs/operators";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'flex',
       justifyContent: 'space-between'
     },
-    '& li:nth-child(odd)':{
+    '& li:nth-child(odd)': {
       background: '#f9f9f9',
       borderBottom: '1px solid #dedede'
     }
@@ -83,10 +83,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: '10px',
     color: theme.palette.text.secondary
   },
-  packageLoading:{
+  packageLoading: {
     '-webkit-animation': 'pulse 3s infinite ease-in-out',
     'animation': 'pulse 3s infinite ease-in-out',
-    pointerEvents:'none'
+    pointerEvents: 'none'
   }
 }));
 
@@ -134,10 +134,14 @@ interface PublishingPackage {
   environment: string;
   comment: string
   selected: any;
+
   setSelected(selected: any): any
+
   pending: any;
+
   setPending(pending: any): any;
-  getPackages(siteId:string): any
+
+  getPackages(siteId: string): any
 }
 
 export default function PublishingPackage(props: PublishingPackage) {
@@ -147,9 +151,16 @@ export default function PublishingPackage(props: PublishingPackage) {
   const [files, setFiles] = useState(null);
   const [loading, setLoading] = useState(null);
 
+  const {current: ref} = useRef<any>({});
+
+  ref.cancelComplete = (packageId: string) => {
+    setPending({...pending, [packageId]: false});
+    getPackages(siteId);
+  };
+
   function onSelect(event: ChangeEvent, id: string, checked: boolean) {
     let list = [...selected];
-    if(checked) {
+    if (checked) {
       list = list.filter(item => item !== id);
     } else {
       list.push(id);
@@ -159,20 +170,19 @@ export default function PublishingPackage(props: PublishingPackage) {
 
   function handleCancel(packageId: string) {
     setPending({...pending, [packageId]: true});
-    setTimeout(
-      () => {
-      cancelPackage(siteId, [packageId])
-        .subscribe(
-          () => {
-            setPending({...pending, [packageId]: false});
-            getPackages(siteId);
-          },
-          ({response}) => {
-            console.log(response);
-          }
-        );
-      }
-      , 10000);
+
+    cancelPackage(siteId, [packageId])
+      .pipe(
+        delay(5000)
+      )
+      .subscribe(
+        () => {
+          ref.cancelComplete(packageId);
+        },
+        ({response}) => {
+          console.log(response);
+        }
+      );
   }
 
   function onFetchPackages(packageId: string) {
@@ -185,11 +195,11 @@ export default function PublishingPackage(props: PublishingPackage) {
         ({response}) => {
           console.log(response);
         }
-    );
+      );
   }
 
   function renderFiles() {
-    return files.map((file:any, index:number) => {
+    return files.map((file: any, index: number) => {
       return (
         <ListItem key={index}>
           <Typography variant="body2">
@@ -203,9 +213,7 @@ export default function PublishingPackage(props: PublishingPackage) {
     })
   }
 
-  setRequestForgeryToken();
-
-  const checked = !!selected.find((item:string) => item === id);
+  const checked = !!selected.find((item: string) => item === id);
 
   return (
     <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
