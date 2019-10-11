@@ -60,6 +60,11 @@ export default function SelectButton(props: ConfirmDropdown) {
     setAnchorEl(null);
   };
 
+  const handleConfirm = () => {
+    handleClose();
+    onConfirm();
+  };
+
   return (
     <div>
       <ColorButton variant="outlined" onClick={handleClick}>
@@ -83,7 +88,7 @@ export default function SelectButton(props: ConfirmDropdown) {
         }}
       >
         <MenuItem onClick={handleClose}>{cancelText}</MenuItem>
-        <MenuItem onClick={onConfirm}>{confirmText}</MenuItem>
+        <MenuItem onClick={handleConfirm}>{confirmText}</MenuItem>
         <Typography variant="body2" color="textSecondary" className={classes.helperText}>
           {confirmHelperText}
         </Typography>

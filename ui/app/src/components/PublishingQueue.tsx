@@ -22,11 +22,11 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
 import PublishingPackage from "./PublishingPackage";
-import { fetchPackages } from '../services/publishing';
+import { cancelPackage, fetchPackages } from '../services/publishing';
 import { Package } from "../models/publishing";
-import SelectButton from "./ConfirmDropdown";
+import ConfirmDropdown from "./ConfirmDropdown";
+import FilterDropdown from "./FilterDropdown";
 
 const messages = defineMessages({
   selectAll: {
@@ -60,9 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: '40px',
     margin: 'auto',
     width: '800px',
-    height: '600px',
     padding: '40px',
-    border: '1px solid #dedede',
     display: 'flex',
     flexDirection: 'column'
   },
@@ -75,7 +73,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
   },
   queueList: {
-    overflow: 'auto'
+    //overflow: 'auto'
   },
   package: {
     padding: '20px',
@@ -94,8 +92,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginRight: '20px'
       }
     },
-    '& .files': {
-    },
+    '& .files': {},
   },
   selectAll: {
     marginRight: 'auto'
@@ -109,11 +106,12 @@ function PublishingQueue() {
   const classes = useStyles({});
   const [packages, setPackages] = useState(null);
   const [selected, setSelected] = useState([]);
+  const [pending, setPending] = useState({});
   const {formatMessage} = useIntl();
 
   useEffect(
     () => {
-      if(packages === null) {
+      if (packages === null) {
         getPackages('editorial');
       }
 
@@ -121,7 +119,7 @@ function PublishingQueue() {
     []
   );
 
-  function renderPackages(){
+  function renderPackages() {
     return packages.map((item: Package, index: number) => {
       return <PublishingPackage
         id={item.id}
@@ -133,11 +131,14 @@ function PublishingQueue() {
         key={index}
         siteId={'editorial'}
         selected={selected}
+        pending={pending}
+        setPending={setPending}
+        getPackages={getPackages}
         setSelected={setSelected}/>
     })
   }
 
-  function getPackages(siteId:string) {
+  function getPackages(siteId: string) {
     fetchPackages(siteId)
       .subscribe(
         ({response}) => {
@@ -150,14 +151,22 @@ function PublishingQueue() {
   }
 
   function handleCancelAll() {
-    console.log('cancel all')
+    cancelPackage('editorial', selected)
+      .subscribe(
+        ({response}) => {
+          console.log(response);
+        },
+        ({response}) => {
+          console.log(response);
+        }
+      );
   }
 
   function handleSelectAll(event: any) {
-    if(event.target.checked) {
+    if (event.target.checked) {
       let list = packages.map((item: Package) => item.id);
       setSelected(list);
-    }else {
+    } else {
       setSelected([]);
     }
   }
@@ -171,16 +180,14 @@ function PublishingQueue() {
             label={formatMessage(messages.selectAll)}
           />
         </FormGroup>
-        <SelectButton
+        <ConfirmDropdown
           text={formatMessage(messages.cancelSelected)}
           cancelText={formatMessage(messages.cancel)}
           confirmText={formatMessage(messages.confirm)}
           confirmHelperText={formatMessage(messages.confirmAllHelper)}
           onConfirm={handleCancelAll}
         />
-        <Button variant="outlined" className={classes.button}>
-          {formatMessage(messages.filters)}
-        </Button>
+        <FilterDropdown className={classes.button} text={formatMessage(messages.filters)}/>
       </div>
       <div className={classes.queueList}>
         {packages && renderPackages()}

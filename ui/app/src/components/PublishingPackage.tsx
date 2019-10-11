@@ -30,10 +30,17 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { setRequestForgeryToken } from "../utils/auth";
+import "../styles/animations.scss";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
     padding: '20px 8px 20px 0',
+    '& .loading-header': {
+      display: 'flex',
+      alignItems: 'center',
+      height: '42px'
+    },
     '& .name': {
       display: 'flex',
       justifyContent: 'space-between',
@@ -75,6 +82,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   spinner: {
     marginRight: '10px',
     color: theme.palette.text.secondary
+  },
+  packageLoading:{
+    '-webkit-animation': 'pulse 3s infinite ease-in-out',
+    'animation': 'pulse 3s infinite ease-in-out',
+    pointerEvents:'none'
   }
 }));
 
@@ -123,12 +135,15 @@ interface PublishingPackage {
   comment: string
   selected: any;
   setSelected(selected: any): any
+  pending: any;
+  setPending(pending: any): any;
+  getPackages(siteId:string): any
 }
 
 export default function PublishingPackage(props: PublishingPackage) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {id, approver, schedule, state, comment, environment, siteId, selected, setSelected} = props;
+  const {id, approver, schedule, state, comment, environment, siteId, selected, setSelected, pending, setPending, getPackages} = props;
   const [files, setFiles] = useState(null);
   const [loading, setLoading] = useState(null);
 
@@ -143,15 +158,21 @@ export default function PublishingPackage(props: PublishingPackage) {
   }
 
   function handleCancel(packageId: string) {
-    cancelPackage(siteId, [packageId])
-      .subscribe(
-        ({response}) => {
-          console.log(response);
-        },
-        ({response}) => {
-          console.log(response);
-        }
-      );
+    setPending({...pending, [packageId]: true});
+    setTimeout(
+      () => {
+      cancelPackage(siteId, [packageId])
+        .subscribe(
+          () => {
+            setPending({...pending, [packageId]: false});
+            getPackages(siteId);
+          },
+          ({response}) => {
+            console.log(response);
+          }
+        );
+      }
+      , 10000);
   }
 
   function onFetchPackages(packageId: string) {
@@ -164,7 +185,7 @@ export default function PublishingPackage(props: PublishingPackage) {
         ({response}) => {
           console.log(response);
         }
-      );
+    );
   }
 
   function renderFiles() {
@@ -186,16 +207,26 @@ export default function PublishingPackage(props: PublishingPackage) {
 
   const checked = !!selected.find((item:string) => item === id);
 
-
   return (
-    <div className={classes.package}>
-      <div className={"name"}>
-        <FormGroup className={classes.checkbox}>
-          <FormControlLabel
-            control={<Checkbox color="primary" checked={checked} onChange={(event) => onSelect(event, id, checked)}/>}
-            label={<strong>{id}</strong>}
-          />
-        </FormGroup>
+    <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
+      <section className={"name"}>
+        {
+          pending[id] ?
+            <header className={"loading-header"}>
+              <CircularProgress size={15} className={classes.spinner} color={"inherit"}/>
+              <Typography variant="body1">
+                <strong>{id}</strong>
+              </Typography>
+            </header>
+            :
+            <FormGroup className={classes.checkbox}>
+              <FormControlLabel
+                control={<Checkbox color="primary" checked={checked}
+                                   onChange={(event) => onSelect(event, id, checked)}/>}
+                label={<strong>{id}</strong>}
+              />
+            </FormGroup>
+        }
         <SelectButton
           text={formatMessage(messages.cancel)}
           cancelText={formatMessage(messages.cancel)}
@@ -203,7 +234,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           confirmHelperText={formatMessage(messages.confirmHelper)}
           onConfirm={() => handleCancel(id)}
         />
-      </div>
+      </section>
       <div className="status">
         <Typography variant="body2">
           {
