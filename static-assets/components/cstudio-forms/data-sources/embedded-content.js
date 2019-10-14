@@ -48,7 +48,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     if (_self.contentType === "") {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
-        CStudioAuthoring.Constants.GETALLCONTENTTYPES,
+        CStudioAuthoring.Constants.GET_ALL_CONTENTTYPES,
         false, {
           success: function (contentTO, editorId, name, value) {
             control.insertItem(name, value, null, null, _self.id);

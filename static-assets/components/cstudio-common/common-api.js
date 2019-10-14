@@ -260,7 +260,7 @@ var nodeOpen = false,
             AUTH_HEADERS: "AUTH_HEADERS",
             DATASOURCE_URL: "/static-assets/components/cstudio-forms/data-sources/",
             CONTROL_URL: "/static-assets/components/cstudio-forms/controls/",
-            GETALLCONTENTTYPES: "getAllContentType"
+            GET_ALL_CONTENTTYPES: "getAllContentType"
         },
         /**
          * required resources, exension of the authoring environment bootstrap
@@ -2185,14 +2185,9 @@ var nodeOpen = false,
                 var callback = {
                     success: function(contentTypes) {
                         if (filter) {
-                            var currentContentTypes = [];
-                            for(var i = 0;  i < contentTypes.length; i++){
-                                if (contentTypes[i].type == filter){
-                                    currentContentTypes.push(contentTypes[i]);
-                                }
-                            }
-                            contentTypes = currentContentTypes;
-                        } 
+                            contentTypes = contentTypes.filter(contentTypes => contentTypes.type == filter);
+                        }
+
                         if (contentTypes.length == 0) {
                             var dialogEl = document.getElementById("errMissingRequirements");
                             if(!dialogEl){
@@ -2233,7 +2228,7 @@ var nodeOpen = false,
                                         selectedTemplate,
                                         null,
                                         null,
-                                        path == CStudioAuthoring.Constants.GETALLCONTENTTYPES ? "" : path,
+                                        path == CStudioAuthoring.Constants.GET_ALL_CONTENTTYPES ? "" : path,
                                         false,
                                         this.asPopup,
                                         this.formSaveCb,
@@ -5426,7 +5421,7 @@ var nodeOpen = false,
 
                 var serviceUri = this.allowedContentTypesForPath + "?site=" + site;
 
-                if (path != CStudioAuthoring.Constants.GETALLCONTENTTYPES){
+                if (path != CStudioAuthoring.Constants.GET_ALL_CONTENTTYPES){
                     if (!path.match(".xml$")) path = path + "/";
                     serviceUri+= "&path=" + path;
                 }
