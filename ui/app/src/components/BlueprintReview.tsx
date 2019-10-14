@@ -58,6 +58,10 @@ interface BlueprintReview {
 }
 
 const messages = defineMessages({
+  siteInfo: {
+    id: 'createSiteDialog.siteInfo',
+    defaultMessage: 'Site Info'
+  },
   bluePrintStrategy: {
     id: 'createSiteDialog.bluePrintStrategy',
     defaultMessage: 'Create from blueprint'
@@ -167,6 +171,9 @@ function BlueprintReview(props: BlueprintReview) {
             <span className={classes.bold}>{formatMessage(messages.authentication)}: </span> {renderAuth(inputs.repoAuthentication)}
           </Typography>
         }
+        <Typography variant="body2" gutterBottom>
+          <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span> {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
+        </Typography>
       </div>
     )
   }
@@ -196,13 +203,12 @@ function BlueprintReview(props: BlueprintReview) {
               <Typography variant="body2" gutterBottom>
                 {formatMessage(messages.gitStrategy)}
               </Typography>
-              {renderGitOptions()}
             </div>
           }
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
-            Site name & description
+            {formatMessage(messages.siteInfo)}
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
               <EditIcon/>
             </IconButton>
@@ -214,33 +220,20 @@ function BlueprintReview(props: BlueprintReview) {
             <span className={classes.bold}>{formatMessage(messages.description)}: </span> {inputs.description ? inputs.description :
             <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>}
           </Typography>
-        </Grid>
-        {
-          (blueprint.id !== "GIT") &&
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom className={classes.section}>
-              {formatMessage(messages.additionalOptions)}
-              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
-                <EditIcon/>
-              </IconButton>
-            </Typography>
-              <Typography variant="body2" gutterBottom>
-                  <span
-                      className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span> {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
-              </Typography>
-            {inputs.pushSite ?
+          {renderGitOptions()}
+          {
+            (blueprint.id !== "GIT") && (
+              inputs.pushSite ?
               <div>
                 <Typography variant="body2" gutterBottom>
                   {formatMessage(messages.pushSite)}
                 </Typography>
-                {renderGitOptions()}
               </div> :
               <Typography variant="body2" gutterBottom>
                 {formatMessage(messages.noPushSite)}
-              </Typography>
-            }
-          </Grid>
-        }
+              </Typography>)
+          }
+        </Grid>
       </Grid>
     </div>
   )

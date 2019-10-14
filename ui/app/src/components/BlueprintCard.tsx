@@ -135,7 +135,7 @@ const messages = defineMessages({
   },
   crafterCms: {
     id: 'common.crafterCMS',
-    defaultMessage: 'CrafterCMS'
+    defaultMessage: 'Crafter CMS'
   }
 });
 
@@ -179,7 +179,8 @@ function BlueprintCard(props: BlueprintCard) {
   function renderMedias(){
     let videos:any = media.videos? {...media.videos, type: 'video'} : [];
     videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
-    const merged = [...videos, ...media.screenshots];
+    let screenshots:any = media.screenshots? media.screenshots : [];
+    const merged = [...videos, ...screenshots];
     return merged.map((item, index) => {
       if(item.type !== 'video') {
         return (
@@ -197,9 +198,9 @@ function BlueprintCard(props: BlueprintCard) {
       }
     })
   }
-
-  let steps = blueprint.media.screenshots? blueprint.media.screenshots.length : 0;
-  steps += blueprint.media.videos? blueprint.media.videos.length : 0;
+  let steps = 0;
+  (blueprint.media && blueprint.media.screenshots)? steps = blueprint.media.screenshots.length : steps = 0;
+  (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
 
   return (
     <Card className={classes.card}>
