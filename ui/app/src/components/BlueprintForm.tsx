@@ -20,7 +20,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from "./GitForm";
 import { Blueprint } from "../models/Blueprint";
@@ -211,19 +210,22 @@ function BlueprintForm(props: BlueprintForm) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength})}
           />
         </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Switch
-                name="createAsOrphan"
-                checked={inputs.createAsOrphan}
-                onChange={(event) => handleInputChange(event)}
-                color="primary"
+        {
+          (blueprint.id === 'GIT') &&
+          <Grid item xs={12}>
+              <FormControlLabel
+                  control={
+                    <Switch
+                      name="createAsOrphan"
+                      checked={inputs.createAsOrphan}
+                      onChange={(event) => handleInputChange(event)}
+                      color="primary"
+                    />
+                  }
+                  label={formatMessage(messages.createAsOrphan)}
               />
-            }
-            label={formatMessage(messages.createAsOrphan)}
-          />
-        </Grid>
+          </Grid>
+        }
         {
           blueprint.parameters &&
           <FormBuilder parameters={blueprint.parameters} handleInputChange={handleInputChange} inputs={inputs}/>
@@ -233,7 +235,7 @@ function BlueprintForm(props: BlueprintForm) {
           <Grid item xs={12}>
               <FormControlLabel
                   control={
-                    <Checkbox
+                    <Switch
                       name="pushSite"
                       checked={inputs.pushSite}
                       onChange={(event) => handleInputChange(event)}
