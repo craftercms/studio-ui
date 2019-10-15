@@ -28,6 +28,7 @@ import { SiteState } from '../models/Site';
 import { defineMessages, useIntl } from "react-intl";
 import FormBuilder from "./FormBuilder";
 import { fetchSites } from '../services/sites';
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles(() => ({
   form: {
@@ -82,7 +83,12 @@ const messages = defineMessages({
   sandboxBranch: {
     id: 'createSiteDialog.sandboxBranch',
     defaultMessage: 'Sandbox Branch'
-  }
+  },
+  createAsOrphan: {
+    id: 'createSiteDialog.createAsOrphan',
+    defaultMessage: 'Create the site from a remote repository as orphan (no git history)'
+  },
+
 });
 
 function BlueprintForm(props: BlueprintForm) {
@@ -203,6 +209,19 @@ function BlueprintForm(props: BlueprintForm) {
             value={inputs.description}
             inputProps={{maxLength: maxLength}}
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength})}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Switch
+                name="createAsOrphan"
+                checked={inputs.createAsOrphan}
+                onChange={(event) => handleInputChange(event)}
+                color="primary"
+              />
+            }
+            label={formatMessage(messages.createAsOrphan)}
           />
         </Grid>
         {
