@@ -231,13 +231,17 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
 });
 
 const messages = defineMessages({
-  builtIn: {
-    id: 'createSiteDialog.builtIn',
-    defaultMessage: 'Built-in'
+  privateBlueprints: {
+    id: 'createSiteDialog.privateBlueprints',
+    defaultMessage: 'Private Blueprints'
   },
   marketplace: {
     id: 'common.marketplace',
     defaultMessage: 'Marketplace'
+  },
+  publicMarketplace: {
+    id: 'createSiteDialog.publicMarketplace',
+    defaultMessage: 'Public Marketplace'
   },
   back: {
     id: 'common.back',
@@ -552,8 +556,8 @@ function CreateSiteDialog() {
             (site.selectedView === 0) &&
             <div className={classes.tabs}>
                 <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                    <Tab label={formatMessage(messages.builtIn)} className={classes.simpleTab}/>
-                    <Tab label={formatMessage(messages.marketplace)} className={classes.simpleTab}/>
+                    <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab}/>
+                    <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab}/>
                 </CustomTabs>
                 <SearchIcon className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
                             onClick={handleSearchClick}/>
