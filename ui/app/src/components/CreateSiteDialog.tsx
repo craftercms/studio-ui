@@ -451,7 +451,10 @@ function CreateSiteDialog() {
           setApiState({ ...apiState, creatingSite: false });
           handleClose();
           //TODO# Change to site.siteId when create site is on API2
-          Cookies.set('crafterSite', site.site_id);
+          Cookies.set('crafterSite', site.site_id, {
+            domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+            path: '/'
+          });
           window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
         ({response}) => {
