@@ -48,7 +48,7 @@ const useStyles = makeStyles(() => ({
   },
   card: {
     maxWidth: '100%',
-    minHeight: '314px',
+    minHeight: '354px',
     '& .cardTitle': {
       fontWeight: '600',
       lineHeight: '1.5rem'
@@ -177,9 +177,9 @@ function BlueprintCard(props: BlueprintCard) {
   }
 
   function renderMedias(){
-    let videos:any = media.videos? {...media.videos, type: 'video'} : [];
+    let videos:any = (media && media.videos)? {...media.videos, type: 'video'} : [];
     videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
-    let screenshots:any = media.screenshots? media.screenshots : [];
+    let screenshots:any = (media && media.screenshots)? media.screenshots : [];
     const merged = [...videos, ...screenshots];
     return merged.map((item, index) => {
       if(item.type !== 'video') {
@@ -231,21 +231,21 @@ function BlueprintCard(props: BlueprintCard) {
       {
         (id !== 'GIT') &&
         <CardActions disableSpacing className={'cardActions'}>
-          <div className={classes.chip}>
-              <label>{formatMessage(messages.version)}</label>
-              <span>{fullVersion}</span>
-          </div>
-          <div className={classes.chip}>
-              <label>{formatMessage(messages.license)}</label>
-              <span>{license.name}</span>
-          </div>
-          <div className={classes.chip}>
-              <label>{formatMessage(messages.crafterCms)}</label>
-              <span>{crafterCMS}</span>
-          </div>
-          <IconButton aria-label="options" aria-controls="simple-menu" aria-haspopup="true" className={classes.options} onClick={handleClick}>
-              <MoreVertIcon/>
-          </IconButton>
+            <div className={classes.chip}>
+                <label>{formatMessage(messages.version)}</label>
+                <span>{fullVersion}</span>
+            </div>
+            <div className={classes.chip}>
+                <label>{formatMessage(messages.license)}</label>
+                <span>{license.name}</span>
+            </div>
+            <div className={classes.chip}>
+                <label>{formatMessage(messages.crafterCms)}</label>
+                <span>{crafterCMS}</span>
+            </div>
+            <IconButton aria-label="options" aria-controls="simple-menu" aria-haspopup="true" className={classes.options} onClick={handleClick}>
+                <MoreVertIcon/>
+            </IconButton>
             <Menu
                 id="simple-menu"
                 anchorEl={anchorEl}
@@ -255,7 +255,7 @@ function BlueprintCard(props: BlueprintCard) {
             >
                 <MenuItem onClick={() => handleClose(blueprint)}>Details</MenuItem>
             </Menu>
-      </CardActions>
+        </CardActions>
       }
     </Card>
   )
