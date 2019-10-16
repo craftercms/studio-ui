@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   card: {
     maxWidth: '100%',
-    minHeight: '383px',
+    minHeight: '360px',
     '& .cardTitle': {
       fontWeight: '600',
       lineHeight: '1.5rem',
@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginBottom: 0
     },
     '& .cardContent': {
-      height: '6.2rem',
-      padding: '12px 14px',
+      height: '6rem',
+      padding: '12px 14px 5px 14px',
       position: 'relative',
     },
     '& .gitCard': {
@@ -80,14 +80,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   carouselImg: {
     width: '100%',
-    height: '200px',
-    objectFit: 'contain'
+    height: '180px',
+    objectFit: 'fill'
   },
   video: {
     width: '100%',
-    height: '200px',
+    height: '180px',
     outline: 'none',
-    background: '#ebebf1'
+    background: backgroundColor
   },
   chip: {
     fontSize: '12px',
@@ -133,6 +133,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '50%',
     textAlign: 'center',
     color: theme.palette.text.secondary,
+  },
+  background: {
+    background: backgroundColor,
+    height: '182px'
   }
 }));
 
@@ -215,13 +219,13 @@ function BlueprintCard(props: BlueprintCard) {
 
   function renderMedias() {
     let videos: any = (media && media.videos) ? {...media.videos, type: 'video'} : [];
-    videos = videos.lenght ? videos.map((obj: any) => ({...obj, type: 'video'})) : [];
+    videos = videos.length ? videos.map((obj: any) => ({...obj, type: 'video'})) : [];
     let screenshots: any = (media && media.screenshots) ? media.screenshots : [];
     const merged = [...videos, ...screenshots];
     return merged.map((item, index) => {
       if (item.type !== 'video') {
         return (
-          <div key={index}>
+          <div key={index} className={classes.background}>
             <img className={classes.carouselImg} src={item.url} alt={item.description}/>
           </div>
         )

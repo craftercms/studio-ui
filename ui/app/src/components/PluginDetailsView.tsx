@@ -30,6 +30,7 @@ import Fab from "@material-ui/core/Fab";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from "@material-ui/core/Grid";
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import { backgroundColor } from "../styles/theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   detailsView: {
@@ -45,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   carouselImg: {
     width: '100%',
     height: '340px',
-    objectFit: 'cover'
+    objectFit: 'contain'
   },
   detailsContainer: {
     position: 'relative',
@@ -95,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     height: '300px',
     outline: 'none',
-    background: '#ebebf1'
+    background: backgroundColor
   },
   chip: {
     fontSize: '12px',
@@ -120,6 +121,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontSize: '1.1rem'
     }
   },
+  background: {
+    background: backgroundColor,
+    height: '340px',
+  }
 }));
 
 const messages = defineMessages({
@@ -192,13 +197,16 @@ export default function PluginDetailsView(props: PluginDetailsView) {
 
   function renderMedias(){
     let videos:any = (media && media.videos)? {...media.videos, type: 'video'} : [];
-    videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
+    videos = videos.length? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
     let screenshots:any = (media && media.screenshots)? media.screenshots : [];
     const merged = [...videos, ...screenshots];
+
+    console.log(merged);
+
     return merged.map((item, index) => {
       if(item.type !== 'video') {
         return (
-          <div key={index}>
+          <div key={index} className={classes.background}>
             <img className={classes.carouselImg} src={item.url} alt={item.description}/>
           </div>
         )
@@ -217,6 +225,8 @@ export default function PluginDetailsView(props: PluginDetailsView) {
   (blueprint.media && blueprint.media.screenshots)? steps = blueprint.media.screenshots.length : steps = 0;
   (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
 
+  console.log(blueprint);
+
   return (
     <div className={classes.detailsView}>
       <div className={classes.topBar}>
@@ -232,7 +242,8 @@ export default function PluginDetailsView(props: PluginDetailsView) {
       </div>
       <AutoPlaySwipeableViews
         index={index}
-        autoplay={!play}
+       // autoplay={!play}
+        autoplay={false}
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
