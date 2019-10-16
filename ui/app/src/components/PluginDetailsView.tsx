@@ -161,6 +161,7 @@ const messages = defineMessages({
 interface PluginDetailsView {
   onCloseDetails(event: any): any,
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
+  selectedIndex?: number,
   blueprint: Blueprint,
   interval: number
 }
@@ -169,9 +170,10 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 export default function PluginDetailsView(props: PluginDetailsView) {
   const classes = useStyles({});
-  const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
-  const {blueprint, interval, onBlueprintSelected, onCloseDetails} = props;
+  const {blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex} = props;
+  console.log(selectedIndex);
+  const [index, setIndex] = useState(selectedIndex || 0);
   const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
@@ -201,8 +203,6 @@ export default function PluginDetailsView(props: PluginDetailsView) {
     let screenshots:any = (media && media.screenshots)? media.screenshots : [];
     const merged = [...videos, ...screenshots];
 
-    console.log(merged);
-
     return merged.map((item, index) => {
       if(item.type !== 'video') {
         return (
@@ -225,8 +225,6 @@ export default function PluginDetailsView(props: PluginDetailsView) {
   (blueprint.media && blueprint.media.screenshots)? steps = blueprint.media.screenshots.length : steps = 0;
   (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
 
-  console.log(blueprint);
-
   return (
     <div className={classes.detailsView}>
       <div className={classes.topBar}>
@@ -242,8 +240,7 @@ export default function PluginDetailsView(props: PluginDetailsView) {
       </div>
       <AutoPlaySwipeableViews
         index={index}
-       // autoplay={!play}
-        autoplay={false}
+        autoplay={!play}
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents

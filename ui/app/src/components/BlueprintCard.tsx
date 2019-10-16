@@ -37,7 +37,7 @@ import clsx from "clsx";
 interface BlueprintCard {
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
 
-  onDetails(blueprint: Blueprint): any,
+  onDetails(blueprint: Blueprint, index?: number): any,
 
   blueprint: Blueprint,
   interval: number;
@@ -196,6 +196,13 @@ function BlueprintCard(props: BlueprintCard) {
     setPlay(false);
   }
 
+  function onImageClick(e: any, index: number) {
+    e.stopPropagation();
+    e.preventDefault();
+    console.log(index);
+    onDetails(blueprint, index);
+  }
+
   function renderDeveloper() {
     if (developer) {
       if (developer.company) {
@@ -225,7 +232,7 @@ function BlueprintCard(props: BlueprintCard) {
     return merged.map((item, index) => {
       if (item.type !== 'video') {
         return (
-          <div key={index} className={classes.background}>
+          <div key={index} className={classes.background} onClick={ (event) => onImageClick(event, index)}>
             <img className={classes.carouselImg} src={item.url} alt={item.description}/>
           </div>
         )

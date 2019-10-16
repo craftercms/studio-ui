@@ -90,7 +90,7 @@ const siteInitialState: SiteState = {
   repoKey: '',
   submitted: false,
   selectedView: 0,
-  details: null,
+  details: { blueprint: null, index: null },
   blueprintFields: {},
 };
 
@@ -324,7 +324,7 @@ function CreateSiteDialog() {
   }
 
   function handleCloseDetails() {
-    setSite({...site, details: null});
+    setSite({...site, details: { blueprint: null, index: null }});
   }
 
   function handleErrorBack() {
@@ -337,11 +337,11 @@ function CreateSiteDialog() {
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
     if (blueprint.id === 'GIT') {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:false, details: null});
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:false, details: { blueprint: null, index: null }})
     } else if(blueprint.source === 'GIT') {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:true, details: null});
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:true, details: { blueprint: null, index: null }})
     } else {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, createAsOrphan:true, details: null});
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, createAsOrphan:true, details: { blueprint: null, index: null }})
     }
   }
 
@@ -532,8 +532,8 @@ function CreateSiteDialog() {
     }
   }
 
-  function onDetails(blueprint: Blueprint) {
-    setSite({...site, details:blueprint })
+  function onDetails(blueprint: Blueprint, index: number) {
+    setSite({...site, details:{ blueprint: blueprint, index: index }});
   }
 
   function renderBlueprints(list: Blueprint[]) {
@@ -554,10 +554,10 @@ function CreateSiteDialog() {
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {( apiState.creatingSite || (apiState.error && apiState.global) || site.details) ?
+      {( apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
         (apiState.creatingSite && <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)} subtitle2={formatMessage(messages.createInBackground)}/>) ||
         (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack} background={backgroundColor}/>) ||
-        (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
+        (site.details && <PluginDetailsView blueprint={site.details.blueprint} selectedIndex={site.details.index} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {
