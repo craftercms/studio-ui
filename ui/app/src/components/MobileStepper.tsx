@@ -22,6 +22,7 @@ import Paper from "@material-ui/core/Paper";
 import { capitalize } from "@material-ui/core/utils";
 import { LinearProgress } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
+import { RedColor } from '../styles/theme';
 
 export const styles = (theme: Theme) => ({
   /* Styles applied to the root element. */
@@ -68,7 +69,7 @@ export const styles = (theme: Theme) => ({
   },
   /* Styles applied to a dot if `variant="dots"` and this is the active step. */
   dotActive: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: RedColor,
   },
   /* Styles applied to the Linear Progress component if `variant="progress"`. */
   progress: {

@@ -19,6 +19,7 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import { fade } from "@material-ui/core/styles";
 
 export const backgroundColor = '#E7E7E7';
+export const RedColor = '#FF3B30';
 
 const defaultTheme = createMuiTheme();
 export  const theme = createMuiTheme({
@@ -56,7 +57,7 @@ export  const theme = createMuiTheme({
         transformOrigin: 'top left !important'
       },
       asterisk: {
-        color: '#f44336',
+        color: RedColor,
       }
     },
     MuiInputBase: {
@@ -71,8 +72,8 @@ export  const theme = createMuiTheme({
           display: 'none'
         },
         '&$error .MuiInputBase-input': {
-          color: '#f44336',
-          borderColor: '#f44336',
+          color: RedColor,
+          borderColor: RedColor,
           '&:focus':{
             boxShadow: 'rgba(244, 67, 54, 0.25) 0 0 0 0.2rem'
           }
