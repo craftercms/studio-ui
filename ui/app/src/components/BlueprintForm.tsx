@@ -33,7 +33,6 @@ const useStyles = makeStyles(() => ({
   form: {
     maxWidth: '600px',
     margin: 'auto',
-    paddingBottom: '20px'
   }
 }));
 

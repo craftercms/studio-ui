@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   card: {
     maxWidth: '100%',
-    minHeight: '360px',
+    minHeight: '358px',
     '& .cardTitle': {
       fontWeight: '600',
       lineHeight: '1.5rem',
@@ -115,7 +115,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'relative'
   },
   dots: {
-    background: backgroundColor,
+    background: 'none',
+    borderTop: '1px solid #e4e3e3',
     height: '30px',
     padding: '0',
     '& .MuiMobileStepper-dot': {
@@ -136,7 +137,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   background: {
     background: backgroundColor,
-    height: '182px'
+    height: '180px'
   }
 }));
 
@@ -197,6 +198,7 @@ function BlueprintCard(props: BlueprintCard) {
   }
 
   function onImageClick(e: any, index: number) {
+    if(blueprint.id === 'GIT') return false;
     e.stopPropagation();
     e.preventDefault();
     onDetails(blueprint, index);
