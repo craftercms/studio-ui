@@ -123,10 +123,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const messages = defineMessages({
-    use: {
-      id: 'common.use',
-      defaultMessage: 'Use'
-    },
+  use: {
+    id: 'common.use',
+    defaultMessage: 'Use'
+  },
   version: {
     id: 'common.version',
     defaultMessage: 'Version'
@@ -191,9 +191,10 @@ export default function PluginDetailsView(props: PluginDetailsView) {
   }
 
   function renderMedias(){
-    let videos:any = media.videos? {...media.videos, type: 'video'} : [];
+    let videos:any = (media && media.videos)? {...media.videos, type: 'video'} : [];
     videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
-    const merged = [...videos, ...media.screenshots];
+    let screenshots:any = (media && media.screenshots)? media.screenshots : [];
+    const merged = [...videos, ...screenshots];
     return merged.map((item, index) => {
       if(item.type !== 'video') {
         return (
@@ -212,8 +213,9 @@ export default function PluginDetailsView(props: PluginDetailsView) {
     })
   }
 
-  let steps = blueprint.media.screenshots? blueprint.media.screenshots.length : 0;
-  steps += blueprint.media.videos? blueprint.media.videos.length : 0;
+  let steps = 0;
+  (blueprint.media && blueprint.media.screenshots)? steps = blueprint.media.screenshots.length : steps = 0;
+  (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
 
   return (
     <div className={classes.detailsView}>
@@ -245,7 +247,7 @@ export default function PluginDetailsView(props: PluginDetailsView) {
         <Grid container spacing={3}>
           <Grid item xs={8}>
             <Typography variant="body1">
-            {description}
+              {description}
             </Typography>
           </Grid>
           <Grid item xs={4}>
@@ -257,13 +259,13 @@ export default function PluginDetailsView(props: PluginDetailsView) {
                 </Typography>
               }
               {
-                developer.company &&
+                (developer && developer.company) &&
                 <Typography variant="subtitle2" color={'textSecondary'}>
-                    {developer.company.name}
+                  {developer.company.name}
                 </Typography>
               }
               {
-                developer.people &&
+                (developer && developer.people) &&
                 <Typography variant="subtitle2" color={'textSecondary'}>
                   {developer.people.name}
                 </Typography>
@@ -277,23 +279,23 @@ export default function PluginDetailsView(props: PluginDetailsView) {
                 </Typography>
               }
               {
-                website.name &&
+                (website && website.name) &&
                 <Typography variant="subtitle2" component="p">
                     <a className={classes.link} href={website.url} target={'blank'}>{website.name} <OpenInNewIcon/></a>
                 </Typography>
               }
             </div>
-              {
-                searchEngine &&
-                  <div className={classes.section}>
+            {
+              searchEngine &&
+              <div className={classes.section}>
                   <Typography variant="subtitle2">
                     {formatMessage(messages.searchEngine)}
                   </Typography>
                   <Typography variant="subtitle2" color={'textSecondary'}>
                     {searchEngine}
                   </Typography>
-                </div>
-              }
+              </div>
+            }
             <div className={classes.sectionChips}>
               <div className={classes.chip}>
                 <label>{formatMessage(messages.version)}</label>

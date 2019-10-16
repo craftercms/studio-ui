@@ -171,9 +171,6 @@ function BlueprintReview(props: BlueprintReview) {
             <span className={classes.bold}>{formatMessage(messages.authentication)}: </span> {renderAuth(inputs.repoAuthentication)}
           </Typography>
         }
-        <Typography variant="body2" gutterBottom>
-          <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span> {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
-        </Typography>
       </div>
     )
   }
@@ -220,18 +217,17 @@ function BlueprintReview(props: BlueprintReview) {
             <span className={classes.bold}>{formatMessage(messages.description)}: </span> {inputs.description ? inputs.description :
             <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>}
           </Typography>
-          {renderGitOptions()}
+          {blueprint.source !== 'GIT' && ( blueprint.id === "GIT" || inputs.pushSite) && renderGitOptions()}
+          <Typography variant="body2" gutterBottom>
+            <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span> {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
+          </Typography>
           {
-            (blueprint.id !== "GIT") && (
-              inputs.pushSite ?
+            (blueprint.id !== "GIT" && inputs.pushSite) &&
               <div>
                 <Typography variant="body2" gutterBottom>
                   {formatMessage(messages.pushSite)}
                 </Typography>
-              </div> :
-              <Typography variant="body2" gutterBottom>
-                {formatMessage(messages.noPushSite)}
-              </Typography>)
+              </div>
           }
         </Grid>
       </Grid>
