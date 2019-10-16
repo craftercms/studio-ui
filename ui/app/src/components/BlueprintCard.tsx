@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       position: 'relative',
     },
     '& .gitCard': {
-      height: '11.3rem',
+      height: '11.1rem',
     },
     '& .cardActions': {
       justifyContent: 'space-around'
