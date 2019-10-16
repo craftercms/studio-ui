@@ -19,7 +19,7 @@ import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import Paper from "@material-ui/core/Paper";
-import { capitalize } from "@material-ui/core/utils";
+//import { capitalize } from "@material-ui/core/utils";
 import { LinearProgress } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import { RedColor } from '../styles/theme';
@@ -91,6 +91,10 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
     variant = 'dots',
     ...other
   } = props;
+
+  const capitalize = (s: string) => {
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  };
 
   return (
     <Paper
