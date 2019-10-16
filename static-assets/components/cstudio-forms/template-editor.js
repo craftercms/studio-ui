@@ -94,10 +94,11 @@ CStudioAuthoring.Module.requireModule(
 
               Promise.all([
                 new Promise((resolve) => {
-                  CStudioAuthoring.Service.getConfiguration(
+                  CStudioAuthoring.Service.getConfigurationV2(
                     CStudioAuthoringContext.site,
                     "/code-editor-config.xml",
-                    { success: resolve }
+                    { success: resolve },
+                    "studio"
                   );
                 }),
                 new Promise((resolve) => {
@@ -105,26 +106,29 @@ CStudioAuthoring.Module.requireModule(
                 })
               ]).then(([config, content]) => {
                 CStudioForms.TemplateEditor.config = config;
-                if ( config && config.snippets ) {
-                  me.addSnippets(config.snippets);
+                if ( config && config.xmlDoc ) {
+                  me.addSnippets(config.xmlDoc);
                 }
 
                 me.renderTemplateEditor(templatePath, content, onSaveCb, contentType, mode);
               });
             },
 
-            addSnippets: (snippets) => {
-              var snippets = snippets.snippet.length ? snippets.snippet : [snippets.snippet];
+            addSnippets: (xmlDoc) => {
+              snippets = xmlDoc.querySelectorAll('snippets snippet');
 
-              snippets.forEach(function(snippet) {
-                const type = snippet.type,
+              for (let snippet of snippets) {
+                const key = snippet.querySelector('key').innerHTML,
+                      label = snippet.querySelector('label').innerHTML,
+                      content = snippet.querySelector('content').textContent.trim(),    // trim to remove empty spaces at beginning and end of the content (added because of CDATA)
+                      type = snippet.querySelector('type').innerHTML,
                       entry = {
-                        label: snippet.label,
-                        value: snippet.content
+                        label,
+                        value: content
                       }
 
-                codeSnippets[type][snippet.key] = entry;
-              })
+                codeSnippets[type][key] = entry;
+              }
             },
 
 						renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, isRead) {
