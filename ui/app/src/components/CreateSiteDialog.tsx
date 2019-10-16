@@ -51,6 +51,7 @@ import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlu
 import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 import Cookies from 'js-cookie';
+import { backgroundColor } from '../styles/theme';
 
 const views: Views = {
   0: {
@@ -105,7 +106,7 @@ const dialogTitleStyles = () => ({
     margin: 0,
     padding: '20px',
     paddingBottom: '20px',
-    background: '#EBEBF0'
+    background: backgroundColor
   },
   title: {
     display: 'flex',
@@ -142,7 +143,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   searchInput: {
     padding: theme.spacing(1, 1, 1, 7),
     width: '100%',
-    backgroundColor: '#EBEBF0',
+    backgroundColor: backgroundColor,
     borderRadius: '5px',
     border: 0,
     '&:focus': {
@@ -175,7 +176,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   dialogActions: {
-    background: '#EBEBF0',
+    background: backgroundColor,
     padding: '8px 20px'
   },
   backBtn: {
@@ -185,7 +186,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '0 20px',
-    background: '#EBEBF0'
+    background: backgroundColor
   },
   simpleTab: {
     minWidth: '80px',
@@ -555,7 +556,7 @@ function CreateSiteDialog() {
             fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
       {( apiState.creatingSite || (apiState.error && apiState.global) || site.details) ?
         (apiState.creatingSite && <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)} subtitle2={formatMessage(messages.createInBackground)}/>) ||
-        (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack} background={'#EBEBF0'}/>) ||
+        (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack} background={backgroundColor}/>) ||
         (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
