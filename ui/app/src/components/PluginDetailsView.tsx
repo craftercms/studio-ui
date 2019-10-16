@@ -31,8 +31,16 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from "@material-ui/core/Grid";
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { backgroundColor } from "../styles/theme";
+import clsx from "clsx";
+// @ts-ignore
+import { fadeIn } from 'react-animations';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  '@keyframes fadeIn': fadeIn,
+  fadeIn: {
+    animationName: '$fadeIn',
+    animationDuration: '1s',
+  },
   detailsView: {
     height: '100%',
     background: '#FFFFFF',
@@ -225,7 +233,7 @@ export default function PluginDetailsView(props: PluginDetailsView) {
   (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
 
   return (
-    <div className={classes.detailsView}>
+    <div className={clsx(classes.detailsView, classes.fadeIn)}>
       <div className={classes.topBar}>
         <Fab aria-label="back" className={classes.circleBtn} onClick={onCloseDetails}>
           <ArrowBackIcon/>
