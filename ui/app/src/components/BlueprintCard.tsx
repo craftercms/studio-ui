@@ -137,7 +137,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   background: {
     background: backgroundColor,
-    height: '180px'
+    height: '180px',
+    overflow: 'hidden'
   }
 }));
 
