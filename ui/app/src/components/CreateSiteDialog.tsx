@@ -47,7 +47,7 @@ import PluginDetailsView from "./PluginDetailsView";
 import EmptyState from "./EmptyState";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
-import { createSite, checkHandleAvailability, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
+import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
 import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 import Cookies from 'js-cookie';
@@ -77,6 +77,7 @@ const siteInitialState: SiteState = {
   description: '',
   pushSite: false,
   useRemote: false,
+  createAsOrphan:false,
   repoUrl: '',
   repoAuthentication: 'none',
   repoRemoteBranch: '',
@@ -334,10 +335,12 @@ function CreateSiteDialog() {
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
-    if(blueprint.id === 'GIT' || blueprint.source === 'GIT'){
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, details: null});
+    if (blueprint.id === 'GIT') {
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:false, details: null});
+    } else if(blueprint.source === 'GIT') {
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:true, details: null});
     } else {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, details: null});
+      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, createAsOrphan:true, details: null});
     }
   }
 
@@ -403,7 +406,8 @@ function CreateSiteDialog() {
         siteId: site.siteId,
         description: site.description,
         singleBranch: false,
-        authenticationType: site.repoAuthentication
+        authenticationType: site.repoAuthentication,
+        createAsOrphan: site.createAsOrphan
       };
       if (site.blueprint.id !== 'GIT' && site.blueprint.source !== 'GIT') {
         params.blueprint = site.blueprint.id;

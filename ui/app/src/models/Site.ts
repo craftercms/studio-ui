@@ -35,6 +35,7 @@ export interface SiteState {
   description: string;
   pushSite: boolean;
   useRemote: boolean;
+  createAsOrphan: boolean;
   repoUrl: string;
   repoAuthentication: string;
   repoRemoteBranch: string;

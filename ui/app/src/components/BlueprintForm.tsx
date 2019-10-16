@@ -20,7 +20,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from "./GitForm";
 import { Blueprint } from "../models/Blueprint";
@@ -28,6 +27,7 @@ import { SiteState } from '../models/Site';
 import { defineMessages, useIntl } from "react-intl";
 import FormBuilder from "./FormBuilder";
 import { fetchSites } from '../services/sites';
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles(() => ({
   form: {
@@ -82,7 +82,12 @@ const messages = defineMessages({
   sandboxBranch: {
     id: 'createSiteDialog.sandboxBranch',
     defaultMessage: 'Sandbox Branch'
-  }
+  },
+  createAsOrphan: {
+    id: 'createSiteDialog.createAsOrphan',
+    defaultMessage: 'Create the site from a remote repository as orphan (no git history)'
+  },
+
 });
 
 function BlueprintForm(props: BlueprintForm) {
@@ -206,6 +211,22 @@ function BlueprintForm(props: BlueprintForm) {
           />
         </Grid>
         {
+          (blueprint.id === 'GIT') &&
+          <Grid item xs={12}>
+              <FormControlLabel
+                  control={
+                    <Switch
+                      name="createAsOrphan"
+                      checked={inputs.createAsOrphan}
+                      onChange={(event) => handleInputChange(event)}
+                      color="primary"
+                    />
+                  }
+                  label={formatMessage(messages.createAsOrphan)}
+              />
+          </Grid>
+        }
+        {
           blueprint.parameters &&
           <FormBuilder parameters={blueprint.parameters} handleInputChange={handleInputChange} inputs={inputs}/>
         }
@@ -214,7 +235,7 @@ function BlueprintForm(props: BlueprintForm) {
           <Grid item xs={12}>
               <FormControlLabel
                   control={
-                    <Checkbox
+                    <Switch
                       name="pushSite"
                       checked={inputs.pushSite}
                       onChange={(event) => handleInputChange(event)}
