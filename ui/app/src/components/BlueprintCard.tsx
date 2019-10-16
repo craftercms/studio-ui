@@ -199,7 +199,6 @@ function BlueprintCard(props: BlueprintCard) {
   function onImageClick(e: any, index: number) {
     e.stopPropagation();
     e.preventDefault();
-    console.log(index);
     onDetails(blueprint, index);
   }
 

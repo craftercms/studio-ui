@@ -172,7 +172,6 @@ export default function PluginDetailsView(props: PluginDetailsView) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
   const {blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex} = props;
-  console.log(selectedIndex);
   const [index, setIndex] = useState(selectedIndex || 0);
   const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
