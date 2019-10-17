@@ -73,6 +73,8 @@ export default function FormBuilder(props: FormBuilder) {
                 label={parameter.label}
                 required={parameter.required}
                 onKeyPress={onKeyPress}
+                InputLabelProps={{shrink: !!parameter.defaultValue}}
+                placeholder={parameter.defaultValue}
                 onChange={(event) => handleInputChange(event, 'blueprintFields')}
                 value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
                 error={(parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name])}
