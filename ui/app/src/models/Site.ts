@@ -28,6 +28,7 @@ export interface Views {
 }
 
 export interface SiteState {
+  [key: string]: string | boolean | Blueprint | number | object;
   blueprint: Blueprint;
   siteId: string;
   siteIdExist: boolean;

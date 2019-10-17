@@ -38,6 +38,7 @@ import BlueprintForm from './BlueprintForm';
 import BlueprintReview from "./BlueprintReview";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
+import ConfirmDialog from "./ConfirmDialog";
 import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
@@ -279,6 +280,22 @@ const messages = defineMessages({
   createInBackground: {
     id: 'createSiteDialog.createInBackground',
     defaultMessage: 'Create in Background'
+  },
+  dialogCloseTitle: {
+    id: 'createSiteDialog.dialogCloseTitle',
+    defaultMessage: 'Confirm Close'
+  },
+  dialogCloseMessage: {
+    id: 'createSiteDialog.dialogCloseMessage',
+    defaultMessage: 'Data entered in the form would be lost upon closing.'
+  },
+  gitBlueprintName: {
+    id: 'createSiteDialog.gitBlueprintName',
+    defaultMessage: 'Remote Git Repository'
+  },
+  gitBlueprintDescription: {
+    id: 'createSiteDialog.gitBlueprintDescription',
+    defaultMessage: 'Create site from a existing remote git repository\''
   }
 });
 
@@ -286,7 +303,10 @@ function CreateSiteDialog() {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
-  const [open, setOpen] = useState(true);
+  const [dialog, setDialog] = useState({
+    open: true,
+    inProgress: false,
+  });
   const [apiState, setApiState] = useState({
     creatingSite: false,
     error: false,
@@ -333,9 +353,50 @@ function CreateSiteDialog() {
   function handleClose(event?:any, reason?: string) {
     if((reason === 'escapeKeyDown') && site.details.blueprint) {
       setSite({...site, details: { blueprint: null, index: null}});
+    } else if((reason === 'escapeKeyDown') && isFormOnProgress()){
+      setDialog({...dialog, inProgress: true });
     } else {
-      setOpen(false);
+      setDialog({...dialog, open: false });
     }
+  }
+
+  function onConfirmOk() {
+    setDialog({...dialog, open: false, inProgress: false });
+  }
+
+  function onConfirmCancel() {
+    setDialog({...dialog, inProgress: false });
+  }
+
+  function isFormOnProgress() {
+    let inProgress = false;
+    const keys = [
+      'siteId',
+      'description',
+      'repoUrl',
+      'repoAuthentication',
+      'repoRemoteBranch',
+      'sandboxBranch',
+      'repoRemoteName',
+      'repoPassword',
+      'repoUsername',
+      'repoToken',
+      'repoKey'
+    ];
+
+    keys.forEach((key: string) => {
+      if (site[key] !== siteInitialState[key]) {
+        inProgress = true;
+      }
+    });
+
+    Object.keys(site.blueprintFields).forEach((key: string) => {
+      if(site.blueprintFields[key] !== '') {
+        inProgress = true;
+      }
+    });
+
+    return inProgress;
   }
 
   function handleCloseDetails() {
@@ -528,13 +589,13 @@ function CreateSiteDialog() {
         ({response}) => {
           const _blueprints: [Blueprint] = [{
             id: 'GIT',
-            name: 'Remote Git Repository',
-            description: 'Create site from a existing remote git repository',
+            name: formatMessage(messages.gitBlueprintName),
+            description: formatMessage(messages.gitBlueprintDescription),
             media: {
               screenshots: [
                 {
-                  description: 'Git logo',
-                  title: 'Remote Git Repository',
+                  description: '',
+                  title: formatMessage(messages.gitBlueprintName),
                   url: gitLogo
                 }
               ],
@@ -591,8 +652,9 @@ function CreateSiteDialog() {
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
+    <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
             fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
+      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel} description={formatMessage(messages.dialogCloseMessage)} title={formatMessage(messages.dialogCloseTitle)}/>
       {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
         (apiState.creatingSite &&
             <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)}
