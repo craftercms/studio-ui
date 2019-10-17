@@ -578,7 +578,7 @@ function CreateSiteDialog() {
     }
     return list.map((item: Blueprint) => {
       return (
-        <Grid item xs={12} sm={6} md={4} key={item.id}>
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={item.id}>
           <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000}
                          onDetails={onDetails}/>
         </Grid>
@@ -588,7 +588,7 @@ function CreateSiteDialog() {
 
   return (
     <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
+            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
       {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
         (apiState.creatingSite &&
             <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)}
