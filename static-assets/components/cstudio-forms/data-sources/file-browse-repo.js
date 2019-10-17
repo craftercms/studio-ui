@@ -38,7 +38,6 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
 		var _self = this;
-		console.log('here');
 		
 		var addContainerEl = null;
 

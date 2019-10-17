@@ -537,7 +537,7 @@
                 currentResults.unshift(results.item);
                 results = currentResults;
 
-                var pathLabel = path ? path.replace(/\//g, ' / ') : "";
+                var pathLabel = path ? path.replace(/\//g, ' / ') : '';
                 $('.current-folder .path').html(pathLabel);
 
                 if(results.length > 0){
