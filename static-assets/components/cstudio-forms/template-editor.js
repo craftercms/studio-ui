@@ -105,10 +105,10 @@ CStudioAuthoring.Module.requireModule(
                 new Promise((resolve) => {
                   CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve }, false);
                 })
-              ]).then(([config, content]) => {
-                CStudioForms.TemplateEditor.config = config;
-                if ( config && config.xmlDoc ) {
-                  me.addSnippets(config.xmlDoc);
+              ]).then(([xmlDoc, content]) => {
+                CStudioForms.TemplateEditor.config = xmlDoc;
+                if ( xmlDoc ) {
+                  me.addSnippets(xmlDoc);
                 }
 
                 me.renderTemplateEditor(templatePath, content, onSaveCb, contentType, mode);
@@ -214,8 +214,10 @@ CStudioAuthoring.Module.requireModule(
 
 											langTools = ace.require("ace/ext/language_tools");
                       var aceEditor = ace.edit("editorPreEl"),
-                          defaultTheme = CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.theme
-                                         && CStudioForms.TemplateEditor.config.theme === 'dark' ? 'tomorrow_night' : 'chrome',
+                          defaultTheme = CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0]
+                                         && CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0].textContent === 'dark'
+                                          ? 'tomorrow_night'
+                                          : 'chrome',
                           theme = localStorage.getItem('templateEditorTheme') ? localStorage.getItem('templateEditorTheme') : defaultTheme;
 
 											aceEditor.setTheme("ace/theme/" + theme);

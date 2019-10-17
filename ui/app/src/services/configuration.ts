@@ -14,8 +14,7 @@ export function fetchFileDOM(site: string, configPath: string, module: string) {
       const xmlString = response ? response.content : '',
                         parser = new DOMParser,
                         xmlDoc = parser.parseFromString(xmlString, "text/xml");
-      response.xmlDoc = xmlDoc;
-      return response;
+      return xmlDoc;
     })
   )
 }
