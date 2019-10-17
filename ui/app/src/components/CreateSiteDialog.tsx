@@ -330,8 +330,12 @@ function CreateSiteDialog() {
     [tab, filteredBlueprints, filteredMarketplace, search.searchSelected],
   );
 
-  function handleClose() {
-    setOpen(false);
+  function handleClose(event?:any, reason?: string) {
+    if((reason === 'escapeKeyDown') && site.details.blueprint) {
+      setSite({...site, details: { blueprint: null, index: null}});
+    } else {
+      setOpen(false);
+    }
   }
 
   function handleCloseDetails() {
