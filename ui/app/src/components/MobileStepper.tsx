@@ -23,6 +23,7 @@ import Paper from "@material-ui/core/Paper";
 import { LinearProgress } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
 import { RedColor } from '../styles/theme';
+import { capitalize } from '../utils/string';
 
 export const styles = (theme: Theme) => ({
   /* Styles applied to the root element. */
@@ -91,10 +92,6 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
     variant = 'dots',
     ...other
   } = props;
-
-  const capitalize = (s: string) => {
-    return s.charAt(0).toUpperCase() + s.slice(1)
-  };
 
   return (
     <Paper

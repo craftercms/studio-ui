@@ -148,31 +148,31 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const messages = defineMessages({
   version: {
-    id: 'common.version',
+    id: 'blueprint.version',
     defaultMessage: 'Version'
   },
   license: {
-    id: 'common.license',
+    id: 'blueprint.license',
     defaultMessage: 'License'
   },
   crafterCms: {
-    id: 'common.crafterCMS',
+    id: 'blueprint.crafterCMS',
     defaultMessage: 'Crafter CMS'
   },
   by: {
-    id: 'common.by',
+    id: 'blueprint.by',
     defaultMessage: 'By'
   },
   noDev: {
-    id: 'common.noDev',
+    id: 'blueprint.noDev',
     defaultMessage: 'No developer specified.'
   },
   use: {
-    id: 'common.use',
+    id: 'blueprint.use',
     defaultMessage: 'Use'
   },
   more: {
-    id: 'common.more',
+    id: 'blueprint.more',
     defaultMessage: 'More...'
   },
 });
