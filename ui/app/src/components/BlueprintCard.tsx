@@ -81,7 +81,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   carouselImg: {
     width: '100%',
     height: '180px',
-    objectFit: 'fill'
+    objectFit: 'cover',
+    '&.git': {
+      objectFit: 'fill',
+    }
   },
   video: {
     width: '100%',
@@ -119,6 +122,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderTop: '1px solid #e4e3e3',
     height: '30px',
     padding: '0',
+    cursor: 'pointer',
     '& .MuiMobileStepper-dot': {
       padding: '6px',
       margin: '4px',
@@ -226,7 +230,7 @@ function BlueprintCard(props: BlueprintCard) {
 
   }
 
-  function renderMedias() {
+  function renderMedias(id: string) {
     let videos: any = (media && media.videos) ? {...media.videos, type: 'video'} : [];
     videos = videos.length ? videos.map((obj: any) => ({...obj, type: 'video'})) : [];
     let screenshots: any = (media && media.screenshots) ? media.screenshots : [];
@@ -235,7 +239,7 @@ function BlueprintCard(props: BlueprintCard) {
       if (item.type !== 'video') {
         return (
           <div key={index} className={classes.background} onClick={ (event) => onImageClick(event, index)}>
-            <img className={classes.carouselImg} src={item.url} alt={item.description}/>
+            <img className={clsx(classes.carouselImg, id === 'GIT' && 'git')} src={item.url} alt={item.description}/>
           </div>
         )
       } else {
@@ -264,7 +268,7 @@ function BlueprintCard(props: BlueprintCard) {
           onChangeIndex={handleChangeIndex}
           enableMouseEvents
         >
-          {renderMedias()}
+          {renderMedias(id)}
         </AutoPlaySwipeableViews>
         {steps > 0 && (id !== 'GIT') &&
         <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={"static"}

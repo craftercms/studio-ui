@@ -635,7 +635,7 @@ function CreateSiteDialog() {
                       </div>
                   </div>
                 }
-                {(site.selectedView == 0) &&
+                {(site.selectedView === 0) &&
                 <div className={clsx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
                   {
                     (tab === 0) ?
@@ -644,7 +644,7 @@ function CreateSiteDialog() {
                       <Grid container spacing={3}>{renderBlueprints(filteredMarketplace)}</Grid>
                   }
                 </div>}
-                {(site.selectedView == 1) && <div className={clsx(classes.slide, classes.fadeIn)}>
+                {(site.selectedView === 1) && <div className={clsx(classes.slide, classes.fadeIn)}>
                   {
                     site.blueprint &&
                     <BlueprintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
@@ -652,7 +652,7 @@ function CreateSiteDialog() {
                                    blueprint={site.blueprint}/>
                   }
                 </div>}
-                {(site.selectedView == 2) && <div className={clsx(classes.slide, classes.fadeIn)}>
+                {(site.selectedView === 2) && <div className={clsx(classes.slide, classes.fadeIn)}>
                   {site.blueprint &&
                   <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
                 </div>}

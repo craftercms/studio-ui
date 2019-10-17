@@ -151,6 +151,12 @@ function BlueprintReview(props: BlueprintReview) {
     }
   }
 
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    if (event.charCode === 13) {
+      console.log('testing');
+    }
+  };
+
   function renderGitOptions() {
     return (<div>
         {
@@ -176,7 +182,7 @@ function BlueprintReview(props: BlueprintReview) {
   }
 
   return (
-    <div className={classes.review}>
+    <div className={classes.review} onKeyPress={onKeyPress}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>

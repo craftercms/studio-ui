@@ -24,11 +24,10 @@ import { SiteState } from "../models/Site";
 import { defineMessages, useIntl } from "react-intl";
 
 interface FormBuilder {
-  parameters: [Parameter],
-
-  handleInputChange(event: any, type?: string): any,
-
-  inputs: SiteState,
+  parameters: [Parameter];
+  handleInputChange(event: any, type?: string): any;
+  onKeyPress(event: any): any;
+  inputs: SiteState;
 }
 
 const useStyles = makeStyles(() => ({
@@ -49,7 +48,7 @@ const messages = defineMessages({
 
 export default function FormBuilder(props: FormBuilder) {
   const classes = useStyles({});
-  const {parameters, handleInputChange, inputs} = props;
+  const {parameters, handleInputChange, inputs, onKeyPress} = props;
   const { formatMessage } = useIntl();
 
   function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean) {
@@ -70,6 +69,7 @@ export default function FormBuilder(props: FormBuilder) {
             name={parameter.name}
             label={parameter.label}
             required={parameter.required}
+            onKeyPress={onKeyPress}
             onChange={(event) => handleInputChange(event, 'blueprintFields')}
             value={inputs.blueprintFields[parameter.name] ? inputs.blueprintFields[parameter.name] : ''}
             error={(parameter.required && inputs.submitted && !inputs.blueprintFields[parameter.name])}

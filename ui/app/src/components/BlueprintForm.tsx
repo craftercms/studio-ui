@@ -135,6 +135,12 @@ function BlueprintForm(props: BlueprintForm) {
     }
   };
 
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    if (event.charCode === 13) {
+      onSubmit(event);
+    }
+  };
+
   function checkSites(event:any) {
     if(sites.find((site:any) => site.siteId === event.target.value)){
       setInputs({...inputs, siteIdExist: true});
@@ -157,7 +163,7 @@ function BlueprintForm(props: BlueprintForm) {
   }
 
   return (
-    <form className={classes.form} onSubmit={e => onSubmit(e)}>
+    <form className={classes.form}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
@@ -165,8 +171,10 @@ function BlueprintForm(props: BlueprintForm) {
             name="siteId"
             label={formatMessage(messages.siteId)}
             required
+            autoFocus={true}
             fullWidth
             onBlur={onCheckNameExist}
+            onKeyPress={onKeyPress}
             onKeyUp={event => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
@@ -189,7 +197,7 @@ function BlueprintForm(props: BlueprintForm) {
             name="sandboxBranch"
             label={formatMessage(messages.sandboxBranch)}
             fullWidth
-            onKeyUp={event => checkSites(event)}
+            onKeyPress={onKeyPress}
             onChange={(event) => handleInputChange(event)}
             InputLabelProps={{shrink: true}}
             placeholder={"master"}
@@ -227,7 +235,7 @@ function BlueprintForm(props: BlueprintForm) {
         }
         {
           blueprint.parameters &&
-          <FormBuilder parameters={blueprint.parameters} handleInputChange={handleInputChange} inputs={inputs}/>
+          <FormBuilder parameters={blueprint.parameters} handleInputChange={handleInputChange} inputs={inputs} onKeyPress={onKeyPress}/>
         }
         {
           (blueprint.id !== 'GIT' && blueprint.source !== 'GIT') &&
@@ -248,12 +256,12 @@ function BlueprintForm(props: BlueprintForm) {
         <Collapse in={inputs.pushSite} timeout={300}>
           {
             (inputs.pushSite && blueprint.source !== 'GIT') &&
-            <GitForm inputs={inputs} expanded={expanded} setExpanded={setExpanded} type="push" handleInputChange={handleInputChange}/>
+            <GitForm inputs={inputs} expanded={expanded} setExpanded={setExpanded} type="push" handleInputChange={handleInputChange} onKeyPress={onKeyPress}/>
           }
         </Collapse>
         {
           (blueprint.id === 'GIT') &&
-          <GitForm type="clone" inputs={inputs} expanded={expanded} setExpanded={setExpanded} handleInputChange={handleInputChange}/>
+          <GitForm type="clone" inputs={inputs} expanded={expanded} setExpanded={setExpanded} handleInputChange={handleInputChange} onKeyPress={onKeyPress}/>
         }
       </Grid>
     </form>

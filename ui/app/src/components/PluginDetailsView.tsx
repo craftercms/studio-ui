@@ -61,12 +61,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '20px'
   },
   dots: {
-    position: 'absolute',
     background: 'none',
-    left: '50%',
-    transform: 'translate(-50%)',
-    top: '-40px',
-    zIndex: 999,
+    borderTop: '1px solid #e4e3e3',
+    height: '30px',
+    padding: '0',
     cursor: 'pointer',
     '& .MuiMobileStepper-dot': {
       padding: '7px',
@@ -251,14 +249,14 @@ export default function PluginDetailsView(props: PluginDetailsView) {
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
-        slideStyle={{ height: '350px'}}
+        slideStyle={{ height: '340px'}}
       >
         {renderMedias()}
       </AutoPlaySwipeableViews>
+      {steps > 1 &&
+      <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
+                     activeStep={index}/>}
       <div className={classes.detailsContainer}>
-        {steps > 1 &&
-        <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
-                       activeStep={index}/>}
         <Grid container spacing={3}>
           <Grid item xs={8}>
             <Typography variant="body1">
