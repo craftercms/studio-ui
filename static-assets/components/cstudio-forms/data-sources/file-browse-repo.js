@@ -38,6 +38,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 		var langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
 
 		var _self = this;
+		console.log('here');
 		
 		var addContainerEl = null;
 
@@ -83,7 +84,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 				CStudioAuthoring.Operations.uploadAsset(CStudioAuthoringContext.site, _self.processPathsForMacros(_self.repoPath), true, {
 					success: function(fileData) {
 						var item = _self.processPathsForMacros(_self.repoPath) + "/" + fileData.fileName;
-						control.insertItem(item, item, fileData.fileExtension, fileData.size);
+						control.insertItem(item, item, fileData.fileExtension, fileData.size, _self.id);
 						if(control._renderItems){
 							control._renderItems();
 						}
@@ -112,7 +113,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 							var item = selectedTOs[i];
 							var fileName = item.name;
 							var fileExtension = fileName.split('.').pop();
-							control.insertItem(item.uri, item.uri, fileExtension);
+							control.insertItem(item.uri, item.uri, fileExtension, null, _self.id);
 							if(control._renderItems){
 								control._renderItems();
 							}
@@ -130,7 +131,7 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
 						var item = selectedTOs[i];
 						var fileName = item.name;
 						var fileExtension = fileName.split('.').pop();
-						control.insertItem(item.uri, item.uri, fileExtension);
+						control.insertItem(item.uri, item.uri, fileExtension, null, _self.id);
 						if(control._renderItems){
 							control._renderItems();
 						}

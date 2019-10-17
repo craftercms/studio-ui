@@ -250,37 +250,39 @@
         item.labelAddLink = CMgs.format(browseLangBundle, "labelAddLink");
         item.labelClone = CMgs.format(browseLangBundle, "labelClone");
 
-        if(item.mimeType.match(/\bimage\b/)){
-            if(repoPath){
-                item.repoPath = repoPath.replace("{item_id}",item.itemId);
-            }
-            var showUrl = true;
-            item.type = "image";
-            item.showUrl = showUrl;
-            item.media = true;
-            var html = template(item);
-            var addedElem = $(html).appendTo($resultsContainer);
-            addedElem.data("item", item);
-        }else{
-            if(item.mimeType.match(/\bvideo\b/)){
+        if(item.mimeType) {
+            if(item.mimeType.match(/\bimage\b/)){
                 if(repoPath){
                     item.repoPath = repoPath.replace("{item_id}",item.itemId);
                 }
                 var showUrl = true;
-                item.type = "video";
+                item.type = "image";
                 item.showUrl = showUrl;
                 item.media = true;
                 var html = template(item);
                 var addedElem = $(html).appendTo($resultsContainer);
                 addedElem.data("item", item);
-            }else {
-                var type = item.isAsset ? "asset" : item.isComponent ? "component" : "page",
-                    showUrl = type == "asset" || type == "page" ? true : false;
-                item.type = type;
-                item.showUrl = showUrl;
-                var html = template(item);
-                var addedElem = $(html).appendTo($resultsContainer);
-                addedElem.data("item", item);
+            }else{
+                if(item.mimeType.match(/\bvideo\b/)){
+                    if(repoPath){
+                        item.repoPath = repoPath.replace("{item_id}",item.itemId);
+                    }
+                    var showUrl = true;
+                    item.type = "video";
+                    item.showUrl = showUrl;
+                    item.media = true;
+                    var html = template(item);
+                    var addedElem = $(html).appendTo($resultsContainer);
+                    addedElem.data("item", item);
+                }else {
+                    var type = item.isAsset ? "asset" : item.isComponent ? "component" : "page",
+                        showUrl = type == "asset" || type == "page" ? true : false;
+                    item.type = type;
+                    item.showUrl = showUrl;
+                    var html = template(item);
+                    var addedElem = $(html).appendTo($resultsContainer);
+                    addedElem.data("item", item);
+                }
             }
         }
     };
@@ -535,7 +537,7 @@
                 currentResults.unshift(results.item);
                 results = currentResults;
 
-                var pathLabel = path.replace(/\//g, ' / ');
+                var pathLabel = path ? path.replace(/\//g, ' / ') : "";
                 $('.current-folder .path').html(pathLabel);
 
                 if(results.length > 0){
@@ -557,6 +559,7 @@
                 }
 
                 me.currentResultsPath = path;
+                
             }
         });
     };

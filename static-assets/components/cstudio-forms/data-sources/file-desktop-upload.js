@@ -51,11 +51,11 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 				path = this.processPathsForMacros(path);
 			}
 		}
-
+x
 		var callback = {
 			success: function(fileData) {
 				if (control) {
-					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
+					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size, this._self.id);
 					if(control._renderItems){
 						control._renderItems();
 					}
@@ -139,7 +139,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 			success: function(fileData) {
 				if (control) {
 					control.deleteItem(key);
-					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size);
+					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size, this._self.id);
 					if(control._renderItems){
 						control._renderItems();
 					}
