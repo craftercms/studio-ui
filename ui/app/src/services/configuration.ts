@@ -8,13 +8,12 @@ export function fetchFileContent(site: string, configPath: string, module: strin
     );
 }
 
-export function fetchFileDOM(site: string, configPath: string, module: string) {  //fetchFileContent -> pipe - map
+export function fetchFileDOM(site: string, configPath: string, module: string) {
   return fetchFileContent(site, configPath, module).pipe(
     map(response => {
       const xmlString = response ? response.content : '',
-                        parser = new DOMParser,
-                        xmlDoc = parser.parseFromString(xmlString, "text/xml");
-      return xmlDoc;
+                        parser = new DOMParser;
+      return parser.parseFromString(xmlString, "text/xml");
     })
   )
 }

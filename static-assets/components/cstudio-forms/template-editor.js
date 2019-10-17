@@ -93,15 +93,11 @@ CStudioAuthoring.Module.requireModule(
               var me = this;
 
               Promise.all([
-                new Promise((resolve) => {
-                  CrafterCMSNext.services.configuration.fetchFileDOM(
-                    CStudioAuthoringContext.site,
-                    "/code-editor-config.xml",
-                    "studio"
-                  ).subscribe(
-                    resolve
-                  );
-                }),
+                CrafterCMSNext.services.configuration.fetchFileDOM(
+                  CStudioAuthoringContext.site,
+                  '/code-editor-config.xml',
+                  'studio'
+                ).toPromise(),
                 new Promise((resolve) => {
                   CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve }, false);
                 })
@@ -118,7 +114,7 @@ CStudioAuthoring.Module.requireModule(
             addSnippets: (xmlDoc) => {
               snippets = xmlDoc.querySelectorAll('snippets snippet');
 
-              for (let snippet of snippets) {
+              Array.from(snippets).forEach(snippet => {
                 const key = snippet.querySelector('key').innerHTML,
                       label = snippet.querySelector('label').innerHTML,
                       content = snippet.querySelector('content').textContent.trim(),    // trim to remove empty spaces at beginning and end of the content (added because of CDATA)
@@ -129,7 +125,7 @@ CStudioAuthoring.Module.requireModule(
                       }
 
                 codeSnippets[type][key] = entry;
-              }
+              });
             },
 
 						renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, isRead) {
