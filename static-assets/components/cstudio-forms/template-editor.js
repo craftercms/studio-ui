@@ -94,11 +94,12 @@ CStudioAuthoring.Module.requireModule(
 
               Promise.all([
                 new Promise((resolve) => {
-                  CStudioAuthoring.Service.getConfigurationV2(
+                  CrafterCMSNext.services.configuration.fetchFileDOM(
                     CStudioAuthoringContext.site,
                     "/code-editor-config.xml",
-                    { success: resolve },
                     "studio"
+                  ).subscribe(
+                    resolve
                   );
                 }),
                 new Promise((resolve) => {

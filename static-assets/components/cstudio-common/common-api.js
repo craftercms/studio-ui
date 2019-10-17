@@ -3385,7 +3385,6 @@ var nodeOpen = false,
 
             // Configuration Services
             getConfigurationUrl: "/api/1/services/api/1/site/get-configuration.json",
-            getConfigurationUrlv2: "/api/2/configuration/get_configuration",
 
             // Workflow Services
             getGoLiveQueueItemsServiceUrl: "/api/1/services/api/1/workflow/get-go-live-items.json",
@@ -3812,25 +3811,6 @@ var nodeOpen = false,
                     }
                 };
                 YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
-            },
-
-            getConfigurationV2: function(site, configPath, callback, module) {
-              const serviceUrl = `${this.getConfigurationUrlv2}?siteId=${site}&module=${module}&path=${configPath}`;
-
-              var serviceCallback = {
-                success: function(response) {
-                  const res = JSON.parse(response.responseText),
-                        xmlString = res ? res.content : '',
-                        parser = new DOMParser,
-                        xmlDoc = parser.parseFromString(xmlString, "text/xml");
-                  res.xmlDoc = xmlDoc;
-                  callback.success(res);
-                },
-                failure: function(response) {
-                    callback.failure(response);
-                }
-              };
-              YConnect.asyncRequest('GET', this.createServiceUri(serviceUrl), serviceCallback);
             },
 
             /**
