@@ -69,7 +69,7 @@ interface Expanded {
 
 interface GitForm {
   inputs: SiteState;
-  handleInputChange(event: any): any;
+  handleInputChange(event: React.ChangeEvent): any;
   onKeyPress(event: any): any;
   setExpanded(expanded: Expanded): any;
   expanded: Expanded;

@@ -174,7 +174,7 @@ function BlueprintForm(props: BlueprintForm) {
             fullWidth
             onBlur={onCheckNameExist}
             onKeyPress={onKeyPress}
-            onKeyUp={event => checkSites(event)}
+            onKeyUp={(event) => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
             inputProps={{maxLength: 50}}
