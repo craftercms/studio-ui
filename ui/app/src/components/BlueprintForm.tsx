@@ -40,7 +40,6 @@ interface BlueprintForm {
   inputs: SiteState;
   setInputs(state: SiteState): any;
   onSubmit(event: any): any;
-  swipeableViews: any;
   blueprint: Blueprint;
   onCheckNameExist(event: any): any;
 }

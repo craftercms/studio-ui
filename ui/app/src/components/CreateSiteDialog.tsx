@@ -123,8 +123,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     animationDuration: '1s',
   },
   paperScrollPaper: {
-    height: '100%',
-    //maxHeight: '900px'
+    height: 'calc(100% - 100px)',
+    maxHeight: '1200px'
   },
   searchContainer:{
     position: 'absolute',
@@ -299,7 +299,7 @@ function CreateSiteDialog() {
   });
   const [site, setSite] = useState(siteInitialState);
   const classes = useStyles({});
-  const swipeableViews = useRef(null);
+  const finishRef = useRef(null);
 
   const {formatMessage} = useIntl();
 
@@ -316,18 +316,18 @@ function CreateSiteDialog() {
   setRequestForgeryToken();
 
   useEffect(() => {
-      if (swipeableViews.current && !apiState.error) {
-        swipeableViews.current.updateHeight();
-      }
       if (tab === 0 && blueprints === null && !apiState.error) {
         getBlueprints();
       }
       if (tab === 1 && marketplace === null && !apiState.error) {
         getMarketPlace()
       }
+      if(finishRef && site.selectedView === 2) {
+        finishRef.current.focus();
+      }
     },
     // eslint-disable-next-line
-    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected],
+    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
   );
 
   function handleClose(event?:any, reason?: string) {
@@ -651,7 +651,7 @@ function CreateSiteDialog() {
                 {(site.selectedView === 1) && <div className={clsx(classes.slide, classes.fadeIn)}>
                   {
                     site.blueprint &&
-                    <BlueprintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
+                    <BlueprintForm inputs={site} setInputs={setSite}
                                    onSubmit={handleFinish} onCheckNameExist={checkNameExist}
                                    blueprint={site.blueprint}/>
                   }
@@ -672,7 +672,7 @@ function CreateSiteDialog() {
                 <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                   {formatMessage(messages.back)}
                 </Button>
-                <Button variant="contained" color="primary" onClick={handleFinish}>
+                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
                   {views[site.selectedView].btnText}
                 </Button>
             </DialogActions>
