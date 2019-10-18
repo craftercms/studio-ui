@@ -31,7 +31,6 @@ import BlueprintCard from './BlueprintCard';
 import Spinner from "./Spinner";
 import InputBase from '@material-ui/core/InputBase';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import SwipeableViews from 'react-swipeable-views';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -39,6 +38,7 @@ import BlueprintForm from './BlueprintForm';
 import BlueprintReview from "./BlueprintReview";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
+import ConfirmDialog from "./ConfirmDialog";
 import { Blueprint } from '../models/Blueprint';
 import { Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
@@ -51,6 +51,9 @@ import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlu
 import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 import Cookies from 'js-cookie';
+import { backgroundColor } from '../styles/theme';
+// @ts-ignore
+import { fadeIn } from 'react-animations';
 
 const views: Views = {
   0: {
@@ -77,7 +80,7 @@ const siteInitialState: SiteState = {
   description: '',
   pushSite: false,
   useRemote: false,
-  createAsOrphan:false,
+  createAsOrphan: false,
   repoUrl: '',
   repoAuthentication: 'none',
   repoRemoteBranch: '',
@@ -89,7 +92,7 @@ const siteInitialState: SiteState = {
   repoKey: '',
   submitted: false,
   selectedView: 0,
-  details: null,
+  details: {blueprint: null, index: null},
   blueprintFields: {},
 };
 
@@ -105,7 +108,7 @@ const dialogTitleStyles = () => ({
     margin: 0,
     padding: '20px',
     paddingBottom: '20px',
-    background: '#EBEBF0'
+    background: backgroundColor
   },
   title: {
     display: 'flex',
@@ -115,14 +118,28 @@ const dialogTitleStyles = () => ({
 });
 
 const useStyles = makeStyles((theme: Theme) => ({
+  '@keyframes fadeIn': fadeIn,
+  fadeIn: {
+    animationName: '$fadeIn',
+    animationDuration: '1s',
+  },
   paperScrollPaper: {
-    height: '100%',
-    maxHeight: '700px'
+    height: 'calc(100% - 100px)',
+    maxHeight: '1200px'
+  },
+  searchContainer:{
+    position: 'absolute',
+    background: 'white',
+    padding: '20px',
+    width: '100%',
+    left: '50%',
+    transform: 'translate(-50%)',
+    zIndex: 1,
   },
   search: {
-    position: 'relative',
-    width: 'calc(100% - 40px)',
-    margin: '20px auto',
+    width: '100%',
+    margin: 'auto',
+    position: 'relative'
   },
   searchIcon: {
     width: theme.spacing(7),
@@ -142,7 +159,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   searchInput: {
     padding: theme.spacing(1, 1, 1, 7),
     width: '100%',
-    backgroundColor: '#EBEBF0',
+    backgroundColor: backgroundColor,
     borderRadius: '5px',
     border: 0,
     '&:focus': {
@@ -157,25 +174,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   dialogContent: {
     padding: '0',
+    position: 'relative'
   },
   slide: {
     padding: 20,
-    height: '532px',
-    overflow: 'auto',
-    display: 'flex'
-  },
-  slideBP: {
-    padding: '20px',
-    height: '550px',
+    flexWrap: 'wrap',
+    height: '100%',
     overflow: 'auto',
     display: 'flex',
     '&.selected': {
-      padding: '1px 20px 20px 20px',
-      height: '474px',
+      height: '100%',
+      paddingTop: '77px',
     }
   },
   dialogActions: {
-    background: '#EBEBF0',
+    background: backgroundColor,
     padding: '8px 20px'
   },
   backBtn: {
@@ -185,7 +198,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '0 20px',
-    background: '#EBEBF0'
+    background: backgroundColor
   },
   simpleTab: {
     minWidth: '80px',
@@ -267,6 +280,22 @@ const messages = defineMessages({
   createInBackground: {
     id: 'createSiteDialog.createInBackground',
     defaultMessage: 'Create in Background'
+  },
+  dialogCloseTitle: {
+    id: 'createSiteDialog.dialogCloseTitle',
+    defaultMessage: 'Confirm Close'
+  },
+  dialogCloseMessage: {
+    id: 'createSiteDialog.dialogCloseMessage',
+    defaultMessage: 'Data entered in the form would be lost upon closing.'
+  },
+  gitBlueprintName: {
+    id: 'createSiteDialog.gitBlueprintName',
+    defaultMessage: 'Remote Git Repository'
+  },
+  gitBlueprintDescription: {
+    id: 'createSiteDialog.gitBlueprintDescription',
+    defaultMessage: 'Create site from a existing remote git repository\''
   }
 });
 
@@ -274,8 +303,11 @@ function CreateSiteDialog() {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
-  const [open, setOpen] = useState(true);
-  const [ apiState, setApiState ] = useState({
+  const [dialog, setDialog] = useState({
+    open: true,
+    inProgress: false,
+  });
+  const [apiState, setApiState] = useState({
     creatingSite: false,
     error: false,
     global: false,
@@ -287,7 +319,7 @@ function CreateSiteDialog() {
   });
   const [site, setSite] = useState(siteInitialState);
   const classes = useStyles({});
-  const swipeableViews = useRef(null);
+  const finishRef = useRef(null);
 
   const {formatMessage} = useIntl();
 
@@ -304,30 +336,75 @@ function CreateSiteDialog() {
   setRequestForgeryToken();
 
   useEffect(() => {
-      if (swipeableViews.current && !apiState.error) {
-        swipeableViews.current.updateHeight();
-      }
       if (tab === 0 && blueprints === null && !apiState.error) {
         getBlueprints();
       }
       if (tab === 1 && marketplace === null && !apiState.error) {
         getMarketPlace()
       }
+      if(finishRef && site.selectedView === 2) {
+        finishRef.current.focus();
+      }
     },
     // eslint-disable-next-line
-    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected],
+    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
   );
 
-  function handleClose() {
-    setOpen(false);
+  function handleClose(event?:any, reason?: string) {
+    if((reason === 'escapeKeyDown') && site.details.blueprint) {
+      setSite({...site, details: { blueprint: null, index: null}});
+    } else if((reason === 'escapeKeyDown') && isFormOnProgress()){
+      setDialog({...dialog, inProgress: true });
+    } else {
+      setDialog({...dialog, open: false });
+    }
+  }
+
+  function onConfirmOk() {
+    setDialog({...dialog, open: false, inProgress: false });
+  }
+
+  function onConfirmCancel() {
+    setDialog({...dialog, inProgress: false });
+  }
+
+  function isFormOnProgress() {
+    let inProgress = false;
+    const keys = [
+      'siteId',
+      'description',
+      'repoUrl',
+      'repoAuthentication',
+      'repoRemoteBranch',
+      'sandboxBranch',
+      'repoRemoteName',
+      'repoPassword',
+      'repoUsername',
+      'repoToken',
+      'repoKey'
+    ];
+
+    keys.forEach((key: string) => {
+      if (site[key] !== siteInitialState[key]) {
+        inProgress = true;
+      }
+    });
+
+    Object.keys(site.blueprintFields).forEach((key: string) => {
+      if(site.blueprintFields[key] !== '') {
+        inProgress = true;
+      }
+    });
+
+    return inProgress;
   }
 
   function handleCloseDetails() {
-    setSite({...site, details: null});
+    setSite({...site, details: {blueprint: null, index: null}});
   }
 
   function handleErrorBack() {
-    setApiState({ ...apiState, error: false, global: false });
+    setApiState({...apiState, error: false, global: false});
   }
 
   function handleSearchClick() {
@@ -336,11 +413,34 @@ function CreateSiteDialog() {
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
     if (blueprint.id === 'GIT') {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:false, details: null});
-    } else if(blueprint.source === 'GIT') {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, pushSite: false, createAsOrphan:true, details: null});
+      setSite({
+        ...site,
+        selectedView: view,
+        submitted: false,
+        blueprint: blueprint,
+        pushSite: false,
+        createAsOrphan: false,
+        details: {blueprint: null, index: null}
+      })
+    } else if (blueprint.source === 'GIT') {
+      setSite({
+        ...site,
+        selectedView: view,
+        submitted: false,
+        blueprint: blueprint,
+        pushSite: false,
+        createAsOrphan: true,
+        details: {blueprint: null, index: null}
+      })
     } else {
-      setSite({...site, selectedView: view, submitted: false, blueprint: blueprint, createAsOrphan:true, details: null});
+      setSite({
+        ...site,
+        selectedView: view,
+        submitted: false,
+        blueprint: blueprint,
+        createAsOrphan: true,
+        details: {blueprint: null, index: null}
+      })
     }
   }
 
@@ -365,7 +465,7 @@ function CreateSiteDialog() {
     if (validateForm()) {
       if (site.selectedView === 2) {
         const params = createParams();
-        setApiState({ ...apiState, creatingSite: true });
+        setApiState({...apiState, creatingSite: true});
         createNewSite(params);
       } else {
         setSite({...site, selectedView: 2});
@@ -375,9 +475,9 @@ function CreateSiteDialog() {
 
   function checkAdditionalFields() {
     let valid = true;
-    if(site.blueprint.parameters) {
+    if (site.blueprint.parameters) {
       site.blueprint.parameters.forEach(parameter => {
-        if(parameter.required && !site.blueprintFields[parameter.name]) {
+        if (parameter.required && !site.blueprintFields[parameter.name]) {
           valid = false;
         }
       });
@@ -416,7 +516,7 @@ function CreateSiteDialog() {
         params.useRemote = true;
       }
       //it is from marketplace
-      if(site.blueprint.source === 'GIT') {
+      if (site.blueprint.source === 'GIT') {
         params.remoteUrl = site.blueprint.url;
         params.remoteBranch = site.blueprint.ref;
         params.remoteName = 'origin';
@@ -440,7 +540,7 @@ function CreateSiteDialog() {
       params.createOption = site.pushSite ? 'push' : 'clone';
 
       //TODO# remove this when change to Api2
-      let _params:any = {};
+      let _params: any = {};
       Object.keys(params).forEach(key => {
         _params[underscore(key)] = params[key];
       });
@@ -452,7 +552,7 @@ function CreateSiteDialog() {
     createSite(site)
       .subscribe(
         () => {
-          setApiState({ ...apiState, creatingSite: false });
+          setApiState({...apiState, creatingSite: false});
           handleClose();
           //TODO# Change to site.siteId when create site is on API2
           Cookies.set('crafterSite', site.site_id, {
@@ -463,8 +563,8 @@ function CreateSiteDialog() {
         },
         ({response}) => {
           //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
-          const _response = {...response,code: '', documentationUrl: '', remedialAction: '' };
-          setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response, global: true });
+          const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
+          setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response, global: true});
         }
       )
   }
@@ -476,8 +576,8 @@ function CreateSiteDialog() {
           setMarketplace(response.plugins);
         },
         ({response}) => {
-          if(response) {
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+          if (response) {
+            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response.response});
           }
         }
       );
@@ -489,13 +589,13 @@ function CreateSiteDialog() {
         ({response}) => {
           const _blueprints: [Blueprint] = [{
             id: 'GIT',
-            name: 'Remote Git Repository',
-            description: 'Create site from a existing remote git repository',
+            name: formatMessage(messages.gitBlueprintName),
+            description: formatMessage(messages.gitBlueprintDescription),
             media: {
               screenshots: [
                 {
-                  description: 'Git logo',
-                  title: 'Remote Git Repository',
+                  description: '',
+                  title: formatMessage(messages.gitBlueprintName),
                   url: gitLogo
                 }
               ],
@@ -508,8 +608,8 @@ function CreateSiteDialog() {
           setBlueprints(_blueprints);
         },
         ({response}) => {
-          if(response) {
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+          if (response) {
+            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response.response});
           }
         }
       );
@@ -524,39 +624,46 @@ function CreateSiteDialog() {
           },
           ({response}) => {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
-            const _response = {...response,code: '', documentationUrl: '', remedialAction: '' };
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response });
+            const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
+            setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response});
           }
         );
     }
   }
 
-  function onDetails(blueprint: Blueprint) {
-    setSite({...site, details:blueprint })
+  function onDetails(blueprint: Blueprint, index: number) {
+    setSite({...site, details: {blueprint: blueprint, index: index}});
   }
 
   function renderBlueprints(list: Blueprint[]) {
-    if(list.length === 0 ) {
+    if (list.length === 0) {
       return (
         <EmptyState title={formatMessage(messages.noBlueprints)} subtitle={formatMessage(messages.changeQuery)}/>
       )
     }
     return list.map((item: Blueprint) => {
       return (
-        <Grid item xs={12} sm={6} md={4} key={item.id}>
-          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000} onDetails={onDetails}/>
+        <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={item.id}>
+          <BlueprintCard blueprint={item} onBlueprintSelected={handleBlueprintSelected} interval={5000}
+                         onDetails={onDetails}/>
         </Grid>
       );
     })
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'md'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      {( apiState.creatingSite || (apiState.error && apiState.global) || site.details) ?
-        (apiState.creatingSite && <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)} subtitle2={formatMessage(messages.createInBackground)}/>) ||
-        (apiState.error && <ErrorState error={apiState.errorResponse} onBack={handleErrorBack} background={'#EBEBF0'}/>) ||
-        (site.details && <PluginDetailsView blueprint={site.details} onBlueprintSelected={handleBlueprintSelected} onCloseDetails={handleCloseDetails} interval={5000}/>):
+    <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
+            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
+      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel} description={formatMessage(messages.dialogCloseMessage)} title={formatMessage(messages.dialogCloseTitle)}/>
+      {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
+        (apiState.creatingSite &&
+            <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)}
+                          subtitle2={formatMessage(messages.createInBackground)}/>) ||
+        (apiState.error &&
+            <ErrorState error={apiState.errorResponse} onBack={handleErrorBack} background={backgroundColor}/>) ||
+        (site.details && <PluginDetailsView blueprint={site.details.blueprint} selectedIndex={site.details.index}
+                                            onBlueprintSelected={handleBlueprintSelected}
+                                            onCloseDetails={handleCloseDetails} interval={5000}/>) :
         <div className={classes.dialogContainer}>
           <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
           {
@@ -575,61 +682,59 @@ function CreateSiteDialog() {
               <DialogContent className={classes.dialogContent}>
                 {
                   (search.searchSelected && site.selectedView === 0) &&
-                  <div className={classes.search}>
-                      <div className={classes.searchIcon}>
-                          <SearchIcon/>
+                  <div className={classes.searchContainer}>
+                      <div className={classes.search}>
+                          <div className={classes.searchIcon}>
+                              <SearchIcon/>
+                          </div>
+                          <InputBase
+                              placeholder="Search…"
+                              autoFocus={true}
+                              classes={{
+                                root: classes.searchRoot,
+                                input: classes.searchInput,
+                              }}
+                              value={search.searchKey}
+                              onChange={e => setSearch({...search, searchKey: e.target.value})}
+                              inputProps={{'aria-label': 'search'}}
+                          />
                       </div>
-                      <InputBase
-                          placeholder="Search…"
-                          autoFocus={true}
-                          classes={{
-                            root: classes.searchRoot,
-                            input: classes.searchInput,
-                          }}
-                          value={search.searchKey}
-                          onChange={e => setSearch({...search, searchKey: e.target.value})}
-                          inputProps={{'aria-label': 'search'}}
-                      />
                   </div>
                 }
-                <SwipeableViews
-                  animateHeight
-                  ref={swipeableViews}
-                  index={site.selectedView}>
-                  <div className={clsx(classes.slideBP, search.searchSelected && 'selected')}>
-                    {
-                      (tab === 0) ?
-                          <Grid container spacing={3}>{renderBlueprints(filteredBlueprints)}</Grid>
-                        :
-                          <Grid container spacing={3}>{renderBlueprints(filteredMarketplace)}</Grid>
-                    }
-                  </div>
-                  <div className={classes.slide}>
-                    {
-                      site.blueprint &&
-                      <BlueprintForm swipeableViews={swipeableViews} inputs={site} setInputs={setSite}
-                                     onSubmit={handleFinish} onCheckNameExist={checkNameExist}
-                                     blueprint={site.blueprint}/>
-                    }
-                  </div>
-                  <div className={classes.slide}>
-                    {site.blueprint &&
-                    <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
-                  </div>
-                </SwipeableViews>
+                {(site.selectedView === 0) &&
+                <div className={clsx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
+                  {
+                    (tab === 0) ?
+                      <Grid container spacing={3}>{renderBlueprints(filteredBlueprints)}</Grid>
+                      :
+                      <Grid container spacing={3}>{renderBlueprints(filteredMarketplace)}</Grid>
+                  }
+                </div>}
+                {(site.selectedView === 1) && <div className={clsx(classes.slide, classes.fadeIn)}>
+                  {
+                    site.blueprint &&
+                    <BlueprintForm inputs={site} setInputs={setSite}
+                                   onSubmit={handleFinish} onCheckNameExist={checkNameExist}
+                                   blueprint={site.blueprint}/>
+                  }
+                </div>}
+                {(site.selectedView === 2) && <div className={clsx(classes.slide, classes.fadeIn)}>
+                  {site.blueprint &&
+                  <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
+                </div>}
               </DialogContent>
-              : apiState.error? <ErrorState error={apiState.errorResponse}/> :
+              : apiState.error ? <ErrorState error={apiState.errorResponse}/> :
               <div className={classes.loading}>
                 <Spinner/>
               </div>
           }
           {
             (site.selectedView !== 0) &&
-            <DialogActions className={classes.dialogActions}>
+            <DialogActions className={clsx(classes.dialogActions, classes.fadeIn)}>
                 <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                   {formatMessage(messages.back)}
                 </Button>
-                <Button variant="contained" color="primary" onClick={handleFinish}>
+                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
                   {views[site.selectedView].btnText}
                 </Button>
             </DialogActions>

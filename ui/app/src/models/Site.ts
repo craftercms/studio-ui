@@ -28,6 +28,7 @@ export interface Views {
 }
 
 export interface SiteState {
+  [key: string]: string | boolean | Blueprint | number | object;
   blueprint: Blueprint;
   siteId: string;
   siteIdExist: boolean;
@@ -47,7 +48,7 @@ export interface SiteState {
   repoKey: string;
   submitted: boolean;
   selectedView: number;
-  details: Blueprint;
+  details: { blueprint: Blueprint, index: number};
   blueprintFields?: {
     [key: string]: string;
   }
