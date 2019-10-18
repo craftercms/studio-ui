@@ -21,8 +21,6 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
-import IconButton from "@material-ui/core/IconButton";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
@@ -30,73 +28,85 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Blueprint } from "../models/Blueprint";
 import { defineMessages, useIntl } from "react-intl";
 import MobileStepper from "./MobileStepper";
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import { backgroundColor } from "../styles/theme";
+import Button from "@material-ui/core/Button";
+import { Theme } from "@material-ui/core";
+import clsx from "clsx";
 
 
 interface BlueprintCard {
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
-  onDetails(blueprint: Blueprint): any,
+
+  onDetails(blueprint: Blueprint, index?: number): any,
+
   blueprint: Blueprint,
   interval: number;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     flexGrow: 1,
   },
   card: {
     maxWidth: '100%',
-    minHeight: '354px',
+    minHeight: '358px',
     '& .cardTitle': {
       fontWeight: '600',
-      lineHeight: '1.5rem'
+      lineHeight: '1.5rem',
+      overflow: 'hidden',
+      display: '-webkit-box',
+      '-webkit-line-clamp': 1,
+      '-webkit-box-orient': 'vertical',
+      marginBottom: 0
     },
     '& .cardContent': {
       height: '6rem',
-      paddingBottom: '0',
+      padding: '12px 14px 5px 14px',
       position: 'relative',
     },
-    '& .description': {
-      overflow: 'hidden',
-      display: '-webkit-box',
-      '-webkit-line-clamp': 2,
-      '-webkit-box-orient': 'vertical',
+    '& .gitCard': {
+      height: '11.1rem',
     },
     '& .cardActions': {
-      paddingTop: '0',
-    }
+      justifyContent: 'space-around'
+    },
+    '& .developer': {
+      overflow: 'hidden',
+      display: '-webkit-box',
+      '-webkit-line-clamp': 1,
+      '-webkit-box-orient': 'vertical',
+    },
   },
   carouselImg: {
     width: '100%',
-    height: '200px',
-    objectFit: 'contain'
+    height: '180px',
+    objectFit: 'cover',
+    '&.git': {
+      objectFit: 'fill',
+    }
   },
   video: {
     width: '100%',
-    height: '200px',
+    height: '180px',
     outline: 'none',
-    background: '#ebebf1'
+    background: backgroundColor
   },
   chip: {
     fontSize: '12px',
     color: 'gray',
-    marginRight: '8px',
     backgroundColor: '#f5f5f5',
     padding: '5px',
     borderRadius: '5px',
+    display: 'inline-block',
     '& label': {
-      display: 'block',
+      marginRight: '5px',
       marginBottom: 0,
       fontWeight: 400,
     },
     '& span': {
       color: '#2F2707'
     }
-  },
-  gitOptions: {
-    height: '4.3rem'
   },
   options: {
     marginLeft: 'auto'
@@ -108,35 +118,63 @@ const useStyles = makeStyles(() => ({
     position: 'relative'
   },
   dots: {
-    position: 'absolute',
     background: 'none',
-    left: '50%',
-    transform: 'translate(-50%)',
-    top: '-30px',
-    zIndex: 999,
+    borderTop: '1px solid #e4e3e3',
+    height: '30px',
+    padding: '0',
+    cursor: 'pointer',
     '& .MuiMobileStepper-dot': {
       padding: '6px',
-      margin: '2px',
-      '&:hover':{
+      margin: '4px',
+      '&:hover': {
         background: 'gray'
       }
     }
+  },
+  use: {
+    width: '50%',
+  },
+  more: {
+    width: '50%',
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+  background: {
+    background: backgroundColor,
+    height: '180px',
+    overflow: 'hidden'
   }
 }));
 
 const messages = defineMessages({
   version: {
-    id: 'common.version',
+    id: 'blueprint.version',
     defaultMessage: 'Version'
   },
   license: {
-    id: 'common.license',
+    id: 'blueprint.license',
     defaultMessage: 'License'
   },
   crafterCms: {
-    id: 'common.crafterCMS',
+    id: 'blueprint.crafterCMS',
     defaultMessage: 'Crafter CMS'
-  }
+  },
+  by: {
+    id: 'blueprint.by',
+    defaultMessage: 'By'
+  },
+  noDev: {
+    id: 'blueprint.noDev',
+    defaultMessage: 'No developer specified.'
+  },
+  use: {
+    id: 'blueprint.use',
+    defaultMessage: 'Use'
+  },
+  more: {
+    id: 'blueprint.more',
+    defaultMessage: 'More...'
+  },
 });
 
 function BlueprintCard(props: BlueprintCard) {
@@ -144,26 +182,14 @@ function BlueprintCard(props: BlueprintCard) {
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
   const {onBlueprintSelected, blueprint, interval, onDetails} = props;
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const {media, name, description, version, license, crafterCmsVersions, id} = blueprint;
-  const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
-  const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
-  const { formatMessage } = useIntl();
+  const {media, name, license, id, developer} = blueprint;
+  const {formatMessage} = useIntl();
 
   function handleChangeIndex(value: number) {
     setIndex(value);
   }
 
-  function handleClick(event: any) {
-    setAnchorEl(event.currentTarget);
-  }
-
-  function handleClose(blueprint: Blueprint) {
-    setAnchorEl(null);
-    onDetails(blueprint);
-  }
-
-  function onDotClick(e:any, step: number) {
+  function onDotClick(e: any, step: number) {
     e.stopPropagation();
     setIndex(step);
   }
@@ -176,21 +202,50 @@ function BlueprintCard(props: BlueprintCard) {
     setPlay(false);
   }
 
-  function renderMedias(){
-    let videos:any = (media && media.videos)? {...media.videos, type: 'video'} : [];
-    videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
-    let screenshots:any = (media && media.screenshots)? media.screenshots : [];
+  function onImageClick(e: any, index: number) {
+    if(blueprint.id === 'GIT') return false;
+    e.stopPropagation();
+    e.preventDefault();
+    onDetails(blueprint, index);
+  }
+
+  function renderDeveloper() {
+    if (developer) {
+      if (developer.company) {
+        return (
+          <Typography gutterBottom variant="subtitle2" className={"developer"} color={"textSecondary"}>
+            {formatMessage(messages.by)} {developer.company.name}
+          </Typography>
+        )
+      } else {
+        return developer.people.map((item:any) => item.name).join(",");
+      }
+    } else {
+      return (
+        <Typography gutterBottom variant="subtitle1" className={"developer"} color={"textSecondary"}>
+          {formatMessage(messages.noDev)}
+        </Typography>
+      )
+    }
+
+  }
+
+  function renderMedias(id: string) {
+    let videos: any = (media && media.videos) ? {...media.videos, type: 'video'} : [];
+    videos = videos.length ? videos.map((obj: any) => ({...obj, type: 'video'})) : [];
+    let screenshots: any = (media && media.screenshots) ? media.screenshots : [];
     const merged = [...videos, ...screenshots];
     return merged.map((item, index) => {
-      if(item.type !== 'video') {
+      if (item.type !== 'video') {
         return (
-          <div key={index}>
-            <img className={classes.carouselImg} src={item.url} alt={item.description}/>
+          <div key={index} className={classes.background} onClick={ (event) => onImageClick(event, index)}>
+            <img className={clsx(classes.carouselImg, id === 'GIT' && 'git')} src={item.url} alt={item.description}/>
           </div>
         )
-      }else {
+      } else {
         return (
-          <video key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay} onEnded={handleEnded}>
+          <video key={index} controls className={classes.video} autoPlay={play} onPlaying={handlePlay}
+                 onEnded={handleEnded}>
             <source src={item.url} type="video/mp4"/>
             Your browser does not support the video tag.
           </video>
@@ -198,9 +253,10 @@ function BlueprintCard(props: BlueprintCard) {
       }
     })
   }
+
   let steps = 0;
-  (blueprint.media && blueprint.media.screenshots)? steps = blueprint.media.screenshots.length : steps = 0;
-  (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
+  (blueprint.media && blueprint.media.screenshots) ? steps = blueprint.media.screenshots.length : steps = 0;
+  (blueprint.media && blueprint.media.videos) ? steps += blueprint.media.videos.length : steps += 0;
 
   return (
     <Card className={classes.card}>
@@ -212,49 +268,37 @@ function BlueprintCard(props: BlueprintCard) {
           onChangeIndex={handleChangeIndex}
           enableMouseEvents
         >
-          {renderMedias()}
+          {renderMedias(id)}
         </AutoPlaySwipeableViews>
-        <CardContent className={'cardContent'}>
-          {steps > 1 && <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'} activeStep={index}/>}
-          <Typography gutterBottom variant="subtitle1" component="h2" className={'cardTitle'}>
+        {steps > 0 && (id !== 'GIT') &&
+        <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={"static"}
+                       activeStep={index}/>}
+        <CardContent className={clsx('cardContent', id === 'GIT' && 'gitCard')}>
+          <Typography gutterBottom variant="subtitle1" component="h2" className={"cardTitle"}>
             {name}
           </Typography>
-          <Typography variant="body2" component="p" className={'description'}>
-            {description}
-          </Typography>
+          {
+            (id !== 'GIT') &&
+            <div>
+              {renderDeveloper()}
+                <div className={classes.chip}>
+                    <label>{formatMessage(messages.license)}</label>
+                    <span>{license.name}</span>
+                </div>
+            </div>
+          }
         </CardContent>
-        {
-          (id === 'GIT') &&
-          <div className={classes.gitOptions}/>
-        }
       </CardActionArea>
       {
         (id !== 'GIT') &&
-        <CardActions disableSpacing className={'cardActions'}>
-            <div className={classes.chip}>
-                <label>{formatMessage(messages.version)}</label>
-                <span>{fullVersion}</span>
-            </div>
-            <div className={classes.chip}>
-                <label>{formatMessage(messages.license)}</label>
-                <span>{license.name}</span>
-            </div>
-            <div className={classes.chip}>
-                <label>{formatMessage(messages.crafterCms)}</label>
-                <span>{crafterCMS}</span>
-            </div>
-            <IconButton aria-label="options" aria-controls="simple-menu" aria-haspopup="true" className={classes.options} onClick={handleClick}>
-                <MoreVertIcon/>
-            </IconButton>
-            <Menu
-                id="simple-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
-                <MenuItem onClick={() => handleClose(blueprint)}>Details</MenuItem>
-            </Menu>
+        <CardActions className={'cardActions'}>
+            <Button variant="outlined" color="primary" onClick={() => onBlueprintSelected(blueprint, 1)}
+                    className={classes.use}>
+              {formatMessage(messages.use)}
+            </Button>
+            <Button className={classes.more} onClick={() => onDetails(blueprint)}>
+              {formatMessage(messages.more)}
+            </Button>
         </CardActions>
       }
     </Card>

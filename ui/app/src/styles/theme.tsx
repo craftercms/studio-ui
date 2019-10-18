@@ -18,6 +18,9 @@
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import { fade } from "@material-ui/core/styles";
 
+export const backgroundColor = '#E7E7E7';
+export const RedColor = '#FF3B30';
+
 const defaultTheme = createMuiTheme();
 export  const theme = createMuiTheme({
   typography: {
@@ -32,11 +35,11 @@ export  const theme = createMuiTheme({
   },
   palette:{
     primary: {
-      main: '#007AFF',
+      main: '#7E9DBB',
       contrastText: '#FFFFFF'
     },
     text: {
-      secondary: '#636366'
+      secondary: '#828282'
     }
   },
   zIndex: {
@@ -54,7 +57,7 @@ export  const theme = createMuiTheme({
         transformOrigin: 'top left !important'
       },
       asterisk: {
-        color: '#f44336',
+        color: RedColor,
       }
     },
     MuiInputBase: {
@@ -69,8 +72,8 @@ export  const theme = createMuiTheme({
           display: 'none'
         },
         '&$error .MuiInputBase-input': {
-          color: '#f44336',
-          borderColor: '#f44336',
+          color: RedColor,
+          borderColor: RedColor,
           '&:focus':{
             boxShadow: 'rgba(244, 67, 54, 0.25) 0 0 0 0.2rem'
           }
@@ -90,17 +93,17 @@ export  const theme = createMuiTheme({
         padding: '10px 12px',
         transition: defaultTheme.transitions.create(['border-color', 'box-shadow']),
         '&:focus:invalid': {
-          boxShadow: `${fade('#007AFF', 0.25)} 0 0 0 0.2rem`,
+          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`,
         },
         '&:focus': {
-          boxShadow: `${fade('#007AFF', 0.25)} 0 0 0 0.2rem`,
-          borderColor: '#007AFF',
+          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`,
+          borderColor: '#7E9DBB',
         },
       },
     },
     MuiTabs: {
       indicator: {
-        backgroundColor: '#007AFF'
+        backgroundColor: '#7E9DBB'
       }
     },
     MuiButton: {

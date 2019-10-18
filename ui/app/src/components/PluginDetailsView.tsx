@@ -30,8 +30,17 @@ import Fab from "@material-ui/core/Fab";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from "@material-ui/core/Grid";
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import { backgroundColor } from "../styles/theme";
+import clsx from "clsx";
+// @ts-ignore
+import { fadeIn } from 'react-animations';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  '@keyframes fadeIn': fadeIn,
+  fadeIn: {
+    animationName: '$fadeIn',
+    animationDuration: '1s',
+  },
   detailsView: {
     height: '100%',
     background: '#FFFFFF',
@@ -45,23 +54,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   carouselImg: {
     width: '100%',
     height: '340px',
-    objectFit: 'cover'
+    objectFit: 'contain'
   },
   detailsContainer: {
     position: 'relative',
     padding: '20px'
   },
   dots: {
-    position: 'absolute',
     background: 'none',
-    left: '50%',
-    transform: 'translate(-50%)',
-    top: '-40px',
-    zIndex: 999,
+    borderTop: '1px solid #e4e3e3',
+    height: '30px',
+    padding: '0',
     cursor: 'pointer',
     '& .MuiMobileStepper-dot': {
-      padding: '6px',
-      margin: '2px',
+      padding: '7px',
+      margin: '4px',
       '&:hover': {
         background: 'gray'
       }
@@ -95,7 +102,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     height: '300px',
     outline: 'none',
-    background: '#ebebf1'
+    background: backgroundColor
   },
   chip: {
     fontSize: '12px',
@@ -120,6 +127,10 @@ const useStyles = makeStyles((theme: Theme) => ({
       fontSize: '1.1rem'
     }
   },
+  background: {
+    background: backgroundColor,
+    height: '340px',
+  }
 }));
 
 const messages = defineMessages({
@@ -156,6 +167,7 @@ const messages = defineMessages({
 interface PluginDetailsView {
   onCloseDetails(event: any): any,
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
+  selectedIndex?: number,
   blueprint: Blueprint,
   interval: number
 }
@@ -164,9 +176,9 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 export default function PluginDetailsView(props: PluginDetailsView) {
   const classes = useStyles({});
-  const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
-  const {blueprint, interval, onBlueprintSelected, onCloseDetails} = props;
+  const {blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex} = props;
+  const [index, setIndex] = useState(selectedIndex || 0);
   const {media, name, description, version, license, crafterCmsVersions, developer, website, searchEngine} = blueprint;
   const fullVersion = version ? `${version.major}.${version.minor}.${version.patch}` : null;
   const crafterCMS = crafterCmsVersions ? `${crafterCmsVersions[0].major}.${crafterCmsVersions[0].minor}.${crafterCmsVersions[0].patch}` : null;
@@ -192,13 +204,14 @@ export default function PluginDetailsView(props: PluginDetailsView) {
 
   function renderMedias(){
     let videos:any = (media && media.videos)? {...media.videos, type: 'video'} : [];
-    videos = videos.lenght? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
+    videos = videos.length? videos.map((obj:any)=> ({ ...obj, type: 'video' })) : [];
     let screenshots:any = (media && media.screenshots)? media.screenshots : [];
     const merged = [...videos, ...screenshots];
+
     return merged.map((item, index) => {
       if(item.type !== 'video') {
         return (
-          <div key={index}>
+          <div key={index} className={classes.background}>
             <img className={classes.carouselImg} src={item.url} alt={item.description}/>
           </div>
         )
@@ -218,7 +231,7 @@ export default function PluginDetailsView(props: PluginDetailsView) {
   (blueprint.media && blueprint.media.videos)? steps += blueprint.media.videos.length : steps += 0;
 
   return (
-    <div className={classes.detailsView}>
+    <div className={clsx(classes.detailsView, classes.fadeIn)}>
       <div className={classes.topBar}>
         <Fab aria-label="back" className={classes.circleBtn} onClick={onCloseDetails}>
           <ArrowBackIcon/>
@@ -236,14 +249,14 @@ export default function PluginDetailsView(props: PluginDetailsView) {
         interval={interval}
         onChangeIndex={handleChangeIndex}
         enableMouseEvents
-        slideStyle={{ height: '350px'}}
+        slideStyle={{ height: '340px'}}
       >
         {renderMedias()}
       </AutoPlaySwipeableViews>
+      {steps > 1 &&
+      <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
+                     activeStep={index}/>}
       <div className={classes.detailsContainer}>
-        {steps > 1 &&
-        <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={'static'}
-                       activeStep={index}/>}
         <Grid container spacing={3}>
           <Grid item xs={8}>
             <Typography variant="body1">

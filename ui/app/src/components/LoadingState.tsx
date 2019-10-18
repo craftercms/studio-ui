@@ -19,11 +19,12 @@ import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import Gears from "./Gears";
+import { backgroundColor } from "../styles/theme";
 
 const useStyles = makeStyles(() => ({
   loadingView: {
     height: '100%',
-    background: '#EBEBF0',
+    background: backgroundColor,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
