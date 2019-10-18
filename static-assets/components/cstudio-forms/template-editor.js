@@ -98,8 +98,8 @@ CStudioAuthoring.Module.requireModule(
                   '/code-editor-config.xml',
                   'studio'
                 ).toPromise(),
-                new Promise((resolve) => {
-                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve }, false);
+                new Promise((resolve, reject) => {
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, false);
                 })
               ]).then(([xmlDoc, content]) => {
                 CStudioForms.TemplateEditor.config = xmlDoc;
@@ -108,6 +108,24 @@ CStudioAuthoring.Module.requireModule(
                 }
 
                 me.renderTemplateEditor(templatePath, content, onSaveCb, contentType, mode);
+              }).catch(error => {
+                const errorMsg = error.responseText
+                  ? JSON.parse(error.responseText).message
+                  : `${error.response.response.message}. ${error.response.response.remedialAction}`;
+
+                console.error(error);
+                CStudioAuthoring.Operations.showSimpleDialog(
+                  "pasteContentFromClipboardError-dialog",
+                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                  CMgs.format(formsLangBundle, "notification"),
+                  errorMsg,
+                  [{ text: "OK",  handler:function(){
+                      this.hide();
+                      callback.failure(response);
+                  }, isDefault:false }],
+                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                  "studioDialog"
+                );
               });
             },
 
