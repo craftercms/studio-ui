@@ -24,10 +24,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from "./PublishingPackage";
 import { cancelPackage, fetchPackages, fetchEnvironments } from '../services/publishing';
-import { Package } from "../models/publishing";
+import { CurrentFilters, Package } from "../models/publishing";
 import ConfirmDropdown from "./ConfirmDropdown";
 import FilterDropdown from "./FilterDropdown";
 import { setRequestForgeryToken } from "../utils/auth";
+import TablePagination from '@material-ui/core/TablePagination';
 
 const messages = defineMessages({
   selectAll: {
@@ -103,41 +104,43 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+const currentFiltersInitialState:CurrentFilters = {
+  environment: '',
+  path: '',
+  states: [],
+  limit: 5,
+  offset: 0
+};
+
 function PublishingQueue() {
   const classes = useStyles({});
   const [packages, setPackages] = useState(null);
   const [selected, setSelected] = useState([]);
   const [pending, setPending] = useState({});
+  const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({
     environments: null,
     states: ['READY_FOR_LIVE', 'PROCESSING', 'COMPLETED', 'CANCELLED', 'BLOCKED']
   });
-  const [currentFilters, setCurrentFilters] = useState({
-    environments: 'all',
-    path: '',
-    states: {
-      READY_FOR_LIVE: false,
-      PROCESSING: false,
-      COMPLETED: false,
-      CANCELLED: false,
-      BLOCKED: false
-    }
-  });
+  const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
   const {formatMessage} = useIntl();
 
   setRequestForgeryToken();
 
   useEffect(
     () => {
+      if(currentFilters && packages !== null){
+        getPackages('editorial');
+      }
       if (packages === null) {
         getPackages('editorial');
       }
       if (filters.environments === null){
         getEnvironments('editorial');
       }
-
     },
-    []
+    // eslint-disable-next-line
+    [currentFilters]
   );
 
   function renderPackages() {
@@ -175,10 +178,21 @@ function PublishingQueue() {
       );
   }
 
+  function getFilters(currentFilters: CurrentFilters) {
+    let filters:any = {};
+    if(currentFilters.environment) filters['environment'] = currentFilters.environment;
+    if(currentFilters.path) filters['path'] = currentFilters.path;
+    //if(currentFilters.states) filters['states'] = currentFilters.states;
+    if(currentFilters.limit) filters['limit'] = currentFilters.limit;
+    if(currentFilters.offset) filters['offset'] = currentFilters.offset;
+    return filters;
+  }
+
   function getPackages(siteId: string) {
-    fetchPackages(siteId)
+    fetchPackages(siteId, getFilters(currentFilters))
       .subscribe(
         ({response}) => {
+          setTotal(response.total);
           setPackages(response.packages);
         },
         ({response}) => {
@@ -188,10 +202,18 @@ function PublishingQueue() {
   }
 
   function handleCancelAll() {
+    let _pending:{[id:string]:boolean} = {};
+    selected.forEach((id: string) => {
+      _pending[id] = true;
+    });
+    setPending(_pending);
     cancelPackage('editorial', selected)
       .subscribe(
-        ({response}) => {
-          console.log(response);
+        () => {
+          selected.forEach((id: string) => {
+            _pending[id] = false;
+          });
+          setPending({...pending, ..._pending});
         },
         ({response}) => {
           console.log(response);
@@ -200,6 +222,7 @@ function PublishingQueue() {
   }
 
   function handleSelectAll(event: any) {
+    if(!packages) return false;
     if (event.target.checked) {
       let list = packages.map((item: Package) => item.id);
       setSelected(list);
@@ -208,12 +231,38 @@ function PublishingQueue() {
     }
   }
 
+  function handleFilterChange(event: any) {
+    event.persist();
+    if (event.target.type === 'checkbox') {
+      let states:any = [...currentFilters.states];
+      let index = states.indexOf(event.target.value);
+      if(index !== -1) {
+        states = states.splice(index, 1);
+      } else {
+        states.push(event.target.value);
+      }
+      setCurrentFilters({...currentFilters, states: states, offset: 0});
+    } else if (event.target.type === 'radio'){
+      setCurrentFilters({...currentFilters, environment: event.target.value, offset: 0});
+    } else {
+      setCurrentFilters({...currentFilters, path: event.target.value, offset: 0});
+    }
+  }
+
+  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+    setCurrentFilters({...currentFilters, offset: newPage});
+  }
+
+  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setCurrentFilters({...currentFilters, offset: 0, limit: parseInt(event.target.value, 10)});
+  }
+
   return (
     <div className={classes.publishingQueue}>
       <div className={classes.topBar}>
         <FormGroup className={classes.selectAll}>
           <FormControlLabel
-            control={<Checkbox color="primary" onClick={(event) => handleSelectAll(event)}/>}
+            control={<Checkbox color="primary" onClick={handleSelectAll}/>}
             label={formatMessage(messages.selectAll)}
           />
         </FormGroup>
@@ -224,12 +273,27 @@ function PublishingQueue() {
           confirmHelperText={formatMessage(messages.confirmAllHelper)}
           onConfirm={handleCancelAll}
         />
-        <FilterDropdown className={classes.button} text={formatMessage(messages.filters)} currentFilters={currentFilters}
-                        setCurrentFilters={setCurrentFilters} filters={filters}/>
+        <FilterDropdown className={classes.button} text={formatMessage(messages.filters)} handleFilterChange={handleFilterChange}
+                        currentFilters={currentFilters} filters={filters}/>
       </div>
       <div className={classes.queueList}>
         {packages && renderPackages()}
       </div>
+      <TablePagination
+        rowsPerPageOptions={[3, 5, 10]}
+        component="div"
+        count={total}
+        rowsPerPage={currentFilters.limit}
+        page={currentFilters.offset}
+        backIconButtonProps={{
+          'aria-label': 'previous page',
+        }}
+        nextIconButtonProps={{
+          'aria-label': 'next page',
+        }}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
     </div>
   )
 }

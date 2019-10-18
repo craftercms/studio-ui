@@ -21,6 +21,7 @@ import { Site } from "../models/Site";
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');
 }
+
 export function fetchSites() {
   return get('/studio/api/2/users/me/sites');
 }
@@ -31,7 +32,7 @@ export function createSite(site: Site) {
   })
 }
 
-export function checkHandleAvailability(name:string) {
+export function checkHandleAvailability(name: string) {
   return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
 }
 

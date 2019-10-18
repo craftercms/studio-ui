@@ -7,3 +7,11 @@ export interface Package {
   environment: string
   comment: string
 }
+
+export interface CurrentFilters {
+  environment: string;
+  path: string;
+  states: any
+  limit: number,
+  offset: number
+}

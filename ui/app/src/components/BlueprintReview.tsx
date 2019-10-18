@@ -168,6 +168,7 @@ function BlueprintReview(props: BlueprintReview) {
       });
       setPasswordFields(fields);
     }
+    // eslint-disable-next-line
   },[]);
 
   function renderAuth(type:string) {

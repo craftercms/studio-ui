@@ -11,6 +11,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
+import { CurrentFilters } from "../models/publishing";
 
 const useStyles = makeStyles(() => ({
   paper: {
@@ -70,10 +71,18 @@ const messages: any = defineMessages({
   }
 });
 
-export default function FilterDropdown(props: any) {
+interface FilterDropdown {
+  text : string;
+  className: any;
+  handleFilterChange(event: any): any;
+  currentFilters: CurrentFilters;
+  filters: any;
+}
+
+export default function FilterDropdown(props: FilterDropdown) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
-  const {text, className, currentFilters, setCurrentFilters, filters} = props;
+  const {text, className, handleFilterChange, currentFilters, filters} = props;
   const {formatMessage} = useIntl();
 
   const handleClick = (event: any) => {
@@ -83,22 +92,6 @@ export default function FilterDropdown(props: any) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const handleInputChange = (event: any) => {
-    console.log(event.target.name);
-    event.persist();
-    if (event.target.type === 'checkbox') {
-      const states = {...currentFilters.states};
-      states[event.target.name] = event.target.checked;
-      //state
-      setCurrentFilters({...currentFilters, states: states});
-    } else {
-      setCurrentFilters({...currentFilters, environments: event.target.value});
-    }
-
-  };
-
-  console.log(currentFilters);
 
   return (
     <div>
@@ -135,7 +128,7 @@ export default function FilterDropdown(props: any) {
               InputLabelProps={{shrink: true}}
               fullWidth
               placeholder={"e.g. /SOME/PATH/*"}
-              onChange={handleInputChange}
+              onChange={handleFilterChange}
               value={currentFilters.path}
             />
           </div>
@@ -148,8 +141,8 @@ export default function FilterDropdown(props: any) {
           </header>
           <div className={classes.formControl}>
             <RadioGroup aria-label="environment" name="environment"
-                        value={currentFilters.environments} onChange={handleInputChange}>
-              <FormControlLabel value={"all"} control={<Radio color="primary"/>}
+                        value={currentFilters.environment} onChange={handleFilterChange}>
+              <FormControlLabel value={""} control={<Radio color="primary"/>}
                                 label={formatMessage(messages.all)}/>
               {
                 filters.environments &&
@@ -173,7 +166,7 @@ export default function FilterDropdown(props: any) {
                 filters.states.map((filter: string, index: number) => {
                   return <FormControlLabel
                     key={index}
-                    control={<Checkbox checked={currentFilters.states[filter]} name={filter} value={filter} color="primary" onChange={handleInputChange}/>}
+                    control={<Checkbox checked={currentFilters.states[filter]} name={filter} value={filter} color="primary" onChange={handleFilterChange}/>}
                     label={formatMessage(messages[filter])}/>
                 })
               }

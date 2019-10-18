@@ -31,7 +31,6 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import "../styles/animations.scss";
 import clsx from "clsx";
-import { delay } from "rxjs/operators";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -141,7 +140,7 @@ interface PublishingPackage {
 
   setPending(pending: any): any;
 
-  getPackages(siteId: string): any
+  getPackages(siteId: string, filters?: string): any
 }
 
 export default function PublishingPackage(props: PublishingPackage) {
@@ -172,9 +171,6 @@ export default function PublishingPackage(props: PublishingPackage) {
     setPending({...pending, [packageId]: true});
 
     cancelPackage(siteId, [packageId])
-      .pipe(
-        delay(5000)
-      )
       .subscribe(
         () => {
           ref.cancelComplete(packageId);

@@ -17,8 +17,9 @@
 
 import { get, post } from "../utils/ajax";
 
-export function fetchPackages(siteId: string) {
-  return get(`/studio/api/2/publish/packages?siteId=${siteId}`)
+export function fetchPackages(siteId: string, filters: any) {
+  let queryS = new URLSearchParams(filters).toString();
+  return get(`/studio/api/2/publish/packages?siteId=${siteId}&${queryS}`)
 }
 
 export function fetchPackage(siteId: string, packageId: string) {
