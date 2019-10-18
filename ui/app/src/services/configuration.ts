@@ -16,28 +16,26 @@
  */
 
 import { get, post } from "../utils/ajax";
-import { Site } from "../models/Site";
+import { map } from 'rxjs/operators';
 
-export function fetchBlueprints() {
-  return get('/studio/api/2/sites/available_blueprints');
-}
-export function fetchSites() {
-  return get('/studio/api/2/users/me/sites');
-}
-
-export function createSite(site: Site) {
-  return post('/studio/api/1/services/api/1/site/create.json', site, {
-    'Content-Type': 'application/json'
-  })
+export function fetchFileContent(site: string, configPath: string, module: string) {
+  return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`)
+    .pipe(
+      map(response => response.response)
+    );
 }
 
-export function checkHandleAvailability(name:string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
+export function fetchFileDOM(site: string, configPath: string, module: string) {
+  return fetchFileContent(site, configPath, module).pipe(
+    map(response => {
+      const xmlString = response ? response.content : '',
+                        parser = new DOMParser;
+      return parser.parseFromString(xmlString, "text/xml");
+    })
+  )
 }
 
 export default {
-  fetchBlueprints,
-  fetchSites,
-  createSite,
-  checkHandleAvailability
+  fetchFileContent,
+  fetchFileDOM
 }

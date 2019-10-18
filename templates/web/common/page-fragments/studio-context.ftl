@@ -27,7 +27,7 @@
 		role: "${envConfig.role!'UNSET'}",
 		site: "${envConfig.site!'UNSET'}",
 		siteId: "${envConfig.site!'UNSET'}",
-        authenticationType: "${envConfig.authenticationType!'UNSET'}",
+    authenticationType: "${envConfig.authenticationType!'UNSET'}",
 		collabSandbox: "",
 		baseUri: "/studio",
 		authoringAppBaseUri: "${envConfig.authoringServerUrl!'/studio'}",
@@ -41,9 +41,10 @@
 		openSiteDropdown: ${envConfig.openSiteDropdown!"false"},
 		isPreview: false,
 		liveAppBaseUri:"",
-
+    graphQLBaseURI: "${envConfig.graphqlServerUrl}/api/1/site/graphql",
 		xsrfHeaderName: "${_csrf.headerName}",
-		xsrfParameterName: "${_csrf.parameterName}"
+		xsrfParameterName: "${_csrf.parameterName}",
+		passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
 	};
 
    	if(CStudioAuthoringContext.role === "") {

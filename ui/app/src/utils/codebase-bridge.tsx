@@ -23,6 +23,9 @@ import string from './string';
 import ajax from './ajax';
 import path from './path';
 import auth from './auth';
+import configuration from '../services/configuration';
+import sites from '../services/sites';
+import marketplace from '../services/marketplace';
 import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
@@ -60,6 +63,7 @@ interface CodebaseBridge {
     messages: object;
     translateElements: Function;
   }
+  services: object;
 }
 
 export function createCodebaseBridge() {
@@ -83,8 +87,8 @@ export function createCodebaseBridge() {
       DependencySelection: lazy(() => import('../components/DependencySelection')),
       DependecySelectionDelete: lazy(() => (
         import('../components/DependencySelection')
-          .then(module => ({ 
-            default: module.DependencySelectionDelete 
+          .then(module => ({
+            default: module.DependencySelectionDelete
           }))
       )),
       CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog'))
@@ -105,6 +109,12 @@ export function createCodebaseBridge() {
       intl,
       messages,
       translateElements
+    },
+
+    services: {
+      configuration,
+      sites,
+      marketplace
     },
 
     // Mechanics

@@ -20,7 +20,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from "./GitForm";
 import { Blueprint } from "../models/Blueprint";
@@ -28,12 +27,12 @@ import { SiteState } from '../models/Site';
 import { defineMessages, useIntl } from "react-intl";
 import FormBuilder from "./FormBuilder";
 import { fetchSites } from '../services/sites';
+import Switch from "@material-ui/core/Switch";
 
 const useStyles = makeStyles(() => ({
   form: {
     maxWidth: '600px',
     margin: 'auto',
-    paddingBottom: '20px'
   }
 }));
 
@@ -41,7 +40,6 @@ interface BlueprintForm {
   inputs: SiteState;
   setInputs(state: SiteState): any;
   onSubmit(event: any): any;
-  swipeableViews: any;
   blueprint: Blueprint;
   onCheckNameExist(event: any): any;
 }
@@ -49,7 +47,7 @@ interface BlueprintForm {
 const messages = defineMessages({
   siteId: {
     id: 'createSiteDialog.siteId',
-    defaultMessage: 'Side ID'
+    defaultMessage: 'Site ID'
   },
   description: {
     id: 'createSiteDialog.description',
@@ -57,11 +55,11 @@ const messages = defineMessages({
   },
   siteFormat: {
     id: 'createSiteDialog.siteFormat',
-    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_)'
+    defaultMessage: 'Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_).'
   },
   nameExist: {
     id: 'createSiteDialog.nameExist',
-    defaultMessage: 'The name already exist'
+    defaultMessage: 'The name already exist.'
   },
   pushSiteToRemote: {
     id: 'createSiteDialog.pushSiteToRemote',
@@ -69,14 +67,36 @@ const messages = defineMessages({
   },
   descriptionMaxLength: {
     id: 'createSiteDialog.descriptionMaxLength',
-    defaultMessage: 'Max length: {maxLength} characters'
+    defaultMessage: 'Max length: {maxLength} characters.'
   },
+  required: {
+    id: 'createSiteDialog.required',
+    defaultMessage: '{name} is required.'
+  },
+  cantStart: {
+    id: 'createSiteDialog.cantStart',
+    defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
+  },
+  sandboxBranch: {
+    id: 'createSiteDialog.sandboxBranch',
+    defaultMessage: 'Sandbox Branch'
+  },
+  createAsOrphan: {
+    id: 'createSiteDialog.createAsOrphan',
+    defaultMessage: 'Create the site from a remote repository as orphan (no git history)'
+  },
+
 });
 
 function BlueprintForm(props: BlueprintForm) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, blueprint, onCheckNameExist} = props;
   const [sites, setSites] = useState(null);
+  const [expanded, setExpanded] = useState({
+    basic: false,
+    token: false,
+    key: false,
+  });
   const { formatMessage } = useIntl();
   const maxLength = 4000;
 
@@ -100,12 +120,23 @@ function BlueprintForm(props: BlueprintForm) {
     if (e.target.type === 'checkbox') {
       setInputs({...inputs, [e.target.name]: e.target.checked, submitted: false});
     } else if (e.target.name === 'siteId') {
-      setInputs({...inputs, [e.target.name]: e.target.value.replace(/\s+/g, "").toLowerCase()});
+      const invalidSiteId = (e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_'));
+      setInputs({
+        ...inputs,
+        [e.target.name]: e.target.value.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase(),
+        invalidSiteId: invalidSiteId
+      });
     } else if (type === 'blueprintFields') {
       let parameters = {...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({...inputs, blueprintFields: parameters});
     } else {
       setInputs({...inputs, [e.target.name]: e.target.value});
+    }
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    if (event.charCode === 13) {
+      onSubmit(event);
     }
   };
 
@@ -117,8 +148,21 @@ function BlueprintForm(props: BlueprintForm) {
     }
   }
 
+  function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean, siteIdExist: boolean) {
+    if(value.startsWith('0') || value.startsWith('-') || value.startsWith('_')){
+      return formatMessage(messages.cantStart)
+    }
+    if(siteIdExist){
+      return formatMessage(messages.nameExist)
+    } else if(required && !value && submitted) {
+      return formatMessage(messages.required, {name: name})
+    } else {
+      return helperText;
+    }
+  }
+
   return (
-    <form className={classes.form} onSubmit={e => onSubmit(e)}>
+    <form className={classes.form}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
@@ -126,13 +170,37 @@ function BlueprintForm(props: BlueprintForm) {
             name="siteId"
             label={formatMessage(messages.siteId)}
             required
+            autoFocus={true}
             fullWidth
             onBlur={onCheckNameExist}
-            onKeyUp={event => checkSites(event)}
+            onKeyPress={onKeyPress}
+            onKeyUp={(event) => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
-            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist)}
-            helperText={!inputs.siteIdExist ? formatMessage(messages.siteFormat) : formatMessage(messages.nameExist)}
+            inputProps={{maxLength: 50}}
+            error={((inputs.submitted && !inputs.siteId) || inputs.siteIdExist || inputs.invalidSiteId)}
+            helperText={
+              renderHelperText(
+                formatMessage(messages.siteId),
+                inputs.siteId,
+                formatMessage(messages.siteFormat),
+                true,
+                inputs.submitted,
+                inputs.siteIdExist)
+            }
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            id="sandboxBranch"
+            name="sandboxBranch"
+            label={formatMessage(messages.sandboxBranch)}
+            fullWidth
+            onKeyPress={onKeyPress}
+            onChange={(event) => handleInputChange(event)}
+            InputLabelProps={{shrink: true}}
+            placeholder={"master"}
+            value={inputs.sandboxBranch}
           />
         </Grid>
         <Grid item xs={12}>
@@ -149,15 +217,31 @@ function BlueprintForm(props: BlueprintForm) {
           />
         </Grid>
         {
+          (blueprint.id === 'GIT') &&
+          <Grid item xs={12}>
+              <FormControlLabel
+                  control={
+                    <Switch
+                      name="createAsOrphan"
+                      checked={inputs.createAsOrphan}
+                      onChange={(event) => handleInputChange(event)}
+                      color="primary"
+                    />
+                  }
+                  label={formatMessage(messages.createAsOrphan)}
+              />
+          </Grid>
+        }
+        {
           blueprint.parameters &&
-          <FormBuilder parameters={blueprint.parameters} handleInputChange={handleInputChange} inputs={inputs}/>
+          <FormBuilder parameters={blueprint.parameters} handleInputChange={handleInputChange} inputs={inputs} onKeyPress={onKeyPress}/>
         }
         {
           (blueprint.id !== 'GIT' && blueprint.source !== 'GIT') &&
           <Grid item xs={12}>
               <FormControlLabel
                   control={
-                    <Checkbox
+                    <Switch
                       name="pushSite"
                       checked={inputs.pushSite}
                       onChange={(event) => handleInputChange(event)}
@@ -168,15 +252,15 @@ function BlueprintForm(props: BlueprintForm) {
               />
           </Grid>
         }
-        <Collapse in={inputs.pushSite} timeout={300} unmountOnExit>
+        <Collapse in={inputs.pushSite} timeout={300}>
           {
             (inputs.pushSite && blueprint.source !== 'GIT') &&
-            <GitForm inputs={inputs} type="push" handleInputChange={handleInputChange}/>
+            <GitForm inputs={inputs} expanded={expanded} setExpanded={setExpanded} type="push" handleInputChange={handleInputChange} onKeyPress={onKeyPress}/>
           }
         </Collapse>
         {
           (blueprint.id === 'GIT') &&
-          <GitForm type="clone" inputs={inputs} handleInputChange={handleInputChange}/>
+          <GitForm type="clone" inputs={inputs} expanded={expanded} setExpanded={setExpanded} handleInputChange={handleInputChange} onKeyPress={onKeyPress}/>
         }
       </Grid>
     </form>

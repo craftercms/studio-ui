@@ -49,6 +49,7 @@ export interface Parameter {
   required: boolean;
   type: string;
   description: string;
+  defaultValue: string;
 }
 
 export interface Blueprint {

@@ -28,15 +28,19 @@ export interface Views {
 }
 
 export interface SiteState {
+  [key: string]: string | boolean | Blueprint | number | object;
   blueprint: Blueprint;
   siteId: string;
   siteIdExist: boolean;
+  invalidSiteId: boolean;
   description: string;
   pushSite: boolean;
   useRemote: boolean;
+  createAsOrphan: boolean;
   repoUrl: string;
   repoAuthentication: string;
   repoRemoteBranch: string;
+  sandboxBranch: string;
   repoRemoteName: string;
   repoPassword: string;
   repoUsername: string;
@@ -44,7 +48,7 @@ export interface SiteState {
   repoKey: string;
   submitted: boolean;
   selectedView: number;
-  details: Blueprint;
+  details: { blueprint: Blueprint, index: number};
   blueprintFields?: {
     [key: string]: string;
   }

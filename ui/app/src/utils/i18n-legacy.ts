@@ -75,6 +75,17 @@ const usersAdminMessages = defineMessages({
   }
 });
 
+const numericInputControlMessages = defineMessages({
+  minimun: {
+    id: 'numericInputControl.childContent',
+    defaultMessage: 'Minimun'
+  },
+  maximun: {
+    id: 'numericInputControl.maximun',
+    defaultMessage: 'Maximun'
+  },
+});
+
 const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
@@ -116,6 +127,10 @@ const contentTypesMessages = defineMessages({
   useChildContent: {
     id: 'contentType.useChildContent',
     defaultMessage: 'Use Deprecated Control Anyway'
+  },
+  fileNameErrorMessage: {
+    id: 'contentType.fileNameErrorMessage',
+    defaultMessage: 'Content types require a file name. Please add either a "File Name" or "Auto Filename" control to this content type definition.'
   }
 
 });
@@ -124,6 +139,7 @@ export default {
   approveDialogMessages,
   deleteDialogMessages,
   usersAdminMessages,
+  numericInputControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,

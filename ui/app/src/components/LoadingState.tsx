@@ -19,11 +19,12 @@ import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 import Gears from "./Gears";
+import { backgroundColor } from "../styles/theme";
 
 const useStyles = makeStyles(() => ({
   loadingView: {
     height: '100%',
-    background: '#EBEBF0',
+    background: backgroundColor,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
@@ -31,7 +32,8 @@ const useStyles = makeStyles(() => ({
   gearContainer: {
     flexGrow: 1,
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingBottom: '100px'
   },
   title: {
     marginTop: '40px',
@@ -55,24 +57,18 @@ export default function LoadingState(props: LoadingState) {
   const classes = useStyles({});
   return (
     <div className={classes.loadingView}>
-      <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
+      <Typography variant="h5" component="h1" className={classes.title}>
         {props.title}
       </Typography>
       {
         props.subtitle &&
-        <Typography variant="subtitle1" component="p" className={classes.paragraph} color={'textSecondary'}>
+        <Typography variant="subtitle1" component="p" className={classes.paragraph}>
           {props.subtitle}
         </Typography>
       }
       <div className={classes.gearContainer}>
         <Gears width={'250px'}/>
       </div>
-      {
-        props.subtitle2 &&
-        <Typography variant="subtitle1" component="p" className={classes.footerText} color={'textSecondary'}>
-          {props.subtitle2}
-        </Typography>
-      }
     </div>
   )
 }

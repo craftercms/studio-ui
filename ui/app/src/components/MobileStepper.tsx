@@ -19,10 +19,11 @@ import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import Paper from "@material-ui/core/Paper";
-import { capitalize } from "@material-ui/core/utils";
+//import { capitalize } from "@material-ui/core/utils";
 import { LinearProgress } from "@material-ui/core";
 import { withStyles } from '@material-ui/core/styles';
-
+import { RedColor } from '../styles/theme';
+import { capitalize } from '../utils/string';
 
 export const styles = (theme: Theme) => ({
   /* Styles applied to the root element. */
@@ -33,6 +34,7 @@ export const styles = (theme: Theme) => ({
     alignItems: 'center',
     background: theme.palette.background.default,
     padding: 8,
+    width: '100%'
   },
   /* Styles applied to the root element if `position="bottom"`. */
   positionBottom: {
@@ -56,6 +58,7 @@ export const styles = (theme: Theme) => ({
   dots: {
     display: 'flex',
     flexDirection: 'row',
+    margin: 'auto'
   },
   /* Styles applied to each dot if `variant="dots"`. */
   dot: {
@@ -67,7 +70,7 @@ export const styles = (theme: Theme) => ({
   },
   /* Styles applied to a dot if `variant="dots"` and this is the active step. */
   dotActive: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: RedColor,
   },
   /* Styles applied to the Linear Progress component if `variant="progress"`. */
   progress: {
@@ -95,6 +98,7 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
       square
       elevation={0}
       className={clsx(classes.root, classes[`position${capitalize(position)}`], className)}
+      onClick={(e)=> e.stopPropagation()}
       ref={ref}
       {...other}
     >

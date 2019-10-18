@@ -93,38 +93,56 @@ CStudioAuthoring.Module.requireModule(
               var me = this;
 
               Promise.all([
-                new Promise((resolve) => {
-                  CStudioAuthoring.Service.getConfiguration(
-                    CStudioAuthoringContext.site,
-                    "/code-editor-config.xml",
-                    { success: resolve }
-                  );
-                }),
-                new Promise((resolve) => {
-                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve }, false);
+                CrafterCMSNext.services.configuration.fetchFileDOM(
+                  CStudioAuthoringContext.site,
+                  '/code-editor-config.xml',
+                  'studio'
+                ).toPromise(),
+                new Promise((resolve, reject) => {
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, false);
                 })
-              ]).then(([config, content]) => {
-                CStudioForms.TemplateEditor.config = config;
-                if ( config && config.snippets ) {
-                  me.addSnippets(config.snippets);
+              ]).then(([xmlDoc, content]) => {
+                CStudioForms.TemplateEditor.config = xmlDoc;
+                if ( xmlDoc ) {
+                  me.addSnippets(xmlDoc);
                 }
 
                 me.renderTemplateEditor(templatePath, content, onSaveCb, contentType, mode);
+              }).catch(error => {
+                const errorMsg = error.responseText
+                  ? JSON.parse(error.responseText).message
+                  : `${error.response.response.message}. ${error.response.response.remedialAction}`;
+
+                CStudioAuthoring.Operations.showSimpleDialog(
+                  "pasteContentFromClipboardError-dialog",
+                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                  CMgs.format(formsLangBundle, "notification"),
+                  errorMsg,
+                  [{ text: "OK",  handler:function(){
+                      this.hide();
+                      callback.failure(response);
+                  }, isDefault:false }],
+                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                  "studioDialog"
+                );
               });
             },
 
-            addSnippets: (snippets) => {
-              var snippets = snippets.snippet.length ? snippets.snippet : [snippets.snippet];
+            addSnippets: (xmlDoc) => {
+              snippets = xmlDoc.querySelectorAll('snippets snippet');
 
-              snippets.forEach(function(snippet) {
-                const type = snippet.type,
+              Array.from(snippets).forEach(snippet => {
+                const key = snippet.querySelector('key').innerHTML,
+                      label = snippet.querySelector('label').innerHTML,
+                      content = snippet.querySelector('content').textContent.trim(),    // trim to remove empty spaces at beginning and end of the content (added because of CDATA)
+                      type = snippet.querySelector('type').innerHTML,
                       entry = {
-                        label: snippet.label,
-                        value: snippet.content
+                        label,
+                        value: content
                       }
 
-                codeSnippets[type][snippet.key] = entry;
-              })
+                codeSnippets[type][key] = entry;
+              });
             },
 
 						renderTemplateEditor: function(templatePath, content, onSaveCb, contentType, isRead) {
@@ -209,8 +227,10 @@ CStudioAuthoring.Module.requireModule(
 
 											langTools = ace.require("ace/ext/language_tools");
                       var aceEditor = ace.edit("editorPreEl"),
-                          defaultTheme = CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.theme
-                                         && CStudioForms.TemplateEditor.config.theme === 'dark' ? 'tomorrow_night' : 'chrome',
+                          defaultTheme = CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0]
+                                         && CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0].textContent === 'dark'
+                                          ? 'tomorrow_night'
+                                          : 'chrome',
                           theme = localStorage.getItem('templateEditorTheme') ? localStorage.getItem('templateEditorTheme') : defaultTheme;
 
 											aceEditor.setTheme("ace/theme/" + theme);

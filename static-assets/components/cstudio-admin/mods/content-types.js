@@ -78,7 +78,7 @@
             CStudioAuthoring.ContextualNav.AdminConsoleNav.initActions(actions);
           },
 
-          titleNameValidation: function (formDef) {
+          componentsValidation: function (formDef) {
             var sections = formDef.sections,
               datasources = formDef.datasources,
               idError = [],
@@ -86,7 +86,8 @@
               currentField,
               postfixError = [],
               postfixes,
-              postfixesFlag = false;
+              postfixesFlag = false,
+              fileNameError = true;
 
             for (var i = 0; i < sections.length; i++) {
               for (var j = 0; j < sections[i].fields.length; j++) {
@@ -131,6 +132,11 @@
                     }
                   }
                 }
+
+                if (currentField.type === 'file-name' || currentField.type === 'auto-filename') {
+                  fileNameError = false;
+                }
+
               }
             }
 
@@ -143,7 +149,8 @@
               }
             }
 
-            return { flagTitleError: flagTitleError, idError: idError, postfixError: postfixError }
+            return { flagTitleError: flagTitleError, idError: idError, 
+                     postfixError: postfixError, fileNameError: fileNameError }
           },
 
           templateValidation: function (formDef) {
@@ -273,7 +280,7 @@
 
                         }
 
-                        var validation = _self.titleNameValidation(formDef);
+                        var validation = _self.componentsValidation(formDef);
                         var istemplate = _self.templateValidation(formDef);
 
                         if (validation.flagTitleError) {
@@ -297,7 +304,17 @@
                               YAHOO.widget.SimpleDialog.ICON_BLOCK,
                               "studioDialog"
                             );
-                          } if (validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable) {
+                          } else if (validation.fileNameError) {
+                              CStudioAuthoring.Operations.showSimpleDialog(
+                                "fileName-dialog",
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                formatMessage(contentTypesMessages.notice),
+                                formatMessage(contentTypesMessages.fileNameErrorMessage),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                "studioDialog"
+                              );
+                          } else if (validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable) {
                             CStudioAuthoring.Operations.showSimpleDialog(
                               "errorPostfix-dialog",
                               CStudioAuthoring.Operations.simpleDialogTypeINFO,

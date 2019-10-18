@@ -15,16 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from '@material-ui/icons/Edit';
 import { SiteState } from "../models/Site";
-import { Blueprint } from "../models/Blueprint";
+import { Blueprint, Parameter } from "../models/Blueprint";
 import { defineMessages, useIntl } from "react-intl";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   review: {
@@ -48,6 +51,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   noDescription: {
     color: '#a2a2a2'
+  },
+  showPassword: {
+    color: theme.palette.primary.main,
+    padding: '1px',
+    marginLeft: '5px',
+    '& svg': {
+      fontSize: '1rem'
+    }
   }
 }));
 
@@ -58,8 +69,12 @@ interface BlueprintReview {
 }
 
 const messages = defineMessages({
-  bluePrintStrategy: {
-    id: 'createSiteDialog.bluePrintStrategy',
+  siteInfo: {
+    id: 'createSiteDialog.siteInfo',
+    defaultMessage: 'Site Info'
+  },
+  blueprintStrategy: {
+    id: 'createSiteDialog.blueprintStrategy',
     defaultMessage: 'Create from blueprint'
   },
   gitStrategy: {
@@ -84,54 +99,76 @@ const messages = defineMessages({
   },
   remoteName: {
     id: 'createSiteDialog.remoteName',
-    defaultMessage: 'Remote Name'
+    defaultMessage: 'Git Remote Name'
   },
   remoteURL: {
     id: 'createSiteDialog.remoteURL',
-    defaultMessage: 'URL'
+    defaultMessage: 'Git Repo URL'
   },
   remoteBranch: {
     id: 'createSiteDialog.remoteBranch',
-    defaultMessage: 'Branch'
+    defaultMessage: 'Git Branch'
   },
   siteId: {
     id: 'createSiteDialog.siteId',
     defaultMessage: 'Site ID'
   },
+  sandboxBranch: {
+    id: 'createSiteDialog.sandboxBranch',
+    defaultMessage: 'Sandbox Branch'
+  },
   userNameAndPassword: {
-    id: 'common.userNameAndPassword',
+    id: 'createSiteDialog.userNameAndPassword',
     defaultMessage: 'Username & Password'
   },
   token: {
-    id: 'common.token',
+    id: 'createSiteDialog.token',
     defaultMessage: 'Token'
   },
   privateKey: {
-    id: 'common.privateKey',
+    id: 'createSiteDialog.privateKey',
     defaultMessage: 'Private Key'
   },
   authentication: {
-    id: 'common.authentication',
+    id: 'createSiteDialog.authentication',
     defaultMessage: 'Authentication'
   },
   noDescription: {
-    id: 'common.noDescription',
+    id: 'createSiteDialog.noDescription',
     defaultMessage: 'No description supplied'
   },
   description: {
-    id: 'common.description',
+    id: 'createSiteDialog.description',
     defaultMessage: 'Description'
   },
-  bluePrint: {
-    id: 'common.bluePrint',
+  blueprint: {
+    id: 'createSiteDialog.blueprint',
     defaultMessage: 'Blueprint'
-  }
+  },
+  blueprintParameters: {
+    id: 'createSiteDialog.blueprintParameters',
+    defaultMessage: 'Blueprint Parameters'
+  },
 });
 
 function BlueprintReview(props: BlueprintReview) {
   const classes = useStyles({});
-  const {onGoTo, inputs, blueprint} = props;
+  const { onGoTo, inputs, blueprint } = props;
+  const [ passswordFields, setPasswordFields ] = useState(null);
   const { formatMessage } = useIntl();
+
+
+  useEffect(()=>{
+    if(blueprint.parameters){
+      let fields:any = {};
+      blueprint.parameters.forEach((parameter: Parameter) => {
+        if(parameter.type === 'PASSWORD'){
+          fields[parameter.name] = false;
+        }
+      });
+      setPasswordFields(fields);
+    }
+  },[]);
 
   function renderAuth(type:string) {
     if(type === 'basic') {
@@ -143,6 +180,47 @@ function BlueprintReview(props: BlueprintReview) {
     }
   }
 
+  function showPassword(parameter: Parameter) {
+    setPasswordFields({...passswordFields, [parameter.name]: !passswordFields[parameter.name]})
+  }
+
+  function renderSingleParameter(parameter: Parameter) {
+    if (inputs.blueprintFields[parameter.name] && parameter.type === 'STRING') {
+      return inputs.blueprintFields[parameter.name];
+    } else if (parameter.type === 'STRING') {
+      return parameter.defaultValue;
+    } else if (inputs.blueprintFields[parameter.name] && parameter.type === 'PASSWORD') {
+      return (
+        <span >
+          {(passswordFields && passswordFields[parameter.name])? inputs.blueprintFields[parameter.name]: '********'}
+          <IconButton
+            edge="end"
+            className={classes.showPassword}
+            aria-label="toggle password visibility"
+            onClick={() => { showPassword(parameter) }}
+          >
+              {(passswordFields && passswordFields[parameter.name]) ? <VisibilityOff/> : <Visibility/>}
+            </IconButton>
+        </span>)
+    } else {
+      return '********';
+    }
+  }
+
+  function renderBlueprintParameters() {
+    return (
+      blueprint.parameters.map((parameter, index) => {
+        console.log(parameter);
+        return (
+          <Typography variant="body2" gutterBottom key={index}>
+            <span className={classes.bold}>{parameter.label}: </span>
+            {renderSingleParameter(parameter)}
+            </Typography>
+        )
+      })
+    )
+  }
+
   function renderGitOptions() {
     return (<div>
         {
@@ -151,18 +229,12 @@ function BlueprintReview(props: BlueprintReview) {
             <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repoUrl}
           </Typography>
         }
-        {
-          inputs.repoRemoteName &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repoRemoteName}
+            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repoRemoteName? inputs.repoRemoteName : 'origin'}
           </Typography>
-        }
-        {
-          inputs.repoRemoteBranch &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch}
+            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch? inputs.repoRemoteBranch : 'master'}
           </Typography>
-        }
         {
           inputs.repoAuthentication !== 'none' &&
           <Typography variant="body2" gutterBottom>
@@ -187,10 +259,10 @@ function BlueprintReview(props: BlueprintReview) {
             (blueprint.id !== "GIT") ?
             <div>
               <Typography variant="body2" gutterBottom>
-                {formatMessage(messages.bluePrintStrategy)}
+                {formatMessage(messages.blueprintStrategy)}
               </Typography>
               <Typography variant="body2" gutterBottom>
-                <span className={classes.bold}>{formatMessage(messages.bluePrint)}: </span> {blueprint && blueprint.name}
+                <span className={classes.bold}>{formatMessage(messages.blueprint)}: </span> {blueprint && blueprint.name}
               </Typography>
             </div>
             :
@@ -198,13 +270,12 @@ function BlueprintReview(props: BlueprintReview) {
               <Typography variant="body2" gutterBottom>
                 {formatMessage(messages.gitStrategy)}
               </Typography>
-              {renderGitOptions()}
             </div>
           }
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
-            Site name & description
+            {formatMessage(messages.siteInfo)}
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
               <EditIcon/>
             </IconButton>
@@ -216,27 +287,29 @@ function BlueprintReview(props: BlueprintReview) {
             <span className={classes.bold}>{formatMessage(messages.description)}: </span> {inputs.description ? inputs.description :
             <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>}
           </Typography>
-        </Grid>
-        {
-          (blueprint.id !== "GIT") &&
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom className={classes.section}>
-              {formatMessage(messages.additionalOptions)}
-              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
-                <EditIcon/>
-              </IconButton>
-            </Typography>
-            {inputs.pushSite ?
+          {blueprint.source !== 'GIT' && ( blueprint.id === "GIT" || inputs.pushSite) && renderGitOptions()}
+          <Typography variant="body2" gutterBottom>
+            <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span> {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
+          </Typography>
+          {
+            (blueprint.id !== "GIT" && inputs.pushSite) &&
               <div>
                 <Typography variant="body2" gutterBottom>
                   {formatMessage(messages.pushSite)}
                 </Typography>
-                {renderGitOptions()}
-              </div> :
-              <Typography variant="body2" gutterBottom>
-                {formatMessage(messages.noPushSite)}
+              </div>
+          }
+        </Grid>
+        {
+          blueprint.parameters &&
+          <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom className={classes.section}>
+                {formatMessage(messages.blueprintParameters)}
+                  <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
+                      <EditIcon/>
+                  </IconButton>
               </Typography>
-            }
+            {renderBlueprintParameters()}
           </Grid>
         }
       </Grid>
