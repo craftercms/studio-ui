@@ -113,7 +113,6 @@ CStudioAuthoring.Module.requireModule(
                   ? JSON.parse(error.responseText).message
                   : `${error.response.response.message}. ${error.response.response.remedialAction}`;
 
-                console.error(error);
                 CStudioAuthoring.Operations.showSimpleDialog(
                   "pasteContentFromClipboardError-dialog",
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
