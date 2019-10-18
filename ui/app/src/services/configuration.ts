@@ -27,7 +27,7 @@ export function fetchFileContent(site: string, configPath: string, module: strin
 
 export function fetchFileDOM(site: string, configPath: string, module: string) {
   return fetchFileContent(site, configPath, module).pipe(
-    map(response => {a
+    map(response => {
       const xmlString = response ? response.content : '',
                         parser = new DOMParser;
       return parser.parseFromString(xmlString, "text/xml");
