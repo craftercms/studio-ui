@@ -75,6 +75,17 @@ const usersAdminMessages = defineMessages({
   }
 });
 
+const numericInputControlMessages = defineMessages({
+  minimun: {
+    id: 'numericInputControl.childContent',
+    defaultMessage: 'Minimun'
+  },
+  maximun: {
+    id: 'numericInputControl.maximun',
+    defaultMessage: 'Maximun'
+  },
+});
+
 const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
@@ -128,6 +139,7 @@ export default {
   approveDialogMessages,
   deleteDialogMessages,
   usersAdminMessages,
+  numericInputControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
