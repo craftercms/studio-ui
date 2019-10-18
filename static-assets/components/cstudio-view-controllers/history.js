@@ -102,7 +102,8 @@
                     col5El,
                     col6El,
                     revertActionEl,
-                    checkboxEl;
+                    checkboxEl,
+                    $revertDropdown;
 
                   col2El = document.createElement('div');
                   Dom.addClass(col2El, "c8");
@@ -174,49 +175,60 @@
                   }
 
                   if(_this.isWrite){
-                    revertActionEl = document.createElement("a");
-                    revertActionEl.innerHTML = '<span id="actionRevert' + version.versionNumber + '" class="action fa fa-reply"></span>';
-                    revertActionEl.item = selection;
-                    revertActionEl.version = version.versionNumber;
-                    new YAHOO.widget.Tooltip("tooltipRevert"+ revertActionEl.version, {
-                      context: "actionRevert" + revertActionEl.version,
+                    $revertDropdown = $(
+                      `<div class="dropdown" style="display: inline-block">
+                        <span id="actionRevert${version.versionNumber}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
+                        <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
+                          <li><a class="confirm" href="#">Confirm</a></li>
+                          <li role="separator" class="divider"></li>
+                          <li><a class="cancel" href="#">Cancel</a></li>
+                        </ul>
+                      </div>`
+                    ).appendTo($(col5El));
+
+                    new YAHOO.widget.Tooltip("tooltipRevert"+ version.versionNumber, {
+                      context: "actionRevert" + version.versionNumber,
                       container: _this.tooltipsContainer,
                       text: CMgs.format(formsLangBundle, "historyDialogRevertFileMessage"),
                       zIndex: 104103
                     });
 
-                    col5El.appendChild(revertActionEl);
-                  }
+
+                  };
 
                   (function (item) {
                     if(_this.isWrite) {
-                      Event.addListener(revertActionEl, "click", function () {
+                      console.log($revertDropdown);
+                      $revertDropdown.find('.confirm').on('click', function() {
                         CStudioAuthoring.Service.revertContentItem(
                           CStudioAuthoringContext.site,
-                          this.item,
-                          this.version, {
-                            success: function () {
-                              if (CStudioAuthoringContext.isPreview) {
-                                CStudioAuthoring.Operations.refreshPreview();
-                              }
-                              eventNS.data = item;
-                              document.dispatchEvent(eventNS);
-                              _this.loadHistory(_this.selection);
-                            },
-                            failure: function () {
-                              var CMgs = CStudioAuthoring.Messages;
-                              var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-                              CStudioAuthoring.Operations.showSimpleDialog(
-                                "revertError-dialog",
-                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                CMgs.format(langBundle, "notification"),
-                                CMgs.format(langBundle, "revertError"),
-                                null,
-                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                "studioDialog"
-                              );
+                          item,
+                          version.versionNumber, {
+                          success: function () {
+                            if (CStudioAuthoringContext.isPreview) {
+                              CStudioAuthoring.Operations.refreshPreview();
                             }
-                          });
+                            eventNS.data = item;
+                            document.dispatchEvent(eventNS);
+                            _this.loadHistory(_this.selection);
+                          },
+                          failure: function () {
+                            var CMgs = CStudioAuthoring.Messages;
+                            var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                              "revertError-dialog",
+                              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                              CMgs.format(langBundle, "notification"),
+                              CMgs.format(langBundle, "revertError"),
+                              null,
+                              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                              "studioDialog"
+                            );
+                          }
+                        });
+                      });
+                      Event.addListener(revertActionEl, "click", function () {
+
                       });
                     }
 
