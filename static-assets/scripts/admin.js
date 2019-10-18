@@ -22,7 +22,8 @@
 
   const i18n = CrafterCMSNext.i18n,
         formatMessage = i18n.intl.formatMessage,
-        messages = i18n.messages.usersAdminMessages;
+        messages = i18n.messages.usersAdminMessages,
+        repoMessages = i18n.messages.reposAdminMessages;
 
   app.service('adminService', [
     '$http', 'Constants', '$cookies', '$timeout', '$window',
@@ -1816,10 +1817,14 @@
         site: $location.search().site,
         selectedTab: 'diff',
         status: {
-          clean: false
+          clean: false,
+          conflicting: false
         },
         diff: {},
-        mergeStrategy: 'none'
+        mergeStrategy: 'none',
+        repoMessages: {
+          pendingCommit: formatMessage(repoMessages.pendingCommit)
+        }
       };
 
       var repositories = $scope.repositories;
@@ -1831,6 +1836,11 @@
 
       repositories.getRepositoryStatus = function() {
         adminService.repositoryStatus($location.search().site).success(function(data){
+          if(data.repositoryStatus.clean || !data.repositoryStatus.clean 
+            && data.repositoryStatus.uncommittedChanges.length > 0 
+            && data.repositoryStatus.conflicting.length < 1){
+            repositories.spinnerOverlay = $scope.spinnerOverlay();
+          }
           repositories.status = data.repositoryStatus;
         });
       }
@@ -1885,6 +1895,9 @@
 
         adminService.getRepositories(repositories).success(function (data) {
           repositories.repositories = data;
+          if(repositories.spinnerOverlay){
+            repositories.spinnerOverlay.close();
+          }
         }).error(function (error) {
           $scope.showError(error.response);
         });
