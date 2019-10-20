@@ -830,6 +830,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     enableCreateNew: "Enable Create New",
     enableBrowseExisting: "Enable Browse Existing",
     enableSearchExisting: "Enable Search Existing",
+    useSearch: "Use Search",
 
     /*Restrictions*/
     required: "Required",
