@@ -17,10 +17,10 @@
 
 CStudioForms.Datasources.ImgRepoUpload = CStudioForms.Datasources.ImgRepoUpload ||
 function(id, form, properties, constraints)  {
-   	this.id = id;
-   	this.form = form;
-   	this.properties = properties;
-   	this.constraints = constraints;
+    this.id = id;
+    this.form = form;
+    this.properties = properties;
+    this.constraints = constraints;
     this.useSearch = false;
 
     var _self = this;
@@ -33,18 +33,18 @@ function(id, form, properties, constraints)  {
     });
 
 	return this;
-}
+};
 
 YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDatasource, {
 
-    getLabel: function() {
+    getLabel() {
         return CMgs.format(langBundle, "imageFromRepository");
     },
     
     /**
      * action called when user clicks insert image
      */
-    insertImageAction: function(insertCb) {
+    insertImageAction(insertCb) {
         var _self = this;
 
         if (this.useSearch) {
@@ -65,7 +65,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
             };
 
             CStudioAuthoring.Operations.openSearch(searchContext, true, {
-              success: function (searchId, selectedTOs) {
+              success(searchId, selectedTOs) {
                 var imageData = {};
                 var path = selectedTOs[0].uri;
                 var url = this.context.createPreviewUrl(path);
@@ -75,15 +75,13 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
 
                 insertCb.success(imageData, true);
               },
-              failure: function () {
-
-              },
+              failure() {},
               context: _self
             }, null);
 
         } else {
             CStudioAuthoring.Operations.openBrowse("", _self.processPathsForMacros(_self.repoPath), "1", "select", true, {
-              success: function (searchId, selectedTOs) {
+              success(searchId, selectedTOs) {
                 var imageData = {};
                 var path = selectedTOs[0].uri;
                 var url = this.context.createPreviewUrl(path);
@@ -93,62 +91,59 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
 
                 insertCb.success(imageData, true);
               },
-              failure: function () {
-
-              },
+              failure() {},
               context: _self
             });
         }
     },
-	
-	/**
-	 * create preview URL
-	 */
-	createPreviewUrl: function(imagePath) {
-		return CStudioAuthoringContext.previewAppBaseUri + imagePath + "";
-	},
-	
-	/**
-	 * clean up preview URL so that URL is canonical
-	 */
-	cleanPreviewUrl: function(previewUrl) {
-		var url = previewUrl;
-		
-		if(previewUrl.indexOf(CStudioAuthoringContext.previewAppBaseUri) != -1) {
-			url =  previewUrl.substring(CStudioAuthoringContext.previewAppBaseUri.length);
-			
-			if(url.substring(0,1) != "/") {
-				url = "/" + url;
-			}
-		}
-		
-		return url;	
-	},
 
-	deleteImage : function(path) {
+    /**
+     * create preview URL
+     */
+    createPreviewUrl(imagePath) {
+        return CStudioAuthoringContext.previewAppBaseUri + imagePath + "";
+    },
 
-	},
+    /**
+     * clean up preview URL so that URL is canonical
+     */
+    cleanPreviewUrl(previewUrl) {
+        var url = previewUrl;
 
-   	getInterface: function() {
-   		return "image";
-   	},
+        if (previewUrl.indexOf(CStudioAuthoringContext.previewAppBaseUri) !== -1) {
+            url =  previewUrl.substring(CStudioAuthoringContext.previewAppBaseUri.length);
 
-	getName: function() {
-		return "img-repository-upload";
-	},
-	
-	getSupportedProperties: function() {
-		return [
-			{ label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
-			{ label: CMgs.format(langBundle, "useSearch"), name: "useSearch", type: "boolean", defaultValue: "false" }
-		];
-	},
+            if (url.substring(0,1) !== "/") {
+                url = "/" + url;
+            }
+        }
+        return url;
+    },
 
-	getSupportedConstraints: function() {
-		return [
-			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" },
-		];
-	}
+    deleteImage(path) {
+
+    },
+
+    getInterface() {
+        return "image";
+    },
+
+    getName() {
+        return "img-repository-upload";
+    },
+
+    getSupportedProperties() {
+        return [
+            { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
+            { label: CMgs.format(langBundle, "useSearch"), name: "useSearch", type: "boolean", defaultValue: "false" }
+        ];
+    },
+
+    getSupportedConstraints() {
+        return [
+            { label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" },
+        ];
+    }
 
 });
 

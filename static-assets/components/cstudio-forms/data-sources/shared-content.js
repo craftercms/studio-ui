@@ -54,10 +54,10 @@ CStudioForms.Datasources.SharedContent = function (id, form, properties, constra
       properties[i].value === 'true' ? this.countOptions++ : null;
     }
 
-    if (properties[i].name === "enableSearchExisting") {
+    if (properties[i].name === 'enableSearchExisting') {
       this.enableSearchExisting = properties[i].value === "true" ? true : false;
       this.defaultEnableSearchExisting = false;
-      properties[i].value === "true" ? this.countOptions++ : null;
+      properties[i].value === 'true' ? this.countOptions++ : null;
     }
   }
 
@@ -165,13 +165,12 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     };
 
     CStudioAuthoring.Operations.openSearch(searchContext, true, {
-      success: function(searchId, selectedTOs) {
-        for (var i = 0; i < selectedTOs.length; i++) {
-          var item = selectedTOs[i];
-          var value = (item.internalName && item.internalName != "") ? item.internalName : item.uri;
+      success(searchId, selectedTOs) {
+        selectedTOs.forEach (function(item) {
+          var value = (item.internalName && item.internalName !== "") ? item.internalName : item.uri;
           control.insertItem(item.uri, value, null, null, _self.id);
           control._renderItems();
-        }
+        });
       },
       failure: function () {
       }
@@ -184,7 +183,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 
     var _self = this;
 
-		var addContainerEl = control.addContainerEl ? control.addContainerEl : null;
+    var addContainerEl = control.addContainerEl ? control.addContainerEl : null;
 
     var datasourceDef = this.form.definition.datasources,
       newElTitle = '';
