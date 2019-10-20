@@ -1994,7 +1994,7 @@ var nodeOpen = false,
                 });
 
                 $modal.find('.bd').append(template).end().appendTo(parentEl);
-                $modal.find('.studio-ice-container').css('z-index', 100525);
+                $modal.find('.studio-ice-container').css('z-index', 1035);
 
                 parent.iframeOpener = window;
                 window.open(url, name);
