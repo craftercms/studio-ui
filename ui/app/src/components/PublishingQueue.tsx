@@ -32,6 +32,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import ErrorState from "./ErrorState";
 import EmptyState from "./EmptyState";
 import Typography from "@material-ui/core/Typography";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const messages = defineMessages({
   selectAll: {
@@ -112,7 +113,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .files': {},
   },
   packagesSelected:{
-    marginRight: '10px'
+    marginRight: '10px',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  clearSelected:{
+    marginLeft: '5px',
+    cursor: 'pointer'
   },
   selectAll: {
     marginRight: 'auto'
@@ -248,14 +255,20 @@ function PublishingQueue() {
       );
   }
 
+  function clearSelected() {
+    setSelected([]);
+  }
+
   function handleSelectAll(event: any) {
     if(!packages || packages.length === 0) return false;
     const list = packages.map((item: Package) => item.id);
     if (event.target.checked) {
-      setSelected([...selected, ...list]);
+      let merge = [...selected, ...list];
+      merge = merge.filter((item,index) => merge.indexOf(item) === index);
+      setSelected(merge);
     } else {
-      const filteredList = list.filter(function(name: string) {
-        return selected.indexOf(name) < 0;
+      const filteredList = selected.filter(function(name: string) {
+        return list.indexOf(name) < 0;
       });
       setSelected(filteredList);
     }
@@ -314,6 +327,7 @@ function PublishingQueue() {
           (selected.length > 0) &&
           <Typography variant="body2" className={classes.packagesSelected} color={"textSecondary"}>
             {formatMessage(messages.packagesSelected, { count: selected.length })}
+            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
           </Typography>
         }
         <ConfirmDropdown
