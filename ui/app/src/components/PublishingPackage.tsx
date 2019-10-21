@@ -133,20 +133,18 @@ interface PublishingPackage {
   environment: string;
   comment: string
   selected: any;
-
   setSelected(selected: any): any
-
   pending: any;
-
+  apiState: any;
+  setApiState(state: any): any;
   setPending(pending: any): any;
-
   getPackages(siteId: string, filters?: string): any
 }
 
 export default function PublishingPackage(props: PublishingPackage) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {id, approver, schedule, state, comment, environment, siteId, selected, setSelected, pending, setPending, getPackages} = props;
+  const {id, approver, schedule, state, comment, environment, siteId, selected, setSelected, pending, setPending, getPackages, apiState, setApiState} = props;
   const [files, setFiles] = useState(null);
   const [loading, setLoading] = useState(null);
 
@@ -176,7 +174,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           ref.cancelComplete(packageId);
         },
         ({response}) => {
-          console.log(response);
+          setApiState({...apiState, error: true, errorResponse: response});
         }
       );
   }
@@ -189,7 +187,7 @@ export default function PublishingPackage(props: PublishingPackage) {
           setFiles(response.package.items);
         },
         ({response}) => {
-          console.log(response);
+          setApiState({...apiState, error: true, errorResponse: response});
         }
       );
   }

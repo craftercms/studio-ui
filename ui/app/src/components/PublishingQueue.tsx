@@ -114,7 +114,7 @@ const currentFiltersInitialState:CurrentFilters = {
   path: '',
   states: [],
   limit: 5,
-  offset: 0
+  page: 0
 };
 
 function PublishingQueue() {
@@ -167,6 +167,8 @@ function PublishingQueue() {
         pending={pending}
         setPending={setPending}
         getPackages={getPackages}
+        apiState={apiState}
+        setApiState={setApiState}
         setSelected={setSelected}/>
     })
   }
@@ -193,7 +195,7 @@ function PublishingQueue() {
     if(currentFilters.path) filters['path'] = currentFilters.path;
     if(currentFilters.states.length) filters['state'] = currentFilters.states.join();
     if(currentFilters.limit) filters['limit'] = currentFilters.limit;
-    if(currentFilters.offset) filters['offset'] = currentFilters.offset;
+    if(currentFilters.page) filters['offset'] = currentFilters.page * currentFilters.limit;
     return filters;
   }
 
@@ -249,22 +251,22 @@ function PublishingQueue() {
       } else {
         states = states.filter((item: string) => item !== event.target.value);
       }
-      setCurrentFilters({...currentFilters, states: states, offset: 0});
+      setCurrentFilters({...currentFilters, states: states, page: 0});
     } else if (event.target.type === 'radio'){
-      setCurrentFilters({...currentFilters, environment: event.target.value, offset: 0});
+      setCurrentFilters({...currentFilters, environment: event.target.value, page: 0});
     }
   }
 
   function handleEnterKey(path: string) {
-    setCurrentFilters({...currentFilters, path: path, offset: 0});
+    setCurrentFilters({...currentFilters, path: path, page: 0});
   }
 
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
-    setCurrentFilters({...currentFilters, offset: newPage});
+    setCurrentFilters({...currentFilters, page: newPage});
   }
 
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setCurrentFilters({...currentFilters, offset: 0, limit: parseInt(event.target.value, 10)});
+    setCurrentFilters({...currentFilters, page: 0, limit: parseInt(event.target.value, 10)});
   }
 
   return (
@@ -272,7 +274,8 @@ function PublishingQueue() {
       <div className={classes.topBar}>
         <FormGroup className={classes.selectAll}>
           <FormControlLabel
-            control={<Checkbox color="primary" disabled={!packages || !packages.length} onClick={handleSelectAll}/>}
+            control={<Checkbox color="primary"
+                               disabled={!packages || !packages.length} onClick={handleSelectAll}/>}
             label={formatMessage(messages.selectAll)}
           />
         </FormGroup>
@@ -305,7 +308,7 @@ function PublishingQueue() {
         component="div"
         count={total}
         rowsPerPage={currentFilters.limit}
-        page={currentFilters.offset}
+        page={currentFilters.page}
         backIconButtonProps={{
           'aria-label': 'previous page',
         }}

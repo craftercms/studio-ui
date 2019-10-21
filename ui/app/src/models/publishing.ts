@@ -13,5 +13,5 @@ export interface CurrentFilters {
   path: string;
   states: any
   limit: number,
-  offset: number
+  page: number
 }
