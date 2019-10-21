@@ -31,11 +31,12 @@ import { setRequestForgeryToken } from "../utils/auth";
 import TablePagination from '@material-ui/core/TablePagination';
 import ErrorState from "./ErrorState";
 import EmptyState from "./EmptyState";
+import Typography from "@material-ui/core/Typography";
 
 const messages = defineMessages({
   selectAll: {
     id: 'publishingQueue.selectAll',
-    defaultMessage: 'Select All'
+    defaultMessage: 'Select all on this page'
   },
   cancelSelected: {
     id: 'publishingQueue.cancelSelected',
@@ -64,7 +65,15 @@ const messages = defineMessages({
   noPackagesSubtitle: {
     id: 'publishingQueue.noPackagesSubtitle',
     defaultMessage: 'Try changing your query'
-  }
+  },
+  filteredBy: {
+    id: 'publishingQueue.filteredBy',
+    defaultMessage: 'Showing: {state, select, all {} other {Status : {state}.}} {environment, select, all {} other {{environment} environment.}} {path, select, none {}  other {Filtered by {path}}}'
+  },
+  packagesSelected: {
+    id: 'publishingQueue.packagesSelected',
+    defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}',
+  },
 });
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -75,7 +84,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '0 0 0 0',
     alignItems: 'center',
     borderBottom: '1px solid #dedede',
-
+  },
+  secondBar: {
+    background: '#f9f9f9',
+    padding: '10px',
+    borderBottom: '1px solid #dedede'
   },
   queueList: {
   },
@@ -97,6 +110,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       }
     },
     '& .files': {},
+  },
+  packagesSelected:{
+    marginRight: '10px'
   },
   selectAll: {
     marginRight: 'auto'
@@ -233,13 +249,27 @@ function PublishingQueue() {
   }
 
   function handleSelectAll(event: any) {
-    if(!packages) return false;
+    if(!packages || packages.length === 0) return false;
+    const list = packages.map((item: Package) => item.id);
     if (event.target.checked) {
-      let list = packages.map((item: Package) => item.id);
-      setSelected(list);
+      setSelected([...selected, ...list]);
     } else {
-      setSelected([]);
+      const filteredList = list.filter(function(name: string) {
+        return selected.indexOf(name) < 0;
+      });
+      setSelected(filteredList);
     }
+  }
+
+  function areAllSelected() {
+    if(!packages || packages.length === 0) return false;
+    let _selected: boolean = true;
+    packages.forEach((item: Package) => {
+      if(!selected.includes(item.id)) {
+        _selected = false;
+      }
+    });
+    return _selected;
   }
 
   function handleFilterChange(event: any) {
@@ -275,10 +305,17 @@ function PublishingQueue() {
         <FormGroup className={classes.selectAll}>
           <FormControlLabel
             control={<Checkbox color="primary"
+                               checked={areAllSelected()}
                                disabled={!packages || !packages.length} onClick={handleSelectAll}/>}
             label={formatMessage(messages.selectAll)}
           />
         </FormGroup>
+        {
+          (selected.length > 0) &&
+          <Typography variant="body2" className={classes.packagesSelected} color={"textSecondary"}>
+            {formatMessage(messages.packagesSelected, { count: selected.length })}
+          </Typography>
+        }
         <ConfirmDropdown
           text={formatMessage(messages.cancelSelected)}
           cancelText={formatMessage(messages.cancel)}
@@ -289,6 +326,23 @@ function PublishingQueue() {
         <FilterDropdown className={classes.button} text={formatMessage(messages.filters)} handleFilterChange={handleFilterChange}
                         currentFilters={currentFilters} handleEnterKey={handleEnterKey} filters={filters}/>
       </div>
+      {
+        (currentFilters.states.length || currentFilters.path || currentFilters.environment) &&
+        <div className={classes.secondBar}>
+          <Typography variant="body2">
+            {
+              formatMessage(
+                messages.filteredBy,
+                {
+                  state: currentFilters.states.length? <strong key="state">{currentFilters.states.join()}</strong> : 'all',
+                  path: currentFilters.path? <strong key="path">{currentFilters.path}</strong> : 'none',
+                  environment: currentFilters.environment? <strong key="environment">{currentFilters.environment}</strong> : 'all',
+                }
+              )
+            }
+          </Typography>
+        </div>
+      }
       {
         (apiState.error && apiState.errorResponse)?
           <ErrorState error={apiState.errorResponse}/>
