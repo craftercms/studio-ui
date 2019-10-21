@@ -23,12 +23,15 @@
  **/
 (function () {
 
-  var History,
-    Dom = YAHOO.util.Dom,
-    Event = YAHOO.util.Event,
+  let History;
 
-    TemplateAgent = CStudioAuthoring.Component.TemplateAgent,
-    template = CStudioAuthoring.TemplateHolder.History;
+  const Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        TemplateAgent = CStudioAuthoring.Component.TemplateAgent,
+        template = CStudioAuthoring.TemplateHolder.History,
+        i18n = CrafterCMSNext.i18n,
+        formatMessage = i18n.intl.formatMessage,
+        commonMessages = i18n.messages.commonMessages;
 
   CStudioAuthoring.register('ViewController.History', function () {
     CStudioAuthoring.ViewController.History.superclass.constructor.apply(this, arguments);
@@ -176,15 +179,17 @@
 
                   if(_this.isWrite){
                     $revertDropdown = $(
-                      `<div class="dropdown" style="display: inline-block">
+                      `<div class="dropdown inline-block">
                         <span id="actionRevert${version.versionNumber}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
                         <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
-                          <li><a class="confirm" href="#">Confirm</a></li>
+                          <li><a class="confirm" href="#">${ formatMessage(commonMessages.confirm) }</a></li>
                           <li role="separator" class="divider"></li>
-                          <li><a class="cancel" href="#">Cancel</a></li>
+                          <li><a class="cancel" href="#" onclick="return false;">${ formatMessage(commonMessages.cancel) }</a></li>
                         </ul>
                       </div>`
                     ).appendTo($(col5El));
+                    $revertDropdown.data('item', selection);
+                    $revertDropdown.data('version', version.versionNumber);
 
                     new YAHOO.widget.Tooltip("tooltipRevert"+ version.versionNumber, {
                       context: "actionRevert" + version.versionNumber,
@@ -198,12 +203,14 @@
 
                   (function (item) {
                     if(_this.isWrite) {
-                      console.log($revertDropdown);
-                      $revertDropdown.find('.confirm').on('click', function() {
+                      $revertDropdown.find('.confirm').on('click', function(e) {
+                        e.preventDefault();
+                        const $dropdown = $(this).closest('.dropdown');
+
                         CStudioAuthoring.Service.revertContentItem(
                           CStudioAuthoringContext.site,
-                          item,
-                          version.versionNumber, {
+                          $dropdown.data('item'),
+                          $dropdown.data('version'), {
                           success: function () {
                             if (CStudioAuthoringContext.isPreview) {
                               CStudioAuthoring.Operations.refreshPreview();
