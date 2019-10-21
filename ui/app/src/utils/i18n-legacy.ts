@@ -135,6 +135,17 @@ const contentTypesMessages = defineMessages({
 
 });
 
+const commonMessages = defineMessages({
+  confirm: {
+    id: 'commonMessages.confirm',
+    defaultMessage: 'Confirm'
+  },
+  cancel: {
+    id: 'commonMessages.cancel',
+    defaultMessage: 'Cancel'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -143,5 +154,6 @@ export default {
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
-  contentTypesMessages
+  contentTypesMessages,
+  commonMessages
 };
