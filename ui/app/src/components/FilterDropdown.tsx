@@ -1,6 +1,6 @@
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from "@material-ui/core/Button";
-import React from "react";
+import React, { useState } from "react";
 import Popover from '@material-ui/core/Popover';
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
@@ -12,8 +12,10 @@ import Radio from "@material-ui/core/Radio";
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import { CurrentFilters } from "../models/publishing";
+import SearchIcon from '@material-ui/icons/Search';
+import { Theme } from "@material-ui/core";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   paper: {
     width: '300px'
   },
@@ -24,12 +26,34 @@ const useStyles = makeStyles(() => ({
     borderBottom: '1px solid #dedede'
   },
   body: {
-    padding: '10px'
+    padding: '10px',
+    position: 'relative'
   },
   formControl: {
     width: '100%',
     padding: '5px 15px 20px 15px',
   },
+  search: {
+    width: '100%',
+    margin: 'auto',
+    position: 'relative'
+  },
+  searchIcon: {
+    width: theme.spacing(7),
+    color: '#828282',
+    height: '41px;',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1
+  },
+  searchTextField: {
+    '& input': {
+      paddingLeft: '50px'
+    }
+  }
 }));
 
 const messages: any = defineMessages({
@@ -72,9 +96,13 @@ const messages: any = defineMessages({
 });
 
 interface FilterDropdown {
-  text : string;
+  text: string;
   className: any;
+
   handleFilterChange(event: any): any;
+
+  handleEnterKey(path: string): any;
+
   currentFilters: CurrentFilters;
   filters: any;
 }
@@ -82,7 +110,8 @@ interface FilterDropdown {
 export default function FilterDropdown(props: FilterDropdown) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
-  const {text, className, handleFilterChange, currentFilters, filters} = props;
+  const {text, className, handleFilterChange, handleEnterKey, currentFilters, filters} = props;
+  const [path, setPath] = useState('');
   const {formatMessage} = useIntl();
 
   const handleClick = (event: any) => {
@@ -91,6 +120,12 @@ export default function FilterDropdown(props: FilterDropdown) {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent, path: string) => {
+    if (event.charCode === 13) {
+      handleEnterKey(path);
+    }
   };
 
   return (
@@ -122,14 +157,19 @@ export default function FilterDropdown(props: FilterDropdown) {
             </Typography>
           </header>
           <div className={classes.body}>
+            <div className={classes.searchIcon}>
+              <SearchIcon/>
+            </div>
             <TextField
               id="path"
               name="path"
+              className={classes.searchTextField}
               InputLabelProps={{shrink: true}}
               fullWidth
               placeholder={"e.g. /SOME/PATH/*"}
-              onChange={handleFilterChange}
-              value={currentFilters.path}
+              onChange={(event) => setPath(event.target.value)}
+              onKeyPress={(event) => onKeyPress(event, path)}
+              value={path}
             />
           </div>
         </section>
@@ -166,7 +206,8 @@ export default function FilterDropdown(props: FilterDropdown) {
                 filters.states.map((filter: string, index: number) => {
                   return <FormControlLabel
                     key={index}
-                    control={<Checkbox checked={currentFilters.states[filter]} name={filter} value={filter} color="primary" onChange={handleFilterChange}/>}
+                    control={<Checkbox checked={currentFilters.states[filter]} name={filter} value={filter}
+                                       color="primary" onChange={handleFilterChange}/>}
                     label={formatMessage(messages[filter])}/>
                 })
               }

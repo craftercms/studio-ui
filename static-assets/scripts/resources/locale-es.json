@@ -254,6 +254,7 @@
         "CHANNEL":"Canal",
         "WARNINGBP":"Advertencia: Publicación Masiva",
         "WRNINGGPBODY":"La publicación masiva obligará a publicar todos los artículos que coincidan con el patrón solicitado, incluidas sus dependencias. Asegúrese de que todos los elementos modificados (incluido el trabajo potencialmente en progreso) estén listos para publicarse antes de continuar.",
+        "PUBLISHQUEUE":"Cola de publicación",
         "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado.",
         "PUBLISHBYCOMMITS": "Públicar por id(s) de commit",
         "PUBLISHBYCOMMITS_SUCCESS": "Publicado exitosamente",

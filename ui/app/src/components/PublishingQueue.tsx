@@ -23,12 +23,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from "./PublishingPackage";
-import { cancelPackage, fetchPackages, fetchEnvironments } from '../services/publishing';
+import { cancelPackage, fetchEnvironments, fetchPackages } from '../services/publishing';
 import { CurrentFilters, Package } from "../models/publishing";
 import ConfirmDropdown from "./ConfirmDropdown";
 import FilterDropdown from "./FilterDropdown";
 import { setRequestForgeryToken } from "../utils/auth";
 import TablePagination from '@material-ui/core/TablePagination';
+import ErrorState from "./ErrorState";
+import EmptyState from "./EmptyState";
 
 const messages = defineMessages({
   selectAll: {
@@ -54,28 +56,28 @@ const messages = defineMessages({
   filters: {
     id: 'publishingQueue.filters',
     defaultMessage: 'Filters'
+  },
+  noPackagesTitle: {
+    id: 'publishingQueue.noPackagesTitle',
+    defaultMessage: 'No Packages Where Found'
+  },
+  noPackagesSubtitle: {
+    id: 'publishingQueue.noPackagesSubtitle',
+    defaultMessage: 'Try changing your query'
   }
 });
 
 const useStyles = makeStyles((theme: Theme) => ({
   publishingQueue: {
-    marginTop: '40px',
-    margin: 'auto',
-    width: '800px',
-    padding: '40px',
-    display: 'flex',
-    flexDirection: 'column'
   },
   topBar: {
     display: 'flex',
     padding: '0 0 0 0',
     alignItems: 'center',
-    borderTop: '1px solid #dedede',
     borderBottom: '1px solid #dedede',
 
   },
   queueList: {
-    //overflow: 'auto'
   },
   package: {
     padding: '20px',
@@ -102,6 +104,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     margin: theme.spacing(1),
   },
+  empty: {
+    padding: '40px 0'
+  }
 }));
 
 const currentFiltersInitialState:CurrentFilters = {
@@ -121,6 +126,10 @@ function PublishingQueue() {
   const [filters, setFilters] = useState({
     environments: null,
     states: ['READY_FOR_LIVE', 'PROCESSING', 'COMPLETED', 'CANCELLED', 'BLOCKED']
+  });
+  const [apiState, setApiState] = useState({
+    error: false,
+    errorResponse: null,
   });
   const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
   const {formatMessage} = useIntl();
@@ -173,7 +182,7 @@ function PublishingQueue() {
           setFilters({...filters, environments: channels });
         },
         ({response}) => {
-          console.log(response);
+          setApiState({...apiState, error: true, errorResponse: response});
         }
       );
   }
@@ -182,7 +191,7 @@ function PublishingQueue() {
     let filters:any = {};
     if(currentFilters.environment) filters['environment'] = currentFilters.environment;
     if(currentFilters.path) filters['path'] = currentFilters.path;
-    //if(currentFilters.states) filters['states'] = currentFilters.states;
+    if(currentFilters.states.length) filters['state'] = currentFilters.states.join();
     if(currentFilters.limit) filters['limit'] = currentFilters.limit;
     if(currentFilters.offset) filters['offset'] = currentFilters.offset;
     return filters;
@@ -196,7 +205,7 @@ function PublishingQueue() {
           setPackages(response.packages);
         },
         ({response}) => {
-          console.log(response);
+          setApiState({...apiState, error: true, errorResponse: response});
         }
       );
   }
@@ -216,7 +225,7 @@ function PublishingQueue() {
           setPending({...pending, ..._pending});
         },
         ({response}) => {
-          console.log(response);
+          setApiState({...apiState, error: true, errorResponse: response});
         }
       );
   }
@@ -235,18 +244,19 @@ function PublishingQueue() {
     event.persist();
     if (event.target.type === 'checkbox') {
       let states:any = [...currentFilters.states];
-      let index = states.indexOf(event.target.value);
-      if(index !== -1) {
-        states = states.splice(index, 1);
-      } else {
+      if(event.target.checked){
         states.push(event.target.value);
+      } else {
+        states = states.filter((item: string) => item !== event.target.value);
       }
       setCurrentFilters({...currentFilters, states: states, offset: 0});
     } else if (event.target.type === 'radio'){
       setCurrentFilters({...currentFilters, environment: event.target.value, offset: 0});
-    } else {
-      setCurrentFilters({...currentFilters, path: event.target.value, offset: 0});
     }
+  }
+
+  function handleEnterKey(path: string) {
+    setCurrentFilters({...currentFilters, path: path, offset: 0});
   }
 
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
@@ -262,7 +272,7 @@ function PublishingQueue() {
       <div className={classes.topBar}>
         <FormGroup className={classes.selectAll}>
           <FormControlLabel
-            control={<Checkbox color="primary" onClick={handleSelectAll}/>}
+            control={<Checkbox color="primary" disabled={!packages || !packages.length} onClick={handleSelectAll}/>}
             label={formatMessage(messages.selectAll)}
           />
         </FormGroup>
@@ -274,11 +284,22 @@ function PublishingQueue() {
           onConfirm={handleCancelAll}
         />
         <FilterDropdown className={classes.button} text={formatMessage(messages.filters)} handleFilterChange={handleFilterChange}
-                        currentFilters={currentFilters} filters={filters}/>
+                        currentFilters={currentFilters} handleEnterKey={handleEnterKey} filters={filters}/>
       </div>
-      <div className={classes.queueList}>
-        {packages && renderPackages()}
-      </div>
+      {
+        (apiState.error && apiState.errorResponse)?
+          <ErrorState error={apiState.errorResponse}/>
+        :
+          <div className={classes.queueList}>
+            {packages && renderPackages()}
+            {
+              packages !== null && packages.length === 0 &&
+              <div className={classes.empty}>
+                  <EmptyState title={formatMessage(messages.noPackagesTitle)} subtitle={formatMessage(messages.noPackagesSubtitle)}/>
+              </div>
+            }
+          </div>
+      }
       <TablePagination
         rowsPerPageOptions={[3, 5, 10]}
         component="div"

@@ -91,7 +91,8 @@ export function createCodebaseBridge() {
             default: module.DependencySelectionDelete
           }))
       )),
-      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog'))
+      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
+      PublishingQueue: lazy(() => import('../components/PublishingQueue'))
     },
 
     assets: {
