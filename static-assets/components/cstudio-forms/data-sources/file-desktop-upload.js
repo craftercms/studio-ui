@@ -39,6 +39,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 	 */
 	add: function(control, multiple) {
 		this._self = this;
+		var me = this;
 
 		var site = CStudioAuthoringContext.site;
 		var path = this._self.repoPath;
@@ -55,7 +56,7 @@ x
 		var callback = {
 			success: function(fileData) {
 				if (control) {
-					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size, this._self.id);
+					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size, me.id);
 					if(control._renderItems){
 						control._renderItems();
 					}
@@ -122,6 +123,7 @@ x
 
 	edit: function(key, control) {
 		this._self = this;
+		var me = this;
 
 		var site = CStudioAuthoringContext.site;
 		var path = this._self.repoPath;
@@ -139,7 +141,7 @@ x
 			success: function(fileData) {
 				if (control) {
 					control.deleteItem(key);
-					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size, this._self.id);
+					control.insertItem(path + "/" + fileData.fileName, path + "/" + fileData.fileName, fileData.fileExtension, fileData.size, me.id);
 					if(control._renderItems){
 						control._renderItems();
 					}
