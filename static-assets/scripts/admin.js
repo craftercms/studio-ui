@@ -1836,11 +1836,6 @@
 
       repositories.getRepositoryStatus = function() {
         adminService.repositoryStatus($location.search().site).success(function(data){
-          if(data.repositoryStatus.clean || !data.repositoryStatus.clean 
-            && data.repositoryStatus.uncommittedChanges.length > 0 
-            && data.repositoryStatus.conflicting.length < 1){
-            repositories.spinnerOverlay = $scope.spinnerOverlay();
-          }
           repositories.status = data.repositoryStatus;
         });
       }
@@ -1891,6 +1886,7 @@
 
         };
 
+        repositories.spinnerOverlay = $scope.spinnerOverlay();
         repositories.getRepositoryStatus();
 
         adminService.getRepositories(repositories).success(function (data) {
