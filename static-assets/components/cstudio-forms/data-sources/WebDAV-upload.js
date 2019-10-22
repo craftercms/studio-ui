@@ -63,7 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVUpload, CStudioForms.CStudioFormData
 						fileName = item,
 						fileExtension = fileName.split(".").pop();
 
-					control.insertItem(item, item, fileExtension);
+					control.insertItem(item, item, fileExtension, null, me.id);
 					if(control._renderItems){
 						control._renderItems();
 					}

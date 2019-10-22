@@ -278,6 +278,12 @@ function BlueprintCard(props: BlueprintCard) {
             {name}
           </Typography>
           {
+            (id === 'GIT') &&
+            <Typography gutterBottom variant="subtitle2" component="h2" color={"textSecondary"}>
+              {blueprint.description}
+            </Typography>
+          }
+          {
             (id !== 'GIT') &&
             <div>
               {renderDeveloper()}

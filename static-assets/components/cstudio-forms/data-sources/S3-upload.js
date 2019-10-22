@@ -63,7 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
 						fileName = item,
 						fileExtension = fileName.split(".").pop();
 
-					control.insertItem(item, item, fileExtension);
+					control.insertItem(item, item, fileExtension, null, me.id);
 					if(control._renderItems){
 						control._renderItems();
 					}
