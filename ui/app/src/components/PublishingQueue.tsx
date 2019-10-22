@@ -135,7 +135,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const currentFiltersInitialState:CurrentFilters = {
   environment: '',
   path: '',
-  states: [],
+  state: '',
   limit: 5,
   page: 0
 };
@@ -221,7 +221,7 @@ function PublishingQueue(props: PublishingQueue) {
     let filters:any = {};
     if(currentFilters.environment) filters['environment'] = currentFilters.environment;
     if(currentFilters.path) filters['path'] = currentFilters.path;
-    if(currentFilters.states.length) filters['state'] = currentFilters.states.join();
+    if(currentFilters.state) filters['state'] = currentFilters.state;
     if(currentFilters.limit) filters['limit'] = currentFilters.limit;
     if(currentFilters.page) filters['offset'] = currentFilters.page * currentFilters.limit;
     return filters;
@@ -292,17 +292,10 @@ function PublishingQueue(props: PublishingQueue) {
   }
 
   function handleFilterChange(event: any) {
-    event.persist();
-    if (event.target.type === 'checkbox') {
-      let states:any = [...currentFilters.states];
-      if(event.target.checked){
-        states.push(event.target.value);
-      } else {
-        states = states.filter((item: string) => item !== event.target.value);
-      }
-      setCurrentFilters({...currentFilters, states: states, page: 0});
-    } else if (event.target.type === 'radio'){
-      setCurrentFilters({...currentFilters, environment: event.target.value, page: 0});
+    //event.persist();
+    console.log(event.target);
+    if (event.target.type === 'radio'){
+      setCurrentFilters({...currentFilters, [event.target.name]: event.target.value, page: 0});
     }
   }
 
@@ -347,14 +340,14 @@ function PublishingQueue(props: PublishingQueue) {
                         currentFilters={currentFilters} handleEnterKey={handleEnterKey} filters={filters}/>
       </div>
       {
-        (currentFilters.states.length || currentFilters.path || currentFilters.environment) &&
+        (currentFilters.state || currentFilters.path || currentFilters.environment) &&
         <div className={classes.secondBar}>
           <Typography variant="body2">
             {
               formatMessage(
                 messages.filteredBy,
                 {
-                  state: currentFilters.states.length? <strong key="state">{currentFilters.states.join()}</strong> : 'all',
+                  state: currentFilters.state? <strong key="state">{currentFilters.state}</strong> : 'all',
                   path: currentFilters.path? <strong key="path">{currentFilters.path}</strong> : 'none',
                   environment: currentFilters.environment? <strong key="environment">{currentFilters.environment}</strong> : 'all',
                 }

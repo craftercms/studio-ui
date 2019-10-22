@@ -9,8 +9,6 @@ import TextField from "@material-ui/core/TextField";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
-import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
 import { CurrentFilters } from "../models/publishing";
 import SearchIcon from '@material-ui/icons/Search';
 import { Theme } from "@material-ui/core";
@@ -201,17 +199,20 @@ export default function FilterDropdown(props: FilterDropdown) {
             </Typography>
           </header>
           <div className={classes.formControl}>
-            <FormGroup>
+            <RadioGroup aria-label="state" name="state"
+                        value={currentFilters.state} onChange={handleFilterChange}>
+              <FormControlLabel value={""} control={<Radio color="primary"/>}
+                                label={formatMessage(messages.all)}/>
               {
                 filters.states.map((filter: string, index: number) => {
                   return <FormControlLabel
                     key={index}
-                    control={<Checkbox checked={currentFilters.states[filter]} name={filter} value={filter}
-                                       color="primary" onChange={handleFilterChange}/>}
+                    value={filter}
+                    control={<Radio color="primary"/>}
                     label={formatMessage(messages[filter])}/>
                 })
               }
-            </FormGroup>
+            </RadioGroup>
           </div>
         </section>
       </Popover>

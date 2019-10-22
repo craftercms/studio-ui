@@ -11,7 +11,7 @@ export interface Package {
 export interface CurrentFilters {
   environment: string;
   path: string;
-  states: any
+  state: string
   limit: number,
   page: number
 }
