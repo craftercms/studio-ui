@@ -210,7 +210,6 @@ function BlueprintReview(props: BlueprintReview) {
   function renderBlueprintParameters() {
     return (
       blueprint.parameters.map((parameter, index) => {
-        console.log(parameter);
         return (
           <Typography variant="body2" gutterBottom key={index}>
             <span className={classes.bold}>{parameter.label}: </span>
