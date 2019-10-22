@@ -33,6 +33,7 @@ import ErrorState from "./ErrorState";
 import EmptyState from "./EmptyState";
 import Typography from "@material-ui/core/Typography";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import Spinner from "./Spinner";
 
 const messages = defineMessages({
   selectAll: {
@@ -361,6 +362,7 @@ function PublishingQueue(props: PublishingQueue) {
           <ErrorState error={apiState.errorResponse}/>
         :
           <div className={classes.queueList}>
+            {packages === null && <Spinner/>}
             {packages && renderPackages()}
             {
               packages !== null && packages.length === 0 &&
