@@ -186,7 +186,7 @@ function PublishingQueue(props: PublishingQueueProps) {
 
   useEffect(
     () => {
-      renderCount(selected);
+      setCount(renderCount(selected).length);
     },
     // eslint-disable-next-line
     [selected]
@@ -253,13 +253,15 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function handleCancelAll() {
-    if(Object.keys(selected).length === 0) return false;
+    if(count === 0) return false;
     let _pending: Selected = {};
     Object.keys(selected).forEach((key: string) => {
-      _pending[key] = true;
+      if(selected[key]) {
+        _pending[key] = true;
+      }
     });
     setPending(_pending);
-    cancelPackage(siteId, Object.keys(selected))
+    cancelPackage(siteId, Object.keys(_pending))
       .subscribe(
         () => {
           Object.keys(selected).forEach((key: string) => {
@@ -323,13 +325,13 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function renderCount(selected: Selected) {
-    let _count = 0;
+    let _selected:any = [];
     Object.keys(selected).forEach((key) => {
       if(selected[key]) {
-        _count++;
+        _selected.push(key);
       }
     });
-    setCount(_count);
+    return _selected;
   }
 
   return (
