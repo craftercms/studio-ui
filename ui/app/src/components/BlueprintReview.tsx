@@ -301,7 +301,7 @@ function BlueprintReview(props: BlueprintReview) {
           }
         </Grid>
         {
-          blueprint.parameters &&
+          (!!blueprint.parameters.length) &&
           <Grid item xs={12}>
               <Typography variant="h6" gutterBottom className={classes.section}>
                 {formatMessage(messages.blueprintParameters)}
