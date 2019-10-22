@@ -28,7 +28,15 @@ $split-view-size: $diff-modal-size / 2;
   .repositories-table {
     overflow-x: scroll;
     margin-bottom: 17px;
+    border-bottom: 1px solid #ddd;
   }
+
+  hr{
+    height: 5px; 
+    background-color: #f2f2f2;
+    margin: 5px 0 10px 0 ;
+  }
+
 }
 
 .diff-header {
