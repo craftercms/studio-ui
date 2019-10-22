@@ -274,7 +274,7 @@
                         "error-dialog",
                         CStudioAuthoring.Operations.simpleDialogTypeINFO,
                         CMgs.format(browseLangBundle, "notification"),
-                        error.message,
+                        error.response.remedialAction,
                         null,
                         YAHOO.widget.SimpleDialog.ICON_BLOCK,
                         "studioDialog"

@@ -78,7 +78,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISRepo, CStudioForms.CStudioFormDatasour
                             uri = uri.startsWith("/") ? uri : "/" + uri;
                         }
 
-                        control.insertItem(uri, item.browserUri, fileExtension);
+                        control.insertItem(uri, item.browserUri, fileExtension, null,_self.id);
                         if(control._renderItems){
                             control._renderItems();
                         }
