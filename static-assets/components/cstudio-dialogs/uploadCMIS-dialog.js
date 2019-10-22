@@ -25,6 +25,9 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
  */
 CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISDialog || {
 
+  formatMessage: CrafterCMSNext.i18n.intl.formatMessage,
+  messages: CrafterCMSNext.i18n.messages.commonMessages,
+
   /**
    * initialize module
    */
@@ -160,6 +163,28 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
 
           me.callback.success(uploaded);
           CStudioAuthoring.Dialogs.UploadCMISDialog.closeDialog();
+        },
+        onError: function(file, error, response) {
+          const res = response.body.response,
+                errorMsg = `${res.message}. ${res.remedialAction}`;
+
+          me.uploadingFile = false;
+          $('#uploadCancelButton').attr('disabled', false);
+
+          CStudioAuthoring.Operations.showSimpleDialog(
+            "uploadErrorDialog",
+            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+            me.formatMessage(me.messages.notification),
+            errorMsg,
+            [{ text: "OK",  handler:function(){
+                this.destroy();
+                callback.failure(response);
+              }, isDefault:false }],
+            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+            "studioDialog",
+            null,
+            100104
+          );
         }
       }
     );

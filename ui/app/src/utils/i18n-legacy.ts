@@ -142,6 +142,13 @@ const contentTypesMessages = defineMessages({
 
 });
 
+const commonMessages = defineMessages({
+  notification: {
+    id: 'commonMessages.notification',
+    defaultMessage: 'Notification'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -151,5 +158,6 @@ export default {
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
-  contentTypesMessages
+  contentTypesMessages,
+  commonMessages
 };
