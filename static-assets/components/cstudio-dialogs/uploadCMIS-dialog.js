@@ -176,12 +176,16 @@ CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISD
             CStudioAuthoring.Operations.simpleDialogTypeINFO,
             me.formatMessage(me.messages.notification),
             errorMsg,
-            [{ text: "OK",  handler:function(){
+            [{
+              text: 'OK',
+              handler:function(){
                 this.destroy();
                 callback.failure(response);
-              }, isDefault:false }],
+              },
+              isDefault:false
+            }],
             YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            "studioDialog",
+            'studioDialog',
             null,
             100104
           );
