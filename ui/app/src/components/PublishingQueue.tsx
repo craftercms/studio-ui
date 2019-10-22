@@ -140,7 +140,11 @@ const currentFiltersInitialState:CurrentFilters = {
   page: 0
 };
 
-function PublishingQueue() {
+interface PublishingQueue {
+  siteId: string
+}
+
+function PublishingQueue(props: PublishingQueue) {
   const classes = useStyles({});
   const [packages, setPackages] = useState(null);
   const [selected, setSelected] = useState([]);
@@ -156,19 +160,20 @@ function PublishingQueue() {
   });
   const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
   const {formatMessage} = useIntl();
+  const {siteId} = props;
 
   setRequestForgeryToken();
 
   useEffect(
     () => {
       if(currentFilters && packages !== null){
-        getPackages('editorial');
+        getPackages(siteId);
       }
       if (packages === null) {
-        getPackages('editorial');
+        getPackages(siteId);
       }
       if (filters.environments === null){
-        getEnvironments('editorial');
+        getEnvironments(siteId);
       }
     },
     // eslint-disable-next-line
@@ -185,7 +190,7 @@ function PublishingQueue() {
         comment={item.comment}
         environment={item.environment}
         key={index}
-        siteId={'editorial'}
+        siteId={siteId}
         selected={selected}
         pending={pending}
         setPending={setPending}
@@ -236,12 +241,13 @@ function PublishingQueue() {
   }
 
   function handleCancelAll() {
+    if(selected.length === 0) return false;
     let _pending:{[id:string]:boolean} = {};
     selected.forEach((id: string) => {
       _pending[id] = true;
     });
     setPending(_pending);
-    cancelPackage('editorial', selected)
+    cancelPackage(siteId, selected)
       .subscribe(
         () => {
           selected.forEach((id: string) => {

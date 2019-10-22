@@ -835,7 +835,8 @@
         CrafterCMSNext
           .render(
             document.getElementsByClassName('publishingQueue')[0],
-            'PublishingQueue'
+            'PublishingQueue',
+            {siteId: $location.search().site}
           );
       };
 
