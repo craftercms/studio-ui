@@ -25,6 +25,10 @@ export interface Package {
   comment: string
 }
 
+export interface Selected {
+  [keys: string]: boolean;
+}
+
 export interface CurrentFilters {
   environment: string;
   path: string;

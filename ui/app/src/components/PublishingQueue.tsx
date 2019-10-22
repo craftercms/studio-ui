@@ -24,7 +24,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from "./PublishingPackage";
 import { cancelPackage, fetchEnvironments, fetchPackages } from '../services/publishing';
-import { CurrentFilters, Package } from "../models/publishing";
+import { CurrentFilters, Package, Selected } from "../models/publishing";
 import ConfirmDropdown from "./ConfirmDropdown";
 import FilterDropdown from "./FilterDropdown";
 import { setRequestForgeryToken } from "../utils/auth";
@@ -141,6 +141,8 @@ const currentFiltersInitialState:CurrentFilters = {
   page: 0
 };
 
+const selectedInitialState:Selected = {};
+
 interface PublishingQueueProps {
   siteId: string
 }
@@ -148,8 +150,9 @@ interface PublishingQueueProps {
 function PublishingQueue(props: PublishingQueueProps) {
   const classes = useStyles({});
   const [packages, setPackages] = useState(null);
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(selectedInitialState);
   const [pending, setPending] = useState({});
+  const [count, setCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState({
     environments: null,
@@ -179,6 +182,14 @@ function PublishingQueue(props: PublishingQueueProps) {
     },
     // eslint-disable-next-line
     [currentFilters]
+  );
+
+  useEffect(
+    () => {
+      renderCount(selected);
+    },
+    // eslint-disable-next-line
+    [selected]
   );
 
   function renderPackages() {
@@ -242,17 +253,17 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function handleCancelAll() {
-    if(selected.length === 0) return false;
-    let _pending:{[id:string]:boolean} = {};
-    selected.forEach((id: string) => {
-      _pending[id] = true;
+    if(Object.keys(selected).length === 0) return false;
+    let _pending: Selected = {};
+    Object.keys(selected).forEach((key: string) => {
+      _pending[key] = true;
     });
     setPending(_pending);
-    cancelPackage(siteId, selected)
+    cancelPackage(siteId, Object.keys(selected))
       .subscribe(
         () => {
-          selected.forEach((id: string) => {
-            _pending[id] = false;
+          Object.keys(selected).forEach((key: string) => {
+            _pending[key] = false;
           });
           setPending({...pending, ..._pending});
         },
@@ -263,21 +274,22 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function clearSelected() {
-    setSelected([]);
+    setSelected({});
   }
 
   function handleSelectAll(event: any) {
     if(!packages || packages.length === 0) return false;
-    const list = packages.map((item: Package) => item.id);
+    let _selected: Selected  = {};
     if (event.target.checked) {
-      let merge = [...selected, ...list];
-      merge = merge.filter((item,index) => merge.indexOf(item) === index);
-      setSelected(merge);
-    } else {
-      const filteredList = selected.filter(function(name: string) {
-        return list.indexOf(name) < 0;
+      packages.forEach((item: Package) => {
+        _selected[item.id] = true;
+        setSelected({...selected, ..._selected });
       });
-      setSelected(filteredList);
+    } else {
+      packages.forEach((item: Package) => {
+        _selected[item.id] = false;
+        setSelected({...selected, ..._selected });
+      });
     }
   }
 
@@ -285,7 +297,7 @@ function PublishingQueue(props: PublishingQueueProps) {
     if(!packages || packages.length === 0) return false;
     let _selected: boolean = true;
     packages.forEach((item: Package) => {
-      if(!selected.includes(item.id)) {
+      if(!selected[item.id]) {
         _selected = false;
       }
     });
@@ -293,7 +305,6 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   function handleFilterChange(event: any) {
-    console.log(event.target);
     if (event.target.type === 'radio'){
       setCurrentFilters({...currentFilters, [event.target.name]: event.target.value, page: 0});
     }
@@ -311,6 +322,16 @@ function PublishingQueue(props: PublishingQueueProps) {
     setCurrentFilters({...currentFilters, page: 0, limit: parseInt(event.target.value, 10)});
   }
 
+  function renderCount(selected: Selected) {
+    let _count = 0;
+    Object.keys(selected).forEach((key) => {
+      if(selected[key]) {
+        _count++;
+      }
+    });
+    setCount(_count);
+  }
+
   return (
     <div className={classes.publishingQueue}>
       <div className={classes.topBar}>
@@ -323,9 +344,9 @@ function PublishingQueue(props: PublishingQueueProps) {
           />
         </FormGroup>
         {
-          (selected.length > 0) &&
+          (count > 0) &&
           <Typography variant="body2" className={classes.packagesSelected} color={"textSecondary"}>
-            {formatMessage(messages.packagesSelected, { count: selected.length })}
+            {formatMessage(messages.packagesSelected, { count: count })}
             <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
           </Typography>
         }

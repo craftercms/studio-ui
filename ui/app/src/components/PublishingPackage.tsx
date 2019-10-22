@@ -156,13 +156,11 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   };
 
   function onSelect(event: ChangeEvent, id: string, checked: boolean) {
-    let list = [...selected];
-    if (checked) {
-      list = list.filter(item => item !== id);
-    } else {
-      list.push(id);
+    if(checked){
+      setSelected({...selected, [id]: false });
+    }else {
+      setSelected({...selected, [id]: true });
     }
-    setSelected(list);
   }
 
   function handleCancel(packageId: string) {
@@ -207,7 +205,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
     })
   }
 
-  const checked = !!selected.find((item: string) => item === id);
+  const checked = selected[id]? selected[id]: false ;
 
   return (
     <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
