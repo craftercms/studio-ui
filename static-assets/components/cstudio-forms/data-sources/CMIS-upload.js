@@ -63,7 +63,7 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 						fileName = fileData.url,
 						fileExtension = fileData.fileExtension;
 
-					control.insertItem(item, item, fileExtension);
+					control.insertItem(item, item, fileExtension, null, me.id);
 					if(control._renderItems){
 						control._renderItems();
 					}
