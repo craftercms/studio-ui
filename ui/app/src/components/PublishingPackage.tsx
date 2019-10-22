@@ -91,40 +91,40 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const messages = defineMessages({
   cancel: {
-    id: 'publishingQueue.cancel',
+    id: 'publishingDashboard.cancel',
     defaultMessage: 'Cancel'
   },
   confirm: {
-    id: 'publishingQueue.confirm',
+    id: 'publishingDashboard.confirm',
     defaultMessage: 'Confirm'
   },
   confirmHelper: {
-    id: 'publishingQueue.confirmHelper',
+    id: 'publishingDashboard.confirmHelper',
     defaultMessage: 'Set the state for the item to "Cancelled"'
   },
   fetchPackagesFiles: {
-    id: 'publishingQueue.fetchPackagesFiles',
+    id: 'publishingDashboard.fetchPackagesFiles',
     defaultMessage: 'Fetch Packages Files'
   },
   scheduled: {
-    id: 'publishingQueue.scheduled',
+    id: 'publishingDashboard.scheduled',
     defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>',
   },
   status: {
-    id: 'publishingQueue.status',
+    id: 'publishingDashboard.status',
     defaultMessage: 'Status is {state} for {environment} environment'
   },
   comment: {
-    id: 'publishingQueue.comment',
+    id: 'publishingDashboard.comment',
     defaultMessage: 'Comment'
   },
   commentNotProvided: {
-    id: 'publishingQueue.commentNotProvided',
+    id: 'publishingDashboard.commentNotProvided',
     defaultMessage: '(submission comment not provided)'
   }
 });
 
-interface PublishingPackage {
+interface PublishingPackageProps {
   siteId: string;
   id: string;
   schedule: string;
@@ -141,7 +141,7 @@ interface PublishingPackage {
   getPackages(siteId: string, filters?: string): any
 }
 
-export default function PublishingPackage(props: PublishingPackage) {
+export default function PublishingPackage(props: PublishingPackageProps) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
   const {id, approver, schedule, state, comment, environment, siteId, selected, setSelected, pending, setPending, getPackages, apiState, setApiState} = props;

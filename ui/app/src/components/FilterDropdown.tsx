@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from "@material-ui/core/Button";
 import React, { useState } from "react";
@@ -56,44 +73,44 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const messages: any = defineMessages({
   pathExpression: {
-    id: 'publishing.pathExpression',
+    id: 'publishingDashboard.pathExpression',
     defaultMessage: 'Path Expression'
   },
   environment: {
-    id: 'publishing.environment',
+    id: 'publishingDashboard.environment',
     defaultMessage: 'Environment'
   },
   state: {
-    id: 'publishing.state',
+    id: 'publishingDashboard.state',
     defaultMessage: 'State'
   },
   all: {
-    id: 'publishing.all',
+    id: 'publishingDashboard.all',
     defaultMessage: 'All'
   },
   READY_FOR_LIVE: {
-    id: 'publishing.READY_FOR_LIVE',
+    id: 'publishingDashboard.READY_FOR_LIVE',
     defaultMessage: 'Ready for Live'
   },
   PROCESSING: {
-    id: 'publishing.PROCESSING',
+    id: 'publishingDashboard.PROCESSING',
     defaultMessage: 'Processing'
   },
   COMPLETED: {
-    id: 'publishing.COMPLETED',
+    id: 'publishingDashboard.COMPLETED',
     defaultMessage: 'Completed'
   },
   CANCELLED: {
-    id: 'publishing.CANCELLED',
+    id: 'publishingDashboard.CANCELLED',
     defaultMessage: 'Cancelled'
   },
   BLOCKED: {
-    id: 'publishing.BLOCKED',
+    id: 'publishingDashboard.BLOCKED',
     defaultMessage: 'Blocked'
   }
 });
 
-interface FilterDropdown {
+interface FilterDropdownProps {
   text: string;
   className: any;
 
@@ -105,7 +122,7 @@ interface FilterDropdown {
   filters: any;
 }
 
-export default function FilterDropdown(props: FilterDropdown) {
+export default function FilterDropdown(props: FilterDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
   const {text, className, handleFilterChange, handleEnterKey, currentFilters, filters} = props;

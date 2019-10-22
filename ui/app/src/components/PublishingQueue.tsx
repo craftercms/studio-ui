@@ -37,43 +37,43 @@ import Spinner from "./Spinner";
 
 const messages = defineMessages({
   selectAll: {
-    id: 'publishingQueue.selectAll',
+    id: 'publishingDashboard.selectAll',
     defaultMessage: 'Select all on this page'
   },
   cancelSelected: {
-    id: 'publishingQueue.cancelSelected',
+    id: 'publishingDashboard.cancelSelected',
     defaultMessage: 'Cancel Selected'
   },
   cancel: {
-    id: 'publishingQueue.cancel',
+    id: 'publishingDashboard.cancel',
     defaultMessage: 'Cancel'
   },
   confirm: {
-    id: 'publishingQueue.confirm',
+    id: 'publishingDashboard.confirm',
     defaultMessage: 'Confirm'
   },
   confirmAllHelper: {
-    id: 'publishingQueue.confirmHelper',
+    id: 'publishingDashboard.confirmHelper',
     defaultMessage: 'Set the state for all selected items to "Cancelled"'
   },
   filters: {
-    id: 'publishingQueue.filters',
+    id: 'publishingDashboard.filters',
     defaultMessage: 'Filters'
   },
   noPackagesTitle: {
-    id: 'publishingQueue.noPackagesTitle',
+    id: 'publishingDashboard.noPackagesTitle',
     defaultMessage: 'No Packages Where Found'
   },
   noPackagesSubtitle: {
-    id: 'publishingQueue.noPackagesSubtitle',
+    id: 'publishingDashboard.noPackagesSubtitle',
     defaultMessage: 'Try changing your query'
   },
   filteredBy: {
-    id: 'publishingQueue.filteredBy',
+    id: 'publishingDashboard.filteredBy',
     defaultMessage: 'Showing: {state, select, all {} other {Status : {state}.}} {environment, select, all {} other {{environment} environment.}} {path, select, none {}  other {Filtered by {path}}}'
   },
   packagesSelected: {
-    id: 'publishingQueue.packagesSelected',
+    id: 'publishingDashboard.packagesSelected',
     defaultMessage: '{count, plural, one {{count} Package selected} other {{count} Packages selected}}',
   },
 });
@@ -141,11 +141,11 @@ const currentFiltersInitialState:CurrentFilters = {
   page: 0
 };
 
-interface PublishingQueue {
+interface PublishingQueueProps {
   siteId: string
 }
 
-function PublishingQueue(props: PublishingQueue) {
+function PublishingQueue(props: PublishingQueueProps) {
   const classes = useStyles({});
   const [packages, setPackages] = useState(null);
   const [selected, setSelected] = useState([]);
@@ -293,7 +293,6 @@ function PublishingQueue(props: PublishingQueue) {
   }
 
   function handleFilterChange(event: any) {
-    //event.persist();
     console.log(event.target);
     if (event.target.type === 'radio'){
       setCurrentFilters({...currentFilters, [event.target.name]: event.target.value, page: 0});

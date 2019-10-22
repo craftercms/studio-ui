@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface BlueprintReview {
+interface BlueprintReviewProps {
   inputs: SiteState,
   onGoTo(step: number): any,
   blueprint: Blueprint,
@@ -151,7 +151,7 @@ const messages = defineMessages({
   },
 });
 
-function BlueprintReview(props: BlueprintReview) {
+function BlueprintReview(props: BlueprintReviewProps) {
   const classes = useStyles({});
   const { onGoTo, inputs, blueprint } = props;
   const [ passswordFields, setPasswordFields ] = useState(null);

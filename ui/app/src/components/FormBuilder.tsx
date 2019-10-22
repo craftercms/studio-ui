@@ -24,7 +24,7 @@ import { SiteState } from "../models/Site";
 import { defineMessages, useIntl } from "react-intl";
 import PasswordTextField from "./PasswordTextField";
 
-interface FormBuilder {
+interface FormBuilderProps {
   parameters: [Parameter];
   handleInputChange(event: React.ChangeEvent, type?: string): any;
   onKeyPress(event: React.KeyboardEvent): any;
@@ -47,7 +47,7 @@ const messages = defineMessages({
   },
 });
 
-export default function FormBuilder(props: FormBuilder) {
+export default function FormBuilder(props: FormBuilderProps) {
   const classes = useStyles({});
   const {parameters, handleInputChange, inputs, onKeyPress} = props;
   const { formatMessage } = useIntl();
