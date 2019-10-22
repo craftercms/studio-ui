@@ -158,7 +158,7 @@ function BlueprintReview(props: BlueprintReview) {
   const { formatMessage } = useIntl();
 
 
-  useEffect(()=>{
+  useEffect(() => {
     if(blueprint.parameters){
       let fields:any = {};
       blueprint.parameters.forEach((parameter: Parameter) => {
@@ -169,7 +169,7 @@ function BlueprintReview(props: BlueprintReview) {
       setPasswordFields(fields);
     }
     // eslint-disable-next-line
-  },[]);
+  }, []);
 
   function renderAuth(type:string) {
     if(type === 'basic') {
