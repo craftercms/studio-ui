@@ -83,6 +83,13 @@ const numericInputControlMessages = defineMessages({
   maximun: {
     id: 'numericInputControl.maximun',
     defaultMessage: 'Maximun'
+  }
+});
+
+const reposAdminMessages = defineMessages({
+  pendingCommit: {
+    id: 'reposAdmin.pendingCommit',
+    defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
   },
 });
 
@@ -138,6 +145,7 @@ const contentTypesMessages = defineMessages({
 export default {
   approveDialogMessages,
   deleteDialogMessages,
+  reposAdminMessages,
   usersAdminMessages,
   numericInputControlMessages,
   sharedContentDSMessages,
