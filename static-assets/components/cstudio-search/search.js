@@ -27,6 +27,7 @@
     /* default search context */
     CStudioSearch.searchContext = {
         searchId: null,
+        query: "",
         itemsPerPage: 20,
         keywords: "",
         filters: {},
@@ -38,7 +39,8 @@
         searchInProgress: false,
         view: 'grid',
         lastSelectedFilterSelector: '',
-        selectionState: {}
+        selectionState: {},
+        mode: "default"              // possible mode values: [default|select]
     };
 
     CStudioSearch.typesMap = {
@@ -74,8 +76,23 @@
     }
 
     CStudioSearch.init = function() {
+
+        CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
+        CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
+
         var searchContext = this.determineSearchContextFromUrl();
         this.searchContext = searchContext;
+
+        $('section.cstudio-search').addClass(this.searchContext.mode);
+
+        // arrange iframe according to search mode
+        if (this.searchContext.mode != "select") {
+            CStudioAuthoring.Events.contextNavLoaded.subscribe(function() {
+              CStudioAuthoring.ContextualNav.hookNavOverlayFromAuthoring();
+              CStudioAuthoring.InContextEdit.autoInitializeEditRegions();
+            });
+        } else
+            this.renderFormControls();
 
         CStudioAuthoring.Operations.translateContent(langBundle, null, 'data-trans');
         this.performSearch();
@@ -124,10 +141,25 @@
             $('input[type="checkbox"][data-url="' + path + '"]').prop('checked', selected);
 
             // if all checkboxes are selected/unselected -> update select all checkbox
+            var currentlySelected = $('input[type="checkbox"].search-select-item:checked').length;
+            allSelected = currentlySelected == $('input[type="checkbox"].search-select-item').length;
+
+            $('#formSaveButton').prop("disabled",currentlySelected == 0);
+            $('#searchSelectAll').prop('checked', allSelected);
+
             allSelected = $('input[type="checkbox"].search-select-item:checked').length == $('input[type="checkbox"].search-select-item').length;
             $('#searchSelectAll').prop('checked', allSelected);
 
             CStudioSearch.changeSelectStatus(path, selected);
+        });
+
+        $('#cstudio-command-controls').on('click', '#formSaveButton', function(){
+            CStudioSearch.saveContent();
+        });
+
+        $('#cstudio-command-controls').on('click', '#formCancelButton', function(){
+            window.close();
+            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
         });
 
         // Select all results
@@ -322,6 +354,8 @@
         var page = CStudioAuthoring.Utils.getQueryVariable(queryString, "page");
         var sortBy = CStudioAuthoring.Utils.getQueryVariable(queryString, "sortBy");
         var view = CStudioAuthoring.Utils.getQueryVariable(queryString, "view");
+        var mode = CStudioAuthoring.Utils.getQueryVariable(queryString, "mode");
+        var query = CStudioAuthoring.Utils.getQueryVariable(queryString, "query");
 
         searchContext.keywords = (keywords) ? keywords : searchContext.keywords;
         searchContext.searchId = (searchId) ? searchId : null;
@@ -329,6 +363,8 @@
         searchContext.sortBy = (sortBy) ? sortBy : searchContext.sortBy;
         searchContext.view = (view) ? view : searchContext.view;
         searchContext.itemsPerPage = (itemsPerPage) ? itemsPerPage : searchContext.itemsPerPage;
+        searchContext.mode = (mode) ? mode : searchContext.mode;
+        searchContext.query = (query) ? query : searchContext.query;
 
         $.each(urlParams, function(key, value){
             var processedKey,
@@ -421,16 +457,27 @@
         });
     }
 
+    CStudioSearch.renderFormControls = function(result) {
+        var $formControlContainer = $('#cstudio-command-controls-container'),
+            source = $("#hb-command-controls").html(),
+            template = Handlebars.compile(source),
+            html;
+
+        html = template(result);
+        $(html).appendTo($formControlContainer);
+    }
+
     CStudioSearch.renderResult = function(result) {
         var $resultsContainer = $('.cstudio-search .results'),
             source = $("#hb-search-result").html(),
             template = Handlebars.compile(source),
             html,
             editable = true,
-            permissionsKey = CStudioAuthoringContext.user;
+            permissionsKey = CStudioAuthoringContext.user,
+            isInSelectMode = (this.searchContext.mode == "select");
 
         if(
-            result.type === "Page"
+            (result.type === "Page" && !isInSelectMode)
             || result.type === "Image"
             || result.type === "Video"
         ){
@@ -450,18 +497,19 @@
                     isDeleteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, "delete");
                 result.editable = isWriteAllowed;
                 // set permissions for edit/delete actions to be (or not) rendered
+                // when in select mode, dont give option to delete
                 result.permissions = {
                     edit: isWriteAllowed && editable,
-                    delete: isDeleteAllowed
+                    delete: isDeleteAllowed && !isInSelectMode
                 };
 
                 html = template(result);
                 $(html).appendTo($resultsContainer);
             };
 
-        if(permissionsCached){
+        if (permissionsCached) {
             validateAndRender(permissionsCached);
-        }else{
+        } else {
             CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, result.path, {
                 success: function (results) {
                     cache.set(permissionsKey, results, CStudioAuthoring.Constants.CACHE_TIME_GET_ROLES);
@@ -478,6 +526,7 @@
     CStudioSearch.createSearchQuery = function() {
         var searchContext = this.searchContext;
         var query = {
+            "query": searchContext.query,
             "keywords": searchContext.keywords,
             "offset": (searchContext.currentPage - 1) * searchContext.itemsPerPage,
             "limit": searchContext.itemsPerPage,
@@ -792,6 +841,79 @@
         CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
     }
 
+    CStudioSearch.saveContent = function() {
+        var searchId = this.searchContext ? this.searchContext.searchId : "" ;
+        var crossServerAccess = false;
+        var opener = window.opener ? window.opener : parent.iframeOpener;
+
+        try {
+            // unfortunately we cannot signal a form close across servers
+            // our preview is in one server
+            // our authoring is in another
+            // in this case we just close the window, no way to pass back details which is ok in some cases
+            if(opener.CStudioAuthoring) {}
+        } catch (crossServerAccessErr) {
+            crossServerAccess = true;
+        }
+        if (opener && !crossServerAccess) {
+
+            if (opener.CStudioAuthoring) {
+                var openerChildSearchMgr = opener.CStudioAuthoring.ChildSearchManager;
+
+                if (openerChildSearchMgr) {
+                    var searchConfig = openerChildSearchMgr.searches[searchId];
+                    if (searchConfig) {
+                        var callback = searchConfig.saveCallback;
+                        if (callback) {
+                            var selectedContentTOs = CStudioAuthoring.SelectedContent.getSelectedContent();
+                            openerChildSearchMgr.signalSearchClose(searchId, selectedContentTOs);
+                      } else {
+                          //TODO PUT THIS BACK
+                          //alert("no success callback provided for seach: " + searchId);
+                      }
+
+                      window.close();
+                      $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+
+                    } else {
+                        CStudioAuthoring.Operations.showSimpleDialog(
+                          "lookUpChildError-dialog",
+                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                          CMgs.format(langBundle, "notification"),
+                          CMgs.format(langBundle, "lookUpChildError") + searchId,
+                          [{ text: "OK",  handler:function(){
+                              this.hide();
+                              window.close();
+                              $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+                            }, isDefault:false }],
+                          YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                          "studioDialog"
+                        );
+                    }
+                } else {
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                      "lookUpParentError-dialog",
+                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                      CMgs.format(langBundle, "notification"),
+                      CMgs.format(langBundle, "lookUpParentError") + searchId,
+                      [{ text: "OK",  handler:function(){
+                          this.hide();
+                          window.close();
+                          $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+                        }, isDefault:false }],
+                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                      "studioDialog"
+                    );
+                }
+            }
+        } else {
+            // no window opening context or cross server call
+            // the only thing we can do is close the window
+            window.close();
+            $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
+        }
+    }
+
     CStudioSearch.editElement = function(path){
         var editCallback = {
                 success: function(){
@@ -853,6 +975,8 @@
         newUrl += '&page=' + searchContext.currentPage;
         newUrl += '&sortBy=' + searchContext.sortBy;
         newUrl += '&view=' + searchContext.view;
+        newUrl += '&mode=' + searchContext.mode;
+        newUrl += '&query=' + searchContext.query;
 
         // Add search filters to url
         // csf = crafter studio filter

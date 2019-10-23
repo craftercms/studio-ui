@@ -34,7 +34,7 @@ import { Theme } from "@material-ui/core";
 import clsx from "clsx";
 
 
-interface BlueprintCard {
+interface BlueprintCardProps {
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
 
   onDetails(blueprint: Blueprint, index?: number): any,
@@ -177,7 +177,7 @@ const messages = defineMessages({
   },
 });
 
-function BlueprintCard(props: BlueprintCard) {
+function BlueprintCard(props: BlueprintCardProps) {
   const classes = useStyles({});
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);

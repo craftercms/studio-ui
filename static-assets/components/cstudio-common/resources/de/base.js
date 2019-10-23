@@ -826,6 +826,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     inputProfileId: "Eingabeprofil-ID",
     outputProfileId: "Ausgabeprofil-ID",
     postfixes: "Postfixes",
+    enableCreateNew: "Zeige 'Neu anlegen'",
+    enableBrowseExisting: "Zeige 'Auswählen'",
+    enableSearchExisting: "Zeige 'Suchen'",
+    useSearch: "Suche verwenden",
 
     /*Restrictions*/
     required: "Erforderlich",
@@ -977,6 +981,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     edit: "Bearbeiten",
     createNew: "Neu Anlegen",
     browseExisting: "Auswählen",
+    searchExisting: "Suchen",
 
     /*help popover*/
     pattern: "Muster",

@@ -164,7 +164,7 @@ const messages = defineMessages({
   }
 });
 
-interface PluginDetailsView {
+interface PluginDetailsViewProps {
   onCloseDetails(event: any): any,
   onBlueprintSelected(blueprint: Blueprint, view: number): any,
   selectedIndex?: number,
@@ -174,7 +174,7 @@ interface PluginDetailsView {
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-export default function PluginDetailsView(props: PluginDetailsView) {
+export default function PluginDetailsView(props: PluginDetailsViewProps) {
   const classes = useStyles({});
   const [play, setPlay] = useState(false);
   const {blueprint, interval, onBlueprintSelected, onCloseDetails, selectedIndex} = props;

@@ -47,13 +47,13 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-interface LoadingState {
+interface LoadingStateProps {
   title: string,
   subtitle?: string
   subtitle2?: string
 }
 
-export default function LoadingState(props: LoadingState) {
+export default function LoadingState(props: LoadingStateProps) {
   const classes = useStyles({});
   return (
     <div className={classes.loadingView}>

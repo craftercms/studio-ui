@@ -231,17 +231,25 @@ CStudioAuthoring.Module.requireModule(
                                          && CStudioForms.TemplateEditor.config.getElementsByTagName('theme')[0].textContent === 'dark'
                                           ? 'tomorrow_night'
                                           : 'chrome',
-                          theme = localStorage.getItem('templateEditorTheme') ? localStorage.getItem('templateEditorTheme') : defaultTheme;
-
+                          theme = localStorage.getItem('templateEditorTheme') ? localStorage.getItem('templateEditorTheme') : defaultTheme,
+                          enableBasicAutocompletion =  CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.getElementsByTagName('enable-basic-autocompletion')[0] ?
+                                                      CStudioForms.TemplateEditor.config.getElementsByTagName('enable-basic-autocompletion')[0].textContent === 'true' : true,
+                          enableLiveAutocompletion =  CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.getElementsByTagName('enable-live-autocompletion')[0] ?
+                                                     CStudioForms.TemplateEditor.config.getElementsByTagName('enable-live-autocompletion')[0].textContent === 'true' : true,
+                          fontSize =  CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.getElementsByTagName('font-size')[0] ?
+                                     CStudioForms.TemplateEditor.config.getElementsByTagName('font-size')[0].textContent : '11pt',
+                          tabSize =  CStudioForms.TemplateEditor.config && CStudioForms.TemplateEditor.config.getElementsByTagName('tab-size')[0] ?
+                                    CStudioForms.TemplateEditor.config.getElementsByTagName('tab-size')[0].textContent: '4';
 											aceEditor.setTheme("ace/theme/" + theme);
 											aceEditor.session.setMode(mode);
 
 											aceEditor.setOptions({
-												enableBasicAutocompletion: true,
+												enableBasicAutocompletion: enableBasicAutocompletion,
+                        enableLiveAutocompletion: enableLiveAutocompletion,
 												enableSnippets: true,
-												enableLiveAutocompletion: true,
 												showPrintMargin: false,
-												fontSize: "11pt"
+												fontSize: fontSize,
+                        tabSize: tabSize
 											});
 
 											$("#themeSelector").val(theme);
@@ -345,23 +353,9 @@ CStudioAuthoring.Module.requireModule(
 
 										return variables;
 									};
-									var _updateVarModel = function() {
-										var varList = $("#var-names"),
-											variableModel = $("#variable").find('option:selected'),
-											selectedValue = $(varList).find('option:selected').val();
-
-										//if val contains - ,
-										var containsDash = (selectedValue.indexOf('-') > -1);
-										if(containsDash){
-											variableModel.val("${contentModel" + selectedValue + "}");
-										}else {
-											variableModel.val("${contentModel." + selectedValue + "}");
-										}
-
-									};
 									var _addVarsSelect = function() {
 										var selectVarList = document.createElement("select");
-										selectVarList.id = "var-names";
+										selectVarList.id = "varNames";
 										selectVarList.style.marginLeft = "10px";
 										$("#variable").after(selectVarList);
 										$(selectVarList).hide();
@@ -377,12 +371,6 @@ CStudioAuthoring.Module.requireModule(
 													option.text = variables[i].label;
 													selectVarList.appendChild(option);
 												}
-
-												_updateVarModel();
-
-												selectVarList.onchange = function() {
-													_updateVarModel();
-												};
 											},
 											failure: function() {
 
@@ -475,7 +463,7 @@ CStudioAuthoring.Module.requireModule(
 												_addVarsSelect();
 
 												var selectedLabel = $("#variable").find('option:selected').text(),
-													$varsSelect = $("#var-names");
+													$varsSelect = $("#varNames");
 												if(selectedLabel == "Content variable"){
 													$varsSelect.show();
 												}
@@ -497,8 +485,21 @@ CStudioAuthoring.Module.requireModule(
 
 											addButton.onclick = () => {
                         const cursorPosition = aceEditor.getCursorPosition(),
-                              itemKey = selectList.options[selectList.selectedIndex].value;
-                              snippet = variableOpts[itemKey].value;
+                              itemKey = selectList.options[selectList.selectedIndex].value,
+                              $varDropdown = $('#varNames');
+
+                        let snippet = variableOpts[itemKey].value;
+
+                        if ($varDropdown.length > 0) {
+                          const variable = $varDropdown.val();
+
+                          if(variable.includes('-')){
+                            snippet = snippet.replace('.VARIABLENAME', variable);
+                          }else {
+                            snippet = snippet.replace('VARIABLENAME', variable);
+                          }
+                        }
+
                         // Insert snippet (second argument) in given position
                         aceEditor.session.insert(cursorPosition, snippet);
                         aceEditor.focus();

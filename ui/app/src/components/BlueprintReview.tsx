@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface BlueprintReview {
+interface BlueprintReviewProps {
   inputs: SiteState,
   onGoTo(step: number): any,
   blueprint: Blueprint,
@@ -151,14 +151,14 @@ const messages = defineMessages({
   },
 });
 
-function BlueprintReview(props: BlueprintReview) {
+function BlueprintReview(props: BlueprintReviewProps) {
   const classes = useStyles({});
   const { onGoTo, inputs, blueprint } = props;
   const [ passswordFields, setPasswordFields ] = useState(null);
   const { formatMessage } = useIntl();
 
 
-  useEffect(()=>{
+  useEffect(() => {
     if(blueprint.parameters){
       let fields:any = {};
       blueprint.parameters.forEach((parameter: Parameter) => {
@@ -168,7 +168,8 @@ function BlueprintReview(props: BlueprintReview) {
       });
       setPasswordFields(fields);
     }
-  },[]);
+    // eslint-disable-next-line
+  }, []);
 
   function renderAuth(type:string) {
     if(type === 'basic') {
