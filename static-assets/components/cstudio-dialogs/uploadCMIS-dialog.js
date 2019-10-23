@@ -26,7 +26,7 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 CStudioAuthoring.Dialogs.UploadCMISDialog = CStudioAuthoring.Dialogs.UploadCMISDialog || {
 
   formatMessage: CrafterCMSNext.i18n.intl.formatMessage,
-  messages: CrafterCMSNext.i18n.messages.commonMessages,
+  messages: CrafterCMSNext.i18n.messages.words,
 
   /**
    * initialize module
