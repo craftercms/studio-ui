@@ -234,7 +234,7 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <IconButton aria-label="close" className={classes.closeButton} onClick={(event) => onClose(event, 'closeButton')}>
             <CloseIcon/>
           </IconButton>
         ) : null}
@@ -353,7 +353,7 @@ function CreateSiteDialog() {
   function handleClose(event?:any, reason?: string) {
     if((reason === 'escapeKeyDown') && site.details.blueprint) {
       setSite({...site, details: { blueprint: null, index: null}});
-    } else if((reason === 'escapeKeyDown') && isFormOnProgress()){
+    } else if((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()){
       setDialog({...dialog, inProgress: true });
     } else {
       setDialog({...dialog, open: false });
