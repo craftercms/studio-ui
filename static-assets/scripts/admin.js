@@ -1823,7 +1823,8 @@
         diff: {},
         mergeStrategy: 'none',
         repoMessages: {
-          pendingCommit: formatMessage(repoMessages.pendingCommit)
+          pendingCommit: formatMessage(repoMessages.pendingCommit),
+          unstagedFiles: formatMessage(repoMessages.unstagedFiles),
         }
       };
 

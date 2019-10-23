@@ -91,6 +91,10 @@ const reposAdminMessages = defineMessages({
     id: 'reposAdmin.pendingCommit',
     defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
   },
+  unstagedFiles: {
+    id: 'reposAdmin.unstagedFilesMessage',
+    defaultMessage: 'There are unstaged files in your repository.'
+  },
 });
 
 const sharedContentDSMessages = defineMessages({
