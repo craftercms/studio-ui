@@ -283,7 +283,7 @@
             $('.view-selector button').removeClass('active');
             $(this).addClass('active');
 
-            $resultsContainer.switchClass(oldView, newView);
+            $resultsContainer.removeClass(oldView).addClass(newView);
             CStudioSearch.updateUrl();
         });
 
