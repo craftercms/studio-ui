@@ -118,12 +118,16 @@ CStudioAuthoring.Module.requireModule(
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   CMgs.format(formsLangBundle, "notification"),
                   errorMsg,
-                  [{ text: "OK",  handler:function(){
+                  [{
+                    text: 'OK',
+                    handler:function(){
                       this.hide();
                       callback.failure(response);
-                  }, isDefault:false }],
+                    },
+                    isDefault:false
+                  }],
                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  "studioDialog"
+                  'studioDialog'
                 );
               });
             },
