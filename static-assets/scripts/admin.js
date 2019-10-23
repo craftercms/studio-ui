@@ -899,8 +899,8 @@
           : false)
         : false;
         publish.isValidateCommitPublishCommentOn = publishing && publishing["comments"]
-        ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["publish-by-commit"] !== "false" )
-          || publishing["comments"]["publish-by-commit"] === "true"
+        ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["publish-by-commit-required"] !== "false" )
+          || publishing["comments"]["publish-by-commit-required"] === "true"
           ? true
           : false)
         : false;
