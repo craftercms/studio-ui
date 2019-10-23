@@ -1048,6 +1048,45 @@ var nodeOpen = false,
                     searchUrl += "&page=1";
                 }
 
+                if (!CStudioAuthoring.Utils.isEmpty(searchContext.mode)) {
+                  searchUrl += "&mode=" + searchContext.mode;
+                }
+
+                if (!CStudioAuthoring.Utils.isEmpty(searchContext.itemsPerPage)) {
+                  searchUrl += "&ipp=" + searchContext.itemsPerPage;
+                }
+
+                if (!CStudioAuthoring.Utils.isEmpty(searchContext.query)) {
+                  searchUrl += "&query=" + searchContext.query;
+                }
+
+                // Add search filters to url
+                // csf = crafter studio filter
+                // csr = crafter studio range
+                // csrTO = crafter studio range separator in URL
+                if (!jQuery.isEmptyObject(searchContext.filters)) {
+                  $.each(searchContext.filters, function(key, value) {
+                    if (typeof value === 'string') {
+                      searchUrl += '&csf_' + key + '=' + value;
+                    } else if ($.isArray(value)) {
+                      $.each(value, function() {
+                        searchUrl += '&csf_' + key + '=' + this;
+                      })
+                    } else {  //is a range
+                      if (value.date) {
+                        var min = value.min,
+                            max = value.max,
+                            id = value.id;
+                        searchUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max + 'csrID' + id;
+                      } else {
+                        var min = isNaN(value.min) ? 'null' : value.min,
+                            max = isNaN(value.max) ? 'null' : value.max;
+                        searchUrl += '&csf_' + key + '=csr_' + min + 'csrTO' + max;
+                      }
+                    }
+                  })
+                }
+
                 var childSearch = null;
 
                 if (!searchId || searchId == null || searchId == "undefined"
@@ -1055,6 +1094,7 @@ var nodeOpen = false,
                     childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
                     childSearch.openInSameWindow = openInSameWindow;
                     searchId = CStudioAuthoring.Utils.generateUUID();
+                    searchUrl += "&searchId=" + searchId;
 
                     childSearch.searchId = searchId;
                     childSearch.searchUrl = searchUrl;
@@ -1954,7 +1994,7 @@ var nodeOpen = false,
                 });
 
                 $modal.find('.bd').append(template).end().appendTo(parentEl);
-                $modal.find('.studio-ice-container').css('z-index', 100525);
+                $modal.find('.studio-ice-container').css('z-index', 1035);
 
                 parent.iframeOpener = window;
                 window.open(url, name);

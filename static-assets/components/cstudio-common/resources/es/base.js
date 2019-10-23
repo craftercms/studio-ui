@@ -801,6 +801,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     inputProfileId: "Id de perfil de entrada",
     outputProfileId: "Id de perfil de salida",
     postfixes: "Postfixes",
+    enableCreateNew: "Mostrar 'Crear nuevo'",
+    enableBrowseExisting: "Mostrar 'Seleccionar Existentes'",
+    enableSearchExisting: "Mostrar 'Buscar Existentes'",
+    useSearch: "Usar Búsqueda",
 
     /*Restrictions*/
     required: "Requerido",
@@ -933,6 +937,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     edit: "Editar",
     createNew: "Crear Nuevo",
     browseExisting: "Buscar Existentes",
+    searchExisting: "Buscar Existentes",
 
     /*help popover*/
     pattern: "Patrón",

@@ -39,7 +39,6 @@
     <script src="${path}momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
-    <#include "/templates/web/common/page-fragments/context-nav.ftl" />
 
     <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -150,6 +149,8 @@
         </div>
 
     </section>
+
+    <div id="cstudio-command-controls-container"></div>
 
     <script id="hb-search-result" type="text/x-handlebars-template">
         <div class="result-container">
@@ -264,6 +265,15 @@
                 </div>
             </div>
         </div>
+    </script>
+
+    <script id="hb-command-controls" type="text/x-handlebars-template">
+      <div id="cstudio-command-controls">
+        <div id="submission-controls" class="cstudio-form-controls-button-container">
+          <input id="formSaveButton" type="button" class="cstudio-search-btn cstudio-button btn btn-primary" disabled="" value="Add Selection">
+          <input id="formCancelButton" type="button" class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel">
+        </div>
+      </div>
     </script>
 
     <script type="text/javascript">

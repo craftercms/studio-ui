@@ -771,6 +771,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     inputProfileId: "입력 프로파일 ID",
     outputProfileId: "출력 프로필 ID",
     postfixes: "포스트 픽스",
+    enableCreateNew: "쇼 새로 만들기",
+    enableBrowseExisting: "쇼 기존 항목 찾아보기",
+    enableSearchExisting: "쇼 기존 검색",
+    useSearch: "검색 사용",
 
     /*Restrictions*/
     required: "필요",
@@ -899,6 +903,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     edit: "편집하다",
     createNew: "새로 만들기",
     browseExisting: "기존 항목 찾아보기",
+    searchExisting: "기존 검색",
 
     /*help popover*/
     pattern: "무늬",
