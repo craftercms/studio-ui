@@ -884,6 +884,7 @@
       publish.site = $location.search().site;
       publish.timeZone;
       publish.isValidateCommentOn = false;
+      publish.isValidateCommitPublishCommentOn = false;
 
       adminService.getTimeZone({
         "site" : publish.site,
@@ -894,6 +895,12 @@
         publish.isValidateCommentOn = publishing && publishing["comments"]
         ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["bulk-publish-required"] !== "false" )
           || publishing["comments"]["bulk-publish-required"] === "true"
+          ? true
+          : false)
+        : false;
+        publish.isValidateCommitPublishCommentOn = publishing && publishing["comments"]
+        ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["publish-by-commit"] !== "false" )
+          || publishing["comments"]["publish-by-commit"] === "true"
           ? true
           : false)
         : false;
