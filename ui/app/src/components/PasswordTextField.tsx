@@ -22,7 +22,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
-interface PasswordTextField {
+interface PasswordTextFieldProps {
   id: string;
   fullWidth: boolean;
   name: string;
@@ -35,7 +35,7 @@ interface PasswordTextField {
   helperText: string;
 }
 
-export default function PasswordTextField(props: PasswordTextField) {
+export default function PasswordTextField(props: PasswordTextFieldProps) {
   const {name, label, required, onKeyPress, onChange, value, error, helperText, fullWidth} = props;
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {

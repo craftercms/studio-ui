@@ -35,7 +35,7 @@ const messages = defineMessages({
   }
 });
 
-interface ConfirmDialog {
+interface ConfirmDialogProps {
   open: boolean;
   onOk(): any;
   onClose(): any;
@@ -43,7 +43,7 @@ interface ConfirmDialog {
   title: string;
 }
 
-export default function ConfirmDialog(props: ConfirmDialog) {
+export default function ConfirmDialog(props: ConfirmDialogProps) {
   const {open, onOk, onClose, description, title} = props;
   const {formatMessage} = useIntl();
 

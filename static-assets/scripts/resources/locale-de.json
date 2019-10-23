@@ -253,6 +253,7 @@
         "CHANNEL":"Kanal",
         "WARNINGBP":"Achtung: Massen-Publizierung",
         "WRNINGGPBODY":"Die Massen-Publizierung beinhaltet alle Elemente, die dem angegebenen Pfad entsprechen, inklusive ihrer Abhängigkeiten. Bitte versichern Sie sich, dass alle betroffenem Inhalte publiziert werden dürfen.",
+        "PUBLISHQUEUE":"Veröffentlichung warteschlange",
         "PUBLISHSTARTED":"Massen-Publizierung wurde gestartet.",
         "PUBLISHBYCOMMITS": "Publizierung anhand eines oder mehrerer Commit-Hashs",
         "PUBLISHBYCOMMITS_SUCCESS": "Erfolgreich verpflichtet",

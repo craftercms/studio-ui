@@ -832,6 +832,15 @@
       var publish = $scope.publish;
       publish.error = "";
 
+      publish.initQueque = function() {
+        CrafterCMSNext
+          .render(
+            document.getElementsByClassName('publishingQueue')[0],
+            'PublishingQueue',
+            {siteId: $location.search().site}
+          );
+      };
+
       publish.showModal = function(template, size, verticalCentered, styleClass){
         var modalInstance = $uibModal.open({
           templateUrl: template,
@@ -847,13 +856,15 @@
       };
       publish.hideAdminModal = function() {
         $scope.adminModal.close();
-      }
+      };
+
       publish.hideConfirmationBulkModal = function() {
         $scope.confirmationBulk.close();
-      }
+      };
+
       publish.hideErrorModal = function() {
         $scope.errorDialog.close();
-      }
+      };
 
       publish.notification = function(notificationText, showOnTop, styleClass){
         var verticalAlign = showOnTop ? false : true;

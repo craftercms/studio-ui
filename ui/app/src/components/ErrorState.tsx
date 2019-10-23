@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface ErrorState {
+interface ErrorStateProps {
   onBack?(event: any): any,
   background?: string,
   error: {
@@ -85,7 +85,7 @@ const messages = defineMessages({
 });
 
 
-export default function ErrorState(props: ErrorState) {
+export default function ErrorState(props: ErrorStateProps) {
   const classes = useStyles({background: props.background || 'inherit'});
   const {error, onBack} = props;
   const {formatMessage} = useIntl();

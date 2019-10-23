@@ -67,7 +67,7 @@ interface Expanded {
   key: boolean;
 }
 
-interface GitForm {
+interface GitFormProps {
   inputs: SiteState;
   handleInputChange(event: React.ChangeEvent): any;
   onKeyPress(event: any): any;
@@ -153,7 +153,7 @@ const messages = defineMessages({
   },
 });
 
-function GitForm(props: GitForm) {
+function GitForm(props: GitFormProps) {
   const classes = useStyles({});
   const {inputs, handleInputChange, type, expanded, setExpanded, onKeyPress} = props;
   const [showPassword, setShowPassword] = useState(false);

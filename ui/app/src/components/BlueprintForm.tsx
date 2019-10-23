@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-interface BlueprintForm {
+interface BlueprintFormProps {
   inputs: SiteState;
   setInputs(state: SiteState): any;
   onSubmit(event: any): any;
@@ -88,7 +88,7 @@ const messages = defineMessages({
 
 });
 
-function BlueprintForm(props: BlueprintForm) {
+function BlueprintForm(props: BlueprintFormProps) {
   const classes = useStyles({});
   const {inputs, setInputs, onSubmit, blueprint, onCheckNameExist} = props;
   const [sites, setSites] = useState(null);

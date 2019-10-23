@@ -78,7 +78,7 @@ export const styles = (theme: Theme) => ({
   },
 });
 
-const MobileStepper = React.forwardRef(function MobileStepper(props:MobileStepper, ref) {
+const MobileStepper = React.forwardRef(function MobileStepper(props:MobileStepperProps, ref) {
   const {
     activeStep = 0,
     backButton,
@@ -134,7 +134,7 @@ const MobileStepper = React.forwardRef(function MobileStepper(props:MobileSteppe
   );
 });
 
-interface  MobileStepper {
+interface  MobileStepperProps {
   activeStep?: number,
   backButton?: ReactNode,
   onDotClick?: Function,

@@ -37,13 +37,13 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-interface EmptyState {
+interface EmptyStateProps {
   image?: string,
   title: string
   subtitle: string
 }
 
-export default function EmptyState(props: EmptyState) {
+export default function EmptyState(props: EmptyStateProps) {
   const classes = useStyles({});
   const {image, title, subtitle} = props;
 

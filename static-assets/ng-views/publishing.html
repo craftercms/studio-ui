@@ -87,7 +87,7 @@
                                         <small class="error"
                                                ng-show="bulkOperationForm.submissionComment.$error.required">
                                             {{ 'admin.publishing.PUBLISHINGSUBMISSIONCOMMENT' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
-                                        </small> 
+                                        </small>
                                     </div>
                                 </div>
 
@@ -171,7 +171,13 @@
                 </form>
             </div>
         </tab>
-
+        <tab id="publishingQueue">
+          <tab-heading>
+            <span class="mr10 fa fa-list-alt"></span>{{ 'admin.publishing.PUBLISHQUEUE' | translate }}
+          </tab-heading>
+          <div class="m10 mt25 publishingQueue" ng-init="publish.initQueque()">
+          </div>
+        </tab>
     </tabset>
 
 </div>
