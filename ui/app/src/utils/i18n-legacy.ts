@@ -135,13 +135,17 @@ const contentTypesMessages = defineMessages({
 
 });
 
-const commonMessages = defineMessages({
+const words = defineMessages({
+  notification: {
+    id: 'words.notification',
+    defaultMessage: 'Notification'
+  },
   confirm: {
-    id: 'commonMessages.confirm',
+    id: 'words.confirm',
     defaultMessage: 'Confirm'
   },
   cancel: {
-    id: 'commonMessages.cancel',
+    id: 'words.cancel',
     defaultMessage: 'Cancel'
   }
 });
@@ -155,5 +159,5 @@ export default {
   embeddedContentDSMessages,
   childContentDSMessages,
   contentTypesMessages,
-  commonMessages
+  words
 };

@@ -31,7 +31,7 @@
         template = CStudioAuthoring.TemplateHolder.History,
         i18n = CrafterCMSNext.i18n,
         formatMessage = i18n.intl.formatMessage,
-        commonMessages = i18n.messages.commonMessages;
+        words = i18n.messages.words;
 
   CStudioAuthoring.register('ViewController.History', function () {
     CStudioAuthoring.ViewController.History.superclass.constructor.apply(this, arguments);
@@ -182,9 +182,9 @@
                       `<div class="dropdown inline-block">
                         <span id="actionRevert${version.versionNumber}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
                         <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
-                          <li><a class="confirm" href="#">${ formatMessage(commonMessages.confirm) }</a></li>
+                          <li><a class="confirm" href="#">${ formatMessage(words.confirm) }</a></li>
                           <li role="separator" class="divider"></li>
-                          <li><a class="cancel" href="#" onclick="return false;">${ formatMessage(commonMessages.cancel) }</a></li>
+                          <li><a class="cancel" href="#" onclick="return false;">${ formatMessage(words.cancel) }</a></li>
                         </ul>
                       </div>`
                     ).appendTo($(col5El));
