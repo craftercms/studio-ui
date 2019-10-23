@@ -149,6 +149,10 @@ const messages = defineMessages({
     id: 'createSiteDialog.blueprintParameters',
     defaultMessage: 'Blueprint Parameters'
   },
+  useDefaultValue: {
+    id: 'createSiteDialog.useDefaultValue',
+    defaultMessage: 'use default value'
+  }
 });
 
 function BlueprintReview(props: BlueprintReviewProps) {

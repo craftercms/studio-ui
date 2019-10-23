@@ -57,9 +57,9 @@ export interface SiteState {
 export interface Site {
   [key:string]: any;
   siteId: string;
-  description: string;
-  singleBranch: boolean;
-  authenticationType: string;
+  description?: string;
+  singleBranch?: boolean;
+  authenticationType?: string;
   blueprint?: string;
   useRemote?: boolean;
   repoRemoteName?: string;
@@ -72,6 +72,20 @@ export interface Site {
   remoteToken?: string;
   remotePrivateKey?: string;
   createOption?: string;
+  siteParams?: {
+    [key: string]: string;
+  }
+}
+
+export interface MarketplaceSite {
+  [key:string]: any;
+  siteId: string;
+  blueprintId: string;
+  blueprintVersion: {
+    major: number,
+    minor: number,
+    patch: number,
+  },
   siteParams?: {
     [key: string]: string;
   }
