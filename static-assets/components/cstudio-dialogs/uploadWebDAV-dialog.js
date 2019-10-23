@@ -25,6 +25,9 @@ CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
  */
 CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWebDAVDialog || {
 
+  formatMessage: CrafterCMSNext.i18n.intl.formatMessage,
+  messages: CrafterCMSNext.i18n.messages.words,
+
 	/**
 	 * initialize module
 	 */
@@ -164,6 +167,32 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
 
           me.callback.success(uploaded);
           CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
+        },
+        onError: function(file, error, response) {
+          const res = response.body.response,
+            errorMsg = `${res.message}. ${res.remedialAction}`;
+
+          me.uploadingFile = false;
+          $('#uploadCancelButton').attr('disabled', false);
+
+          CStudioAuthoring.Operations.showSimpleDialog(
+            "uploadErrorDialog",
+            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+            me.formatMessage(me.messages.notification),
+            errorMsg,
+            [{
+              text: 'OK',
+              handler:function(){
+                this.destroy();
+                callback.failure(response);
+              },
+              isDefault:false
+            }],
+            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+            'studioDialog',
+            null,
+            100104
+          );
         }
       }
     );

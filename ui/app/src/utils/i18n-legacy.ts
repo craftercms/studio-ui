@@ -163,6 +163,21 @@ const contentTypesMessages = defineMessages({
 
 });
 
+const words = defineMessages({
+  notification: {
+    id: 'words.notification',
+    defaultMessage: 'Notification'
+  },
+  confirm: {
+    id: 'words.confirm',
+    defaultMessage: 'Confirm'
+  },
+  cancel: {
+    id: 'words.cancel',
+    defaultMessage: 'Cancel'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -172,5 +187,6 @@ export default {
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
-  contentTypesMessages
+  contentTypesMessages,
+  words
 };

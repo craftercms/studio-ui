@@ -596,7 +596,7 @@ var nodeOpen = false,
             simpleDialogTypeWARN: "WARN",
             simpleDialogTypeERROR: "ERROR",
 
-            showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width) {
+            showSimpleDialog: function(id, type, header, message, buttonsArray, dialogType, className, width, customZIndex) {
 
                 var dialogId = id;
 
@@ -641,6 +641,10 @@ var nodeOpen = false,
                     }
 
                     dialog.show();
+
+                    if (customZIndex) {
+                      dialog.element.style.setProperty('z-index', customZIndex, 'important');
+                    }
 
                     $(".studioDialog").on("keyup", function(e) {
                         if (e.keyCode === 27) {	// esc
