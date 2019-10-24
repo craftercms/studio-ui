@@ -53,6 +53,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      disableEnforceFocus={true}
     >
       {
         title &&

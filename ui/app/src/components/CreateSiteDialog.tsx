@@ -653,7 +653,7 @@ function CreateSiteDialog() {
 
   return (
     <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
+            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}} disableEnforceFocus={true}>
       <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel} description={formatMessage(messages.dialogCloseMessage)} title={formatMessage(messages.dialogCloseTitle)}/>
       {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
         (apiState.creatingSite &&
