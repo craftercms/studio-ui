@@ -920,6 +920,10 @@
           .then(function success(data) {
             window.reLoginModalOn = false;
             $scope.reLoginModal.close();
+            //fire event when the login is success
+            let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'logged'} });
+            document.dispatchEvent(reLoginEvent);
+            document.removeEventListener("login", null, true);
             setTimeout(function () {
               authLoop();
             }, $scope.authDelay);
@@ -987,7 +991,11 @@
                 response.status == 302 || response.status == 0) {
                 if(authService.getUser().authenticationType == Constants.HEADERS){
                   $state.go('login');
-                }else{
+                }else {
+                  //fire event when the reLogin is show up
+                  let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'reLogin'} });
+                  document.dispatchEvent(reLoginEvent);
+                  document.removeEventListener("login", null, true);
                   $scope.reLoginModal = showReLoginModal();
                 }
 

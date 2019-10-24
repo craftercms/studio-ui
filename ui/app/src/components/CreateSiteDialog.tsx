@@ -303,6 +303,7 @@ function CreateSiteDialog() {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
+  const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
   const [dialog, setDialog] = useState({
     open: true,
     inProgress: false,
@@ -334,6 +335,20 @@ function CreateSiteDialog() {
   const filteredMarketplace: Blueprint[] = filterBlueprints(marketplace, search.searchKey);
 
   setRequestForgeryToken();
+
+  useEffect(() => {
+      document.addEventListener("login", function(event: any) {
+        debugger;
+        if(event.detail.state === 'logged') {
+          setDisableEnforceFocus(false);
+        }else if(event.detail.state === 'reLogin') {
+          setDisableEnforceFocus(true);
+        }
+      });
+    },
+    // eslint-disable-next-line
+    [],
+  );
 
   useEffect(() => {
       if (tab === 0 && blueprints === null && !apiState.error) {
@@ -651,10 +666,12 @@ function CreateSiteDialog() {
     })
   }
 
+  console.log('disableEnforceFocus', disableEnforceFocus);
+
   return (
     <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}} disableEnforceFocus={true}>
-      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel} description={formatMessage(messages.dialogCloseMessage)} title={formatMessage(messages.dialogCloseTitle)}/>
+            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}} disableEnforceFocus={disableEnforceFocus}>
+      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel} description={formatMessage(messages.dialogCloseMessage)} title={formatMessage(messages.dialogCloseTitle)} disableEnforceFocus={disableEnforceFocus}/>
       {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
         (apiState.creatingSite &&
             <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)}
