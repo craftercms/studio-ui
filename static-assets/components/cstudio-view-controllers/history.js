@@ -182,9 +182,9 @@
                       `<div class="dropdown inline-block">
                         <span id="actionRevert${version.versionNumber}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
                         <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
-                          <li><a class="confirm" href="#">${ formatMessage(words.confirm) }</a></li>
+                          <li><a class="cancel" href="#" onclick="return false;">${formatMessage(words.cancel)}</a></li>
                           <li role="separator" class="divider"></li>
-                          <li><a class="cancel" href="#" onclick="return false;">${ formatMessage(words.cancel) }</a></li>
+                          <li><a class="confirm" href="#">${formatMessage(words.confirm)}</a></li>
                         </ul>
                       </div>`
                     ).appendTo($(col5El));
