@@ -338,12 +338,12 @@ function CreateSiteDialog() {
 
   useEffect(() => {
       document.addEventListener("login", function(event: any) {
-        debugger;
         if(event.detail.state === 'logged') {
           setDisableEnforceFocus(false);
         }else if(event.detail.state === 'reLogin') {
           setDisableEnforceFocus(true);
         }
+        document.removeEventListener("login", null, true);
       });
     },
     // eslint-disable-next-line
@@ -665,8 +665,6 @@ function CreateSiteDialog() {
       );
     })
   }
-
-  console.log('disableEnforceFocus', disableEnforceFocus);
 
   return (
     <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}

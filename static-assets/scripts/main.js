@@ -923,7 +923,6 @@
             //fire event when the login is success
             let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'logged'} });
             document.dispatchEvent(reLoginEvent);
-            document.removeEventListener("login", null, true);
             setTimeout(function () {
               authLoop();
             }, $scope.authDelay);
@@ -995,7 +994,6 @@
                   //fire event when the reLogin is show up
                   let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'reLogin'} });
                   document.dispatchEvent(reLoginEvent);
-                  document.removeEventListener("login", null, true);
                   $scope.reLoginModal = showReLoginModal();
                 }
 
