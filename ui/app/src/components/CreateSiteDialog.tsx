@@ -337,16 +337,14 @@ function CreateSiteDialog() {
   setRequestForgeryToken();
 
   useEffect(() => {
-      const loginListener = function() {
-        document.addEventListener('login', function (event: any) {
-          if (event.detail.state === 'logged') {
-            setDisableEnforceFocus(false);
-          } else if (event.detail.state === 'reLogin') {
-            setDisableEnforceFocus(true);
-          }
-        });
+      const loginListener = function (event: any) {
+        if (event.detail.state === 'logged') {
+          setDisableEnforceFocus(false);
+        } else if (event.detail.state === 'reLogin') {
+          setDisableEnforceFocus(true);
+        }
       };
-      loginListener();
+      document.addEventListener('login', loginListener, false);
       return () => document.removeEventListener('login', loginListener, true);
     },
     // eslint-disable-next-line
