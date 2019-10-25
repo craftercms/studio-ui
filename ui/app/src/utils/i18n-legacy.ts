@@ -175,6 +175,10 @@ const words = defineMessages({
   cancel: {
     id: 'words.cancel',
     defaultMessage: 'Cancel'
+  },
+  update: {
+    id: 'words.update',
+    defaultMessage: 'Update'
   }
 });
 
