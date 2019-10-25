@@ -328,12 +328,10 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 
                       if (currentProp.default_value === '') {
                         $dateTimePicker.val(currentProp.default_value);
-                        $timeZonePicker.hide();
                       }else{
                         $dateTimePicker.datetimepicker({
                           value: new Date(currentProp.default_value)
                         });
-                        $timeZonePicker.show();
                       }
 
 
@@ -514,24 +512,20 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
             $dateTimeEl.datetimepicker({
               value: dateValue
             });
-            $timeZonePicker.show();
           } else {
             $dateTimeEl.val('');
-            $timeZonePicker.hide();
           }
 
           $setNowLink.on('click', function(e) {
             e.preventDefault();
             $dateTimeEl.datetimepicker({
               value: new Date()
-            })
-            $timeZonePicker.show();
+            });
           });
 
           $setClearLink.on('click', function(e) {
             e.preventDefault();
             $dateTimeEl.val('');
-            $timeZonePicker.hide();
           })
         }
 			}
