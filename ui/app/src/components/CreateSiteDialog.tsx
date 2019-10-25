@@ -127,7 +127,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: 'calc(100% - 100px)',
     maxHeight: '1200px'
   },
-  searchContainer:{
+  searchContainer: {
     position: 'absolute',
     background: 'white',
     padding: '20px',
@@ -337,17 +337,20 @@ function CreateSiteDialog() {
   setRequestForgeryToken();
 
   useEffect(() => {
-      document.addEventListener("login", function(event: any) {
-        if(event.detail.state === 'logged') {
-          setDisableEnforceFocus(false);
-        }else if(event.detail.state === 'reLogin') {
-          setDisableEnforceFocus(true);
-        }
-        document.removeEventListener("login", null, true);
-      });
+      const loginListener = function() {
+        document.addEventListener('login', function (event: any) {
+          if (event.detail.state === 'logged') {
+            setDisableEnforceFocus(false);
+          } else if (event.detail.state === 'reLogin') {
+            setDisableEnforceFocus(true);
+          }
+        });
+      };
+      loginListener();
+      return () => document.removeEventListener('login', loginListener, true);
     },
     // eslint-disable-next-line
-    [],
+    []
   );
 
   useEffect(() => {
@@ -357,7 +360,7 @@ function CreateSiteDialog() {
       if (tab === 1 && marketplace === null && !apiState.error) {
         getMarketPlace()
       }
-      if(finishRef && site.selectedView === 2) {
+      if (finishRef && site.selectedView === 2) {
         finishRef.current.focus();
       }
     },
@@ -365,22 +368,22 @@ function CreateSiteDialog() {
     [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
   );
 
-  function handleClose(event?:any, reason?: string) {
-    if((reason === 'escapeKeyDown') && site.details.blueprint) {
-      setSite({...site, details: { blueprint: null, index: null}});
-    } else if((reason === 'escapeKeyDown') && isFormOnProgress()){
-      setDialog({...dialog, inProgress: true });
+  function handleClose(event?: any, reason?: string) {
+    if ((reason === 'escapeKeyDown') && site.details.blueprint) {
+      setSite({...site, details: {blueprint: null, index: null}});
+    } else if ((reason === 'escapeKeyDown') && isFormOnProgress()) {
+      setDialog({...dialog, inProgress: true});
     } else {
-      setDialog({...dialog, open: false });
+      setDialog({...dialog, open: false});
     }
   }
 
   function onConfirmOk() {
-    setDialog({...dialog, open: false, inProgress: false });
+    setDialog({...dialog, open: false, inProgress: false});
   }
 
   function onConfirmCancel() {
-    setDialog({...dialog, inProgress: false });
+    setDialog({...dialog, inProgress: false});
   }
 
   function isFormOnProgress() {
@@ -406,7 +409,7 @@ function CreateSiteDialog() {
     });
 
     Object.keys(site.blueprintFields).forEach((key: string) => {
-      if(site.blueprintFields[key] !== '') {
+      if (site.blueprintFields[key] !== '') {
         inProgress = true;
       }
     });
@@ -668,8 +671,11 @@ function CreateSiteDialog() {
 
   return (
     <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}} disableEnforceFocus={disableEnforceFocus}>
-      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel} description={formatMessage(messages.dialogCloseMessage)} title={formatMessage(messages.dialogCloseTitle)} disableEnforceFocus={disableEnforceFocus}/>
+            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}
+            disableEnforceFocus={disableEnforceFocus}>
+      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel}
+                     description={formatMessage(messages.dialogCloseMessage)}
+                     title={formatMessage(messages.dialogCloseTitle)} disableEnforceFocus={disableEnforceFocus}/>
       {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
         (apiState.creatingSite &&
             <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)}
