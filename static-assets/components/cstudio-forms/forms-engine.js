@@ -1272,7 +1272,7 @@ var CStudioForms = CStudioForms || function() {
             }
             dialogEl.dialog.show();
             setTimeout(function () {
-              dialogEl.dialog.hide();
+              dialogEl.dialog.destroy();
             }, 1500);
           };
 
