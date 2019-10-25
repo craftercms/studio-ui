@@ -1198,10 +1198,17 @@
       }
 
       $scope.createSitesDialog = function() {
+        const container = document.getElementsByClassName('create-site-dialog-container')[0];
+        const onClose = () => {
+          CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
+        };
         CrafterCMSNext
           .render(
-            document.getElementsByClassName('mainContainer')[0],
-            'CreateSiteDialog'
+            container,
+            'CreateSiteDialog',
+            {
+              onClose: onClose
+            }
           );
       };
 

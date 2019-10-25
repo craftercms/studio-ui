@@ -299,7 +299,11 @@ const messages = defineMessages({
   }
 });
 
-function CreateSiteDialog() {
+interface CreateSiteDialogProps {
+  onClose(): any;
+}
+
+function CreateSiteDialog(props: CreateSiteDialogProps) {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
@@ -345,7 +349,9 @@ function CreateSiteDialog() {
         }
       };
       document.addEventListener('login', loginListener, false);
-      return () => document.removeEventListener('login', loginListener, true);
+      return () => {
+        document.removeEventListener('login', loginListener, false);
+      }
     },
     // eslint-disable-next-line
     []
@@ -372,6 +378,8 @@ function CreateSiteDialog() {
     } else if ((reason === 'escapeKeyDown') && isFormOnProgress()) {
       setDialog({...dialog, inProgress: true});
     } else {
+      //call externalClose fn
+      props.onClose();
       setDialog({...dialog, open: false});
     }
   }
