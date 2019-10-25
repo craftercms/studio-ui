@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Utils.addJavascript("/static-assets/jquery/timezones/timezones.full.js");
+if (!$.prototype.timezones) {
+  CStudioAuthoring.Utils.addJavascript("/static-assets/jquery/timezones/timezones.full.js");
+}
 
 /**
  * Preview Tools
