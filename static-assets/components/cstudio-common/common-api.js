@@ -1776,7 +1776,7 @@ var nodeOpen = false,
                     openDialogCb);
             },
 
-            performSimpleIceEdit: function (item, field, isEdit, callback, aux, isFlattenedInclude) {
+            performSimpleIceEdit: function (item, field, isEdit, callback, aux, isFlattenedInclude, display) {
               var editorId = CStudioAuthoring.Utils.generateUUID();
 
               if (callback) {
@@ -1791,8 +1791,10 @@ var nodeOpen = false,
 
               isEdit = (typeof (isEdit) == 'undefined') ? true : isEdit;
 
+              display = (typeof (display) == 'undefined') ? 'inherit' : display;
+
               var $modal = $(
-                '<div style="">' +
+                '<div style="visibility: '+ display + '">' +
                 /**/'<div class="no-ice-mask"></div>' +
                 /**/'<div ' +
                 /****/'class="studio-ice-dialog studio-ice-container-' + editorId + '" ' +
