@@ -1272,7 +1272,7 @@ var CStudioForms = CStudioForms || function() {
             }
             dialogEl.dialog.show();
             setTimeout(function () {
-              dialogEl.dialog.hide();
+              dialogEl.dialog.destroy();
             }, 1500);
           };
 
@@ -1669,10 +1669,11 @@ var CStudioForms = CStudioForms || function() {
             switch (message.type) {
               case OPEN_CHILD_COMPONENT: {
                 const key = message.key;
+                const iceId = message.iceId;
                 const contentType = parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
                 CStudioAuthoring.Operations.performSimpleIceEdit(
                   { contentType: contentType, uri: key },
-                  null, // field
+                  iceId || null, // field
                   true,
                   {
                     success: function (contentTO, editorId, objId, value) {

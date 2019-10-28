@@ -40,7 +40,7 @@ import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
 import ConfirmDialog from "./ConfirmDialog";
 import { Blueprint } from '../models/Blueprint';
-import { Site, SiteState, Views } from '../models/Site';
+import { MarketplaceSite, Site, SiteState, Views } from '../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import PluginDetailsView from "./PluginDetailsView";
@@ -49,6 +49,7 @@ import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
 import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
 import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
+import { createSite as createSiteFromMarketplace } from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
@@ -234,7 +235,7 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <IconButton aria-label="close" className={classes.closeButton} onClick={(event) => onClose(event, 'closeButton')}>
             <CloseIcon/>
           </IconButton>
         ) : null}
@@ -372,11 +373,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
   );
 
-  function handleClose(event?: any, reason?: string) {
-    if ((reason === 'escapeKeyDown') && site.details.blueprint) {
-      setSite({...site, details: {blueprint: null, index: null}});
-    } else if ((reason === 'escapeKeyDown') && isFormOnProgress()) {
-      setDialog({...dialog, inProgress: true});
+  function handleClose(event?:any, reason?: string) {
+    if((reason === 'escapeKeyDown') && site.details.blueprint) {
+      setSite({...site, details: { blueprint: null, index: null}});
+    } else if((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()){
+      setDialog({...dialog, inProgress: true });
     } else {
       //call externalClose fn
       props.onClose();
@@ -488,9 +489,15 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
     if (validateForm()) {
       if (site.selectedView === 2) {
-        const params = createParams();
         setApiState({...apiState, creatingSite: true});
-        createNewSite(params);
+        //it is a marketplace blueprint
+        if(site.blueprint.source === 'GIT') {
+          const marketplaceParams: MarketplaceSite = createMarketplaceParams();
+          createNewSiteFromMarketplace(marketplaceParams);
+        } else {
+          const blueprintParams = createParams();
+          createNewSite(blueprintParams);
+        }
       } else {
         setSite({...site, selectedView: 2});
       }
@@ -524,43 +531,61 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
   }
 
+  function createMarketplaceParams() {
+    const params: MarketplaceSite = {
+      siteId: site.siteId,
+      description: site.description,
+      blueprintId: site.blueprint.id,
+      blueprintVersion: {
+        major: site.blueprint.version.major,
+        minor: site.blueprint.version.minor,
+        patch: site.blueprint.version.patch,
+      }
+    };
+    if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
+    if (site.blueprintFields) params.siteParams = site.blueprintFields;
+    //TODO# remove this when change to Api2
+    let _params: any = {};
+    Object.keys(params).forEach(key => {
+      _params[underscore(key)] = params[key];
+    });
+    return _params;
+  }
+
   function createParams() {
     if (site.blueprint) {
       const params: Site = {
         siteId: site.siteId,
-        description: site.description,
         singleBranch: false,
-        authenticationType: site.repoAuthentication,
         createAsOrphan: site.createAsOrphan
       };
-      if (site.blueprint.id !== 'GIT' && site.blueprint.source !== 'GIT') {
+      if (site.blueprint.id !== 'GIT') {
         params.blueprint = site.blueprint.id;
         params.useRemote = site.pushSite;
       } else {
         params.useRemote = true;
       }
-      //it is from marketplace
-      if (site.blueprint.source === 'GIT') {
-        params.remoteUrl = site.blueprint.url;
-        params.remoteBranch = site.blueprint.ref;
-        params.remoteName = 'origin';
-      }
-      if (site.repoRemoteName) params.remoteName = site.repoRemoteName;
-      if (site.repoUrl) params.remoteUrl = site.repoUrl;
-      if (site.repoRemoteBranch) {
-        params.remoteBranch = site.repoRemoteBranch;
-      }
+
       if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
-      if (site.repoAuthentication === 'basic') {
-        params.remoteUsername = site.repoUsername;
-        params.remotePassword = site.repoPassword;
+      if (site.description) params.description = site.description;
+      if (site.pushSite || site.blueprint.id === 'GIT') {
+        params.authenticationType = site.repoAuthentication;
+        if (site.repoRemoteName) params.remoteName = site.repoRemoteName;
+        if (site.repoUrl) params.remoteUrl = site.repoUrl;
+        if (site.repoRemoteBranch) {
+          params.remoteBranch = site.repoRemoteBranch;
+        }
+        if (site.repoAuthentication === 'basic') {
+          params.remoteUsername = site.repoUsername;
+          params.remotePassword = site.repoPassword;
+        }
+        if (site.repoAuthentication === 'token') {
+          params.remoteUsername = site.repoUsername;
+          params.remoteToken = site.repoToken;
+        }
+        if (site.repoAuthentication === 'key') params.remotePrivateKey = site.repoKey;
       }
-      if (site.repoAuthentication === 'token') {
-        params.remoteUsername = site.repoUsername;
-        params.remoteToken = site.repoToken;
-      }
-      if (site.repoAuthentication === 'key') params.remotePrivateKey = site.repoKey;
-      if (site.blueprintFields) params.siteParams = site.blueprintFields;
+      if (Object.keys(site.blueprintFields).length) params.siteParams = site.blueprintFields;
       params.createOption = site.pushSite ? 'push' : 'clone';
 
       //TODO# remove this when change to Api2
@@ -586,11 +611,34 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
         ({response}) => {
-          //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
-          const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
-          setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response, global: true});
+          if(response) {
+            //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
+            const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
+            setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response, global: true});
+          }
         }
       )
+  }
+
+  function createNewSiteFromMarketplace(site: MarketplaceSite) {
+    createSiteFromMarketplace(site)
+      .subscribe(
+      () => {
+        setApiState({...apiState, creatingSite: false});
+        handleClose();
+        //TODO# Change to site.siteId when create site is on API2
+        Cookies.set('crafterSite', site.site_id, {
+          domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+          path: '/'
+        });
+        window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
+      },
+      ({response}) => {
+        if(response) {
+          setApiState({...apiState, creatingSite: false, error: true, errorResponse: response, global: true});
+        }
+      }
+    )
   }
 
   function getMarketPlace() {

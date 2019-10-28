@@ -43,7 +43,10 @@ CStudioAuthoring.Module.requireModule(
 	{  },
 	{ moduleLoaded: function() {
 
-	var YDom = YAHOO.util.Dom;
+	const YDom = YAHOO.util.Dom,
+        i18n = CrafterCMSNext.i18n,
+        formatMessage = i18n.intl.formatMessage,
+        messages = i18n.messages.contentTypesMessages;
 
 	YAHOO.extend(CStudioForms.Controls.RTETINYMCE5, CStudioForms.CStudioFormField, {
 
@@ -124,17 +127,17 @@ CStudioAuthoring.Module.requireModule(
 		 */
 		getSupportedProperties: function() {
 			return [
-				{ label: CMgs.format(langBundle, "width"), name: "width", type: "int" },
-        { label: CMgs.format(langBundle, "height"), name: "height", type: "int" },
-        { label: CMgs.format(langBundle, "autoGrow"), name: "autoGrow", type: "boolean", defaultValue: "false" },
-				{ label: CMgs.format(langBundle, "forceRootBlockP"), name: "forceRootBlockPTag", type: "boolean", defaultValue: "true" },
-				{ label: CMgs.format(langBundle, "forcePNewLines"), name: "forcePTags", type: "boolean", defaultValue: "true" },
-				{ label: CMgs.format(langBundle, "forceBRNewLines"), name: "forceBRTags", type: "boolean", defaultValue: "false" },
-				{ label: CMgs.format(langBundle, "supportedChannels"), name: "supportedChannels", type: "supportedChannels" },
-				{ label: CMgs.format(langBundle, "RTEConfiguration"), name: "rteConfiguration", type: "string", defaultValue: "generic" },
-				{ label: CMgs.format(langBundle, "imageManager"), name: "imageManager", type: "datasource:image" },
-				{ label: CMgs.format(langBundle, "videoManager"), name: "videoManager", type: "datasource:video" },
-				{ label: CMgs.format(langBundle, "fileManager"), name: "fileManager", type: "datasource:item" }
+				{ label: formatMessage(messages.width), name: "width", type: "int" },
+        { label: formatMessage(messages.height), name: "height", type: "int" },
+        { label: formatMessage(messages.autoGrow), name: "autoGrow", type: "boolean", defaultValue: "false" },
+				{ label: formatMessage(messages.forceRootBlockP), name: "forceRootBlockPTag", type: "boolean", defaultValue: "true" },
+				{ label: formatMessage(messages.forcePNewLines), name: "forcePTags", type: "boolean", defaultValue: "true" },
+				{ label: formatMessage(messages.forceBRNewLines), name: "forceBRTags", type: "boolean", defaultValue: "false" },
+				{ label: formatMessage(messages.supportedChannels), name: "supportedChannels", type: "supportedChannels" },
+				{ label: formatMessage(messages.RTEConfiguration), name: "rteConfiguration", type: "string", defaultValue: "generic" },
+				{ label: formatMessage(messages.imageManager), name: "imageManager", type: "datasource:image" },
+				{ label: formatMessage(messages.videoManager), name: "videoManager", type: "datasource:video" },
+				{ label: formatMessage(messages.fileManager), name: "fileManager", type: "datasource:item" }
 			];
 		},
 

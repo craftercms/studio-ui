@@ -159,8 +159,81 @@ const contentTypesMessages = defineMessages({
   fileNameErrorMessage: {
     id: 'contentType.fileNameErrorMessage',
     defaultMessage: 'Content types require a file name. Please add either a "File Name" or "Auto Filename" control to this content type definition.'
+  },
+  width: {
+    id: 'contentType.width',
+    defaultMessage: 'Width'
+  },
+  height: {
+    id: 'contentType.height',
+    defaultMessage: 'Height'
+  },
+  autoGrow: {
+    id: 'contentType.autoGrow',
+    defaultMessage: 'Auto Grow'
+  },
+  forceRootBlockP: {
+    id: 'contentType.forceRootBlockP',
+    defaultMessage: 'Force Root Block p Tag'
+  },
+  forcePNewLines: {
+    id: 'contentType.forcePNewLines',
+    defaultMessage: 'Force p tags New Lines'
+  },
+  forceBRNewLines: {
+    id: 'contentType.forceBRNewLines',
+    defaultMessage: 'Force br New Lines'
+  },
+  supportedChannels: {
+    id: 'contentType.supportedChannels',
+    defaultMessage: 'Supported Channels'
+  },
+  RTEConfiguration: {
+    id: 'contentType.RTEConfiguration',
+    defaultMessage: 'RTE Configuration'
+  },
+  imageManager: {
+    id: 'contentType.imageManager',
+    defaultMessage: 'Image Manager'
+  },
+  videoManager: {
+    id: 'contentType.videoManager',
+    defaultMessage: 'Video Manager'
+  },
+  fileManager: {
+    id: 'contentType.fileManager',
+    defaultMessage: 'File Manager'
   }
+});
 
+const targetingDialog = defineMessages({
+  setNow: {
+    id: 'targetingDialog.setNow',
+    defaultMessage: 'Set Now'
+  },
+  defaults: {
+    id: 'words.defaults',
+    defaultMessage: 'Defaults'
+  }
+});
+
+const words = defineMessages({
+  notification: {
+    id: 'words.notification',
+    defaultMessage: 'Notification'
+  },
+  confirm: {
+    id: 'words.confirm',
+    defaultMessage: 'Confirm'
+  },
+  cancel: {
+    id: 'words.cancel',
+    defaultMessage: 'Cancel'
+  },
+  clear: {
+    id: 'words.clear',
+    defaultMessage: 'Clear'
+  }
 });
 
 export default {
@@ -172,5 +245,7 @@ export default {
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
-  contentTypesMessages
+  contentTypesMessages,
+  targetingDialog,
+  words
 };

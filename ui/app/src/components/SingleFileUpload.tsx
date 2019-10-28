@@ -45,6 +45,7 @@ interface UppyProps {
   url: string;
   onUploadStart?(): void;
   onComplete?(result: any): void;
+  onError?(file: any, error: any, response: any): void;
   fileTypes?: [string];
 }
 
@@ -56,6 +57,7 @@ function SingleFileUpload(props: UppyProps) {
       formTarget,
       onUploadStart,
       onComplete,
+      onError,
       fileTypes
     } = props;
 
@@ -74,6 +76,7 @@ function SingleFileUpload(props: UppyProps) {
     formatMessage(messages.selectFileMessage)
   );
   const [fileName, setFileName] = useState();
+  const [fileNameErrorClass, setFileNameErrorClass] = useState();
 
   let uploadBtn: HTMLInputElement;
 
@@ -109,6 +112,7 @@ function SingleFileUpload(props: UppyProps) {
           uploadBtn = document.querySelector('.uppy-FileInput-btn');
           setDescription(`${formatMessage(messages.uploadingFile)}:`);
           setFileName(file.name);
+          setFileNameErrorClass('');
           uploadBtn.disabled = true;
           onUploadStart();
         })
@@ -117,6 +121,12 @@ function SingleFileUpload(props: UppyProps) {
           uploadBtn.disabled = false;
         })
         uppy.on('complete', onComplete);
+        uppy.on('upload-error', (file, error, response) => {
+          uppy.cancelAll();
+          uploadBtn.disabled = false;
+          setFileNameErrorClass('text-danger');
+          onError && onError(file, error, response);
+        })
 
       return () => {
         // https://uppy.io/docs/uppy/#uppy-close
@@ -138,7 +148,7 @@ function SingleFileUpload(props: UppyProps) {
         <div className="uppy-file-input-container"></div>
         {
           fileName &&
-          <em className="single-file-upload--file-name">{fileName}</em>
+          <em className={"single-file-upload--file-name " + fileNameErrorClass }>{fileName}</em>
         }
       </div>
     </>

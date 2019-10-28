@@ -77,7 +77,11 @@
       switch (_message.type) {
         case "FORM_ENGINE_RENDER_COMPLETE": {
           amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-          CStudioAuthoring.InContextEdit.messageDialogs({ type: 'OPEN_CHILD_COMPONENT', key: message.embeddedItemId });
+          CStudioAuthoring.InContextEdit.messageDialogs({
+            type: 'OPEN_CHILD_COMPONENT',
+            key: message.embeddedItemId,
+            iceId: message.iceId? message.iceId: null
+          });
           break;
         }
       }
@@ -147,9 +151,10 @@
                 cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
               }
               isLockOwner(contentTO.item.lockOwner);
+              //debugger;
               CStudioAuthoring.Operations.performSimpleIceEdit(
                 contentTO.item,
-                this.iceId, //field
+                message.embeddedItemId? null : this.iceId, //field
                 isWrite,
                 this.editCb,
                 par);
