@@ -547,12 +547,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     };
     if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
     if (site.blueprintFields) params.siteParams = site.blueprintFields;
-    //TODO# remove this when change to Api2
-    let _params: any = {};
-    Object.keys(params).forEach(key => {
-      _params[underscore(key)] = params[key];
-    });
-    return _params;
+    return params;
   }
 
   function createParams() {
@@ -629,12 +624,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         () => {
           setApiState({...apiState, creatingSite: false});
           handleClose();
-          //TODO# Change to site.siteId when create site is on API2
-          Cookies.set('crafterSite', site.site_id, {
+          Cookies.set('crafterSite', site.siteId, {
             domain: window.location.hostname.includes('.') ? window.location.hostname : '',
             path: '/'
           });
-          window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
+          window.location.href = '/studio/preview/#/?page=/&site=' + site.siteId;
         },
         ({response}) => {
           if (response) {
