@@ -159,7 +159,7 @@
                 this.editCb,
                 par,
                 null,
-                'hidden');
+                false);
             },
             failure: function () {
               callback.failure();
