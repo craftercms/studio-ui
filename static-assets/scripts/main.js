@@ -920,6 +920,9 @@
           .then(function success(data) {
             window.reLoginModalOn = false;
             $scope.reLoginModal.close();
+            //fire event when the login is success
+            let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'logged'} });
+            document.dispatchEvent(reLoginEvent);
             setTimeout(function () {
               authLoop();
             }, $scope.authDelay);
@@ -987,7 +990,10 @@
                 response.status == 302 || response.status == 0) {
                 if(authService.getUser().authenticationType == Constants.HEADERS){
                   $state.go('login');
-                }else{
+                }else {
+                  //fire event when the reLogin is show up
+                  let reLoginEvent = new CustomEvent('login', { 'detail': { state: 'reLogin'} });
+                  document.dispatchEvent(reLoginEvent);
                   $scope.reLoginModal = showReLoginModal();
                 }
 
@@ -1192,10 +1198,17 @@
       }
 
       $scope.createSitesDialog = function() {
+        const container = document.getElementsByClassName('create-site-dialog-container')[0];
+        const onClose = () => {
+          CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
+        };
         CrafterCMSNext
           .render(
-            document.getElementsByClassName('mainContainer')[0],
-            'CreateSiteDialog'
+            container,
+            'CreateSiteDialog',
+            {
+              onClose: onClose
+            }
           );
       };
 

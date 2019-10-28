@@ -48,8 +48,10 @@ import EmptyState from "./EmptyState";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
 import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
-import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
-import { createSite as createSiteFromMarketplace } from "../services/marketplace";
+import {
+  createSite as createSiteFromMarketplace,
+  fetchBlueprints as fetchMarketplaceBlueprints
+} from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
@@ -128,7 +130,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: 'calc(100% - 100px)',
     maxHeight: '1200px'
   },
-  searchContainer:{
+  searchContainer: {
     position: 'absolute',
     background: 'white',
     padding: '20px',
@@ -235,7 +237,8 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={(event) => onClose(event, 'closeButton')}>
+          <IconButton aria-label="close" className={classes.closeButton}
+                      onClick={(event) => onClose(event, 'closeButton')}>
             <CloseIcon/>
           </IconButton>
         ) : null}
@@ -300,10 +303,15 @@ const messages = defineMessages({
   }
 });
 
-function CreateSiteDialog() {
+interface CreateSiteDialogProps {
+  onClose(): any;
+}
+
+function CreateSiteDialog(props: CreateSiteDialogProps) {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [tab, setTab] = useState(0);
+  const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
   const [dialog, setDialog] = useState({
     open: true,
     inProgress: false,
@@ -337,13 +345,30 @@ function CreateSiteDialog() {
   setRequestForgeryToken();
 
   useEffect(() => {
+      const loginListener = function (event: any) {
+        if (event.detail.state === 'logged') {
+          setDisableEnforceFocus(false);
+        } else if (event.detail.state === 'reLogin') {
+          setDisableEnforceFocus(true);
+        }
+      };
+      document.addEventListener('login', loginListener, false);
+      return () => {
+        document.removeEventListener('login', loginListener, false);
+      }
+    },
+    // eslint-disable-next-line
+    []
+  );
+
+  useEffect(() => {
       if (tab === 0 && blueprints === null && !apiState.error) {
         getBlueprints();
       }
       if (tab === 1 && marketplace === null && !apiState.error) {
         getMarketPlace()
       }
-      if(finishRef && site.selectedView === 2) {
+      if (finishRef && site.selectedView === 2) {
         finishRef.current.focus();
       }
     },
@@ -351,22 +376,24 @@ function CreateSiteDialog() {
     [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
   );
 
-  function handleClose(event?:any, reason?: string) {
-    if((reason === 'escapeKeyDown') && site.details.blueprint) {
-      setSite({...site, details: { blueprint: null, index: null}});
-    } else if((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()){
-      setDialog({...dialog, inProgress: true });
+  function handleClose(event?: any, reason?: string) {
+    if ((reason === 'escapeKeyDown') && site.details.blueprint) {
+      setSite({...site, details: {blueprint: null, index: null}});
+    } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
+      setDialog({...dialog, inProgress: true});
     } else {
-      setDialog({...dialog, open: false });
+      //call externalClose fn
+      props.onClose();
+      setDialog({...dialog, open: false});
     }
   }
 
   function onConfirmOk() {
-    setDialog({...dialog, open: false, inProgress: false });
+    setDialog({...dialog, open: false, inProgress: false});
   }
 
   function onConfirmCancel() {
-    setDialog({...dialog, inProgress: false });
+    setDialog({...dialog, inProgress: false});
   }
 
   function isFormOnProgress() {
@@ -392,7 +419,7 @@ function CreateSiteDialog() {
     });
 
     Object.keys(site.blueprintFields).forEach((key: string) => {
-      if(site.blueprintFields[key] !== '') {
+      if (site.blueprintFields[key] !== '') {
         inProgress = true;
       }
     });
@@ -467,7 +494,7 @@ function CreateSiteDialog() {
       if (site.selectedView === 2) {
         setApiState({...apiState, creatingSite: true});
         //it is a marketplace blueprint
-        if(site.blueprint.source === 'GIT') {
+        if (site.blueprint.source === 'GIT') {
           const marketplaceParams: MarketplaceSite = createMarketplaceParams();
           createNewSiteFromMarketplace(marketplaceParams);
         } else {
@@ -587,7 +614,7 @@ function CreateSiteDialog() {
           window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
         ({response}) => {
-          if(response) {
+          if (response) {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
             setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response, global: true});
@@ -599,22 +626,22 @@ function CreateSiteDialog() {
   function createNewSiteFromMarketplace(site: MarketplaceSite) {
     createSiteFromMarketplace(site)
       .subscribe(
-      () => {
-        setApiState({...apiState, creatingSite: false});
-        handleClose();
-        //TODO# Change to site.siteId when create site is on API2
-        Cookies.set('crafterSite', site.site_id, {
-          domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-          path: '/'
-        });
-        window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
-      },
-      ({response}) => {
-        if(response) {
-          setApiState({...apiState, creatingSite: false, error: true, errorResponse: response, global: true});
+        () => {
+          setApiState({...apiState, creatingSite: false});
+          handleClose();
+          //TODO# Change to site.siteId when create site is on API2
+          Cookies.set('crafterSite', site.site_id, {
+            domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+            path: '/'
+          });
+          window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
+        },
+        ({response}) => {
+          if (response) {
+            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response, global: true});
+          }
         }
-      }
-    )
+      )
   }
 
   function getMarketPlace() {
@@ -701,8 +728,11 @@ function CreateSiteDialog() {
 
   return (
     <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}>
-      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel} description={formatMessage(messages.dialogCloseMessage)} title={formatMessage(messages.dialogCloseTitle)}/>
+            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}
+            disableEnforceFocus={disableEnforceFocus}>
+      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel}
+                     description={formatMessage(messages.dialogCloseMessage)}
+                     title={formatMessage(messages.dialogCloseTitle)} disableEnforceFocus={disableEnforceFocus}/>
       {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
         (apiState.creatingSite &&
             <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)}
