@@ -844,6 +844,9 @@ var CStudioForms = CStudioForms || function() {
               amplify.publish('UPDATE_NODE_SELECTOR', message );
               cfe.engine.saveForm();
             }
+            case FORM_CANCEL: {
+              cfe.engine.cancelForm();
+            }
           }
         });
       }
@@ -1466,9 +1469,6 @@ var CStudioForms = CStudioForms || function() {
         };
 
         var cancelFn = function () {
-
-          sendMessage({type: FORM_CANCEL});
-
           if (iceWindowCallback && iceWindowCallback.cancelled) {
             iceWindowCallback.cancelled();
           }
@@ -1560,6 +1560,8 @@ var CStudioForms = CStudioForms || function() {
             }
           }
         };
+
+        cfe.engine.cancelForm = cancelFn;
 
         amplify.subscribe('/field/init/completed', function () {
           form.asyncFields--;
@@ -1678,6 +1680,9 @@ var CStudioForms = CStudioForms || function() {
                   {
                     success: function (contentTO, editorId, objId, value) {
                       sendMessage({type: FORM_SAVE_REQUEST, objId, value});
+                    },
+                    cancelled: function(){
+                      sendMessage({type: FORM_CANCEL});
                     }
                   },
                   [],

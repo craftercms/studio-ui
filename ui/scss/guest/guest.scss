@@ -75,6 +75,10 @@
 }
 
 .#{$ice-class-prefix}-indicator {
+  &.fa-spinner {
+    background-color: transparent;
+    box-sizing: content-box;
+  }
   background-color: rgba(#fff, .7);
   z-index: 9999;
 }

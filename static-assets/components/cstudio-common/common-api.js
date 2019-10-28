@@ -1776,7 +1776,7 @@ var nodeOpen = false,
                     openDialogCb);
             },
 
-            performSimpleIceEdit: function (item, field, isEdit, callback, aux, isFlattenedInclude) {
+            performSimpleIceEdit: function (item, field, isEdit, callback, aux, isFlattenedInclude, openHidden) {
               var editorId = CStudioAuthoring.Utils.generateUUID();
 
               if (callback) {
@@ -1789,18 +1789,17 @@ var nodeOpen = false,
                 animator,
                 view;
 
-              isEdit = (typeof (isEdit) == 'undefined') ? true : isEdit;
+              isEdit = (typeof (isEdit) === 'undefined') ? true : isEdit;
 
-              var $modal = $(
-                '<div style="">' +
-                /**/'<div class="no-ice-mask"></div>' +
-                /**/'<div ' +
-                /****/'class="studio-ice-dialog studio-ice-container-' + editorId + '" ' +
-                /****/'style="display: none; height: ' + ($(window).height() * 0.75) + 'px">' +
-                /****/'<div class="bd overlay" id="' + id + '"></div>' +
-                /**/'</div>' +
-                '</div>'
-              );
+              var $modal = $(`<div ${openHidden? `style="visibility: hidden"`: ""}>
+                   <div class="no-ice-mask"></div>
+                    <div
+                    class="studio-ice-dialog studio-ice-container-${editorId}"
+                    style="display: none; height: ${($(window).height() * 0.75)}px"
+                    >
+                    <div class="bd overlay" id="${id}"></div>
+                    </div>
+              </div>`)
 
               if (aux && aux.length) {
                 for (var j = 0; j < aux.length; j++) {

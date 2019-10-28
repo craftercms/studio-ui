@@ -157,7 +157,9 @@
                 message.embeddedItemId? null : this.iceId, //field
                 isWrite,
                 this.editCb,
-                par);
+                par,
+                null,
+                true);
             },
             failure: function () {
               callback.failure();

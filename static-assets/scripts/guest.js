@@ -189,6 +189,18 @@ define('guest', [
     });
 
     $document.on('click', '.studio-ice-indicator', function (e) {
+      let pencilClasses =  'fa-pencil icon-yellow';
+      let spinnerClases = 'fa-spinner fa-spin icon-default';
+
+      if($(e.target).hasClass(spinnerClases)) return false;
+
+      $(e.target).removeClass(pencilClasses);
+      $(e.target).addClass(spinnerClases);
+
+      setTimeout(function () {
+        $(e.target).removeClass(spinnerClases);
+        $(e.target).addClass(pencilClasses);
+      }, 4000);
 
       var $i = $(this);
       var $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
