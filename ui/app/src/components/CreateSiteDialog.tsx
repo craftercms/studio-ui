@@ -48,8 +48,10 @@ import EmptyState from "./EmptyState";
 import { underscore } from '../utils/string';
 import { setRequestForgeryToken } from '../utils/auth';
 import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
-import { fetchBlueprints as fetchMarketplaceBlueprints } from "../services/marketplace";
-import { createSite as createSiteFromMarketplace } from "../services/marketplace";
+import {
+  createSite as createSiteFromMarketplace,
+  fetchBlueprints as fetchMarketplaceBlueprints
+} from "../services/marketplace";
 import gitLogo from "../assets/git-logo.svg";
 import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
@@ -235,7 +237,8 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton} onClick={(event) => onClose(event, 'closeButton')}>
+          <IconButton aria-label="close" className={classes.closeButton}
+                      onClick={(event) => onClose(event, 'closeButton')}>
             <CloseIcon/>
           </IconButton>
         ) : null}
@@ -373,11 +376,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
   );
 
-  function handleClose(event?:any, reason?: string) {
-    if((reason === 'escapeKeyDown') && site.details.blueprint) {
-      setSite({...site, details: { blueprint: null, index: null}});
-    } else if((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()){
-      setDialog({...dialog, inProgress: true });
+  function handleClose(event?: any, reason?: string) {
+    if ((reason === 'escapeKeyDown') && site.details.blueprint) {
+      setSite({...site, details: {blueprint: null, index: null}});
+    } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
+      setDialog({...dialog, inProgress: true});
     } else {
       //call externalClose fn
       props.onClose();
@@ -491,7 +494,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       if (site.selectedView === 2) {
         setApiState({...apiState, creatingSite: true});
         //it is a marketplace blueprint
-        if(site.blueprint.source === 'GIT') {
+        if (site.blueprint.source === 'GIT') {
           const marketplaceParams: MarketplaceSite = createMarketplaceParams();
           createNewSiteFromMarketplace(marketplaceParams);
         } else {
@@ -611,7 +614,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
         ({response}) => {
-          if(response) {
+          if (response) {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
             setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response, global: true});
@@ -623,22 +626,22 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function createNewSiteFromMarketplace(site: MarketplaceSite) {
     createSiteFromMarketplace(site)
       .subscribe(
-      () => {
-        setApiState({...apiState, creatingSite: false});
-        handleClose();
-        //TODO# Change to site.siteId when create site is on API2
-        Cookies.set('crafterSite', site.site_id, {
-          domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-          path: '/'
-        });
-        window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
-      },
-      ({response}) => {
-        if(response) {
-          setApiState({...apiState, creatingSite: false, error: true, errorResponse: response, global: true});
+        () => {
+          setApiState({...apiState, creatingSite: false});
+          handleClose();
+          //TODO# Change to site.siteId when create site is on API2
+          Cookies.set('crafterSite', site.site_id, {
+            domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+            path: '/'
+          });
+          window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
+        },
+        ({response}) => {
+          if (response) {
+            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response, global: true});
+          }
         }
-      }
-    )
+      )
   }
 
   function getMarketPlace() {
