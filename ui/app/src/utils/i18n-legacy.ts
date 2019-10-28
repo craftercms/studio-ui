@@ -206,6 +206,17 @@ const contentTypesMessages = defineMessages({
   }
 });
 
+const targetingDialog = defineMessages({
+  setNow: {
+    id: 'targetingDialog.setNow',
+    defaultMessage: 'Set Now'
+  },
+  defaults: {
+    id: 'words.defaults',
+    defaultMessage: 'Defaults'
+  }
+});
+
 const words = defineMessages({
   notification: {
     id: 'words.notification',
@@ -218,6 +229,10 @@ const words = defineMessages({
   cancel: {
     id: 'words.cancel',
     defaultMessage: 'Cancel'
+  },
+  clear: {
+    id: 'words.clear',
+    defaultMessage: 'Clear'
   }
 });
 
@@ -231,5 +246,6 @@ export default {
   embeddedContentDSMessages,
   childContentDSMessages,
   contentTypesMessages,
+  targetingDialog,
   words
 };
