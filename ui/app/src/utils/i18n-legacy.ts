@@ -182,6 +182,17 @@ const words = defineMessages({
   }
 });
 
+const codeEditorMessages = defineMessages( {
+  confirm: {
+    id: 'codeEditor.confirm',
+    defaultMessage: 'Confirm Close'
+  },
+  stay: {
+    id: 'codeEditor.stay',
+    defaultMessage: 'No, stay'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -192,5 +203,6 @@ export default {
   embeddedContentDSMessages,
   childContentDSMessages,
   contentTypesMessages,
-  words
+  words,
+  codeEditorMessages
 };

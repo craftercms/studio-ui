@@ -39,6 +39,7 @@ CStudioAuthoring.Module.requireModule(
 
           const i18n = CrafterCMSNext.i18n,
                 formatMessage = i18n.intl.formatMessage,
+                messages = i18n.messages.codeEditorMessages,
                 words = i18n.messages.words;
 
           var codeSnippets = {
@@ -193,9 +194,9 @@ CStudioAuthoring.Module.requireModule(
                       "<div class='dropup inline-block relative'>" +
                       "<span id='template-editor-cancel-button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' class='btn btn-default cstudio-template-editor-button'>" + formatMessage(words.cancel) + "</span>" +
                       "<ul class='dropdown-menu' aria-labelledby='template-editor-cancel-button'>" +
-                      "<li><a class='confirm' href='#'>" + formatMessage(words.confirm) + "</a></li>" +
+                      "<li><a class='cancel' href='#' onclick='return false;'>" + formatMessage(messages.stay) + "</a></li>" +
                       "<li role='separator' class='divider'></li>" +
-                      "<li><a class='cancel' href='#' onclick='return false;'>" + formatMessage(words.cancel) + "</a></li>" +
+                      "<li><a class='confirm' href='#'>" + formatMessage(messages.confirm) + "</a></li>" +
                       "</ul>" +
                       "</div>" +
 											"<div/>";
