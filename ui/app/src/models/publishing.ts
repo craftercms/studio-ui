@@ -29,6 +29,12 @@ export interface Selected {
   [keys: string]: boolean;
 }
 
+export interface File {
+  contentTypeClass: string
+  mimeType: string
+  path: string
+}
+
 export interface CurrentFilters {
   environment: string;
   path: string;
