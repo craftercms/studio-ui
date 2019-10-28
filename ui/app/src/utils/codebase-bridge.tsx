@@ -145,12 +145,13 @@ export function createCodebaseBridge() {
         new Promise((resolve, reject) => {
           try {
             // @ts-ignore
-            ReactDOM.unstable_createRoot(container)
+            ReactDOM
               .render(
                 // @ts-ignore
                 <CrafterCMSNextBridge>
                   <Component {...props} />
                 </CrafterCMSNextBridge>,
+                container,
                 () => resolve()
               );
           } catch (e) {

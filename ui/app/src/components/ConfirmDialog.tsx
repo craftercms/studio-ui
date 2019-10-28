@@ -41,10 +41,11 @@ interface ConfirmDialogProps {
   onClose(): any;
   description: string;
   title: string;
+  disableEnforceFocus: boolean;
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const {open, onOk, onClose, description, title} = props;
+  const {open, onOk, onClose, description, title, disableEnforceFocus} = props;
   const {formatMessage} = useIntl();
 
   return (
@@ -53,6 +54,7 @@ export default function ConfirmDialog(props: ConfirmDialogProps) {
       onClose={onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      disableEnforceFocus={disableEnforceFocus}
     >
       {
         title &&
