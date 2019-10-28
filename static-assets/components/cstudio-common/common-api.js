@@ -1791,17 +1791,15 @@ var nodeOpen = false,
 
               isEdit = (typeof (isEdit) === 'undefined') ? true : isEdit;
 
-              var $modal = $(
-                `<div ${openHidden? `style="visibility: hidden"`: ""}>
+              var $modal = $(`<div ${openHidden? `style="visibility: hidden"`: ""}>
                    <div class="no-ice-mask"></div>
-                    <div 
+                    <div
                     class="studio-ice-dialog studio-ice-container-${editorId}"
-                    style="display: none; height: ${($(window).height() * 0.75)}px" 
+                    style="display: none; height: ${($(window).height() * 0.75)}px"
                     >
                     <div class="bd overlay" id="${id}"></div>
                     </div>
-                 </div>
-                `)
+              </div>`)
 
               if (aux && aux.length) {
                 for (var j = 0; j < aux.length; j++) {
