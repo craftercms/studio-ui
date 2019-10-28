@@ -37,6 +37,11 @@ CStudioAuthoring.Module.requireModule(
 					var CMgs = CStudioAuthoring.Messages;
           var contextNavLangBundle = CMgs.getBundle("contextnav", CStudioAuthoringContext.lang);
 
+          const i18n = CrafterCMSNext.i18n,
+                formatMessage = i18n.intl.formatMessage,
+                messages = i18n.messages.codeEditorMessages,
+                words = i18n.messages.words;
+
           var codeSnippets = {
             freemarker: {
               "content-variable": { label:"Content variable", value:"${contentModel.VARIABLENAME}" },
@@ -88,7 +93,6 @@ CStudioAuthoring.Module.requireModule(
           };
 
 					CStudioForms.TemplateEditor.prototype = {
-
 						render: function(templatePath, channel, onSaveCb, contentType, mode) {
               var me = this;
 
@@ -186,8 +190,15 @@ CStudioAuthoring.Module.requireModule(
 									if(isWrite == true) {
 										formHTML +=
 											"<div class='edit-buttons-container'>" +
-											"<div  id='template-editor-update-button' class='btn btn-primary cstudio-template-editor-button'>Update</div>" +
-											"<div  id='template-editor-cancel-button' class='btn btn-default cstudio-template-editor-button'>Cancel</div>" +
+											"<div  id='template-editor-update-button' class='btn btn-primary cstudio-template-editor-button'>" + formatMessage(words.update) + "</div>" +
+                      "<div class='dropup inline-block relative'>" +
+                      "<span id='template-editor-cancel-button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' class='btn btn-default cstudio-template-editor-button'>" + formatMessage(words.cancel) + "</span>" +
+                      "<ul class='dropdown-menu' aria-labelledby='template-editor-cancel-button'>" +
+                      "<li><a class='cancel' href='#' onclick='return false;'>" + formatMessage(messages.stay) + "</a></li>" +
+                      "<li role='separator' class='divider'></li>" +
+                      "<li><a class='confirm' href='#'>" + formatMessage(messages.confirm) + "</a></li>" +
+                      "</ul>" +
+                      "</div>" +
 											"<div/>";
 									}
 									else {
@@ -262,6 +273,10 @@ CStudioAuthoring.Module.requireModule(
 												aceEditor.setTheme("ace/theme/" + this.value);
                         localStorage.setItem('templateEditorTheme', this.value);
 											})
+
+                      aceEditor.getSession().on('change', function() {
+                        aceEditor.isModified = true;
+                      });
 
 											return aceEditor;
 										}
@@ -534,10 +549,17 @@ CStudioAuthoring.Module.requireModule(
 										YAHOO.util.Connect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(cancelEditServiceUrl), cancelEditCb);
 									}
 
-									var cancelEl = document.getElementById('template-editor-cancel-button');
-									cancelEl.onclick = function() {
-										cancelEdit();
-									};
+                  $('#template-editor-cancel-button').on('click', function(e) {
+                    if (!aceEditor.isModified) {
+                      e.stopPropagation();
+                      cancelEdit();
+                    }
+                  });
+
+									$('#template-editor-cancel-button + .dropdown-menu .confirm').on('click', function(e) {
+									  e.preventDefault();
+                    cancelEdit();
+                  });
 
 									var saveSvcCb = {
 										success: function() {

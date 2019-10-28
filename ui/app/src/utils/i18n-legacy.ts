@@ -204,6 +204,7 @@ const contentTypesMessages = defineMessages({
     id: 'contentType.fileManager',
     defaultMessage: 'File Manager'
   }
+
 });
 
 const targetingDialog = defineMessages({
@@ -233,6 +234,21 @@ const words = defineMessages({
   clear: {
     id: 'words.clear',
     defaultMessage: 'Clear'
+  },
+  update: {
+    id: 'words.update',
+    defaultMessage: 'Update'
+  }
+});
+
+const codeEditorMessages = defineMessages( {
+  confirm: {
+    id: 'codeEditor.confirm',
+    defaultMessage: 'Confirm Close'
+  },
+  stay: {
+    id: 'codeEditor.stay',
+    defaultMessage: 'No, stay'
   }
 });
 
@@ -246,6 +262,7 @@ export default {
   embeddedContentDSMessages,
   childContentDSMessages,
   contentTypesMessages,
+  codeEditorMessages,
   targetingDialog,
   words
 };
