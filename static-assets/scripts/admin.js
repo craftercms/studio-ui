@@ -1087,7 +1087,7 @@
             field: formatMessage(messages.lastName),
             size: maxInputLength
           }),
-          fullfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fullfillAllReqErrorMessage),
+          fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
         },
         validPass: false
       };

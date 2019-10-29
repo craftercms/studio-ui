@@ -129,9 +129,9 @@ const passwordRequirementMessages = defineMessages({
     id: 'passwordRequirement.invalidPassword',
     defaultMessage: 'Requirements not met'
   },
-  fullfillAllReqErrorMessage: {
-    id: 'passwordRequirement.fullfillAllReqErrorMessage',
-    defaultMessage: 'Please fullfill all password requirements.'
+  fulfillAllReqErrorMessage: {
+    id: 'passwordRequirement.fulfillAllReqErrorMessage',
+    defaultMessage: 'Please fulfill all password requirements.'
   }
 });
 
