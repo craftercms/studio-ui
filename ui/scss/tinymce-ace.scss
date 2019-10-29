@@ -1,0 +1,94 @@
+/*!
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ */
+
+.tox-dialog {
+
+  .ace_editor {
+    position: relative;
+    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  }
+
+  .ace_scroller {
+    position: absolute;
+    overflow: hidden;
+  }
+
+  .ace_gutter {
+    position: absolute;
+  }
+
+  .ace_scroller.ace_scroll-left {
+    box-shadow: 17px 0 16px -16px rgba(0, 0, 0, 0.4) inset;
+  }
+
+  .ace_gutter-cell {
+    padding-left: 19px;
+
+  }
+
+  .ace_scrollbar {
+    position: absolute;
+  }
+
+  .ace_layer {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
+
+  .ace_cursor {
+    border-left: 2px solid;
+  }
+
+  //
+
+  .ace_marker-layer .ace_step, .ace_marker-layer .ace_stack {
+    position: absolute;
+    z-index: 3;
+  }
+
+  .ace_marker-layer .ace_selection {
+    position: absolute;
+    z-index: 5;
+  }
+
+  .ace_marker-layer .ace_bracket {
+    position: absolute;
+    z-index: 6;
+  }
+
+  .ace_marker-layer .ace_active-line {
+    position: absolute;
+    z-index: 2;
+  }
+
+  .ace_marker-layer .ace_selected-word {
+    position: absolute;
+    z-index: 4;
+    box-sizing: border-box;
+  }
+
+  //
+
+  .tox-dialog__body-content [role="presentation"], .tox-dialog__body-content [role="presentation"] .ace_editor{
+    height: 100%
+  }
+}
+
+
