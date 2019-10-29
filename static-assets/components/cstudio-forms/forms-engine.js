@@ -1477,7 +1477,7 @@ var CStudioForms = CStudioForms || function() {
           sendMessage({type: FORM_CANCEL});
 
           if (iceWindowCallback && iceWindowCallback.cancelled) {
-            iceWindowCallback.cancelled(true);
+            iceWindowCallback.cancelled();
           }
 
           if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
