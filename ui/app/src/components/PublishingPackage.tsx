@@ -144,15 +144,15 @@ interface PublishingPackageProps {
 
   setPending(pending: any): any;
 
-  getPackages(siteId: string, filters?: string): any,
+  getPackages(siteId: string, filters?: string): any;
 
-  currentFilters: CurrentFilters,
-  READY_FOR_LIVE: string,
+  currentFilters: CurrentFilters;
+  READY_FOR_LIVE: string;
   filesPerPackage: {
     [key: string]: any;
-  },
+  };
 
-  setFilesPerPackage(filesPerPackage: any): any
+  setFilesPerPackage(filesPerPackage: any): any;
 }
 
 export default function PublishingPackage(props: PublishingPackageProps) {
@@ -227,36 +227,43 @@ export default function PublishingPackage(props: PublishingPackageProps) {
 
   return (
     <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
-      <section className={"name"}>
+      <section className="name">
         {
-          pending[id] ?
+          pending[id] ? (
             <header className={"loading-header"}>
               <CircularProgress size={15} className={classes.spinner} color={"inherit"}/>
               <Typography variant="body1">
                 <strong>{id}</strong>
               </Typography>
             </header>
-            :
-            (currentFilters.state === READY_FOR_LIVE) ?
+          ) : (
+            (currentFilters.state === READY_FOR_LIVE) ? (
               <FormGroup className={classes.checkbox}>
                 <FormControlLabel
-                  control={<Checkbox color="primary" checked={checked}
-                                     onChange={(event) => onSelect(event, id, checked)}/>}
+                  control={
+                    <Checkbox 
+                      color="primary" 
+                      checked={checked}
+                      onChange={(event) => onSelect(event, id, checked)}/>
+                  }
                   label={<strong>{id}</strong>}
                 />
-              </FormGroup> :
+              </FormGroup> 
+            ) : (
               <Typography variant="body1">
                 <strong>{id}</strong>
               </Typography>
+            )
+          )
         }
         {
           (state === READY_FOR_LIVE) &&
           <SelectButton
-              text={formatMessage(messages.cancel)}
-              cancelText={formatMessage(messages.cancel)}
-              confirmText={formatMessage(messages.confirm)}
-              confirmHelperText={formatMessage(messages.confirmHelper)}
-              onConfirm={() => handleCancel(id)}
+            text={formatMessage(messages.cancel)}
+            cancelText={formatMessage(messages.cancel)}
+            confirmText={formatMessage(messages.confirm)}
+            confirmHelperText={formatMessage(messages.confirmHelper)}
+            onConfirm={() => handleCancel(id)}
           />
         }
       </section>
