@@ -288,6 +288,9 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .settings-view{
   max-width: 800px;
   margin: 0 auto;
+  .input-error{
+    border-color: #f59191;
+  }
 }
 
 .settings-view, .about-us-view {

@@ -908,6 +908,7 @@
               }
             }, function(error){
               var errorResponse = error.data.response;
+              $('#current').focus();
 
               if (errorResponse.code === 6003) {
                 $scope.error = $translate.instant('dashboard.login.PASSWORD_REQUIREMENTS_ERROR') + '. ' +
