@@ -31,6 +31,7 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import "../styles/animations.scss";
 import clsx from "clsx";
+import { CurrentFilters, READY_FOR_LIVE } from "../models/publishing";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -133,19 +134,35 @@ interface PublishingPackageProps {
   environment: string;
   comment: string
   selected: any;
+
   setSelected(selected: any): any
+
   pending: any;
   apiState: any;
+
   setApiState(state: any): any;
+
   setPending(pending: any): any;
-  getPackages(siteId: string, filters?: string): any
+
+  getPackages(siteId: string, filters?: string): any;
+
+  currentFilters: CurrentFilters;
+  filesPerPackage: {
+    [key: string]: any;
+  };
+
+  setFilesPerPackage(filesPerPackage: any): any;
 }
 
 export default function PublishingPackage(props: PublishingPackageProps) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {id, approver, schedule, state, comment, environment, siteId, selected, setSelected, pending, setPending, getPackages, apiState, setApiState} = props;
-  const [files, setFiles] = useState(null);
+  const {
+    id, approver, schedule, state, comment, environment,
+    siteId, selected, setSelected, pending, setPending,
+    getPackages, apiState, setApiState, currentFilters,
+    filesPerPackage, setFilesPerPackage
+  } = props;
   const [loading, setLoading] = useState(null);
 
   const {current: ref} = useRef<any>({});
@@ -156,10 +173,10 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   };
 
   function onSelect(event: ChangeEvent, id: string, checked: boolean) {
-    if(checked){
-      setSelected({...selected, [id]: false });
-    }else {
-      setSelected({...selected, [id]: true });
+    if (checked) {
+      setSelected({...selected, [id]: false});
+    } else {
+      setSelected({...selected, [id]: true});
     }
   }
 
@@ -182,7 +199,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
     fetchPackage(siteId, packageId)
       .subscribe(
         ({response}) => {
-          setFiles(response.package.items);
+          setFilesPerPackage({...filesPerPackage, [packageId]: response.package.items});
         },
         ({response}) => {
           setApiState({...apiState, error: true, errorResponse: response});
@@ -190,7 +207,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       );
   }
 
-  function renderFiles() {
+  function renderFiles(files: [File]) {
     return files.map((file: any, index: number) => {
       return (
         <ListItem key={index}>
@@ -205,35 +222,49 @@ export default function PublishingPackage(props: PublishingPackageProps) {
     })
   }
 
-  const checked = selected[id]? selected[id]: false ;
+  const checked = selected[id] ? selected[id] : false;
 
   return (
     <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
-      <section className={"name"}>
+      <section className="name">
         {
-          pending[id] ?
+          pending[id] ? (
             <header className={"loading-header"}>
               <CircularProgress size={15} className={classes.spinner} color={"inherit"}/>
               <Typography variant="body1">
                 <strong>{id}</strong>
               </Typography>
             </header>
-            :
-            <FormGroup className={classes.checkbox}>
-              <FormControlLabel
-                control={<Checkbox color="primary" checked={checked}
-                                   onChange={(event) => onSelect(event, id, checked)}/>}
-                label={<strong>{id}</strong>}
-              />
-            </FormGroup>
+          ) : (
+            (currentFilters.state === READY_FOR_LIVE) ? (
+              <FormGroup className={classes.checkbox}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="primary"
+                      checked={checked}
+                      onChange={(event) => onSelect(event, id, checked)}/>
+                  }
+                  label={<strong>{id}</strong>}
+                />
+              </FormGroup>
+            ) : (
+              <Typography variant="body1">
+                <strong>{id}</strong>
+              </Typography>
+            )
+          )
         }
-        <SelectButton
-          text={formatMessage(messages.cancel)}
-          cancelText={formatMessage(messages.cancel)}
-          confirmText={formatMessage(messages.confirm)}
-          confirmHelperText={formatMessage(messages.confirmHelper)}
-          onConfirm={() => handleCancel(id)}
-        />
+        {
+          (state === READY_FOR_LIVE) &&
+          <SelectButton
+            text={formatMessage(messages.cancel)}
+            cancelText={formatMessage(messages.cancel)}
+            confirmText={formatMessage(messages.confirm)}
+            confirmHelperText={formatMessage(messages.confirmHelper)}
+            onConfirm={() => handleCancel(id)}
+          />
+        }
       </section>
       <div className="status">
         <Typography variant="body2">
@@ -270,13 +301,13 @@ export default function PublishingPackage(props: PublishingPackageProps) {
       </div>
       <div className="files">
         {
-          files &&
+          (filesPerPackage && filesPerPackage[id]) &&
           <List aria-label="files list" className={classes.list}>
-            {renderFiles()}
+            {renderFiles(filesPerPackage[id])}
           </List>
         }
         {
-          (files === null) &&
+          (filesPerPackage === null || !filesPerPackage[id]) &&
           <Button variant="outlined" onClick={() => onFetchPackages(id)} disabled={!!loading}>
             {
               loading &&
