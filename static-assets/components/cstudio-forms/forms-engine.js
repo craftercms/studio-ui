@@ -843,7 +843,7 @@ var CStudioForms = CStudioForms || function() {
             }
             case FORM_SAVE_REQUEST: {
               amplify.publish('UPDATE_NODE_SELECTOR', message );
-              cfe.engine.saveForm(false, false);
+              cfe.engine.saveForm(false, message.draft, true);
               break;
             }
             case FORM_CANCEL_REQUEST: {
@@ -1197,7 +1197,7 @@ var CStudioForms = CStudioForms || function() {
         var editorId = CStudioAuthoring.Utils.getQueryVariable(queryString, 'editorId');
         var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
 
-        var saveFn = function(preview, draft) {
+        var saveFn = function(preview, draft, embeddedIceDraft) {
           showWarnMsg = false;
           var saveDraft = (draft == true) ? true : false;
 
@@ -1351,6 +1351,11 @@ var CStudioForms = CStudioForms || function() {
                       parent.document.querySelector('#studioBar nav .container-fluid').appendChild(noticeEl);
                       YDom.addClass(noticeEl, 'acnDraftContent');
                       noticeEl.innerHTML = CMgs.format(formsLangBundle, 'wcmContentSavedAsDraft');
+                    }
+
+                    if(embeddedIceDraft){
+                      //close parent form when embeddedIce is saved as draft
+                      sendMessage({type: FORM_CANCEL_REQUEST});
                     }
                   },
                   failure: function (err) {
@@ -1685,8 +1690,8 @@ var CStudioForms = CStudioForms || function() {
                   iceId || null, // field
                   true,
                   {
-                    success: function (contentTO, editorId, objId, value) {
-                      sendMessage({type: FORM_SAVE_REQUEST, objId, value});
+                    success: function (contentTO, editorId, objId, value, draft) {
+                      sendMessage({type: FORM_SAVE_REQUEST, objId, value, draft});
                     },
                     cancelled: function(){
                       sendMessage({type: FORM_CANCEL_REQUEST});
