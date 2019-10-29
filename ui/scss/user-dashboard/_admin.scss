@@ -242,6 +242,33 @@ table {
   }
 }
 
+.password-popover {
+  ul{
+    list-style-type: none;
+    padding-left: 0;
+    &.static{
+      list-style-type: circle;
+      li{
+        margin-left: 10px;
+      }
+    }
+    .list-icon{
+      margin-right: 10px;
+    }
+    
+    .result{
+      margin-top: 10px;
+    }
+    .red{
+      color: red;
+    }
+    .green{
+      color: green;
+    }
+    
+  }
+}
+
 .audit-view {
 
   min-height: 435px;

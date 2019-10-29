@@ -88,7 +88,50 @@ const usersAdminMessages = defineMessages({
   lastName: {
     id: 'usersAdmin.lastName',
     defaultMessage: 'Last Name'
+  }
 
+});
+
+const passwordRequirementMessages = defineMessages({
+  hasNumbers: {
+    id: 'passwordRequirement.hasNumbers',
+    defaultMessage: 'Must contain Numbers'
+  },
+  hasLowercase: {
+    id: 'passwordRequirement.hasLowercase',
+    defaultMessage: 'Must contain Lowercase'
+  },
+  hasUppercase: {
+    id: 'passwordRequirement.hasUppercase',
+    defaultMessage: 'Must contain Uppercase'
+  },
+  hasSpecialChars: {
+    id: 'passwordRequirement.hasSpecialChars',
+    defaultMessage: 'Must contain Special Chars'
+  },
+  noSpaces: {
+    id: 'passwordRequirement.noSpaces',
+    defaultMessage: 'Blank spaces aren\'t allowed'
+  },
+  minLength: {
+    id: 'passwordRequirement.minLength',
+    defaultMessage: 'Min Length'
+  },
+  passwordValidation: {
+    id: 'passwordRequirement.passwordValidation',
+    defaultMessage: 'Password Validation'
+  },
+  validPassword: {
+    id: 'passwordRequirement.validPassword',
+    defaultMessage: 'Requirements met'
+  },
+  invalidPassword: {
+    id: 'passwordRequirement.invalidPassword',
+    defaultMessage: 'Requirements not met'
+  },
+  fullfillAllReqErrorMessage: {
+    id: 'passwordRequirement.fullfillAllReqErrorMessage',
+    defaultMessage: 'Please fullfill all password requirements.'
   }
 });
 
@@ -257,6 +300,7 @@ export default {
   deleteDialogMessages,
   reposAdminMessages,
   usersAdminMessages,
+  passwordRequirementMessages,
   numericInputControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,

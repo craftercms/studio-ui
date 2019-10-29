@@ -23,7 +23,8 @@
   const i18n = CrafterCMSNext.i18n,
         formatMessage = i18n.intl.formatMessage,
         messages = i18n.messages.usersAdminMessages,
-        repoMessages = i18n.messages.reposAdminMessages;
+        repoMessages = i18n.messages.reposAdminMessages,
+        passwordRequirementMessages = i18n.messages.passwordRequirementMessages;
 
   app.service('adminService', [
     '$http', 'Constants', '$cookies', '$timeout', '$window',
@@ -1065,9 +1066,9 @@
 
   app.controller('UsersCtrl', [
     '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
-    '$stateParams', '$translate', '$location',
+    '$stateParams', '$translate', '$location', 'passwordRequirements',
     function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
-              $stateParams, $translate, $location) {
+              $stateParams, $translate, $location, passwordRequirements) {
 
       const maxInputLength = 32;
 
@@ -1085,8 +1086,10 @@
           lastNameMaxLength: formatMessage(messages.maxLengthError, {
             field: formatMessage(messages.lastName),
             size: maxInputLength
-          })
-        }
+          }),
+          fullfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fullfillAllReqErrorMessage),
+        },
+        validPass: false
       };
       var users = $scope.users;
       $scope.user.enabled = true;
@@ -1136,6 +1139,9 @@
           }, 1500, false);
 
         };
+
+        passwordRequirements.init($scope, 'password');
+
       };
       this.init();
 

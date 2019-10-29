@@ -31,6 +31,10 @@
     'ngAnimate'
   ]);
 
+  const i18n = CrafterCMSNext.i18n,
+        formatMessage = i18n.intl.formatMessage,
+        passwordRequirementMessages = i18n.messages.passwordRequirementMessages;
+
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
     function ($rootScope, $state, $stateParams, authService, sitesService, Constants, $http, $cookies, $location) {
@@ -716,9 +720,113 @@
     }
   ]);
 
+  app.service('passwordRequirements', [
+    '$rootScope', '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
+    function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
+      var me = this,
+        generalRegExpre = passwordRequirementsRegex,
+        generalRegExpreWithoutGroups = generalRegExpre.replace(/\?<(.*?)>/g, ""),
+        captureGroup = generalRegExpre.match(/\(\?<.*?>.*?\)/g),
+        messages = {
+          hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
+          hasLowercase: formatMessage(passwordRequirementMessages.hasLowercase),
+          hasUppercase: formatMessage(passwordRequirementMessages.hasUppercase),
+          hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars),
+          noSpaces: formatMessage(passwordRequirementMessages.noSpaces),
+          minLength: formatMessage(passwordRequirementMessages.minLength),
+          passwordValidation: formatMessage(passwordRequirementMessages.passwordValidation),
+          validPassword: formatMessage(passwordRequirementMessages.validPassword),
+          invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
+        };
+
+      this.init = function ($scope, elt) {
+        try {
+          let isRegExpValid = new RegExp(generalRegExpre);
+          if (isRegExpValid && captureGroup.length > 0) {
+            this.runValidation($scope, elt);
+          }
+        } catch (error) {
+          try {
+            let isRegExpValid = new RegExp(generalRegExpreWithoutGroups);
+            if (isRegExpValid) {
+              this.runValidation($scope, elt, true);
+            }
+          } catch (error) {
+            console.log("Default Password Validation");
+          }
+        }
+      }
+
+      this.creatingPassValHTML = function (content, staticTemplate) {
+        var html = '<div class="password-popover">';
+        var validPass = false;
+        var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpreWithoutGroups) : false;
+        captureGroup.forEach(captureGroup => {
+          let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
+          if (staticTemplate) {
+            html += '<ul class="static"><li>'
+          } else {
+            let isValid = content ? content.match(captureGroup) : false;
+            html += '<ul><li>'
+            if (isValid) {
+              html += '<span class="list-icon fa fa-check-circle green"></span>';
+            } else {
+              html += '<span class="list-icon fa fa-times-circle red "></span>';
+              validPass = true;
+            }
+          }
+          html += messages[captureGroupName[0].replace(/\?<|>/g, "")] +
+            '</li>';
+        });
+        html += '</ul>';
+        if (staticTemplate) {
+          if (isGeneralRegExpWithoutGroupsValid) {
+            html += '<p class="result green"><span class="list-icon fa fa-check-circle"></span>' + messages.validPassword + '</p>';
+          } else {
+            html += '<p class="result red"><span class="list-icon fa fa-times-circle"></span>' + messages.invalidPassword + '</p>';
+            validPass = true;
+          }
+        }
+        html += '</div>';
+        return { 'template': html, 'validPass': validPass };
+      }
+
+      this.runValidation = function ($scope, elt, staticTemplate) {
+        $(function () {
+          $("#" + elt)
+            .blur(function () {
+              $(this).popover('destroy');
+            })
+            .keyup(function () {
+              let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
+              $('.popover').find('.popover-content').html(creatingPassValHTML.template);
+              $scope.users.validPass = creatingPassValHTML.validPass;
+              $scope.$apply();
+            })
+            .focus(function () {
+              let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
+              $(this).popover({
+                title: messages.passwordValidation,
+                content: creatingPassValHTML.template,
+                placement: "top",
+                html: true,
+                trigger: "focus"
+              });
+              $(this).popover('show');
+              $scope.users.validPass = creatingPassValHTML.validPass;
+              $scope.$apply();
+            });
+        });
+      }
+
+      return this;
+
+    }
+  ]);
+
   app.controller('AppCtrl', [
-    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window',
-    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window) {
+    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements',
+    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements) {
 
       $scope.langSelected = '';
       $scope.modalInstance = '';
@@ -1021,6 +1129,9 @@
           windowClass: 'spinner-modal centered-dialog',
         });
       }
+
+      passwordRequirements.init($scope, 'password');
+
     }
   ]);
 
