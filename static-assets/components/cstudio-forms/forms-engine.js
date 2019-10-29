@@ -691,6 +691,7 @@ var CStudioForms = CStudioForms || function() {
     FORM_UPDATE_REQUEST = 'FORMS.FORM_UPDATE_REQUEST',
     OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
     FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE',
+    FORM_CANCEL_REQUEST = 'FORM_CANCEL_REQUEST',
     FORM_CANCEL = 'FORM_CANCEL';
 
   const { fromEvent, operators } = CrafterCMSNext.rxjs;
@@ -842,10 +843,12 @@ var CStudioForms = CStudioForms || function() {
             }
             case FORM_SAVE_REQUEST: {
               amplify.publish('UPDATE_NODE_SELECTOR', message );
-              cfe.engine.saveForm();
+              cfe.engine.saveForm(false, false);
+              break;
             }
-            case FORM_CANCEL: {
+            case FORM_CANCEL_REQUEST: {
               cfe.engine.cancelForm();
+              break;
             }
           }
         });
@@ -1469,8 +1472,12 @@ var CStudioForms = CStudioForms || function() {
         };
 
         var cancelFn = function () {
+
+          //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
+          sendMessage({type: FORM_CANCEL});
+
           if (iceWindowCallback && iceWindowCallback.cancelled) {
-            iceWindowCallback.cancelled();
+            iceWindowCallback.cancelled(true);
           }
 
           if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
@@ -1682,7 +1689,7 @@ var CStudioForms = CStudioForms || function() {
                       sendMessage({type: FORM_SAVE_REQUEST, objId, value});
                     },
                     cancelled: function(){
-                      sendMessage({type: FORM_CANCEL});
+                      sendMessage({type: FORM_CANCEL_REQUEST});
                     }
                   },
                   [],
