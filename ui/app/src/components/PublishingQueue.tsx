@@ -24,7 +24,16 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from "./PublishingPackage";
 import { cancelPackage, fetchEnvironments, fetchPackages } from '../services/publishing';
-import { CurrentFilters, Package, Selected } from "../models/publishing";
+import {
+  BLOCKED,
+  CANCELLED,
+  COMPLETED,
+  CurrentFilters,
+  Package,
+  PROCESSING,
+  READY_FOR_LIVE,
+  Selected
+} from "../models/publishing";
 import ConfirmDropdown from "./ConfirmDropdown";
 import FilterDropdown from "./FilterDropdown";
 import { setRequestForgeryToken } from "../utils/auth";
@@ -132,12 +141,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const READY_FOR_LIVE = 'READY_FOR_LIVE';
-const PROCESSING = 'PROCESSING';
-const COMPLETED = 'COMPLETED';
-const CANCELLED = 'CANCELLED';
-const BLOCKED = 'BLOCKED';
-
 const currentFiltersInitialState: CurrentFilters = {
   environment: '',
   path: '',
@@ -218,8 +221,7 @@ function PublishingQueue(props: PublishingQueueProps) {
         setSelected={setSelected}
         currentFilters={currentFilters}
         filesPerPackage={filesPerPackage}
-        setFilesPerPackage={setFilesPerPackage}
-        READY_FOR_LIVE={READY_FOR_LIVE}/>
+        setFilesPerPackage={setFilesPerPackage}/>
     })
   }
 

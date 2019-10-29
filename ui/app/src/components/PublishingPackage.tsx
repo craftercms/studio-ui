@@ -31,7 +31,7 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import "../styles/animations.scss";
 import clsx from "clsx";
-import { CurrentFilters } from "../models/publishing";
+import { CurrentFilters, READY_FOR_LIVE } from "../models/publishing";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {
@@ -144,10 +144,9 @@ interface PublishingPackageProps {
 
   setPending(pending: any): any;
 
-  getPackages(siteId: string, filters?: string): any,
+  getPackages(siteId: string, filters?: string): any;
 
-  currentFilters: CurrentFilters,
-  READY_FOR_LIVE: string,
+  currentFilters: CurrentFilters;
   filesPerPackage: {
     [key: string]: any;
   },
@@ -162,7 +161,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
     id, approver, schedule, state, comment, environment,
     siteId, selected, setSelected, pending, setPending,
     getPackages, apiState, setApiState, currentFilters,
-    READY_FOR_LIVE, filesPerPackage, setFilesPerPackage
+    filesPerPackage, setFilesPerPackage
   } = props;
   const [loading, setLoading] = useState(null);
 
