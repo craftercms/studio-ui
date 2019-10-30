@@ -19,6 +19,7 @@ import React, { useState } from 'react';
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import SwipeableViews from 'react-swipeable-views';
@@ -61,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginBottom: 0
     },
     '& .cardContent': {
-      height: '6rem',
+      //height: '6rem',
       padding: '12px 14px 5px 14px',
       position: 'relative',
     },
@@ -76,6 +77,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: '-webkit-box',
       '-webkit-line-clamp': 1,
       '-webkit-box-orient': 'vertical',
+      marginBottom: 0
     },
   },
   carouselImg: {
@@ -261,6 +263,12 @@ function BlueprintCard(props: BlueprintCardProps) {
   return (
     <Card className={classes.card}>
       <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+        <CardHeader
+          title={name}
+          subheader={id !== 'GIT'? renderDeveloper() :''}
+          titleTypographyProps={{variant: "subtitle1", component: "h2", className: "cardTitle"}}
+          subheaderTypographyProps={{variant: "subtitle2", component: "h2", color: "textSecondary"}}
+        />
         <AutoPlaySwipeableViews
           index={index}
           interval={interval}
@@ -274,9 +282,6 @@ function BlueprintCard(props: BlueprintCardProps) {
         <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={"static"}
                        activeStep={index}/>}
         <CardContent className={clsx('cardContent', id === 'GIT' && 'gitCard')}>
-          <Typography gutterBottom variant="subtitle1" component="h2" className={"cardTitle"}>
-            {name}
-          </Typography>
           {
             (id === 'GIT') &&
             <Typography gutterBottom variant="subtitle2" component="h2" color={"textSecondary"}>
@@ -286,7 +291,6 @@ function BlueprintCard(props: BlueprintCardProps) {
           {
             (id !== 'GIT') &&
             <div>
-              {renderDeveloper()}
                 <div className={classes.chip}>
                     <label>{formatMessage(messages.license)}</label>
                     <span>{license.name}</span>

@@ -57,6 +57,7 @@ import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const views: Views = {
   0: {
@@ -97,6 +98,7 @@ const siteInitialState: SiteState = {
   selectedView: 0,
   details: {blueprint: null, index: null},
   blueprintFields: {},
+  checkingName: false
 };
 
 const CustomTabs = withStyles({
@@ -226,7 +228,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'relative',
     padding: 16,
     flexGrow: 1
-  }
+  },
+  spinner: {
+    marginRight: '10px',
+    color: theme.palette.text.secondary
+  },
 }));
 
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
@@ -488,21 +494,22 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function handleFinish(e: MouseEvent) {
     e && e.preventDefault();
     if (site.selectedView === 1) {
-      setSite({...site, submitted: true});
+      if(validateForm()){
+        setSite({...site, checkingName: true});
+        checkNameExist(site.siteId);
+      }else {
+        setSite({...site, submitted: true});
+      }
     }
-    if (validateForm()) {
-      if (site.selectedView === 2) {
-        setApiState({...apiState, creatingSite: true});
-        //it is a marketplace blueprint
-        if (site.blueprint.source === 'GIT') {
-          const marketplaceParams: MarketplaceSite = createMarketplaceParams();
-          createNewSiteFromMarketplace(marketplaceParams);
-        } else {
-          const blueprintParams = createParams();
-          createNewSite(blueprintParams);
-        }
+    if (site.selectedView === 2) {
+      setApiState({...apiState, creatingSite: true});
+      //it is a marketplace blueprint
+      if (site.blueprint.source === 'GIT') {
+        const marketplaceParams: MarketplaceSite = createMarketplaceParams();
+        createNewSiteFromMarketplace(marketplaceParams);
       } else {
-        setSite({...site, selectedView: 2});
+        const blueprintParams = createParams();
+        createNewSite(blueprintParams);
       }
     }
   }
@@ -684,12 +691,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       );
   }
 
-  function checkNameExist(e: any) {
-    if (e.target.value) {
-      checkHandleAvailability(e.target.value)
+  function checkNameExist(siteId: string) {
+    if (siteId) {
+      checkHandleAvailability(siteId)
         .subscribe(
           ({response}) => {
-            setSite({...site, siteIdExist: response.exists});
+            if (response.exists) {
+              setSite({...site, siteIdExist: true, checkingName: false});
+            } else {
+              setSite({...site, selectedView: 2, siteIdExist: false, checkingName: false});
+            }
           },
           ({response}) => {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
@@ -786,7 +797,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   {
                     site.blueprint &&
                     <BlueprintForm inputs={site} setInputs={setSite}
-                                   onSubmit={handleFinish} onCheckNameExist={checkNameExist}
+                                   onSubmit={handleFinish}
                                    blueprint={site.blueprint}/>
                   }
                 </div>}
@@ -806,7 +817,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                   {formatMessage(messages.back)}
                 </Button>
-                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
+                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish} disabled={site.checkingName}>
+                  {
+                    site.checkingName &&
+                    <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
+                  }
                   {views[site.selectedView].btnText}
                 </Button>
             </DialogActions>

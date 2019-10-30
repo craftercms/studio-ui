@@ -41,7 +41,6 @@ interface BlueprintFormProps {
   setInputs(state: SiteState): any;
   onSubmit(event: any): any;
   blueprint: Blueprint;
-  onCheckNameExist(event: any): any;
 }
 
 const messages = defineMessages({
@@ -90,7 +89,7 @@ const messages = defineMessages({
 
 function BlueprintForm(props: BlueprintFormProps) {
   const classes = useStyles({});
-  const {inputs, setInputs, onSubmit, blueprint, onCheckNameExist} = props;
+  const {inputs, setInputs, onSubmit, blueprint} = props;
   const [sites, setSites] = useState(null);
   const [expanded, setExpanded] = useState({
     basic: false,
@@ -172,7 +171,6 @@ function BlueprintForm(props: BlueprintFormProps) {
             required
             autoFocus={true}
             fullWidth
-            onBlur={onCheckNameExist}
             onKeyPress={onKeyPress}
             onKeyUp={(event) => checkSites(event)}
             onChange={(event) => handleInputChange(event)}
