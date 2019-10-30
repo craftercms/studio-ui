@@ -291,6 +291,9 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   .input-error{
     border-color: #f59191;
   }
+  .input-error:focus{
+    box-shadow: 0 0 5px rgb(238, 81, 81);
+  }
 }
 
 .settings-view, .about-us-view {
