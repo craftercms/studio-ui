@@ -18,28 +18,35 @@
  */
 
 .tox-dialog {
-
   .ace_editor {
     position: relative;
-    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+
+    * {
+      font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+      font-family:monospace !important;
+      white-space: pre;
+    }
   }
 
   .ace_scroller {
     position: absolute;
-    overflow: hidden;
+    cursor: text;
   }
 
   .ace_gutter {
     position: absolute;
-  }
-
-  .ace_scroller.ace_scroll-left {
-    box-shadow: 17px 0 16px -16px rgba(0, 0, 0, 0.4) inset;
+    overflow : hidden;
   }
 
   .ace_gutter-cell {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     padding-left: 19px;
-
+    padding-right: 6px;
+    background-repeat: no-repeat;
+    text-align: right;
   }
 
   .ace_scrollbar {
@@ -47,44 +54,69 @@
   }
 
   .ace_layer {
+    z-index: 1;
     position: absolute;
+    overflow: hidden;
     height: 100%;
     width: 100%;
+    box-sizing: border-box;
+    pointer-events: none;
   }
 
   .ace_cursor {
+    position: absolute;
     border-left: 2px solid;
   }
 
-  //
-
-  .ace_marker-layer .ace_step, .ace_marker-layer .ace_stack {
-    position: absolute;
-    z-index: 3;
+  .ace_multiselect .ace_cursor {
+    border-left-width: 1px;
   }
 
-  .ace_marker-layer .ace_selection {
-    position: absolute;
-    z-index: 5;
+  .ace_slim-cursors .ace_cursor {
+    border-left-width: 1px;
   }
 
-  .ace_marker-layer .ace_bracket {
-    position: absolute;
-    z-index: 6;
+  .ace_overwrite-cursors .ace_cursor {
+    border-left-width: 0;
+    border-bottom: 1px solid;
   }
 
-  .ace_marker-layer .ace_active-line {
-    position: absolute;
-    z-index: 2;
+  .ace_fold:hover {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAJCAYAAADU6McMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAJpJREFUeNpi/P//PwOlgAXGYGRklAVSokD8GmjwY1wasKljQpYACtpCFeADcHVQfQyMQAwzwAZI3wJKvCLkfKBaMSClBlR7BOQikCFGQEErIH0VqkabiGCAqwUadAzZJRxQr/0gwiXIal8zQQPnNVTgJ1TdawL0T5gBIP1MUJNhBv2HKoQHHjqNrA4WO4zY0glyNKLT2KIfIMAAQsdgGiXvgnYAAAAASUVORK5CYII="),url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAA3CAYAAADNNiA5AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACBJREFUeNpi+P//fz4TAwPDZxDxD5X4i5fLMEwJgAADAEPVDbjNw87ZAAAAAElFTkSuQmCC");
   }
 
-  .ace_marker-layer .ace_selected-word {
-    position: absolute;
-    z-index: 4;
+  .ace_tooltip {
+    background-color: #FFF;
+    background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));
+    border: 1px solid gray;
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    color: black;
+    max-width: 100%;
+    padding: 3px 4px;
+    position: fixed;
+    pointer-events: none;
+  }
+
+  .ace_folding-enabled > .ace_gutter-cell {
+    padding-right: 13px;
+  }
+
+  .ace_fold-widget {
     box-sizing: border-box;
+    margin: 0 -12px 0 1px;
+    width: 11px;
+    vertical-align: top;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAANElEQVR42mWKsQ0AMAzC8ixLlrzQjzmBiEjp0A6WwBCSPgKAXoLkqSot7nN3yMwR7pZ32NzpKkVoDBUxKAAAAABJRU5ErkJggg==");
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 3px;
+    border: 1px solid transparent;
   }
 
-  //
+  .ace_fold-widget.ace_closed {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAAGCAYAAAAG5SQMAAAAOUlEQVR42jXKwQkAMAgDwKwqKD4EwQ26sSOkVWjgIIHAzPiCgaqiqnJHZnKICBERHN194O5b9vbLuAVRL+l0YWnZAAAAAElFTkSuQmCCXA==");
+  }
 
   .tox-dialog__body-content [role="presentation"], .tox-dialog__body-content [role="presentation"] .ace_editor{
     height: 100%
