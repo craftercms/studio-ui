@@ -133,7 +133,6 @@
         if (!isWrite) {
           par.push({ name: "readonly" });
         }
-
         if (!message.itemId) {
           // base page edit
           isLockOwner(CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner);
@@ -159,7 +158,7 @@
                 this.editCb,
                 par,
                 null,
-                true);
+                message.embeddedItemId? true: false);
             },
             failure: function () {
               callback.failure();

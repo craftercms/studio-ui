@@ -61,7 +61,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 		
         if(window.frameElement){
             var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-            this.formSize = parent.getFormSize(id);
+            this.formSize = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
             if(this.formSize < 522){
                 parent.setFormSize(522, id);
                 $($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease', true);
