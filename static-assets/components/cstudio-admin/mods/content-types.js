@@ -87,7 +87,8 @@
               postfixError = [],
               postfixes,
               postfixesFlag = false,
-              fileNameError = true;
+              fileNameError = true,
+              internalNameError = true;
 
             for (var i = 0; i < sections.length; i++) {
               for (var j = 0; j < sections[i].fields.length; j++) {
@@ -137,6 +138,9 @@
                   fileNameError = false;
                 }
 
+                if (currentField.id === 'internal-name' || formDef.contentType === '/component/level-descriptor') {
+                    internalNameError = false;
+                }
               }
             }
 
@@ -149,8 +153,12 @@
               }
             }
 
-            return { flagTitleError: flagTitleError, idError: idError, 
-                     postfixError: postfixError, fileNameError: fileNameError }
+            return {
+              flagTitleError,
+              idError,
+              postfixError,
+              fileNameError,
+              internalNameError}
           },
 
           templateValidation: function (formDef) {
