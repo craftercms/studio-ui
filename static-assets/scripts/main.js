@@ -764,14 +764,14 @@
         captureGroup.forEach(captureGroup => {
           let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
           if (staticTemplate) {
-            html += '<ul class="static"><li>'
+            html += '<ul class="password-popover--list password-popover--static"><li class="password-popover--list--item">'
           } else {
             let isValid = content ? content.match(captureGroup) : false;
-            html += '<ul><li>'
+            html += '<ul class="password-popover--list" ><li class="password-popover--list--item">'
             if (isValid) {
-              html += '<span class="list-icon fa fa-check-circle green"></span>';
+              html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
             } else {
-              html += '<span class="list-icon fa fa-times-circle red "></span>';
+              html += '<span class="password-popover--list-icon fa fa-times-circle password-popover--red "></span>';
               validPass = true;
             }
           }
@@ -781,9 +781,9 @@
         html += '</ul>';
         if (staticTemplate) {
           if (isGeneralRegExpWithoutGroupsValid) {
-            html += '<p class="result green"><span class="list-icon fa fa-check-circle"></span>' + messages.validPassword + '</p>';
+            html += '<p class="password-popover--result password-popover--green"><span class="password-popover--list-icon fa fa-check-circle"></span>' + messages.validPassword + '</p>';
           } else {
-            html += '<p class="result red"><span class="list-icon fa fa-times-circle"></span>' + messages.invalidPassword + '</p>';
+            html += '<p class="password-popover--result password-popover--red"><span class="password-popover--list-icon fa fa-times-circle"></span>' + messages.invalidPassword + '</p>';
             validPass = true;
           }
         }
