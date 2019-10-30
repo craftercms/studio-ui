@@ -29,6 +29,12 @@ export interface Selected {
   [keys: string]: boolean;
 }
 
+export interface File {
+  contentTypeClass: string
+  mimeType: string
+  path: string
+}
+
 export interface CurrentFilters {
   environment: string;
   path: string;
@@ -36,3 +42,9 @@ export interface CurrentFilters {
   limit: number,
   page: number
 }
+
+export const READY_FOR_LIVE = 'READY_FOR_LIVE';
+export const PROCESSING = 'PROCESSING';
+export const COMPLETED = 'COMPLETED';
+export const CANCELLED = 'CANCELLED';
+export const BLOCKED = 'BLOCKED';
