@@ -342,6 +342,10 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				handler: function(bits) {
 					var d = new Date();
 					var h = parseInt(bits[1], 10);
+          if (h > 12) {
+            h -= 12;
+          }
+          if(h === 0) h = 12;
 					d.setHours(h);
 					d.setMinutes(parseInt(bits[2], 10));
 					d.setSeconds(parseInt(bits[3], 10));
@@ -355,6 +359,10 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				handler: function(bits) {
 					var d = new Date();
 					var h = parseInt(bits[1], 10);
+          if (h > 12) {
+            h -= 12;
+          }
+          if(h === 0) h = 12;
 					d.setHours(h);
 					d.setMinutes(parseInt(bits[2], 10));
 					d.setSeconds(0);
@@ -368,6 +376,10 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				handler: function(bits) {
 					var d = new Date();
 					var h = parseInt(bits[1], 10);
+          if (h > 12) {
+            h -= 12;
+          }
+          if(h === 0) h = 12;
 					d.setHours(h);
 					d.setMinutes(0);
 					d.setSeconds(0);
@@ -381,13 +393,16 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				handler: function(bits) {
 					var d = new Date();
 					var h = parseInt(bits[1], 10);
-					if (h == 12) {
-						//h = 0;
-					}
+          var am_pm = "~a.m.";
+          if (h > 12) {
+            h -= 12;
+            am_pm = "~p.m."
+          }
+          if(h === 0) h = 12;
 					d.setHours(h);
 					d.setMinutes(parseInt(bits[2], 10));
 					d.setSeconds(parseInt(bits[3], 10));
-					return d + "~a.m.";
+          return d + am_pm;
 				}
 			},
 			// hh:mm
@@ -397,13 +412,16 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 				handler: function(bits) {
 					var d = new Date();
 					var h = parseInt(bits[1], 10);
-					if (h == 12) {
-						//h = 0;
-					}
+          var am_pm = "~a.m.";
+          if (h > 12) {
+            h -= 12;
+            am_pm = "~p.m."
+          }
+          if(h === 0) h = 12;
 					d.setHours(h);
 					d.setMinutes(parseInt(bits[2], 10));
 					d.setSeconds(0);
-					return d + "~a.m.";
+          return d + am_pm;
 				}
 			},
 			// hhmmss
@@ -415,19 +433,22 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 					var h = bits[1].substring(0, 2)
 					var m = parseInt(bits[1].substring(2, 4), 10);
 					var s = parseInt(bits[1].substring(4, 6), 10);
+          var am_pm = "~a.m.";
 					if (isNaN(m)) {
 						m = 0;
 					}
 					if (isNaN(s)) {
 						s = 0;
 					}
-					if (h == 12) {
-						//h = 0;
-					}
-					d.setHours(parseInt(h, 10));
+          if (h > 12) {
+            h -= 12;
+            am_pm = "~p.m."
+          }
+          if(h === 0) h = 12;
+          d.setHours(h);
 					d.setMinutes(parseInt(m, 10));
 					d.setSeconds(parseInt(s, 10));
-					return d + "~a.m.";
+          return d + am_pm;
 				}
 			}
 		];
