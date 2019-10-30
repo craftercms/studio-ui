@@ -1088,9 +1088,9 @@
             size: maxInputLength
           }),
           fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
-        },
-        validPass: false
+        }
       };
+      $scope.validPass = false;
       var users = $scope.users;
       $scope.user.enabled = true;
 
@@ -1140,9 +1140,12 @@
 
         };
 
-        passwordRequirements.init($scope, 'password');
-
       };
+
+      $scope.passwordRequirements = function() {
+        passwordRequirements.init($scope, 'password');
+      }
+      
       this.init();
 
       //table setup

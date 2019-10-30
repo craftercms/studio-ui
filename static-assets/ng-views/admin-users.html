@@ -242,7 +242,7 @@
 
           <div class="form-group" ng-if="dialogMode == 'CREATE'">
             <label for="password" class="control-label">{{ 'admin.users.PASSWORD' | translate }}</label>
-            <input ng-disabled="!dialogMode" type="password" class="form-control" id="password" name="password" ng-model="user.password" required >
+            <input ng-disabled="!dialogMode" type="password" class="form-control" id="password" name="password" ng-model="user.password" required  ng-init="passwordRequirements()">
 
             <div class="error-container" ng-if="dialogMode"
                  ng-show="(createNameForm.password.$dirty && createNameForm.password.$invalid) || (createNameForm.password.$touched && createNameForm.password.$invalid)" >
@@ -252,8 +252,8 @@
               </small>
             </div>
             <div class="error-container" ng-if="dialogMode"
-                 ng-show="users.validPass">
-              <small class="error ng-binding" ng-show="users.validPass" >
+                 ng-show="validPass">
+              <small class="error ng-binding" ng-show="validPass" >
                 {{ users.messages.fulfillAllReqErrorMessage }}
               </small>
             </div>
@@ -286,7 +286,7 @@
 
     <div class="modal-footer" id="new-user-dialog-footer">
       <button class="btn btn-primary text-capitalize save-new-user" ng-if="dialogMode"
-              ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externallyManaged || users.validPass">{{ 'admin.users.SAVE' | translate }}</button>
+              ng-click="okModalFunction(user)" ng-disabled="createNameForm.$invalid || user.externallyManaged || validPass">{{ 'admin.users.SAVE' | translate }}</button>
       <button ng-if="dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CANCEL_LABEL' | translate }}</button>
       <button ng-if="!dialogMode" class="btn" ng-click="hideModal()">{{ 'common.CLOSE_LABEL' | translate }}</button>
     </div>

@@ -739,17 +739,17 @@
           invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
         };
 
-      this.init = function ($scope, elt) {
+      this.init = function (scope, elt) {
         try {
           let isRegExpValid = new RegExp(generalRegExpre);
           if (isRegExpValid && captureGroup.length > 0) {
-            this.runValidation($scope, elt);
+            this.runValidation(scope, elt, false);
           }
         } catch (error) {
           try {
             let isRegExpValid = new RegExp(generalRegExpreWithoutGroups);
             if (isRegExpValid) {
-              this.runValidation($scope, elt, true);
+              this.runValidation(scope, elt, true);
             }
           } catch (error) {
             console.log("Default Password Validation");
@@ -791,32 +791,30 @@
         return { 'template': html, 'validPass': validPass };
       }
 
-      this.runValidation = function ($scope, elt, staticTemplate) {
-        $(function () {
-          $("#" + elt)
-            .blur(function () {
-              $(this).popover('destroy');
-            })
-            .keyup(function () {
-              let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
-              $('.popover').find('.popover-content').html(creatingPassValHTML.template);
-              $scope.users.validPass = creatingPassValHTML.validPass;
-              $scope.$apply();
-            })
-            .focus(function () {
-              let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
-              $(this).popover({
-                title: messages.passwordValidation,
-                content: creatingPassValHTML.template,
-                placement: "top",
-                html: true,
-                trigger: "focus"
-              });
-              $(this).popover('show');
-              $scope.users.validPass = creatingPassValHTML.validPass;
-              $scope.$apply();
+      this.runValidation = function (scope, elt, staticTemplate) {
+        $("#" + elt)
+          .blur(function () {
+            $(this).popover('destroy');
+          })
+          .keyup(function () {
+            let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
+            $('.popover').find('.popover-content').html(creatingPassValHTML.template);
+            scope.validPass = creatingPassValHTML.validPass;
+            scope.$apply();
+          })
+          .focus(function () {
+            let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
+            $(this).popover({
+              title: messages.passwordValidation,
+              content: creatingPassValHTML.template,
+              placement: "top",
+              html: true,
+              trigger: "focus"
             });
-        });
+            $(this).popover('show');
+            scope.validPass = creatingPassValHTML.validPass;
+            scope.$apply();
+          });
       }
 
       return this;
@@ -1131,7 +1129,9 @@
         });
       }
 
-      passwordRequirements.init($scope, 'password');
+      $scope.passwordRequirements = function() {
+        passwordRequirements.init($scope, 'password');
+      }
 
     }
   ]);
