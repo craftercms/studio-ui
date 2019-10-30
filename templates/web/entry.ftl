@@ -33,6 +33,7 @@
 
     <script>
         window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
+        const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
     </script>
 
     <#include "/templates/web/common/js-next-scripts.ftl" />

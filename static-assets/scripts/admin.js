@@ -22,9 +22,10 @@
 
   const i18n = CrafterCMSNext.i18n,
         formatMessage = i18n.intl.formatMessage,
+        repoMessages = i18n.messages.reposAdminMessages,
+        passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
         usersAdminMessages = i18n.messages.usersAdminMessages,
-        groupsAdminMessages = i18n.messages.groupsAdminMessages,
-        repoMessages = i18n.messages.reposAdminMessages;
+        groupsAdminMessages = i18n.messages.groupsAdminMessages;
 
   app.service('adminService', [
     '$http', 'Constants', '$cookies', '$timeout', '$window',
@@ -1066,9 +1067,9 @@
 
   app.controller('UsersCtrl', [
     '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
-    '$stateParams', '$translate', '$location',
+    '$stateParams', '$translate', '$location', 'passwordRequirements',
     function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
-              $stateParams, $translate, $location) {
+              $stateParams, $translate, $location, passwordRequirements) {
 
       const maxInputLength = 32;
 
@@ -1086,9 +1087,11 @@
           lastNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
             field: formatMessage(usersAdminMessages.lastName),
             size: maxInputLength
-          })
+          }),
+          fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
         }
       };
+      $scope.validPass = false;
       var users = $scope.users;
       $scope.user.enabled = true;
 
@@ -1137,7 +1140,13 @@
           }, 1500, false);
 
         };
+
       };
+
+      $scope.passwordRequirements = function() {
+        passwordRequirements.init($scope, 'password');
+      }
+      
       this.init();
 
       //table setup
