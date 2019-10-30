@@ -22,7 +22,8 @@
 
   const i18n = CrafterCMSNext.i18n,
         formatMessage = i18n.intl.formatMessage,
-        messages = i18n.messages.usersAdminMessages,
+        usersAdminMessages = i18n.messages.usersAdminMessages,
+        groupsAdminMessages = i18n.messages.groupsAdminMessages,
         repoMessages = i18n.messages.reposAdminMessages;
 
   app.service('adminService', [
@@ -1074,16 +1075,16 @@
       $scope.users = {
         maxInputLength: maxInputLength,
         messages: {
-          userNameMaxLength: formatMessage(messages.maxLengthError, {
-            field: formatMessage(messages.userName),
+          userNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
+            field: formatMessage(usersAdminMessages.userName),
             size: maxInputLength
           }),
-          firstNameMaxLength: formatMessage(messages.maxLengthError, {
-            field: formatMessage(messages.firstName),
+          firstNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
+            field: formatMessage(usersAdminMessages.firstName),
             size: maxInputLength
           }),
-          lastNameMaxLength: formatMessage(messages.maxLengthError, {
-            field: formatMessage(messages.lastName),
+          lastNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
+            field: formatMessage(usersAdminMessages.lastName),
             size: maxInputLength
           })
         }
@@ -1456,6 +1457,13 @@
       $scope.groups = {};
       var groups = $scope.groups;
       groups.site = $location.search().site;
+      groups.maxInputLength = 32;
+      groups.messages = {
+        groupNameMaxLength: formatMessage(groupsAdminMessages.maxLengthError, {
+          field: formatMessage(groupsAdminMessages.displayName),
+          size: groups.maxInputLength
+        })
+      };
       groups.members = {};
 
       this.init = function() {
@@ -1583,7 +1591,7 @@
           $scope.groups.pagination.goToLast();
           $scope.notification('\''+ group.name + '\' created.', '', null, 'studioMedium green', 'check-circle');
         }).error(function(error){
-          $scope.groupsError = error.response.message;
+          $scope.groupsError = `${error.response.message}. ${error.response.remedialAction}`;
         });
 
       };

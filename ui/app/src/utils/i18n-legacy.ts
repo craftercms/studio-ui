@@ -92,6 +92,17 @@ const usersAdminMessages = defineMessages({
   }
 });
 
+const groupsAdminMessages = defineMessages({
+  maxLengthError: {
+    id: 'groupsAdmin.maxLengthError',
+    defaultMessage: '{field} can\'t be longer than {size} characters'
+  },
+  displayName: {
+    id: 'groupsAdmin.displayName',
+    defaultMessage: 'Display Name'
+  }
+});
+
 const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
@@ -257,6 +268,7 @@ export default {
   deleteDialogMessages,
   reposAdminMessages,
   usersAdminMessages,
+  groupsAdminMessages,
   numericInputControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
