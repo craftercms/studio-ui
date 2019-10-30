@@ -342,14 +342,18 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
+          var am_pm = "~p.m.";
           if (h > 12) {
             h -= 12;
           }
-          if (h === 0) h = 12;
+          if (h === 0) {
+            h = 12;
+            am_pm = "~a.m.";
+          }
           d.setHours(h);
           d.setMinutes(parseInt(bits[2], 10));
           d.setSeconds(parseInt(bits[3], 10));
-          return d + "~p.m.";
+          return d + am_pm;
         }
       },
       // p.m., no seconds
@@ -359,14 +363,18 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
+          var am_pm = "~p.m.";
           if (h > 12) {
             h -= 12;
           }
-          if (h === 0) h = 12;
+          if (h === 0) {
+            h = 12;
+            am_pm = "~a.m.";
+          }
           d.setHours(h);
           d.setMinutes(parseInt(bits[2], 10));
           d.setSeconds(0);
-          return d + "~p.m.";
+          return d + am_pm;
         }
       },
       // p.m., hour only
@@ -376,14 +384,18 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         handler: function (bits) {
           var d = new Date();
           var h = parseInt(bits[1], 10);
+          var am_pm = "~p.m.";
           if (h > 12) {
             h -= 12;
           }
-          if (h === 0) h = 12;
+          if (h === 0) {
+            h = 12;
+            am_pm = "~a.m.";
+          }
           d.setHours(h);
           d.setMinutes(0);
           d.setSeconds(0);
-          return d + "~p.m.";
+          return d + am_pm;
         }
       },
       // hh:mm:ss
