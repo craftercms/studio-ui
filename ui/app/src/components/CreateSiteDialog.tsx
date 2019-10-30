@@ -384,12 +384,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     } else {
       //call externalClose fn
       props.onClose();
-      setDialog({...dialog, open: false});
+      setDialog({...dialog, open: false, inProgress: false});
     }
   }
 
   function onConfirmOk() {
-    setDialog({...dialog, open: false, inProgress: false});
+    handleClose(null, null);
   }
 
   function onConfirmCancel() {
