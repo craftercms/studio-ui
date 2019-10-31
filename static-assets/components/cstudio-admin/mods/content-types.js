@@ -20,7 +20,8 @@
 
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
-    contentTypesMessages = i18n.messages.contentTypesMessages;
+    contentTypesMessages = i18n.messages.contentTypesMessages,
+    words = i18n.messages.words;
 
   CStudioAdminConsole.isDirty = false;
   CStudioAdminConsole.contentTypeSelected = "";
@@ -291,70 +292,56 @@
                         var validation = _self.componentsValidation(formDef);
                         var istemplate = _self.templateValidation(formDef);
 
-                        if (validation.flagTitleError) {
+                        let errorMessage = validation.fileNameError
+                          ? `<li>${formatMessage(contentTypesMessages.fileNameErrorMessage)}</li>` : '';
+
+                        errorMessage += validation.internalNameError
+                          ? `<li>${formatMessage(contentTypesMessages.internalNameErrorMessage)}</li>` : '';
+
+                        errorMessage += validation.flagTitleError
+                          ? `<li>${formatMessage(contentTypesMessages.flagTitleError)}</li>` : '';
+
+                        errorMessage += validation.idError.length > 0
+                          ? `<li>${formatMessage(contentTypesMessages.idError)} ${validation.idError.toString().replace(/,/g, ", ")}</li>`  : '';
+
+                        errorMessage += validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable
+                          ? `<li>${_self.postfixErrorMessage(validation.postfixError)}</li>` : '';
+
+                        if (errorMessage !== '') {
+                          errorMessage = `${formatMessage(contentTypesMessages.saveFailed)}</br><ul>${errorMessage}</ul>`;
+
                           CStudioAuthoring.Operations.showSimpleDialog(
                             "errorTitle-dialog",
                             CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                            CMgs.format(langBundle, "notification"),
-                            CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorTitle"),
+                            formatMessage(words.notification),
+                            errorMessage,
                             null, // use default button
                             YAHOO.widget.SimpleDialog.ICON_BLOCK,
                             "studioDialog"
                           );
                         } else {
-                          if (validation.idError.length > 0) {
-                            CStudioAuthoring.Operations.showSimpleDialog(
-                              "errorName-dialog",
-                              CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                              CMgs.format(langBundle, "notification"),
-                              CMgs.format(langBundle, "saveFailed") + CMgs.format(langBundle, "errorName") + validation.idError.toString().replace(/,/g, ", "),
-                              null, // use default button
-                              YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                              "studioDialog"
-                            );
-                          } else if (validation.fileNameError) {
-                              CStudioAuthoring.Operations.showSimpleDialog(
-                                "fileName-dialog",
-                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                formatMessage(contentTypesMessages.notice),
-                                formatMessage(contentTypesMessages.fileNameErrorMessage),
-                                null, // use default button
-                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                "studioDialog"
-                              );
-                          } else if (validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable) {
-                            CStudioAuthoring.Operations.showSimpleDialog(
-                              "errorPostfix-dialog",
-                              CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                              CMgs.format(langBundle, "notification"),
-                              _self.postfixErrorMessage(validation.postfixError),
-                              null, // use default button
-                              YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                              "studioDialog"
-                            );
-                          } else {
-                            if (!istemplate.flagTemplateError) {
-                              var dialogEl = document.getElementById("errTemplates");
-                              if (dialogEl) {
-                                dialogEl.parentNode.removeChild(dialogEl);
-                              }
-                              var dialog = new YAHOO.widget.SimpleDialog("errTemplates",
-                                {
-                                  width: "400px", fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
-                                  text: CMgs.format(formsLangBundle, "noTemplateAssocAdm"), icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-                                  constraintoviewport: true,
-                                  buttons: [{ text: CMgs.format(formsLangBundle, "continueEditing"), handler: function () { this.destroy(); }, isDefault: false },
-                                  { text: CMgs.format(formsLangBundle, "save"), handler: function () { this.destroy(); saveFn(); }, isDefault: false }]
-                                });
-                              dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
-                              dialog.render(document.body);
-                              dialogEl = document.getElementById("errTemplates");
-                              dialogEl.dialog = dialog;
-                              dialogEl.className += (' studioDialog');
-                              dialogEl.dialog.show();
-                            } else {
-                              saveFn();
+                          // if there are no errors, check for templateError (that has different dialog)
+                          if (!istemplate.flagTemplateError) {
+                            var dialogEl = document.getElementById("errTemplates");
+                            if (dialogEl) {
+                              dialogEl.parentNode.removeChild(dialogEl);
                             }
+                            var dialog = new YAHOO.widget.SimpleDialog("errTemplates",
+                              {
+                                width: "400px", fixedcenter: true, visible: false, draggable: false, close: false, modal: true,
+                                text: formatMessage(contentTypesMessages.noTemplateAssoc), icon: YAHOO.widget.SimpleDialog.ICON_WARN,
+                                constraintoviewport: true,
+                                buttons: [{ text: formatMessage(contentTypesMessages.continueEditing), handler: function () { this.destroy(); }, isDefault: false },
+                                { text: formatMessage(words.save), handler: function () { this.destroy(); saveFn(); }, isDefault: false }]
+                              });
+                            dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
+                            dialog.render(document.body);
+                            dialogEl = document.getElementById("errTemplates");
+                            dialogEl.dialog = dialog;
+                            dialogEl.className += (' studioDialog');
+                            dialogEl.dialog.show();
+                          } else {  // otherwise, save
+                            saveFn();
                           }
                         }
                       }
