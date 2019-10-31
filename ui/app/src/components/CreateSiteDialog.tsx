@@ -57,7 +57,6 @@ import Cookies from 'js-cookie';
 import { backgroundColor } from '../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
-import CircularProgress from "@material-ui/core/CircularProgress";
 
 const views: Views = {
   0: {
@@ -815,7 +814,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   {formatMessage(messages.back)}
                 </Button>
                 <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
-                    <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
                   {views[site.selectedView].btnText}
                 </Button>
             </DialogActions>
