@@ -693,7 +693,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         .subscribe(
           ({response}) => {
             if (response.exists) {
-              setSite({siteIdExist: response.exists, selectedView: 1});
+              refts.setSite({siteIdExist: response.exists, selectedView: 1});
             } else {
               refts.setSite({siteIdExist: false});
             }
