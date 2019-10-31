@@ -52,7 +52,6 @@ export interface SiteState {
   blueprintFields?: {
     [key: string]: string;
   };
-  checkingName: boolean;
 }
 
 export interface Site {

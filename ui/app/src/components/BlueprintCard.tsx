@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginBottom: 0
     },
     '& .cardContent': {
-      height: '14.49em',
+      height: '13.26em',
       padding: '12px 14px 5px 14px',
       position: 'relative',
     },

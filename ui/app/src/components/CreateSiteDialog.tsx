@@ -97,8 +97,7 @@ const siteInitialState: SiteState = {
   submitted: false,
   selectedView: 0,
   details: {blueprint: null, index: null},
-  blueprintFields: {},
-  checkingName: false
+  blueprintFields: {}
 };
 
 const CustomTabs = withStyles({
@@ -815,12 +814,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                   {formatMessage(messages.back)}
                 </Button>
-                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}
-                        disabled={site.checkingName}>
-                  {
-                    site.checkingName &&
+                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
                     <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>
-                  }
                   {views[site.selectedView].btnText}
                 </Button>
             </DialogActions>
