@@ -744,20 +744,20 @@
           try {
             let isRegExpValid = new RegExp(generalRegExpre);
             if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-              this.runValidation(scope, elt, "groupsSupported");
+              this.runValidation(scope, elt, 'groupsSupported');
             }else{
-              this.runValidation(scope, elt, "noGroups");
+              this.runValidation(scope, elt, 'noGroups');
             }
           } catch (error) {
             try {
               let isRegExpValid = new RegExp(generalRegExpreWithoutGroups);
               if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-                this.runValidation(scope, elt, "groupsNotSupported");
+                this.runValidation(scope, elt, 'groupsNotSupported');
               }else{
-                this.runValidation(scope, elt, "noGroups");
+                this.runValidation(scope, elt, 'noGroups');
               }
             } catch (error) {
-              console.log("Default Password Validation");
+              console.warning('Defaulting password validation to server due to issues in RegExp compilation.');
             }
           }
         }
