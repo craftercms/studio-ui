@@ -16,7 +16,7 @@
  */
 
 import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
-import { fade } from "@material-ui/core/styles";
+import { darken, fade } from "@material-ui/core/styles";
 
 export const backgroundColor = '#E7E7E7';
 export const RedColor = '#FF3B30';
@@ -114,6 +114,10 @@ export  const theme = createMuiTheme({
         '&:hover': {
           backgroundColor: '#FFFFFF',
         },
+      },
+      outlinedPrimary: {
+        color: darken('#7E9DBB', 0.10),
+        border:`1px solid ${darken('#7E9DBB', 0.10)}`
       }
     }
   }
