@@ -51,7 +51,7 @@ export interface SiteState {
   details: { blueprint: Blueprint, index: number};
   blueprintFields?: {
     [key: string]: string;
-  }
+  };
 }
 
 export interface Site {

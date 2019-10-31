@@ -19,6 +19,7 @@ import React, { useState } from 'react';
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import SwipeableViews from 'react-swipeable-views';
@@ -30,7 +31,7 @@ import { defineMessages, useIntl } from "react-intl";
 import MobileStepper from "./MobileStepper";
 import { backgroundColor } from "../styles/theme";
 import Button from "@material-ui/core/Button";
-import { Theme } from "@material-ui/core";
+import { Theme, Tooltip } from "@material-ui/core";
 import clsx from "clsx";
 
 
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   card: {
     maxWidth: '100%',
-    minHeight: '358px',
+    minHeight: '339px',
     '& .cardTitle': {
       fontWeight: '600',
       lineHeight: '1.5rem',
@@ -61,12 +62,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginBottom: 0
     },
     '& .cardContent': {
-      height: '6rem',
+      height: '13.26em',
       padding: '12px 14px 5px 14px',
       position: 'relative',
-    },
-    '& .gitCard': {
-      height: '11.1rem',
     },
     '& .cardActions': {
       justifyContent: 'space-around'
@@ -76,6 +74,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: '-webkit-box',
       '-webkit-line-clamp': 1,
       '-webkit-box-orient': 'vertical',
+      marginBottom: 0
     },
   },
   carouselImg: {
@@ -93,12 +92,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: backgroundColor
   },
   chip: {
-    fontSize: '12px',
+    fontSize: '11px',
     color: 'gray',
     backgroundColor: '#f5f5f5',
-    padding: '5px',
+    padding: '2px 5px',
     borderRadius: '5px',
     display: 'inline-block',
+    whiteSpace: 'nowrap',
     '& label': {
       marginRight: '5px',
       marginBottom: 0,
@@ -142,7 +142,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   background: {
     background: backgroundColor,
     height: '180px',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    '&.git': {
+      background: 'none'
+    }
+  },
+  subtitleContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   }
 }));
 
@@ -175,6 +183,10 @@ const messages = defineMessages({
     id: 'blueprint.more',
     defaultMessage: 'More...'
   },
+  licenseTooltip: {
+    id: 'blueprint.more',
+    defaultMessage: '{license} license'
+  }
 });
 
 function BlueprintCard(props: BlueprintCardProps) {
@@ -209,25 +221,40 @@ function BlueprintCard(props: BlueprintCardProps) {
     onDetails(blueprint, index);
   }
 
-  function renderDeveloper() {
+  function renderLicense() {
+    return (
+      <Tooltip title={formatMessage(messages.licenseTooltip,{license:license.name})}>
+        <div className={classes.chip}>
+          <span>{license.name}</span>
+        </div>
+      </Tooltip>
+    )
+  }
+
+  function renderSubtitle() {
     if (developer) {
       if (developer.company) {
         return (
-          <Typography gutterBottom variant="subtitle2" className={"developer"} color={"textSecondary"}>
-            {formatMessage(messages.by)} {developer.company.name}
-          </Typography>
+          <div className={classes.subtitleContainer}>
+            <Typography gutterBottom variant="subtitle2" className={"developer"} color={"textSecondary"}>
+              {formatMessage(messages.by)} {developer.company.name}
+            </Typography>
+            {renderLicense()}
+          </div>
         )
       } else {
         return developer.people.map((item:any) => item.name).join(",");
       }
     } else {
       return (
-        <Typography gutterBottom variant="subtitle1" className={"developer"} color={"textSecondary"}>
-          {formatMessage(messages.noDev)}
-        </Typography>
+        <div className={classes.subtitleContainer}>
+          <Typography gutterBottom variant="subtitle1" className={"developer"} color={"textSecondary"}>
+            {formatMessage(messages.noDev)}
+          </Typography>
+          {renderLicense()}
+        </div>
       )
     }
-
   }
 
   function renderMedias(id: string) {
@@ -238,7 +265,7 @@ function BlueprintCard(props: BlueprintCardProps) {
     return merged.map((item, index) => {
       if (item.type !== 'video') {
         return (
-          <div key={index} className={classes.background} onClick={ (event) => onImageClick(event, index)}>
+          <div key={index} className={clsx(classes.background, id === 'GIT' && 'git')} onClick={ (event) => onImageClick(event, index)}>
             <img className={clsx(classes.carouselImg, id === 'GIT' && 'git')} src={item.url} alt={item.description}/>
           </div>
         )
@@ -260,6 +287,17 @@ function BlueprintCard(props: BlueprintCardProps) {
 
   return (
     <Card className={classes.card}>
+        {
+          (id !== 'GIT') &&
+          <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+            <CardHeader
+                title={name}
+                subheader={id !== 'GIT'? renderSubtitle() :''}
+                titleTypographyProps={{variant: "subtitle2", component: "h2", className: "cardTitle"}}
+                subheaderTypographyProps={{variant: "subtitle2", component: "h2", color: "textSecondary"}}
+            />
+          </CardActionArea>
+        }
       <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
         <AutoPlaySwipeableViews
           index={index}
@@ -270,31 +308,21 @@ function BlueprintCard(props: BlueprintCardProps) {
         >
           {renderMedias(id)}
         </AutoPlaySwipeableViews>
-        {steps > 0 && (id !== 'GIT') &&
-        <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={"static"}
-                       activeStep={index}/>}
-        <CardContent className={clsx('cardContent', id === 'GIT' && 'gitCard')}>
-          <Typography gutterBottom variant="subtitle1" component="h2" className={"cardTitle"}>
-            {name}
-          </Typography>
           {
             (id === 'GIT') &&
-            <Typography gutterBottom variant="subtitle2" component="h2" color={"textSecondary"}>
-              {blueprint.description}
-            </Typography>
+            <CardContent className='cardContent'>
+                <Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">
+                  {name}
+                </Typography>
+              <Typography gutterBottom variant="subtitle2" component="h2" color={"textSecondary"}>
+                {blueprint.description}
+              </Typography>
+            </CardContent>
           }
-          {
-            (id !== 'GIT') &&
-            <div>
-              {renderDeveloper()}
-                <div className={classes.chip}>
-                    <label>{formatMessage(messages.license)}</label>
-                    <span>{license.name}</span>
-                </div>
-            </div>
-          }
-        </CardContent>
       </CardActionArea>
+      {steps > 0 && (id !== 'GIT') &&
+      <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={"static"}
+                     activeStep={index}/>}
       {
         (id !== 'GIT') &&
         <CardActions className={'cardActions'}>

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent, useEffect, useRef, useState } from 'react';
+import React, { MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -96,7 +96,7 @@ const siteInitialState: SiteState = {
   submitted: false,
   selectedView: 0,
   details: {blueprint: null, index: null},
-  blueprintFields: {},
+  blueprintFields: {}
 };
 
 const CustomTabs = withStyles({
@@ -226,7 +226,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: 'relative',
     padding: 16,
     flexGrow: 1
-  }
+  },
+  spinner: {
+    marginRight: '10px',
+    color: theme.palette.text.secondary
+  },
 }));
 
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
@@ -326,11 +330,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     searchKey: '',
     searchSelected: false
   });
-  const [site, setSite] = useState(siteInitialState);
+  const [site, setSite] = useReducer((a, b) => ({...a, ...b}), siteInitialState);
   const classes = useStyles({});
   const finishRef = useRef(null);
-
-  const {formatMessage} = useIntl();
+  const { current: refts } = useRef<any>({});
+  refts.setSite = setSite;
+  const { formatMessage } = useIntl();
 
   function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
     searchKey = searchKey.toLowerCase();
@@ -368,7 +373,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       if (tab === 1 && marketplace === null && !apiState.error) {
         getMarketPlace()
       }
-      if (finishRef && site.selectedView === 2) {
+      if (finishRef && finishRef.current && site.selectedView === 2) {
         finishRef.current.focus();
       }
     },
@@ -378,18 +383,18 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function handleClose(event?: any, reason?: string) {
     if ((reason === 'escapeKeyDown') && site.details.blueprint) {
-      setSite({...site, details: {blueprint: null, index: null}});
+      setSite({ details: { blueprint: null, index: null } });
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
       setDialog({...dialog, inProgress: true});
     } else {
       //call externalClose fn
       props.onClose();
-      setDialog({...dialog, open: false});
+      setDialog({...dialog, open: false, inProgress: false});
     }
   }
 
   function onConfirmOk() {
-    setDialog({...dialog, open: false, inProgress: false});
+    handleClose(null, null);
   }
 
   function onConfirmCancel() {
@@ -428,7 +433,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleCloseDetails() {
-    setSite({...site, details: {blueprint: null, index: null}});
+    setSite({ details: {blueprint: null, index: null}});
   }
 
   function handleErrorBack() {
@@ -442,7 +447,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
     if (blueprint.id === 'GIT') {
       setSite({
-        ...site,
         selectedView: view,
         submitted: false,
         blueprint: blueprint,
@@ -452,7 +456,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       })
     } else if (blueprint.source === 'GIT') {
       setSite({
-        ...site,
         selectedView: view,
         submitted: false,
         blueprint: blueprint,
@@ -462,7 +465,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       })
     } else {
       setSite({
-        ...site,
         selectedView: view,
         submitted: false,
         blueprint: blueprint,
@@ -474,7 +476,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function handleBack() {
     let back = site.selectedView - 1;
-    setSite({...site, selectedView: back});
+    setSite({selectedView: back});
   }
 
   function handleChange(e: Object, value: number) {
@@ -482,27 +484,27 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleGoTo(step: number) {
-    setSite({...site, selectedView: step});
+    setSite({ selectedView: step});
   }
 
   function handleFinish(e: MouseEvent) {
     e && e.preventDefault();
     if (site.selectedView === 1) {
-      setSite({...site, submitted: true});
-    }
-    if (validateForm()) {
-      if (site.selectedView === 2) {
-        setApiState({...apiState, creatingSite: true});
-        //it is a marketplace blueprint
-        if (site.blueprint.source === 'GIT') {
-          const marketplaceParams: MarketplaceSite = createMarketplaceParams();
-          createNewSiteFromMarketplace(marketplaceParams);
-        } else {
-          const blueprintParams = createParams();
-          createNewSite(blueprintParams);
-        }
+      if (validateForm() && !site.siteIdExist) {
+        setSite({selectedView: 2});
       } else {
-        setSite({...site, selectedView: 2});
+        setSite({submitted: true});
+      }
+    }
+    if (site.selectedView === 2) {
+      setApiState({...apiState, creatingSite: true});
+      //it is a marketplace blueprint
+      if (site.blueprint.source === 'GIT') {
+        const marketplaceParams: MarketplaceSite = createMarketplaceParams();
+        createNewSiteFromMarketplace(marketplaceParams);
+      } else {
+        const blueprintParams = createParams();
+        createNewSite(blueprintParams);
       }
     }
   }
@@ -510,7 +512,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function checkAdditionalFields() {
     let valid = true;
     if (site.blueprint.parameters) {
-      site.blueprint.parameters.forEach(parameter => {
+      site.blueprint.parameters.forEach((parameter: any) => {
         if (parameter.required && !site.blueprintFields[parameter.name]) {
           valid = false;
         }
@@ -684,12 +686,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       );
   }
 
-  function checkNameExist(e: any) {
-    if (e.target.value) {
-      checkHandleAvailability(e.target.value)
+  function checkNameExist(siteId: string) {
+    if (siteId) {
+      checkHandleAvailability(siteId)
         .subscribe(
           ({response}) => {
-            setSite({...site, siteIdExist: response.exists});
+            if (response.exists) {
+              refts.setSite({siteIdExist: response.exists, selectedView: 1});
+            } else {
+              refts.setSite({siteIdExist: false});
+            }
           },
           ({response}) => {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
@@ -701,7 +707,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function onDetails(blueprint: Blueprint, index: number) {
-    setSite({...site, details: {blueprint: blueprint, index: index}});
+    setSite({details: {blueprint: blueprint, index: index}});
   }
 
   function renderBlueprints(list: Blueprint[]) {
@@ -786,7 +792,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   {
                     site.blueprint &&
                     <BlueprintForm inputs={site} setInputs={setSite}
-                                   onSubmit={handleFinish} onCheckNameExist={checkNameExist}
+                                   onCheckNameExist={checkNameExist}
+                                   onSubmit={handleFinish}
                                    blueprint={site.blueprint}/>
                   }
                 </div>}
