@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { MouseEvent, useEffect, useRef, useState } from 'react';
+import React, { MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -332,11 +332,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     searchKey: '',
     searchSelected: false
   });
-  const [site, setSite] = useState(siteInitialState);
+  const [site, setSite] = useReducer((a, b) => ({...a, ...b}), siteInitialState);
   const classes = useStyles({});
   const finishRef = useRef(null);
-
-  const {formatMessage} = useIntl();
+  const { current: refts } = useRef<any>({});
+  refts.setSite = setSite;
+  const { formatMessage } = useIntl();
 
   function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
     searchKey = searchKey.toLowerCase();
@@ -374,7 +375,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       if (tab === 1 && marketplace === null && !apiState.error) {
         getMarketPlace()
       }
-      if (finishRef && site.selectedView === 2) {
+      if (finishRef && finishRef.current && site.selectedView === 2) {
         finishRef.current.focus();
       }
     },
@@ -384,7 +385,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function handleClose(event?: any, reason?: string) {
     if ((reason === 'escapeKeyDown') && site.details.blueprint) {
-      setSite({...site, details: {blueprint: null, index: null}});
+      setSite({ details: { blueprint: null, index: null } });
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
       setDialog({...dialog, inProgress: true});
     } else {
@@ -434,7 +435,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleCloseDetails() {
-    setSite({...site, details: {blueprint: null, index: null}});
+    setSite({ details: {blueprint: null, index: null}});
   }
 
   function handleErrorBack() {
@@ -448,7 +449,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
     if (blueprint.id === 'GIT') {
       setSite({
-        ...site,
         selectedView: view,
         submitted: false,
         blueprint: blueprint,
@@ -458,7 +458,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       })
     } else if (blueprint.source === 'GIT') {
       setSite({
-        ...site,
         selectedView: view,
         submitted: false,
         blueprint: blueprint,
@@ -468,7 +467,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       })
     } else {
       setSite({
-        ...site,
         selectedView: view,
         submitted: false,
         blueprint: blueprint,
@@ -480,7 +478,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function handleBack() {
     let back = site.selectedView - 1;
-    setSite({...site, selectedView: back});
+    setSite({selectedView: back});
   }
 
   function handleChange(e: Object, value: number) {
@@ -488,17 +486,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleGoTo(step: number) {
-    setSite({...site, selectedView: step});
+    setSite({ selectedView: step});
   }
 
   function handleFinish(e: MouseEvent) {
     e && e.preventDefault();
     if (site.selectedView === 1) {
-      if(validateForm()){
-        setSite({...site, checkingName: true});
-        checkNameExist(site.siteId);
-      }else {
-        setSite({...site, submitted: true});
+      if (validateForm() && !site.siteIdExist) {
+        setSite({selectedView: 2});
+      } else {
+        setSite({submitted: true});
       }
     }
     if (site.selectedView === 2) {
@@ -517,7 +514,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function checkAdditionalFields() {
     let valid = true;
     if (site.blueprint.parameters) {
-      site.blueprint.parameters.forEach(parameter => {
+      site.blueprint.parameters.forEach((parameter: any) => {
         if (parameter.required && !site.blueprintFields[parameter.name]) {
           valid = false;
         }
@@ -697,9 +694,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         .subscribe(
           ({response}) => {
             if (response.exists) {
-              setSite({...site, siteIdExist: true, checkingName: false});
+              setSite({siteIdExist: response.exists, selectedView: 1});
             } else {
-              setSite({...site, selectedView: 2, siteIdExist: false, checkingName: false});
+              refts.setSite({siteIdExist: false});
             }
           },
           ({response}) => {
@@ -712,7 +709,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function onDetails(blueprint: Blueprint, index: number) {
-    setSite({...site, details: {blueprint: blueprint, index: index}});
+    setSite({details: {blueprint: blueprint, index: index}});
   }
 
   function renderBlueprints(list: Blueprint[]) {
@@ -797,6 +794,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   {
                     site.blueprint &&
                     <BlueprintForm inputs={site} setInputs={setSite}
+                                   onCheckNameExist={checkNameExist}
                                    onSubmit={handleFinish}
                                    blueprint={site.blueprint}/>
                   }
@@ -817,7 +815,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                   {formatMessage(messages.back)}
                 </Button>
-                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish} disabled={site.checkingName}>
+                <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}
+                        disabled={site.checkingName}>
                   {
                     site.checkingName &&
                     <CircularProgress size={14} className={classes.spinner} color={"inherit"}/>

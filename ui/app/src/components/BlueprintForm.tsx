@@ -38,9 +38,10 @@ const useStyles = makeStyles(() => ({
 
 interface BlueprintFormProps {
   inputs: SiteState;
-  setInputs(state: SiteState): any;
+  setInputs(state: any): any;
   onSubmit(event: any): any;
   blueprint: Blueprint;
+  onCheckNameExist(siteId: string): any;
 }
 
 const messages = defineMessages({
@@ -89,7 +90,7 @@ const messages = defineMessages({
 
 function BlueprintForm(props: BlueprintFormProps) {
   const classes = useStyles({});
-  const {inputs, setInputs, onSubmit, blueprint} = props;
+  const {inputs, setInputs, onSubmit, blueprint, onCheckNameExist} = props;
   const [sites, setSites] = useState(null);
   const [expanded, setExpanded] = useState({
     basic: false,
@@ -117,19 +118,18 @@ function BlueprintForm(props: BlueprintFormProps) {
   const handleInputChange = (e: any, type?:string) => {
     e.persist();
     if (e.target.type === 'checkbox') {
-      setInputs({...inputs, [e.target.name]: e.target.checked, submitted: false});
+      setInputs({[e.target.name]: e.target.checked, submitted: false});
     } else if (e.target.name === 'siteId') {
       const invalidSiteId = (e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_'));
       setInputs({
-        ...inputs,
         [e.target.name]: e.target.value.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase(),
         invalidSiteId: invalidSiteId
       });
     } else if (type === 'blueprintFields') {
       let parameters = {...inputs.blueprintFields, [e.target.name]: e.target.value };
-      setInputs({...inputs, blueprintFields: parameters});
+      setInputs({ blueprintFields: parameters});
     } else {
-      setInputs({...inputs, [e.target.name]: e.target.value});
+      setInputs({ [e.target.name]: e.target.value});
     }
   };
 
@@ -140,10 +140,10 @@ function BlueprintForm(props: BlueprintFormProps) {
   };
 
   function checkSites(event:any) {
-    if(sites.find((site:any) => site.siteId === event.target.value)){
-      setInputs({...inputs, siteIdExist: true});
+    if(sites && sites.find((site:any) => site.siteId === event.target.value)){
+      setInputs({ siteIdExist: true});
     } else {
-      setInputs({...inputs, siteIdExist: false});
+      setInputs({ siteIdExist: false});
     }
   }
 
@@ -171,6 +171,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             required
             autoFocus={true}
             fullWidth
+            onBlur={() => onCheckNameExist(inputs.siteId)}
             onKeyPress={onKeyPress}
             onKeyUp={(event) => checkSites(event)}
             onChange={(event) => handleInputChange(event)}

@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginBottom: 0
     },
     '& .cardContent': {
-      //height: '6rem',
+      height: '14.49em',
       padding: '12px 14px 5px 14px',
       position: 'relative',
     },
@@ -98,6 +98,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '2px 5px',
     borderRadius: '5px',
     display: 'inline-block',
+    whiteSpace: 'nowrap',
     '& label': {
       marginRight: '5px',
       marginBottom: 0,
@@ -286,16 +287,18 @@ function BlueprintCard(props: BlueprintCardProps) {
 
   return (
     <Card className={classes.card}>
-      <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
         {
           (id !== 'GIT') &&
-          <CardHeader
-            title={name}
-            subheader={id !== 'GIT'? renderSubtitle() :''}
-            titleTypographyProps={{variant: "subtitle2", component: "h2", className: "cardTitle"}}
-            subheaderTypographyProps={{variant: "subtitle2", component: "h2", color: "textSecondary"}}
-          />
+          <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
+            <CardHeader
+                title={name}
+                subheader={id !== 'GIT'? renderSubtitle() :''}
+                titleTypographyProps={{variant: "subtitle2", component: "h2", className: "cardTitle"}}
+                subheaderTypographyProps={{variant: "subtitle2", component: "h2", color: "textSecondary"}}
+            />
+          </CardActionArea>
         }
+      <CardActionArea onClick={() => onBlueprintSelected(blueprint, 1)}>
         <AutoPlaySwipeableViews
           index={index}
           interval={interval}
@@ -305,9 +308,6 @@ function BlueprintCard(props: BlueprintCardProps) {
         >
           {renderMedias(id)}
         </AutoPlaySwipeableViews>
-        {steps > 0 && (id !== 'GIT') &&
-        <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={"static"}
-                       activeStep={index}/>}
           {
             (id === 'GIT') &&
             <CardContent className='cardContent'>
@@ -320,6 +320,9 @@ function BlueprintCard(props: BlueprintCardProps) {
             </CardContent>
           }
       </CardActionArea>
+      {steps > 0 && (id !== 'GIT') &&
+      <MobileStepper variant="dots" steps={steps} onDotClick={onDotClick} className={classes.dots} position={"static"}
+                     activeStep={index}/>}
       {
         (id !== 'GIT') &&
         <CardActions className={'cardActions'}>
