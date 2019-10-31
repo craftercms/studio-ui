@@ -740,46 +740,54 @@
         };
 
       this.init = function (scope, elt) {
-        try {
-          let isRegExpValid = new RegExp(generalRegExpre);
-          if (isRegExpValid && captureGroup.length > 0) {
-            this.runValidation(scope, elt, false);
-          }
-        } catch (error) {
+        if (generalRegExpre) {
           try {
-            let isRegExpValid = new RegExp(generalRegExpreWithoutGroups);
-            if (isRegExpValid) {
-              this.runValidation(scope, elt, true);
+            let isRegExpValid = new RegExp(generalRegExpre);
+            if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
+              this.runValidation(scope, elt, 'groupsSupported');
+            }else{
+              this.runValidation(scope, elt, 'noGroups');
             }
           } catch (error) {
-            console.log("Default Password Validation");
+            try {
+              let isRegExpValid = new RegExp(generalRegExpreWithoutGroups);
+              if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
+                this.runValidation(scope, elt, 'groupsNotSupported');
+              }else{
+                this.runValidation(scope, elt, 'noGroups');
+              }
+            } catch (error) {
+              console.warning('Defaulting password validation to server due to issues in RegExp compilation.');
+            }
           }
         }
       }
 
-      this.creatingPassValHTML = function (content, staticTemplate) {
+      this.creatingPassValHTML = function (content, templateType) {
         var html = '<div class="password-popover">';
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpreWithoutGroups) : false;
-        captureGroup.forEach(captureGroup => {
-          let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
-          if (staticTemplate) {
-            html += '<ul class="password-popover--list password-popover--static"><li class="password-popover--list--item">'
-          } else {
-            let isValid = content ? content.match(captureGroup) : false;
-            html += '<ul class="password-popover--list" ><li class="password-popover--list--item">'
-            if (isValid) {
-              html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
+        if (templateType !== "noGroups") {
+          captureGroup.forEach(captureGroup => {
+            let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
+            if (templateType === "groupsNotSupported") {
+              html += '<ul class="password-popover--list password-popover--static"><li class="password-popover--list--item">'
             } else {
-              html += '<span class="password-popover--list-icon fa fa-times-circle password-popover--red "></span>';
-              validPass = true;
+              let isValid = content ? content.match(captureGroup) : false;
+              html += '<ul class="password-popover--list" ><li class="password-popover--list--item">'
+              if (isValid) {
+                html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
+              } else {
+                html += '<span class="password-popover--list-icon fa fa-times-circle password-popover--red "></span>';
+                validPass = true;
+              }
             }
-          }
-          html += messages[captureGroupName[0].replace(/\?<|>/g, "")] +
-            '</li>';
-        });
-        html += '</ul>';
-        if (staticTemplate) {
+            html += messages[captureGroupName[0].replace(/\?<|>/g, "")] +
+              '</li>';
+          });
+          html += '</ul>';
+        }
+        if (templateType === "groupsNotSupported" || templateType === "noGroups") {
           if (isGeneralRegExpWithoutGroupsValid) {
             html += '<p class="password-popover--result password-popover--green"><span class="password-popover--list-icon fa fa-check-circle"></span>' + messages.validPassword + '</p>';
           } else {
