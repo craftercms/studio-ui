@@ -316,12 +316,10 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
 
   getSupportedProperties: function() {
     return [
-      { label: CMgs.format(langBundle, "Enable Create New"), name: "enableCreateNew", type: "boolean", defaultValue: "true"  },
-      { label: CMgs.format(langBundle, "Enable Browse Existing"), name: "enableBrowseExisting", type: "boolean", defaultValue: "true" },
-      { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
       { label: CMgs.format(langBundle, "enableCreateNew"), name: "enableCreateNew", type: "boolean", defaultValue: "true"  },
       { label: CMgs.format(langBundle, "enableBrowseExisting"), name: "enableBrowseExisting", type: "boolean", defaultValue: "true" },
       { label: CMgs.format(langBundle, "enableSearchExisting"), name: "enableSearchExisting", type: "boolean", defaultValue: "false" },
+      { label: CMgs.format(langBundle, "repositoryPath"), name: "repoPath", type: "string" },
       { label: CMgs.format(langBundle, "browsePath"), name: "browsePath", type: "string" },
       { label: CMgs.format(langBundle, "defaultType"), name: "type", type: "string" }
     ];
