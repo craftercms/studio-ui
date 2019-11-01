@@ -67,10 +67,8 @@
             var workareaEl = document.getElementById("cstudio-admin-console-workarea");
 
             workareaEl.innerHTML =
-              "<div id='content-type-canvas'>" +
-              "</div>" +
-              "<div id='content-type-tools'>" +
-              "</div>";
+              "<div id='content-type-canvas'></div>" +
+              "<div id='content-type-tools'></div>";
 
             var actions = [
               { name: CMgs.format(langBundle, "openExistingType"), context: this, method: this.onOpenExistingClick },
@@ -159,7 +157,8 @@
               idError,
               postfixError,
               fileNameError,
-              internalNameError}
+              internalNameError
+            };
           },
 
           templateValidation: function (formDef) {
@@ -176,7 +175,7 @@
               }
             }
 
-            return { flagTemplateError: flagTemplateError }
+            return { flagTemplateError };
           },
 
           openExistingItemRender: function (contentType) {
