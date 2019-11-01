@@ -150,7 +150,6 @@
                 cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
               }
               isLockOwner(contentTO.item.lockOwner);
-              //debugger;
               CStudioAuthoring.Operations.performSimpleIceEdit(
                 contentTO.item,
                 message.embeddedItemId? null : this.iceId, //field
@@ -348,7 +347,8 @@
       message.zones,
       message.compPath,
       message.conComp,
-      message.model
+      message.model,
+      message.embeddedId
     );
   });
 

@@ -151,7 +151,8 @@
                         });
 
                         amplify.subscribe(cstopic('COMPONENT_DROPPED'), function () {
-                            self.ondrop.apply(self, arguments);
+                          console.log(arguments);
+                          self.ondrop.apply(self, arguments);
                         });
 
                         amplify.subscribe(cstopic('SAVE_DRAG_AND_DROP'), function (isNew) {
@@ -224,23 +225,68 @@
                             amplify.publish(cstopic('REFRESH_PREVIEW'));
                           }
                         }
-                      }
+                      };
                       amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-                      CStudioAuthoring.Operations.performSimpleIceEdit({
-                        uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
-                        contentType: type
-                      }, null, false, {
-                        failure: CStudioAuthoring.Utils.noop,
-                        success: function (contentTO) {
-                          amplify.publish('/operation/started');
-                          // Use the information from the newly created component entry and use it to load the model data for the
-                          // component placeholder in the UI. After this update, we can then proceed to save all the components
-                          var value = (!!contentTO.item.internalName)
-                            ? contentTO.item.internalName
-                            : contentTO.item.uri;
-                          isNewEvent(value, contentTO.item.uri);
-                        }
-                      });
+
+                      ///if to check if this is embedded??, still pending how to check this...
+                      /// with this if we get the index.url if no compPath
+                      // if compPath the parent form is compPath
+                      if(!compPath) {
+                        var parentPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
+                          CStudioAuthoringContext.previewCurrentPath);
+
+                        //if embbed we need to subscribe to open a new child forms
+
+                        var getContentItemsCb = {
+                          success: function (contentTO) {
+                            console.log(contentTO);
+                            CStudioAuthoring.Operations.performSimpleIceEdit(
+                              contentTO.item,
+                              null,
+                              true,
+                              {
+                                failure: CStudioAuthoring.Utils.noop,
+                                success: function (contentTO, editorId, name, value, draft) {
+                                  //refresh??
+                                }
+                              },
+                              null,
+                              false,
+                              false
+                            );
+                          }
+                        };
+
+                        CStudioAuthoring.Service.lookupContentItem(
+                          CStudioAuthoringContext.site,
+                          parentPath,
+                          getContentItemsCb,
+                          false, false);
+                      }else {
+                        CStudioAuthoring.Operations.performSimpleIceEdit(
+                          {
+                            uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
+                            contentType: type
+                          },
+                          null,
+                          false,
+                          {
+                            failure: CStudioAuthoring.Utils.noop,
+                            success: function (contentTO) {
+                              amplify.publish('/operation/started');
+                              // Use the information from the newly created component entry and use it to load the model data for the
+                              // component placeholder in the UI. After this update, we can then proceed to save all the components
+                              var value = (!!contentTO.item.internalName)
+                                ? contentTO.item.internalName
+                                : contentTO.item.uri;
+                              isNewEvent(value, contentTO.item.uri);
+                            }
+                          },
+                          null,
+                          false,
+                          false
+                        );
+                      }
                     } else {
                       CStudioAuthoring.Service.getContent(path, "false", {
                         success: function (model) {
