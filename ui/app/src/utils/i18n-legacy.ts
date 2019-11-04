@@ -210,9 +210,33 @@ const contentTypesMessages = defineMessages({
     id: 'contentType.useChildContent',
     defaultMessage: 'Use Deprecated Control Anyway'
   },
+  saveFailed: {
+    id: 'contentType.saveFailed',
+    defaultMessage: 'Save Failed'
+  },
   fileNameErrorMessage: {
     id: 'contentType.fileNameErrorMessage',
     defaultMessage: 'Content types require a file name. Please add either a "File Name" or "Auto Filename" control to this content type definition.'
+  },
+  internalNameErrorMessage: {
+    id: 'contentType.internalNameErrorMessage',
+    defaultMessage: 'This content type requires an Internal Name.'
+  },
+  flagTitleError: {
+    id: 'contentType.flatTitleError',
+    defaultMessage: 'Please fill every title for fields and datasources.'
+  },
+  idError: {
+    id: 'contentType.idError',
+    defaultMessage: 'Please fill variable name for: '
+  },
+  noTemplateAssoc: {
+    id: 'contentType.noTemplateAssoc',
+    defaultMessage: 'There is no template associated with this content type. Click Save to proceed with save operation or Continue to update the content type (under Basic Content Type Properties) with a template.'
+  },
+  continueEditing: {
+    id: 'contentType.continueEditing',
+    defaultMessage: 'Continue Editing'
   },
   width: {
     id: 'contentType.width',
@@ -292,6 +316,10 @@ const words = defineMessages({
   update: {
     id: 'words.update',
     defaultMessage: 'Update'
+  },
+  save: {
+    id: 'words.save',
+    defaultMessage: 'Save'
   }
 });
 
