@@ -17,7 +17,7 @@
 
 (function (window) {
 
-  var define = window.crafterRequire && (typeof window.crafterRequire.define === "function" && window.crafterRequire.define.amd) ? window.crafterRequire.define : function (a, b, f) {
+  var define = (typeof window.crafterDefine === "function" && window.crafterDefine.amd) ? window.crafterDefine : function (a, b, f) {
     f(window.crafter, window.amplify);
   };
 

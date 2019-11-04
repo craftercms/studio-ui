@@ -18,13 +18,9 @@
 /**
  * Created by rart on 18/02/15.
  */
-const crafterRequireDefine = window.crafterRequire ? window.crafterRequire.define : undefined;
-(crafterRequireDefine || function (a, b, f) {
+(window.crafterDefine || function (a, b, f) {
     f(crafter, $);
 })('animator', ['crafter', 'jquery'], function (crafter, $) {
-
-  $ = $ ? $ : window.$;   // TODO: need to find out why is jquery not being loaded
-
     var ANIMATE_CLASS = 'animated',
         END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 

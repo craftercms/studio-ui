@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-crafterRequire.define('guest', [
+crafterDefine('guest', [
   'crafter', 'jquery', 'communicator', 'ice-overlay',
 ], function (crafter, $, Communicator, ICEOverlay) {
   'use strict';
 
-  $ = $ ? $ : window.$;   // TODO: need to find out why is jquery not being loaded
   $.noConflict(true);
 
   if (!window.location.origin) {
@@ -63,7 +62,7 @@ crafterRequire.define('guest', [
     this.test = config.test
 
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {
-      crafterRequire.require(['dnd-controller'], function (DnDController) {
+      crafterRequire(['dnd-controller'], function (DnDController) {
 
         (typeof dndController === 'undefined') && (dndController = new DnDController({
           communicator: communicator
@@ -89,7 +88,7 @@ crafterRequire.define('guest', [
     });
 
     communicator.on(Topics.DND_COMPONENTS_PANEL_OFF, function (message) {
-      crafterRequire.require(['dnd-controller'], function (DnDController) {
+      crafterRequire(['dnd-controller'], function (DnDController) {
 
         (typeof dndController === 'undefined') && (dndController = new DnDController({
           communicator: communicator
@@ -100,7 +99,7 @@ crafterRequire.define('guest', [
     });
 
     communicator.on(Topics.DND_CREATE_BROWSE_COMP, function (message) {
-      crafterRequire.require(['pointer-controller'], function (pointerController) {
+      crafterRequire(['pointer-controller'], function (pointerController) {
 
         (typeof pointerControllerVar === 'undefined') && (pointerControllerVar = new pointerController({
           communicator: communicator

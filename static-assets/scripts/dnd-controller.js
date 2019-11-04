@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-crafterRequire.define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator'], function (crafter, $, $ui, Animator, Communicator) {
+crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator'], function (crafter, $, $ui, Animator, Communicator) {
   'use strict';
-
-  $ = $ ? $ : window.$;   // TODO: need to find out why is jquery not being loaded
 
   var Topics = crafter.studio.preview.Topics,
     string = crafter.String;

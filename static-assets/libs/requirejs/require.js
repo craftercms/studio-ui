@@ -7,7 +7,8 @@
 /*jslint regexp: true, nomen: true, sloppy: true */
 /*global window, navigator, document, importScripts, setTimeout, opera */
 
-var crafterRequire = {};
+var crafterRequire;
+var crafterDefine;
 
 (function() {
   var requirejs, require, define;
@@ -16,7 +17,7 @@ var crafterRequire = {};
       interactiveScript, currentlyAddingScript, mainScript, subPath,
       version = '2.3.6',
       commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/mg,
-      cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
+      cjsRequireRegExp = /[^.]\s*crafteRequire\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
       jsSuffixRegExp = /\.js$/,
       currDirRegExp = /^\.\//,
       op = Object.prototype,
@@ -2147,7 +2148,6 @@ var crafterRequire = {};
     req(cfg);
   }(this, (typeof setTimeout === 'undefined' ? undefined : setTimeout)));
 
-  crafterRequire.requirejs = requirejs;
-  crafterRequire.require = require;
-  crafterRequire.define = define;
+  crafterRequire = require;
+  crafterDefine = define;
 }());
