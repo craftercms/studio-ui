@@ -838,12 +838,22 @@ var CStudioForms = CStudioForms || function() {
               if(CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
                 CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({ }, message.editorId, objectId, name, message.draft);
               }
-              //save
               break;
             }
             case FORM_SAVE_REQUEST: {
-              amplify.publish('UPDATE_NODE_SELECTOR', message );
-              cfe.engine.saveForm(false, message.draft, true);
+              if(message.new) {
+                amplify.publish('UPDATE_NODE_SELECTOR_NEW', {
+                  key: message.key,
+                  value:message.value,
+                  inline:true, selectorId:
+                  message.selectorId,
+                  ds: message.ds
+                });
+              } else{
+                amplify.publish('UPDATE_NODE_SELECTOR', message );
+              }
+
+              //cfe.engine.saveForm(false, message.draft, true);
               break;
             }
             case FORM_CANCEL_REQUEST: {
@@ -1682,24 +1692,51 @@ var CStudioForms = CStudioForms || function() {
           messages$.subscribe((message) => {
             switch (message.type) {
               case OPEN_CHILD_COMPONENT: {
-                const key = message.key;
-                const iceId = message.iceId;
-                const contentType = parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
-                CStudioAuthoring.Operations.performSimpleIceEdit(
-                  { contentType: contentType, uri: key },
-                  iceId || null, // field
-                  true,
-                  {
-                    success: function (contentTO, editorId, objId, value, draft) {
-                      sendMessage({type: FORM_SAVE_REQUEST, objId, value, draft});
+                const key = message.key || null;
+                const edit = message.edit || false;
+                const iceId = message.iceId || null;
+                const selectorId = message.selectorId || null;
+                const ds = message.ds || null;
+                const contentType = message.contentType || parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
+                if(edit) {
+                  CStudioAuthoring.Operations.performSimpleIceEdit(
+                    { contentType: contentType, uri: key },
+                    iceId || null, // field
+                    edit,
+                    {
+                      success: function (contentTO, editorId, objId, value, draft) {
+                        sendMessage({type: FORM_SAVE_REQUEST, objId, value, draft});
+                      },
+                      cancelled: function(){
+                        sendMessage({type: FORM_CANCEL_REQUEST});
+                      }
                     },
-                    cancelled: function(){
-                      sendMessage({type: FORM_CANCEL_REQUEST});
-                    }
-                  },
-                  [],
-                  true
-                );
+                    [],
+                    true
+                  );
+                } else {
+                  CStudioAuthoring.Operations.openContentWebForm(
+                    contentType,
+                    null,
+                    null,
+                    "",
+                    false,
+                    false,
+                    {
+                      success: function (contentTO, editorId, objId, value, draft) {
+                        sendMessage({type: FORM_SAVE_REQUEST, key:objId, value, draft, new: true, selectorId: selectorId, ds});
+                      },
+                      cancelled: function() {
+                        sendMessage({type: FORM_CANCEL_REQUEST});
+                      }
+                    },
+                    [
+                      { name: "childForm", value: "true" }
+                    ],
+                    null,
+                    true);
+                  //it is a dnd
+                }
               }
             }
           });

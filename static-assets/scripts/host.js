@@ -80,7 +80,8 @@
           CStudioAuthoring.InContextEdit.messageDialogs({
             type: 'OPEN_CHILD_COMPONENT',
             key: message.embeddedItemId,
-            iceId: message.iceId? message.iceId: null
+            iceId: message.iceId? message.iceId: null,
+            edit: true
           });
           break;
         }
