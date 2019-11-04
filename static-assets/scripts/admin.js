@@ -937,7 +937,6 @@
             }
             publish.iconColor = currentIconColor;
             publish.message = data.message;
-            // publish.statusText = $translate.instant(`admin.publishing.${data.status.toUpperCase()}`);
             publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
           })
           .error(function (err) {
