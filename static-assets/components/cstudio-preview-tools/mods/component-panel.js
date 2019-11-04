@@ -46,6 +46,7 @@
                 rollbackContentMap: null, // use this content map to restore the app in case of any errors
                 contentModelMap: {},
                 zones: null,
+                cacheValidation: {},
 
                 initialize: function (config) {
 
@@ -279,11 +280,15 @@
                         CStudioAuthoring.Operations.simpleDialogTypeINFO,
                         CMgs.format(langBundle, "notification"),
                         CMgs.format(langBundle, "componentsNotSupported"),
-                        [{ text: "OK",  handler:function(){
+                        [{
+                          text: "OK",
+                          handler: function () {
                             this.hide();
                             window.close();
                             amplify.publish(cstopic('REFRESH_PREVIEW'));
-                          }, isDefault:false }],
+                          },
+                          isDefault: false
+                        }],
                         YAHOO.widget.SimpleDialog.ICON_BLOCK,
                         "studioDialog"
                       );
@@ -293,9 +298,12 @@
 
                 validate: function(componentPath, pageContentType, zones, componentType) {
                   var zone = Object.keys(zones)[0];
-
                   return new Promise((resolve, reject) => {
-
+                    if(ComponentsPanel.cacheValidation[zone]) {
+                      resolve(ComponentsPanel.cacheValidation[zone]);
+                    }else {
+                      ComponentsPanel.cacheValidation[zone] = {supported: false, ds: null};
+                    }
                     CStudioForms.Util.loadFormDefinition(componentPath || pageContentType, { success: function(response){
                         var selector;
                         var _response = { supported: false, ds: null};
@@ -306,10 +314,10 @@
                         var selectorDS = selector.properties.find(item => item.name === "itemManager");
                         selectorDS.value.split(',').forEach(ds => {
                           var type = response.datasources.find(formDS => formDS.id === ds).type;
-                          if(type === componentType) _response = {supported: true, ds: ds};
+                          if(type === componentType) ComponentsPanel.cacheValidation[zone] = {supported: true, ds: ds};
                           return true;
                         });
-                        resolve(_response);
+                        resolve(ComponentsPanel.cacheValidation[zone]);
                       }});
                   });
                 },
@@ -341,33 +349,31 @@
                   var parentPath = compPath || CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
                     CStudioAuthoringContext.previewCurrentPath);
 
-                  var getContentItemsCb = {
-                    success: function (contentTO) {
-                      CStudioAuthoring.Operations.performSimpleIceEdit(
-                        contentTO.item,
-                        null,
-                        true,
-                        {
-                          failure: CStudioAuthoring.Utils.noop,
-                          success: function (contentTO, editorId, name, value, draft) {
-                            amplify.publish(cstopic('REFRESH_PREVIEW'));
-                          },
-                          cancelled: function() {
-                            amplify.publish(cstopic('REFRESH_PREVIEW'));
-                          }
-
-                        },
-                        null,
-                        false,
-                        false
-                      );
-                    }
-                  };
-
                   CStudioAuthoring.Service.lookupContentItem(
                     CStudioAuthoringContext.site,
                     parentPath,
-                    getContentItemsCb,
+                    {
+                      success: function (contentTO) {
+                        CStudioAuthoring.Operations.performSimpleIceEdit(
+                          contentTO.item,
+                          null,
+                          true,
+                          {
+                            failure: CStudioAuthoring.Utils.noop,
+                            success: function (contentTO, editorId, name, value, draft) {
+                              amplify.publish(cstopic('REFRESH_PREVIEW'));
+                            },
+                            cancelled: function() {
+                              amplify.publish(cstopic('REFRESH_PREVIEW'));
+                            }
+
+                          },
+                          null,
+                          false,
+                          true
+                        );
+                      }
+                    },
                     false, false);
                 },
 

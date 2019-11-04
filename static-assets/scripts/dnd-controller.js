@@ -404,7 +404,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
       name = $component.text();
       tracking = crafter.guid();
       $component.before(
-        string('<div data-studio-component="%@" data-studio-component-path="%@" data-studio-tracking-number="%@">%@</div>')
+        string('<div data-studio-component="%@" data-studio-component-path="%@" data-studio-tracking-number="%@">%@ <span class="fa fa-spinner fa-spin"></span></div>')
           .fmt(type, path, tracking, name));
       $component.remove();
     } else {

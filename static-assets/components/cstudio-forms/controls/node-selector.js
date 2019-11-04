@@ -452,11 +452,11 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     insertEmbeddedItem: function(data){
       if(this.id === data.selectorId) {
-        this.insertItem(data.key, data.value, null, null, data.ds, true );
+        this.insertItem(data.key, data.value, null, null, data.ds);
       }
     },
 
-    insertItem: function(key, value, fileType, fileSize, datasource, inline) {
+    insertItem: function(key, value, fileType, fileSize, datasource) {
         var successful = true;
         var message = "";
         if(this.allowDuplicates != true){
@@ -513,7 +513,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             item.datasource = datasource;
             this.items[this.items.length] = item;
 
-            if(this.form.datasourceMap[datasource] && this.form.datasourceMap[datasource].itemsAreContentReferences) {
+            if(this.form.datasourceMap[datasource].itemsAreContentReferences) {
                 if(key.indexOf('.xml') != -1) {
                     item.include = key;
                     item.disableFlattening = this.disableFlattening;
@@ -521,9 +521,6 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                   item.key = key;
                   item.inline = 'true';
                 }
-            } else if (inline) {
-              item.key = key;
-              item.inline = 'true';
             }
 
             this.count();

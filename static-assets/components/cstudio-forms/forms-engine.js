@@ -845,8 +845,7 @@ var CStudioForms = CStudioForms || function() {
                 amplify.publish('UPDATE_NODE_SELECTOR_NEW', {
                   key: message.key,
                   value:message.value,
-                  inline:true, selectorId:
-                  message.selectorId,
+                  selectorId: message.selectorId,
                   ds: message.ds
                 });
               } else{
