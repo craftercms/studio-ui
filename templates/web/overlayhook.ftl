@@ -9,8 +9,7 @@ crafterRequire.config({
         'libs': '${staticAssets}/libs/',
         'jquery': '${staticAssets}/libs/jquery/dist/jquery',
         'jquery-ui': '${staticAssets}/libs/jquery-ui/jquery-ui',
-        'amplify': '${staticAssets}/libs/amplify/lib/amplify.core',
-        'cache': '${staticAssets}/libs/js-cache/cache'
+        'amplify': '${staticAssets}/libs/amplify/lib/amplify.core'
     }
 });
 
