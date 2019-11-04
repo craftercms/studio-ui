@@ -117,8 +117,8 @@
                                                     isNew: (data.operation === 'save-components-new') ? true : false,
                                                     conComp: data.conComp,
                                                     zones: data.zones ? data.zones : self.zones,
-                                                    comPath: data.compPath
-
+                                                    comPath: data.compPath,
+                                                    model: data.model
                                                 });
                                             },
                                             failure: function () {
@@ -147,7 +147,7 @@
 
                         amplify.subscribe('components/form-def/loaded', function (data) {
                             amplify.publish('/operation/started');
-                            self.saveModel(data.pagePath, data.formDefinition, data.contentMap, false, true, data.isNew, data.conComp, data.zones, data.compPath);
+                            self.saveModel(data.pagePath, data.formDefinition, data.contentMap, false, true, data.isNew, data.conComp, data.zones, data.compPath, data.model);
                         });
 
                         amplify.subscribe(cstopic('COMPONENT_DROPPED'), function () {
@@ -492,14 +492,20 @@
                     // console.log("initial model ", contentMap);
                 },
 
-                saveModel: function (pagePath, formDefinition, contentMap, start, complete, isNew, conComp, zones, compPath) {
+                saveModel: function (pagePath, formDefinition, contentMap, start, complete, isNew, conComp, zones, compPath, model) {
 
                     if (start) {
                         amplify.publish('/operation/started');
                     }
+                  var FlattenerState = {};
+
+                  if(model) {
+                    var dom = CStudioForms.communication.parseDOM(model);
+                    CStudioForms.Util.createFlattenerState(dom);
+                  }
 
                     var form = {definition: formDefinition, model: contentMap},
-                        xml = CStudioForms.Util.serializeModelToXml(form);
+                        xml = CStudioForms.Util.serializeModelToXml(form, null, FlattenerState);
 
                     CStudioAuthoring.Service.writeContent(pagePath,
                         pagePath.substring(pagePath.lastIndexOf('/') + 1),

@@ -852,8 +852,7 @@ var CStudioForms = CStudioForms || function() {
               } else{
                 amplify.publish('UPDATE_NODE_SELECTOR', message );
               }
-
-              //cfe.engine.saveForm(false, message.draft, true);
+              cfe.engine.saveForm(false, message.draft, true);
               break;
             }
             case FORM_CANCEL_REQUEST: {
@@ -920,10 +919,7 @@ var CStudioForms = CStudioForms || function() {
         };
 
         if(!isInclude && content) {
-          const components = Array.from(dom.querySelectorAll(`item > component`));
-          components.forEach((component) => {
-            FlattenerState[component.getAttribute('id')] = component.outerHTML;
-          });
+          CStudioForms.Util.createFlattenerState(dom);
         }
 
         _self._renderFormWithContent(dom, formId, formDef, style, ctrlCls, readonly);
@@ -2720,6 +2716,13 @@ var CStudioForms = CStudioForms || function() {
           );
         }
       }
+    },
+
+    createFlattenerState: function(dom){
+      const components = Array.from(dom.querySelectorAll(`item > component`));
+      components.forEach((component) => {
+        FlattenerState[component.getAttribute('id')] = component.outerHTML;
+      });
     },
 
     serializeModelToXml: function(form, saveDraft) {
