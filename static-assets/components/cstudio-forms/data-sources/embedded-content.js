@@ -46,6 +46,8 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     }
 
     if (_self.contentType === "") {
+      console.log(CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES);
+
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
         CStudioAuthoring.Constants.GET_ALL_CONTENT_TYPES,
@@ -56,8 +58,8 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
           },
           failure: function () {
           }
-        }, true, true, 
-        contentType => contentType.type === "component");
+        }, true, true,
+        contentType => (contentType.type === 'component' && contentType.name !== '/component/level-descriptor'));
     } else {
       CStudioAuthoring.Operations.openContentWebForm(
         _self.contentType,
