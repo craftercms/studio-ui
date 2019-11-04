@@ -1349,8 +1349,11 @@
   ]);
 
   app.controller('GlobalConfigCtrl', [
-    '$scope', '$element', '$http', '$timeout', '$uibModal',
-    function ($scope, $element, $http, $timeout, $uibModal) {
+    '$scope', '$element', '$http', '$timeout', '$uibModal', '$rootScope',
+    function ($scope, $element, $http, $timeout, $uibModal, $rootScope) {
+
+      $scope.globalConfig = {};
+      let globalConfig = $scope.globalConfig;
 
       $scope.uiEnabled = false;
       let defaultValue = '';
@@ -1365,6 +1368,10 @@
         theme: 'ace/theme/textmate',
       });
 
+      aceEditor.getSession().on('change', function() {
+        globalConfig.isModified = true;
+      });
+
       $http.get('/studio/api/2/configuration/get_configuration', {
         params: {
           'siteId': 'studio_root',
@@ -1373,6 +1380,7 @@
         }
       }).then((data) => {
         aceEditor.setValue(data.data.content || defaultValue);
+        globalConfig.isModified = false;
         enableUI(true, true);
       });
 
@@ -1405,6 +1413,7 @@
             position: 'top left',
             className: 'success'
           });
+          globalConfig.isModified = false;
         }).catch(() => {
           $element.notify('Save failed. Please retry momentarily.', {
             position: 'top left',
@@ -1441,6 +1450,12 @@
         $scope.uiEnabled = enable;
         digest && $scope.$apply();
       }
+
+      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
+        if (globalConfig.isModified) {
+          event.preventDefault();   //TODO: show confirmation dialog
+        }
+      });
 
     }
   ]);
