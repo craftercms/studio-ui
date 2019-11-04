@@ -32,8 +32,8 @@
       root = root[pkg];
     }
     root[componentName] = component;
-    if (typeof define === "function" && define.amd) {
-      define(dasherize(componentName), [], function () {
+    if (window.crafterRequire && (typeof window.crafterRequire.define === "function" && window.crafterRequire.define.amd)) {
+      window.crafterRequire.define(dasherize(componentName), [], function () {
         return component;
       });
     }
@@ -176,8 +176,8 @@
     return join(path, "..");
   }
 
-  if (typeof define === "function" && define.amd) {
-    define('crafter', [], function () {
+  if (window.crafterRequire && (typeof window.crafterRequire.define === "function" && window.crafterRequire.define.amd)) {
+    window.crafterRequire.define('crafter', [], function () {
       return crafter;
     });
   } else {

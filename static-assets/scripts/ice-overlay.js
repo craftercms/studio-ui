@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('ice-overlay', ['crafter', 'jquery', 'animator'], function (crafter, $, Animator) {
+crafterRequire.define('ice-overlay', ['crafter', 'jquery', 'animator'], function (crafter, $, Animator) {
     'use strict';
 
-    var studio = crafter.studio;
+    $ = $ ? $ : window.$;   // TODO: need to find out why is jquery not being loaded
 
     function ICEOverlay() {
 

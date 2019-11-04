@@ -3,7 +3,7 @@
 <#assign hostOrigin = authoringServer?replace("/${studioContext}", "") />
 <#assign staticAssets = "${authoringServer}/static-assets"/>
 
-requirejs.config({
+crafterRequire.requirejs.config({
     baseUrl: '${staticAssets}/scripts',
     paths: {
         'libs': '${staticAssets}/libs/',
@@ -15,7 +15,7 @@ requirejs.config({
     }
 });
 
-require(['guest'], function (guest) {
+crafterRequire.require(['guest'], function (guest) {
     guest.init({
         hostOrigin: '${hostOrigin}',
         studioContext: '${studioContext}',

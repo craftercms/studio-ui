@@ -18,8 +18,10 @@
 /**
  * Created by veronicaestrada on 12/21/15.
  */
-define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator', 'noty'], function (crafter, $, $ui, Animator, Communicator, Noty) {
+crafterRequire.define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator', 'noty'], function (crafter, $, $ui, Animator, Communicator, Noty) {
   'use strict';
+
+  $ = $ ? $ : window.$;   // TODO: need to find out why is jquery not being loaded
 
   var Topics = crafter.studio.preview.Topics,
     string = crafter.String;
