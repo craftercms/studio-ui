@@ -17,7 +17,7 @@ var crafterDefine;
       interactiveScript, currentlyAddingScript, mainScript, subPath,
       version = '2.3.6',
       commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/mg,
-      cjsRequireRegExp = /[^.]\s*crafteRequire\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
+      cjsRequireRegExp = /[^.]\s*crafterRequire\s*\(\s*["']([^'"\s]+)["']\s*\)/g,
       jsSuffixRegExp = /\.js$/,
       currDirRegExp = /^\.\//,
       op = Object.prototype,
