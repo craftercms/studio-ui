@@ -104,7 +104,7 @@
     <h3 ng-if="!dialogMode" class="modal-title text-capitalize">{{user.name}}</h3>
   </div>
   <form name="createNameForm" id="user-form" novalidate class="ng-dirty ng-invalid ng-invalid-required">
-    <div class="modal-body clearfix edit-{{dialogMode | lowercase}} admin-dialog">
+    <div class="modal-body clearfix edit-{{dialogMode | lowercase}} admin-dialog user-management-dialog">
       <div class="col-md-12">
         <fieldset ng-disabled="user.externallyManaged">
           <div class="form-group" ng-if="!(dialogMode == 'CREATE')">
