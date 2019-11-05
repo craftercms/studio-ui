@@ -21,13 +21,13 @@ function(id, form, properties, constraints)  {
    	this.form = form;
    	this.properties = properties;
    	this.constraints = constraints;
-   	
+
    	for(var i=0; i<properties.length; i++) {
    		if(properties[i].name == "repoPath") {
  			this.repoPath = properties[i].value;
    		}
-   	} 
-	
+   	}
+
 	return this;
 }
 
@@ -60,7 +60,6 @@ x
 					if(control._renderItems){
 						control._renderItems();
 					}
-                    CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
 
@@ -109,7 +108,7 @@ x
 			createEl.innerHTML = "Create New - " + newElTitle;
 			control.addContainerEl.create.appendChild(createEl);
 
-			var addContainerEl = control.addContainerEl;			
+			var addContainerEl = control.addContainerEl;
 			YAHOO.util.Event.on(createEl, 'click', function() {
 				control.addContainerEl = null;
 				control.containerEl.removeChild(addContainerEl);
@@ -137,7 +136,7 @@ x
 			}
 		}
 
-		var callback = { 
+		var callback = {
 			success: function(fileData) {
 				if (control) {
 					control.deleteItem(key);
@@ -145,18 +144,18 @@ x
 					if(control._renderItems){
 						control._renderItems();
 					}
-					
+
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
 
 			failure: function() {
 				if (control) {
-					control.failure("An error occurred while uploading the file."); 
+					control.failure("An error occurred while uploading the file.");
 				}
 			},
 
-			context: this 
+			context: this
 		};
 
 		CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
