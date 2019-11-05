@@ -23,13 +23,13 @@ function(id, form, properties, constraints)  {
    	this.constraints = constraints;
 
    	for(var i=0; i<properties.length; i++) {
-   		if(properties[i].name == "repoPath") {
+   		if(properties[i].name === "repoPath") {
  			this.repoPath = properties[i].value;
    		}
    	}
 
 	return this;
-}
+};
 
 YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFormDatasource, {
 	itemsAreContentReferences: true,
@@ -46,13 +46,13 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 		var isUploadOverwrite = true;
 
 		for(var i=0; i<this.properties.length; i++) {
-			if(this.properties[i].name == "repoPath") {
+			if(this.properties[i].name === "repoPath") {
 				path = this.properties[i].value;
 
 				path = this.processPathsForMacros(path);
 			}
 		}
-x
+
 		var callback = {
 			success: function(fileData) {
 				if (control) {
@@ -76,7 +76,7 @@ x
 			var addContainerEl = null;
 
 			if(!control.addContainerEl){
-				addContainerEl = document.createElement("div")
+				addContainerEl = document.createElement("div");
 				addContainerEl.create = document.createElement("div");
 				addContainerEl.browse = document.createElement("div");
 
@@ -98,7 +98,7 @@ x
 				newElTitle = '';
 
 			for(var x = 0; x < datasourceDef.length; x++){
-				if (datasourceDef[x].id == this.id){
+				if (datasourceDef[x].id === this.id){
 					newElTitle = datasourceDef[x].title;
 				}
 			}
@@ -108,7 +108,7 @@ x
 			createEl.innerHTML = "Create New - " + newElTitle;
 			control.addContainerEl.create.appendChild(createEl);
 
-			var addContainerEl = control.addContainerEl;
+			addContainerEl = control.addContainerEl;
 			YAHOO.util.Event.on(createEl, 'click', function() {
 				control.addContainerEl = null;
 				control.containerEl.removeChild(addContainerEl);
@@ -129,7 +129,7 @@ x
 		var isUploadOverwrite = true;
 
 		for(var i=0; i<this.properties.length; i++) {
-			if(this.properties[i].name == "repoPath") {
+			if(this.properties[i].name === "repoPath") {
 				path = this.properties[i].value;
 
 				path = this.processPathsForMacros(path);
