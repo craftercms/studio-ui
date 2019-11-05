@@ -725,26 +725,44 @@
   app.service('passwordRequirements', [
     '$rootScope', '$http', 'Constants', '$cookies', '$timeout', '$window', '$translate',
     function ($rootScope, $http, Constants, $cookies, $timeout, $window, $translate) {
-      var me = this,
-        generalRegExpre = passwordRequirementsRegex,
-        generalRegExpreWithoutGroups = generalRegExpre.replace(/\?<(.*?)>/g, ""),
-        captureGroup = generalRegExpre.match(/\(\?<.*?>.*?\)/g),
-        messages = {
-          hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
-          hasLowercase: formatMessage(passwordRequirementMessages.hasLowercase),
-          hasUppercase: formatMessage(passwordRequirementMessages.hasUppercase),
-          hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars),
-          noSpaces: formatMessage(passwordRequirementMessages.noSpaces),
-          minLength: formatMessage(passwordRequirementMessages.minLength),
-          passwordValidation: formatMessage(passwordRequirementMessages.passwordValidation),
-          validPassword: formatMessage(passwordRequirementMessages.validPassword),
-          invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
-        };
+
+      var
+        me = this,
+        generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
+        generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ""),
+        captureGroup = generalRegExp.match(/\(\?<.*?>.*?\)/g);
+
+      const allowedChars = (
+        generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) ||
+        ['', '', '']
+      )[2];
+
+      const min = (
+        (
+          (
+            generalRegExp.match(/\(\?<minLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[0];
+
+      const messages = {
+        hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
+        hasLowercase: formatMessage(passwordRequirementMessages.hasLowercase),
+        hasUppercase: formatMessage(passwordRequirementMessages.hasUppercase),
+        hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars, { chars: (allowedChars ? `(${allowedChars})` : '') }),
+        noSpaces: formatMessage(passwordRequirementMessages.noSpaces),
+        minLength: formatMessage(passwordRequirementMessages.minLength, { min }),
+        passwordValidation: formatMessage(passwordRequirementMessages.passwordValidation),
+        validPassword: formatMessage(passwordRequirementMessages.validPassword),
+        invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
+      };
 
       this.init = function (scope, elt) {
-        if (generalRegExpre) {
+        if (generalRegExp) {
           try {
-            let isRegExpValid = new RegExp(generalRegExpre);
+            let isRegExpValid = new RegExp(generalRegExp);
             if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
               this.runValidation(scope, elt, 'groupsSupported');
             }else{
@@ -752,7 +770,7 @@
             }
           } catch (error) {
             try {
-              let isRegExpValid = new RegExp(generalRegExpreWithoutGroups);
+              let isRegExpValid = new RegExp(generalRegExpWithoutGroups);
               if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
                 this.runValidation(scope, elt, 'groupsNotSupported');
               }else{
@@ -768,7 +786,7 @@
       this.creatingPassValHTML = function (content, templateType) {
         var html = '<div class="password-popover">';
         var validPass = false;
-        var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpreWithoutGroups) : false;
+        var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
         if (templateType !== "noGroups") {
           captureGroup.forEach(captureGroup => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
@@ -817,9 +835,9 @@
             $(this).popover({
               title: messages.passwordValidation,
               content: creatingPassValHTML.template,
-              placement: "top",
+              placement: 'top',
               html: true,
-              trigger: "focus"
+              trigger: 'manual'
             });
             $(this).popover('show');
             scope.validPass = creatingPassValHTML.validPass;
@@ -1411,8 +1429,7 @@
         }
       }).then((data) => {
         aceEditor.setValue(data.data.content || defaultValue);
-        globalConfig.isModified = false;
-        enableUI(true, true);
+        enableUI(true);
       });
 
       // Differ the loading of the sample config file to the "background"
@@ -1438,7 +1455,7 @@
           'path': '/configuration/studio-config-override.yaml',
           'content': value
         }).then(() => {
-          enableUI(true, false);
+          enableUI(true);
           defaultValue = value;
           $element.notify(formatMessage(globalConfigMessages.successfulSave), {
             position: 'top left',
