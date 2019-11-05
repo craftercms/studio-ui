@@ -195,8 +195,11 @@
                 },
 
                 ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, embeddedId) {
-                  var componentType = path? 'shared-content' : 'embedded-content';
+                  var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
+                    CStudioAuthoringContext.previewCurrentPath);
+                  var componentType = (path && path !== previewPath ) ? 'shared-content' : 'embedded-content';
                   ComponentsPanel.validate(compPath, modelP['content-type'], zones, componentType).then((response) => {
+                    console.log(response);
                     if (response.supported) {
                       if (isNew) {
                         function isNewEvent(value, modelPath) {
@@ -223,7 +226,7 @@
                           //If no path provided the dnd item is a embedded content
                           if (!path) {
                             var selectorId = Object.keys(zones)[0];
-                            ComponentsPanel.onDropEmbedded(compPath, type, selectorId, response.ds);
+                            ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, response.ds);
                           } else {
                             var subscribeCallback = function (_message) {
                               switch (_message.type) {
@@ -298,15 +301,15 @@
 
                 validate: function(componentPath, pageContentType, zones, componentType) {
                   var zone = Object.keys(zones)[0];
+                  var key = `${zone}-${componentType}`;
                   return new Promise((resolve, reject) => {
-                    if(ComponentsPanel.cacheValidation[zone]) {
-                      resolve(ComponentsPanel.cacheValidation[zone]);
+                    if(ComponentsPanel.cacheValidation[key]) {
+                      resolve(ComponentsPanel.cacheValidation[key]);
                     }else {
-                      ComponentsPanel.cacheValidation[zone] = {supported: false, ds: null};
+                      ComponentsPanel.cacheValidation[key] = {supported: false, ds: null};
                     }
                     CStudioForms.Util.loadFormDefinition(componentPath || pageContentType, { success: function(response){
                         var selector;
-                        var _response = { supported: false, ds: null};
                         response.sections.forEach(section => {
                           var _selector = section.fields.find(item => item.id === zone);
                           if (_selector) selector = _selector;
@@ -314,15 +317,15 @@
                         var selectorDS = selector.properties.find(item => item.name === "itemManager");
                         selectorDS.value.split(',').forEach(ds => {
                           var type = response.datasources.find(formDS => formDS.id === ds).type;
-                          if(type === componentType) ComponentsPanel.cacheValidation[zone] = {supported: true, ds: ds};
+                          if(type === componentType) ComponentsPanel.cacheValidation[key] = {supported: true, ds: ds};
                           return true;
                         });
-                        resolve(ComponentsPanel.cacheValidation[zone]);
+                        resolve(ComponentsPanel.cacheValidation[key]);
                       }});
                   });
                 },
 
-                onDropEmbedded: function(compPath, type, selectorId, ds){
+                onDropEmbedded: function(previewPath, compPath, type, selectorId, ds){
                   var subscribeCallback = function (_message) {
                     switch (_message.type) {
                       case "FORM_CANCEL": {
@@ -346,8 +349,7 @@
                     }
                   };
                   amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-                  var parentPath = compPath || CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
-                    CStudioAuthoringContext.previewCurrentPath);
+                  var parentPath = compPath || previewPath;
 
                   CStudioAuthoring.Service.lookupContentItem(
                     CStudioAuthoringContext.site,
