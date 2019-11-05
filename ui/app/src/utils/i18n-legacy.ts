@@ -401,6 +401,33 @@ const globalConfigMessages = defineMessages( {
   }
 });
 
+const publishingMessages = defineMessages({
+  idle: {
+    id: 'publishing.idle',
+    defaultMessage: 'Idle'
+  },
+  busy: {
+    id: 'publishing.busy',
+    defaultMessage: 'Busy'
+  },
+  ready: {
+    id: 'publishing.ready',
+    defaultMessage: 'Ready'
+  },
+  stopped: {
+    id: 'publishing.stopped',
+    defaultMessage: 'Stopped'
+  },
+  started: {
+    id: 'publishing.started',
+    defaultMessage: 'Started'
+  },
+  queued: {
+    id: 'publishing.queued',
+    defaultMessage: 'Queued'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -416,5 +443,6 @@ export default {
   codeEditorMessages,
   targetingDialog,
   words,
-  globalConfigMessages
+  globalConfigMessages,
+  publishingMessages,
 };

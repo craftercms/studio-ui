@@ -4,10 +4,10 @@
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
 
 (function( factory ) {
-	if ( typeof define === "function" && define.amd ) {
+	if ( typeof crafterDefine === "function" && crafterDefine.amd ) {
 
 		// AMD. Register as an anonymous module.
-		define([ "jquery" ], factory );
+    crafterDefine([ "jquery" ], factory );
 	} else {
 
 		// Browser globals

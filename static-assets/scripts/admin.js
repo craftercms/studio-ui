@@ -25,7 +25,8 @@
         repoMessages = i18n.messages.reposAdminMessages,
         passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
         usersAdminMessages = i18n.messages.usersAdminMessages,
-        groupsAdminMessages = i18n.messages.groupsAdminMessages;
+        groupsAdminMessages = i18n.messages.groupsAdminMessages,
+        publishingMessages = i18n.messages.publishingMessages;
 
   app.service('adminService', [
     '$http', 'Constants', '$cookies', '$timeout', '$window',
@@ -936,7 +937,7 @@
             }
             publish.iconColor = currentIconColor;
             publish.message = data.message;
-            publish.statusText = $translate.instant(`admin.publishing.${data.status.toUpperCase()}`);
+            publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
           })
           .error(function (err) {
           });
@@ -1146,7 +1147,7 @@
       $scope.passwordRequirements = function() {
         passwordRequirements.init($scope, 'password');
       }
-      
+
       this.init();
 
       //table setup

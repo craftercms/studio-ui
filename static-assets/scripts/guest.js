@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('guest', [
+crafterDefine('guest', [
   'crafter', 'jquery', 'communicator', 'ice-overlay',
 ], function (crafter, $, Communicator, ICEOverlay) {
   'use strict';
@@ -62,7 +62,7 @@ define('guest', [
     this.test = config.test
 
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {
-      require(['dnd-controller'], function (DnDController) {
+      crafterRequire(['dnd-controller'], function (DnDController) {
 
         (typeof dndController === 'undefined') && (dndController = new DnDController({
           communicator: communicator
@@ -88,7 +88,7 @@ define('guest', [
     });
 
     communicator.on(Topics.DND_COMPONENTS_PANEL_OFF, function (message) {
-      require(['dnd-controller'], function (DnDController) {
+      crafterRequire(['dnd-controller'], function (DnDController) {
 
         (typeof dndController === 'undefined') && (dndController = new DnDController({
           communicator: communicator
@@ -99,7 +99,7 @@ define('guest', [
     });
 
     communicator.on(Topics.DND_CREATE_BROWSE_COMP, function (message) {
-      require(['pointer-controller'], function (pointerController) {
+      crafterRequire(['pointer-controller'], function (pointerController) {
 
         (typeof pointerControllerVar === 'undefined') && (pointerControllerVar = new pointerController({
           communicator: communicator
