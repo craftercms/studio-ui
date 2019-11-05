@@ -16,13 +16,21 @@
  */
 
 import React from 'react';
-import CrafterCMSNextBridge from './CrafterCMSNextBridge';
+import CreateSiteDialog from './CreateSiteDialog';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
+import { IntlProvider } from "react-intl";
+import { theme } from '../styles/theme';
+
+import "../styles/aux.scss";
+import PublishingQueue from "./PublishingQueue";
 
 function App() {
   return (
-    <CrafterCMSNextBridge>
-      Hello World!
-    </CrafterCMSNextBridge>
+    <IntlProvider locale="en">
+      <ThemeProvider theme={theme}>
+        <CreateSiteDialog onClose={() => {}}/>
+      </ThemeProvider>
+    </IntlProvider>
   );
 }
 

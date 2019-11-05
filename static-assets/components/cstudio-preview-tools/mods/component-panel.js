@@ -194,12 +194,11 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, embeddedId) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone) {
                   var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
                     CStudioAuthoringContext.previewCurrentPath);
                   var componentType = (path && path !== previewPath ) ? 'shared-content' : 'embedded-content';
-                  ComponentsPanel.validate(compPath, modelP['content-type'], zones, componentType).then((response) => {
-                    console.log(response);
+                  ComponentsPanel.validate(compPath, modelP['content-type'], destinationZone, componentType).then((response) => {
                     if (response.supported) {
                       if (isNew) {
                         function isNewEvent(value, modelPath) {
@@ -278,6 +277,7 @@
                     } else {
                       var CMgs = CStudioAuthoring.Messages;
                       var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                      if($(document.body).find('#componentsNotSupported-dialog_c').length) return;
                       CStudioAuthoring.Operations.showSimpleDialog(
                         "componentsNotSupported-dialog",
                         CStudioAuthoring.Operations.simpleDialogTypeINFO,
@@ -286,8 +286,7 @@
                         [{
                           text: "OK",
                           handler: function () {
-                            this.hide();
-                            window.close();
+                            this.destroy();
                             amplify.publish(cstopic('REFRESH_PREVIEW'));
                           },
                           isDefault: false
@@ -299,8 +298,7 @@
                   });
                 },
 
-                validate: function(componentPath, pageContentType, zones, componentType) {
-                  var zone = Object.keys(zones)[0];
+                validate: function(componentPath, pageContentType, zone, componentType) {
                   var key = `${zone}-${componentType}`;
                   return new Promise((resolve, reject) => {
                     if(ComponentsPanel.cacheValidation[key]) {
@@ -501,7 +499,6 @@
                 },
 
                 saveModel: function (pagePath, formDefinition, contentMap, start, complete, isNew, conComp, zones, compPath, model) {
-
                     if (start) {
                         amplify.publish('/operation/started');
                     }

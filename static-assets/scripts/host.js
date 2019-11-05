@@ -349,7 +349,7 @@
       message.compPath,
       message.conComp,
       message.model,
-      message.embeddedId
+      message.destinationZone
     );
   });
 

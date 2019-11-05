@@ -385,14 +385,13 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
   }
 
   function componentDropped($dropZone, $component) {
-
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
-    var embeddedId = $dropZone.attr('data-studio-embedded-item-id');
     var trackingZone = $dropZone.attr('data-studio-zone-tracking');
     var dropName = $dropZone.attr('data-studio-components-target');
     var index = 0, currentTag = "", zone;
+    var destinationZone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target');
 
     var me = this,
       isNew = $component.hasClass('studio-component-drag-target'),
@@ -455,7 +454,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         trackingNumber: tracking,
         compPath: compPath,
         conComp: (conRepeat > 1) ? true : false,
-        embeddedId: embeddedId || null
+        destinationZone: destinationZone
       });
 
     });
