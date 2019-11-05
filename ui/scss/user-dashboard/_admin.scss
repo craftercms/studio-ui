@@ -242,6 +242,10 @@ table {
   }
 }
 
+.user-management-dialog .popover {
+  max-width: 500px;
+}
+
 .password-popover--list{
   list-style-type: none;
   padding-left: 0;

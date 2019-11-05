@@ -95,27 +95,35 @@ const usersAdminMessages = defineMessages({
 const passwordRequirementMessages = defineMessages({
   hasNumbers: {
     id: 'passwordRequirement.hasNumbers',
-    defaultMessage: 'Must contain Numbers'
+    defaultMessage: 'Must contain at least one number'
   },
   hasLowercase: {
     id: 'passwordRequirement.hasLowercase',
-    defaultMessage: 'Must contain Lowercase'
+    defaultMessage: 'Must contain at least one lowercase letter'
   },
   hasUppercase: {
     id: 'passwordRequirement.hasUppercase',
-    defaultMessage: 'Must contain Uppercase'
+    defaultMessage: 'Must contain at least one uppercase letter'
   },
   hasSpecialChars: {
     id: 'passwordRequirement.hasSpecialChars',
-    defaultMessage: 'Must contain Special Chars'
+    defaultMessage: 'Must contain at least one special character {chars}'
   },
   noSpaces: {
     id: 'passwordRequirement.noSpaces',
-    defaultMessage: 'Blank spaces aren\'t allowed'
+    defaultMessage: 'Must not contain whitespaces'
   },
   minLength: {
     id: 'passwordRequirement.minLength',
-    defaultMessage: 'Min Length'
+    defaultMessage: 'Length must be at least {min} characters'
+  },
+  maxLength: {
+    id: 'passwordRequirement.maxLength',
+    defaultMessage: 'Length must not exceed {max} characters'
+  },
+  minMaxLength: {
+    id: 'passwordRequirement.minMaxLength',
+    defaultMessage: 'Length must be between {min} and {max} characters'
   },
   passwordValidation: {
     id: 'passwordRequirement.passwordValidation',
@@ -127,7 +135,7 @@ const passwordRequirementMessages = defineMessages({
   },
   invalidPassword: {
     id: 'passwordRequirement.invalidPassword',
-    defaultMessage: 'Requirements not met'
+    defaultMessage: 'Requirements are not met'
   },
   fulfillAllReqErrorMessage: {
     id: 'passwordRequirement.fulfillAllReqErrorMessage',
