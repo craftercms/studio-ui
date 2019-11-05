@@ -17,7 +17,7 @@
 
 (function (window) {
 
-  var define = (typeof window.define === "function" && window.define.amd) ? window.define : function (a, b, f) {
+  var define = (typeof window.crafterDefine === "function" && window.crafterDefine.amd) ? window.crafterDefine : function (a, b, f) {
     f(window.crafter, window.amplify);
   };
 

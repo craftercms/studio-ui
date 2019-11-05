@@ -18,7 +18,7 @@
 /**
  * Created by veronicaestrada on 12/21/15.
  */
-define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator', 'noty'], function (crafter, $, $ui, Animator, Communicator, Noty) {
+crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator'], function (crafter, $, $ui, Animator, Communicator) {
   'use strict';
 
   var Topics = crafter.studio.preview.Topics,
