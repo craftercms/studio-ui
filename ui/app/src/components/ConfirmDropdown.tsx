@@ -25,7 +25,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import Typography from "@material-ui/core/Typography";
 
-const ColorButton = withStyles(() => ({
+export const ColorButton = withStyles(() => ({
   root: {
     color: '#FF9500',
     paddingRight: '10px',
