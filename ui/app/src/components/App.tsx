@@ -20,8 +20,7 @@ import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 
 function App() {
   return (
-    <CrafterCMSNextBridge
-      idge>
+    <CrafterCMSNextBridge>
       Hello World!
     </CrafterCMSNextBridge>
   );
