@@ -320,6 +320,22 @@ const words = defineMessages({
   save: {
     id: 'words.save',
     defaultMessage: 'Save'
+  },
+  reset: {
+    id: 'words.reset',
+    defaultMessage: 'Reset'
+  },
+  close: {
+    id: 'words.close',
+    defaultMessage: 'Close'
+  },
+  yes: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  no: {
+    id: 'words.no',
+    defaultMessage: 'No'
   }
 });
 
@@ -331,6 +347,57 @@ const codeEditorMessages = defineMessages( {
   stay: {
     id: 'codeEditor.stay',
     defaultMessage: 'No, stay'
+  }
+});
+
+const globalConfigMessages = defineMessages( {
+  title: {
+    id: 'globalConfig.title',
+    defaultMessage: 'Global Configuration'
+  },
+  viewSample: {
+    id: 'globalConfig.viewSample',
+    defaultMessage: 'View Sample'
+  },
+  sampleFile: {
+    id: 'globalConfig.sampleFile',
+    defaultMessage: 'Sample File'
+  },
+  useSampleContent: {
+    id: 'globalConfig.useSampleContent',
+    defaultMessage: 'Use Sample Content'
+  },
+  replaceContent: {
+    id: 'globalConfig.replaceContent',
+    defaultMessage: 'Replace current value on background editor?'
+  },
+  appendContent: {
+    id: 'globalConfig.appendContent',
+    defaultMessage: 'Append sample on to background editor?'
+  },
+  confirmSave: {
+    id: 'globalConfig.confirmSave',
+    defaultMessage: 'Confirm Save?'
+  },
+  confirmReset: {
+    id: 'globalConfig.confirmReset',
+    defaultMessage: 'Confirm Reset?'
+  },
+  successfulSave: {
+    id: 'globalConfig.successfulSave',
+    defaultMessage: 'Configuration saved successfully.'
+  },
+  failedSave: {
+    id: 'globalConfig.failedSave',
+    defaultMessage: 'Save failed. Please retry momentarily.'
+  },
+  unSavedConfirmation: {
+    id: 'globalConfig.unsavedConfirmation',
+    defaultMessage: 'You have unsaved changes, do you want to leave?'
+  },
+  unSavedConfirmationTitle: {
+    id: 'globalConfig.unsavedConfirmationTitle',
+    defaultMessage: 'Unsaved changes'
   }
 });
 
@@ -348,5 +415,6 @@ export default {
   contentTypesMessages,
   codeEditorMessages,
   targetingDialog,
-  words
+  words,
+  globalConfigMessages
 };

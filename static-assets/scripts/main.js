@@ -33,7 +33,9 @@
 
   const i18n = CrafterCMSNext.i18n,
         formatMessage = i18n.intl.formatMessage,
-        passwordRequirementMessages = i18n.messages.passwordRequirementMessages;
+        passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
+        globalConfigMessages = i18n.messages.globalConfigMessages,
+        words = i18n.messages.words;
 
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
@@ -1149,12 +1151,7 @@
 
     function ($scope, $state, $location, sitesService) {
 
-
       $scope.entities;
-      $scope.changeTab = function(tab, route) {
-        $scope.view_tab = tab;
-        $state.go(route ? route : ' ');
-      }
 
       sitesService.getGlobalMenu()
         .success(function (data) {
@@ -1349,15 +1346,49 @@
   ]);
 
   app.controller('GlobalConfigCtrl', [
-    '$scope', '$element', '$http', '$timeout', '$uibModal', '$rootScope',
-    function ($scope, $element, $http, $timeout, $uibModal, $rootScope) {
+    '$rootScope', '$scope', '$element', '$http', '$timeout', '$uibModal', '$state',
+    function ($rootScope, $scope, $element, $http, $timeout, $uibModal, $state) {
 
       $scope.globalConfig = {};
       let globalConfig = $scope.globalConfig;
+      $scope.messages = {
+        title: formatMessage(globalConfigMessages.title),
+        viewSample: formatMessage(globalConfigMessages.viewSample),
+        sampleFile: formatMessage(globalConfigMessages.sampleFile),
+        useSampleContent: formatMessage(globalConfigMessages.useSampleContent),
+        replaceContent: formatMessage(globalConfigMessages.replaceContent),
+        appendContent: formatMessage(globalConfigMessages.appendContent),
+        confirmSave: formatMessage(globalConfigMessages.confirmSave),
+        confirmReset: formatMessage(globalConfigMessages.confirmReset),
+        unSavedConfirmation: formatMessage(globalConfigMessages.unSavedConfirmation),
+        unSavedConfirmationTitle: formatMessage(globalConfigMessages.unSavedConfirmationTitle),
+        cancel: formatMessage(words.cancel),
+        reset: formatMessage(words.reset),
+        close: formatMessage(words.close),
+        yes: formatMessage(words.yes),
+        no: formatMessage(words.no),
+        save: formatMessage(words.save)
+      };
 
       $scope.uiEnabled = false;
       let defaultValue = '';
       let sampleValue = '';
+
+      $scope.showModal = function(template, size, verticalCentered, styleClass){
+        var modalInstance = $uibModal.open({
+          templateUrl: template,
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          backdrop: 'static',
+          keyboard: true,
+          scope: $scope,
+          size: size ? size : ''
+        });
+
+        return modalInstance;
+      };
+      $scope.hideModal = function() {
+        $scope.confirmationModal.close();
+      };
 
       const aceEditor = ace.edit('globalConfigAceEditor');
 
@@ -1409,13 +1440,13 @@
         }).then(() => {
           enableUI(true, false);
           defaultValue = value;
-          $element.notify('Config saved successfully.', {
+          $element.notify(formatMessage(globalConfigMessages.successfulSave), {
             position: 'top left',
             className: 'success'
           });
           globalConfig.isModified = false;
         }).catch(() => {
-          $element.notify('Save failed. Please retry momentarily.', {
+          $element.notify(formatMessage(globalConfigMessages.failedSave), {
             position: 'top left',
             className: 'error'
           });
@@ -1424,6 +1455,7 @@
 
       $scope.reset = function () {
         aceEditor.setValue(defaultValue);
+        globalConfig.isModified = false;
       };
 
       $scope.sample = function () {
@@ -1432,6 +1464,7 @@
           ariaDescribedBy: 'modal-body',
           templateUrl: 'sampleModal.html',
           controller: 'SampleGlobalConfigCtrl',
+          scope: $scope,
           controllerAs: '$ctrl',
           size: 'lg',
           resolve: { sample: () => sampleValue }
@@ -1453,7 +1486,17 @@
 
       $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
         if (globalConfig.isModified) {
-          event.preventDefault();   //TODO: show confirmation dialog
+          event.preventDefault();
+
+          $scope.confirmationAction = function() {
+            globalConfig.isModified = false;
+            $state.go(toState.name);
+          };
+
+          $scope.confirmationText = formatMessage(globalConfigMessages.unSavedConfirmation);
+          $scope.confirmationTitle = formatMessage(globalConfigMessages.unSavedConfirmationTitle);
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
+
         }
       });
 
