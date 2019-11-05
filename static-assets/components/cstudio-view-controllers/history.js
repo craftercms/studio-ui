@@ -108,7 +108,7 @@
                     checkboxEl,
                     $revertDropdown,
                     // if more than 5 versions, last 5 will have dropup
-                    dropdownClass = (versions.length > 5) && (i + 5 >= versions.length ) ? 'dropup' : 'dropdown';
+                    dropdownClass = (versions.length > 5) && i > 1 && (i + 5 >= versions.length ) ? 'dropup' : 'dropdown';
 
                   col2El = document.createElement('div');
                   Dom.addClass(col2El, "c8");
@@ -181,7 +181,7 @@
 
                   if(_this.isWrite){
                     $revertDropdown = $(
-                      `<div class="${dropdownClass} inline-block relative">
+                      `<div class="${dropdownClass} inline-block relative confirmation-dropdown">
                         <span id="actionRevert${version.versionNumber}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="action fa fa-reply"></span>
                         <ul class="dropdown-menu pull-right" aria-labelledby="actionRevert${version.versionNumber}">
                           <li><a class="cancel" href="#" onclick="return false;">${formatMessage(words.cancel)}</a></li>
@@ -207,7 +207,7 @@
                     if(_this.isWrite) {
                       $revertDropdown.find('.confirm').on('click', function(e) {
                         e.preventDefault();
-                        const $dropdown = $(this).closest('.dropdown');
+                        const $dropdown = $(this).closest('.confirmation-dropdown');
 
                         CStudioAuthoring.Service.revertContentItem(
                           CStudioAuthoringContext.site,
