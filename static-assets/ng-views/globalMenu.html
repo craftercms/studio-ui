@@ -19,9 +19,9 @@
     <div class="row mt30">
         <div class="col-sm-3">
             <ul class="nav nav-tabs nav-stacked nav-pills" role="tablist">
-                <li ng-repeat="entity in entities" ng-class="{'active': view_tab == entity.tabName}">
-                    <a class="btn-lg" ng-click="changeTab(entity.tabName, entity.id)" href=""><span class="nav-icon fa {{entity.icon}}"></span> {{entity.label}}</a>
-                </li>
+              <li ng-repeat="entity in entities" ui-sref-active="active">
+                <a class="btn-lg" ui-sref={{entity.id}} href=""><span class="nav-icon fa {{entity.icon}}"></span> {{entity.label}}</a>
+              </li>
             </ul>
         </div>
         <div class="col-sm-9">

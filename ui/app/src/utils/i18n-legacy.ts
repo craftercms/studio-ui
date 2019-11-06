@@ -95,27 +95,35 @@ const usersAdminMessages = defineMessages({
 const passwordRequirementMessages = defineMessages({
   hasNumbers: {
     id: 'passwordRequirement.hasNumbers',
-    defaultMessage: 'Must contain Numbers'
+    defaultMessage: 'Must contain at least one number'
   },
   hasLowercase: {
     id: 'passwordRequirement.hasLowercase',
-    defaultMessage: 'Must contain Lowercase'
+    defaultMessage: 'Must contain at least one lowercase letter'
   },
   hasUppercase: {
     id: 'passwordRequirement.hasUppercase',
-    defaultMessage: 'Must contain Uppercase'
+    defaultMessage: 'Must contain at least one uppercase letter'
   },
   hasSpecialChars: {
     id: 'passwordRequirement.hasSpecialChars',
-    defaultMessage: 'Must contain Special Chars'
+    defaultMessage: 'Must contain at least one special character {chars}'
   },
   noSpaces: {
     id: 'passwordRequirement.noSpaces',
-    defaultMessage: 'Blank spaces aren\'t allowed'
+    defaultMessage: 'Must not contain whitespaces'
   },
   minLength: {
     id: 'passwordRequirement.minLength',
-    defaultMessage: 'Min Length'
+    defaultMessage: 'Length must be at least {min} characters'
+  },
+  maxLength: {
+    id: 'passwordRequirement.maxLength',
+    defaultMessage: 'Length must not exceed {max} characters'
+  },
+  minMaxLength: {
+    id: 'passwordRequirement.minMaxLength',
+    defaultMessage: 'Length must be between {min} and {max} characters'
   },
   passwordValidation: {
     id: 'passwordRequirement.passwordValidation',
@@ -127,7 +135,7 @@ const passwordRequirementMessages = defineMessages({
   },
   invalidPassword: {
     id: 'passwordRequirement.invalidPassword',
-    defaultMessage: 'Requirements not met'
+    defaultMessage: 'Requirements are not met'
   },
   fulfillAllReqErrorMessage: {
     id: 'passwordRequirement.fulfillAllReqErrorMessage',
@@ -320,6 +328,22 @@ const words = defineMessages({
   save: {
     id: 'words.save',
     defaultMessage: 'Save'
+  },
+  reset: {
+    id: 'words.reset',
+    defaultMessage: 'Reset'
+  },
+  close: {
+    id: 'words.close',
+    defaultMessage: 'Close'
+  },
+  yes: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  no: {
+    id: 'words.no',
+    defaultMessage: 'No'
   }
 });
 
@@ -381,6 +405,57 @@ const codeEditorMessages = defineMessages( {
   }
 });
 
+const globalConfigMessages = defineMessages( {
+  title: {
+    id: 'globalConfig.title',
+    defaultMessage: 'Global Configuration'
+  },
+  viewSample: {
+    id: 'globalConfig.viewSample',
+    defaultMessage: 'View Sample'
+  },
+  sampleFile: {
+    id: 'globalConfig.sampleFile',
+    defaultMessage: 'Sample File'
+  },
+  useSampleContent: {
+    id: 'globalConfig.useSampleContent',
+    defaultMessage: 'Use Sample Content'
+  },
+  replaceContent: {
+    id: 'globalConfig.replaceContent',
+    defaultMessage: 'Replace current value on background editor?'
+  },
+  appendContent: {
+    id: 'globalConfig.appendContent',
+    defaultMessage: 'Append sample on to background editor?'
+  },
+  confirmSave: {
+    id: 'globalConfig.confirmSave',
+    defaultMessage: 'Confirm Save?'
+  },
+  confirmReset: {
+    id: 'globalConfig.confirmReset',
+    defaultMessage: 'Confirm Reset?'
+  },
+  successfulSave: {
+    id: 'globalConfig.successfulSave',
+    defaultMessage: 'Configuration saved successfully.'
+  },
+  failedSave: {
+    id: 'globalConfig.failedSave',
+    defaultMessage: 'Save failed. Please retry momentarily.'
+  },
+  unSavedConfirmation: {
+    id: 'globalConfig.unsavedConfirmation',
+    defaultMessage: 'You have unsaved changes, do you want to leave?'
+  },
+  unSavedConfirmationTitle: {
+    id: 'globalConfig.unsavedConfirmationTitle',
+    defaultMessage: 'Unsaved changes'
+  }
+});
+
 const publishingMessages = defineMessages({
   idle: {
     id: 'publishing.idle',
@@ -422,7 +497,8 @@ export default {
   contentTypesMessages,
   codeEditorMessages,
   targetingDialog,
-  publishingMessages,
   words,
+  globalConfigMessages,
+  publishingMessages,
   taxonomySelectorMessages
 };

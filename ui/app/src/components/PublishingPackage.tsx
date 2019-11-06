@@ -199,6 +199,7 @@ export default function PublishingPackage(props: PublishingPackageProps) {
     fetchPackage(siteId, packageId)
       .subscribe(
         ({response}) => {
+          setLoading(false);
           setFilesPerPackage({...filesPerPackage, [packageId]: response.package.items});
         },
         ({response}) => {
@@ -223,7 +224,6 @@ export default function PublishingPackage(props: PublishingPackageProps) {
   }
 
   const checked = selected[id] ? selected[id] : false;
-
   return (
     <div className={clsx(classes.package, pending[id] && classes.packageLoading)}>
       <section className="name">

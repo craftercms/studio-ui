@@ -522,6 +522,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     unableLoad: "El sistema no pudo cargar ",
     failure: "Fallo.",
     loadFormDefError: "Error al cargar la definición del formulario.",
+    componentsNotSupported: "La zona de colocación no admite este tipo de componentes",
     loadModelError: "Error al cargar el modelo.",
     controllerError: "No se encontró ningún controlador.",
     notExist:" no existe.",
