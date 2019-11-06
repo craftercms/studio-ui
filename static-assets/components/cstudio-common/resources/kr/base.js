@@ -496,6 +496,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     unableLoad: "시스템을로드 할 수 없습니다 ",
     failure: "실패",
     loadFormDefError: "양식 정의를로드하지 못했습니다.",
+    componentsNotSupported: "드롭 존은이 유형의 컴포넌트를 지원하지 않습니다",
     loadModelError: "모델을로드하지 못했습니다.",
     controllerError: "컨트롤러가 없습니다.",
     notExist:" 존재하지 않는다.",

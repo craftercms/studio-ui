@@ -43,6 +43,7 @@ CStudioForms.Controls.NodeSelector = CStudioForms.Controls.NodeSelector ||
         this.supportedPostFixes = ["_o"];
         amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
         amplify.subscribe("UPDATE_NODE_SELECTOR", this, this.onIceUpdate);
+        amplify.subscribe("UPDATE_NODE_SELECTOR_NEW", this, this.insertEmbeddedItem);
 
         return this;
     }
@@ -449,6 +450,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         }
     },
 
+    insertEmbeddedItem: function(data){
+      if(this.id === data.selectorId) {
+        this.insertItem(data.key, data.value, null, null, data.ds);
+      }
+    },
+
     insertItem: function(key, value, fileType, fileSize, datasource) {
         var successful = true;
         var message = "";
@@ -504,7 +511,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             }
 
             item.datasource = datasource;
-            this.items[this.items.length] = item
+            this.items[this.items.length] = item;
 
             if(this.form.datasourceMap[datasource].itemsAreContentReferences) {
                 if(key.indexOf('.xml') != -1) {

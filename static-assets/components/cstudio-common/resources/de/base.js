@@ -537,6 +537,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     unableLoad: "Fehler beim Laden ",
     failure: "Fehler.",
     loadFormDefError: "Fehler beim Laden der Formular Definition.",
+    componentsNotSupported: "Die Drop-Zone unterstützt diese Art von Komponenten nicht",
     loadModelError: "Fehler beim Laden des Models.",
     controllerError: "Kein Controller gefunden",
     notExist:" existiert nicht.",
