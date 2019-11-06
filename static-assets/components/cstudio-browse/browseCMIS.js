@@ -160,7 +160,7 @@
                     $resultsContainer.empty();
                     $resultsActions.empty();
                 }
-            
+
                 CStudioBrowseCMIS.getContent("browse", {
                     success: function(response) {
                         var subFolders = false;
@@ -282,6 +282,24 @@
                 }
             }
             CStudioAuthoring.Service.contentCloneCMIS(paramsJson, callbackContent);
+
+            const dialogContent = `<div class="loading-bar">
+                                     <div class="loading-bar-inner" style="height: 3px; width: 100%; background-color: #2275d7;"/>
+                                   </div>
+                                   Cloning CMIS Asset
+                                  `;
+
+            CStudioAuthoring.Operations.showSimpleDialog(
+              "cloningCMIS",
+              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+              "CMIS",
+              dialogContent,
+              [],
+              '',
+              'studioDialog',
+              null,
+              100104
+            );
         });
 
         $('.cstudio-wcm-result .results').delegate( ".magnify-icon", "click", function() {
@@ -487,10 +505,10 @@
             failure: function(response){
                 var message = (CMgs.format(browseLangBundle, "" + response.status + ""));
                 var error = JSON.parse(response.responseText)
-                
+
                 message += "</br></br><div id='errorCode' style='display: none; padding-left: 26px; width: calc(100% - 26px);'>" + error.message + "</div>";
 
-                message += "<div style='margin-left: 26px;'><a style='color: #4F81A0;' href='#' data-open='false' class='show-more-toggle'>Show More" + 
+                message += "<div style='margin-left: 26px;'><a style='color: #4F81A0;' href='#' data-open='false' class='show-more-toggle'>Show More" +
                 "<i class='fa fa-chevron-right' aria-hidden='true' style='font-size: 10px;margin-left: 5px;'></i></span></div>";
 
                 CStudioAuthoring.Operations.showSimpleDialog(
