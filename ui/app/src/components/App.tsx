@@ -16,18 +16,13 @@
  */
 
 import React from 'react';
-import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import { IntlProvider } from "react-intl";
-import { theme } from '../styles/theme';
-import PublishingQueue from "./PublishingQueue";
+import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 
 function App() {
   return (
-    <IntlProvider locale="en">
-      <ThemeProvider theme={theme}>
-        <PublishingQueue siteId={'editorial'}/>
-      </ThemeProvider>
-    </IntlProvider>
+    <CrafterCMSNextBridge>
+      Hello World!
+    </CrafterCMSNextBridge>
   );
 }
 
