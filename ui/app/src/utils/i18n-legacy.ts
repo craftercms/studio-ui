@@ -323,6 +323,49 @@ const words = defineMessages({
   }
 });
 
+const taxonomySelectorMessages = defineMessages({
+  label: {
+    id: 'taxonomySelector.label',
+    defaultMessage: 'Taxonomy Selector'
+  },
+  unableLoad: {
+    id: 'taxonomySelector.unableLoad',
+    defaultMessage: 'The system was unable to load {file}.'
+  },
+  required: {
+    id: 'taxonomySelector.required',
+    defaultMessage: 'Required'
+  },
+  componentPath: {
+    id: 'taxonomySelector.componentPath',
+    defaultMessage: 'Component Path'
+  },
+  dataType: {
+    id: 'taxonomySelector.dataType',
+    defaultMessage: 'Data Type'
+  },
+  string: {
+    id: 'taxonomySelector.string',
+    defaultMessage: 'String'
+  },
+  integer: {
+    id: 'taxonomySelector.integer',
+    defaultMessage: 'Integer'
+  },
+  float: {
+    id: 'taxonomySelector.float',
+    defaultMessage: 'Float'
+  },
+  date: {
+    id: 'taxonomySelector.date',
+    defaultMessage: 'Date'
+  },
+  html: {
+    id: 'taxonomySelector.html',
+    defaultMessage: 'Data Type'
+  }
+});
+
 const codeEditorMessages = defineMessages( {
   confirm: {
     id: 'codeEditor.confirm',
@@ -376,5 +419,6 @@ export default {
   codeEditorMessages,
   targetingDialog,
   publishingMessages,
-  words
+  words,
+  taxonomySelectorMessages
 };
