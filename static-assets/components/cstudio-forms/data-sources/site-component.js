@@ -24,7 +24,7 @@ function(id, form, properties, constraints)  {
    	this.constraints = constraints;
 	this.callbacks = [];
 	var _self = this;
-	
+
 	for(var i=0; i<properties.length; i++) {
 		var property = properties[i]
 		if(property.name == "componentPath") {
@@ -88,7 +88,7 @@ function(id, form, properties, constraints)  {
 			YConnect.asyncRequest('GET', this.getContextIdUrl, getContextIdCallback);
 		}
 	}
-	
+
 	return this;
 }
 
@@ -98,7 +98,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
 	getItemServiceUrl: "/api/1/content_store/item.json",
 
     getLabel: function() {
-        return CMgs.format(langBundle, "siteComponent");
+      return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.taxonomySelectorMessages.siteComponent);
     },
 
    	getInterface: function() {
@@ -109,7 +109,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
      * Datasource controllers don't have direct access to the properties controls, only to their properties and their values.
      * Because the property control (dropdown) and the dataType property share the property value, the dataType value must stay
      * as an array of objects where each object corresponds to each one of the options of the control. In order to know exactly
-     * which of the options in the control is currently selected, we loop through all of the objects in the dataType value 
+     * which of the options in the control is currently selected, we loop through all of the objects in the dataType value
      * and check their selected value.
      */
     getDataType : function getDataType () {
@@ -118,7 +118,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
         this.properties.forEach( function(prop) {
             if (prop.name == "dataType") {
                 // return the value of the option currently selected
-                var value = JSON.parse(prop.value); 
+                var value = JSON.parse(prop.value);
                 value.forEach( function(opt) {
                     if (opt.selected) {
                         val = opt.value;
@@ -132,7 +132,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
 	getName: function() {
 		return "site-component";
 	},
-	
+
 	getSupportedProperties: function() {
 		return [{
 			label: CMgs.format(langBundle, "dataType"),
@@ -168,14 +168,14 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
 			name: "componentPath",
 			type: "string"
 		}];
-	},	
+	},
 
 	getSupportedConstraints: function() {
 		return [
 			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
 		];
 	},
-	
+
 	getList: function(cb) {
 		if(!this.list) {
 			this.callbacks[this.callbacks.length] = cb;
@@ -184,7 +184,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
 			cb.success(this.list);
 		}
 	}
-	
+
 
 });
 

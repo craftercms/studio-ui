@@ -363,6 +363,10 @@ const taxonomySelectorMessages = defineMessages({
   html: {
     id: 'taxonomySelector.html',
     defaultMessage: 'Data Type'
+  },
+  siteComponent: {
+    id: 'taxonomySelector.siteComponent',
+    defaultMessage: 'Site Component (Deprecated)'
   }
 });
 
