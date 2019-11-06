@@ -43,6 +43,8 @@ import EmptyState from "./EmptyState";
 import Typography from "@material-ui/core/Typography";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import Spinner from "./Spinner";
+import RefreshIcon from '@material-ui/icons/Refresh';
+import Button from "@material-ui/core/Button";
 
 const messages = defineMessages({
   selectAll: {
@@ -368,6 +370,9 @@ function PublishingQueue(props: PublishingQueueProps) {
               <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected}/>
           </Typography>
         }
+        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)} >
+          <RefreshIcon/>
+        </Button>
         {
           currentFilters.state === READY_FOR_LIVE &&
           <ConfirmDropdown
