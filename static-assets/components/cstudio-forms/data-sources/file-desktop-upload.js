@@ -144,8 +144,6 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
 					if(control._renderItems){
 						control._renderItems();
 					}
-
-                    CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
 
