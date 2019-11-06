@@ -293,13 +293,13 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
 
 										'<field>\r\n';
-										if(type == "component") {
-											formDefContent +=
-											'<type>auto-filename</type>\r\n';
-										}else{
-											formDefContent +=
-											'<type>file-name</type>\r\n';
-										}
+											if(type == "component") {
+												formDefContent +=
+												'<type>auto-filename</type>\r\n';
+											}else{
+												formDefContent +=
+												'<type>file-name</type>\r\n';
+											}
 											formDefContent +=
 											'<id>file-name</id>\r\n' +
 											'<iceId></iceId>\r\n' +
