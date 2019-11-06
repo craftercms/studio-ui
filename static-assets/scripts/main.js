@@ -1429,6 +1429,7 @@
         }
       }).then((data) => {
         aceEditor.setValue(data.data.content || defaultValue);
+        defaultValue = data.data.content;
         globalConfig.isModified = false;
         enableUI(true);
       });
