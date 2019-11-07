@@ -289,12 +289,12 @@
       }
       CStudioAuthoring.Service.contentCloneCMIS(paramsJson, callbackContent);
 
-      const dialogContent = `<div class="cstudio__loading-bar animate mb5">
-                                     <span class="loading-bar-inner" style="width: 100%;"></span>
-                                   </div>
-                                   <p class="bold">${formatMessage(browseMessages.cloningCMIS)}:</p>
-                                   ${paramsJson.cmisPath}
-                                  `;
+      const dialogContent =
+        '<div class="cstudio__loading-bar animate mb5">' +
+          '<span class="loading-bar-inner" style="width: 100%;"></span>' +
+        '</div>' +
+        '<p class="bold">' + formatMessage(browseMessages.cloningCMIS) +':</p>' +
+        paramsJson.cmisPath;
 
       CStudioAuthoring.Operations.showSimpleDialog(
         "cloneCMISLoader",
@@ -307,8 +307,6 @@
         null,
         100104
       );
-
-      console.log(cloneDialog);
     });
 
     $('.cstudio-wcm-result .results').delegate(".magnify-icon", "click", function () {
