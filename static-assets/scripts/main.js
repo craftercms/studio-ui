@@ -1165,9 +1165,9 @@
   ]);
 
   app.controller('GlobalMenuCtrl', [
-    '$scope', '$state', '$location', 'sitesService',
+    '$scope', '$state', '$location', 'sitesService', '$window',
 
-    function ($scope, $state, $location, sitesService) {
+    function ($scope, $state, $location, sitesService, $window) {
 
       $scope.entities;
 
@@ -1178,7 +1178,7 @@
           if($scope.entities.length > 1){
             $scope.entities.forEach(function(entry, i) {
               entry.tabName = 'tab'+ entry.label.replace(/ /g,'').toLocaleLowerCase();
-              if (i < 1) {
+              if (/globalMenu$/.test($window.location.href) && i < 1) {
                 $scope.view_tab = entry.tabName;
                 $state.go(entry.id);
               }
