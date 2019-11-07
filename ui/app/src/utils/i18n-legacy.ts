@@ -390,7 +390,7 @@ const taxonomySelectorMessages = defineMessages({
   },
   siteComponent: {
     id: 'taxonomySelector.siteComponent',
-    defaultMessage: 'Site Component (Deprecated)'
+    defaultMessage: 'Site Component'
   }
 });
 
