@@ -280,6 +280,14 @@ CStudioAuthoring.Module.requireModule(
 				content_style: rteStyleOverride,
 
 				setup: function (editor) {
+				  var addPadding = function () {
+				    const formHeader= $('#formHeader');
+            if(formHeader.is(":visible")) {
+              formHeader.addClass('paddedTop');
+            }else {
+              $('#formContainer').addClass('paddedTop');
+            }
+          };
 					editor.on('init', function (e) {
             amplify.publish('/field/init/completed');
             _thisControl.editorId = editor.id;
@@ -289,10 +297,12 @@ CStudioAuthoring.Module.requireModule(
 					});
 
 					editor.on('focus', function (e) {
+            addPadding();
 						_thisControl._showBars(this.editorContainer);
 					});
 
 					editor.on('blur', function (e) {
+            addPadding();
 						_thisControl._hideBars(this.editorContainer);
 					});
 
