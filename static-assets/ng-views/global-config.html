@@ -27,13 +27,9 @@
     </ul>
   </div>
   <div class="btn-group" uib-dropdown>
-    <button ng-disabled="!uiEnabled" type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+    <button ng-disabled="!uiEnabled" type="button" class="btn btn-default" ng-disabled="disabled" ng-click="reset()">
       {{ messages.reset }}
     </button>
-    <ul class="dropdown-menu" uib-dropdown-menu role="menu" style="top: -150%">
-      <li role="menuitem"><a ng-click="reset()">{{ messages.confirmReset }}</a></li>
-      <li role="menuitem"><a>{{ messages.cancel }}</a></li>
-    </ul>
   </div>
 </div>
 
