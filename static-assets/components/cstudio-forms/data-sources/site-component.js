@@ -25,7 +25,7 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
     this.callbacks = [];
     var _self = this;
     this.messages = {
-      taxonomySelectorMessages: CrafterCMSNext.i18n.messages.taxonomySelectorMessages,
+      siteComponentDSMessages: CrafterCMSNext.i18n.messages.siteComponentDSMessages,
       words: CrafterCMSNext.i18n.messages.words
     };
 
@@ -52,7 +52,7 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
                 'unableLoad-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
                 CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
-                CrafterCMSNext.i18n.intl.formatMessage(_self.messages.taxonomySelectorMessages.unableLoad, {file: property.value}),
+                CrafterCMSNext.i18n.intl.formatMessage(_self.messages.siteComponentDSMessages.unableLoad, {file: property.value}),
                 null,
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
                 'studioDialog'
@@ -68,7 +68,7 @@ CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent 
 YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDatasource, {
 
   getLabel: function () {
-    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.taxonomySelectorMessages.siteComponent);
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent);
   },
 
   getInterface: function () {
@@ -105,7 +105,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
 
   getSupportedProperties: function () {
     return [{
-      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.dataType),
+      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.dataType),
       name: 'dataType',
       type: 'dropdown',
       defaultValue: [{ // Update this array if the dropdown options need to be updated
@@ -114,27 +114,27 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
         selected: true
       }, {
         value: 'value_s',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.string),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.string),
         selected: false
       }, {
         value: 'value_i',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.integer),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.integer),
         selected: false
       }, {
         value: 'value_f',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.float),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.float),
         selected: false
       }, {
         value: 'value_dt',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.date),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.date),
         selected: false
       }, {
         value: 'value_html',
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.html),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.html),
         selected: false
       }]
     }, {
-      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.componentPath),
+      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.componentPath),
       name: 'componentPath',
       type: 'string'
     }];
@@ -142,7 +142,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
 
   getSupportedConstraints: function () {
     return [{
-      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.required),
+      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.required),
       name: 'required',
       type: 'boolean'
     }];

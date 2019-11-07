@@ -347,7 +347,7 @@ const words = defineMessages({
   }
 });
 
-const taxonomySelectorMessages = defineMessages({
+const siteComponentDSMessages = defineMessages({
   label: {
     id: 'taxonomySelector.label',
     defaultMessage: 'Taxonomy Selector'
@@ -500,5 +500,5 @@ export default {
   words,
   globalConfigMessages,
   publishingMessages,
-  taxonomySelectorMessages
+  siteComponentDSMessages
 };
