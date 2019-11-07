@@ -349,47 +349,47 @@ const words = defineMessages({
 
 const siteComponentDSMessages = defineMessages({
   label: {
-    id: 'taxonomySelector.label',
+    id: 'siteComponentDS.label',
     defaultMessage: 'Taxonomy Selector'
   },
   unableLoad: {
-    id: 'taxonomySelector.unableLoad',
+    id: 'siteComponentDS.unableLoad',
     defaultMessage: 'The system was unable to load {file}.'
   },
   required: {
-    id: 'taxonomySelector.required',
+    id: 'siteComponentDS.required',
     defaultMessage: 'Required'
   },
   componentPath: {
-    id: 'taxonomySelector.componentPath',
+    id: 'siteComponentDS.componentPath',
     defaultMessage: 'Component Path'
   },
   dataType: {
-    id: 'taxonomySelector.dataType',
+    id: 'siteComponentDS.dataType',
     defaultMessage: 'Data Type'
   },
   string: {
-    id: 'taxonomySelector.string',
+    id: 'siteComponentDS.string',
     defaultMessage: 'String'
   },
   integer: {
-    id: 'taxonomySelector.integer',
+    id: 'siteComponentDS.integer',
     defaultMessage: 'Integer'
   },
   float: {
-    id: 'taxonomySelector.float',
+    id: 'siteComponentDS.float',
     defaultMessage: 'Float'
   },
   date: {
-    id: 'taxonomySelector.date',
+    id: 'siteComponentDS.date',
     defaultMessage: 'Date'
   },
   html: {
-    id: 'taxonomySelector.html',
+    id: 'siteComponentDS.html',
     defaultMessage: 'Data Type'
   },
   siteComponent: {
-    id: 'taxonomySelector.siteComponent',
+    id: 'siteComponentDS.siteComponent',
     defaultMessage: 'Site Component'
   }
 });
