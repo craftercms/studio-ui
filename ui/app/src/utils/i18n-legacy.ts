@@ -436,6 +436,17 @@ const publishingMessages = defineMessages({
   }
 });
 
+const browseMessages = defineMessages({
+  cmis: {
+    id: 'browse.cmis',
+    defaultMessage: 'CMIS'
+  },
+  cloningCMIS: {
+    id: 'browse.cloningCMIS',
+    defaultMessage: 'Cloning CMIS Asset'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -453,4 +464,5 @@ export default {
   words,
   globalConfigMessages,
   publishingMessages,
+  browseMessages
 };
