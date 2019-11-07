@@ -31,29 +31,31 @@ CStudioForms.Datasources.TaxonomySelector = CStudioForms.Datasources.TaxonomySel
 
     for (var i = 0; i < properties.length; i++) {
       var property = properties[i];
-      if (property.name === "componentPath") {
+      if (property.name === 'componentPath') {
         CrafterCMSNext.services.content.getDOM(CStudioAuthoringContext.siteId, property.value)
           .subscribe(
             (dom) => {
               let items = Array.from(dom.querySelectorAll('items > item'));
               items = items.map((item) => {
-                return { key: item.querySelector('key').innerHTML, value: item.querySelector('value').innerHTML }
+                return {
+                  key: item.querySelector('key').innerHTML,
+                  value: item.querySelector('value').innerHTML
+                }
               });
               _self.list = items;
-
               for(var j=0; j<_self.callbacks.length; j++) {
                 _self.callbacks[j].success(items);
               }
             },
             () => {
               CStudioAuthoring.Operations.showSimpleDialog(
-                "unableLoad-dialog",
+                'unableLoad-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
                 CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
                 CrafterCMSNext.i18n.intl.formatMessage(_self.messages.taxonomySelectorMessages.unableLoad, {file: property.value}),
                 null,
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                "studioDialog"
+                'studioDialog'
               );
             }
           )
@@ -70,7 +72,7 @@ YAHOO.extend(CStudioForms.Datasources.TaxonomySelector, CStudioForms.CStudioForm
   },
 
   getInterface: function () {
-    return "item";
+    return 'item';
   },
 
   /*
@@ -84,7 +86,7 @@ YAHOO.extend(CStudioForms.Datasources.TaxonomySelector, CStudioForms.CStudioForm
     var val = null;
 
     this.properties.forEach(function (prop) {
-      if (prop.name === "dataType") {
+      if (prop.name === 'dataType') {
         // return the value of the option currently selected
         var value = JSON.parse(prop.value);
         value.forEach(function (opt) {
@@ -98,50 +100,52 @@ YAHOO.extend(CStudioForms.Datasources.TaxonomySelector, CStudioForms.CStudioForm
   },
 
   getName: function () {
-    return "taxonomy-selector";
+    return 'taxonomy-selector';
   },
 
   getSupportedProperties: function () {
     return [{
       label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.dataType),
-      name: "dataType",
-      type: "dropdown",
+      name: 'dataType',
+      type: 'dropdown',
       defaultValue: [{ // Update this array if the dropdown options need to be updated
-        value: "value",
-        label: "",
+        value: 'value',
+        label: '',
         selected: true
       }, {
-        value: "value_s",
+        value: 'value_s',
         label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.string),
         selected: false
       }, {
-        value: "value_i",
+        value: 'value_i',
         label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.integer),
         selected: false
       }, {
-        value: "value_f",
+        value: 'value_f',
         label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.float),
         selected: false
       }, {
-        value: "value_dt",
+        value: 'value_dt',
         label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.date),
         selected: false
       }, {
-        value: "value_html",
+        value: 'value_html',
         label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.html),
         selected: false
       }]
     }, {
       label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.componentPath),
-      name: "componentPath",
-      type: "string"
+      name: 'componentPath',
+      type: 'string'
     }];
   },
 
   getSupportedConstraints: function () {
-    return [
-      {label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.required), name: "required", type: "boolean"}
-    ];
+    return [{
+      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.taxonomySelectorMessages.required),
+      name: 'required',
+      type: 'boolean'
+    }];
   },
 
   getList: function (cb) {
@@ -155,4 +159,4 @@ YAHOO.extend(CStudioForms.Datasources.TaxonomySelector, CStudioForms.CStudioForm
 
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-taxonomy-selector", CStudioForms.Datasources.TaxonomySelector);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-taxonomy-selector', CStudioForms.Datasources.TaxonomySelector);

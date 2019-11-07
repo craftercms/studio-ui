@@ -22,14 +22,14 @@ import { Observable } from "rxjs";
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`)
     .pipe(
-      map(response => response.response)
+      map(({response}) => response.content)
     );
 }
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(
     map((response:any) => {
-      const xmlString = response ? response.content : '',
+      const xmlString = response ? response : '',
         parser = new DOMParser;
       return parser.parseFromString(xmlString, "text/xml");
     })
