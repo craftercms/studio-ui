@@ -282,10 +282,10 @@ CStudioAuthoring.Module.requireModule(
 				setup: function (editor) {
 				  var addPadding = function () {
 				    const formHeader= $('#formHeader');
-            if(formHeader.is(":visible")) {
-              formHeader.addClass('paddedTop');
+            if(formHeader.is(':visible')) {
+              formHeader.addClass('padded-top');
             }else {
-              $('#formContainer').addClass('paddedTop');
+              $('#formContainer').addClass('padded-top');
             }
           };
 					editor.on('init', function (e) {
