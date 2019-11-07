@@ -35,3 +35,10 @@ export function cancelPackage(siteId: string, packageIds: any) {
 export function fetchEnvironments(siteId: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`)
 }
+
+export default {
+  fetchPackages,
+  fetchPackage,
+  cancelPackage,
+  fetchEnvironments
+}

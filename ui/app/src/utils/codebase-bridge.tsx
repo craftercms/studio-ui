@@ -26,6 +26,8 @@ import auth from './auth';
 import configuration from '../services/configuration';
 import sites from '../services/sites';
 import marketplace from '../services/marketplace';
+import publishing from '../services/publishing';
+import content from '../services/content';
 import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
@@ -115,7 +117,9 @@ export function createCodebaseBridge() {
     services: {
       configuration,
       sites,
-      marketplace
+      marketplace,
+      publishing,
+      content
     },
 
     // Mechanics

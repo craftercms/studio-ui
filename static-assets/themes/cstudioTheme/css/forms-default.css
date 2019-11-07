@@ -604,6 +604,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     font-weight: normal;
     padding: 2px;
     display: inline;
+    max-width: 60%;
 }
 
 .cstudio-form-control-input-count {

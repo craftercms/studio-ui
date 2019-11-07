@@ -16,176 +16,147 @@
  */
 
 CStudioForms.Datasources.SiteComponent = CStudioForms.Datasources.SiteComponent ||
-function(id, form, properties, constraints)  {
+  function (id, form, properties, constraints) {
 
-   	this.id = id;
-   	this.form = form;
-   	this.properties = properties;
-   	this.constraints = constraints;
-	this.callbacks = [];
-	var _self = this;
-	
-	for(var i=0; i<properties.length; i++) {
-		var property = properties[i]
-		if(property.name == "componentPath") {
-			// Load page model
-			var getContextIdCallback = {
-				getItemServiceUrl: this.getItemServiceUrl,
-				success: function(context) {
-					var idContent = JSON.parse(context.responseText);
-					var url = property.value;
-					var getItemServiceUrl = this.getItemServiceUrl + "?url=" + url + "&contextId=" + idContent.id;
-                    var CMgs = CStudioAuthoring.Messages;
-                    var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+    this.id = id;
+    this.form = form;
+    this.properties = properties;
+    this.constraints = constraints;
+    this.callbacks = [];
+    var _self = this;
+    this.messages = {
+      siteComponentDSMessages: CrafterCMSNext.i18n.messages.siteComponentDSMessages,
+      words: CrafterCMSNext.i18n.messages.words
+    };
 
-					var getItemCallBack = {
-						success: function(response) {
-							// Some native JSON parsers (e.g. Chrome) don't like the empty string for input
-							var res = response.responseText || "null";
-							var config = YAHOO.lang.JSON.parse(res).descriptorDom;
-							if (config.component == undefined || config.component.items == undefined || config.component.items.item == undefined) {
-                                CStudioAuthoring.Operations.showSimpleDialog(
-                                    "notAComponent-dialog",
-                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                    CMgs.format(langBundle, "notification"),
-                                    property.value + CMgs.format(langBundle, "notAComponent"),
-                                    null,
-                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                    "studioDialog"
-                                );
-							} else {
-								var items = config.component.items.item;
-								if (items.length == undefined) {
-									items = [ items ];
-								}
-								_self.list = items;
+    for (var i = 0; i < properties.length; i++) {
+      var property = properties[i];
+      if (property.name === 'componentPath') {
+        CrafterCMSNext.services.content.getDOM(CStudioAuthoringContext.siteId, property.value)
+          .subscribe(
+            (dom) => {
+              let items = Array.from(dom.querySelectorAll('items > item'));
+              items = items.map((item) => {
+                return {
+                  key: item.querySelector('key').innerHTML,
+                  value: item.querySelector('value').innerHTML
+                }
+              });
+              _self.list = items;
+              for(var j=0; j<_self.callbacks.length; j++) {
+                _self.callbacks[j].success(items);
+              }
+            },
+            () => {
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'unableLoad-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
+                CrafterCMSNext.i18n.intl.formatMessage(_self.messages.siteComponentDSMessages.unableLoad, {file: property.value}),
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+          )
+      }
+    }
 
-								for(var j=0; j<_self.callbacks.length; j++) {
-									_self.callbacks[j].success(items);
-								}
-							}
-						},
-						failure: function() {
-                            CStudioAuthoring.Operations.showSimpleDialog(
-                                "unableLoad-dialog",
-                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                CMgs.format(langBundle, "notification"),
-                                CMgs.format(langBundle, "unableLoad") + property.value + ".",
-                                null,
-                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                "studioDialog"
-                            );
-						}
-					}; // end of getItemCallBack
-
-					YConnect.asyncRequest('GET', getItemServiceUrl, getItemCallBack);
-				}, // end of success
-				failure: function(err) {
-				}
-			}; // end of getContextIdCallback
-
-			// get the context id from preview store
-			YConnect.asyncRequest('GET', this.getContextIdUrl, getContextIdCallback);
-		}
-	}
-	
-	return this;
-}
+    return this;
+  };
 
 YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDatasource, {
 
-	getContextIdUrl: "/api/1/site/context/id.json",
-	getItemServiceUrl: "/api/1/content_store/item.json",
+  getLabel: function () {
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent);
+  },
 
-    getLabel: function() {
-        return CMgs.format(langBundle, "siteComponent");
-    },
+  getInterface: function () {
+    return 'item';
+  },
 
-   	getInterface: function() {
-   		return "item";
-   	},
+  /*
+  * Datasource controllers don't have direct access to the properties controls, only to their properties and their values.
+  * Because the property control (dropdown) and the dataType property share the property value, the dataType value must stay
+  * as an array of objects where each object corresponds to each one of the options of the control. In order to know exactly
+  * which of the options in the control is currently selected, we loop through all of the objects in the dataType value
+  * and check their selected value.
+  */
+  getDataType: function getDataType() {
+    var val = null;
 
-   	/*
-     * Datasource controllers don't have direct access to the properties controls, only to their properties and their values.
-     * Because the property control (dropdown) and the dataType property share the property value, the dataType value must stay
-     * as an array of objects where each object corresponds to each one of the options of the control. In order to know exactly
-     * which of the options in the control is currently selected, we loop through all of the objects in the dataType value 
-     * and check their selected value.
-     */
-    getDataType : function getDataType () {
-        var val = null;
-
-        this.properties.forEach( function(prop) {
-            if (prop.name == "dataType") {
-                // return the value of the option currently selected
-                var value = JSON.parse(prop.value); 
-                value.forEach( function(opt) {
-                    if (opt.selected) {
-                        val = opt.value;
-                    }
-                });
-            }
+    this.properties.forEach(function (prop) {
+      if (prop.name === 'dataType') {
+        // return the value of the option currently selected
+        var value = JSON.parse(prop.value);
+        value.forEach(function (opt) {
+          if (opt.selected) {
+            val = opt.value;
+          }
         });
-        return val;
-    },
+      }
+    });
+    return val;
+  },
 
-	getName: function() {
-		return "site-component";
-	},
-	
-	getSupportedProperties: function() {
-		return [{
-			label: CMgs.format(langBundle, "dataType"),
-			name: "dataType",
-			type: "dropdown",
-			defaultValue: [{ // Update this array if the dropdown options need to be updated
-				value: "value",
-				label: "",
-				selected: true
-			}, {
-				value: "value_s",
-				label: CMgs.format(langBundle, "string"),
-				selected: false
-			}, {
-				value: "value_i",
-				label: CMgs.format(langBundle, "integer"),
-				selected: false
-			}, {
-				value: "value_f",
-				label: CMgs.format(langBundle, "float"),
-				selected: false
-			}, {
-				value: "value_dt",
-				label: CMgs.format(langBundle, "date"),
-				selected: false
-			}, {
-				value: "value_html",
-				label: CMgs.format(langBundle, "HTML"),
-				selected: false
-			}]
-		}, {
-			label: CMgs.format(langBundle, "componentPath"),
-			name: "componentPath",
-			type: "string"
-		}];
-	},	
+  getName: function () {
+    return 'site-component';
+  },
 
-	getSupportedConstraints: function() {
-		return [
-			{ label: CMgs.format(langBundle, "required"), name: "required", type: "boolean" }
-		];
-	},
-	
-	getList: function(cb) {
-		if(!this.list) {
-			this.callbacks[this.callbacks.length] = cb;
-		}
-		else {
-			cb.success(this.list);
-		}
-	}
-	
+  getSupportedProperties: function () {
+    return [{
+      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.dataType),
+      name: 'dataType',
+      type: 'dropdown',
+      defaultValue: [{ // Update this array if the dropdown options need to be updated
+        value: 'value',
+        label: '',
+        selected: true
+      }, {
+        value: 'value_s',
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.string),
+        selected: false
+      }, {
+        value: 'value_i',
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.integer),
+        selected: false
+      }, {
+        value: 'value_f',
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.float),
+        selected: false
+      }, {
+        value: 'value_dt',
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.date),
+        selected: false
+      }, {
+        value: 'value_html',
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.html),
+        selected: false
+      }]
+    }, {
+      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.componentPath),
+      name: 'componentPath',
+      type: 'string'
+    }];
+  },
+
+  getSupportedConstraints: function () {
+    return [{
+      label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.required),
+      name: 'required',
+      type: 'boolean'
+    }];
+  },
+
+  getList: function (cb) {
+    if (!this.list) {
+      this.callbacks[this.callbacks.length] = cb;
+    } else {
+      cb.success(this.list);
+    }
+  }
+
 
 });
 
-CStudioAuthoring.Module.moduleLoaded("cstudio-forms-controls-site-component", CStudioForms.Datasources.SiteComponent);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-site-component', CStudioForms.Datasources.SiteComponent);
