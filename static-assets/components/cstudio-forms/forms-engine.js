@@ -690,6 +690,7 @@ var CStudioForms = CStudioForms || function() {
     FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
     FORM_UPDATE_REQUEST = 'FORMS.FORM_UPDATE_REQUEST',
     OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
+    CHILD_FORM_ENABLE_BUTTONS = 'CHILD_FORM_ENABLE_BUTTONS',
     FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE',
     FORM_CANCEL_REQUEST = 'FORM_CANCEL_REQUEST',
     FORM_CANCEL = 'FORM_CANCEL';
@@ -835,8 +836,13 @@ var CStudioForms = CStudioForms || function() {
               nextComponentDOM.setAttribute('id', objectId);
               FlattenerState[objectId] = nextComponentDOM.outerHTML;
               const name = nextComponentDOM.querySelector('internal-name').innerHTML;
-              if(CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
-                CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({ }, message.editorId, objectId, name, message.draft);
+              if (message.draft) {
+                amplify.publish('UPDATE_NODE_SELECTOR', {objId: objectId, value: name});
+                cfe.engine.saveForm(false, message.draft);
+              } else {
+                if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
+                  CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
+                }
               }
               break;
             }
@@ -1288,6 +1294,11 @@ var CStudioForms = CStudioForms || function() {
           };
 
           if (me.config.isInclude) {
+            messages$.subscribe((message) => {
+              if (message.type === CHILD_FORM_ENABLE_BUTTONS) {
+                setButtonsEnabled(true);
+              }
+            });
             sendMessage({
               type: FORM_UPDATE_REQUEST,
               editorId: editorId,
@@ -1308,6 +1319,7 @@ var CStudioForms = CStudioForms || function() {
                     var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
 
                     setButtonsEnabled(true);
+                    sendMessage({type: CHILD_FORM_ENABLE_BUTTONS});
 
                     if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
                       for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
