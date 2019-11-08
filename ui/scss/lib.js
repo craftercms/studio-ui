@@ -12,6 +12,7 @@ const
     'graphiql',
     'uppy',
     'tinymce-ace',
+    'browse',
     { input: 'guest/guest', output: 'guest' }
   ];
 

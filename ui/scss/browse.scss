@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import 'util/util';
+
 body {
 	font-family: 'Open Sans', sans-serif;
     background-color: #F0F0F0;
     margin: 0;
    	padding-top: 20px;
-   	box-sizing: border-box;	
+   	box-sizing: border-box;
 
 	*{
-	    box-sizing: border-box;	 
+	    box-sizing: border-box;
 	}
 
 	.bold {
@@ -130,12 +132,12 @@ body {
 		}
 		#cstudio-wcm-search-result, #cstudio-wcm-browse-result {
 			width: calc(100% - 400px)!important;
-			border-radius: 5px; 
+			border-radius: 5px;
 			padding-left: 20px;
 			padding-top: 20px;
 			overflow:hidden;
 
-			.results{									
+			.results{
 			    height: calc(100vh - 155px);
 			    overflow-y: scroll;
 			    // margin-right: -15px;
@@ -165,14 +167,14 @@ body {
                               word-break: break-word;
                             }
 
-				   	 		.browse-icon {		
+				   	 		.browse-icon {
 			   	 			    margin-right: 20px;
-				   	 		}	
+				   	 		}
 
 				   	 		.cstudio-search-component-title-nopreview{
 								font-size: 1.38em;
 								color: #808080 !important;
-								cursor: auto !important; 
+								cursor: auto !important;
 								display: inline-block;
 				   	 		}
 
@@ -223,7 +225,7 @@ body {
 						    margin-right: 10px;
 					  	}
 
-					  	
+
 					}
 
 				  	.no-preview{
@@ -318,7 +320,7 @@ body {
 		  	height: 100%;
 		}
 	}
-	
+
 
 	#cstudio-command-controls {
 	    position: fixed;
@@ -416,7 +418,7 @@ body {
 			font-size: 12px;
 
 			table tr td {
-				padding: 0;			
+				padding: 0;
 			}
 		}
 	}
@@ -431,21 +433,25 @@ body {
 	::-webkit-scrollbar-thumb:hover {
 	    background: #808080;
 	}
-	 
+
 	/* Track */
 	::-webkit-scrollbar-track {
 	    -webkit-border-radius: 10px;
 	    border-radius: 10px;
 	}
-	 
+
 	/* Handle */
 	::-webkit-scrollbar-thumb {
 	    -webkit-border-radius: 10px;
 	    border-radius: 10px;
-	    background: rgba(128,128,128,0.7); 
+	    background: rgba(128,128,128,0.7);
 	}
 	::-webkit-scrollbar-thumb:window-inactive {
-		background: rgba(128,128,128,0.4); 
+		background: rgba(128,128,128,0.4);
 	}
 
-}	
+}
+
+.cstudio__loading-bar {
+  @include cstudioLoadingBar(3px, #2275d7);
+}

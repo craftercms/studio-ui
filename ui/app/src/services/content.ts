@@ -15,25 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from "../utils/ajax";
+import { get } from '../utils/ajax';
 import { map } from 'rxjs/operators';
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 export function getContent(site: string, path: string): Observable<string> {
-  return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`)
-    .pipe(
-      map(({response}) => response.content)
-    );
+  return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
+    map(({ response }) => response.content)
+  );
 }
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(
-    map((response:any) => {
-      const xmlString = response ? response : '',
-        parser = new DOMParser;
-      return parser.parseFromString(xmlString, "text/xml");
-    })
-  )
+    map((xml = '') => new DOMParser().parseFromString(xml, 'text/xml'))
+  );
 }
 
 export default {

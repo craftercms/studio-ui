@@ -97,7 +97,7 @@ CStudioAuthoring.Module.requireModule(
               var me = this;
 
               Promise.all([
-                CrafterCMSNext.services.configuration.fetchFileDOM(
+                CrafterCMSNext.services.configuration.getDOM(
                   CStudioAuthoringContext.site,
                   '/code-editor-config.xml',
                   'studio'
