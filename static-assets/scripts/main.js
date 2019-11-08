@@ -1417,11 +1417,6 @@
         theme: 'ace/theme/textmate',
       });
 
-      // aceEditor.clearSelection();
-      // aceEditor.setValue(defaultValue, -1);
-      // aceEditor.focus();
-      // aceEditor.gotoLine(0, 0);
-
       aceEditor.getSession().on('change', function() {
         globalConfig.isModified = true;
       });
