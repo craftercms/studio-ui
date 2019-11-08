@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '600px',
     margin: 'auto'
   },
+  helpText: {
+    transition: `color .5s`
+  },
   muted: {
     color: theme.palette.text.secondary
   }
@@ -240,7 +243,7 @@ function BlueprintForm(props: BlueprintFormProps) {
               }
               label={formatMessage(messages.createAsOrphan)}
             />
-            <Typography variant="subtitle2" component="small" className={inputs.createAsOrphan ? '' : classes.muted}>
+            <Typography variant="subtitle2" component="small" className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}>
               {formatMessage(messages.createAsOrphanHelpText)}
             </Typography>
           </Grid>
@@ -273,14 +276,26 @@ function BlueprintForm(props: BlueprintFormProps) {
         <Collapse in={inputs.pushSite} timeout={300}>
           {
             (inputs.pushSite && blueprint.source !== 'GIT') &&
-            <GitForm inputs={inputs} expanded={expanded} setExpanded={setExpanded} type="push"
-                     handleInputChange={handleInputChange} onKeyPress={onKeyPress}/>
+            <GitForm
+              inputs={inputs}
+              expanded={expanded}
+              setExpanded={setExpanded}
+              type="push"
+              handleInputChange={handleInputChange}
+              onKeyPress={onKeyPress}
+            />
           }
         </Collapse>
         {
           (blueprint.id === 'GIT') &&
-          <GitForm type="clone" inputs={inputs} expanded={expanded} setExpanded={setExpanded}
-                   handleInputChange={handleInputChange} onKeyPress={onKeyPress}/>
+          <GitForm
+            type="clone"
+            inputs={inputs}
+            expanded={expanded}
+            setExpanded={setExpanded}
+            handleInputChange={handleInputChange}
+            onKeyPress={onKeyPress}
+          />
         }
       </Grid>
     </form>
