@@ -2103,7 +2103,7 @@
               }
 
               if (itemProperty != null) {
-                if(itemProperty.type === 'dropdown') {
+                if(itemProperty.type === 'dropdown' && !(Array.isArray(itemProperty.value))) {
                   value = itemProperty.value  ? JSON.parse(itemProperty.value) : '';
                 } else {
                   value = itemProperty.value ? itemProperty.value : '';
