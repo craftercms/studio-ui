@@ -452,4 +452,6 @@ body {
 
 }
 
-@include cstudioLoadingBar(3px, #2275d7);
+.cstudio__loading-bar {
+  @include cstudioLoadingBar(3px, #2275d7);
+}
