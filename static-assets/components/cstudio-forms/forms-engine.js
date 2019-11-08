@@ -690,7 +690,7 @@ var CStudioForms = CStudioForms || function() {
     FORM_SAVE_REQUEST = 'FORMS.FORM_SAVE_REQUEST',
     FORM_UPDATE_REQUEST = 'FORMS.FORM_UPDATE_REQUEST',
     OPEN_CHILD_COMPONENT = 'OPEN_CHILD_COMPONENT',
-    CHILD_FORM_ENABLE_BUTTONS = 'CHILD_FORM_ENABLE_BUTTONS',
+    CHILD_FORM_DRAFT_COMPLETE = 'CHILD_FORM_DRAFT_COMPLETE',
     FORM_ENGINE_RENDER_COMPLETE = 'FORM_ENGINE_RENDER_COMPLETE',
     FORM_CANCEL_REQUEST = 'FORM_CANCEL_REQUEST',
     FORM_CANCEL = 'FORM_CANCEL';
@@ -727,6 +727,26 @@ var CStudioForms = CStudioForms || function() {
       take(1)
     ).subscribe(observer);
     sendMessage({ type: FORM_REQUEST, key });
+  }
+
+  function createDialog() {
+    var dialogEl = document.getElementById('saveDraftWar');
+    if (!dialogEl) {
+      var dialog = new YAHOO.widget.SimpleDialog('saveDraftWar',
+        {
+          width: '300px', fixedcenter: true, visible: false, draggable: false, close: true, modal: true,
+          text: 'Draft Save Completed', icon: YAHOO.widget.SimpleDialog.ICON_INFO,
+          constraintoviewport: true
+        });
+      dialog.setHeader('Notification');
+      dialog.render(document.body);
+      dialogEl = document.getElementById('saveDraftWar');
+      dialogEl.dialog = dialog;
+    }
+    dialogEl.dialog.show();
+    setTimeout(function () {
+      dialogEl.dialog.destroy();
+    }, 1500);
   }
 
   function setButtonsEnabled(enabled) {
@@ -1273,29 +1293,10 @@ var CStudioForms = CStudioForms || function() {
             serviceUrl += '&unlock=true';
           }
 
-          var createDialog = function () {
-            var dialogEl = document.getElementById('saveDraftWar');
-            if (!dialogEl) {
-              var dialog = new YAHOO.widget.SimpleDialog('saveDraftWar',
-                {
-                  width: '300px', fixedcenter: true, visible: false, draggable: false, close: true, modal: true,
-                  text: 'Draft Save Completed', icon: YAHOO.widget.SimpleDialog.ICON_INFO,
-                  constraintoviewport: true
-                });
-              dialog.setHeader('Notification');
-              dialog.render(document.body);
-              dialogEl = document.getElementById('saveDraftWar');
-              dialogEl.dialog = dialog;
-            }
-            dialogEl.dialog.show();
-            setTimeout(function () {
-              dialogEl.dialog.destroy();
-            }, 1500);
-          };
-
           if (me.config.isInclude) {
             messages$.subscribe((message) => {
-              if (message.type === CHILD_FORM_ENABLE_BUTTONS) {
+              if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
+                createDialog();
                 setButtonsEnabled(true);
               }
             });
@@ -1319,7 +1320,7 @@ var CStudioForms = CStudioForms || function() {
                     var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
 
                     setButtonsEnabled(true);
-                    sendMessage({type: CHILD_FORM_ENABLE_BUTTONS});
+                    sendMessage({type: CHILD_FORM_DRAFT_COMPLETE});
 
                     if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
                       for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
