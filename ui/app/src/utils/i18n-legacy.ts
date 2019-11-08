@@ -483,6 +483,17 @@ const publishingMessages = defineMessages({
   }
 });
 
+const browseCMISMessages = defineMessages({
+  cmis: {
+    id: 'browseCMIS.cmis',
+    defaultMessage: 'CMIS'
+  },
+  cloningCMIS: {
+    id: 'browseCMIS.cloningCMIS',
+    defaultMessage: 'Cloning CMIS Asset'
+  }
+});
+
 
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
@@ -509,5 +520,6 @@ export default {
   globalConfigMessages,
   publishingMessages,
   siteComponentDSMessages,
-  formEngineMessages
+  formEngineMessages,
+  browseCMISMessages
 };
