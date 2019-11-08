@@ -40,7 +40,7 @@
     "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
     "i18n:manage": "node scripts/i18n.js"
   },
-  "proxy": "http://127.0.0.1:8080/",
+  "proxy": "http://localhost:8080/",
   "eslintConfig": {
     "extends": "react-app"
   },

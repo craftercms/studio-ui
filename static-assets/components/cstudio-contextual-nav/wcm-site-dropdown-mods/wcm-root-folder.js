@@ -185,7 +185,6 @@
                 });
             }
           }
-
           if (config.params.excludes && (typeof (config.params.excludes) == "object")){
             if(config.params.excludes.exclude){
               this.creatingExcludeArray(config.params.excludes.exclude, instance.excludeCache);
@@ -194,7 +193,6 @@
               this.creatingExcludeArray(config.params.excludes.regex, instance.excludeRegexCache);
             }
           }
-          
 
           // cache the searches by name so they can be checked quickly when building the nav
           if (config.params.cannedSearches) {

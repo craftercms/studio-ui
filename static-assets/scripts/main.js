@@ -1428,7 +1428,8 @@
           'path': '/configuration/studio-config-override.yaml'
         }
       }).then((data) => {
-        aceEditor.setValue(data.data.content || defaultValue);
+        aceEditor.setValue((data.data.content || defaultValue), -1);  // sets cursor in position 0, avoiding all editor content selection
+        aceEditor.focus();
         defaultValue = data.data.content;
         globalConfig.isModified = false;
         enableUI(true);
@@ -1473,7 +1474,9 @@
       };
 
       $scope.reset = function () {
-        aceEditor.setValue(defaultValue);
+        aceEditor.setValue(defaultValue, -1);   // sets cursor in position 0, avoiding all editor content selection
+        aceEditor.focus();
+        aceEditor.gotoLine(0, 0, true);
         globalConfig.isModified = false;
       };
 

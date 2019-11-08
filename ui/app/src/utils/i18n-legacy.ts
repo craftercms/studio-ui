@@ -483,6 +483,17 @@ const publishingMessages = defineMessages({
   }
 });
 
+const browseCMISMessages = defineMessages({
+  cmis: {
+    id: 'browseCMIS.cmis',
+    defaultMessage: 'CMIS'
+  },
+  cloningCMIS: {
+    id: 'browseCMIS.cloningCMIS',
+    defaultMessage: 'Cloning CMIS Asset'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -500,5 +511,6 @@ export default {
   words,
   globalConfigMessages,
   publishingMessages,
+  browseCMISMessages,
   siteComponentDSMessages
 };
