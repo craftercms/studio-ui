@@ -15,17 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
-import { darken, fade } from "@material-ui/core/styles";
+import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import { darken, fade } from '@material-ui/core/styles';
 
 export const backgroundColor = '#E7E7E7';
 export const RedColor = '#FF3B30';
 
 const defaultTheme = createMuiTheme();
-export  const theme = createMuiTheme({
+export const theme = createMuiTheme({
   typography: {
     button: {
-      textTransform: "none"
+      textTransform: 'none'
     },
     fontSize: 14,
     fontFamily: [
@@ -33,7 +33,7 @@ export  const theme = createMuiTheme({
       'sans-serif'
     ].join(',')
   },
-  palette:{
+  palette: {
     primary: {
       main: '#7E9DBB',
       contrastText: '#FFFFFF'
@@ -48,39 +48,39 @@ export  const theme = createMuiTheme({
     drawer: 924,
     modal: 1000,
     snackbar: 1078,
-    tooltip: 1155,
+    tooltip: 1155
   },
   overrides: {
-    MuiFormLabel:{
+    MuiFormLabel: {
       root: {
         transform: 'translate(0, 1.5px) scale(1) !important',
         transformOrigin: 'top left !important'
       },
       asterisk: {
-        color: RedColor,
+        color: RedColor
       }
     },
     MuiInputBase: {
       root: {
         'label + &': {
-          marginTop: `${defaultTheme.spacing(3)}px !important`,
+          marginTop: `${defaultTheme.spacing(3)}px !important`
         },
-        '&.MuiInput-underline:before':{
+        '&.MuiInput-underline:before': {
           display: 'none'
         },
-        '&.MuiInput-underline:after':{
+        '&.MuiInput-underline:after': {
           display: 'none'
         },
         '&$error .MuiInputBase-input': {
           color: RedColor,
           borderColor: RedColor,
-          '&:focus':{
+          '&:focus': {
             boxShadow: 'rgba(244, 67, 54, 0.25) 0 0 0 0.2rem'
           }
 
         },
         '&$multiline textarea': {
-          padding: '10px 12px',
+          padding: '10px 12px'
         }
       },
       input: {
@@ -93,13 +93,13 @@ export  const theme = createMuiTheme({
         padding: '10px 12px',
         transition: defaultTheme.transitions.create(['border-color', 'box-shadow']),
         '&:focus:invalid': {
-          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`,
+          boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`
         },
         '&:focus': {
           boxShadow: `${fade('#7E9DBB', 0.25)} 0 0 0 0.2rem`,
-          borderColor: '#7E9DBB',
-        },
-      },
+          borderColor: '#7E9DBB'
+        }
+      }
     },
     MuiTabs: {
       indicator: {
@@ -112,12 +112,12 @@ export  const theme = createMuiTheme({
         backgroundColor: '#FFFFFF',
         textTransform: 'inherit',
         '&:hover': {
-          backgroundColor: '#FFFFFF',
-        },
+          backgroundColor: '#FFFFFF'
+        }
       },
       outlinedPrimary: {
         color: darken('#7E9DBB', 0.10),
-        border:`1px solid ${darken('#7E9DBB', 0.10)}`
+        border: `1px solid ${darken('#7E9DBB', 0.10)}`
       }
     }
   }
