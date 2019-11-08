@@ -483,13 +483,13 @@ const publishingMessages = defineMessages({
   }
 });
 
-const browseMessages = defineMessages({
+const browseCMISMessages = defineMessages({
   cmis: {
-    id: 'browse.cmis',
+    id: 'browseCMIS.cmis',
     defaultMessage: 'CMIS'
   },
   cloningCMIS: {
-    id: 'browse.cloningCMIS',
+    id: 'browseCMIS.cloningCMIS',
     defaultMessage: 'Cloning CMIS Asset'
   }
 });
@@ -511,6 +511,6 @@ export default {
   words,
   globalConfigMessages,
   publishingMessages,
-  browseMessages,
+  browseCMISMessages,
   siteComponentDSMessages
 };

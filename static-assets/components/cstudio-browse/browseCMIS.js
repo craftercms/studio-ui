@@ -26,7 +26,7 @@
 
   const i18n = CrafterCMSNext.i18n,
     formatMessage = i18n.intl.formatMessage,
-    browseMessages = i18n.messages.browseMessages;
+    browseCMISMessages = i18n.messages.browseCMISMessages;
 
   CStudioBrowseCMIS.init = function () {
     var me = this;
@@ -293,13 +293,13 @@
         '<div class="cstudio__loading-bar animate mb5">' +
         /**/'<span class="loading-bar-inner" style="width: 100%;"></span>' +
         '</div>' +
-        `<p class="bold">${formatMessage(browseMessages.cloningCMIS)}:</p>` +
+        `<p class="bold">${formatMessage(browseCMISMessages.cloningCMIS)}:</p>` +
         paramsJson.cmisPath;
 
       CStudioAuthoring.Operations.showSimpleDialog(
         "cloneCMISLoader",
         CStudioAuthoring.Operations.simpleDialogTypeINFO,
-        formatMessage(browseMessages.cmis),
+        formatMessage(browseCMISMessages.cmis),
         dialogContent,
         [],
         '',
