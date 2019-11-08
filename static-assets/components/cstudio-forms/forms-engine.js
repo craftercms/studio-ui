@@ -732,25 +732,8 @@ var CStudioForms = CStudioForms || function() {
     sendMessage({ type: FORM_REQUEST, key });
   }
 
-  function createDialog() {
-    var dialogEl = document.getElementById('saveDraftWar');
-    if (!dialogEl) {
-      var dialog = new YAHOO.widget.SimpleDialog('saveDraftWar',
-        {
-          width: '300px', fixedcenter: true, visible: false, draggable: false, close: true, modal: true,
-          text: formatMessage(formEngineMessages.saveDraftCompleted),
-          icon: YAHOO.widget.SimpleDialog.ICON_INFO,
-          constraintoviewport: true
-        });
-      dialog.setHeader(formatMessage(words.notification));
-      dialog.render(document.body);
-      dialogEl = document.getElementById('saveDraftWar');
-      dialogEl.dialog = dialog;
-    }
-    dialogEl.dialog.show();
-    setTimeout(function () {
-      dialogEl.dialog.destroy();
-    }, 1500);
+  function saveDraftDialog() {
+    $.notify(formatMessage(formEngineMessages.saveDraftCompleted), "success");
   }
 
   function setButtonsEnabled(enabled) {
@@ -891,7 +874,7 @@ var CStudioForms = CStudioForms || function() {
       } else {
         messages$.subscribe((message) => {
           if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
-            createDialog();
+            saveDraftDialog();
             setButtonsEnabled(true);
           }
         });
@@ -1343,7 +1326,7 @@ var CStudioForms = CStudioForms || function() {
                       iceWindowCallback.success(contentTO, editorId, name, value, draft);
                       if (draft) {
                         CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
-                        createDialog();
+                        saveDraftDialog();
                       } else {
                         CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
@@ -1354,7 +1337,7 @@ var CStudioForms = CStudioForms || function() {
                       if (draft) {
                         CStudioAuthoring.Utils.Cookies.createCookie('cstudio-save-draft', 'true');
                         CStudioAuthoring.Operations.refreshPreview();
-                        createDialog();
+                        saveDraftDialog();
                       } else {
                         CStudioAuthoring.Utils.Cookies.eraseCookie('cstudio-save-draft');
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);

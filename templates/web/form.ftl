@@ -40,6 +40,7 @@
   <script src="/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+  <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script>CStudioAuthoring.Module.moduleLoaded("publish-subscribe", {});</script>
 
   <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
