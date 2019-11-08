@@ -291,9 +291,9 @@
 
       const dialogContent =
         '<div class="cstudio__loading-bar animate mb5">' +
-          '<span class="loading-bar-inner" style="width: 100%;"></span>' +
+        /**/'<span class="loading-bar-inner" style="width: 100%;"></span>' +
         '</div>' +
-        '<p class="bold">' + formatMessage(browseMessages.cloningCMIS) +':</p>' +
+        `<p class="bold">${formatMessage(browseMessages.cloningCMIS)}:</p>` +
         paramsJson.cmisPath;
 
       CStudioAuthoring.Operations.showSimpleDialog(
@@ -337,9 +337,9 @@
 
     var me = this;
 
-    //Removes jstree cached state from localStorage
+    // Removes jstree cached state from localStorage
     localStorage.removeItem('jstree');
-    //Tree - default closed
+    // Tree - default closed
     $.jstree.defaults.core.expand_selected_onload = false;
     $('#data').jstree({
       'core': {
