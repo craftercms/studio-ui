@@ -185,29 +185,24 @@
             }
           }
 
+          if (
+            config.params.excludes && 
+            typeof config.params.excludes === 'object' &&
+            config.params.excludes.exclude
+          ) {
+            
+            const excludes = Array.isArray(config.params.excludes.exclude)
+              ? config.params.excludes.exclude
+              : [config.params.excludes.exclude] ;
 
-          if(config.params.excludes) {
-            if ( (typeof(config.params.excludes) == "object")
-              && (typeof(config.params.excludes.exclude) != "array")) {
-              if (config.params.excludes.exclude != undefined) {
-                var path = config.params.excludes.exclude;
-                if (!instance.excludeCache[path]) {
-                  instance.excludeCache[path] = [];
-                }
-                instance.excludeCache[path].push(config.params.excludes.exclude);
+            excludes.forEach(function (path) {
+              if (!instance.excludeCache[path]) {
+                instance.excludeCache[path] = [];
               }
-            }
-            else {
-              for (var i = 0; i < config.params.excludes.exclude.length; i++) {
-                var path = config.params.excludes.exclude[i];
-                if (!instance.excludeCache[path]) {
-                  instance.excludeCache[path] = [];
-                }
-                instance.excludeCache[path].push(config.params.excludes.exclude[i]);
-              }
-            }
+              instance.excludeCache[path].push(path);
+            });
+            
           }
-
 
           // cache the searches by name so they can be checked quickly when building the nav
           if (config.params.cannedSearches) {
