@@ -34,6 +34,9 @@ CStudioForms.Controls.CheckBoxGroup = CStudioForms.Controls.CheckBoxGroup ||
     // Stores the type of data the control is now working with (this value is fetched from the datasource controller)
     this.dataType = null;
     this.supportedPostFixes = ["_o"];
+    this.i18n = CrafterCMSNext.i18n;
+    this.formatMessage = this.i18n.intl.formatMessage;
+    this.checkboxGroupControlMessages = this.i18n.messages.checkboxGroupControlMessages;
 
     amplify.subscribe("/datasource/loaded", this, this.onDatasourceLoaded);
 
@@ -493,23 +496,23 @@ YAHOO.extend(CStudioForms.Controls.CheckBoxGroup, CStudioForms.CStudioFormField,
 
   getSupportedProperties: function () {
     return [
-      {label: CMgs.format(langBundle, "datasource"), name: "datasource", type: "datasource:item"},
-      {label: CMgs.format(langBundle, "showSelectAll"), name: "selectAll", type: "boolean"},
+      {label: this.formatMessage(this.checkboxGroupControlMessages.datasource), name: "datasource", type: "datasource:item"},
+      {label: this.formatMessage(this.checkboxGroupControlMessages.showSelectAll), name: "selectAll", type: "boolean"},
       {
-        label: "List direction",
+        label: this.formatMessage(this.checkboxGroupControlMessages.listDirection),
         name: 'listDirection',
         type: 'dropdown',
-        defaultValue: [{    // Update this array if the dropdown options need to be updated
+        defaultValue: [{
           value: "horizontal",
-          label: "Horizontal",
+          label: this.formatMessage(this.checkboxGroupControlMessages.horizontal),
           selected: true
         }, {
           value: "vertical",
-          label: "Vertical",
+          label: this.formatMessage(this.checkboxGroupControlMessages.vertical),
           selected: false
         }]
       },
-      {label: CMgs.format(langBundle, "readonly"), name: "readonly", type: "boolean"}
+      {label: this.formatMessage(this.checkboxGroupControlMessages.readonly), name: "readonly", type: "boolean"}
     ];
   },
 

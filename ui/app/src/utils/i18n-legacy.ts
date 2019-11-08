@@ -165,6 +165,33 @@ const numericInputControlMessages = defineMessages({
   }
 });
 
+const checkboxGroupControlMessages = defineMessages({
+  datasource: {
+    id: 'checkboxGroupControl.datasource',
+    defaultMessage: 'Data Source'
+  },
+  showSelectAll: {
+    id: 'checkboxGroupControl.showSelectAll',
+    defaultMessage: 'Show "Select All"'
+  },
+  listDirection: {
+    id: 'checkboxGroupControl.listDirection',
+    defaultMessage: 'List Direction'
+  },
+  horizontal: {
+    id: 'checkboxGroupControl.horizontal',
+    defaultMessage: 'Horizonal'
+  },
+  vertical: {
+    id: 'checkboxGroupControl.vertical',
+    defaultMessage: 'Vertical'
+  },
+  readonly: {
+    id: 'checkboxGroupControl.readonly',
+    defaultMessage: 'Read Only'
+  }
+});
+
 const reposAdminMessages = defineMessages({
   pendingCommit: {
     id: 'reposAdmin.pendingCommit',
@@ -502,6 +529,7 @@ export default {
   passwordRequirementMessages,
   groupsAdminMessages,
   numericInputControlMessages,
+  checkboxGroupControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
