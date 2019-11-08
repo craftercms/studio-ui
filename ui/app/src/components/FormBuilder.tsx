@@ -22,7 +22,7 @@ import Grid from "@material-ui/core/Grid";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { SiteState } from "../models/Site";
 import { defineMessages, useIntl } from "react-intl";
-import PasswordTextField from "./PasswordTextField";
+import PasswordTextField from "./Controls/PasswordTextField";
 
 interface FormBuilderProps {
   parameters: [Parameter];
