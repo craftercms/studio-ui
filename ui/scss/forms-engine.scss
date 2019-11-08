@@ -21,10 +21,16 @@
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
 
 #formContainer {
-
   padding: 20px 0 80px;
+  &.padded-top {
+    padding-top: 80px;
+  }
+}
 
-
+#formHeader {
+  &.padded-top {
+    padding-top: 50px;
+  }
 }
 
 header {
