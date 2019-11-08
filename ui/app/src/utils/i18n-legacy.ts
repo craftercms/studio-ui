@@ -483,6 +483,14 @@ const publishingMessages = defineMessages({
   }
 });
 
+
+const formEngineMessages = defineMessages({
+  saveDraftCompleted: {
+    id: 'formEngine.saveDraftCompleted',
+    defaultMessage: 'Draft Save Completed'
+  },
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -500,5 +508,6 @@ export default {
   words,
   globalConfigMessages,
   publishingMessages,
-  siteComponentDSMessages
+  siteComponentDSMessages,
+  formEngineMessages
 };

@@ -698,6 +698,9 @@ var CStudioForms = CStudioForms || function() {
   const { fromEvent, operators } = CrafterCMSNext.rxjs;
   const { map, filter, take } = operators;
   const FlattenerState = {};
+  const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+  const formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
+  const words = CrafterCMSNext.i18n.messages.words;
 
   const messages$ = fromEvent(window, 'message').pipe(
     filter(event => event.data && event.data.type),
@@ -735,10 +738,11 @@ var CStudioForms = CStudioForms || function() {
       var dialog = new YAHOO.widget.SimpleDialog('saveDraftWar',
         {
           width: '300px', fixedcenter: true, visible: false, draggable: false, close: true, modal: true,
-          text: 'Draft Save Completed', icon: YAHOO.widget.SimpleDialog.ICON_INFO,
+          text: formatMessage(formEngineMessages.saveDraftCompleted),
+          icon: YAHOO.widget.SimpleDialog.ICON_INFO,
           constraintoviewport: true
         });
-      dialog.setHeader('Notification');
+      dialog.setHeader(formatMessage(words.notification));
       dialog.render(document.body);
       dialogEl = document.getElementById('saveDraftWar');
       dialogEl.dialog = dialog;
@@ -859,10 +863,8 @@ var CStudioForms = CStudioForms || function() {
               if (message.draft) {
                 amplify.publish('UPDATE_NODE_SELECTOR', {objId: objectId, value: name});
                 cfe.engine.saveForm(false, message.draft);
-              } else {
-                if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
-                  CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
-                }
+              } else if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
+                CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
               }
               break;
             }
@@ -884,6 +886,13 @@ var CStudioForms = CStudioForms || function() {
               cfe.engine.cancelForm();
               break;
             }
+          }
+        });
+      } else {
+        messages$.subscribe((message) => {
+          if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
+            createDialog();
+            setButtonsEnabled(true);
           }
         });
       }
@@ -1294,12 +1303,6 @@ var CStudioForms = CStudioForms || function() {
           }
 
           if (me.config.isInclude) {
-            messages$.subscribe((message) => {
-              if (message.type === CHILD_FORM_DRAFT_COMPLETE) {
-                createDialog();
-                setButtonsEnabled(true);
-              }
-            });
             sendMessage({
               type: FORM_UPDATE_REQUEST,
               editorId: editorId,
