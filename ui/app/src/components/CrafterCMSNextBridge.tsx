@@ -23,11 +23,19 @@ import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from "../styles/theme";
 
 const cache = createIntlCache();
+const locale = document.documentElement.lang;
+export const intl = _createIntl(locale);
 
-export const intl = createIntl({
-  locale: 'en',
-  messages: {}
-}, cache);
+export async function _createIntl(locale: any) {
+  if(!locale) locale = 'en';
+  return createIntl(
+      {
+        locale,
+        messages: await import(`../translations/locales/${locale}.json`),
+      },
+      cache,
+    )
+}
 
 function CrafterCMSNextBridge(props: any) {
   return (
