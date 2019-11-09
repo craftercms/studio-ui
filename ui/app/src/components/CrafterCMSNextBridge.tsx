@@ -27,14 +27,18 @@ const locale = document.documentElement.lang;
 export const intl = _createIntl(locale);
 
 export async function _createIntl(locale: any) {
-  if(!locale) locale = 'en';
+  if (!locale) {
+    locale = 'en';
+    // TODO: throw console error
+  }
+  
   return createIntl(
-      {
-        locale,
-        messages: await import(`../translations/locales/${locale}.json`),
-      },
-      cache,
-    )
+    {       
+      locale,
+      messages: await import(`../translations/locales/${locale}.json`),
+    },
+    cache
+   );
 }
 
 function CrafterCMSNextBridge(props: any) {
