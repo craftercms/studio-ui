@@ -88,6 +88,7 @@
           var instance = new CStudioAuthoring.ContextualNav.WcmRootFolderInstance(config);
           instance.cannedSearchCache = [];
           instance.excludeCache = [];
+          instance.excludeRegexCache = [];
           instance.openArray = {};
           var latestStored = storage.read( Self.getStoredPathKey(instance) );
           if(latestStored){
@@ -184,24 +185,13 @@
                 });
             }
           }
-
-          if (
-            config.params.excludes && 
-            typeof config.params.excludes === 'object' &&
-            config.params.excludes.exclude
-          ) {
-            
-            const excludes = Array.isArray(config.params.excludes.exclude)
-              ? config.params.excludes.exclude
-              : [config.params.excludes.exclude] ;
-
-            excludes.forEach(function (path) {
-              if (!instance.excludeCache[path]) {
-                instance.excludeCache[path] = [];
-              }
-              instance.excludeCache[path].push(path);
-            });
-            
+          if (config.params.excludes && (typeof (config.params.excludes) == "object")){
+            if(config.params.excludes.exclude){
+              this.creatingExcludeArray(config.params.excludes.exclude, instance.excludeCache);
+            }
+            if(config.params.excludes.regex){
+              this.creatingExcludeArray(config.params.excludes.regex, instance.excludeRegexCache);
+            }
           }
 
           // cache the searches by name so they can be checked quickly when building the nav
@@ -410,6 +400,41 @@
       },
 
       /**
+       * creating Exclude Array
+       */
+      creatingExcludeArray: function (exclude, excludeCache) {
+        if (exclude) {
+          const excludes = Array.isArray(exclude)
+            ? exclude
+            : [exclude];
+
+          excludes.forEach(function (path) {
+            if (!excludeCache[path]) {
+              excludeCache[path] = [];
+            }
+            excludeCache[path].push(path);
+          });
+        }
+      },
+
+      /**
+       * is Exclude
+       */
+      isExcludeFromNav: function (path, instance) {
+        var regex;
+        if (instance.excludeCache[path]) {
+          return true;
+        }
+        for (const excludeRegexCache in instance.excludeRegexCache) {
+          regex = RegExp(excludeRegexCache,'g');
+          if (regex.test(path)) {
+            return true;
+          }
+        }
+        return false;
+      },
+
+      /**
        * render function called on root level elements
        */
       drawTree: function(treeItems, tree, pathToOpenTo, instance, uniquePath) {
@@ -441,10 +466,7 @@
         }
 
         for (var i = 0; i < treeItems.length; i++) {
-          var exclude = false;
-          if(instance.excludeCache[treeItems[i].path]) {
-            exclude = true;
-          }
+          var exclude = this.isExcludeFromNav(treeItems[i].path, instance);
 
           if(instance.mods) {
             for(var m=0; m<instance.mods.length; m++) {
@@ -717,17 +739,13 @@
         }
 
         for (var i = 0, l = treeItems.length, treeNodeTO, renderChild; i < l; i++) {
-          var exclude = false;
+          var exclude = this.isExcludeFromNav(treeItems[i].path, instance);
 
           if(instance.mods) {
             for(var m=0; m<instance.mods.length; m++) {
               var mod = instance.mods[m];
               exclude = mod.filterItem(treeItems[i]);
             }
-          }
-
-          if(instance.excludeCache[treeItems[i].path]) {
-            exclude = true;
           }
 
           treeNodeTO = this.createTreeNodeTransferObject(treeItems[i]);
