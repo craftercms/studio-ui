@@ -29,23 +29,29 @@ import KO from '../translations/locales/ko.json'
 const cache = createIntlCache();
 const locale = document.documentElement.lang;
 
-function selectMessages() {
-  if(locale === 'en') {
-    return EN;
-  } else if (locale === 'es') {
-    return ES;
-  } else if (locale === 'de') {
-    return DE;
-  } else if (locale === 'ko') {
-    return KO;
-  }else {
-    return EN;
+function selectMessages(locale: string) {
+  switch(locale) {
+    case 'en':
+      return EN;
+      break;
+    case 'es':
+      return ES;
+      break;
+    case 'de':
+      return DE;
+      break;
+    case 'ko':
+      return KO;
+      break;
+    default:
+      return EN;
+      break;
   }
 }
 
 export const intl = createIntl({
   locale: locale,
-  messages: selectMessages()
+  messages: {}
 }, cache);
 
 function CrafterCMSNextBridge(props: any) {

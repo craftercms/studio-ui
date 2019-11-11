@@ -350,7 +350,6 @@
 </section>
 <script>
     (function (CStudioAuthoring) {
-        $('html').attr('lang', CStudioAuthoringContext.lang);
         var CMgs = CStudioAuthoring.Messages;
         var langBundle = CMgs.getBundle("siteDashboard", CStudioAuthoringContext.lang);
         var formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);

@@ -32,7 +32,6 @@
     <#include "/templates/web/common/page-fragments/context-nav.ftl" />
 
     <script>
-        $('html').attr('lang', CStudioAuthoringContext.lang);
         CMgs = CStudioAuthoring.Messages;
         langBundle = CMgs.getBundle("siteDashboard", CStudioAuthoringContext.lang);
         formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);

@@ -52,6 +52,7 @@
    	}
 
   var lang = localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage');
+  $('html').attr('lang', lang);
   CStudioAuthoringContext.lang = lang ? lang : "en";
 
 	$(function() {

@@ -48,7 +48,6 @@
     <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <script>
-        $('html').attr('lang', CStudioAuthoringContext.lang);
         CMgs = CStudioAuthoring.Messages;
         langBundle = CMgs.getBundle("contentTypes", CStudioAuthoringContext.lang);
         formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
