@@ -243,7 +243,7 @@ const contentTypesMessages = defineMessages({
   },
   internalNameErrorMessage: {
     id: 'contentType.internalNameErrorMessage',
-    defaultMessage: 'This content type requires an Internal Name.'
+    defaultMessage: 'This content type requires an internal name. Please add an "Internal Name" control to this content type definition.'
   },
   flagTitleError: {
     id: 'contentType.flatTitleError',
