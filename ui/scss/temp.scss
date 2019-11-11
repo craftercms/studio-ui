@@ -500,6 +500,21 @@ div#acn-active-content {
     &.highlighted {
       font-weight: bold;
     }
+
+    .context-menu--ellipsis {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+      display: none;
+    }
+
+  }
+
+  //TODO: need to set a proper class
+  .ygtvitem:hover > table {
+    .context-menu--ellipsis {
+      display: inline-block;
+    }
   }
 }
 

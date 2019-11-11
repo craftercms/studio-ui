@@ -186,11 +186,11 @@
           }
 
           if (
-            config.params.excludes && 
+            config.params.excludes &&
             typeof config.params.excludes === 'object' &&
             config.params.excludes.exclude
           ) {
-            
+
             const excludes = Array.isArray(config.params.excludes.exclude)
               ? config.params.excludes.exclude
               : [config.params.excludes.exclude] ;
@@ -201,7 +201,7 @@
               }
               instance.excludeCache[path].push(path);
             });
-            
+
           }
 
           // cache the searches by name so they can be checked quickly when building the nav
@@ -646,6 +646,7 @@
           })(tree, instance);
         }
 
+        tree.oContextMenu = oContextMenu;
         tree.draw();
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
           var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
@@ -917,6 +918,15 @@
           if(!isLevelDescriptor){
             nodeSpan.dataset.uri = treeNodeTO.uri;
           }
+
+          var $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-v"></span>').appendTo($(nodeSpan));
+
+          $contextMenuEllipsis.on('click', function(e) {
+            e.stopPropagation();
+
+            _self.onTriggerContextMenu(instance.tree, instance.tree.oContextMenu, this.parentElement);
+
+          })
 
           treeNodeTO.html = nodeSpan;
 
@@ -2589,8 +2599,8 @@
       /**
        * load context menu
        */
-      onTriggerContextMenu: function(tree, p_aArgs) {
-        var target = p_aArgs.contextEventTarget;
+      onTriggerContextMenu: function(tree, p_aArgs, target) {
+        var target = target ? target : p_aArgs.contextEventTarget;
 
         /* Get the TextNode instance that that triggered the display of the ContextMenu instance. */
         oCurrentTextNode = tree.getNodeByElement(target);
