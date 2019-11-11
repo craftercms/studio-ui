@@ -165,6 +165,21 @@ const numericInputControlMessages = defineMessages({
   }
 });
 
+const internalNameControlMessages = defineMessages({
+  label: {
+    id: 'internalNameControl.label',
+    defaultMessage: 'Internal Name'
+  },
+  displaySize: {
+    id: 'internalNameControl.displaySize',
+    defaultMessage: 'Display Size'
+  },
+  maxLength: {
+    id: 'internalNameControl.maxLength',
+    defaultMessage: 'Max Length'
+  }
+});
+
 const reposAdminMessages = defineMessages({
   pendingCommit: {
     id: 'reposAdmin.pendingCommit',
@@ -228,7 +243,7 @@ const contentTypesMessages = defineMessages({
   },
   internalNameErrorMessage: {
     id: 'contentType.internalNameErrorMessage',
-    defaultMessage: 'This content type requires an Internal Name.'
+    defaultMessage: 'This content type requires an internal name. Please add an "Internal Name" control to this content type definition.'
   },
   flagTitleError: {
     id: 'contentType.flatTitleError',
@@ -494,6 +509,14 @@ const browseCMISMessages = defineMessages({
   }
 });
 
+
+const formEngineMessages = defineMessages({
+  saveDraftCompleted: {
+    id: 'formEngine.saveDraftCompleted',
+    defaultMessage: 'Draft Save Completed'
+  },
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -502,6 +525,7 @@ export default {
   passwordRequirementMessages,
   groupsAdminMessages,
   numericInputControlMessages,
+  internalNameControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
@@ -511,6 +535,7 @@ export default {
   words,
   globalConfigMessages,
   publishingMessages,
-  browseCMISMessages,
-  siteComponentDSMessages
+  siteComponentDSMessages,
+  formEngineMessages,
+  browseCMISMessages
 };
