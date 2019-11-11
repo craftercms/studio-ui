@@ -34,11 +34,11 @@
     <script>
         window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
         const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
-        var user = "${username!""}";
-        var lang = localStorage.getItem(user + '_crafterStudioLanguage');
-        document.documentElement.setAttribute('lang', lang);
     </script>
 
+
+
+    <#include "/templates/web/common/localeJSON.ftl" />
     <#include "/templates/web/common/js-next-scripts.ftl" />
 
     <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!.now?string('Mddyyyy')}">

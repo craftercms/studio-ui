@@ -21,37 +21,14 @@ import React, { Suspense } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from "../styles/theme";
-import EN from '../translations/locales/en.json'
-import ES from '../translations/locales/es.json'
-import DE from '../translations/locales/de.json'
-import KO from '../translations/locales/ko.json'
 
 const cache = createIntlCache();
-const locale = document.documentElement.lang;
-
-function selectMessages(locale: string) {
-  switch(locale) {
-    case 'en':
-      return EN;
-      break;
-    case 'es':
-      return ES;
-      break;
-    case 'de':
-      return DE;
-      break;
-    case 'ko':
-      return KO;
-      break;
-    default:
-      return EN;
-      break;
-  }
-}
+const locale = document.getElementById('localeJSON').getAttribute('locale');
+const messages = JSON.parse(document.getElementById('localeJSON').innerHTML);
 
 export const intl = createIntl({
-  locale: locale,
-  messages: selectMessages(locale)
+  locale,
+  messages
 }, cache);
 
 function CrafterCMSNextBridge(props: any) {

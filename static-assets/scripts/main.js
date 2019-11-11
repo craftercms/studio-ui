@@ -1170,7 +1170,6 @@
     function ($scope, $state, $location, sitesService, $window) {
 
       $scope.entities;
-
       sitesService.getGlobalMenu()
         .success(function (data) {
           $scope.entities = data.menuItems;
@@ -1943,10 +1942,13 @@
               $scope.error = data.error;
             } else {
               hideModalForm();
-              $state.go('home.globalMenu');
               // set selected language in localStorage
+              let userCookie = data.username + '_crafterStudioLanguage';
               localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-              localStorage.setItem(data.username + '_crafterStudioLanguage', $scope.langSelected);
+              localStorage.setItem(userCookie, $scope.langSelected);
+              CrafterCMSNext.util.auth.setCookie('crafterStudioLanguage', $scope.langSelected);
+              CrafterCMSNext.util.auth.setCookie(userCookie, $scope.langSelected);
+              $state.go('home.globalMenu');
             }
           }, function error(response){
             $scope.error = {};

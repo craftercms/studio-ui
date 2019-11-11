@@ -23,7 +23,8 @@
     window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
   </script>
 
-  <#include "/templates/web/common/js-next-scripts.ftl" />
+    <#include "/templates/web/common/localeJSON.ftl" />
+    <#include "/templates/web/common/js-next-scripts.ftl" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/skin.css?version=${UIBuildId!.now?string('Mddyyyy')}" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/yui/container/assets/skins/sam/container.css?version=${UIBuildId!.now?string('Mddyyyy')}"/>
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/base.css?version=${UIBuildId!.now?string('Mddyyyy')}" />

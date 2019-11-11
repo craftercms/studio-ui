@@ -51,10 +51,6 @@
    		document.location = CStudioAuthoringContext.baseUri;
    	}
 
-  var lang = localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage');
-  $('html').attr('lang', lang);
-  CStudioAuthoringContext.lang = lang ? lang : "en";
-
 	$(function() {
 		var isChromium = window.chrome,
 			vendorName = window.navigator.vendor,

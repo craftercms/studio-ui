@@ -27,8 +27,18 @@ export function setRequestForgeryToken() {
   setGlobalHeaders({'X-XSRF-TOKEN': token});
 }
 
+export function getCookie(name:string){
+  return Cookies.get(name);
+}
+
+export function setCookie(name: string, value: string){
+  return Cookies.set(name, value);
+}
+
 
 export default {
   getRequestForgeryToken,
-  setRequestForgeryToken
+  setRequestForgeryToken,
+  getCookie,
+  setCookie
 };
