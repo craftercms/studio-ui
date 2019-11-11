@@ -282,6 +282,7 @@ function PublishingQueue(props: PublishingQueueProps) {
             _pending[key] = false;
           });
           setPending({...pending, ..._pending});
+          getPackages(siteId);
         },
         ({response}) => {
           setApiState({...apiState, error: true, errorResponse: response});
