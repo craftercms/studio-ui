@@ -420,19 +420,18 @@
       /**
        * is Exclude
        */
-      isPathExcludeFromNav: function (path, instance) {
-        var exclude = false,
-            regex;
-        if(instance.excludeCache[path]) {
-          exclude = true;
+      isExcludeFromNav: function (path, instance) {
+        var regex;
+        if (instance.excludeCache[path]) {
+          return true;
         }
         for (const excludeRegexCache in instance.excludeRegexCache) {
           regex = RegExp(excludeRegexCache,'g');
-          if(regex.test(path)){
-            exclude = true;
+          if (regex.test(path)) {
+            return true;
           }
-        };
-        return exclude;
+        }
+        return false;
       },
 
       /**
@@ -467,7 +466,7 @@
         }
 
         for (var i = 0; i < treeItems.length; i++) {
-          var exclude = this.isPathExcludeFromNav(treeItems[i].path, instance);
+          var exclude = this.isExcludeFromNav(treeItems[i].path, instance);
 
           if(instance.mods) {
             for(var m=0; m<instance.mods.length; m++) {
@@ -740,7 +739,7 @@
         }
 
         for (var i = 0, l = treeItems.length, treeNodeTO, renderChild; i < l; i++) {
-          var exclude = this.isPathExcludeFromNav(treeItems[i].path, instance);
+          var exclude = this.isExcludeFromNav(treeItems[i].path, instance);
 
           if(instance.mods) {
             for(var m=0; m<instance.mods.length; m++) {
