@@ -13,8 +13,6 @@
     <#assign locale = cookies['crafterStudioLanguage']/>
 </#if>
 
-${locale}
-
 <script id="localeJSON" type="application/json" locale="${locale}">
   <#include "/static-assets/next/locales/${locale}.json"/>
 </script>
