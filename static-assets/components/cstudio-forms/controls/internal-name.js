@@ -30,6 +30,9 @@ CStudioForms.Controls.InternalName = CStudioForms.Controls.InternalName ||
     this.form = form;
     this.id = "internal-name";
     this.readonly = readonly;
+    this.i18n = CrafterCMSNext.i18n;
+    this.formatMessage = this.i18n.intl.formatMessage;
+    this.internalNameControlMessages = this.i18n.messages.internalNameControlMessages;
 
     return this;
   }
@@ -41,7 +44,7 @@ YAHOO.extend(CStudioForms.Controls.InternalName, CStudioForms.CStudioFormField, 
   },
 
   getLabel: function () {
-    return CMgs.format(langBundle, "internalName");
+    return this.formatMessage(this.internalNameControlMessages.label);
   },
 
   _onChange: function (evt, obj) {
@@ -56,7 +59,6 @@ YAHOO.extend(CStudioForms.Controls.InternalName, CStudioForms.CStudioFormField, 
         validationResult = false;
       } else {
         obj.clearError("required");
-        //validationExist = true;
       }
     }
 
@@ -94,7 +96,9 @@ YAHOO.extend(CStudioForms.Controls.InternalName, CStudioForms.CStudioFormField, 
 
   _onChangeVal: function (evt, obj) {
     obj.edited = true;
-    this._onChange(evt, obj);
+    if(this._onChange){
+      this._onChange(evt, obj);
+    }
   },
 
   /**
@@ -231,13 +235,13 @@ YAHOO.extend(CStudioForms.Controls.InternalName, CStudioForms.CStudioFormField, 
   },
 
   getName: function () {
-    return "input";
+    return "internal-name";
   },
 
   getSupportedProperties: function () {
     return [
-      {label: CMgs.format(langBundle, "displaySize"), name: "size", type: "int", defaultValue: "50"},
-      {label: CMgs.format(langBundle, "maxLength"), name: "maxlength", type: "int", defaultValue: "50"},
+      {label: this.formatMessage(this.internalNameControlMessages.displaySize), name: "size", type: "int", defaultValue: "50"},
+      {label: this.formatMessage(this.internalNameControlMessages.maxLength), name: "maxlength", type: "int", defaultValue: "50"},
     ];
   },
 

@@ -165,6 +165,21 @@ const numericInputControlMessages = defineMessages({
   }
 });
 
+const internalNameControlMessages = defineMessages({
+  label: {
+    id: 'internalNameControl.label',
+    defaultMessage: 'Internal Name'
+  },
+  displaySize: {
+    id: 'internalNameControl.displaySize',
+    defaultMessage: 'Display Size'
+  },
+  maxLength: {
+    id: 'internalNameControl.maxLength',
+    defaultMessage: 'Max Length'
+  }
+});
+
 const reposAdminMessages = defineMessages({
   pendingCommit: {
     id: 'reposAdmin.pendingCommit',
@@ -502,6 +517,7 @@ export default {
   passwordRequirementMessages,
   groupsAdminMessages,
   numericInputControlMessages,
+  internalNameControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
