@@ -36,9 +36,6 @@
         const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
     </script>
 
-
-
-    <#include "/templates/web/common/localeJSON.ftl" />
     <#include "/templates/web/common/js-next-scripts.ftl" />
 
     <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!.now?string('Mddyyyy')}">

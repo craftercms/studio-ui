@@ -17,23 +17,64 @@
 
 import '../styles/index.scss';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from "../styles/theme";
+import EN from '../translations/locales/en.json'
+import ES from '../translations/locales/es.json'
+import DE from '../translations/locales/de.json'
+import KO from '../translations/locales/ko.json'
 
 const cache = createIntlCache();
-const locale = document.getElementById('localeJSON').getAttribute('locale');
-const messages = JSON.parse(document.getElementById('localeJSON').innerHTML);
+const username = localStorage.getItem('userName');
+
+const locale = username ?
+  localStorage.getItem(`${username}_crafterStudioLanguage`) :
+  localStorage.getItem(`crafterStudioLanguage`);
+
+function selectMessages(locale: string) {
+  switch(locale) {
+    case 'en':
+      return EN;
+      break;
+    case 'es':
+      return ES;
+      break;
+    case 'de':
+      return DE;
+      break;
+    case 'ko':
+      return KO;
+      break;
+    default:
+      return EN;
+      break;
+  }
+}
 
 export const intl = createIntl({
   locale,
-  messages
+  messages: selectMessages(locale)
 }, cache);
 
 function CrafterCMSNextBridge(props: any) {
+  const [_intl, setIntl] = useState(intl);
+  useEffect(() => {
+    const _locale = username ?
+      localStorage.getItem(`${username}_crafterStudioLanguage`) :
+      localStorage.getItem(`crafterStudioLanguage`);
+    //TODO#: Update intl
+    // intl.locale = locale;
+    // intl.messages = selectMessages(_locale);
+    setIntl(createIntl({
+      locale,
+      messages: selectMessages(_locale)
+    }, cache));
+    // eslint-disable-next-line
+  }, []);
   return (
-    <RawIntlProvider value={intl}>
+    <RawIntlProvider value={_intl}>
       <ThemeProvider theme={theme}>
         <Suspense fallback="">
           {props.children}

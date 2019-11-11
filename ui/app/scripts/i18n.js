@@ -2,7 +2,7 @@ const manageTranslations = require('react-intl-translations-manager').default;
 
 manageTranslations({
   messagesDirectory: './src/translations/src',
-  translationsDirectory: './public/locales/',
+  translationsDirectory: './src/translations/locales/',
   whitelistsDirectory: './src/translations/whitelists',
   languages: ['en', 'es', 'de', 'ko', 'fr']
 });

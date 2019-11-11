@@ -52,12 +52,3 @@ ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
     console.log('Done!');
   }
 });
-
-console.log(`Copying build locales files to ${DEST}/static`);
-ncp(`${PATH_BUILD}/locales`, `${DEST}/locales`, (err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log('Done!');
-  }
-});

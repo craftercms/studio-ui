@@ -1945,13 +1945,9 @@
               // set selected language in localStorage
               let userCookie = data.username + '_crafterStudioLanguage';
               localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
+              localStorage.setItem('userName', data.username);
               localStorage.setItem(userCookie, $scope.langSelected);
-              CrafterCMSNext.util.auth.setCookie('crafterStudioLanguage', $scope.langSelected);
-              CrafterCMSNext.util.auth.setCookie(userCookie, $scope.langSelected);
               $state.go('home.globalMenu');
-              setTimeout(function () {
-                window.location.reload();
-              },0)
             }
           }, function error(response){
             $scope.error = {};
