@@ -51,7 +51,7 @@ function selectMessages(locale: string) {
 
 export const intl = createIntl({
   locale: locale,
-  messages: {}
+  messages: selectMessages(locale)
 }, cache);
 
 function CrafterCMSNextBridge(props: any) {
