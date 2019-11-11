@@ -189,7 +189,7 @@
             if(config.params.excludes.exclude){
               this.creatingExcludeArray(config.params.excludes.exclude, instance.excludeCache);
             }
-            if(config.params.excludes.exclude){
+            if(config.params.excludes.regex){
               this.creatingExcludeArray(config.params.excludes.regex, instance.excludeRegexCache);
             }
           }
@@ -420,7 +420,7 @@
       /**
        * is Exclude
        */
-      isExclude: function (path, instance) {
+      isPathExcludeFromNav: function (path, instance) {
         var exclude = false,
             regex;
         if(instance.excludeCache[path]) {
@@ -431,7 +431,7 @@
           if(regex.test(path)){
             exclude = true;
           }
-        }
+        };
         return exclude;
       },
 
@@ -467,7 +467,7 @@
         }
 
         for (var i = 0; i < treeItems.length; i++) {
-          var exclude = this.isExclude(treeItems[i].path, instance);
+          var exclude = this.isPathExcludeFromNav(treeItems[i].path, instance);
 
           if(instance.mods) {
             for(var m=0; m<instance.mods.length; m++) {
@@ -740,7 +740,7 @@
         }
 
         for (var i = 0, l = treeItems.length, treeNodeTO, renderChild; i < l; i++) {
-          var exclude = this.isExclude(treeItems[i].path, instance);
+          var exclude = this.isPathExcludeFromNav(treeItems[i].path, instance);
 
           if(instance.mods) {
             for(var m=0; m<instance.mods.length; m++) {
