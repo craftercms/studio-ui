@@ -68,7 +68,7 @@
 
 <section class="site-dashboard">
     <div class="container">
-        
+
         <div id="GoLiveQueue" class="panel panel-default">
             <div class="panel-heading">
                 <div id="section-widget-GoLiveQueue" class="studio-section-widget"
@@ -350,7 +350,7 @@
 </section>
 <script>
     (function (CStudioAuthoring) {
-
+        $('html').attr('lang', CStudioAuthoringContext.lang);
         var CMgs = CStudioAuthoring.Messages;
         var langBundle = CMgs.getBundle("siteDashboard", CStudioAuthoringContext.lang);
         var formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);

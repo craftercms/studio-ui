@@ -21,27 +21,38 @@ import React, { Suspense } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from "../styles/theme";
+import EN from '../translations/locales/en.json'
+import ES from '../translations/locales/es.json'
+import DE from '../translations/locales/de.json'
+import KO from '../translations/locales/ko.json'
 
 const cache = createIntlCache();
 const locale = document.documentElement.lang;
-export const intl = _createIntl(locale);
 
-export async function _createIntl(locale: any) {
-  if(!locale) locale = 'en';
-  return createIntl(
-      {
-        locale,
-        messages: await import(`../translations/locales/${locale}.json`),
-      },
-      cache,
-    )
+function selectMessages() {
+  if(locale === 'en') {
+    return EN;
+  } else if (locale === 'es') {
+    return ES;
+  } else if (locale === 'de') {
+    return DE;
+  } else if (locale === 'ko') {
+    return KO;
+  }else {
+    return EN;
+  }
 }
+
+export const intl = createIntl({
+  locale: locale,
+  messages: selectMessages()
+}, cache);
 
 function CrafterCMSNextBridge(props: any) {
   return (
     <RawIntlProvider value={intl}>
       <ThemeProvider theme={theme}>
-        <Suspense fallback="">
+        <Suspense fallback=''>
           {props.children}
         </Suspense>
       </ThemeProvider>
