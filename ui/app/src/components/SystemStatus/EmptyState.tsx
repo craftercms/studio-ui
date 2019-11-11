@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
-import emptyIGM from "../assets/desert.svg";
+import React from 'react';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import emptyImage from '../../assets/desert.svg';
 
 const useStyles = makeStyles(() => ({
   emptyContainer: {
@@ -49,7 +49,7 @@ export default function EmptyState(props: EmptyStateProps) {
 
   return (
     <div className={classes.emptyContainer}>
-      <img src={image ? image : emptyIGM} alt=""/>
+      <img src={image ? image : emptyImage} alt=""/>
       {
         title &&
         <Typography variant="h5" component="h1" className={'title'} color={'textSecondary'}>
