@@ -59,8 +59,6 @@ crafterDefine('guest', [
       origin: origin
     }, origin);
 
-    this.test = config.test
-
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {
       crafterRequire(['dnd-controller'], function (DnDController) {
 
@@ -165,6 +163,13 @@ crafterDefine('guest', [
     communicator.on(Topics.INIT_ICE_REGIONS, initIceRegions_resizeIceRegions_handler);
 
     communicator.on(Topics.RESIZE_ICE_REGIONS, initIceRegions_resizeIceRegions_handler);
+
+    communicator.on(Topics.CHANGE_GUEST_REQUEST, (params) => {
+      const locationOrigin = window.location.origin;
+      if (window.location.href.replace(locationOrigin, '') !== params.url) {
+        window.location.href = `${locationOrigin}${params.url}`;
+      }
+    });
 
     // When the page has successfully loaded, notify the host window of it's readiness
     communicator.publish(Topics.GUEST_SITE_LOAD, {
