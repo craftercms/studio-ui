@@ -597,21 +597,6 @@
       });
       }
 
-    // setTimeout(function () {
-    //   // TODO this thing doesn't work well if document domain is not set on both windows. Problem?
-    //   try {
-    //     console.log(win.contentWindow.location.href);
-    //     if (siteChanged || win.contentWindow.location.href.replace(origin, '') !== hash.page) {
-    //       win.src = previewAppBaseUri + hash.page;
-    //     }
-    //   } catch (error) {
-    //     console.log(win.src, win.src.replace(origin, ''), hash.page);
-    //     if (siteChanged || win.src.replace(origin, '') !== hash.page) {
-    //       win.src = previewAppBaseUri + hash.page;
-    //     }
-    //   }
-    // });
-
     var path = hash.page,
       hashPage = hash.page;
 
