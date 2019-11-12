@@ -1093,6 +1093,7 @@
         }
       };
       $scope.validPass = false;
+      $scope.validResetPass = false;
       var users = $scope.users;
       $scope.user.enabled = true;
 
@@ -1145,7 +1146,11 @@
       };
 
       $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, 'password');
+        passwordRequirements.init($scope, 'validPass', 'password', 'top');
+      }
+
+      $scope.newPasswordRequirements = function() {
+        passwordRequirements.init($scope, 'validResetPass', 'newPassword', 'bottom');
       }
 
       this.init();

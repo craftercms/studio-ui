@@ -35,7 +35,8 @@
         formatMessage = i18n.intl.formatMessage,
         passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
         globalConfigMessages = i18n.messages.globalConfigMessages,
-        words = i18n.messages.words;
+        words = i18n.messages.words,
+        usersAdminMessages = i18n.messages.usersAdminMessages,;
 
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
@@ -759,22 +760,22 @@
         invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
       };
 
-      this.init = function (scope, elt) {
+      this.init = function (scope, isValid, elt, placement) {
         if (generalRegExp) {
           try {
             let isRegExpValid = new RegExp(generalRegExp);
             if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-              this.runValidation(scope, elt, 'groupsSupported');
+              this.runValidation(scope, isValid, elt, 'groupsSupported', placement);
             }else{
-              this.runValidation(scope, elt, 'noGroups');
+              this.runValidation(scope, isValid, elt, 'noGroups', placement);
             }
           } catch (error) {
             try {
               let isRegExpValid = new RegExp(generalRegExpWithoutGroups);
               if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-                this.runValidation(scope, elt, 'groupsNotSupported');
+                this.runValidation(scope, isValid, elt, 'groupsNotSupported', placement);
               }else{
-                this.runValidation(scope, elt, 'noGroups');
+                this.runValidation(scope, isValid, elt, 'noGroups', placement);
               }
             } catch (error) {
               console.warning('Defaulting password validation to server due to issues in RegExp compilation.');
@@ -819,7 +820,7 @@
         return { 'template': html, 'validPass': validPass };
       }
 
-      this.runValidation = function (scope, elt, staticTemplate) {
+      this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
         $("#" + elt)
           .blur(function () {
             $(this).popover('destroy');
@@ -827,7 +828,7 @@
           .keyup(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $('.popover').find('.popover-content').html(creatingPassValHTML.template);
-            scope.validPass = creatingPassValHTML.validPass;
+            scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           })
           .focus(function () {
@@ -835,12 +836,12 @@
             $(this).popover({
               title: messages.passwordValidation,
               content: creatingPassValHTML.template,
-              placement: 'top',
+              placement: placement ? placement : 'top',
               html: true,
               trigger: 'manual'
             });
             $(this).popover('show');
-            scope.validPass = creatingPassValHTML.validPass;
+            scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           });
       }
@@ -863,6 +864,9 @@
       $scope.showLogoutLink = false;
       $scope.logoutInfo = {};
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
+      $scope.messages = {
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+      };
 
       if($location.$$search.iframe){
         $rootScope.isFooter = false;
@@ -1156,9 +1160,9 @@
           windowClass: 'spinner-modal centered-dialog',
         });
       }
-
+      $scope.validPass = false;
       $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, 'password');
+        passwordRequirements.init($scope, 'validPass', 'password', 'top');
       }
 
     }
@@ -2056,13 +2060,21 @@
   ]);
 
   app.controller('ResetCtrl', [
-    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants',
-    function ($scope, $state, $location, authService, $timeout, $translate, Constants) {
+    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants', 'passwordRequirements', 
+    function ($scope, $state, $location, authService, $timeout, $translate, Constants, passwordRequirements) {
 
       var successDelay = 2500;
       $scope.user = {};
       $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
+      $scope.validPass = false;
+      $scope.messages = {
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+      };
+
+      $scope.passwordRequirements = function() {
+        passwordRequirements.init($scope, "validPass", 'password', 'bottom');
+      }
 
       authService.validateToken({
         'token': $location.search().token,
