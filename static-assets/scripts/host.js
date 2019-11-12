@@ -19,19 +19,20 @@
   'use strict';
 
   if (!window.location.origin) {
-    window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
   }
 
   var
     cstopic = crafter.studio.preview.cstopic,
     Topics = crafter.studio.preview.Topics,
-    previewAppBaseUri = CStudioAuthoringContext.previewAppBaseUri || "",
+    previewAppBaseUri = CStudioAuthoringContext.previewAppBaseUri || '',
     origin = previewAppBaseUri,
     communicator = new crafter.studio.Communicator(origin),
-    previewWidth;
+    previewWidth,
+    hasCheckIn = false;
 
   communicator.subscribe(Topics.RESET_ICE_TOOLS_CONTENT, function (message) {
-    sessionStorage.setItem("ice-tools-content", message);
+    sessionStorage.setItem('ice-tools-content', message);
     try {
       // For ICE tools panel syncing.
       window.initRegCookie();
@@ -60,10 +61,7 @@
 
   communicator.subscribe(Topics.GUEST_CHECKIN, function (url) {
     var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite');
-    var params = {
-      page: url,
-      site: site
-    };
+    var params = { page: url, site };
     setHash(params);
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
@@ -75,7 +73,7 @@
   communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
     var subscribeCallback = function (_message) {
       switch (_message.type) {
-        case "FORM_ENGINE_RENDER_COMPLETE": {
+        case 'FORM_ENGINE_RENDER_COMPLETE': {
           amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
           CStudioAuthoring.InContextEdit.messageDialogs({
             type: 'OPEN_CHILD_COMPONENT',
@@ -102,7 +100,7 @@
       if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
         par = [];
         isWrite = false;
-        par.push({ name: "readonly" });
+        par.push({ name: 'readonly' });
       }
     }
     var editCb = {
@@ -118,7 +116,7 @@
         }
         if (CStudioAuthoringContext.isPreview || (!CStudioAuthoringContext.isPreview && !draft)) {
           eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
-          eventNS.typeAction = "";
+          eventNS.typeAction = '';
           document.dispatchEvent(eventNS);
         }
       },
@@ -132,7 +130,7 @@
         }
         isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
         if (!isWrite) {
-          par.push({ name: "readonly" });
+          par.push({ name: 'readonly' });
         }
         if (!message.itemId) {
           // base page edit
@@ -277,12 +275,16 @@
   // Listen to the guest site load
   communicator.subscribe(Topics.GUEST_SITE_LOAD, function (message, scope) {
 
+    hasCheckIn = true;
+
     if (message.url) {
       var params = {
             page: message.url,
             site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
-          },
-          studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
+      };
+
+      var studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
+
       setHash(params);
       amplify.publish(cstopic('GUEST_SITE_LOAD'), params);
 
@@ -307,10 +309,10 @@
   });
 
   communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
-    CStudioAuthoring.PreviewTools.panel.element.style.visibility = "visible";
+    CStudioAuthoring.PreviewTools.panel.element.style.visibility = 'visible';
     $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function () {
 
-      if (!previewWidth || previewWidth == 0 || previewWidth == "0px") {
+      if (!previewWidth || previewWidth == 0 || previewWidth == '0px') {
         previewWidth = 265;
       }
       $('.studio-preview').css('right', previewWidth);
@@ -319,20 +321,20 @@
   });
 
   amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_OFF'), function (config) {
-    sessionStorage.setItem('pto-on', "");
+    sessionStorage.setItem('pto-on', '');
     /*var PreviewToolsOffEvent = new YAHOO.util.CustomEvent("cstudio-preview-tools-off", CStudioAuthoring);
     PreviewToolsOffEvent.fire();*/
-    var el = YDom.get("acn-preview-tools-container");
-    YDom.removeClass(el.children[0], "icon-light-blue");
-    YDom.addClass(el.children[0], "icon-default");
+    var el = YDom.get('acn-preview-tools-container');
+    YDom.removeClass(el.children[0], 'icon-light-blue');
+    YDom.addClass(el.children[0], 'icon-default');
     communicator.publish(Topics.DND_COMPONENTS_PANEL_OFF, {});
   });
 
   amplify.subscribe(cstopic('DND_COMPONENTS_PANEL_ON'), function (config) {
-    sessionStorage.setItem('pto-on', "on");
-    var el = YDom.get("acn-preview-tools-container");
-    YDom.removeClass(el.children[0], "icon-default");
-    YDom.addClass(el.children[0], "icon-light-blue");
+    sessionStorage.setItem('pto-on', 'on');
+    var el = YDom.get('acn-preview-tools-container');
+    YDom.removeClass(el.children[0], 'icon-default');
+    YDom.addClass(el.children[0], 'icon-light-blue');
     amplify.publish(cstopic('START_DRAG_AND_DROP'), {
       components: config.components
     });
@@ -354,37 +356,38 @@
   });
 
   communicator.subscribe(Topics.START_DIALOG, function (message) {
-    var newdiv = document.createElement("div");
+    var newdiv = document.createElement('div');
 
-    newdiv.setAttribute("id", "cstudio-wcm-popup-div");
-    newdiv.className = "yui-pe-content";
-    newdiv.innerHTML = '<div class="contentTypePopupInner" id="warning">' +
-      '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
-      '<div class="contentTypePopupHeader">Notification</div> ' +
-      '<div class="contentTypeOuter">' +
-      '<div>' + message.message + '</div> ' +
-      '<div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="contentTypePopupBtn"> ' +
-      '<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="OK" />' +
-      '</div>' +
-      '</div>';
+    newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
+    newdiv.className = 'yui-pe-content';
+    newdiv.innerHTML = (
+      '<div class="contentTypePopupInner" id="warning">' +
+      /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
+      /****/'<div class="contentTypePopupHeader">Notification</div> ' +
+      /****/'<div class="contentTypeOuter">' +
+      /****/'<div>' + message.message + '</div> ' +
+      /****/'<div></div>' +
+      /**/'</div>' +
+      /**/'<div class="contentTypePopupBtn"> ' +
+      /****/'<input type="button" class="btn btn-primary cstudio-xform-button ok" id="cancelButton" value="OK" />' +
+      /**/'</div>' +
+      '</div>'
+    );
 
     document.body.appendChild(newdiv);
 
-    var dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", {
-      width: "400px",
-      height: message.height ? message.height : "222px",
+    var dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
+      width: '400px',
+      height: message.height ? message.height : '222px',
       fixedcenter: true,
       visible: false,
       modal: true,
       close: false,
       constraintoviewport: true,
-      underlay: "none",
+      underlay: 'none',
       autofillheight: null,
       buttons: [{
-        text: "Cancel", handler: function () {
+        text: 'Cancel', handler: function () {
           $(this).destroy();
         }, isDefault: true
       }]
@@ -392,13 +395,13 @@
 
     dialog.render();
     dialog.show();
-    dialog.cfg.setProperty("zIndex", 100001); // Update the z-index value to make it go over the site content nav
+    dialog.cfg.setProperty('zIndex', 100001); // Update the z-index value to make it go over the site content nav
 
-    YAHOO.util.Event.addListener("cancelButton", "click", function () {
+    YAHOO.util.Event.addListener('cancelButton', 'click', function () {
       dialog.destroy();
-      var masks = YAHOO.util.Dom.getElementsByClassName("mask");
+      var masks = YAHOO.util.Dom.getElementsByClassName('mask');
       for (var i = 0; i < masks.length; i++) {
-        YAHOO.util.Dom.getElementsByClassName("mask")[0].parentElement.removeChild(YAHOO.util.Dom.getElementsByClassName("mask")[0]);
+        YAHOO.util.Dom.getElementsByClassName('mask')[0].parentElement.removeChild(YAHOO.util.Dom.getElementsByClassName('mask')[0]);
       }
     });
 
@@ -406,7 +409,7 @@
   });
 
   communicator.subscribe(Topics.OPEN_BROWSE, function (message) {
-    CStudioAuthoring.Operations.openBrowse("", CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel), 1, "select", true, {
+    CStudioAuthoring.Operations.openBrowse('', CStudioAuthoring.Operations.processPathsForMacros(message.path, initialContentModel), 1, 'select', true, {
       success: function (searchId, selectedTOs) {
 
         for (var i = 0; i < selectedTOs.length; i++) {
@@ -502,9 +505,9 @@
       }
 
       var text = {};
-      text.done = CMgs.format(previewLangBundle, "done");
-      text.components = CMgs.format(previewLangBundle, "components");
-      text.addComponent = CMgs.format(previewLangBundle, "addComponent");
+      text.done = CMgs.format(previewLangBundle, 'done');
+      text.components = CMgs.format(previewLangBundle, 'components');
+      text.addComponent = CMgs.format(previewLangBundle, 'addComponent');
 
       communicator.publish(Topics.START_DRAG_AND_DROP, {
         components: categories,
@@ -513,10 +516,6 @@
         browse: browse
       });
     });
-  });
-
-  amplify.subscribe(cstopic('CHANGE_GUEST_REQUEST'), function (url) {
-    // console.log(arguments);
   });
 
   amplify.subscribe(cstopic('DND_COMPONENT_MODEL_LOAD'), function (data) {
@@ -533,11 +532,11 @@
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
-    $("#acn-ice-tools-container img").attr("src", CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit_off.png")
+    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png')
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
-    $("#acn-ice-tools-container img").attr("src", CStudioAuthoringContext.authoringAppBaseUri + "/static-assets/themes/cstudioTheme/images/edit.png")
+    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png')
   });
 
   amplify.subscribe(cstopic('ICE_TOOLS_ON'), function () {
@@ -564,10 +563,6 @@
     CStudioAuthoring.Utils.isReviewer(callback);
   });
 
-  function setHashPage(url) {
-    window.location.hash = '#/?page=' + url;
-  }
-
   function setHash(params) {
     var hash = [];
     for (var key in params) {
@@ -593,27 +588,35 @@
       siteChanged = (site !== hash.site);
     }
 
-    setTimeout(function () {
-      // TODO this thing doesn't work well if document domain is not set on both windows. Problem?
-      try {
-        if (siteChanged ||
-          win.contentWindow.location.href.replace(origin, '') !== hash.page) {
+    if (siteChanged || !hasCheckIn) {
           win.src = previewAppBaseUri + hash.page;
-        }
-      } catch (err) {
-        if (siteChanged ||
-          win.src.replace(origin, '') !== hash.page) {
-          win.src = previewAppBaseUri + hash.page;
-        }
+    } else {
+      communicator.publish(Topics.CHANGE_GUEST_REQUEST, {
+        base: previewAppBaseUri,
+        url: hash.page
+      });
       }
 
-    });
+    // setTimeout(function () {
+    //   // TODO this thing doesn't work well if document domain is not set on both windows. Problem?
+    //   try {
+    //     console.log(win.contentWindow.location.href);
+    //     if (siteChanged || win.contentWindow.location.href.replace(origin, '') !== hash.page) {
+    //       win.src = previewAppBaseUri + hash.page;
+    //     }
+    //   } catch (error) {
+    //     console.log(win.src, win.src.replace(origin, ''), hash.page);
+    //     if (siteChanged || win.src.replace(origin, '') !== hash.page) {
+    //       win.src = previewAppBaseUri + hash.page;
+    //     }
+    //   }
+    // });
 
     var path = hash.page,
       hashPage = hash.page;
 
-    if (path && path.indexOf(".") != -1) {
-      if (path.indexOf(".html") != -1 || path.indexOf(".xml") != -1) {
+    if (path && path.indexOf('.') != -1) {
+      if (path.indexOf('.html') != -1 || path.indexOf('.xml') != -1) {
         path = ('/site/website/' + hashPage).replace('//', '/');
         path = path.replace('.html', '.xml')
       }
@@ -702,14 +705,14 @@
   // reloadTree: if needed, allows tree to be reloaded. For assets it will be false since reload is not needed.
   function selectContentSet(item, reloadTree) {
     window.setTimeout(function() {
-      amplify.publish("SELECTED_CONTENT_SET", {
+      amplify.publish('SELECTED_CONTENT_SET', {
         contentTO: item,
         reload: reloadTree
       });
     }, 0);
   }
 
-  window.addEventListener("hashchange", function (e) {
+  window.addEventListener('hashchange', function (e) {
     e.preventDefault();
     goToHashPage();
   }, false);
@@ -724,10 +727,6 @@
     } else {
       goToHashPage();
     }
-
-    communicator.subscribe("URL_CHANGE", function (message) {
-      selectContent(message.pathname);
-    });
 
   }, false);
 
