@@ -269,12 +269,12 @@
       var callbackContent = {
         success: function (response) {
           contentTO.clone = true;
-          $('#cloneCMISLoader').remove();
+          $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
           CStudioAuthoring.SelectedContent.selectContent(contentTO);
           me.saveContent();
         },
         failure: function (response) {
-          $('#cloneCMISLoader').remove();
+          $('#cloneCMISLoader, #cloneCMISLoader_mask').remove();
           const error = JSON.parse(response.responseText);
           CStudioAuthoring.Operations.showSimpleDialog(
             "error-dialog",
