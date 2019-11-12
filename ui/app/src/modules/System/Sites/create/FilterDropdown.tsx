@@ -26,7 +26,7 @@ import TextField from "@material-ui/core/TextField";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
-import { CurrentFilters } from "../models/publishing";
+import { CurrentFilters } from "../../../../models/publishing";
 import SearchIcon from '@material-ui/icons/Search';
 import { Theme } from "@material-ui/core";
 

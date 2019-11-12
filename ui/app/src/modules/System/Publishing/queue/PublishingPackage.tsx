@@ -22,16 +22,16 @@ import Button from "@material-ui/core/Button";
 import React, { ChangeEvent, useRef, useState } from "react";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
-import SelectButton from "./UserControl/ConfirmDropdown";
+import SelectButton from "../../../../components/UserControl/ConfirmDropdown";
 import Typography from "@material-ui/core/Typography";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import { cancelPackage, fetchPackage } from "../services/publishing";
+import { cancelPackage, fetchPackage } from "../../../../services/publishing";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import "../styles/animations.scss";
+import "../../../../styles/animations.scss";
 import clsx from "clsx";
-import { CurrentFilters, READY_FOR_LIVE } from "../models/publishing";
+import { CurrentFilters, READY_FOR_LIVE } from "../../../../models/publishing";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {

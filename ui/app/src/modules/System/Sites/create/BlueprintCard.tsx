@@ -26,10 +26,10 @@ import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Blueprint } from "../models/Blueprint";
+import { Blueprint } from "../../../../models/Blueprint";
 import { defineMessages, useIntl } from "react-intl";
-import MobileStepper from "./MobileStepper";
-import { backgroundColor } from "../styles/theme";
+import MobileStepper from "../../../../components/MobileStepper";
+import { backgroundColor } from "../../../../styles/theme";
 import Button from "@material-ui/core/Button";
 import { Theme, Tooltip } from "@material-ui/core";
 import clsx from "clsx";

@@ -23,7 +23,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from "./PublishingPackage";
-import { cancelPackage, fetchEnvironments, fetchPackages } from '../services/publishing';
+import { cancelPackage, fetchEnvironments, fetchPackages } from '../../../../services/publishing';
 import {
   BLOCKED,
   CANCELLED,
@@ -33,16 +33,16 @@ import {
   PROCESSING,
   READY_FOR_LIVE,
   Selected
-} from "../models/publishing";
-import ConfirmDropdown from "./UserControl/ConfirmDropdown";
-import FilterDropdown from "./FilterDropdown";
-import { setRequestForgeryToken } from "../utils/auth";
+} from "../../../../models/publishing";
+import ConfirmDropdown from "../../../../components/UserControl/ConfirmDropdown";
+import FilterDropdown from "../../Sites/create/FilterDropdown";
+import { setRequestForgeryToken } from "../../../../utils/auth";
 import TablePagination from '@material-ui/core/TablePagination';
-import ErrorState from "./SystemStatus/ErrorState";
-import EmptyState from "./SystemStatus/EmptyState";
+import ErrorState from "../../../../components/SystemStatus/ErrorState";
+import EmptyState from "../../../../components/SystemStatus/EmptyState";
 import Typography from "@material-ui/core/Typography";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import Spinner from "./SystemStatus/Spinner";
+import Spinner from "../../../../components/SystemStatus/Spinner";
 import RefreshIcon from '@material-ui/icons/Refresh';
 import Button from "@material-ui/core/Button";
 
