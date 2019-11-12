@@ -40,6 +40,7 @@ export let intl = getIntl(getCurrentLocale());
 document.addEventListener('setlocale', (e: CustomEvent<string>) => {
   intl = getIntl(e.detail);
   updateIntl(intl);
+  document.documentElement.setAttribute('lang', e.detail);
 }, false);
 
 function getIntl(locale: string) {

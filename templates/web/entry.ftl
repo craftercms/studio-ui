@@ -34,11 +34,11 @@
     <script>
         window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
         const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
-        var user = "${username!""}";
-        var lang = localStorage.getItem(user + '_crafterStudioLanguage')?
-            localStorage.getItem(user + '_crafterStudioLanguage') :
-            localStorage.getItem('crafterStudioLanguage');
-        document.documentElement.setAttribute('lang', lang || 'en');
+        document.documentElement.setAttribute('lang', (
+            localStorage.getItem('${username!""}_crafterStudioLanguage') ||
+            localStorage.getItem('crafterStudioLanguage') ||
+            'en'
+        ));
     </script>
 
     <#include "/templates/web/common/js-next-scripts.ftl" />

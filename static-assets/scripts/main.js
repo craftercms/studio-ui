@@ -955,8 +955,10 @@
       $scope.selectAction = function(optSelected) {
         $scope.langSelected = optSelected;
         $translate.use($scope.langSelected);
-        let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
-        document.dispatchEvent(loginSuccess);
+        if(optSelected) {
+          let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
+          document.dispatchEvent(loginSuccess);
+        }
       };
 
       $scope.setLangCookie = function() {

@@ -51,12 +51,14 @@
    		document.location = CStudioAuthoringContext.baseUri;
    	}
 
-  var lang = localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage') ?
-      localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage') :
-      localStorage.getItem('crafterStudioLanguage');
-  $('html').attr('lang', lang || 'en');
-  CStudioAuthoringContext.lang = lang ? lang : "en";
+  var lang = (
+      localStorage.getItem(CStudioAuthoringContext.user + '_crafterStudioLanguage') ||
+      localStorage.getItem('crafterStudioLanguage') ||
+      'en'
+  );
 
+  $('html').attr('lang', lang);
+  CStudioAuthoringContext.lang = lang;
 
 	$(function() {
 		var isChromium = window.chrome,
