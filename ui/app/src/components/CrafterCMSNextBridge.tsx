@@ -21,58 +21,68 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from "../styles/theme";
-import EN from '../translations/locales/en.json'
-import ES from '../translations/locales/es.json'
-import DE from '../translations/locales/de.json'
-import KO from '../translations/locales/ko.json'
+import { updateIntl } from '../utils/codebase-bridge';
+import en from '../translations/locales/en.json';
+import es from '../translations/locales/es.json';
+import de from '../translations/locales/de.json';
+import ko from '../translations/locales/ko.json';
 
-const cache = createIntlCache();
-const username = localStorage.getItem('userName');
+const Locales: any = {
+  en,
+  es,
+  de,
+  ko
+};
 
-const locale = username ?
-  localStorage.getItem(`${username}_crafterStudioLanguage`) :
-  localStorage.getItem(`crafterStudioLanguage`);
+export let intl = getIntl(getCurrentLocale());
 
-function selectMessages(locale: string) {
-  switch(locale) {
-    case 'en':
-      return EN;
-      break;
-    case 'es':
-      return ES;
-      break;
-    case 'de':
-      return DE;
-      break;
-    case 'ko':
-      return KO;
-      break;
-    default:
-      return EN;
-      break;
-  }
+// @ts-ignore
+document.addEventListener('setlocale', (e: CustomEvent<string>) => {
+  intl = getIntl(e.detail);
+  updateIntl(intl);
+}, false);
+
+function getIntl(locale: string) {
+  return createIntl({
+    locale: locale,
+    messages: Locales[locale] || en
+  }, createIntlCache());
 }
 
-export const intl = createIntl({
-  locale,
-  messages: selectMessages(locale)
-}, cache);
+function getCurrentLocale() {
+  // TODO: get from storage, user, generic or default to 'en'
+  // Remember to check username in the distinct ways it could be set in user
+  // dashboard vs other parts of the system (i.e. preview, site config, etc)
+  // const username = localStorage.getItem('userName');
+  // const locale = username
+  //   ? localStorage.getItem(`${username}_crafterStudioLanguage`) 
+  //   : localStorage.getItem(`crafterStudioLanguage`);
+  return 'en';
+}
 
 function CrafterCMSNextBridge(props: any) {
-  const [_intl, setIntl] = useState(intl);
+
+  // When codebase bridge goes away...
+  // const [locale, setLocale] = useState(getCurrentLocale());
+  // const i18n = useMemo(() => createIntl({
+  //   locale,
+  //   messages: Locales[locale] || en
+  // }, createIntlCache()), [locale]);
+  // useEffect(() => {
+  //   const handler = (e: any) => setLocale(e.detail);
+  //   document.addEventListener('setlocale', handler, false);
+  //   return () => document.removeEventListener('setlocale', handler, false);
+  // }, [locale]);
+
+  // While codebase bridge still in play: trick React
+  // into re-rendering with the updated locale.
+  const [, update] = useState();
   useEffect(() => {
-    const _locale = username ?
-      localStorage.getItem(`${username}_crafterStudioLanguage`) :
-      localStorage.getItem(`crafterStudioLanguage`);
-    //TODO#: Update intl
-    // intl.locale = locale;
-    // intl.messages = selectMessages(_locale);
-    setIntl(createIntl({
-      locale,
-      messages: selectMessages(_locale)
-    }, cache));
-    // eslint-disable-next-line
-  }, []);
+    const handler = (e: any) => update({});
+    document.addEventListener('setlocale', handler, false);
+    return () => document.removeEventListener('setlocale', handler, false);
+  }, [update]);
+
   return (
     <RawIntlProvider value={_intl}>
       <ThemeProvider theme={theme}>
@@ -82,6 +92,7 @@ function CrafterCMSNextBridge(props: any) {
       </ThemeProvider>
     </RawIntlProvider>
   );
+  
 }
 
 export default CrafterCMSNextBridge;
