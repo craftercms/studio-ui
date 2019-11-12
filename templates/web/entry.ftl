@@ -17,7 +17,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<html class="no-js" lang="" ng-app="studio">
+<html class="no-js" ng-app="studio">
 <head>
     <meta charset="utf-8">
     <meta name="description" content="">
@@ -34,6 +34,11 @@
     <script>
         window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
         const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
+        document.documentElement.setAttribute('lang', (
+            localStorage.getItem('${username!""}_crafterStudioLanguage') ||
+            localStorage.getItem('crafterStudioLanguage') ||
+            'en'
+        ));
     </script>
 
     <#include "/templates/web/common/js-next-scripts.ftl" />
@@ -82,6 +87,5 @@
         <img class="crafter-studio-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
     </section>
 </div>
-
 </body>
 </html>

@@ -184,7 +184,7 @@ const messages = defineMessages({
     defaultMessage: 'More...'
   },
   licenseTooltip: {
-    id: 'blueprint.more',
+    id: 'blueprint.licenseTooltip',
     defaultMessage: '{license} license'
   }
 });
