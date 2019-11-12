@@ -84,7 +84,7 @@ function CrafterCMSNextBridge(props: any) {
   }, [update]);
 
   return (
-    <RawIntlProvider value={_intl}>
+    <RawIntlProvider value={intl}>
       <ThemeProvider theme={theme}>
         <Suspense fallback="">
           {props.children}
