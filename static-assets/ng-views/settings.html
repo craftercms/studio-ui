@@ -53,16 +53,23 @@
                     <p>{{ 'settings.CHANGE_PASSWORD_ADVERTISEMENT' | translate }}</p>
                     <div class="form-group">
                         <label for="current">{{ 'settings.CURRENT_PASSWORD_LABEL' | translate }}</label>
-                        <input class="form-control" type="password" id="current" ng-model="data.current" required/>
+                        <input class="form-control" type="password" name="current" id="current" ng-model="data.current" required/>
+                        <div class="error-container"
+                            ng-show="(settingsForm.current.$dirty && settingsForm.current.$invalid) || (settingsForm.current.$touched && settingsForm.current.$invalid)" >
+                            <small class="error"
+                                    ng-show="settingsForm.current.$error.required">
+                                {{ messages.currentPassword}} {{ messages.isRequired }}
+                            </small>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="password">{{ 'settings.NEW_PASSWORD_LABEL' | translate }}</label>
-                        <input class="form-control" type="password" id="password" ng-model="data.new" ng-init="passwordRequirements()" required/>
+                        <input class="form-control" type="password" name="password" id="password" ng-model="data.new" ng-init="passwordRequirements()" required/>
                         <div class="error-container"
                             ng-show="(settingsForm.password.$dirty && settingsForm.password.$invalid) || (settingsForm.password.$touched && settingsForm.password.$invalid)" >
                             <small class="error"
                                     ng-show="settingsForm.password.$error.required">
-                                {{ 'admin.users.PASSWORD' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                                {{ messages.password}} {{ messages.isRequired }}
                             </small>
                         </div>
                         <div class="error-container" ng-show="validPass">
@@ -75,6 +82,13 @@
                         <label for="confirm">{{ 'settings.CONFIRM_PASSWORD_LABEL' | translate }}</label>
                         <input class="form-control" ng-class="{'input-error': settingsForm.confirm.$error.compareTo}" type="password" id="confirm" name="confirm" ng-model="data.confirmation"
                         required compare-to="data.new" />
+                        <div class="error-container"
+                            ng-show="settingsForm.confirm.$error.compareTo" >
+                            <small class="error"
+                                    ng-show="settingsForm.confirm.$error.compareTo">
+                                {{ messages.mustMatchPreviousEntry}}
+                            </small>
+                        </div>
                     </div>
                     <div class="form-group">
                         <div ng-show="error" class="alert alert-danger">{{error}}</div>

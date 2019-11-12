@@ -154,6 +154,25 @@ const groupsAdminMessages = defineMessages({
   }
 });
 
+const settingsMessages = defineMessages({
+  password: {
+    id: 'settings.password',
+    defaultMessage: 'Password'
+  },
+  currentPassword: {
+    id: 'settings.currentPassword',
+    defaultMessage: 'Current password'
+  },
+  isRequired: {
+    id: 'settings.isRequired',
+    defaultMessage: 'is required'
+  },
+  mustMatchPreviousEntry: {
+    id: 'settings.mustMatchPreviousEntry',
+    defaultMessage: 'Must match the previous entry'
+  }
+});
+
 const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
@@ -524,6 +543,7 @@ export default {
   usersAdminMessages,
   passwordRequirementMessages,
   groupsAdminMessages,
+  settingsMessages,
   numericInputControlMessages,
   internalNameControlMessages,
   sharedContentDSMessages,
