@@ -408,7 +408,7 @@ const codeEditorMessages = defineMessages( {
 const globalConfigMessages = defineMessages( {
   title: {
     id: 'globalConfig.title',
-    defaultMessage: 'Global Configuration'
+    defaultMessage: 'Global Config'
   },
   viewSample: {
     id: 'globalConfig.viewSample',
