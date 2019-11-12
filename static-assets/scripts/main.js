@@ -955,6 +955,8 @@
       $scope.selectAction = function(optSelected) {
         $scope.langSelected = optSelected;
         $translate.use($scope.langSelected);
+        let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
+        document.dispatchEvent(loginSuccess);
       };
 
       $scope.setLangCookie = function() {
@@ -963,6 +965,8 @@
         // set both cookies, on login (on user) it will get last selected
         localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
         localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+        let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+        document.dispatchEvent(loginSuccess);
 
         $rootScope.modalInstance = $uibModal.open({
           templateUrl: 'settingLanguajeConfirmation.html',
@@ -1947,6 +1951,8 @@
               localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
               localStorage.setItem('userName', data.username);
               localStorage.setItem(userCookie, $scope.langSelected);
+              let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+              document.dispatchEvent(loginSuccess);
               $state.go('home.globalMenu');
             }
           }, function error(response){
@@ -2017,7 +2023,6 @@
       $scope.selectAction = function(optSelected) {
         $scope.langSelected = optSelected;
         $translate.use($scope.langSelected);
-
       };
 
     }

@@ -50,32 +50,14 @@ function getIntl(locale: string) {
 }
 
 function getCurrentLocale() {
-  // TODO: get from storage, user, generic or default to 'en'
-  // Remember to check username in the distinct ways it could be set in user
-  // dashboard vs other parts of the system (i.e. preview, site config, etc)
-  // const username = localStorage.getItem('userName');
-  // const locale = username
-  //   ? localStorage.getItem(`${username}_crafterStudioLanguage`) 
-  //   : localStorage.getItem(`crafterStudioLanguage`);
-  return 'en';
+  const username = localStorage.getItem('userName');
+  const locale = username
+    ? localStorage.getItem(`${username}_crafterStudioLanguage`)
+    : localStorage.getItem(`crafterStudioLanguage`);
+  return locale ? locale : 'en';
 }
 
 function CrafterCMSNextBridge(props: any) {
-
-  // When codebase bridge goes away...
-  // const [locale, setLocale] = useState(getCurrentLocale());
-  // const i18n = useMemo(() => createIntl({
-  //   locale,
-  //   messages: Locales[locale] || en
-  // }, createIntlCache()), [locale]);
-  // useEffect(() => {
-  //   const handler = (e: any) => setLocale(e.detail);
-  //   document.addEventListener('setlocale', handler, false);
-  //   return () => document.removeEventListener('setlocale', handler, false);
-  // }, [locale]);
-
-  // While codebase bridge still in play: trick React
-  // into re-rendering with the updated locale.
   const [, update] = useState();
   useEffect(() => {
     const handler = (e: any) => update({});
@@ -92,7 +74,7 @@ function CrafterCMSNextBridge(props: any) {
       </ThemeProvider>
     </RawIntlProvider>
   );
-  
+
 }
 
 export default CrafterCMSNextBridge;
