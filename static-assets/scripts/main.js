@@ -1465,6 +1465,7 @@
         }).then(() => {
           enableUI(true);
           defaultValue = value;
+          aceEditor.focus();
           $element.notify(formatMessage(globalConfigMessages.successfulSave), {
             position: 'top left',
             className: 'success'
@@ -1500,8 +1501,10 @@
           aceEditor.setValue(
             (mode === 'replace')
               ? sample
-              : `${value}${(value.trim() === '') ? '' : '\n\n'}${sample}`
+              : `${value}${(value.trim() === '') ? '' : '\n\n'}${sample}`,
+            -1
           );
+          aceEditor.focus();
         });
       };
 
