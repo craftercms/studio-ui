@@ -608,7 +608,7 @@
           zIndex: 100
         });
 
-        oContextMenu.subscribe('beforeShow', function() {
+        oContextMenu.subscribe('beforeShow', function(e) {
           Self.onTriggerContextMenu(tree, this);
         }, tree, false);
 
@@ -924,8 +924,26 @@
           $contextMenuEllipsis.on('click', function(e) {
             e.stopPropagation();
 
-            _self.onTriggerContextMenu(instance.tree, instance.tree.oContextMenu, this.parentElement);
+            const offsetLeft = e.currentTarget.offsetLeft;
+            const offsetTop = e.currentTarget.offsetTop;
 
+            $(instance.tree.oContextMenu.element).on('contextmenu-rendered', function() {
+              let $contextMenu = $('#' + instance.tree.oContextMenu.id);
+
+              $contextMenu.css('visibility', 'visible');
+              $contextMenu.css('left', offsetLeft + 'px');
+              $contextMenu.css('top', offsetTop + 'px');
+            });
+
+            // If context menu hasn't been initialized, create it
+            let $contextMenu = $('#' + instance.tree.oContextMenu.id);
+            if ($contextMenu.length === 0) {
+              let $contextMenuContainer = $('#acn-context-menu');
+
+              $contextMenuContainer.append(instance.tree.oContextMenu.element);
+            }
+
+            _self.onTriggerContextMenu(instance.tree, instance.tree.oContextMenu, this.parentElement);
           })
 
           treeNodeTO.html = nodeSpan;
@@ -2229,6 +2247,10 @@
 
                   this.args.render();
                   menuId.removeChild(d);
+
+                  if (this.args.manualTrigger) {
+                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+                  }
                 },
                 failure: function() { },
                 args: p_aArgs,
@@ -2243,6 +2265,10 @@
 
               p_aArgs.render();
               menuId.removeChild(d);
+
+              if (this.args.manualTrigger) {
+                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+              }
             }
             else if(!isWrite) {
               p_aArgs.addItems([ menuItems.viewOption ]);
@@ -2311,6 +2337,10 @@
 
               p_aArgs.render();
               menuId.removeChild(d);
+
+              if (this.args.manualTrigger) {
+                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+              }
             }
             else {
               if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
@@ -2549,6 +2579,10 @@
                   }
 
                   this.args.render();     // Render the site dropdown's context menu
+
+                  if (this.args.manualTrigger) {
+                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+                  }
                 },
                 failure: function() { },
                 args: p_aArgs,
@@ -2600,7 +2634,10 @@
        * load context menu
        */
       onTriggerContextMenu: function(tree, p_aArgs, target) {
-        var target = target ? target : p_aArgs.contextEventTarget;
+        var isManualTrigger = target ? true : false,
+            target = target ? target : p_aArgs.contextEventTarget;
+
+        p_aArgs.manualTrigger = isManualTrigger;
 
         /* Get the TextNode instance that that triggered the display of the ContextMenu instance. */
         oCurrentTextNode = tree.getNodeByElement(target);
