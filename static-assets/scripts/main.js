@@ -733,7 +733,7 @@
         me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ""),
-        captureGroup = generalRegExp.match(/\(\?<.*?>.*?\)/g);
+        captureGroups = generalRegExp.match(/\(\?<.*?>.*?\)/g);
 
       const allowedChars = (
         generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) ||
@@ -750,6 +750,36 @@
         )
       )[1].split(',')[0];
 
+      const max = (
+        (
+          (
+            generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[1];
+
+      const minLength = (
+        (
+          (
+            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[0];
+
+      const maxLength = (
+        (
+          (
+            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[1];
+
       const messages = {
         hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
         hasLowercase: formatMessage(passwordRequirementMessages.hasLowercase),
@@ -757,6 +787,8 @@
         hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars, { chars: (allowedChars ? `(${allowedChars})` : '') }),
         noSpaces: formatMessage(passwordRequirementMessages.noSpaces),
         minLength: formatMessage(passwordRequirementMessages.minLength, { min }),
+        maxLength: formatMessage(passwordRequirementMessages.maxLength, { max }),
+        minMaxLength: formatMessage(passwordRequirementMessages.minMaxLength, { minLength, maxLength }),
         passwordValidation: formatMessage(passwordRequirementMessages.passwordValidation),
         validPassword: formatMessage(passwordRequirementMessages.validPassword),
         invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
@@ -766,7 +798,7 @@
         if (generalRegExp) {
           try {
             let isRegExpValid = new RegExp(generalRegExp);
-            if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
+            if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
               this.runValidation(scope, isValid, elt, 'groupsSupported', placement);
             }else{
               this.runValidation(scope, isValid, elt, 'noGroups', placement);
@@ -774,7 +806,7 @@
           } catch (error) {
             try {
               let isRegExpValid = new RegExp(generalRegExpWithoutGroups);
-              if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
+              if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
                 this.runValidation(scope, isValid, elt, 'groupsNotSupported', placement);
               }else{
                 this.runValidation(scope, isValid, elt, 'noGroups', placement);
@@ -791,12 +823,18 @@
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
         if (templateType !== "noGroups") {
-          captureGroup.forEach(captureGroup => {
+          captureGroups.forEach(captureGroup => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
             if (templateType === "groupsNotSupported") {
               html += '<ul class="password-popover--list password-popover--static"><li class="password-popover--list--item">'
             } else {
-              let isValid = content ? content.match(captureGroup) : false;
+              let isValid;
+              if (captureGroupName[0].toLowerCase().indexOf('maxlength') > 0){
+                isValid = content ? content.match(`^${captureGroup}$`) : false;
+              } else {
+                isValid = content ? content.match(captureGroup) : false;
+              }
+              
               html += '<ul class="password-popover--list" ><li class="password-popover--list--item">'
               if (isValid) {
                 html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';

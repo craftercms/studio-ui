@@ -123,7 +123,7 @@ const passwordRequirementMessages = defineMessages({
   },
   minMaxLength: {
     id: 'passwordRequirement.minMaxLength',
-    defaultMessage: 'Length must be between {min} and {max} characters'
+    defaultMessage: 'Length must be between {minLength} and {maxLength} characters'
   },
   passwordValidation: {
     id: 'passwordRequirement.passwordValidation',
