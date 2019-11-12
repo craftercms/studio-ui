@@ -924,8 +924,8 @@
           $contextMenuEllipsis.on('click', function(e) {
             e.stopPropagation();
 
-            const offsetLeft = e.currentTarget.offsetLeft;
-            const offsetTop = e.currentTarget.offsetTop;
+            const offsetLeft = e.clientX;
+            const offsetTop = e.clientY - 50;
 
             $(instance.tree.oContextMenu.element).on('contextmenu-rendered', function() {
               let $contextMenu = $('#' + instance.tree.oContextMenu.id);
