@@ -327,6 +327,21 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   }
 }
 
+.modal-top-override.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal-top-override .modal-dialog {
+  display: inline-block;
+  text-align: left;
+  top: 50px;
+}
+
+.modal-top-override.modal-reset-pass .modal-dialog{
+  top: 97px;
+}
+
 .panel {
 
   .alert {

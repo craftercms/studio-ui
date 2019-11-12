@@ -369,7 +369,8 @@
                 controller: 'ResetCtrl',
                 backdrop: 'static',
                 keyboard: false,
-                size: 'sm'
+                size: 'sm',
+                windowTopClass: "modal-top-override"
               });
             }
           ],
@@ -2078,7 +2079,7 @@
       };
 
       $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, "validPass", 'password', 'bottom');
+        passwordRequirements.init($scope, "validPass", 'password', 'top');
       }
 
       authService.validateToken({
