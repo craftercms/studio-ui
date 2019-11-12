@@ -494,6 +494,14 @@ const browseCMISMessages = defineMessages({
   }
 });
 
+
+const formEngineMessages = defineMessages({
+  saveDraftCompleted: {
+    id: 'formEngine.saveDraftCompleted',
+    defaultMessage: 'Draft Save Completed'
+  },
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -511,6 +519,7 @@ export default {
   words,
   globalConfigMessages,
   publishingMessages,
-  browseCMISMessages,
-  siteComponentDSMessages
+  siteComponentDSMessages,
+  formEngineMessages,
+  browseCMISMessages
 };

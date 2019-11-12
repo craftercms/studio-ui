@@ -22,7 +22,7 @@ import Button from "@material-ui/core/Button";
 import React, { ChangeEvent, useRef, useState } from "react";
 import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import { defineMessages, useIntl } from "react-intl";
-import SelectButton from "./ConfirmDropdown";
+import SelectButton from "./UserControl/ConfirmDropdown";
 import Typography from "@material-ui/core/Typography";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import { cancelPackage, fetchPackage } from "../services/publishing";
