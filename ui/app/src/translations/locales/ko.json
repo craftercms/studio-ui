@@ -207,7 +207,7 @@
   "siteComponentDS.componentPath": "구성 요소 경로",
   "siteComponentDS.dataType": "데이터 형식",
   "siteComponentDS.date": "날짜",
-  "siteComponentDS.float": "흙손",
+  "siteComponentDS.float": "부동 소수점",
   "siteComponentDS.html": "데이터 형식",
   "siteComponentDS.integer": "정수",
   "siteComponentDS.label": "분류법 선택기",

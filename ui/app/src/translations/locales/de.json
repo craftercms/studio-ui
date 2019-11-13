@@ -207,7 +207,7 @@
   "siteComponentDS.componentPath": "Komponentenpfad",
   "siteComponentDS.dataType": "Datentyp",
   "siteComponentDS.date": "Datum",
-  "siteComponentDS.float": "Schweben",
+  "siteComponentDS.float": "Gleitkommazahl",
   "siteComponentDS.html": "Datentyp",
   "siteComponentDS.integer": "Ganze Zahl",
   "siteComponentDS.label": "Taxonomie-Auswahl",
