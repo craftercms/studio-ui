@@ -242,6 +242,13 @@ table {
   }
 }
 
+.user-management-dialog .popover,
+.modal-reset-pass .popover,
+.settings-view .popover,
+.reset-password-view .popover{
+  max-width: 500px;
+}
+
 .password-popover{
   padding: 1px 0;
 }
@@ -264,14 +271,14 @@ table {
   margin-right: 10px;
   display: block;
   float: left;
-  width: 3%;
+  width: 2%;
   position: relative;
   top: 2px;
 }   
 .password-popover--list-Info {
   display: block;
   float: left;
-  width: 91%;
+  width: 94%;
 }
 .password-popover--result{
   clear: both;

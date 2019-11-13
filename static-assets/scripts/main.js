@@ -865,7 +865,7 @@
       this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
         $("#" + elt)
           .blur(function () {
-            //$(this).popover('destroy');
+            $(this).popover('destroy');
           })
           .keyup(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
