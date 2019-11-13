@@ -511,7 +511,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             }
 
             item.datasource = datasource;
-            if (order) {
+            if (order != null) {
               //insert on specific order
               this.items.splice(order, 0, item);
             } else {

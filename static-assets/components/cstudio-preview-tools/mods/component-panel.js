@@ -202,7 +202,6 @@
                     if (response.supported) {
                       if (isNew) {
                         function isNewEvent(value, modelPath) {
-                          debugger;
                           var modelData = {
                             value: value,
                             key: modelPath,
@@ -227,7 +226,7 @@
                           //If no path provided the dnd item is a embedded content
                           if (!path) {
                             var selectorId = Object.keys(zones)[0];
-                            var order = zones[selectorId].findIndex((item) => item == tracking);
+                            var order = zones[selectorId].findIndex((item) => item === tracking);
                             ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, response.ds, order);
                           } else {
                             var subscribeCallback = function (_message) {

@@ -1692,7 +1692,7 @@ var CStudioForms = CStudioForms || function() {
                 const iceId = message.iceId || null;
                 const selectorId = message.selectorId || null;
                 const ds = message.ds || null;
-                const order = message.order || null;
+                const order = message.order != null ? message.order : null;
                 const contentType = message.contentType || parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
                 if(edit) {
                   CStudioAuthoring.Operations.performSimpleIceEdit(
