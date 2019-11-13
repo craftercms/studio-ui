@@ -195,7 +195,7 @@
   "publishingDashboard.filters": "Filtros",
   "publishingDashboard.noPackagesSubtitle": "Intenta cambiar tu consulta",
   "publishingDashboard.noPackagesTitle": "No hay paquetes donde se encuentran",
-  "publishingDashboard.packagesSelected": "{count, plural, one {{count} Package selected} other {{count} Packages selected}}",
+  "publishingDashboard.packagesSelected": "{count, plural, one {{count} Paquete seleccionado} other {{count} Paquetes seleccionados}}",
   "publishingDashboard.pathExpression": "Expresión de ruta",
   "publishingDashboard.scheduled": "Programado para <b>{schedule, date, medium} {schedule, time, short}</b> por <b>{approver}</b>",
   "publishingDashboard.selectAll": "Seleccionar todo en esta página",

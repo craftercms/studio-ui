@@ -1366,7 +1366,7 @@
         }
 
         $scope.confirmationAction = deleteUser;
-        $scope.confirmationText = "Do you want to delete " + user.username + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${user.username}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
       };
@@ -1456,7 +1456,7 @@
         }
 
         $scope.confirmationAction = deleteClusterMember;
-        $scope.confirmationText = "Do you want to delete " + clusterMember.gitUrl + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${clusterMember.gitUrl}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
       };
@@ -1665,7 +1665,7 @@
         };
 
         $scope.confirmationAction = deleteGroup;
-        $scope.confirmationText = "Do you want to delete " + group.name + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${group.name}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
       };
@@ -1827,7 +1827,7 @@
         };
 
         $scope.confirmationAction = removeUserFromGroup;
-        $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.name + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${user.username} ${$translate.instant('common.FROM')} ${group.name}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
       };
