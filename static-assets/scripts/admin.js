@@ -1093,6 +1093,7 @@
         }
       };
       $scope.validPass = false;
+      $scope.validResetPass = false;
       var users = $scope.users;
       $scope.user.enabled = true;
 
@@ -1145,7 +1146,11 @@
       };
 
       $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, 'password');
+        passwordRequirements.init($scope, 'validPass', 'password', 'top');
+      }
+
+      $scope.newPasswordRequirements = function() {
+        passwordRequirements.init($scope, 'validResetPass', 'newPassword', 'top');
       }
 
       this.init();
@@ -1249,7 +1254,7 @@
         $scope.user = {};
         $scope.okModalFunction = users.editPassword;
 
-        $scope.adminModal = $scope.showModal('resetPassword.html');
+        $scope.adminModal = $scope.showModal('resetPassword.html', null, null, 'modal-top-override modal-reset-pass');
 
         adminService.getUser(user.username).success(function (data) {
           $scope.user = data.user;

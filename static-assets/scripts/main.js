@@ -35,7 +35,8 @@
         formatMessage = i18n.intl.formatMessage,
         passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
         globalConfigMessages = i18n.messages.globalConfigMessages,
-        words = i18n.messages.words;
+        words = i18n.messages.words,
+        profileSettingsMessages = i18n.messages.profileSettingsMessages;
 
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
@@ -367,7 +368,8 @@
                 controller: 'ResetCtrl',
                 backdrop: 'static',
                 keyboard: false,
-                size: 'sm'
+                size: 'sm',
+                windowTopClass: "modal-top-override"
               });
             }
           ],
@@ -730,7 +732,7 @@
         me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ""),
-        captureGroup = generalRegExp.match(/\(\?<.*?>.*?\)/g);
+        captureGroups = generalRegExp.match(/\(\?<.*?>.*?\)/g);
 
       const allowedChars = (
         generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) ||
@@ -747,6 +749,36 @@
         )
       )[1].split(',')[0];
 
+      const max = (
+        (
+          (
+            generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[1];
+
+      const minLength = (
+        (
+          (
+            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[0];
+
+      const maxLength = (
+        (
+          (
+            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[1];
+
       const messages = {
         hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
         hasLowercase: formatMessage(passwordRequirementMessages.hasLowercase),
@@ -754,27 +786,29 @@
         hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars, { chars: (allowedChars ? `(${allowedChars})` : '') }),
         noSpaces: formatMessage(passwordRequirementMessages.noSpaces),
         minLength: formatMessage(passwordRequirementMessages.minLength, { min }),
+        maxLength: formatMessage(passwordRequirementMessages.maxLength, { max }),
+        minMaxLength: formatMessage(passwordRequirementMessages.minMaxLength, { minLength, maxLength }),
         passwordValidation: formatMessage(passwordRequirementMessages.passwordValidation),
         validPassword: formatMessage(passwordRequirementMessages.validPassword),
         invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
       };
 
-      this.init = function (scope, elt) {
+      this.init = function (scope, isValid, elt, placement) {
         if (generalRegExp) {
           try {
             let isRegExpValid = new RegExp(generalRegExp);
-            if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-              this.runValidation(scope, elt, 'groupsSupported');
+            if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
+              this.runValidation(scope, isValid, elt, 'groupsSupported', placement);
             }else{
-              this.runValidation(scope, elt, 'noGroups');
+              this.runValidation(scope, isValid, elt, 'noGroups', placement);
             }
           } catch (error) {
             try {
               let isRegExpValid = new RegExp(generalRegExpWithoutGroups);
-              if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-                this.runValidation(scope, elt, 'groupsNotSupported');
+              if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
+                this.runValidation(scope, isValid, elt, 'groupsNotSupported', placement);
               }else{
-                this.runValidation(scope, elt, 'noGroups');
+                this.runValidation(scope, isValid, elt, 'noGroups', placement);
               }
             } catch (error) {
               console.warning('Defaulting password validation to server due to issues in RegExp compilation.');
@@ -788,13 +822,22 @@
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
         if (templateType !== "noGroups") {
-          captureGroup.forEach(captureGroup => {
+          if (templateType === "groupsNotSupported") {
+            html += '<ul class="password-popover--list password-popover--static">';
+          }else{
+            html += '<ul class="password-popover--list" >';
+          }
+          captureGroups.forEach(captureGroup => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
-            if (templateType === "groupsNotSupported") {
-              html += '<ul class="password-popover--list password-popover--static"><li class="password-popover--list--item">'
-            } else {
-              let isValid = content ? content.match(captureGroup) : false;
-              html += '<ul class="password-popover--list" ><li class="password-popover--list--item">'
+            html += '<li class="password-popover--list--item">'
+            if (templateType === "groupsSupported") {
+              let isValid;
+              if (captureGroupName[0].toLowerCase().indexOf('maxlength') > 0){
+                isValid = content ? content.match(`^${captureGroup}$`) : false;
+              } else {
+                isValid = content ? content.match(captureGroup) : false;
+              }
+              
               if (isValid) {
                 html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
               } else {
@@ -802,7 +845,7 @@
                 validPass = true;
               }
             }
-            html += messages[captureGroupName[0].replace(/\?<|>/g, "")] +
+            html += '<span class="password-popover--list-Info">' + messages[captureGroupName[0].replace(/\?<|>/g, "")] + '</span>' +
               '</li>';
           });
           html += '</ul>';
@@ -819,7 +862,7 @@
         return { 'template': html, 'validPass': validPass };
       }
 
-      this.runValidation = function (scope, elt, staticTemplate) {
+      this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
         $("#" + elt)
           .blur(function () {
             $(this).popover('destroy');
@@ -827,7 +870,7 @@
           .keyup(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $('.popover').find('.popover-content').html(creatingPassValHTML.template);
-            scope.validPass = creatingPassValHTML.validPass;
+            scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           })
           .focus(function () {
@@ -835,12 +878,12 @@
             $(this).popover({
               title: messages.passwordValidation,
               content: creatingPassValHTML.template,
-              placement: 'top',
+              placement: placement ? placement : 'top',
               html: true,
               trigger: 'manual'
             });
             $(this).popover('show');
-            scope.validPass = creatingPassValHTML.validPass;
+            scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           });
       }
@@ -863,6 +906,13 @@
       $scope.showLogoutLink = false;
       $scope.logoutInfo = {};
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
+      $scope.messages = {
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+        password: formatMessage(profileSettingsMessages.password),
+        currentPassword: formatMessage(profileSettingsMessages.currentPassword),
+        isRequired: formatMessage(profileSettingsMessages.isRequired),
+        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry)
+      };
 
       if($location.$$search.iframe){
         $rootScope.isFooter = false;
@@ -1162,9 +1212,9 @@
           windowClass: 'spinner-modal centered-dialog',
         });
       }
-
+      $scope.validPass = false;
       $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, 'password');
+        passwordRequirements.init($scope, 'validPass', 'password', 'top');
       }
 
     }
@@ -2067,13 +2117,21 @@
   ]);
 
   app.controller('ResetCtrl', [
-    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants',
-    function ($scope, $state, $location, authService, $timeout, $translate, Constants) {
+    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants', 'passwordRequirements', 
+    function ($scope, $state, $location, authService, $timeout, $translate, Constants, passwordRequirements) {
 
       var successDelay = 2500;
       $scope.user = {};
       $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
+      $scope.validPass = false;
+      $scope.messages = {
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+      };
+
+      $scope.passwordRequirements = function() {
+        passwordRequirements.init($scope, "validPass", 'password', 'top');
+      }
 
       authService.validateToken({
         'token': $location.search().token,
