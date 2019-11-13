@@ -112,11 +112,9 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       $(divMouse).css('top', e.pageY);
     });
     try {
-      $(window.parent.document).keyup(function (e) {
-        var _self = this;
+      $window.keyup(function (e) {
         if (e.keyCode == 27) { // esc
           me.done();
-          _self.css('cursor', 'pointer');
         }
       });
     } catch (e) {
@@ -164,6 +162,8 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
     });
     $.notify("Item will be attached by clicking on zone. \n Click Esc to exit event",
       { autoHideDelay: 6000, style: 'studio-notify' });
+
+    $window.focus();
   }
 
   function componentDropped($dropZone, $component, destinationZone) {
