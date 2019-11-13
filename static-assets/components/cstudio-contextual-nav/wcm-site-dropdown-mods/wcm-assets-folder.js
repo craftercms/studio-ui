@@ -413,6 +413,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       RootFolder().myTree = RootFolder().myTreePages[idTree];
     }, tree, false);
 
+    tree.oContextMenu = contextMenu;
     tree.draw();
 
     if (Object.prototype.toString.call(instance.path) === '[object Array]') {
@@ -550,6 +551,35 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       if(!isFolder && !isLevelDescriptor){
         nodeSpan.dataset.uri = treeNodeTO.uri;
       }
+
+      var $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-v"></span>').appendTo($(nodeSpan));
+
+      $contextMenuEllipsis.on('click', function(e) {
+        e.stopPropagation();
+
+        const offsetLeft = e.clientX;
+        const offsetTop = e.clientY - 50;
+
+        $(instance.tree.oContextMenu.element).on('contextmenu-rendered', function() {
+          let $contextMenu = $('#' + instance.tree.oContextMenu.id);
+
+          $contextMenu.css('visibility', 'visible');
+          $contextMenu.css('left', offsetLeft + 'px');
+          $contextMenu.css('top', offsetTop + 'px');
+
+          console.log("TEST");
+        });
+
+        // If context menu hasn't been initialized, create it
+        let $contextMenu = $('#' + instance.tree.oContextMenu.id);
+        if ($contextMenu.length === 0) {
+          let $contextMenuContainer = $('#acn-context-menu');
+
+          $contextMenuContainer.append(instance.tree.oContextMenu.element);
+        }
+
+        CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(instance.tree, instance.tree.oContextMenu, instance.tree.oContextMenu.id, this.parentElement);
+      });
 
       treeNodeTO.html = nodeSpan;
       var treeNode = new YAHOO.widget.HTMLNode(treeNodeTO, root, false);
@@ -1172,9 +1202,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     return toolTip;
   },
 
-  onTriggerContextMenu: function(tree, p_aArgs, contextMenuId)	{
+  onTriggerContextMenu: function(tree, p_aArgs, contextMenuId, target)	{
+     var isManualTrigger = target ? true : false,
+         target = target ? target : p_aArgs.contextEventTarget;
 
-    target = p_aArgs.contextEventTarget;
+    p_aArgs.manualTrigger = isManualTrigger;
+
     var aMenuItems;
     var menuWidth = "80px";
     var menuItems = {
@@ -1229,7 +1262,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
     var targetNode = tree.getNodeByElement(target);
 
-    if ( targetNode != null && YDom.isAncestor(tree.id, p_aArgs.contextEventTarget) ) {
+    if ( targetNode != null && YDom.isAncestor(tree.id, target) ) {
       // Get the TextNode instance that that triggered the display of the ContextMenu instance.
       oCurrentTextNode = targetNode;
 
@@ -1435,8 +1468,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 this.menuEl.style.display = "block";
                 this.menuEl.style.minWidth = this.menuWidth;
                 this.args.render();
-                this.args.show();
 
+                if (this.args.manualTrigger) {
+                  $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+                }
+
+                this.args.show();
 
               },
 
