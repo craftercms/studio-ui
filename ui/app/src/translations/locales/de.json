@@ -195,7 +195,7 @@
   "publishingDashboard.filters": "Filter",
   "publishingDashboard.noPackagesSubtitle": "Versuchen Sie, Ihre Abfrage zu ändern",
   "publishingDashboard.noPackagesTitle": "Keine Pakete gefunden",
-  "publishingDashboard.packagesSelected": "{count, plural, one {{count} Package selected} other {{count} Packages selected}}",
+  "publishingDashboard.packagesSelected": "{count, plural, one {{count} Paket ausgewählt} other {{count} Pakete ausgewählt}}",
   "publishingDashboard.pathExpression": "Pfadausdruck",
   "publishingDashboard.scheduled": "Geplant für <b>{schedule, date, medium} {schedule, time, short}</b> von <b>{approver}</b>",
   "publishingDashboard.selectAll": "Alles auf dieser Seite auswählen",

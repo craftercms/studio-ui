@@ -31,7 +31,8 @@ const Locales: any = {
   en,
   es,
   de,
-  ko
+  ko,
+  kr: ko // TODO: Currently studio uses the wrong code for korean
 };
 
 export let intl = getIntl(getCurrentLocale());

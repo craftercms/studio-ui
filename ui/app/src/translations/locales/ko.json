@@ -195,7 +195,7 @@
   "publishingDashboard.filters": "필터",
   "publishingDashboard.noPackagesSubtitle": "검색어를 변경해보십시오",
   "publishingDashboard.noPackagesTitle": "패키지가없는 곳",
-  "publishingDashboard.packagesSelected": "{count, plural, one {{count} Package selected} other {{count} Packages selected}}",
+  "publishingDashboard.packagesSelected": "{count, plural, one {{count} 선택된 패키지} other {{count} 선택된 패키지}}",
   "publishingDashboard.pathExpression": "경로 표현",
   "publishingDashboard.scheduled": "<b>{approver}</b>에 의해 <b>{schedule, date, medium} {schedule, time, short}</b> 에 예약",
   "publishingDashboard.selectAll": "이 페이지에서 모두 선택",
