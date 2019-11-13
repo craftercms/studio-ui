@@ -225,7 +225,8 @@
                           //If no path provided the dnd item is a embedded content
                           if (!path) {
                             var selectorId = Object.keys(zones)[0];
-                            ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, response.ds);
+                            var order = zones[selectorId].findIndex((item) => item == tracking);
+                            ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, response.ds, order);
                           } else {
                             var subscribeCallback = function (_message) {
                               switch (_message.type) {
@@ -323,7 +324,7 @@
                   });
                 },
 
-                onDropEmbedded: function(previewPath, compPath, type, selectorId, ds){
+                onDropEmbedded: function(previewPath, compPath, type, selectorId, ds, order){
                   var subscribeCallback = function (_message) {
                     switch (_message.type) {
                       case "FORM_CANCEL": {
@@ -340,7 +341,8 @@
                           contentType: type,
                           edit: false,
                           selectorId: selectorId,
-                          ds: ds
+                          ds: ds,
+                          order: order
                         });
                         break;
                       }
