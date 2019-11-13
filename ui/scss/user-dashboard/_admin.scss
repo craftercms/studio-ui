@@ -242,25 +242,39 @@ table {
   }
 }
 
-.user-management-dialog .popover {
-  max-width: 500px;
+.password-popover{
+  padding: 1px 0;
 }
-
 .password-popover--list{
   list-style-type: none;
   padding-left: 0;
+  width: 100%;
+  overflow: hidden;
 }
 .password-popover--list.password-popover--static{
   list-style-type: circle;
+  overflow: inherit;
+  padding-left: 11px;
+  padding-bottom: 12px;
 }
 .password-popover--list--item{
-  margin-left: 10px;
+  clear: both;
 }
 .password-popover--list-icon{
   margin-right: 10px;
+  display: block;
+  float: left;
+  width: 3%;
+  position: relative;
+  top: 2px;
 }   
+.password-popover--list-Info {
+  display: block;
+  float: left;
+  width: 91%;
+}
 .password-popover--result{
-  margin-top: 10px;
+  clear: both;
 }
 .password-popover--red{
   color: red;

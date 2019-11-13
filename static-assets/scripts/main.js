@@ -823,11 +823,15 @@
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
         if (templateType !== "noGroups") {
+          if (templateType === "groupsNotSupported") {
+            html += '<ul class="password-popover--list password-popover--static">';
+          }else{
+            html += '<ul class="password-popover--list" >';
+          }
           captureGroups.forEach(captureGroup => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
-            if (templateType === "groupsNotSupported") {
-              html += '<ul class="password-popover--list password-popover--static"><li class="password-popover--list--item">'
-            } else {
+            html += '<li class="password-popover--list--item">'
+            if (templateType === "groupsSupported") {
               let isValid;
               if (captureGroupName[0].toLowerCase().indexOf('maxlength') > 0){
                 isValid = content ? content.match(`^${captureGroup}$`) : false;
@@ -835,7 +839,6 @@
                 isValid = content ? content.match(captureGroup) : false;
               }
               
-              html += '<ul class="password-popover--list" ><li class="password-popover--list--item">'
               if (isValid) {
                 html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
               } else {
@@ -843,7 +846,7 @@
                 validPass = true;
               }
             }
-            html += messages[captureGroupName[0].replace(/\?<|>/g, "")] +
+            html += '<span class="password-popover--list-Info">' + messages[captureGroupName[0].replace(/\?<|>/g, "")] + '</span>' +
               '</li>';
           });
           html += '</ul>';
@@ -863,7 +866,7 @@
       this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
         $("#" + elt)
           .blur(function () {
-            $(this).popover('destroy');
+            //$(this).popover('destroy');
           })
           .keyup(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
