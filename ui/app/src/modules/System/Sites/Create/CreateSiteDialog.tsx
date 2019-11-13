@@ -43,7 +43,7 @@ import { Blueprint } from '../../../../models/Blueprint';
 import { MarketplaceSite, Site, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import PluginDetailsView from "../../Publishing/queue/PluginDetailsView";
+import PluginDetailsView from "../../Publishing/Queue/PluginDetailsView";
 import EmptyState from "../../../../components/SystemStatus/EmptyState";
 import { underscore } from '../../../../utils/string';
 import { setRequestForgeryToken } from '../../../../utils/auth';

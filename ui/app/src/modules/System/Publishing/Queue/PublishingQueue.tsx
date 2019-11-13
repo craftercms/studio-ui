@@ -35,7 +35,7 @@ import {
   Selected
 } from "../../../../models/publishing";
 import ConfirmDropdown from "../../../../components/UserControl/ConfirmDropdown";
-import FilterDropdown from "../../Sites/create/FilterDropdown";
+import FilterDropdown from "../../Sites/Create/FilterDropdown";
 import { setRequestForgeryToken } from "../../../../utils/auth";
 import TablePagination from '@material-ui/core/TablePagination';
 import ErrorState from "../../../../components/SystemStatus/ErrorState";
