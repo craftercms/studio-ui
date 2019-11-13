@@ -202,10 +202,12 @@
                     if (response.supported) {
                       if (isNew) {
                         function isNewEvent(value, modelPath) {
+                          debugger;
                           var modelData = {
                             value: value,
                             key: modelPath,
-                            include: modelPath
+                            include: modelPath,
+                            datasource: response.ds
                           };
                           $.each(zones, function (key, array) {
                             $.each(array, function (i, item) {
