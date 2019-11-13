@@ -22,11 +22,11 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Collapse from '@material-ui/core/Collapse';
 import GitForm from './GitForm';
-import { Blueprint } from '../models/Blueprint';
-import { SiteState } from '../models/Site';
+import { Blueprint } from '../../../../models/Blueprint';
+import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import FormBuilder from './FormBuilder';
-import { fetchSites } from '../services/sites';
+import { fetchSites } from '../../../../services/sites';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 

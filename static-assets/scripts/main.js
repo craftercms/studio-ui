@@ -955,6 +955,10 @@
       $scope.selectAction = function(optSelected) {
         $scope.langSelected = optSelected;
         $translate.use($scope.langSelected);
+        if(optSelected) {
+          let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
+          document.dispatchEvent(loginSuccess);
+        }
       };
 
       $scope.setLangCookie = function() {
@@ -963,6 +967,8 @@
         // set both cookies, on login (on user) it will get last selected
         localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
         localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+        let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+        document.dispatchEvent(loginSuccess);
 
         $rootScope.modalInstance = $uibModal.open({
           templateUrl: 'settingLanguajeConfirmation.html',
@@ -1170,7 +1176,6 @@
     function ($scope, $state, $location, sitesService, $window) {
 
       $scope.entities;
-
       sitesService.getGlobalMenu()
         .success(function (data) {
           $scope.entities = data.menuItems;
@@ -1460,6 +1465,7 @@
         }).then(() => {
           enableUI(true);
           defaultValue = value;
+          aceEditor.focus();
           $element.notify(formatMessage(globalConfigMessages.successfulSave), {
             position: 'top left',
             className: 'success'
@@ -1495,8 +1501,10 @@
           aceEditor.setValue(
             (mode === 'replace')
               ? sample
-              : `${value}${(value.trim() === '') ? '' : '\n\n'}${sample}`
+              : `${value}${(value.trim() === '') ? '' : '\n\n'}${sample}`,
+            -1
           );
+          aceEditor.focus();
         });
       };
 
@@ -1943,10 +1951,14 @@
               $scope.error = data.error;
             } else {
               hideModalForm();
-              $state.go('home.globalMenu');
               // set selected language in localStorage
+              let userCookie = data.username + '_crafterStudioLanguage';
               localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-              localStorage.setItem(data.username + '_crafterStudioLanguage', $scope.langSelected);
+              localStorage.setItem('userName', data.username);
+              localStorage.setItem(userCookie, $scope.langSelected);
+              let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+              document.dispatchEvent(loginSuccess);
+              $state.go('home.globalMenu');
             }
           }, function error(response){
             $scope.error = {};
@@ -2016,7 +2028,6 @@
       $scope.selectAction = function(optSelected) {
         $scope.langSelected = optSelected;
         $translate.use($scope.langSelected);
-
       };
 
     }
