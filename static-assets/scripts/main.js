@@ -36,8 +36,7 @@
         passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
         globalConfigMessages = i18n.messages.globalConfigMessages,
         words = i18n.messages.words,
-        usersAdminMessages = i18n.messages.usersAdminMessages,
-        settingsMessages = i18n.messages.settingsMessages;
+        profileSettingsMessages = i18n.messages.profileSettingsMessages;
 
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
@@ -909,10 +908,10 @@
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
       $scope.messages = {
         fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
-        password: formatMessage(settingsMessages.password),
-        currentPassword: formatMessage(settingsMessages.currentPassword),
-        isRequired: formatMessage(settingsMessages.isRequired),
-        mustMatchPreviousEntry: formatMessage(settingsMessages.mustMatchPreviousEntry)
+        password: formatMessage(profileSettingsMessages.password),
+        currentPassword: formatMessage(profileSettingsMessages.currentPassword),
+        isRequired: formatMessage(profileSettingsMessages.isRequired),
+        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry)
       };
 
       if($location.$$search.iframe){

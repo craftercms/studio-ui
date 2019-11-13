@@ -154,21 +154,21 @@ const groupsAdminMessages = defineMessages({
   }
 });
 
-const settingsMessages = defineMessages({
+const profileSettingsMessages = defineMessages({
   password: {
-    id: 'settings.password',
+    id: 'profileSettings.password',
     defaultMessage: 'Password'
   },
   currentPassword: {
-    id: 'settings.currentPassword',
+    id: 'profileSettings.currentPassword',
     defaultMessage: 'Current password'
   },
   isRequired: {
-    id: 'settings.isRequired',
+    id: 'profileSettings.isRequired',
     defaultMessage: 'is required'
   },
   mustMatchPreviousEntry: {
-    id: 'settings.mustMatchPreviousEntry',
+    id: 'profileSettings.mustMatchPreviousEntry',
     defaultMessage: 'Must match the previous entry'
   }
 });
@@ -543,7 +543,7 @@ export default {
   usersAdminMessages,
   passwordRequirementMessages,
   groupsAdminMessages,
-  settingsMessages,
+  profileSettingsMessages,
   numericInputControlMessages,
   internalNameControlMessages,
   sharedContentDSMessages,
