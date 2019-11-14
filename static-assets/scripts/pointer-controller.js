@@ -18,7 +18,7 @@
 /**
  * Created by veronicaestrada on 12/21/15.
  */
-crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator'], function (crafter, $, $ui, Animator, Communicator) {
+crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator', 'noty'], function (crafter, $, $ui, Animator, Communicator, noty) {
   'use strict';
 
   var Topics = crafter.studio.preview.Topics,
@@ -93,6 +93,13 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
 
     currentModel = initialContentModel;
 
+    const keyUpHandler = function(e) {
+      if (e.keyCode == 27) { // esc
+        me.done();
+        $window.off( "keyup", keyUpHandler);
+      }
+    };
+
     if (this.active()) return;
     this.active(true);
 
@@ -112,13 +119,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       $(divMouse).css('top', e.pageY);
     });
     try {
-      $(window.parent.document).keyup(function (e) {
-        var _self = this;
-        if (e.keyCode == 27) { // esc
-          me.done();
-          _self.css('cursor', 'pointer');
-        }
-      });
+      $window.keyup(keyUpHandler);
     } catch (e) {
       console.warn && console.warn(e.message);
     }
@@ -139,16 +140,17 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         $component = components,
         compPath = $component.uri,
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
-        compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path');
+        compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
+        destinationZone = $dropZone.attr('data-studio-components-target');
       if (compPath != zonePath && compPathChild != compPath) {
-        componentDropped.call(me, $dropZone, $component);
+        componentDropped.call(me, $dropZone, $component, destinationZone);
       } else {
         me.done();
+        $window.off( "keyup", keyUpHandler);
         publish.call(me, Topics.START_DIALOG, {
           message: 'The component cannot be added, it is already in the drop-zone.',
-          height: '208px'
+          height: '248px'
         });
-        //return;
       }
     });
 
@@ -163,9 +165,11 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
     });
     $.notify("Item will be attached by clicking on zone. \n Click Esc to exit event",
       { autoHideDelay: 6000, style: 'studio-notify' });
+
+    $window.focus();
   }
 
-  function componentDropped($dropZone, $component) {
+  function componentDropped($dropZone, $component, destinationZone) {
 
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
@@ -232,7 +236,8 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         zones: zones,
         trackingNumber: tracking,
         compPath: compPath,
-        conComp: (conRepeat > 1) ? true : false
+        conComp: (conRepeat > 1) ? true : false,
+        destinationZone: destinationZone
       });
 
     });

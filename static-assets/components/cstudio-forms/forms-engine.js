@@ -857,7 +857,8 @@ var CStudioForms = CStudioForms || function() {
                   key: message.key,
                   value:message.value,
                   selectorId: message.selectorId,
-                  ds: message.ds
+                  ds: message.ds,
+                  order: message.order
                 });
               } else{
                 amplify.publish('UPDATE_NODE_SELECTOR', message );
@@ -1691,6 +1692,7 @@ var CStudioForms = CStudioForms || function() {
                 const iceId = message.iceId || null;
                 const selectorId = message.selectorId || null;
                 const ds = message.ds || null;
+                const order = message.order != null ? message.order : null;
                 const contentType = message.contentType || parseDOM(FlattenerState[message.key]).querySelector('content-type').innerHTML;
                 if(edit) {
                   CStudioAuthoring.Operations.performSimpleIceEdit(
@@ -1718,7 +1720,7 @@ var CStudioForms = CStudioForms || function() {
                     false,
                     {
                       success: function (contentTO, editorId, objId, value, draft) {
-                        sendMessage({type: FORM_SAVE_REQUEST, key:objId, value, draft, new: true, selectorId: selectorId, ds});
+                        sendMessage({type: FORM_SAVE_REQUEST, key:objId, value, draft, new: true, selectorId: selectorId, ds, order});
                       },
                       cancelled: function() {
                         sendMessage({type: FORM_CANCEL_REQUEST});
