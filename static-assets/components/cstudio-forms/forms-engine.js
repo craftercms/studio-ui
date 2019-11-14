@@ -846,10 +846,13 @@ var CStudioForms = CStudioForms || function() {
               if (message.draft) {
                 if(message.edit) {
                   amplify.publish('UPDATE_NODE_SELECTOR', {objId: objectId, value: name});
+                  cfe.engine.saveForm(false, message.draft, false);
                 } else {
                   CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
+                  if(!CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).type){
+                    cfe.engine.saveForm(false, message.draft, false);
+                  }
                 }
-                //botones no disponibles??
               } else if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
                 CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
               }
@@ -1728,6 +1731,9 @@ var CStudioForms = CStudioForms || function() {
                       },
                       cancelled: function() {
                         sendMessage({type: FORM_CANCEL_REQUEST});
+                      },
+                      type: function () {
+                        return 'dnd'
                       }
                     },
                     [
