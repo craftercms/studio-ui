@@ -846,7 +846,7 @@ var CStudioForms = CStudioForms || function() {
               if (message.draft) {
                 if(message.edit) {
                   amplify.publish('UPDATE_NODE_SELECTOR', {objId: objectId, value: name});
-                } else if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
+                } else {
                   CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
                 }
                 cfe.engine.saveForm(false, message.draft);
