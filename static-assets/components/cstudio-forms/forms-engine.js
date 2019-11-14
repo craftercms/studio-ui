@@ -849,7 +849,7 @@ var CStudioForms = CStudioForms || function() {
                 } else {
                   CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
                 }
-                cfe.engine.saveForm(false, message.draft);
+                //botones no disponibles??
               } else if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
                 CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
               }
@@ -864,10 +864,11 @@ var CStudioForms = CStudioForms || function() {
                   ds: message.ds,
                   order: message.order
                 });
-              } else{
+                cfe.engine.saveForm(false, message.draft, false);
+              }else {
                 amplify.publish('UPDATE_NODE_SELECTOR', message );
+                cfe.engine.saveForm(false, message.draft, true);
               }
-              cfe.engine.saveForm(false, message.draft, true);
               break;
             }
             case FORM_CANCEL_REQUEST: {
