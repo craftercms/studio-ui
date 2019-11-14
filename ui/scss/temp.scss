@@ -367,7 +367,7 @@ div#acn-active-content {
     padding: 0 0 5px;
   }
   .acn-dropdown-menu {
-    padding: 26px 20px 15px 20px;
+    padding: 26px 0px 15px 20px;
     overflow-y: auto;
     overflow-x: auto;
     text-align: left;
@@ -493,28 +493,42 @@ div#acn-active-content {
   padding: 0;
 }
 
-.acn-dropdown-wrapper .acn-dropdown-menu div.acn-parent {
-  margin: 15px 0 0 0;
+.acn-dropdown-wrapper .acn-dropdown-menu {
 
-  .treenode-label {
-    &.highlighted {
-      font-weight: bold;
+  div.acn-parent {
+    margin: 15px 0 0 0;
+    position: relative;
+
+    .treenode-label {
+      &.highlighted {
+        font-weight: bold;
+      }
     }
 
-    .context-menu--ellipsis {
-      position: absolute;
-      right: 10px;
-      cursor: pointer;
-      display: none;
-      padding: 2px 7px;
+    .ygtvrow td:last-child {
+      width: 100%;
     }
 
+    .ygtvcell.ygtvcontent:hover {
+      .context-menu--ellipsis {
+        display: inline-block;
+      }
+    }
   }
+}
 
-  //TODO: need to set a proper class
-  .ygtvitem:hover > table {
-    .context-menu--ellipsis {
-      display: inline-block;
+.acn-data {
+  .context-menu--ellipsis {
+    position: absolute;
+    right: 14px;
+    cursor: pointer;
+    display: none;
+    padding: 3px 7px;
+
+    background-color: #f8f8f8;
+
+    &:hover {
+      display: inline-block !important;
     }
   }
 }
