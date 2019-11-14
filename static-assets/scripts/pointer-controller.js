@@ -115,6 +115,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       $window.keyup(function (e) {
         if (e.keyCode == 27) { // esc
           me.done();
+          $window.off( "keyup" );
         }
       });
     } catch (e) {
@@ -147,7 +148,6 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
           message: 'The component cannot be added, it is already in the drop-zone.',
           height: '248px'
         });
-        //return;
       }
     });
 
