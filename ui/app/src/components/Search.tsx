@@ -22,14 +22,13 @@ import SearchIcon from '@material-ui/icons/Search';
 import ImageIcon from '@material-ui/icons/Image';
 import AppsIcon from '@material-ui/icons/Apps';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from "@material-ui/core/Grid";
+import MediaCard from './MediaCard';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  content: {
-    width: '1000px',
+  wrapper: {
     margin: 'auto',
-  },
-  helperContainer: {
-
   },
   searchHeader: {
     padding: '15px 20px',
@@ -70,6 +69,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     borderRadius: '5px 0 0 5px',
     alignItems: 'center',
+    marginLeft: 'auto',
     '& .select': {
       width: '100%'
     }
@@ -92,16 +92,36 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: '30px',
     marginRight: '15px',
   },
-  avatar: {
-    margin: 10,
+  helperContainer: {
+    display: 'flex',
+    marginLeft: 'auto',
   },
+  avatarContent: {
+    margin: 5,
+    padding: 0,
+  },
+  avatar: {
+    background: '#EBEBF0',
+    color: '#8E8E93'
+  },
+  content: {
+    padding: '50px 30px'
+  }
 }));
 
 function Search() {
   const classes = useStyles({});
 
+  function renderMediaCards() {
+    return (
+      <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+        <MediaCard/>
+      </Grid>
+    )
+  }
+
   return (
-    <section className={classes.content}>
+    <section className={classes.wrapper}>
       <header className={classes.searchHeader}>
         <div className={classes.assetSelector}>
           <ImageIcon className={classes.assetImage}/>
@@ -133,10 +153,19 @@ function Search() {
           <SearchIcon className={classes.searchIcon}/>
         </div>
         <div className={classes.helperContainer}>
-          <Avatar className={classes.avatar}><AppsIcon/></Avatar>
-          <Avatar className={classes.avatar}><HelpOutlineIcon/></Avatar>
+          <IconButton className={classes.avatarContent}>
+            <Avatar className={classes.avatar}><AppsIcon/></Avatar>
+          </IconButton>
+          <IconButton className={classes.avatarContent}>
+            <Avatar className={classes.avatar}><HelpOutlineIcon/></Avatar>
+          </IconButton>
         </div>
       </header>
+      <section className={classes.content}>
+        <Grid container spacing={3}>
+          {renderMediaCards()}
+        </Grid>
+      </section>
     </section>
   )
 }
