@@ -227,6 +227,7 @@
       "ORDER":"주문",
       "ALL_ORIGINS":"모든 근원",
       "SORT":"종류",
+      "OPTIONS":"옵션",
       "COLLAPSE":"무너짐",
       "EXPAND":"넓히다",
       "TIMESTAMP":"타임 스탬프",
@@ -249,6 +250,7 @@
         "PATHPUBLISH": "게시 경로",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "환경",
+        "PUBLISHINGSUBMISSIONCOMMENT": "제출 코멘트",
         "PUBLISH": "게시",
         "PATH":"통로",
         "CHANNEL":"채널",
@@ -360,6 +362,7 @@
     "EDIT": "편집하다",
     "SAVE": "구하다",
     "VIEW": "view",
+    "FROM": "...에서",
     "IS_REQUIRED_LABEL": "필요하다",
     "REQUIRED_LABEL": "필수",
     "ALL_LABEL": "모든",
@@ -383,6 +386,7 @@
     "DELETE_QUESTION":"삭제 하시겠습니까",
     "GLOBAL_MENU": "글로벌 메뉴",
     "MAIN_MENU": "기본 메뉴",
-    "RESET_PASSWORD": "암호를 재설정"
+    "RESET_PASSWORD": "암호를 재설정",
+    "CLOSE": "닫기"
   }
 }

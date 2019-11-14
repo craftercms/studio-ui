@@ -123,7 +123,7 @@ const passwordRequirementMessages = defineMessages({
   },
   minMaxLength: {
     id: 'passwordRequirement.minMaxLength',
-    defaultMessage: 'Length must be between {min} and {max} characters'
+    defaultMessage: 'Length must be between {minLength} and {maxLength} characters'
   },
   passwordValidation: {
     id: 'passwordRequirement.passwordValidation',
@@ -154,6 +154,25 @@ const groupsAdminMessages = defineMessages({
   }
 });
 
+const profileSettingsMessages = defineMessages({
+  password: {
+    id: 'profileSettings.password',
+    defaultMessage: 'Password'
+  },
+  currentPassword: {
+    id: 'profileSettings.currentPassword',
+    defaultMessage: 'Current password'
+  },
+  isRequired: {
+    id: 'profileSettings.isRequired',
+    defaultMessage: 'is required'
+  },
+  mustMatchPreviousEntry: {
+    id: 'profileSettings.mustMatchPreviousEntry',
+    defaultMessage: 'Must match the previous entry'
+  }
+});
+
 const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
@@ -162,21 +181,6 @@ const numericInputControlMessages = defineMessages({
   maximun: {
     id: 'numericInputControl.maximun',
     defaultMessage: 'Maximun'
-  }
-});
-
-const internalNameControlMessages = defineMessages({
-  label: {
-    id: 'internalNameControl.label',
-    defaultMessage: 'Internal Name'
-  },
-  displaySize: {
-    id: 'internalNameControl.displaySize',
-    defaultMessage: 'Display Size'
-  },
-  maxLength: {
-    id: 'internalNameControl.maxLength',
-    defaultMessage: 'Max Length'
   }
 });
 
@@ -243,7 +247,7 @@ const contentTypesMessages = defineMessages({
   },
   internalNameErrorMessage: {
     id: 'contentType.internalNameErrorMessage',
-    defaultMessage: 'This content type requires an internal name. Please add an "Internal Name" control to this content type definition.'
+    defaultMessage: 'This content type requires an Internal Name.'
   },
   flagTitleError: {
     id: 'contentType.flatTitleError',
@@ -524,8 +528,8 @@ export default {
   usersAdminMessages,
   passwordRequirementMessages,
   groupsAdminMessages,
+  profileSettingsMessages,
   numericInputControlMessages,
-  internalNameControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,

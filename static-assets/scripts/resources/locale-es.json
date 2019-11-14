@@ -227,6 +227,7 @@
       "ORDER":"Orden",
       "ALL_ORIGINS":"Todos los orígenes",
       "SORT":"Ordenar",
+      "OPTIONS":"Opciones",
       "COLLAPSE":"Colapso",
       "EXPAND":"Expandir",
       "TIMESTAMP":"Marca de tiempo",
@@ -249,6 +250,7 @@
         "PATHPUBLISH": "Camino a publicar",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "Ambiente",
+        "PUBLISHINGSUBMISSIONCOMMENT": "Comentario",
         "PUBLISH": "Publicar",
         "PATH":"Ruta",
         "CHANNEL":"Canal",
@@ -360,6 +362,7 @@
     "EDIT": "Modificar",
     "SAVE": "Guardar",
     "VIEW": "view",
+    "FROM": "de",
     "IS_REQUIRED_LABEL": "es requerido.",
     "REQUIRED_LABEL": "requerido.",
     "ALL_LABEL": "Todos",
@@ -385,6 +388,7 @@
     "DELETE_QUESTION":"Quieres borrar",
     "GLOBAL_MENU": "Menu Global",
     "MAIN_MENU": "Menu Principal",
-    "RESET_PASSWORD": "Restablecer la contraseña"
+    "RESET_PASSWORD": "Restablecer la contraseña",
+    "CLOSE": "Cerrar"
   }
 }

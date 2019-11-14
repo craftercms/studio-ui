@@ -248,6 +248,7 @@
         "PATHPUBLISH": "Pfad, der publiziert werden soll",
         "PATHEXAMPLE": "(z.B. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "Umgebung",
+        "PUBLISHINGSUBMISSIONCOMMENT": "Submission Kommentar",
         "PUBLISH": "Publizieren",
         "PATH":"Pfad",
         "CHANNEL":"Kanal",
@@ -359,6 +360,7 @@
     "EDIT": "Bearbeiten",
     "SAVE": "Speichern",
     "VIEW": "Ansehen",
+    "FROM": "von",
     "IS_REQUIRED_LABEL": "ist notwendig.",
     "REQUIRED_LABEL": "notwendig.",
     "ALL_LABEL": "Alle",
@@ -382,7 +384,7 @@
     "DELETE_QUESTION":"Sind Sie sicher, dass Sie den folgenden Eintrag löschen möchten: ",
     "GLOBAL_MENU": "Globales Menü",
     "MAIN_MENU": "Hauptmenü",
-    "RESET_PASSWORD": "Passwort zurücksetzen"
-
+    "RESET_PASSWORD": "Passwort zurücksetzen",
+    "CLOSE": "Schließen"
   }
 }
