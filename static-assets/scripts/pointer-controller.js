@@ -87,6 +87,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
 
   function done() {
     this.stop();
+    $window.off( "keyup", $window.keyUpHandler );
   }
 
   function enablePointer(components, initialContentModel) {
@@ -112,12 +113,12 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       $(divMouse).css('top', e.pageY);
     });
     try {
-      $window.keyup(function (e) {
+      $window.keyUpHandler = function(e) {
         if (e.keyCode == 27) { // esc
           me.done();
-          $window.off( "keyup" );
         }
-      });
+      };
+      $window.keyup($window.keyUpHandler);
     } catch (e) {
       console.warn && console.warn(e.message);
     }
