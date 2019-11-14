@@ -17,26 +17,35 @@
 import React from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Theme, InputBase, MenuItem, Select } from "@material-ui/core";
+import { Theme, InputBase, MenuItem, Select, Avatar } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
 import ImageIcon from '@material-ui/icons/Image';
+import AppsIcon from '@material-ui/icons/Apps';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
 const useStyles = makeStyles((theme: Theme) => ({
   content: {
-    width: '800px',
+    width: '1000px',
     margin: 'auto',
+  },
+  helperContainer: {
+
   },
   searchHeader: {
     padding: '15px 20px',
-    display: 'flex'
+    display: 'flex',
+    borderBottom: '1px solid #EBEBF0',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   search: {
     position: 'relative',
     background: '#EBEBF0',
-    width: '100%',
+    width: '500px',
     display: 'flex',
     alignItems: 'center',
-    padding: '15px'
+    padding: '10px 12px',
+    borderRadius: '0px 5px 5px 0px'
   },
   searchIcon: {
     marginLeft: '10px',
@@ -55,20 +64,37 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   assetSelector: {
-    width: '200px',
-    padding: '15px',
+    minWidth: '187px',
+    padding: '10px 12px',
     background: 'rgba(0, 122, 255, 0.1)',
     display: 'flex',
+    borderRadius: '5px 0 0 5px',
     alignItems: 'center',
     '& .select': {
       width: '100%'
     }
   },
+  selectRoot:{
+    width: '100%',
+    color: '#007AFF',
+    background: 'none',
+    border: 'none',
+    '&:focus': {
+      boxShadow: 'none',
+      background: 'none'
+    }
+  },
+  selectIcon: {
+    color: '#000000'
+  },
   assetImage: {
     color: '#007AFF',
     fontSize: '30px',
-    marginRight: '15px'
-  }
+    marginRight: '15px',
+  },
+  avatar: {
+    margin: 10,
+  },
 }));
 
 function Search() {
@@ -80,10 +106,14 @@ function Search() {
         <div className={classes.assetSelector}>
           <ImageIcon className={classes.assetImage}/>
           <Select
-            labelId="demo-simple-select-helper-label"
-            id="demo-simple-select-helper"
+            labelId="asset-selector-label"
+            id="asset-selector"
             value="all"
             className='select'
+            classes={{
+              root: classes.selectRoot,
+              icon: classes.selectIcon
+            }}
           >
             <MenuItem value="all">All</MenuItem>
             <MenuItem value={10}>Ten</MenuItem>
@@ -101,6 +131,10 @@ function Search() {
             inputProps={{ 'aria-label': 'search' }}
           />
           <SearchIcon className={classes.searchIcon}/>
+        </div>
+        <div className={classes.helperContainer}>
+          <Avatar className={classes.avatar}><AppsIcon/></Avatar>
+          <Avatar className={classes.avatar}><HelpOutlineIcon/></Avatar>
         </div>
       </header>
     </section>
