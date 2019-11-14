@@ -87,12 +87,18 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
 
   function done() {
     this.stop();
-    $window.off( "keyup", $window.keyUpHandler );
   }
 
   function enablePointer(components, initialContentModel) {
 
     currentModel = initialContentModel;
+
+    const keyUpHandler = function(e) {
+      if (e.keyCode == 27) { // esc
+        me.done();
+        $window.off( "keyup", keyUpHandler);
+      }
+    };
 
     if (this.active()) return;
     this.active(true);
@@ -113,12 +119,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       $(divMouse).css('top', e.pageY);
     });
     try {
-      $window.keyUpHandler = function(e) {
-        if (e.keyCode == 27) { // esc
-          me.done();
-        }
-      };
-      $window.keyup($window.keyUpHandler);
+      $window.keyup(keyUpHandler);
     } catch (e) {
       console.warn && console.warn(e.message);
     }
@@ -145,6 +146,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         componentDropped.call(me, $dropZone, $component, destinationZone);
       } else {
         me.done();
+        $window.off( "keyup", keyUpHandler);
         publish.call(me, Topics.START_DIALOG, {
           message: 'The component cannot be added, it is already in the drop-zone.',
           height: '248px'
