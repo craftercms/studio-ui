@@ -22,15 +22,15 @@ import Typography from "@material-ui/core/Typography";
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import MobileStepper from "./MobileStepper";
+import MobileStepper from "../../../../components/MobileStepper";
 import { defineMessages, useIntl } from "react-intl";
-import { Blueprint } from "../models/Blueprint";
+import { Blueprint } from "../../../../models/Blueprint";
 import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Grid from "@material-ui/core/Grid";
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { backgroundColor } from "../styles/theme";
+import { backgroundColor } from "../../../../styles/theme";
 import clsx from "clsx";
 // @ts-ignore
 import { fadeIn } from 'react-animations';

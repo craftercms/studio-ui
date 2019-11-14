@@ -28,7 +28,7 @@ import Grid from '@material-ui/core/Grid';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import BlueprintCard from './BlueprintCard';
-import Spinner from "./SystemStatus/Spinner";
+import Spinner from "../../../../components/SystemStatus/Spinner";
 import InputBase from '@material-ui/core/InputBase';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
@@ -36,44 +36,107 @@ import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from "./BlueprintReview";
-import LoadingState from "./SystemStatus/LoadingState";
-import ErrorState from "./SystemStatus/ErrorState";
-import ConfirmDialog from "./UserControl/ConfirmDialog";
-import { Blueprint } from '../models/Blueprint';
-import { MarketplaceSite, Site, SiteState, Views } from '../models/Site';
+import LoadingState from "../../../../components/SystemStatus/LoadingState";
+import ErrorState from "../../../../components/SystemStatus/ErrorState";
+import ConfirmDialog from "../../../../components/UserControl/ConfirmDialog";
+import { Blueprint } from '../../../../models/Blueprint';
+import { MarketplaceSite, Site, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import PluginDetailsView from "./PluginDetailsView";
-import EmptyState from "./SystemStatus/EmptyState";
-import { underscore } from '../utils/string';
-import { setRequestForgeryToken } from '../utils/auth';
-import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
+import PluginDetailsView from "../../Publishing/Queue/PluginDetailsView";
+import EmptyState from "../../../../components/SystemStatus/EmptyState";
+import { underscore } from '../../../../utils/string';
+import { setRequestForgeryToken } from '../../../../utils/auth';
+import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../../../../services/sites";
 import {
   createSite as createSiteFromMarketplace,
   fetchBlueprints as fetchMarketplaceBlueprints
-} from "../services/marketplace";
-import gitLogo from "../assets/git-logo.svg";
+} from "../../../../services/marketplace";
+import gitLogo from "../../../../assets/git-logo.svg";
 import Cookies from 'js-cookie';
-import { backgroundColor } from '../styles/theme';
+import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 
-const views: Views = {
-  0: {
-    title: 'Create Site',
-    subtitle: 'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
+
+const messages = defineMessages({
+  privateBlueprints: {
+    id: 'createSiteDialog.privateBlueprints',
+    defaultMessage: 'Private Blueprints'
   },
-  1: {
-    title: 'Create Site',
-    subtitle: 'Name and describe your site',
-    btnText: 'Review'
+  marketplace: {
+    id: 'common.marketplace',
+    defaultMessage: 'Marketplace'
   },
-  2: {
-    title: 'Finish',
-    subtitle: 'Review set up summary and create your site',
-    btnText: 'Create Site'
+  publicMarketplace: {
+    id: 'createSiteDialog.publicMarketplace',
+    defaultMessage: 'Public Marketplace'
+  },
+  back: {
+    id: 'common.back',
+    defaultMessage: 'Back'
+  },
+  noBlueprints: {
+    id: 'createSiteDialog.noBlueprints',
+    defaultMessage: 'No Blueprints Where Found'
+  },
+  changeQuery: {
+    id: 'createSiteDialog.changeQuery',
+    defaultMessage: 'Try changing your query or browse the full catalog.'
+  },
+  creatingSite: {
+    id: 'createSiteDialog.creatingSite',
+    defaultMessage: 'Creating Site'
+  },
+  pleaseWait: {
+    id: 'createSiteDialog.pleaseWait',
+    defaultMessage: 'Please wait while your site is being created..'
+  },
+  createInBackground: {
+    id: 'createSiteDialog.createInBackground',
+    defaultMessage: 'Create in Background'
+  },
+  dialogCloseTitle: {
+    id: 'createSiteDialog.dialogCloseTitle',
+    defaultMessage: 'Confirm Close'
+  },
+  dialogCloseMessage: {
+    id: 'createSiteDialog.dialogCloseMessage',
+    defaultMessage: 'Data entered in the form would be lost upon closing.'
+  },
+  gitBlueprintName: {
+    id: 'createSiteDialog.gitBlueprintName',
+    defaultMessage: 'Remote Git Repository'
+  },
+  gitBlueprintDescription: {
+    id: 'createSiteDialog.gitBlueprintDescription',
+    defaultMessage: 'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
+  },
+  createSite: {
+    id: 'createSiteDialog.createSite',
+    defaultMessage: 'Create Site'
+  },
+  review: {
+    id: 'createSiteDialog.review',
+    defaultMessage: 'Review'
+  },
+  finish: {
+    id: 'createSiteDialog.finish',
+    defaultMessage: 'Finish'
+  },
+  nameAndDescription: {
+    id: 'createSiteDialog.nameAndDescription',
+    defaultMessage: 'Name and describe your site'
+  },
+  reviewSite: {
+    id: 'createSiteDialog.reviewSite',
+    defaultMessage: 'Review set up summary and create your site'
+  },
+  chooseCreationStrategy: {
+    id: 'createSiteDialog.chooseCreationStrategy',
+    defaultMessage: 'Choose creation strategy: start from an existing Git repo or create based on a blueprint that suits you best.'
   }
-};
+});
 
 const siteInitialState: SiteState = {
   blueprint: null,
@@ -234,7 +297,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
-  const {classes, onClose, selectedView} = props;
+  const {classes, onClose, selectedView, views} = props;
   const {title, subtitle} = views[selectedView];
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
@@ -250,61 +313,6 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <Typography variant="subtitle1">{subtitle}</Typography>
     </MuiDialogTitle>
   );
-});
-
-const messages = defineMessages({
-  privateBlueprints: {
-    id: 'createSiteDialog.privateBlueprints',
-    defaultMessage: 'Private Blueprints'
-  },
-  marketplace: {
-    id: 'common.marketplace',
-    defaultMessage: 'Marketplace'
-  },
-  publicMarketplace: {
-    id: 'createSiteDialog.publicMarketplace',
-    defaultMessage: 'Public Marketplace'
-  },
-  back: {
-    id: 'common.back',
-    defaultMessage: 'Back'
-  },
-  noBlueprints: {
-    id: 'createSiteDialog.noBlueprints',
-    defaultMessage: 'No Blueprints Where Found'
-  },
-  changeQuery: {
-    id: 'createSiteDialog.changeQuery',
-    defaultMessage: 'Try changing your query or browse the full catalog.'
-  },
-  creatingSite: {
-    id: 'createSiteDialog.creatingSite',
-    defaultMessage: 'Creating Site'
-  },
-  pleaseWait: {
-    id: 'createSiteDialog.pleaseWait',
-    defaultMessage: 'Please wait while your site is being created..'
-  },
-  createInBackground: {
-    id: 'createSiteDialog.createInBackground',
-    defaultMessage: 'Create in Background'
-  },
-  dialogCloseTitle: {
-    id: 'createSiteDialog.dialogCloseTitle',
-    defaultMessage: 'Confirm Close'
-  },
-  dialogCloseMessage: {
-    id: 'createSiteDialog.dialogCloseMessage',
-    defaultMessage: 'Data entered in the form would be lost upon closing.'
-  },
-  gitBlueprintName: {
-    id: 'createSiteDialog.gitBlueprintName',
-    defaultMessage: 'Remote Git Repository'
-  },
-  gitBlueprintDescription: {
-    id: 'createSiteDialog.gitBlueprintDescription',
-    defaultMessage: 'Create a new site based on a Crafter CMS project in an existing, remote git repository.'
-  }
 });
 
 interface CreateSiteDialogProps {
@@ -336,6 +344,23 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const { current: refts } = useRef<any>({});
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
+
+  const views: Views = {
+    0: {
+      title: formatMessage(messages.createSite),
+      subtitle: formatMessage(messages.chooseCreationStrategy)
+    },
+    1: {
+      title: formatMessage(messages.createSite),
+      subtitle: formatMessage(messages.nameAndDescription),
+      btnText: formatMessage(messages.review)
+    },
+    2: {
+      title: formatMessage(messages.finish),
+      subtitle: formatMessage(messages.reviewSite),
+      btnText: formatMessage(messages.createSite)
+    }
+  };
 
   function filterBlueprints(blueprints: Blueprint[], searchKey: string) {
     searchKey = searchKey.toLowerCase();
@@ -743,7 +768,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                                             onBlueprintSelected={handleBlueprintSelected}
                                             onCloseDetails={handleCloseDetails} interval={5000}/>) :
         <div className={classes.dialogContainer}>
-          <DialogTitle id="create-site-dialog" onClose={handleClose} selectedView={site.selectedView}/>
+          <DialogTitle id="create-site-dialog" onClose={handleClose} views={views} selectedView={site.selectedView}/>
           {
             (site.selectedView === 0) &&
             <div className={classes.tabs}>

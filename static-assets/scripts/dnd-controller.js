@@ -588,11 +588,11 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         if (category.components.length) {
           $.each(category.components, function (j, component) {
             html.push(crafter.String(COMPONENT_TPL)
-              .fmt(component.path, component.type, component.label));
+              .fmt(component.path || '', component.type, component.label));
           });
         } else {
           html.push(crafter.String(COMPONENT_TPL)
-            .fmt(category.components.path, category.components.type, category.components.label));
+            .fmt(category.components.path || '', category.components.type, category.components.label));
         }
       }
       html.push('</sul>');

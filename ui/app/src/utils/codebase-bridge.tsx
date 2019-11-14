@@ -68,6 +68,14 @@ interface CodebaseBridge {
   services: object;
 }
 
+export function updateIntl(nextIntl: IntlShape) {
+  // @ts-ignore
+  if (window.CrafterCMSNext) {
+    // @ts-ignore
+    window.CrafterCMSNext.i18n.intl = nextIntl;
+  }
+}
+
 export function createCodebaseBridge() {
 
   const Bridge: CodebaseBridge = {
@@ -93,8 +101,8 @@ export function createCodebaseBridge() {
             default: module.DependencySelectionDelete
           }))
       )),
-      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../components/PublishingQueue'))
+      CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
+      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue'))
     },
 
     assets: {

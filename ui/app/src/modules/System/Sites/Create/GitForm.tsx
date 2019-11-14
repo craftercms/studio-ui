@@ -28,7 +28,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { SiteState } from '../models/Site';
+import { SiteState } from '../../../../models/Site';
 import { defineMessages, useIntl } from "react-intl";
 import Typography from '@material-ui/core/Typography';
 

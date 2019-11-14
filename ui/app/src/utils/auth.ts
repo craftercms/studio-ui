@@ -27,7 +27,6 @@ export function setRequestForgeryToken() {
   setGlobalHeaders({'X-XSRF-TOKEN': token});
 }
 
-
 export default {
   getRequestForgeryToken,
   setRequestForgeryToken

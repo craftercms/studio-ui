@@ -123,7 +123,7 @@ const passwordRequirementMessages = defineMessages({
   },
   minMaxLength: {
     id: 'passwordRequirement.minMaxLength',
-    defaultMessage: 'Length must be between {min} and {max} characters'
+    defaultMessage: 'Length must be between {minLength} and {maxLength} characters'
   },
   passwordValidation: {
     id: 'passwordRequirement.passwordValidation',
@@ -151,6 +151,25 @@ const groupsAdminMessages = defineMessages({
   displayName: {
     id: 'groupsAdmin.displayName',
     defaultMessage: 'Display Name'
+  }
+});
+
+const profileSettingsMessages = defineMessages({
+  password: {
+    id: 'profileSettings.password',
+    defaultMessage: 'Password'
+  },
+  currentPassword: {
+    id: 'profileSettings.currentPassword',
+    defaultMessage: 'Current password'
+  },
+  isRequired: {
+    id: 'profileSettings.isRequired',
+    defaultMessage: 'is required'
+  },
+  mustMatchPreviousEntry: {
+    id: 'profileSettings.mustMatchPreviousEntry',
+    defaultMessage: 'Must match the previous entry'
   }
 });
 
@@ -408,7 +427,7 @@ const codeEditorMessages = defineMessages( {
 const globalConfigMessages = defineMessages( {
   title: {
     id: 'globalConfig.title',
-    defaultMessage: 'Global Configuration'
+    defaultMessage: 'Global Config'
   },
   viewSample: {
     id: 'globalConfig.viewSample',
@@ -509,6 +528,7 @@ export default {
   usersAdminMessages,
   passwordRequirementMessages,
   groupsAdminMessages,
+  profileSettingsMessages,
   numericInputControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
