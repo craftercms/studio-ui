@@ -523,9 +523,14 @@ div#acn-active-content {
     right: 14px;
     cursor: pointer;
     display: none;
-    padding: 3px 7px;
+    padding: 2px 0 2px 2px;
 
-    background-color: #f8f8f8;
+    &:before {
+      background-color: #e2e2e2;
+      padding: 2px 3px;
+      border-radius: 8px;
+      width: 16px;
+    }
 
     &:hover {
       display: inline-block !important;

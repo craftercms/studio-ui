@@ -608,57 +608,9 @@
           zIndex: 100
         });
 
-        const $treeParent = $('#' + tree.id).parent(),
-              $dropdownMenu = $('#acn-dropdown-menu').parent();
-
-        let $contextMenuEllipsis;
-
-        if($dropdownMenu.find('.context-menu--ellipsis').length === 0) {
-          $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-h" ></span>').appendTo($dropdownMenu);
-        } else {
-          $contextMenuEllipsis = $dropdownMenu.find('.context-menu--ellipsis');
-        }
-
-        $treeParent.on('mouseenter', '.ygtvcell', function() {
-          const target = $(this).find('.treenode-label')[0], // it's always one item (label)
-                top =  $(this).closest('.ygtvitem').offset().top - 50; // remove 50 because of the topbar
-
-          $contextMenuEllipsis.show();
-          $contextMenuEllipsis.attr('data-tree', tree.id);
-          $contextMenuEllipsis.data('target', target);
-          $contextMenuEllipsis.css('top', top);
-
-        });
-
-        $treeParent.on('mouseleave', '.ygtvcell', function() {
-          $contextMenuEllipsis.hide();
-        });
-
-        $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
-          e.stopPropagation();
-
-          const target = $(this).data().target;
-          const offsetLeft = e.clientX;
-          const offsetTop = e.clientY - 50;
-
-          $(tree.oContextMenu.element).on('contextmenu-rendered', function() {
-            let $contextMenu = $('#' + tree.oContextMenu.id);
-
-            $contextMenu.css('visibility', 'visible');
-            $contextMenu.css('left', offsetLeft + 'px');
-            $contextMenu.css('top', offsetTop + 'px');
-          });
-
-          // // If context menu hasn't been initialized, create it
-          let $contextMenu = $('#' + tree.oContextMenu.id);
-          if ($contextMenu.length === 0) {
-            let $contextMenuContainer = $('#acn-context-menu');
-
-            $contextMenuContainer.append(tree.oContextMenu.element);
-          }
-
+        this.manualContextMenu(tree, function(tree, target) {
           self.onTriggerContextMenu(tree, tree.oContextMenu, target);
-        })
+        });
 
         oContextMenu.subscribe('beforeShow', function(e) {
           Self.onTriggerContextMenu(tree, this);
@@ -1001,6 +953,63 @@
         }
 
         return treeNode;
+      },
+
+      /**
+       *
+       */
+      manualContextMenu: function(tree, callback) {
+        const $treeParent = $('#' + tree.id).parent(),
+          $dropdownMenu = $('#acn-dropdown-menu').parent();
+
+        let $contextMenuEllipsis;
+
+        if($dropdownMenu.find('.context-menu--ellipsis').length === 0) {
+          $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-h" ></span>').appendTo($dropdownMenu);
+        } else {
+          $contextMenuEllipsis = $dropdownMenu.find('.context-menu--ellipsis');
+        }
+
+        $treeParent.on('mouseenter', '.ygtvcell', function() {
+          const target = $(this).find('.treenode-label')[0], // it's always one item (label)
+            top =  $(this).closest('.ygtvitem').offset().top - 48;
+
+          $contextMenuEllipsis.show();
+          $contextMenuEllipsis.attr('data-tree', tree.id);
+          $contextMenuEllipsis.data('target', target);
+          $contextMenuEllipsis.css('top', top);
+
+        });
+
+        $treeParent.on('mouseleave', '.ygtvcell', function() {
+          $contextMenuEllipsis.hide();
+        });
+
+        $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
+          e.stopPropagation();
+
+          const target = $(this).data().target;
+          const offsetLeft = e.clientX;
+          const offsetTop = e.clientY - 50;
+
+          $(tree.oContextMenu.element).on('contextmenu-rendered', function() {
+            let $contextMenu = $('#' + tree.oContextMenu.id);
+
+            $contextMenu.css('visibility', 'visible');
+            $contextMenu.css('left', offsetLeft + 'px');
+            $contextMenu.css('top', offsetTop + 'px');
+          });
+
+          // // If context menu hasn't been initialized, create it
+          let $contextMenu = $('#' + tree.oContextMenu.id);
+          if ($contextMenu.length === 0) {
+            let $contextMenuContainer = $('#acn-context-menu');
+
+            $contextMenuContainer.append(tree.oContextMenu.element);
+          }
+
+          callback(tree, target);
+        })
       },
 
       scrollToHighlighted: function() {
