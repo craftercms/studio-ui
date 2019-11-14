@@ -22,16 +22,14 @@ export const backgroundColor = '#E7E7E7';
 export const RedColor = '#FF3B30';
 
 const defaultTheme = createMuiTheme();
+
 export const theme = createMuiTheme({
   typography: {
     button: {
       textTransform: 'none'
     },
     fontSize: 14,
-    fontFamily: [
-      '"Open Sans"',
-      'sans-serif'
-    ].join(',')
+    fontFamily: '"Open Sans", "Source Sans Pro", sans-serif'
   },
   palette: {
     primary: {

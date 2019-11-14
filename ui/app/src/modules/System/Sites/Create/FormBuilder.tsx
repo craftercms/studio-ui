@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import { Parameter } from "../models/Blueprint";
+import { Parameter } from "../../../../models/Blueprint";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { SiteState } from "../models/Site";
+import { SiteState } from "../../../../models/Site";
 import { defineMessages, useIntl } from "react-intl";
-import PasswordTextField from "./PasswordTextField";
+import PasswordTextField from "../../../../components/Controls/PasswordTextField";
 
 interface FormBuilderProps {
   parameters: [Parameter];

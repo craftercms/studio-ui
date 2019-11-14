@@ -28,7 +28,7 @@ import Grid from '@material-ui/core/Grid';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import BlueprintCard from './BlueprintCard';
-import Spinner from "./Spinner";
+import Spinner from "../../../../components/SystemStatus/Spinner";
 import InputBase from '@material-ui/core/InputBase';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
@@ -36,25 +36,25 @@ import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from "./BlueprintReview";
-import LoadingState from "./LoadingState";
-import ErrorState from "./ErrorState";
-import ConfirmDialog from "./ConfirmDialog";
-import { Blueprint } from '../models/Blueprint';
-import { MarketplaceSite, Site, SiteState, Views } from '../models/Site';
+import LoadingState from "../../../../components/SystemStatus/LoadingState";
+import ErrorState from "../../../../components/SystemStatus/ErrorState";
+import ConfirmDialog from "../../../../components/UserControl/ConfirmDialog";
+import { Blueprint } from '../../../../models/Blueprint';
+import { MarketplaceSite, Site, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import PluginDetailsView from "./PluginDetailsView";
-import EmptyState from "./EmptyState";
-import { underscore } from '../utils/string';
-import { setRequestForgeryToken } from '../utils/auth';
-import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../services/sites";
+import PluginDetailsView from "../../Publishing/Queue/PluginDetailsView";
+import EmptyState from "../../../../components/SystemStatus/EmptyState";
+import { underscore } from '../../../../utils/string';
+import { setRequestForgeryToken } from '../../../../utils/auth';
+import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../../../../services/sites";
 import {
   createSite as createSiteFromMarketplace,
   fetchBlueprints as fetchMarketplaceBlueprints
-} from "../services/marketplace";
-import gitLogo from "../assets/git-logo.svg";
+} from "../../../../services/marketplace";
+import gitLogo from "../../../../assets/git-logo.svg";
 import Cookies from 'js-cookie';
-import { backgroundColor } from '../styles/theme';
+import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 
