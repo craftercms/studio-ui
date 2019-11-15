@@ -170,6 +170,10 @@ const profileSettingsMessages = defineMessages({
   mustMatchPreviousEntry: {
     id: 'profileSettings.mustMatchPreviousEntry',
     defaultMessage: 'Must match the previous entry'
+  },
+  languageSaveSuccesfully: {
+    id: 'profileSettings.languageSaveSuccesfully',
+    defaultMessage: 'Language Save Succesfully'
   }
 });
 

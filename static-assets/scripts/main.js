@@ -894,8 +894,8 @@
   ]);
 
   app.controller('AppCtrl', [
-    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements',
-    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements) {
+    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements', '$element',
+    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements, $element) {
 
       $scope.langSelected = '';
       $scope.modalInstance = '';
@@ -1004,7 +1004,6 @@
 
       $scope.selectAction = function(optSelected) {
         $scope.langSelected = optSelected;
-        $translate.use($scope.langSelected);
         if(optSelected) {
           let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
           document.dispatchEvent(loginSuccess);
@@ -1020,18 +1019,10 @@
         let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
         document.dispatchEvent(loginSuccess);
 
-        $rootScope.modalInstance = $uibModal.open({
-          templateUrl: 'settingLanguajeConfirmation.html',
-          windowClass: 'centered-dialog',
-          controller: 'AppCtrl',
-          backdrop: 'static',
-          backdropClass: 'hidden',
-          keyboard: false,
-          size: 'sm'
+        $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
+          position: 'top left',
+          className: 'success'
         });
-        $timeout(function () {
-          $rootScope.modalInstance.close();
-        }, 1500, false);
 
       };
 
