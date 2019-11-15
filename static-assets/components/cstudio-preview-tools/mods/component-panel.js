@@ -239,8 +239,6 @@
                               }
                             };
                             amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-                            console.log(modelP);
-                            console.log(CStudioAuthoring.Operations.processPathsForMacros(path, modelP));
                             CStudioAuthoring.Operations.performSimpleIceEdit(
                               {
                                 uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
