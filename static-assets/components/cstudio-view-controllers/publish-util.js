@@ -149,7 +149,6 @@ function calculateDependencies(data, callback) {
 }
 
 function renderItems(items) {
-
   this.result = [];
 
   CrafterCMSNext
@@ -166,7 +165,7 @@ function renderItems(items) {
       }
     );
 
-  CStudioAuthoring.Utils.removeLoadingIcon();  
+  CStudioAuthoring.Utils.removeLoadingIcon();
   const me = this;
   $(document).on('keyup', function (e) {
     if (e.keyCode === 27) {	// esc
@@ -385,9 +384,9 @@ function submitComplete(items, dialogue, args){
           dependencies.push(this.item);
         });
       });
-      
+
       var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
-      dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+      dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos});
 
       eventNS.dependencies = dependencies;
       document.dispatchEvent(eventNS);
@@ -414,4 +413,4 @@ CStudioAuthoring.Env.ModuleMap.map("publish-util", {
   getScheduledDateTimeForJson,
   traverse,
   getScheduledDateTimeFromJson
-}); 
+});

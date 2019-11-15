@@ -28,6 +28,10 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import {defineMessages, useIntl} from "react-intl";
+import Grid from "@material-ui/core/Grid";
+
+import { Item } from '../../../models/Item';
+import DependencySelection from "../../../components/DependencySelection";
 
 const messages = defineMessages({
   dialogTitle: {
@@ -70,11 +74,27 @@ const DialogTitle = withStyles(styles)((props: DialogTitleProps) => {
   );
 });
 
+const DialogContent = withStyles((theme: Theme) => ({
+  root: {
+    padding: theme.spacing(2),
+  },
+}))(MuiDialogContent);
+
+const DialogActions = withStyles((theme: Theme) => ({
+  root: {
+    margin: 0,
+    padding: theme.spacing(1),
+  },
+}))(MuiDialogActions);
+
 interface RequestPublishDialogProps {
   onClose(): any;
+  items: Item[];
+  siteId: string;
 }
 
 function RequestPublishDialog(props: RequestPublishDialogProps) {
+  const { items, siteId } = props;
   const [open, setOpen] = React.useState(true);
   const { formatMessage } = useIntl();
 
@@ -84,11 +104,30 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
   return (
     <div>
-      <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+      <Dialog onClose={handleClose} aria-labelledby="requestPublishDialogTitle" open={open} disableBackdropClick={true}
+              fullWidth={true} maxWidth={'md'}>
+        <DialogTitle id="requestPublishDialogTitle" onClose={handleClose}>
           { formatMessage(messages.dialogTitle) }
         </DialogTitle>
+        <DialogContent dividers>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={7} md={8} lg={8} xl={8}>
+              <DependencySelection items={items} siteId={'editorial'} onChange={ (result:any) => { console.log(result) }}/>
+            </Grid>
 
+            <Grid item xs={12} sm={5} md={4} lg={4} xl={4}>
+              test
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button autoFocus onClick={handleClose} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );
