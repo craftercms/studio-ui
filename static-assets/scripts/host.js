@@ -351,7 +351,8 @@
       message.compPath,
       message.conComp,
       message.model,
-      message.destinationZone
+      message.destinationZone,
+      message.contentType
     );
   });
 

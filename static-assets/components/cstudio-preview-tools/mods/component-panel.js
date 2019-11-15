@@ -194,11 +194,11 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone, contentType) {
                   var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
                     CStudioAuthoringContext.previewCurrentPath);
                   var componentType = (path && path !== previewPath ) ? 'shared-content' : 'embedded-content';
-                  ComponentsPanel.validate(compPath, modelP['content-type'], destinationZone, componentType).then((response) => {
+                  ComponentsPanel.validate(contentType, destinationZone, componentType).then((response) => {
                     if (response.supported) {
                       if (isNew) {
                         function isNewEvent(value, modelPath) {
@@ -239,6 +239,8 @@
                               }
                             };
                             amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
+                            console.log(modelP);
+                            console.log(CStudioAuthoring.Operations.processPathsForMacros(path, modelP));
                             CStudioAuthoring.Operations.performSimpleIceEdit(
                               {
                                 uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
@@ -300,15 +302,17 @@
                   });
                 },
 
-                validate: function(componentPath, pageContentType, zone, componentType) {
+                validate: function(contentType, zone, componentType) {
                   var key = `${zone}-${componentType}`;
+                  //creating compatibility with child-content
+                  var childContent = componentType === 'shared-content'? 'child-content' : null;
                   return new Promise((resolve, reject) => {
                     if(ComponentsPanel.cacheValidation[key]) {
                       resolve(ComponentsPanel.cacheValidation[key]);
                     }else {
                       ComponentsPanel.cacheValidation[key] = {supported: false, ds: null};
                     }
-                    CStudioForms.Util.loadFormDefinition(componentPath || pageContentType, { success: function(response){
+                    CStudioForms.Util.loadFormDefinition(contentType, { success: function(response){
                         var selector;
                         response.sections.forEach(section => {
                           var _selector = section.fields.find(item => item.id === zone);
@@ -317,7 +321,7 @@
                         var selectorDS = selector.properties.find(item => item.name === "itemManager");
                         selectorDS.value.split(',').forEach(ds => {
                           var type = response.datasources.find(formDS => formDS.id === ds).type;
-                          if(type === componentType) ComponentsPanel.cacheValidation[key] = {supported: true, ds: ds};
+                          if(type === componentType || type  === childContent ) ComponentsPanel.cacheValidation[key] = {supported: true, ds: ds};
                           return true;
                         });
                         resolve(ComponentsPanel.cacheValidation[key]);

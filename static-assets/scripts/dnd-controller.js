@@ -392,6 +392,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     var dropName = $dropZone.attr('data-studio-components-target');
     var index = 0, currentTag = "", zone;
     var destinationZone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target');
+    var contentType = $dropZone.attr('data-studio-zone-contenttype');
 
     var me = this,
       isNew = $component.hasClass('studio-component-drag-target'),
@@ -454,7 +455,8 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         trackingNumber: tracking,
         compPath: compPath,
         conComp: (conRepeat > 1) ? true : false,
-        destinationZone: destinationZone
+        destinationZone: destinationZone,
+        contentType: contentType
       });
 
     });
@@ -465,11 +467,11 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
   }
 
   function componentsModelLoad(data) {
-    //console.log("test");
     var aNotFound = [],
       me = this,
       noObjectid = 0,
-      structure1, structure2, index = 0, currentTag = "";
+      structure1, structure2, index = 0, currentTag = "",
+      contentType = data['content-type'];
 
     $('[data-studio-components-target]').each(function () {
       var $el = $(this),
@@ -481,6 +483,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       if (name.indexOf('.') < 0) {
         if (objectId) {
           if (!found[id] || objectId == data['objectId']) {
+            $el.attr('data-studio-zone-contenttype', contentType);
             if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
               found[id] = true;
               $el.find('> [data-studio-component]').each(function (i, el) {

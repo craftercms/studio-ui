@@ -141,9 +141,10 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         compPath = $component.uri,
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
         compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
-        destinationZone = $dropZone.attr('data-studio-components-target');
+        destinationZone = $dropZone.attr('data-studio-components-target'),
+        contentType = $dropZone.attr('data-studio-zone-contenttype');
       if (compPath != zonePath && compPathChild != compPath) {
-        componentDropped.call(me, $dropZone, $component, destinationZone);
+        componentDropped.call(me, $dropZone, $component, destinationZone, contentType);
       } else {
         me.done();
         $window.off( "keyup", keyUpHandler);
@@ -237,7 +238,8 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         trackingNumber: tracking,
         compPath: compPath,
         conComp: (conRepeat > 1) ? true : false,
-        destinationZone: destinationZone
+        destinationZone: destinationZone,
+        contentType: contentType
       });
 
     });
