@@ -230,9 +230,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, path, instance);
 
-        //add hover effect to nodes
-        CStudioAuthoring.ContextualNav.WcmAssetsFolder.nodeHoverEffects(this);
-
         YDom.removeClass(label, "loading");
       },
       failure: function() {
@@ -650,9 +647,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawSubtree(treeData.item.children, node, args.pathToOpenTo, args.instance);
 
         args.fnLoadComplete();
-
-        //add hove effect to nodes
-        CStudioAuthoring.ContextualNav.WcmAssetsFolder.nodeHoverEffects(this);
       },
 
       failure: function(err, args) {
@@ -848,8 +842,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             } else {
               YDom.removeClass(label, "loading");
               YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
-              // Add hover effect to nodes
-              RootFolder().nodeHoverEffects(this);
               RootFolder().firePathLoaded(instance);
             }
           } else {
@@ -887,8 +879,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
             YDom.removeClass(label, "loading");
             YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
-            // Add hover effect to nodes
-            RootFolder().nodeHoverEffects(this);
             RootFolder().firePathLoaded(instance);
           }
         });
@@ -1772,80 +1762,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
    */
   deleteContainer: function(p_sType, p_aArgs, tree) {
     CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent(p_sType, p_aArgs, tree);
-  },
-
-  nodeHoverEffects: function(e) {
-    var YDom = YAHOO.util.Dom,
-      highlightWrpClass = "highlight-wrapper",
-      highlightColor = "#e2e2e2",
-      overSetClass = "over-effect-set",
-      spanNodes = YAHOO.util.Selector.query("span.yui-resize-label:not(." + overSetClass + ")", "acn-dropdown-menu-wrapper"),
-      moverFn = function(evt) {
-
-        var el = this,
-          wrapEl = function(table) {
-            var wrp = document.createElement('div');
-            wrp.setAttribute('style', 'background-color:' + highlightColor);
-            wrp.setAttribute('class', highlightWrpClass);
-            YDom.insertBefore(wrp, table);
-            wrp.appendChild(table);
-            return wrp;
-          };
-        if (YDom.hasClass(el, highlightWrpClass)) {
-          YDom.setStyle(el, 'background-color', highlightColor)
-        } else if (YDom.hasClass(el, 'ygtvitem')) {
-          var firstChild = YDom.getFirstChild(el);
-          YDom.hasClass(firstChild, highlightWrpClass)
-            ? YDom.setStyle(firstChild, 'background-color', highlightColor)
-            : wrapEl(firstChild)
-        } else {
-          var parent = el.parentNode;
-          YDom.hasClass(parent, highlightWrpClass)
-            ? YDom.setStyle(parent, 'background-color', highlightColor)
-            : wrapEl(el);
-        }
-        if(RootFolder().lastSelectedTextNode != null) {
-          var currentlySelectedTextNode = el
-          if(currentlySelectedTextNode == RootFolder().lastSelectedTextNode) return;
-          (YDom.hasClass(RootFolder().lastSelectedTextNode, highlightWrpClass)
-            ? RootFolder().lastSelectedTextNode
-            : (YDom.hasClass(RootFolder().lastSelectedTextNode, 'ygtvitem')
-              ? YDom.getFirstChild(RootFolder().lastSelectedTextNode)
-              : RootFolder().lastSelectedTextNode.parentNode))
-            .style.backgroundColor = "";
-
-          RootFolder().lastSelectedTextNode = null;
-        }
-
-        var nodeId = (""+el.id).replace("table","label");
-        var node = RootFolder().treeNodes[nodeId];
-      },
-      moutFn = function(evt) {
-        if(RootFolder().lastSelectedTextNode != null) return;
-        var el = this;
-        (YDom.hasClass(el, highlightWrpClass)
-          ? el
-          : (YDom.hasClass(el, 'ygtvitem')
-            ? YDom.getFirstChild(el)
-            : el.parentNode))
-          .style.backgroundColor = "";
-      };
-    for (var i = 0,
-           l = spanNodes.length,
-           span = spanNodes[0],
-           barItem;
-         i < l;
-         i++,span = spanNodes[i]
-    ) {
-      // span -> td -> tr -> tbody -> table
-      barItem = span.parentNode.parentNode.parentNode.parentNode;
-      if (barItem) {
-        YEvent.addListener(barItem, "mouseover", moverFn);
-        YEvent.addListener(barItem, "mouseout", moutFn);
-        YDom.addClass(span, overSetClass);
-      }
-    }
-  },
+  }
 };
 
 /**

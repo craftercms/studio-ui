@@ -508,12 +508,6 @@ div#acn-active-content {
     .ygtvrow td:last-child {
       width: 100%;
     }
-
-    .ygtvcell.ygtvcontent:hover {
-      .context-menu--ellipsis {
-        display: inline-block;
-      }
-    }
   }
 }
 
@@ -531,6 +525,19 @@ div#acn-active-content {
       border-radius: 8px;
       width: 16px;
     }
+
+    &:hover {
+      display: inline-block !important;
+    }
+  }
+
+  .sidebar-highlight {
+    height: 20px;
+    width: 100%;
+    position: absolute;
+    background-color: #e2e2e2;
+    z-index: -1;
+    display: none;
 
     &:hover {
       display: inline-block !important;
