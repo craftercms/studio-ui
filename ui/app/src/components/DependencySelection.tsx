@@ -133,12 +133,7 @@ export function DependencySelection(props: DependencySelectionProps) {
     _setCheckedSoftDep(nextCheckedSoftDep);
   };
 
-  useEffect(
-    () => {
-      setRef();
-    },
-    [checked, checkedSoftDep]
-  );
+  useEffect(setRef, [checked, checkedSoftDep]);
 
   return (
     <>
@@ -281,15 +276,9 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
     setResultItems(null);
-  }
+  };
 
-  useEffect(
-    () => {
-      showAllDependencies();
-      setRef();
-    },
-    [checked]
-  );
+  useEffect(checkedChange, [checked]);
 
   return (
     <>
@@ -366,6 +355,11 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
     </>
 
   );
+
+  function checkedChange() {
+    showAllDependencies();
+    setRef();
+  }
 
   function setRef() {
     const result = Object.entries({ ...checked })

@@ -51,6 +51,13 @@ crafterDefine('guest', [
   }
 
   function init(config) {
+    if (window.parent === window) {
+      return console && console.warn && console.warn(
+        '[Crafter CMS] Host is not running inside of Studio as it\'s parent window. ' +
+        'ICE mechanics will be disabled. Configure your authoring Environment to point to ' +
+        `'${window.origin}' if you wish to enable In Context Editing.`
+      );
+    }
 
     origin = config.hostOrigin;
 
@@ -110,7 +117,7 @@ crafterDefine('guest', [
 
     communicator.on(Topics.REFRESH_PREVIEW, function (message) {
       window.location.reload();
-    })
+    });
 
     communicator.on(Topics.ICE_TOOLS_OFF, function (message) {
       iceToolsOn = false;

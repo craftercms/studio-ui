@@ -31,3 +31,12 @@ if (elem) {
   // Alternative path to use on current studio UI
   require('./utils/codebase-bridge').createCodebaseBridge();
 }
+
+// @ts-ignore
+if (module.hot) {
+  // @ts-ignore
+  module.hot.accept('./components/App', () => {
+    const NextApp = require('./components/App').default;
+    ReactDOM.render(<NextApp/>, elem);
+  });
+}

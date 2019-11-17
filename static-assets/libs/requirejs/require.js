@@ -7,7 +7,7 @@
 /*jslint regexp: true, nomen: true, sloppy: true */
 /*global window, navigator, document, importScripts, setTimeout, opera */
 
-var crafterRequire;
+var crafterRequireJS;
 var crafterDefine;
 
 (function() {
@@ -2148,6 +2148,6 @@ var crafterDefine;
     req(cfg);
   }(this, (typeof setTimeout === 'undefined' ? undefined : setTimeout)));
 
-  crafterRequire = require;
+  crafterRequireJS = require;
   crafterDefine = define;
 }());

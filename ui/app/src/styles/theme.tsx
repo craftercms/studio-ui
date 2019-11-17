@@ -63,10 +63,10 @@ export const theme = createMuiTheme({
         'label + &': {
           marginTop: `${defaultTheme.spacing(3)}px !important`
         },
-        '&.MuiInput-underline:before': {
+        '&.MuiInput-underline::before': {
           display: 'none'
         },
-        '&.MuiInput-underline:after': {
+        '&.MuiInput-underline::after': {
           display: 'none'
         },
         '&$error .MuiInputBase-input': {
@@ -84,7 +84,6 @@ export const theme = createMuiTheme({
       input: {
         borderRadius: 4,
         position: 'relative',
-        backgroundColor: '#FFFFFF',
         border: '1px solid #ced4da',
         fontSize: 16,
         width: '100%',

@@ -16,3 +16,9 @@
  */
 
 @import "variables";
+
+body, html, #studioSPARoot {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
