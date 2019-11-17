@@ -2,8 +2,6 @@
 import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
 import prettier from 'prettier/standalone';
 
-// export const commentRegExpStr = '^<!--[\s\S\n]*?-->$';
-
 export function fromString(xml: string) {
   return (xml != null) ? new DOMParser().parseFromString(xml, 'text/xml') : null
 }
