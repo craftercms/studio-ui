@@ -352,7 +352,8 @@
       message.conComp,
       message.model,
       message.destinationZone,
-      message.contentType
+      message.contentType,
+      message.embeddedItemId
     );
   });
 

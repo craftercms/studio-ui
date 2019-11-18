@@ -194,9 +194,12 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone, contentType) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone, contentType, embeddedItemId) {
                   var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
                     CStudioAuthoringContext.previewCurrentPath);
+                  if(ComponentsPanel.restrictions(embeddedItemId)){
+                    return false;
+                  }
                   var componentType = (path && path !== previewPath ) ? 'shared-content' : 'embedded-content';
                   ComponentsPanel.validate(contentType, destinationZone, componentType).then((response) => {
                     if (response.supported) {
@@ -298,6 +301,36 @@
                       );
                     }
                   });
+                },
+
+                restrictions: function(embeddedItemId){
+                  var invalid = false;
+                  //component inside embedded, not supported
+                  if(embeddedItemId) {
+                    invalid = true;
+                  }
+                  if(invalid) {
+                    var CMgs = CStudioAuthoring.Messages;
+                    var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
+                    if($(document.body).find('#componentsNotSupported-dialog_c').length) return;
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                      "componentsNotSupported-dialog",
+                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                      CMgs.format(langBundle, "notification"),
+                      'Nested embedded components does not support DnD',
+                      [{
+                        text: "OK",
+                        handler: function () {
+                          this.destroy();
+                          amplify.publish(cstopic('REFRESH_PREVIEW'));
+                        },
+                        isDefault: false
+                      }],
+                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                      "studioDialog"
+                    );
+                  }
+                  return invalid;
                 },
 
                 validate: function(contentType, zone, componentType) {
@@ -507,15 +540,12 @@
                     if (start) {
                         amplify.publish('/operation/started');
                     }
-                  var FlattenerState = {};
 
-                  if(model) {
-                    var dom = CStudioForms.communication.parseDOM(model);
-                    CStudioForms.Util.createFlattenerState(dom);
-                  }
+                  var dom = CStudioForms.communication.parseDOM(model);
+                  CStudioForms.Util.createFlattenerState(dom);
 
                     var form = {definition: formDefinition, model: contentMap},
-                        xml = CStudioForms.Util.serializeModelToXml(form, null, FlattenerState);
+                        xml = CStudioForms.Util.serializeModelToXml(form, null);
 
                     CStudioAuthoring.Service.writeContent(pagePath,
                         pagePath.substring(pagePath.lastIndexOf('/') + 1),
@@ -1446,7 +1476,6 @@
                                                 categories.push({ label: data.label, components: data.components });
                                             }
                                         }
-
                                         amplify.publish(cstopic('START_DRAG_AND_DROP'), {
                                             components: categories,
                                             contentModel: initialContentModel
