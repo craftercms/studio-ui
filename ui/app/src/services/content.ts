@@ -31,7 +31,12 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
   );
 }
 
+export function fetchPublishingChannels(site: string) {
+  return get(`studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
+}
+
 export default {
   getContent,
-  getDOM
+  getDOM,
+  fetchPublishingChannels
 }

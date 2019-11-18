@@ -27,18 +27,24 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import {defineMessages, useIntl} from "react-intl";
+import { FormattedMessage } from "react-intl";
 import Grid from "@material-ui/core/Grid";
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from "@material-ui/core/Checkbox";
+import NativeSelect from '@material-ui/core/NativeSelect';
+import InputBase from '@material-ui/core/InputBase';
+import {InputLabel} from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
 
 import { Item } from '../../../models/Item';
 import DependencySelection from "../../../components/DependencySelection";
+import { fetchPublishingChannels } from "../../../services/content";
 
-const messages = defineMessages({
-  dialogTitle: {
-    id: 'requestPublishDialog.dialogTitle',
-    defaultMessage: 'Request Publish'
-  }
-});
+const dialogInitialState: any = {
+  emailOnApprove: false,
+  environment: '',
+  submissionComment: ''
+};
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -53,6 +59,31 @@ const styles = (theme: Theme) =>
       color: theme.palette.grey[500],
     },
   });
+
+const BootstrapInput = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      'label + &': {
+        marginTop: theme.spacing(3),
+      },
+    },
+    input: {
+      borderRadius: 4,
+      position: 'relative',
+      backgroundColor: theme.palette.background.paper,
+      border: '1px solid #ced4da',
+      fontSize: 16,
+      padding: '10px 26px 10px 12px',
+      transition: theme.transitions.create(['border-color', 'box-shadow']),
+      // Use the system font instead of the default Roboto font.
+      '&:focus': {
+        borderRadius: 4,
+        borderColor: '#80bdff',
+        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+      },
+    },
+  }),
+)(InputBase);
 
 export interface DialogTitleProps extends WithStyles<typeof styles> {
   id: string;
@@ -96,18 +127,49 @@ interface RequestPublishDialogProps {
 function RequestPublishDialog(props: RequestPublishDialogProps) {
   const { items, siteId } = props;
   const [open, setOpen] = React.useState(true);
-  const { formatMessage } = useIntl();
+  const [publishingChannels, setPublishingChannels] = useState(null);
+  const [dialog, setDialog] = useReducer((a, b) => ({...a, ...b}), dialogInitialState);
+
+  useEffect(() => {
+      getPublishingChannels();
+    },
+    // eslint-disable-next-line
+    [],
+  );
 
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleInputChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDialog({ ...dialog, [name]: event.target.checked });
+  };
+
+  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
+    setDialog({ ...dialog, [name]: event.target.value as string });
+  };
+
+  function getPublishingChannels() {
+    fetchPublishingChannels(siteId)
+      .subscribe(
+        ({response}) => {
+          setPublishingChannels(response.availablePublishChannels);
+        },
+        ({response}) => {
+
+        }
+      );
+  }
 
   return (
     <div>
       <Dialog onClose={handleClose} aria-labelledby="requestPublishDialogTitle" open={open} disableBackdropClick={true}
               fullWidth={true} maxWidth={'md'}>
         <DialogTitle id="requestPublishDialogTitle" onClose={handleClose}>
-          { formatMessage(messages.dialogTitle) }
+          <FormattedMessage
+            id="requestPublishDialog.dialogTitle"
+            defaultMessage={`Request Publish`}
+          />
         </DialogTitle>
         <DialogContent dividers>
           <Grid container spacing={3}>
@@ -116,16 +178,66 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
             </Grid>
 
             <Grid item xs={12} sm={5} md={4} lg={4} xl={4}>
-              test
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={dialog.emailOnApprove}
+                    onChange={handleInputChange('emailOnApprove')}
+                    value="emailOnApprove"
+                    color="primary"
+                  />
+                }
+                label="Email me when items are approved"
+              />
+
+
+              {
+                publishingChannels === null ? (null) : (
+                  <>
+                    <InputLabel htmlFor="environmentSelect">Environment</InputLabel>
+                    <NativeSelect
+                      id="environmentSelect"
+                      fullWidth
+                      value={dialog.environment}
+                      onChange={handleSelectChange('environment')}
+                      input={<BootstrapInput />}
+                    >
+                      {
+                        publishingChannels.map( (publishingChannel: any) =>
+                          <option key={ publishingChannel.name } value={ publishingChannel.name }>{ publishingChannel.name }</option>
+                        )
+                      }
+                    </NativeSelect>
+                  </>
+                )
+              }
+
+              <TextField
+                id="sandboxBranch"
+                name="sandboxBranch"
+                label={'Submission Comment'}
+                fullWidth
+                // onKeyPress={onKeyPress}
+                onChange={handleInputChange('submissionComment')}
+                InputLabelProps={{ shrink: true }}
+                value={dialog.submissionComment}
+              />
+
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={handleClose} color="primary">
-            Cancel
+            <FormattedMessage
+              id="requestPublishDialog.cancel"
+              defaultMessage={`Cancel`}
+            />
           </Button>
           <Button autoFocus onClick={handleClose} color="primary">
-            Submit
+            <FormattedMessage
+              id="requestPublishDialog.submit"
+              defaultMessage={`Submit`}
+            />
           </Button>
         </DialogActions>
       </Dialog>
