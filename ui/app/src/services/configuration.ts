@@ -18,6 +18,7 @@
 import { get } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { fromString } from '../utils/xml';
 
 export function getRawContent(site: string, configPath: string, module: string): Observable<string> {
   return get(`/studio/api/2/configuration/get_configuration?siteId=${site}&module=${module}&path=${configPath}`).pipe(
@@ -26,9 +27,7 @@ export function getRawContent(site: string, configPath: string, module: string):
 }
 
 export function getDOM(site: string, configPath: string, module: string): Observable<XMLDocument> {
-  return getRawContent(site, configPath, module).pipe(
-    map((xml = '') => new DOMParser().parseFromString(xml, 'text/xml'))
-  );
+  return getRawContent(site, configPath, module).pipe(map(fromString));
 }
 
 export default {

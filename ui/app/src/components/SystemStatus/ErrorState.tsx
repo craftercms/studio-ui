@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import Fab from "@material-ui/core/Fab";
-import crack from "../../assets/full-crack.svg";
-import { defineMessages, useIntl } from "react-intl";
+import Fab from '@material-ui/core/Fab';
+import crack from '../../assets/full-crack.svg';
+import { defineMessages, useIntl } from 'react-intl';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 const useStyles = makeStyles((theme: Theme) => ({
   errorView: {
     height: '100%',
-    background: (props:any) => props.background,
+    background: (props: any) => props.background,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: '10px'
   },
   paragraph: {
-    marginTop: '10px',
+    marginTop: '10px'
   },
   link: {
     color: theme.palette.text.secondary,
@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     left: '40px',
     top: '35px',
     '&:hover': {
-      backgroundColor: '#FFFFFF',
-    },
+      backgroundColor: '#FFFFFF'
+    }
   }
 }));
 
@@ -70,10 +70,10 @@ interface ErrorStateProps {
   onBack?(event: any): any,
   background?: string,
   error: {
-    code: string,
+    code?: string,
     documentationUrl?: string,
     message: string,
-    remedialAction: string
+    remedialAction?: string
   },
 }
 
@@ -84,33 +84,38 @@ const messages = defineMessages({
   }
 });
 
-
 export default function ErrorState(props: ErrorStateProps) {
-  const classes = useStyles({background: props.background || 'inherit'});
-  const {error, onBack} = props;
-  const {formatMessage} = useIntl();
-  const {code, documentationUrl, message, remedialAction} = error;
+  const classes = useStyles({ background: props.background || 'inherit' });
+  const { error, onBack } = props;
+  const { formatMessage } = useIntl();
+  const { code, documentationUrl, message, remedialAction } = error;
 
   return (
     <div className={classes.errorView}>
       <img src={crack} alt=""/>
-      <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
-        Error {code}
-      </Typography>
+      {
+        code &&
+        <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
+          Error {code}
+        </Typography>
+      }
       <Typography variant="subtitle1" component="p" color={'textSecondary'}>
         {message}. {remedialAction}
       </Typography>
       {
         documentationUrl &&
         <Typography variant="subtitle1" component="p" className={classes.paragraph}>
-            <a className={classes.link} href={documentationUrl}
-               target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/></a>
+          <a
+            className={classes.link}
+            href={documentationUrl}
+            target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/>
+          </a>
         </Typography>
       }
       {
         onBack &&
         <Fab aria-label="back" className={classes.circleBtn} onClick={onBack}>
-            <ArrowBackIcon/>
+          <ArrowBackIcon/>
         </Fab>
       }
     </div>
