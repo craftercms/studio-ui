@@ -174,7 +174,11 @@ const profileSettingsMessages = defineMessages({
   languageSaveSuccesfully: {
     id: 'profileSettings.languageSaveSuccesfully',
     defaultMessage: 'Language Save Succesfully'
-  }
+  },
+  languageSaveFailedWarning: {
+    id: 'profileSettings.languageSaveFailedWarning',
+    defaultMessage: 'Save failed. Please retry momentarily.'
+  },
 });
 
 const numericInputControlMessages = defineMessages({

@@ -1011,19 +1011,25 @@
       };
 
       $scope.setLangCookie = function() {
-        $translate.use($scope.langSelected);
-        // set max-age of language cookie to one year
-        // set both cookies, on login (on user) it will get last selected
-        localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-        localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
-        let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
-        document.dispatchEvent(loginSuccess);
+        try {
+          $translate.use($scope.langSelected);
+          // set max-age of language cookie to one year
+          // set both cookies, on login (on user) it will get last selected
+          localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
+          localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+          let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+          document.dispatchEvent(loginSuccess);
 
-        $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
-          position: 'top left',
-          className: 'success'
-        });
-
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
+            position: 'top left',
+            className: 'success'
+          });
+        } catch (err) {
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
+            position: 'top left',
+            className: 'error'
+          });
+        }
       };
 
       $scope.cancel = function () {
