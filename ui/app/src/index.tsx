@@ -16,6 +16,7 @@
  */
 
 import './styles/index.scss';
+import 'react-hot-loader';
 
 import React, {  } from 'react';
 import ReactDOM from 'react-dom';
@@ -33,10 +34,10 @@ if (elem) {
 }
 
 // @ts-ignore
-if (module.hot) {
+if (process.env.NODE_ENV === 'development' && module.hot) {
   // @ts-ignore
   module.hot.accept('./components/App', () => {
     const NextApp = require('./components/App').default;
-    ReactDOM.render(<NextApp/>, elem);
+    ReactDOM.render(<NextApp/>, elem, () => console.log('App replaced.'));
   });
 }

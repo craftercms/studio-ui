@@ -16,11 +16,14 @@ import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
+  toolBar: {
+    placeContent: 'center space-between'
+  },
+  addressBarInput: {
+    width: 400,
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 400
   },
   inputContainer: {
     marginLeft: theme.spacing(1),
@@ -41,10 +44,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     margin: 4
   },
 
-  grow: {
-    flexGrow: 1,
+  addressBarContainer: {
     display: 'flex',
-    justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   emptyPlaceholder: {
     width: 48,
@@ -69,7 +72,7 @@ export function AddressBar() {
       <IconButton className={classes.iconButton} aria-label="search">
         <RefreshRounded/>
       </IconButton>
-      <Paper className={classes.root}>
+      <Paper className={classes.addressBarInput}>
         <Select value={site} classes={{ select: classes.input }} onChange={(e: any) => setSite(e.target.value)}>
           <MenuItem value="editorial">
             editorial
@@ -112,14 +115,14 @@ export function ToolBarUI(props: any) {
   const classes = useStyles({});
   return (
     <AppBar position="static" color="inherit">
-      <Toolbar>
+      <Toolbar className={classes.toolBar}>
         <IconButton
           aria-label="Open drawer"
           onClick={onMenuButtonClicked}
         >
           <MenuIcon/>
         </IconButton>
-        <section className={classes.grow}>
+        <section className={classes.addressBarContainer}>
           <AddressBar/>
         </section>
         <div className={classes.emptyPlaceholder}/>

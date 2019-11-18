@@ -116,13 +116,15 @@ const previewProviderReducer: Reducer<PreviewState, StandardAction> = (state, ac
   }
 };
 
+const INITIAL_PREVIEW_CONTEXT = {
+  hostSize: { width: null, height: null },
+  showToolsPanel: true,
+  selectedTool: null,
+  tools: null
+};
+
 export function PreviewProvider(props: any) {
-  const [state, setState] = useReducer(previewProviderReducer, {
-    hostSize: { width: null, height: null },
-    showToolsPanel: true,
-    selectedTool: null,
-    tools: null
-  });
+  const [state, setState] = useReducer(previewProviderReducer, INITIAL_PREVIEW_CONTEXT);
   const value = useMemo(() => [state, setState], [state]);
   // @ts-ignore
   window.previewContext = value;
