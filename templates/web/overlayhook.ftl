@@ -9,7 +9,8 @@ crafterRequire.config({
         'libs': '${staticAssets}/libs/',
         'jquery': '${staticAssets}/libs/jquery/dist/jquery',
         'jquery-ui': '${staticAssets}/libs/jquery-ui/jquery-ui',
-        'amplify': '${staticAssets}/libs/amplify/lib/amplify.core'
+        'amplify': '${staticAssets}/libs/amplify/lib/amplify.core',
+        'noty': '${staticAssets}/libs/notify/notify.min'
     }
 });
 

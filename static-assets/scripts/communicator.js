@@ -176,7 +176,7 @@
         targetWindows = this.getTargetWindows();
 
       for (var i = 0; (!hasWindow) && (i < targetWindows.length); ++i)
-        hasWindow = (targetWindow === targetWindows[i]);
+        hasWindow = (targetWindow.window === targetWindows[i].window);
 
       if (!hasWindow) targetWindows.push(targetWindow);
 

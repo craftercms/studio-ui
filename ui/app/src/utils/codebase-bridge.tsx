@@ -68,6 +68,14 @@ interface CodebaseBridge {
   services: object;
 }
 
+export function updateIntl(nextIntl: IntlShape) {
+  // @ts-ignore
+  if (window.CrafterCMSNext) {
+    // @ts-ignore
+    window.CrafterCMSNext.i18n.intl = nextIntl;
+  }
+}
+
 export function createCodebaseBridge() {
 
   const Bridge: CodebaseBridge = {
