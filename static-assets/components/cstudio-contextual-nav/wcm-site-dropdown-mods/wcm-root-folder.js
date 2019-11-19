@@ -668,6 +668,8 @@
           })(tree, instance);
         }
 
+        tree.oContextMenu = oContextMenu;
+
         tree.draw();
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
           var treeChild = tree.getEl().querySelectorAll(".acn-parent > div > div > .ygtvchildren > .ygtvitem");
