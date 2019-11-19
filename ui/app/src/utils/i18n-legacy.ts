@@ -172,20 +172,20 @@ const profileSettingsMessages = defineMessages({
     defaultMessage: 'Must match the previous entry'
   },
   languageSaveSuccesfully: {
-    id: 'profileSettings.languageSaveSuccesfully',
-    defaultMessage: 'Language Save Succesfully'
+    id: 'profileSettings.languageUpdatedSuccesfully',
+    defaultMessage: 'Language Updated Succesfully.'
   },
   languageSaveFailedWarning: {
-    id: 'profileSettings.languageSaveFailedWarning',
-    defaultMessage: 'Save failed. Please retry momentarily.'
+    id: 'profileSettings.languageUpdateFailedWarning',
+    defaultMessage: 'Language update has failed. Please retry momentarily.'
   },
   unSavedConfirmation: {
     id: 'profileSettings.unsavedConfirmation',
-    defaultMessage: 'You have changed language, but you haven\'t saved it, do you still want to leave?'
+    defaultMessage: 'You have unsaved changes. Discard changes?'
   },
   unSavedConfirmationTitle: {
     id: 'profileSettings.unsavedConfirmationTitle',
-    defaultMessage: 'Unsaved changes'
+    defaultMessage: 'Unsaved Changes'
   }
 });
 
