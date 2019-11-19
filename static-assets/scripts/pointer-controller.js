@@ -143,10 +143,10 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
         destinationZone = $dropZone.attr('data-studio-components-target'),
         contentType = $dropZone.attr('data-studio-zone-content-type'),
-        embeddedItemId = $dropZone.parent().attr('data-studio-embedded-item-id') || null;
+        isZoneEmbedded = $dropZone.parent().attr('data-studio-embedded-item-id') || false;
 
       if (compPath != zonePath && compPathChild != compPath) {
-        componentDropped.call(me, $dropZone, $component, destinationZone, contentType, embeddedItemId);
+        componentDropped.call(me, $dropZone, $component, destinationZone, contentType, isZoneEmbedded);
       } else {
         me.done();
         $window.off( "keyup", keyUpHandler);
@@ -172,7 +172,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
     $window.focus();
   }
 
-  function componentDropped($dropZone, $component, destinationZone, contentType, embeddedItemId) {
+  function componentDropped($dropZone, $component, destinationZone, contentType, isZoneEmbedded) {
 
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
@@ -242,7 +242,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         conComp: (conRepeat > 1) ? true : false,
         destinationZone: destinationZone,
         contentType: contentType,
-        embeddedItemId: embeddedItemId
+        isZoneEmbedded: isZoneEmbedded
       });
 
     });

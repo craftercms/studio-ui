@@ -194,10 +194,10 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone, contentType, embeddedItemId) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone, contentType, isZoneEmbedded, isItemEmbedded) {
                   var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
                     CStudioAuthoringContext.previewCurrentPath);
-                  if(ComponentsPanel.restrictions(embeddedItemId)){
+                  if(ComponentsPanel.restrictions(isZoneEmbedded, isItemEmbedded, path, compPath, previewPath)){
                     return false;
                   }
                   var componentType = (path && path !== previewPath ) ? 'shared-content' : 'embedded-content';
@@ -303,21 +303,24 @@
                   });
                 },
 
-                restrictions: function(embeddedItemId){
+                restrictions: function(isZoneEmbedded, isItemEmbedded, path, compPath){
                   var invalid = false;
                   //component inside embedded, not supported
-                  if(embeddedItemId) {
+                  if(isZoneEmbedded) {
+                    invalid = true;
+                  } else if ((path === '' || isItemEmbedded) && compPath){
                     invalid = true;
                   }
                   if(invalid) {
+                    var message = isZoneEmbedded? 'embeddedDropOnNotSupported': 'embeddedDropOffNotSupported';
                     var CMgs = CStudioAuthoring.Messages;
                     var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-                    if($(document.body).find('#componentsNotSupported-dialog_c').length) return;
+                    if($(document.body).find('#componentsNotSupported-dialog_c').length) return invalid;
                     CStudioAuthoring.Operations.showSimpleDialog(
                       "componentsNotSupported-dialog",
                       CStudioAuthoring.Operations.simpleDialogTypeINFO,
                       CMgs.format(langBundle, "notification"),
-                      CMgs.format(langBundle, "embeddedDropNotSupported"),
+                      CMgs.format(langBundle, message),
                       [{
                         text: "OK",
                         handler: function () {

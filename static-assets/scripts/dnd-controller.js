@@ -385,6 +385,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
   }
 
   function componentDropped($dropZone, $component) {
+    //debugger;
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
@@ -393,7 +394,8 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     var index = 0, currentTag = "", zone;
     var destinationZone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target');
     var contentType = $dropZone.attr('data-studio-zone-content-type');
-    var embeddedItemId = $dropZone.parent().attr('data-studio-embedded-item-id') || null;
+    var isZoneEmbedded = $dropZone.parent().attr('data-studio-embedded-item-id') || false;
+    var isItemEmbedded = $component.attr('data-studio-embedded-item-id') || false;
 
     var me = this,
       isNew = $component.hasClass('studio-component-drag-target'),
@@ -414,7 +416,10 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       type = $component.attr('data-studio-component');
       //if it is move send the contentType/embeddedItemId of the destination to validate
       contentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type');
-      embeddedItemId = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || null;
+      isZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      if(isItemEmbedded) {
+        compPath = $component.parents('[data-studio-component-path]').attr('data-studio-component-path') || false;
+      }
     }
 
     // DOM Reorganization hasn't happened at this point,
@@ -461,7 +466,8 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         conComp: (conRepeat > 1) ? true : false,
         destinationZone: destinationZone,
         contentType: contentType,
-        embeddedItemId:embeddedItemId
+        isZoneEmbedded: isZoneEmbedded,
+        isItemEmbedded: isItemEmbedded
       });
 
     });

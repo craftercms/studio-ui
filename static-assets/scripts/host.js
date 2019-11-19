@@ -353,7 +353,9 @@
       message.model,
       message.destinationZone,
       message.contentType,
-      message.embeddedItemId
+      message.isZoneEmbedded,
+      message.isItemEmbedded,
+
     );
   });
 
