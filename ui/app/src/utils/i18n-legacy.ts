@@ -181,7 +181,7 @@ const profileSettingsMessages = defineMessages({
   },
   unSavedConfirmation: {
     id: 'profileSettings.unsavedConfirmation',
-    defaultMessage: 'You have unsaved changes, do you want to leave?'
+    defaultMessage: 'You have changed language, but you haven\'t saved it, do you still want to leave?'
   },
   unSavedConfirmationTitle: {
     id: 'profileSettings.unsavedConfirmationTitle',
