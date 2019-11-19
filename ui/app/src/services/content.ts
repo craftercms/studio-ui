@@ -18,7 +18,6 @@
 import { get } from '../utils/ajax';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { fromString } from '../utils/xml';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -27,10 +26,17 @@ export function getContent(site: string, path: string): Observable<string> {
 }
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
-  return getContent(site, path).pipe(map(fromString));
+  return getContent(site, path).pipe(
+    map((xml = '') => new DOMParser().parseFromString(xml, 'text/xml'))
+  );
+}
+
+export function fetchPublishingChannels(site: string) {
+  return get(`studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
 }
 
 export default {
   getContent,
-  getDOM
+  getDOM,
+  fetchPublishingChannels
 }
