@@ -179,6 +179,14 @@ const profileSettingsMessages = defineMessages({
     id: 'profileSettings.languageSaveFailedWarning',
     defaultMessage: 'Save failed. Please retry momentarily.'
   },
+  unSavedConfirmation: {
+    id: 'profileSettings.unsavedConfirmation',
+    defaultMessage: 'You have unsaved changes, do you want to leave?'
+  },
+  unSavedConfirmationTitle: {
+    id: 'profileSettings.unsavedConfirmationTitle',
+    defaultMessage: 'Unsaved changes'
+  }
 });
 
 const numericInputControlMessages = defineMessages({

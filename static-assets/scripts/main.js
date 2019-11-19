@@ -911,7 +911,27 @@
         password: formatMessage(profileSettingsMessages.password),
         currentPassword: formatMessage(profileSettingsMessages.currentPassword),
         isRequired: formatMessage(profileSettingsMessages.isRequired),
-        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry)
+        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry),
+        unSavedConfirmation: formatMessage(profileSettingsMessages.unSavedConfirmation),
+        unSavedConfirmationTitle: formatMessage(profileSettingsMessages.unSavedConfirmationTitle),
+        yes: formatMessage(words.yes),
+        no: formatMessage(words.no),
+      };
+
+      $scope.showModal = function(template, size, verticalCentered, styleClass){
+        var modalInstance = $uibModal.open({
+          templateUrl: template,
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          backdrop: 'static',
+          keyboard: true,
+          scope: $scope,
+          size: size ? size : ''
+        });
+
+        return modalInstance;
+      };
+      $scope.hideModal = function() {
+        $scope.confirmationModal.close();
       };
 
       if($location.$$search.iframe){
@@ -1002,7 +1022,8 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectAction = function(optSelected) {
+      $scope.selectActionLanguage = function(optSelected) {
+        $scope.isModified = true;
         $scope.langSelected = optSelected;
         if(optSelected) {
           let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
@@ -1024,6 +1045,7 @@
             position: 'top left',
             className: 'success'
           });
+          $scope.isModified = false;
         } catch (err) {
           $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
             position: 'top left',
@@ -1213,6 +1235,22 @@
       $scope.passwordRequirements = function() {
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       }
+
+      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
+        if ($scope.isModified) {
+          event.preventDefault();
+
+          $scope.confirmationAction = function() {
+            $scope.isModified = false;
+            $state.go(toState.name);
+          };
+
+          $scope.confirmationText = $scope.messages.unSavedConfirmation;
+          $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
+
+        }
+      });
 
     }
   ]);

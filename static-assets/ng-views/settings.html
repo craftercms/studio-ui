@@ -32,7 +32,7 @@
                         <select id="language"
                                 name="language"
                                 class="form-control"
-                                ng-change="selectAction(langSelect)"
+                                ng-change="selectActionLanguage(langSelect)"
                                 ng-model="langSelect"
                                 ng-options="opt.id as opt.label for opt in languagesAvailable">
                             <option value="" ng-if="false"></option>
@@ -111,3 +111,16 @@
         <h4><span class="fa fa-check-circle text-success"></span> {{ 'settings.PASSWORD_UPDATED' | translate }}</h4>
     </div>
 </script>
+
+<script type="text/ng-template" id="confirmationModal.html">
+    <div class="modal-header">
+      <h3 class="modal-title">{{ confirmationTitle }}</h3>
+    </div>
+    <div class="modal-body">
+      {{ confirmationText }}
+    </div>
+    <div class="modal-footer">
+      <button class="btn" ng-disabled="confirmationSubmitDisabled" ng-click="confirmationAction(); hideModal()">{{ messages.yes }}</button>
+      <button class="btn" ng-click="hideModal()">{{ messages.no }}</button>
+    </div>
+  </script>
