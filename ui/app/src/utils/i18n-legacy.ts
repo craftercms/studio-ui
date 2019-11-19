@@ -172,8 +172,8 @@ const profileSettingsMessages = defineMessages({
     defaultMessage: 'Must match the previous entry'
   },
   languageSaveSuccesfully: {
-    id: 'profileSettings.languageUpdatedSuccesfully',
-    defaultMessage: 'Language Updated Succesfully.'
+    id: 'profileSettings.languageUpdatedSuccessfully',
+    defaultMessage: 'Language Updated Successfully.'
   },
   languageSaveFailedWarning: {
     id: 'profileSettings.languageUpdateFailedWarning',
