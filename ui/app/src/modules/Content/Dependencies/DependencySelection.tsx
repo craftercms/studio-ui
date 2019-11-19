@@ -16,11 +16,11 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Item } from '../models/Item';
-import '../styles/dependency-selection.scss';
+import { Item } from '../../../models/Item';
+import '../../../styles/dependency-selection.scss';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { get } from '../utils/ajax';
+import { get } from '../../../utils/ajax';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 
