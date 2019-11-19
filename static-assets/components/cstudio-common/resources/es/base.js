@@ -523,6 +523,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     failure: "Fallo.",
     loadFormDefError: "Error al cargar la definición del formulario.",
     componentsNotSupported: "La zona de colocación no admite este tipo de componente",
+    embeddedDropNotSupported: "Arrastrar y soltar en componentes integrados no es compatible en este momento",
     loadModelError: "Error al cargar el modelo.",
     controllerError: "No se encontró ningún controlador.",
     notExist:" no existe.",

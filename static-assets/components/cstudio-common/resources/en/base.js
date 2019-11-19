@@ -538,6 +538,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     failure: "Failure.",
     loadFormDefError: "Failed to load form definition.",
     componentsNotSupported: "The drop zone does not support this type of component",
+    embeddedDropNotSupported: "Drag and drop on embedded components it's not supported at this time",
     loadModelError: "Failed to load model.",
     controllerError: "No controller found.",
     notExist:" does not exist.",

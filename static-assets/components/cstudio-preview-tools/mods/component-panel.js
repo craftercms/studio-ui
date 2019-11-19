@@ -317,7 +317,7 @@
                       "componentsNotSupported-dialog",
                       CStudioAuthoring.Operations.simpleDialogTypeINFO,
                       CMgs.format(langBundle, "notification"),
-                      'Nested embedded components does not support DnD',
+                      CMgs.format(langBundle, "embeddedDropNotSupported"),
                       [{
                         text: "OK",
                         handler: function () {
