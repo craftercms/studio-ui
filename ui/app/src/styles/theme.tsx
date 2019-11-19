@@ -22,16 +22,14 @@ export const backgroundColor = '#E7E7E7';
 export const RedColor = '#FF3B30';
 
 const defaultTheme = createMuiTheme();
+
 export const theme = createMuiTheme({
   typography: {
     button: {
       textTransform: 'none'
     },
     fontSize: 14,
-    fontFamily: [
-      '"Open Sans"',
-      'sans-serif'
-    ].join(',')
+    fontFamily: '"Open Sans", "Source Sans Pro", sans-serif'
   },
   palette: {
     primary: {
@@ -65,10 +63,10 @@ export const theme = createMuiTheme({
         'label + &': {
           marginTop: `${defaultTheme.spacing(3)}px !important`
         },
-        '&.MuiInput-underline:before': {
+        '&.MuiInput-underline::before': {
           display: 'none'
         },
-        '&.MuiInput-underline:after': {
+        '&.MuiInput-underline::after': {
           display: 'none'
         },
         '&$error .MuiInputBase-input': {
@@ -86,7 +84,6 @@ export const theme = createMuiTheme({
       input: {
         borderRadius: 4,
         position: 'relative',
-        backgroundColor: '#FFFFFF',
         border: '1px solid #ced4da',
         fontSize: 16,
         width: '100%',
