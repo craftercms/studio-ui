@@ -412,6 +412,9 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       tracking = $component.attr('data-studio-tracking-number');
       path = $component.attr('data-studio-component-path');
       type = $component.attr('data-studio-component');
+      //if it is move send the contentType/embeddedItemId of the destination to validate
+      contentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type');
+      embeddedItemId = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || null;
     }
 
     // DOM Reorganization hasn't happened at this point,
