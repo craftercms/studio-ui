@@ -291,7 +291,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     }
 
     function validation($dropZone, $component, contentType, zone, componentType, response) {
-      console.log('one time validation');
       var childContent = componentType === 'shared-content'? 'child-content' : null;
       var key = `${zone}-${componentType}`;
 
@@ -362,8 +361,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
 
           //Validation with cache avoiding doble validation...
           let key = `${zone}-${componentType}`;
-          console.log('... checking validation');
-          console.log(key, cacheValidation[key]);
           if(cacheValidation[key]) {
             communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
             componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds);
@@ -588,67 +585,70 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       structure1, structure2, index = 0, currentTag = "";
 
     $('[data-studio-components-target]').each(function () {
+      //debugger;
       var $el = $(this),
         objectId = $el.attr('data-studio-components-objectid'),
         tracking = $el.attr('data-studio-zone-tracking'),
         name = $el.attr('data-studio-components-target'),
         path = $el.parents('[data-studio-component-path]').attr('data-studio-component-path'),
         id = objectId + "-" + name;
-      if (name.indexOf('.') < 0) {
-        if (objectId) {
-          if (!found[id] || objectId == data['objectId']) {
-            if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
-              found[id] = true;
-              $el.find('> [data-studio-component]').each(function (i, el) {
-                $(this).data('model', data[name][i]);
-              });
-            } else {
-              var repeated = false;
-              for (var j = 0; j < aNotFound.length; j++) {
-                if (aNotFound[j].path == path && aNotFound[j].name == name) {
-                  repeated = true;
+        //avoid searching if the item is embedded;
+        if(!$el.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id')) {
+          if (name.indexOf('.') < 0) {
+            if (objectId) {
+              if (!found[id] || objectId == data['objectId']) {
+                if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
+                  found[id] = true;
+                  $el.find('> [data-studio-component]').each(function (i, el) {
+                    $(this).data('model', data[name][i]);
+                  });
+                } else {
+                  var repeated = false;
+                  for (var j = 0; j < aNotFound.length; j++) {
+                    if (aNotFound[j].path == path && aNotFound[j].name == name) {
+                      repeated = true;
+                    }
+                  }
+                  if (!repeated) {
+                    aNotFound.push({ path: path, name: name });
+                  }
                 }
               }
-              if (!repeated) {
-                aNotFound.push({ path: path, name: name });
-              }
-            }
-          }
-        } else {
-          noObjectid++
-        }
-      } else {
-        if (currentTag !== name) {
-          index = 0;
-          currentTag = name;
-        }
-        structure1 = name.split('.')[0];
-        structure2 = name.split('.')[1];
-        if (objectId) {
-          if (!found[id] || objectId == data['objectId']) {
-            if ((data[structure1][index][structure2] || data[structure1][index][structure2] == "") && objectId == data['objectId']) { ///objid?
-              found[id] = true;
-              $el.find('> [data-studio-component]').each(function (i, el) {
-                $(this).data('model', data[structure1][index][structure2][i]);
-              });
             } else {
-              var repeated = false;
-              for (var j = 0; j < aNotFound.length; j++) {
-                if (aNotFound[j].path == path && aNotFound[j].name == name) {
-                  repeated = true;
-                }
-              }
-              if (!repeated) {
-                aNotFound.push({ path: path, name: name });
-              }
+              noObjectid++
             }
-            index++;
+          } else {
+            if (currentTag !== name) {
+              index = 0;
+              currentTag = name;
+            }
+            structure1 = name.split('.')[0];
+            structure2 = name.split('.')[1];
+            if (objectId) {
+              if (!found[id] || objectId == data['objectId']) {
+                if ((data[structure1][index][structure2] || data[structure1][index][structure2] == "") && objectId == data['objectId']) { ///objid?
+                  found[id] = true;
+                  $el.find('> [data-studio-component]').each(function (i, el) {
+                    $(this).data('model', data[structure1][index][structure2][i]);
+                  });
+                } else {
+                  var repeated = false;
+                  for (var j = 0; j < aNotFound.length; j++) {
+                    if (aNotFound[j].path == path && aNotFound[j].name == name) {
+                      repeated = true;
+                    }
+                  }
+                  if (!repeated) {
+                    aNotFound.push({ path: path, name: name });
+                  }
+                }
+                index++;
+              }
+            } else {
+              noObjectid++
+            }
           }
-        } else {
-          noObjectid++
         }
-      }
-
     });
 
     var isSearched = false;
