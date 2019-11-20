@@ -13,16 +13,10 @@ export type Tools =
   'craftercms.ice.simulator' |
   'craftercms.ice.ice';
 
-interface ToolMeta {
-  id: Tools;
-  titleKey: string;
-  config?: any;
-}
-
 interface PreviewState {
   showToolsPanel: boolean;
   selectedTool: Tools;
-  tools: Array<ToolMeta>;
+  tools: Array<any>;
   hostSize: Dimensions;
 }
 
@@ -156,7 +150,7 @@ export function closeTools(): StandardAction {
   return { type: CLOSE_TOOLS };
 }
 
-export function toolsLoaded(tools: Array<ToolMeta>): StandardAction {
+export function toolsLoaded(tools: Array<any>): StandardAction {
   return {
     type: TOOLS_LOADED,
     payload: tools

@@ -14,15 +14,15 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Drawer from '@material-ui/core/Drawer';
 import { DRAWER_WIDTH, selectTool, toolsLoaded, usePreviewContext } from './previewContext';
 import Typography from '@material-ui/core/Typography';
-import { defineMessages, useIntl } from 'react-intl';
-import { getDOM } from '../../services/configuration';
-import { map } from 'rxjs/operators';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { getPreviewToolsConfig } from '../../services/configuration';
 import ToolPanel from './Tools/ToolPanel';
 import AudiencesPanel from './Tools/AudiencesPanel';
 import AssetsPanel from './Tools/AssetsPanel';
 import ComponentsPanel from './Tools/ComponentsPanel';
 import SimulatorPanel from './Tools/SimulatorPanel';
 import ICEPanel from './Tools/ICEPanel';
+import { getTranslation } from '../../utils/i18n';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -66,6 +66,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   presetFieldset: {
     marginTop: theme.spacing(1)
+  },
+
+  ellipsis: {
+    textOverflow: 'ellipsis',
+    whitespace: 'no-wrap',
+    overflow: 'hidden'
   }
 
 }));
@@ -98,18 +104,24 @@ const translations = defineMessages({
   publishingChannel: {
     id: 'craftercms.ice.simulator.title',
     defaultMessage: 'Device Simulator'
-  },
+  }
 });
 
-const ELEMENT_MOCKUP = { innerHTML: null };
-
-function UnknownPanel() {
+function UnknownPanel(props: any) {
   const classes = useStyles({});
   return (
     <ToolPanel title={translations.unknownPanel}>
       <Typography component="div" variant="body1" className={`${classes.panelBodyInner} ${classes.center}`}>
-        <WarningRounded/>
-        <div>This Panel is unknown to the system. Please check your configuration.</div>
+        <div>
+          <WarningRounded/>
+        </div>
+        <pre className={classes.ellipsis} title={props.id}>
+          {props.id}
+        </pre>
+        <FormattedMessage
+          id="previewTools.unknownPanel"
+          defaultMessage={`This panel is unknown to the system. Please check your configuration.`}
+        />
       </Typography>
     </ToolPanel>
   );
@@ -122,32 +134,6 @@ function ToolSelector() {
   const [{ tools }, dispatch] = usePreviewContext();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
 
-  const site = 'editorial';
-  useEffect(() => {
-    getDOM(site, `/preview-tools/panel.xml`, 'studio')
-      .pipe(
-        map((xml) =>
-          Array.from(xml.querySelectorAll('module')).map((module) => {
-            const id = module.querySelector('moduleName').innerHTML;
-            return {
-              id: panelIdMapper[id] || id,
-              titleKey: module.querySelector('title').innerHTML,
-              config: (module.querySelector('config') || ELEMENT_MOCKUP).innerHTML
-            };
-          })
-        )
-      )
-      .subscribe(
-        (tools) => {
-          dispatch(toolsLoaded(tools));
-        },
-        (e) => {
-          // TODO: Show error view.
-          console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
-        }
-      )
-  }, []);
-
   return (
     (tools == null) ? <>
       Loading...
@@ -155,7 +141,7 @@ function ToolSelector() {
       {tools.map((tool) => ({
         ...tool,
         Icon: componentIconMap[tool.id] || WarningRounded,
-        title: formatMessage((translations as any)[tool.titleKey] || translations.unknownPanel)
+        title: getTranslation(tool.title, translations, formatMessage)
       })).map(({ id, title, Icon }) =>
         <ListItem key={id} button onClick={() => select(id)}>
           <ListItemIcon className={classes.itemIconRoot}><Icon/></ListItemIcon>
@@ -183,20 +169,29 @@ const componentMap: any = {
   'craftercms.ice.ice': ICEPanel
 };
 
-const panelIdMapper: any = {
-  'ice-tools-panel': 'craftercms.ice.ice',
-  'component-panel': 'craftercms.ice.components',
-  'medium-panel': 'craftercms.ice.simulator'
-};
-
 export default function ToolsPanel() {
 
   const classes = useStyles({});
-  const [state] = usePreviewContext();
-  const { tools, showToolsPanel, selectedTool } = state;
+  const [{ tools, showToolsPanel, selectedTool }, dispatch] = usePreviewContext();
 
   let Tool = selectedTool ? componentMap[selectedTool] || UnknownPanel : ToolSelector;
-  let config = tools ? (tools.find((desc) => desc.id === selectedTool) || { config: null }).config : null
+  let toolMeta = tools ? tools.find((desc) => desc.id === selectedTool) : null;
+  let config = tools ? (toolMeta || { config: null }).config : null;
+
+  const site = 'editorial';
+  useEffect(() => {
+    !tools && getPreviewToolsConfig(site)
+      .subscribe(
+        (tools) => {
+          dispatch(toolsLoaded(tools.modules));
+        },
+        (e) => {
+          // TODO: Show error view.
+          console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
+        }
+      )
+
+  }, []);
 
   return (
     <Drawer
@@ -206,7 +201,7 @@ export default function ToolsPanel() {
       className={classes.drawer}
       classes={{ paper: classes.drawerPaper }}
     >
-      <Tool config={config}/>
+      <Tool id={toolMeta ? toolMeta.id : null} config={config}/>
     </Drawer>
   );
 
