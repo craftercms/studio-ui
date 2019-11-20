@@ -147,13 +147,6 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         });
       }
 
-      if(!valid){
-        // if(isNew) {
-        //   $component.remove();
-        // }else {
-        //   $(DROPPABLE_SELECTION).sortable("cancel");
-        // }
-      }
       return valid;
     }
 
