@@ -356,6 +356,11 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
                   messageKey: 'contentTypeNotSupported',
                   height: 'auto'
                 });
+                if(isNew) {
+                  $component.remove();
+                }else {
+                  $(DROPPABLE_SELECTION).sortable("cancel");
+                }
               }
             });
             communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
