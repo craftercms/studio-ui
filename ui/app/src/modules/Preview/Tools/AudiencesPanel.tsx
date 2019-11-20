@@ -20,6 +20,12 @@ import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { get } from '../../../utils/ajax';
+import { getAudiencesPanelConfig } from '../../../services/configuration';
+import Divider from '@material-ui/core/Divider';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
 
 
 const translations = defineMessages({
@@ -30,11 +36,11 @@ const translations = defineMessages({
 });
 
 const useStyles = makeStyles((theme) => createStyles({
-  
+
 }));
 
-interface AudiencesPanelUIProps{
-  properties : any;
+interface AudiencesPanelUIProps {
+  properties: any;
 }
 
 interface AudiencesPanelProps {
@@ -43,6 +49,88 @@ interface AudiencesPanelProps {
 
 interface ResultObject {
   properties: []
+}
+
+interface CodeDependingTypeProps {
+  type: string;
+}
+
+function getCodeDependingType(props: CodeDependingTypeProps) {
+
+  const {
+    type
+  } = props;
+
+  switch (type) {
+    case "input":
+      return (
+        <FormControl component="fieldset">
+          <FormLabel component="legend">input</FormLabel>
+          <TextField
+              id= "standard-basic"
+              label= "input"
+              type= "text"
+              name= "input"
+              margin= "normal"
+              placeholder= "auto"
+              onKeyUp= {}
+              onChange= {}
+              value= {}
+            />
+        </FormControl>
+      )
+    case "dropdown":
+      return (
+        <FormControl component="fieldset">
+          <FormLabel component="legend">input</FormLabel>
+          <TextField
+              id= "standard-basic"
+              label= "input"
+              type= "text"
+              name= "input"
+              margin= "normal"
+              placeholder= "auto"
+              onKeyUp= {}
+              onChange= {}
+              value= {}
+            />
+        </FormControl>
+      )
+    case "checkboxes":
+      return (
+        <FormControl component="fieldset">
+          <FormLabel component="legend">input</FormLabel>
+          <TextField
+              id= "standard-basic"
+              label= "input"
+              type= "text"
+              name= "input"
+              margin= "normal"
+              placeholder= "auto"
+              onKeyUp= {}
+              onChange= {}
+              value= {}
+            />
+        </FormControl>
+      )
+    case "dateTime":
+      return (
+        <FormControl component="fieldset">
+          <FormLabel component="legend">input</FormLabel>
+          <TextField
+              id= "standard-basic"
+              label= "input"
+              type= "text"
+              name= "input"
+              margin= "normal"
+              placeholder= "auto"
+              onKeyUp= {}
+              onChange= {}
+              value= {}
+            />
+        </FormControl>
+      )
+  }
 }
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
@@ -54,33 +142,39 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   return (
     <ToolPanel title={translations.audiencesPanel}>
-        <Typography component="h2" variant="subtitle1" style={{ padding: '10px' }}>
-          <FormattedMessage
-            id="craftercms.ice.audiences.audiencesPanel"
-            defaultMessage={`Audiences Panel`}
-          />
-        </Typography>
-        <Typography component="p" style={{ padding: '10px' }}>
-          {properties[0].hint}
-        </Typography>
+      <Typography component="h2" variant="subtitle1" style={{ padding: '10px' }}>
+        <FormattedMessage
+          id="craftercms.ice.audiences.audiencesPanel"
+          defaultMessage={`Audiences Panel`}
+        />
+      </Typography>
+      {
+        properties ? (
+          properties.map((property: any) => (
+            property.name === "input" ? (
+              <div>
+                {property.name}
+              </div>
+            ) : (null)
+          ))
+        ) : (null)
+      }
     </ToolPanel>
   );
 }
 
-export default function AudiencesPanel(props: AudiencesPanelProps) {
+export default function AudiencesPanel() {
 
   const classes = useStyles({});
   const [items, setItems] = useState();
-  const {
-    siteId
-  } = props;
+  const site = 'editorial';
 
-  function getConfigurationFile() {
-    get(`/studio/api/1/services/api/1/site/get-configuration.json?site=editorial&path=/targeting/targeting-config.xml`)
+  useEffect(() => {
+    getAudiencesPanelConfig(site)
       .subscribe(
         (response: any) => {
           setItems(
-            response.response.property
+            response.properties
           );
         },
         () => {
@@ -89,15 +183,16 @@ export default function AudiencesPanel(props: AudiencesPanelProps) {
           );
         }
       );
-  }
-
-  getConfigurationFile();
+  }, []);
 
   return (
     <div>
-      <AudiencesPanelUI
-        properties = {items}
-      />
+      {
+        items &&
+        <AudiencesPanelUI
+          properties={items}
+        />
+      }
     </div>
   );
 

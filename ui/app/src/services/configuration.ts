@@ -48,6 +48,19 @@ interface PreviewToolsConfig {
   modules: Array<PreviewToolsModuleDescriptor>;
 }
 
+interface AudiencesPanelDescriptor {
+  name: string;
+  label: string;
+  description: string;
+  type: string;
+  default_value: string;
+  hint: string;
+}
+
+interface AudiencesPanelConfig {
+  properties: Array<AudiencesPanelDescriptor>;
+}
+
 const LegacyPanelIdMap: any = {
   'ice-tools-panel': 'craftercms.ice.ice',
   'component-panel': 'craftercms.ice.components',
@@ -90,6 +103,43 @@ export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConf
 
         });
         return previewToolsConfig;
+      }
+    })
+  );
+}
+
+export function getAudiencesPanelConfig(site: string): Observable<AudiencesPanelConfig> {
+  return getRawContent(site, `/targeting/targeting-config.xml`, 'studio').pipe(
+    map((content) => {
+      try {
+        return JSON.parse(content);
+      } catch (e) {
+        // Not JSON, assuming XML
+        let audiencesPanelConfig: AudiencesPanelConfig = { properties: null };
+        const xml = fromString(content);
+        audiencesPanelConfig.properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
+
+          const name = elem.getElementsByTagName('name')[0].innerHTML,
+          label = elem.getElementsByTagName('label')[0].innerHTML,
+          description = elem.getElementsByTagName('description')[0].innerHTML,
+          type = elem.getElementsByTagName('type')[0].innerHTML,
+          possible_values = "test",
+          default_value = elem.getElementsByTagName('default_value')[0].innerHTML,
+          hint = elem.getElementsByTagName('hint')[0].innerHTML;
+
+          return {
+            name : name,
+            label : label,
+            description : description,
+            type : type,
+            possible_values: possible_values,
+            default_value : default_value,
+            hint : hint
+          };
+
+        });
+        
+        return audiencesPanelConfig;
       }
     })
   );
