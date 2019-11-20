@@ -367,7 +367,7 @@ div#acn-active-content {
     padding: 0 0 5px;
   }
   .acn-dropdown-menu {
-    padding: 26px 20px 15px 20px;
+    padding: 26px 0px 15px 20px;
     overflow-y: auto;
     overflow-x: auto;
     text-align: left;
@@ -493,12 +493,54 @@ div#acn-active-content {
   padding: 0;
 }
 
-.acn-dropdown-wrapper .acn-dropdown-menu div.acn-parent {
-  margin: 15px 0 0 0;
+.acn-dropdown-wrapper .acn-dropdown-menu {
 
-  .treenode-label {
-    &.highlighted {
-      font-weight: bold;
+  div.acn-parent {
+    margin: 15px 0 0 0;
+    position: relative;
+
+    .treenode-label {
+      &.highlighted {
+        font-weight: bold;
+      }
+    }
+
+    .ygtvrow td:last-child {
+      width: 100%;
+    }
+  }
+}
+
+.acn-data {
+  .context-menu--ellipsis {
+    position: absolute;
+    right: 14px;
+    cursor: pointer;
+    display: none;
+    padding: 2px 0 2px 2px;
+
+    &:before {
+      background-color: #e2e2e2;
+      padding: 2px 3px;
+      border-radius: 8px;
+      width: 16px;
+    }
+
+    &:hover {
+      display: inline-block !important;
+    }
+  }
+
+  .sidebar-highlight {
+    height: 20px;
+    width: 100%;
+    position: absolute;
+    background-color: #e2e2e2;
+    z-index: -1;
+    display: none;
+
+    &:hover {
+      display: inline-block !important;
     }
   }
 }
