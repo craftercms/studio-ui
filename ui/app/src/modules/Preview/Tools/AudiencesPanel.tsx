@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { get } from '../../../utils/ajax';
+
 
 const translations = defineMessages({
   audiencesPanel: {
@@ -12,70 +14,73 @@ const translations = defineMessages({
 });
 
 const useStyles = makeStyles((theme) => createStyles({
-  iframe: {
-    width: '100%',
-    maxWidth: '100%',
-    border: 'none',
-    height: '100%',
-    transition: 'width .25s ease, height .25s ease'
-  },
-  iframeWithBorder: {
-    borderRadius: 20,
-    borderColor: '#555',
-  },
-  iframeWithBorderLandscape: {
-    borderWidth: '10px 50px'
-  },
-  iframeWithBorderPortrait: {
-    borderWidth: '50px 10px'
-  },
-  hostContainer: {
-    flexGrow: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#f3f3f3',
-    height: '100%',
-    maxHeight: 'calc(100% - 64px)',
-    overflow: 'auto',
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
-  }
+  
 }));
 
-interface AudiencesPanelProps {
-
+interface AudiencesPanelUIProps{
+  properties : any;
 }
 
-export function AudiencesPanelUI(props: AudiencesPanelProps) {
+interface AudiencesPanelProps {
+  siteId: string;
+}
+
+interface ResultObject {
+  properties: []
+}
+
+export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   const classes = useStyles({});
-
   const {
+    properties
   } = props;
 
   return (
     <ToolPanel title={translations.audiencesPanel}>
-      <Typography component="h2" variant="subtitle1" style={{ padding: '10px' }}>
-        <FormattedMessage
-          id="craftercms.ice.audiences.audiencesPanel"
-          defaultMessage={`Audiences Panel`}
-        />
-      </Typography>
+        <Typography component="h2" variant="subtitle1" style={{ padding: '10px' }}>
+          <FormattedMessage
+            id="craftercms.ice.audiences.audiencesPanel"
+            defaultMessage={`Audiences Panel`}
+          />
+        </Typography>
+        <Typography component="p" style={{ padding: '10px' }}>
+          {properties[0].hint}
+        </Typography>
     </ToolPanel>
   );
-
 }
 
-export default function AudiencesPanel() {
+export default function AudiencesPanel(props: AudiencesPanelProps) {
 
   const classes = useStyles({});
+  const [items, setItems] = useState();
+  const {
+    siteId
+  } = props;
+
+  function getConfigurationFile() {
+    get(`/studio/api/1/services/api/1/site/get-configuration.json?site=editorial&path=/targeting/targeting-config.xml`)
+      .subscribe(
+        (response: any) => {
+          setItems(
+            response.response.property
+          );
+        },
+        () => {
+          setItems(
+            []
+          );
+        }
+      );
+  }
+
+  getConfigurationFile();
 
   return (
     <div>
       <AudiencesPanelUI
+        properties = {items}
       />
     </div>
   );
