@@ -894,8 +894,8 @@
   ]);
 
   app.controller('AppCtrl', [
-    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements',
-    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements) {
+    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements', '$element',
+    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements, $element) {
 
       $scope.langSelected = '';
       $scope.modalInstance = '';
@@ -911,7 +911,27 @@
         password: formatMessage(profileSettingsMessages.password),
         currentPassword: formatMessage(profileSettingsMessages.currentPassword),
         isRequired: formatMessage(profileSettingsMessages.isRequired),
-        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry)
+        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry),
+        unSavedConfirmation: formatMessage(profileSettingsMessages.unSavedConfirmation),
+        unSavedConfirmationTitle: formatMessage(profileSettingsMessages.unSavedConfirmationTitle),
+        yes: formatMessage(words.yes),
+        no: formatMessage(words.no),
+      };
+
+      $scope.showModal = function(template, size, verticalCentered, styleClass){
+        var modalInstance = $uibModal.open({
+          templateUrl: template,
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          backdrop: 'static',
+          keyboard: true,
+          scope: $scope,
+          size: size ? size : ''
+        });
+
+        return modalInstance;
+      };
+      $scope.hideModal = function() {
+        $scope.confirmationModal.close();
       };
 
       if($location.$$search.iframe){
@@ -1002,9 +1022,9 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectAction = function(optSelected) {
+      $scope.selectActionLanguage = function(optSelected) {
+        $scope.isModified = true;
         $scope.langSelected = optSelected;
-        $translate.use($scope.langSelected);
         if(optSelected) {
           let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
           document.dispatchEvent(loginSuccess);
@@ -1012,27 +1032,26 @@
       };
 
       $scope.setLangCookie = function() {
-        $translate.use($scope.langSelected);
-        // set max-age of language cookie to one year
-        // set both cookies, on login (on user) it will get last selected
-        localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-        localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
-        let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
-        document.dispatchEvent(loginSuccess);
+        try {
+          $translate.use($scope.langSelected);
+          // set max-age of language cookie to one year
+          // set both cookies, on login (on user) it will get last selected
+          localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
+          localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+          let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+          document.dispatchEvent(loginSuccess);
 
-        $rootScope.modalInstance = $uibModal.open({
-          templateUrl: 'settingLanguajeConfirmation.html',
-          windowClass: 'centered-dialog',
-          controller: 'AppCtrl',
-          backdrop: 'static',
-          backdropClass: 'hidden',
-          keyboard: false,
-          size: 'sm'
-        });
-        $timeout(function () {
-          $rootScope.modalInstance.close();
-        }, 1500, false);
-
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
+            position: 'top left',
+            className: 'success'
+          });
+          $scope.isModified = false;
+        } catch (err) {
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
+            position: 'top left',
+            className: 'error'
+          });
+        }
       };
 
       $scope.cancel = function () {
@@ -1216,6 +1235,22 @@
       $scope.passwordRequirements = function() {
         passwordRequirements.init($scope, 'validPass', 'password', 'top');
       }
+
+      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
+        if ($scope.isModified) {
+          event.preventDefault();
+
+          $scope.confirmationAction = function() {
+            $scope.isModified = false;
+            $state.go(toState.name);
+          };
+
+          $scope.confirmationText = $scope.messages.unSavedConfirmation;
+          $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
+
+        }
+      });
 
     }
   ]);

@@ -94,9 +94,9 @@ export function createCodebaseBridge() {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
       SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
-      DependencySelection: lazy(() => import('../components/DependencySelection')),
+      DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
       DependecySelectionDelete: lazy(() => (
-        import('../components/DependencySelection')
+        import('../modules/Content/Dependencies/DependencySelection')
           .then(module => ({
             default: module.DependencySelectionDelete
           }))
