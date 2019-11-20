@@ -198,6 +198,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
 
   function enableDnD(components, initialComponentModel, browse) {
     amplify.publish(Topics.ICE_TOOLS_OFF);
+    var communicator = this.cfg('communicator');
 
     publish.call(this, Topics.SET_SESSION_STORAGE_ITEM, {
       key: 'components-on',
@@ -239,6 +240,86 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       zIndex: 1030
     });
 
+    let dndInProgress = null;
+    let validationInProgress = null;
+    var cacheValidation = {};
+
+    function restrictions($dropZone, $component, isNew) {
+      if(dndInProgress !== null) {
+        let temp  = dndInProgress;
+        dndInProgress = null;
+        return temp;
+      }
+      var valid = true;
+      var isZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var isItemEmbedded;
+      var originPath;
+      var destPath;
+
+      //we are moving a component
+      if(!isNew) {
+        isItemEmbedded = $component.attr('data-studio-embedded-item-id') || false;
+        originPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
+        destPath = $component.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
+      }else {
+        let path =  $component.attr('data-studio-component-path');
+        isItemEmbedded = path ? false: true;
+      }
+
+      if(isZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsNotSupported',
+          height: 'auto'
+        });
+      }else if(isItemEmbedded && originPath !== destPath){
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsDrag',
+          height: 'auto'
+        });
+      }
+
+      if(!valid){
+        if(isNew) {
+          $component.remove();
+        }else {
+          $(DROPPABLE_SELECTION).sortable("cancel");
+        }
+      }
+
+      if(!isNew) dndInProgress = valid;
+      return valid;
+    }
+
+    function validation($dropZone, $component, contentType, zone, componentType, response) {
+      var childContent = componentType === 'shared-content'? 'child-content' : null;
+      var key = `${zone}-${componentType}`;
+
+      return new Promise((resolve, reject) => {
+        if (cacheValidation[key]) {
+          resolve(cacheValidation[key]);
+        } else {
+          cacheValidation[key] = {supported: false, ds: null};
+        }
+        var selector;
+        response.sections.forEach(section => {
+          var _selector = section.fields.find(item => item.id === zone);
+          if (_selector) selector = _selector;
+        });
+        var selectorDS = selector.properties.find(item => item.name === "itemManager");
+        selectorDS.value.split(',').forEach(ds => {
+          var type = response.datasources.find(formDS => formDS.id === ds).type;
+          if (type === componentType || type === childContent) cacheValidation[key] = {
+            supported: true,
+            ds: ds
+          };
+          return true;
+        });
+        resolve(cacheValidation[key]);
+      });
+    }
+
     function updateDop(self, me, ui) {
       var $dropZone = $(self),
         $component = ui.item,
@@ -246,13 +327,56 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
         orgZoneComp = ui.item.parents('[data-studio-components-target]').parents('[data-studio-component-path]'),
         destZoneComp = $dropZone.parents('[data-studio-component-path]');
-      if (compPath != zonePath && ((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
+
+      var isNew = $component.hasClass('studio-component-drag-target');
+      var destContentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type') || null;
+      var componentType;
+      var zone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target') || null;
+      if(!isNew) {
+        componentType = $component.attr('data-studio-embedded-item-id')? 'embedded-content' : 'shared-content';
+      }else {
+        let path =  $component.attr('data-studio-component-path');
+        componentType = path ? 'shared-content': 'embedded-content';
+      }
+
+      if (((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
         (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
           $dropZone.attr('data-studio-components-objectid') != ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid')) ||
         (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
           orgZoneComp.attr('data-studio-tracking-number') == destZoneComp.attr('data-studio-tracking-number') &&
           $dropZone.attr('data-studio-components-objectid') == ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid'))))) {
-        componentDropped.call(me, $dropZone, $component);
+        if(restrictions($dropZone, $component, isNew)) {
+          var callback = function(response) {
+            validation($dropZone, $component, destContentType, zone, componentType, response).then((response) => {
+              validationInProgress = null;
+              if (response.supported) {
+                componentDropped.call(me, $dropZone, $component, response.ds);
+              } else{
+                publish.call(me, Topics.START_DIALOG, {
+                  messageKey: 'contentTypeNotSupported',
+                  height: 'auto'
+                });
+                if(isNew) {
+                  $component.remove();
+                }else {
+                  $(DROPPABLE_SELECTION).sortable("cancel");
+                }
+              }
+            });
+            communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+          };
+          communicator.on(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+
+          //Validation with cache avoiding doble validation...
+          let key = `${zone}-${componentType}`;
+          if(cacheValidation[key]) {
+            communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+            componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds);
+          } else if(validationInProgress === null) {
+            validationInProgress = true;
+            publish.call(me, Topics.REQUEST_FORM_DEFINITION, {contentType: destContentType});
+          }
+        }
       } else {
         $(DROPPABLE_SELECTION).sortable("cancel");
       }
@@ -384,14 +508,13 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     }
   }
 
-  function componentDropped($dropZone, $component) {
+  function componentDropped($dropZone, $component, datasource) {
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
     var trackingZone = $dropZone.attr('data-studio-zone-tracking');
     var dropName = $dropZone.attr('data-studio-components-target');
     var index = 0, currentTag = "", zone;
-    var destinationZone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target');
 
     var me = this,
       isNew = $component.hasClass('studio-component-drag-target'),
@@ -416,7 +539,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     // need a timeout to grab out the updated DOM structure
     var conRepeat = 0;
     setTimeout(function () {
-
       $('[data-studio-components-target]').each(function () {
         zone = $(this).attr("data-studio-components-target");
         if (currentTag !== zone) {
@@ -454,7 +576,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         trackingNumber: tracking,
         compPath: compPath,
         conComp: (conRepeat > 1) ? true : false,
-        destinationZone: destinationZone
+        datasource: datasource
       });
 
     });
@@ -465,7 +587,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
   }
 
   function componentsModelLoad(data) {
-    //console.log("test");
     var aNotFound = [],
       me = this,
       noObjectid = 0,
@@ -478,61 +599,63 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         name = $el.attr('data-studio-components-target'),
         path = $el.parents('[data-studio-component-path]').attr('data-studio-component-path'),
         id = objectId + "-" + name;
-      if (name.indexOf('.') < 0) {
-        if (objectId) {
-          if (!found[id] || objectId == data['objectId']) {
-            if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
-              found[id] = true;
-              $el.find('> [data-studio-component]').each(function (i, el) {
-                $(this).data('model', data[name][i]);
-              });
-            } else {
-              var repeated = false;
-              for (var j = 0; j < aNotFound.length; j++) {
-                if (aNotFound[j].path == path && aNotFound[j].name == name) {
-                  repeated = true;
+        //avoid searching if the item is embedded;
+        if(!$el.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id')) {
+          if (name.indexOf('.') < 0) {
+            if (objectId) {
+              if (!found[id] || objectId == data['objectId']) {
+                if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
+                  found[id] = true;
+                  $el.find('> [data-studio-component]').each(function (i, el) {
+                    $(this).data('model', data[name][i]);
+                  });
+                } else {
+                  var repeated = false;
+                  for (var j = 0; j < aNotFound.length; j++) {
+                    if (aNotFound[j].path == path && aNotFound[j].name == name) {
+                      repeated = true;
+                    }
+                  }
+                  if (!repeated) {
+                    aNotFound.push({ path: path, name: name });
+                  }
                 }
               }
-              if (!repeated) {
-                aNotFound.push({ path: path, name: name });
-              }
-            }
-          }
-        } else {
-          noObjectid++
-        }
-      } else {
-        if (currentTag !== name) {
-          index = 0;
-          currentTag = name;
-        }
-        structure1 = name.split('.')[0];
-        structure2 = name.split('.')[1];
-        if (objectId) {
-          if (!found[id] || objectId == data['objectId']) {
-            if ((data[structure1][index][structure2] || data[structure1][index][structure2] == "") && objectId == data['objectId']) { ///objid?
-              found[id] = true;
-              $el.find('> [data-studio-component]').each(function (i, el) {
-                $(this).data('model', data[structure1][index][structure2][i]);
-              });
             } else {
-              var repeated = false;
-              for (var j = 0; j < aNotFound.length; j++) {
-                if (aNotFound[j].path == path && aNotFound[j].name == name) {
-                  repeated = true;
-                }
-              }
-              if (!repeated) {
-                aNotFound.push({ path: path, name: name });
-              }
+              noObjectid++
             }
-            index++;
+          } else {
+            if (currentTag !== name) {
+              index = 0;
+              currentTag = name;
+            }
+            structure1 = name.split('.')[0];
+            structure2 = name.split('.')[1];
+            if (objectId) {
+              if (!found[id] || objectId == data['objectId']) {
+                if ((data[structure1][index][structure2] || data[structure1][index][structure2] == "") && objectId == data['objectId']) { ///objid?
+                  found[id] = true;
+                  $el.find('> [data-studio-component]').each(function (i, el) {
+                    $(this).data('model', data[structure1][index][structure2][i]);
+                  });
+                } else {
+                  var repeated = false;
+                  for (var j = 0; j < aNotFound.length; j++) {
+                    if (aNotFound[j].path == path && aNotFound[j].name == name) {
+                      repeated = true;
+                    }
+                  }
+                  if (!repeated) {
+                    aNotFound.push({ path: path, name: name });
+                  }
+                }
+                index++;
+              }
+            } else {
+              noObjectid++
+            }
           }
-        } else {
-          noObjectid++
         }
-      }
-
     });
 
     var isSearched = false;
