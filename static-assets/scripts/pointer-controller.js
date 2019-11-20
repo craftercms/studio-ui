@@ -152,7 +152,6 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
     var cacheValidation = {};
 
     function validation($dropZone, $component, contentType, zone, componentType, response) {
-      console.log('one time validation');
       var childContent = componentType === 'shared-content'? 'child-content' : null;
       var key = `${zone}-${componentType}`;
 
