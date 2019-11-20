@@ -588,7 +588,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       structure1, structure2, index = 0, currentTag = "";
 
     $('[data-studio-components-target]').each(function () {
-      //debugger;
       var $el = $(this),
         objectId = $el.attr('data-studio-components-objectid'),
         tracking = $el.attr('data-studio-zone-tracking'),

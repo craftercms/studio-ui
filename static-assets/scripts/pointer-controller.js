@@ -145,6 +145,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
           height: 'auto'
         });
       }
+
       return valid;
     }
 
