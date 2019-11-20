@@ -234,7 +234,7 @@ CStudioAuthoring.Module.requireModule(
 			rteStylesheets = ( rteConfig.rteStylesheets && typeof rteConfig.rteStylesheets === 'object' )
 				? rteConfig.rteStylesheets.link : null;
 
-			rteStyleOverride = ( rteConfig.rteStyleOverride && typeof rteConfig.rteStylesheets === 'object' )
+			rteStyleOverride = ( rteConfig.rteStyleOverride )
 				? rteConfig.rteStyleOverride : null;
 
 			editor = tinymce.init({
