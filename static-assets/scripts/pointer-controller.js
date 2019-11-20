@@ -137,22 +137,13 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
 
     function restrictions($dropZone, $component, isZoneEmbedded) {
       var valid = true;
-      var originPath;
-      var destPath;
 
       if(isZoneEmbedded) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
-          message: 'Drag and drop on embedded components it\'s not supported at this time'
+          messageKey: 'embeddedComponentsNotSupported',
+          height: 'auto'
         });
-      }
-
-      if(!valid){
-        // if(isNew) {
-        //   $component.remove();
-        // }else {
-        //   $(DROPPABLE_SELECTION).sortable("cancel");
-        // }
       }
       return valid;
     }
@@ -210,7 +201,8 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
                 componentDropped.call(me, $dropZone, $component, response.ds);
               } else{
                 publish.call(me, Topics.START_DIALOG, {
-                  message: 'The drop zone does not support this type of component'
+                  messageKey: 'contentTypeNotSupported',
+                  height: 'auto'
                 });
               }
             });

@@ -357,6 +357,13 @@
 
   communicator.subscribe(Topics.START_DIALOG, function (message) {
     var newdiv = document.createElement('div');
+    var text;
+
+    if(message.messageKey) {
+      text = CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey])
+    }else {
+      text = message.message;
+    }
 
     newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
     newdiv.className = 'yui-pe-content';
@@ -365,7 +372,7 @@
       /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
       /****/'<div class="contentTypePopupHeader">Notification</div> ' +
       /****/'<div class="contentTypeOuter">' +
-      /****/'<div>' + message.message + '</div> ' +
+      /****/'<div>' + text + '</div> ' +
       /****/'<div></div>' +
       /**/'</div>' +
       /**/'<div class="contentTypePopupBtn"> ' +

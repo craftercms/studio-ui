@@ -269,12 +269,14 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       if(isZoneEmbedded) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
-          message: 'On this release, drag and drop on embedded components it\'s not supported.'
+          messageKey: 'embeddedComponentsNotSupported',
+          height: 'auto'
         });
       }else if(isItemEmbedded && originPath !== destPath){
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
-          message: 'On this release, embedded components may only be dragged within their current parent.'
+          messageKey: 'embeddedComponentsDrag',
+          height: 'auto'
         });
       }
 
@@ -351,7 +353,8 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
                 componentDropped.call(me, $dropZone, $component, response.ds);
               } else{
                 publish.call(me, Topics.START_DIALOG, {
-                  message: 'The drop zone does not support this type of component. Check your content model.'
+                  messageKey: 'contentTypeNotSupported',
+                  height: 'auto'
                 });
               }
             });

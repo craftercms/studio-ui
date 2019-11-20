@@ -521,6 +521,21 @@ const formEngineMessages = defineMessages({
   },
 });
 
+const dragAndDropMessages = defineMessages({
+  contentTypeNotSupported: {
+    id: 'dragAndDropMessages.contentTypeNotSupported',
+    defaultMessage: 'The drop zone does not support this type of component. Check your content model.'
+  },
+  embeddedComponentsNotSupported: {
+    id: 'dragAndDropMessages.embeddedComponentsNotSupported',
+    defaultMessage: 'On this release, drag and drop on embedded components it\'s not supported.'
+  },
+  embeddedComponentsDrag: {
+    id: 'dragAndDropMessages.embeddedComponentsDrag',
+    defaultMessage: 'On this release, embedded components may only be dragged within their current parent.'
+  },
+})
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -541,5 +556,6 @@ export default {
   publishingMessages,
   siteComponentDSMessages,
   formEngineMessages,
-  browseCMISMessages
+  browseCMISMessages,
+  dragAndDropMessages
 };
