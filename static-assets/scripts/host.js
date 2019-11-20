@@ -351,11 +351,7 @@
       message.compPath,
       message.conComp,
       message.model,
-      message.destinationZone,
-      message.contentType,
-      message.isZoneEmbedded,
-      message.isItemEmbedded,
-
+      message.datasource,
     );
   });
 
@@ -565,6 +561,12 @@
     }
 
     CStudioAuthoring.Utils.isReviewer(callback);
+  });
+
+  communicator.subscribe(Topics.FORM_DEFINITION, function (message) {
+    CStudioForms.Util.loadFormDefinition(message.contentType, { success: function(response){
+        communicator.publish(Topics.FORM_DEFINITION_RESPONSE, response);
+    }});
   });
 
   function setHash(params) {

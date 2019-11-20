@@ -198,6 +198,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
 
   function enableDnD(components, initialComponentModel, browse) {
     amplify.publish(Topics.ICE_TOOLS_OFF);
+    var communicator = this.cfg('communicator');
 
     publish.call(this, Topics.SET_SESSION_STORAGE_ITEM, {
       key: 'components-on',
@@ -239,6 +240,97 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       zIndex: 1030
     });
 
+    let dndInProgress = null;
+    let validationInProgress = null;
+    var cacheValidation = {};
+
+    function restrictions($dropZone, $component, isNew) {
+      if(dndInProgress !== null) {
+        let temp  = dndInProgress;
+        dndInProgress = null;
+        return temp;
+      }
+      var valid = true;
+      var isZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var isItemEmbedded;
+      var isZoneEmbedded;
+      var originPath;
+      var destPath;
+
+      //we are moving a component
+      if(!isNew) {
+        isItemEmbedded = $component.attr('data-studio-embedded-item-id') || false;
+        originPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
+        destPath = $component.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
+      }else {
+        let path =  $component.attr('data-studio-component-path');
+        isItemEmbedded = path ? false: true;
+      }
+
+      if(isZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          message: 'Drag and drop on embedded components it\'s not supported at this time'
+        });
+      }else if(isItemEmbedded && originPath !== destPath){
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          message: 'Embedded components may only be dragged within their current parent'
+        });
+      }
+
+      if(!valid){
+        if(isNew) {
+          $component.remove();
+        }else {
+          $(DROPPABLE_SELECTION).sortable("cancel");
+        }
+      }
+
+      if(!isNew) dndInProgress = valid;
+      return valid;
+    }
+
+    function validation($dropZone, $component, isNew, response) {
+      //we are moving a component
+      var componentType;
+      var zone;
+      var contentType;
+      if(!isNew) {
+        componentType = $component.attr('data-studio-embedded-item-id')? 'embedded-content' : 'shared-content';
+        contentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type') || null;
+        zone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target') || null;
+      }else {
+        let path =  $component.attr('data-studio-component-path');
+        componentType = path ? 'shared-content': 'embedded-content';
+      }
+      var childContent = componentType === 'shared-content'? 'child-content' : null;
+      var key = `${zone}-${componentType}`;
+
+      return new Promise((resolve, reject) => {
+        if (cacheValidation[key]) {
+          resolve(cacheValidation[key]);
+        } else {
+          cacheValidation[key] = {supported: false, ds: null};
+        }
+        var selector;
+        response.sections.forEach(section => {
+          var _selector = section.fields.find(item => item.id === zone);
+          if (_selector) selector = _selector;
+        });
+        var selectorDS = selector.properties.find(item => item.name === "itemManager");
+        selectorDS.value.split(',').forEach(ds => {
+          var type = response.datasources.find(formDS => formDS.id === ds).type;
+          if (type === componentType || type === childContent) cacheValidation[key] = {
+            supported: true,
+            ds: ds
+          };
+          return true;
+        });
+        resolve(cacheValidation[key]);
+      });
+    }
+
     function updateDop(self, me, ui) {
       var $dropZone = $(self),
         $component = ui.item,
@@ -246,13 +338,35 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
         orgZoneComp = ui.item.parents('[data-studio-components-target]').parents('[data-studio-component-path]'),
         destZoneComp = $dropZone.parents('[data-studio-component-path]');
-      if (compPath != zonePath && ((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
+      var destContentType;
+      var isNew = $component.hasClass('studio-component-drag-target');
+      if(!isNew) {
+        destContentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type') || null;
+      }
+      if (((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
         (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
           $dropZone.attr('data-studio-components-objectid') != ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid')) ||
         (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
           orgZoneComp.attr('data-studio-tracking-number') == destZoneComp.attr('data-studio-tracking-number') &&
           $dropZone.attr('data-studio-components-objectid') == ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid'))))) {
-        componentDropped.call(me, $dropZone, $component);
+        if(restrictions($dropZone, $component, isNew)) {
+          var callback = function(response) {
+            validation($dropZone, $component, isNew, response).then((response) => {
+              if (response.supported) {
+                componentDropped.call(me, $dropZone, $component, response.ds);
+              } else{
+                publish.call(me, Topics.START_DIALOG, {
+                  message: 'The drop zone does not support this type of component'
+                });
+              }
+            });
+            communicator.unsubscribe(Topics.FORM_DEFINITION_RESPONSE, callback);
+          };
+          communicator.on(Topics.FORM_DEFINITION_RESPONSE, callback);
+
+          //calling form definition, it needs cache validation
+          publish.call(me, Topics.FORM_DEFINITION, {contentType: destContentType});
+        }
       } else {
         $(DROPPABLE_SELECTION).sortable("cancel");
       }
@@ -384,8 +498,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     }
   }
 
-  function componentDropped($dropZone, $component) {
-    //debugger;
+  function componentDropped($dropZone, $component, datasource) {
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
@@ -464,10 +577,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         trackingNumber: tracking,
         compPath: compPath,
         conComp: (conRepeat > 1) ? true : false,
-        destinationZone: destinationZone,
-        contentType: contentType,
-        isZoneEmbedded: isZoneEmbedded,
-        isItemEmbedded: isItemEmbedded
+        datasource: datasource
       });
 
     });
