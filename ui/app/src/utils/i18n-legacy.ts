@@ -528,7 +528,7 @@ const dragAndDropMessages = defineMessages({
   },
   embeddedComponentsNotSupported: {
     id: 'dragAndDropMessages.embeddedComponentsNotSupported',
-    defaultMessage: 'On this release, drag and drop on embedded components it\'s not supported.'
+    defaultMessage: 'Drag and drop on embedded components it\'s not supported yet.'
   },
   embeddedComponentsDrag: {
     id: 'dragAndDropMessages.embeddedComponentsDrag',
