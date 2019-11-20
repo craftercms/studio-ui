@@ -203,7 +203,7 @@
                         value: value,
                         key: modelPath,
                         include: modelPath,
-                        datasource: response.ds
+                        datasource: datasource
                       };
                       $.each(zones, function (key, array) {
                         $.each(array, function (i, item) {

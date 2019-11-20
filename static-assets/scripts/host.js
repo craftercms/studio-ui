@@ -563,9 +563,9 @@
     CStudioAuthoring.Utils.isReviewer(callback);
   });
 
-  communicator.subscribe(Topics.FORM_DEFINITION, function (message) {
+  communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function (message) {
     CStudioForms.Util.loadFormDefinition(message.contentType, { success: function(response){
-        communicator.publish(Topics.FORM_DEFINITION_RESPONSE, response);
+        communicator.publish(Topics.REQUEST_FORM_DEFINITION_RESPONSE, response);
     }});
   });
 
