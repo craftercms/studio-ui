@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { Dispatch, Reducer, useContext, useMemo, useReducer } from 'react';
 import { Subject } from 'rxjs';
 
@@ -13,16 +30,10 @@ export type Tools =
   'craftercms.ice.simulator' |
   'craftercms.ice.ice';
 
-interface ToolMeta {
-  id: Tools;
-  titleKey: string;
-  config?: any;
-}
-
 interface PreviewState {
   showToolsPanel: boolean;
   selectedTool: Tools;
-  tools: Array<ToolMeta>;
+  tools: Array<any>;
   hostSize: Dimensions;
 }
 
@@ -116,13 +127,15 @@ const previewProviderReducer: Reducer<PreviewState, StandardAction> = (state, ac
   }
 };
 
+const INITIAL_PREVIEW_CONTEXT = {
+  hostSize: { width: null, height: null },
+  showToolsPanel: true,
+  selectedTool: null,
+  tools: null
+};
+
 export function PreviewProvider(props: any) {
-  const [state, setState] = useReducer(previewProviderReducer, {
-    hostSize: { width: null, height: null },
-    showToolsPanel: true,
-    selectedTool: null,
-    tools: null
-  });
+  const [state, setState] = useReducer(previewProviderReducer, INITIAL_PREVIEW_CONTEXT);
   const value = useMemo(() => [state, setState], [state]);
   // @ts-ignore
   window.previewContext = value;
@@ -154,7 +167,7 @@ export function closeTools(): StandardAction {
   return { type: CLOSE_TOOLS };
 }
 
-export function toolsLoaded(tools: Array<ToolMeta>): StandardAction {
+export function toolsLoaded(tools: Array<any>): StandardAction {
   return {
     type: TOOLS_LOADED,
     payload: tools
