@@ -351,12 +351,19 @@
       message.compPath,
       message.conComp,
       message.model,
-      message.destinationZone
+      message.datasource,
     );
   });
 
   communicator.subscribe(Topics.START_DIALOG, function (message) {
     var newdiv = document.createElement('div');
+    var text;
+
+    if(message.messageKey) {
+      text = CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey])
+    }else {
+      text = message.message;
+    }
 
     newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
     newdiv.className = 'yui-pe-content';
@@ -365,7 +372,7 @@
       /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
       /****/'<div class="contentTypePopupHeader">Notification</div> ' +
       /****/'<div class="contentTypeOuter">' +
-      /****/'<div>' + message.message + '</div> ' +
+      /****/'<div>' + text + '</div> ' +
       /****/'<div></div>' +
       /**/'</div>' +
       /**/'<div class="contentTypePopupBtn"> ' +
@@ -561,6 +568,12 @@
     }
 
     CStudioAuthoring.Utils.isReviewer(callback);
+  });
+
+  communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function (message) {
+    CStudioForms.Util.loadFormDefinition(message.contentType, { success: function(response){
+        communicator.publish(Topics.REQUEST_FORM_DEFINITION_RESPONSE, response);
+    }});
   });
 
   function setHash(params) {

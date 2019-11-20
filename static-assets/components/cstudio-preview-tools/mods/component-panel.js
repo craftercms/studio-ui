@@ -194,135 +194,86 @@
                     }
                 },
 
-                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, destinationZone) {
+                ondrop: function (type, path, isNew, tracking, zones, compPath, conComp, modelP, datasource) {
                   var previewPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(
                     CStudioAuthoringContext.previewCurrentPath);
-                  var componentType = (path && path !== previewPath ) ? 'shared-content' : 'embedded-content';
-                  ComponentsPanel.validate(compPath, modelP['content-type'], destinationZone, componentType).then((response) => {
-                    if (response.supported) {
-                      if (isNew) {
-                        function isNewEvent(value, modelPath) {
-                          var modelData = {
-                            value: value,
-                            key: modelPath,
-                            include: modelPath,
-                            datasource: response.ds
-                          };
-                          $.each(zones, function (key, array) {
-                            $.each(array, function (i, item) {
-                              if (item === tracking) {
-                                zones[key][i] = modelData;
-                              }
-                            });
-                          });
-                          ComponentsPanel.contentModelMap[tracking] = modelData;
-                          amplify.publish(cstopic('DND_COMPONENT_MODEL_LOAD'), {
-                            model: modelData,
-                            trackingNumber: tracking
-                          });
-                          ComponentsPanel.save(isNew, zones, compPath, conComp);
-                        }
-                        if (isNew == true) {
-                          //If no path provided the dnd item is a embedded content
-                          if (!path) {
-                            var selectorId = Object.keys(zones)[0];
-                            var order = zones[selectorId].findIndex((item) => item === tracking);
-                            ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, response.ds, order);
-                          } else {
-                            var subscribeCallback = function (_message) {
-                              switch (_message.type) {
-                                case "FORM_CANCEL": {
-                                  amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-                                  amplify.publish(cstopic('REFRESH_PREVIEW'));
-                                  break;
-                                }
-                              }
-                            };
-                            amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-                            CStudioAuthoring.Operations.performSimpleIceEdit(
-                              {
-                                uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
-                                contentType: type
-                              },
-                              null,
-                              false,
-                              {
-                                failure: CStudioAuthoring.Utils.noop,
-                                success: function (contentTO) {
-                                  amplify.publish('/operation/started');
-                                  // Use the information from the newly created component entry and use it to load the model data for the
-                                  // component placeholder in the UI. After this update, we can then proceed to save all the components
-                                  var value = (!!contentTO.item.internalName)
-                                    ? contentTO.item.internalName
-                                    : contentTO.item.uri;
-                                  isNewEvent(value, contentTO.item.uri);
-                                }
-                              },
-                              null,
-                              false,
-                              false
-                            );
+                  if (isNew) {
+                    function isNewEvent(value, modelPath) {
+                      var modelData = {
+                        value: value,
+                        key: modelPath,
+                        include: modelPath,
+                        datasource: datasource
+                      };
+                      $.each(zones, function (key, array) {
+                        $.each(array, function (i, item) {
+                          if (item === tracking) {
+                            zones[key][i] = modelData;
                           }
-                        } else {
-                          CStudioAuthoring.Service.getContent(path, "false", {
-                            success: function (model) {
-                              isNewEvent($(model).find("internal-name").text(), path);
-                            },
-                            failure: function (err) {
-                            }
-                          });
-                        }
+                        });
+                      });
+                      ComponentsPanel.contentModelMap[tracking] = modelData;
+                      amplify.publish(cstopic('DND_COMPONENT_MODEL_LOAD'), {
+                        model: modelData,
+                        trackingNumber: tracking
+                      });
+                      ComponentsPanel.save(isNew, zones, compPath, conComp);
+                    }
 
+                    if (isNew == true) {
+                      //If no path provided the dnd item is a embedded content
+                      if (!path) {
+                        var selectorId = Object.keys(zones)[0];
+                        var order = zones[selectorId].findIndex((item) => item === tracking);
+                        ComponentsPanel.onDropEmbedded(previewPath, compPath, type, selectorId, datasource, order);
                       } else {
-                        ComponentsPanel.save(isNew, zones, compPath, conComp);
+                        var subscribeCallback = function (_message) {
+                          switch (_message.type) {
+                            case "FORM_CANCEL": {
+                              amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
+                              amplify.publish(cstopic('REFRESH_PREVIEW'));
+                              break;
+                            }
+                          }
+                        };
+                        amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
+                        CStudioAuthoring.Operations.performSimpleIceEdit(
+                          {
+                            uri: CStudioAuthoring.Operations.processPathsForMacros(path, modelP),
+                            contentType: type
+                          },
+                          null,
+                          false,
+                          {
+                            failure: CStudioAuthoring.Utils.noop,
+                            success: function (contentTO) {
+                              amplify.publish('/operation/started');
+                              // Use the information from the newly created component entry and use it to load the model data for the
+                              // component placeholder in the UI. After this update, we can then proceed to save all the components
+                              var value = (!!contentTO.item.internalName)
+                                ? contentTO.item.internalName
+                                : contentTO.item.uri;
+                              isNewEvent(value, contentTO.item.uri);
+                            }
+                          },
+                          null,
+                          false,
+                          false
+                        );
                       }
                     } else {
-                      var CMgs = CStudioAuthoring.Messages;
-                      var langBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-                      if($(document.body).find('#componentsNotSupported-dialog_c').length) return;
-                      CStudioAuthoring.Operations.showSimpleDialog(
-                        "componentsNotSupported-dialog",
-                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                        CMgs.format(langBundle, "notification"),
-                        CMgs.format(langBundle, "componentsNotSupported"),
-                        [{
-                          text: "OK",
-                          handler: function () {
-                            this.destroy();
-                            amplify.publish(cstopic('REFRESH_PREVIEW'));
-                          },
-                          isDefault: false
-                        }],
-                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                        "studioDialog"
-                      );
+                      CStudioAuthoring.Service.getContent(path, "false", {
+                        success: function (model) {
+                          isNewEvent($(model).find("internal-name").text(), path);
+                        },
+                        failure: function (err) {
+                        }
+                      });
                     }
-                  });
-                },
 
-                validate: function(componentPath, pageContentType, zone, componentType) {
-                  var key = `${zone}-${componentType}`;
-                  return new Promise((resolve, reject) => {
-                    if(ComponentsPanel.cacheValidation[key]) {
-                      resolve(ComponentsPanel.cacheValidation[key]);
-                    }else {
-                      ComponentsPanel.cacheValidation[key] = {supported: false, ds: null};
-                    }
-                    CStudioForms.Util.loadFormDefinition(componentPath || pageContentType, { success: function(response){
-                        var selector;
-                        response.sections.forEach(section => {
-                          var _selector = section.fields.find(item => item.id === zone);
-                          if (_selector) selector = _selector;
-                        });
-                        var selectorDS = selector.properties.find(item => item.name === "itemManager");
-                        selectorDS.value.split(',').forEach(ds => {
-                          var type = response.datasources.find(formDS => formDS.id === ds).type;
-                          if(type === componentType) ComponentsPanel.cacheValidation[key] = {supported: true, ds: ds};
-                          return true;
-                        });
-                        resolve(ComponentsPanel.cacheValidation[key]);
-                      }});
-                  });
+                  } else {
+                    ComponentsPanel.save(isNew, zones, compPath, conComp);
+                  }
                 },
 
                 onDropEmbedded: function(previewPath, compPath, type, selectorId, ds, order){
@@ -505,15 +456,12 @@
                     if (start) {
                         amplify.publish('/operation/started');
                     }
-                  var FlattenerState = {};
 
-                  if(model) {
-                    var dom = CStudioForms.communication.parseDOM(model);
-                    CStudioForms.Util.createFlattenerState(dom);
-                  }
+                  var dom = CStudioForms.communication.parseDOM(model);
+                  CStudioForms.Util.createFlattenerState(dom);
 
                     var form = {definition: formDefinition, model: contentMap},
-                        xml = CStudioForms.Util.serializeModelToXml(form, null, FlattenerState);
+                        xml = CStudioForms.Util.serializeModelToXml(form, null);
 
                     CStudioAuthoring.Service.writeContent(pagePath,
                         pagePath.substring(pagePath.lastIndexOf('/') + 1),
@@ -1444,7 +1392,6 @@
                                                 categories.push({ label: data.label, components: data.components });
                                             }
                                         }
-
                                         amplify.publish(cstopic('START_DRAG_AND_DROP'), {
                                             components: categories,
                                             contentModel: initialContentModel
