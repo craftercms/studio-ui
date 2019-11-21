@@ -302,6 +302,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       if (!valid) {
         if (isNew) {
           $component.remove();
+          window.location.reload();
         } else {
           $(DROPPABLE_SELECTION).sortable("cancel");
         }
@@ -380,6 +381,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
                 });
                 if(isNew) {
                   $component.remove();
+                  window.location.reload();
                 }else {
                   $(DROPPABLE_SELECTION).sortable("cancel");
                 }
