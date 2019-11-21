@@ -279,11 +279,6 @@
                 onDropEmbedded: function(previewPath, compPath, type, selectorId, ds, order){
                   var subscribeCallback = function (_message) {
                     switch (_message.type) {
-                      case "FORM_CANCEL": {
-                        amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
-                        amplify.publish(cstopic('REFRESH_PREVIEW'));
-                        break;
-                      }
                       case "FORM_ENGINE_RENDER_COMPLETE": {
                         amplify.unsubscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
                         CStudioAuthoring.InContextEdit.messageDialogs({
@@ -324,7 +319,7 @@
                           },
                           null,
                           false,
-                          true
+                          false
                         );
                       }
                     },

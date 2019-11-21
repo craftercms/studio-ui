@@ -1491,12 +1491,6 @@ var CStudioForms = CStudioForms || function() {
         };
 
         var cancelFn = function () {
-          //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
-          sendMessage({type: FORM_CANCEL});
-
-          if (iceWindowCallback && iceWindowCallback.cancelled) {
-            iceWindowCallback.cancelled();
-          }
 
           if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
             for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
@@ -1528,6 +1522,10 @@ var CStudioForms = CStudioForms || function() {
                   buttons: [
                     {
                       text: CMgs.format(formsLangBundle, 'yes'), handler: function () {
+                        if (iceWindowCallback && iceWindowCallback.cancelled) {
+                          iceWindowCallback.cancelled();
+                        }
+                        sendMessage({type: FORM_CANCEL});
                         this.destroy();
                         var entityId = buildEntityIdFn(null);
                         showWarnMsg = false;
@@ -1548,6 +1546,9 @@ var CStudioForms = CStudioForms || function() {
                     },
                     {
                       text: CMgs.format(formsLangBundle, 'no'), handler: function () {
+                        if (iceWindowCallback && iceWindowCallback.cancelled) {
+                          iceWindowCallback.cancelled();
+                        }
                         this.destroy();
                       }, isDefault: true
                     }
@@ -1560,6 +1561,11 @@ var CStudioForms = CStudioForms || function() {
             }
             dialogEl.dialog.show();
           } else {
+            if (iceWindowCallback && iceWindowCallback.cancelled) {
+              iceWindowCallback.cancelled();
+            }
+            //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
+            sendMessage({type: FORM_CANCEL});
             var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
             if (acnDraftContent) {
               unlockBeforeCancel(path);
