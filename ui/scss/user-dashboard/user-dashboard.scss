@@ -287,12 +287,18 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 
 .settings-view{
   max-width: 800px;
-  margin: 0 auto;
+  margin: 39px auto 0 auto;
+  .settings-header{
+    margin-top: 0;
+  }
   .input-error{
     border-color: #f59191;
   }
   .input-error:focus{
     box-shadow: 0 0 5px rgb(238, 81, 81);
+  }
+  .error-container .error{
+    color:red;
   }
 }
 
@@ -322,6 +328,21 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     }
 
   }
+}
+
+.modal-top-override.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal-top-override .modal-dialog {
+  display: inline-block;
+  text-align: left;
+  top: 72px;
+}
+
+.modal-top-override.modal-reset-pass .modal-dialog{
+  top: 126px;
 }
 
 .panel {

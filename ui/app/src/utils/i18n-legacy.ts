@@ -123,7 +123,7 @@ const passwordRequirementMessages = defineMessages({
   },
   minMaxLength: {
     id: 'passwordRequirement.minMaxLength',
-    defaultMessage: 'Length must be between {min} and {max} characters'
+    defaultMessage: 'Length must be between {minLength} and {maxLength} characters'
   },
   passwordValidation: {
     id: 'passwordRequirement.passwordValidation',
@@ -154,6 +154,41 @@ const groupsAdminMessages = defineMessages({
   }
 });
 
+const profileSettingsMessages = defineMessages({
+  password: {
+    id: 'profileSettings.password',
+    defaultMessage: 'Password'
+  },
+  currentPassword: {
+    id: 'profileSettings.currentPassword',
+    defaultMessage: 'Current password'
+  },
+  isRequired: {
+    id: 'profileSettings.isRequired',
+    defaultMessage: 'is required'
+  },
+  mustMatchPreviousEntry: {
+    id: 'profileSettings.mustMatchPreviousEntry',
+    defaultMessage: 'Must match the previous entry'
+  },
+  languageSaveSuccesfully: {
+    id: 'profileSettings.languageUpdatedSuccessfully',
+    defaultMessage: 'Language Updated Successfully.'
+  },
+  languageSaveFailedWarning: {
+    id: 'profileSettings.languageUpdateFailedWarning',
+    defaultMessage: 'Language update has failed. Please retry momentarily.'
+  },
+  unSavedConfirmation: {
+    id: 'profileSettings.unsavedConfirmation',
+    defaultMessage: 'You have unsaved changes. Discard changes?'
+  },
+  unSavedConfirmationTitle: {
+    id: 'profileSettings.unsavedConfirmationTitle',
+    defaultMessage: 'Unsaved Changes'
+  }
+});
+
 const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
@@ -165,18 +200,30 @@ const numericInputControlMessages = defineMessages({
   }
 });
 
-const internalNameControlMessages = defineMessages({
-  label: {
-    id: 'internalNameControl.label',
-    defaultMessage: 'Internal Name'
+const checkboxGroupControlMessages = defineMessages({
+  datasource: {
+    id: 'checkboxGroupControl.datasource',
+    defaultMessage: 'Data Source'
   },
-  displaySize: {
-    id: 'internalNameControl.displaySize',
-    defaultMessage: 'Display Size'
+  showSelectAll: {
+    id: 'checkboxGroupControl.showSelectAll',
+    defaultMessage: 'Show "Select All"'
   },
-  maxLength: {
-    id: 'internalNameControl.maxLength',
-    defaultMessage: 'Max Length'
+  listDirection: {
+    id: 'checkboxGroupControl.listDirection',
+    defaultMessage: 'List Direction'
+  },
+  horizontal: {
+    id: 'checkboxGroupControl.horizontal',
+    defaultMessage: 'Horizonal'
+  },
+  vertical: {
+    id: 'checkboxGroupControl.vertical',
+    defaultMessage: 'Vertical'
+  },
+  readonly: {
+    id: 'checkboxGroupControl.readonly',
+    defaultMessage: 'Read Only'
   }
 });
 
@@ -243,7 +290,7 @@ const contentTypesMessages = defineMessages({
   },
   internalNameErrorMessage: {
     id: 'contentType.internalNameErrorMessage',
-    defaultMessage: 'This content type requires an internal name. Please add an "Internal Name" control to this content type definition.'
+    defaultMessage: 'This content type requires an Internal Name.'
   },
   flagTitleError: {
     id: 'contentType.flatTitleError',
@@ -517,6 +564,21 @@ const formEngineMessages = defineMessages({
   },
 });
 
+const dragAndDropMessages = defineMessages({
+  contentTypeNotSupported: {
+    id: 'dragAndDropMessages.contentTypeNotSupported',
+    defaultMessage: 'The drop zone does not support this type of component. Check your content model.'
+  },
+  embeddedComponentsNotSupported: {
+    id: 'dragAndDropMessages.embeddedComponentsNotSupported',
+    defaultMessage: 'Drag and drop on embedded components it\'s not supported yet. Please use the forms to edit content.'
+  },
+  embeddedComponentsDrag: {
+    id: 'dragAndDropMessages.embeddedComponentsDrag',
+    defaultMessage: 'In this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
+  },
+})
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -524,8 +586,9 @@ export default {
   usersAdminMessages,
   passwordRequirementMessages,
   groupsAdminMessages,
+  profileSettingsMessages,
   numericInputControlMessages,
-  internalNameControlMessages,
+  checkboxGroupControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
@@ -537,5 +600,6 @@ export default {
   publishingMessages,
   siteComponentDSMessages,
   formEngineMessages,
-  browseCMISMessages
+  browseCMISMessages,
+  dragAndDropMessages
 };

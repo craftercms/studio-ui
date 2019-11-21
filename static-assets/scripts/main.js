@@ -35,7 +35,8 @@
         formatMessage = i18n.intl.formatMessage,
         passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
         globalConfigMessages = i18n.messages.globalConfigMessages,
-        words = i18n.messages.words;
+        words = i18n.messages.words,
+        profileSettingsMessages = i18n.messages.profileSettingsMessages;
 
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
@@ -367,7 +368,8 @@
                 controller: 'ResetCtrl',
                 backdrop: 'static',
                 keyboard: false,
-                size: 'sm'
+                size: 'sm',
+                windowTopClass: "modal-top-override"
               });
             }
           ],
@@ -730,7 +732,7 @@
         me = this,
         generalRegExp = passwordRequirementsRegex, // Global declared in entry.ftl, comes from FTL context.
         generalRegExpWithoutGroups = generalRegExp.replace(/\?<(.*?)>/g, ""),
-        captureGroup = generalRegExp.match(/\(\?<.*?>.*?\)/g);
+        captureGroups = generalRegExp.match(/\(\?<.*?>.*?\)/g);
 
       const allowedChars = (
         generalRegExp.match(/\(\?<hasSpecialChars>(.*)\[(.*?)]\)/) ||
@@ -747,6 +749,36 @@
         )
       )[1].split(',')[0];
 
+      const max = (
+        (
+          (
+            generalRegExp.match(/\(\?<maxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[1];
+
+      const minLength = (
+        (
+          (
+            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[0];
+
+      const maxLength = (
+        (
+          (
+            generalRegExp.match(/\(\?<minMaxLength>(.*){(.*?)}\)/) ||
+            ['']
+          )[0].match(/{(.*?)}/) ||
+          ['', '']
+        )
+      )[1].split(',')[1];
+
       const messages = {
         hasNumbers: formatMessage(passwordRequirementMessages.hasNumbers),
         hasLowercase: formatMessage(passwordRequirementMessages.hasLowercase),
@@ -754,27 +786,29 @@
         hasSpecialChars: formatMessage(passwordRequirementMessages.hasSpecialChars, { chars: (allowedChars ? `(${allowedChars})` : '') }),
         noSpaces: formatMessage(passwordRequirementMessages.noSpaces),
         minLength: formatMessage(passwordRequirementMessages.minLength, { min }),
+        maxLength: formatMessage(passwordRequirementMessages.maxLength, { max }),
+        minMaxLength: formatMessage(passwordRequirementMessages.minMaxLength, { minLength, maxLength }),
         passwordValidation: formatMessage(passwordRequirementMessages.passwordValidation),
         validPassword: formatMessage(passwordRequirementMessages.validPassword),
         invalidPassword: formatMessage(passwordRequirementMessages.invalidPassword)
       };
 
-      this.init = function (scope, elt) {
+      this.init = function (scope, isValid, elt, placement) {
         if (generalRegExp) {
           try {
             let isRegExpValid = new RegExp(generalRegExp);
-            if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-              this.runValidation(scope, elt, 'groupsSupported');
+            if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
+              this.runValidation(scope, isValid, elt, 'groupsSupported', placement);
             }else{
-              this.runValidation(scope, elt, 'noGroups');
+              this.runValidation(scope, isValid, elt, 'noGroups', placement);
             }
           } catch (error) {
             try {
               let isRegExpValid = new RegExp(generalRegExpWithoutGroups);
-              if (isRegExpValid && (captureGroup && captureGroup.length > 0)) {
-                this.runValidation(scope, elt, 'groupsNotSupported');
+              if (isRegExpValid && (captureGroups && captureGroups.length > 0)) {
+                this.runValidation(scope, isValid, elt, 'groupsNotSupported', placement);
               }else{
-                this.runValidation(scope, elt, 'noGroups');
+                this.runValidation(scope, isValid, elt, 'noGroups', placement);
               }
             } catch (error) {
               console.warning('Defaulting password validation to server due to issues in RegExp compilation.');
@@ -788,13 +822,22 @@
         var validPass = false;
         var isGeneralRegExpWithoutGroupsValid = content ? content.match(generalRegExpWithoutGroups) : false;
         if (templateType !== "noGroups") {
-          captureGroup.forEach(captureGroup => {
+          if (templateType === "groupsNotSupported") {
+            html += '<ul class="password-popover--list password-popover--static">';
+          }else{
+            html += '<ul class="password-popover--list" >';
+          }
+          captureGroups.forEach(captureGroup => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
-            if (templateType === "groupsNotSupported") {
-              html += '<ul class="password-popover--list password-popover--static"><li class="password-popover--list--item">'
-            } else {
-              let isValid = content ? content.match(captureGroup) : false;
-              html += '<ul class="password-popover--list" ><li class="password-popover--list--item">'
+            html += '<li class="password-popover--list--item">'
+            if (templateType === "groupsSupported") {
+              let isValid;
+              if (captureGroupName[0].toLowerCase().indexOf('maxlength') > 0){
+                isValid = content ? content.match(`^${captureGroup}$`) : false;
+              } else {
+                isValid = content ? content.match(captureGroup) : false;
+              }
+              
               if (isValid) {
                 html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
               } else {
@@ -802,7 +845,7 @@
                 validPass = true;
               }
             }
-            html += messages[captureGroupName[0].replace(/\?<|>/g, "")] +
+            html += '<span class="password-popover--list-Info">' + messages[captureGroupName[0].replace(/\?<|>/g, "")] + '</span>' +
               '</li>';
           });
           html += '</ul>';
@@ -819,7 +862,7 @@
         return { 'template': html, 'validPass': validPass };
       }
 
-      this.runValidation = function (scope, elt, staticTemplate) {
+      this.runValidation = function (scope, isValid, elt, staticTemplate, placement) {
         $("#" + elt)
           .blur(function () {
             $(this).popover('destroy');
@@ -827,7 +870,7 @@
           .keyup(function () {
             let creatingPassValHTML = me.creatingPassValHTML($(this).get(0).value, staticTemplate);
             $('.popover').find('.popover-content').html(creatingPassValHTML.template);
-            scope.validPass = creatingPassValHTML.validPass;
+            scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           })
           .focus(function () {
@@ -835,12 +878,12 @@
             $(this).popover({
               title: messages.passwordValidation,
               content: creatingPassValHTML.template,
-              placement: 'top',
+              placement: placement ? placement : 'top',
               html: true,
               trigger: 'manual'
             });
             $(this).popover('show');
-            scope.validPass = creatingPassValHTML.validPass;
+            scope[isValid] = creatingPassValHTML.validPass;
             scope.$apply();
           });
       }
@@ -851,8 +894,8 @@
   ]);
 
   app.controller('AppCtrl', [
-    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements',
-    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements) {
+    '$rootScope', '$scope', '$state', 'authService', 'Constants', 'sitesService', '$cookies', '$uibModal', '$translate', '$timeout', '$location', '$window', 'passwordRequirements', '$element',
+    function ($rootScope, $scope, $state, authService, Constants, sitesService, $cookies, $uibModal, $translate, $timeout, $location, $window, passwordRequirements, $element) {
 
       $scope.langSelected = '';
       $scope.modalInstance = '';
@@ -863,6 +906,33 @@
       $scope.showLogoutLink = false;
       $scope.logoutInfo = {};
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
+      $scope.messages = {
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+        password: formatMessage(profileSettingsMessages.password),
+        currentPassword: formatMessage(profileSettingsMessages.currentPassword),
+        isRequired: formatMessage(profileSettingsMessages.isRequired),
+        mustMatchPreviousEntry: formatMessage(profileSettingsMessages.mustMatchPreviousEntry),
+        unSavedConfirmation: formatMessage(profileSettingsMessages.unSavedConfirmation),
+        unSavedConfirmationTitle: formatMessage(profileSettingsMessages.unSavedConfirmationTitle),
+        yes: formatMessage(words.yes),
+        no: formatMessage(words.no),
+      };
+
+      $scope.showModal = function(template, size, verticalCentered, styleClass){
+        var modalInstance = $uibModal.open({
+          templateUrl: template,
+          windowClass: (verticalCentered ? 'centered-dialog ' : '') + (styleClass ? styleClass : ''),
+          backdrop: 'static',
+          keyboard: true,
+          scope: $scope,
+          size: size ? size : ''
+        });
+
+        return modalInstance;
+      };
+      $scope.hideModal = function() {
+        $scope.confirmationModal.close();
+      };
 
       if($location.$$search.iframe){
         $rootScope.isFooter = false;
@@ -952,9 +1022,9 @@
 
       sitesService.getLanguages($scope);
 
-      $scope.selectAction = function(optSelected) {
+      $scope.selectActionLanguage = function(optSelected) {
+        $scope.isModified = true;
         $scope.langSelected = optSelected;
-        $translate.use($scope.langSelected);
         if(optSelected) {
           let loginSuccess = new CustomEvent('setlocale', { 'detail': optSelected });
           document.dispatchEvent(loginSuccess);
@@ -962,27 +1032,26 @@
       };
 
       $scope.setLangCookie = function() {
-        $translate.use($scope.langSelected);
-        // set max-age of language cookie to one year
-        // set both cookies, on login (on user) it will get last selected
-        localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-        localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
-        let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
-        document.dispatchEvent(loginSuccess);
+        try {
+          $translate.use($scope.langSelected);
+          // set max-age of language cookie to one year
+          // set both cookies, on login (on user) it will get last selected
+          localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
+          localStorage.setItem( $scope.user.username + '_crafterStudioLanguage', $scope.langSelected);
+          let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+          document.dispatchEvent(loginSuccess);
 
-        $rootScope.modalInstance = $uibModal.open({
-          templateUrl: 'settingLanguajeConfirmation.html',
-          windowClass: 'centered-dialog',
-          controller: 'AppCtrl',
-          backdrop: 'static',
-          backdropClass: 'hidden',
-          keyboard: false,
-          size: 'sm'
-        });
-        $timeout(function () {
-          $rootScope.modalInstance.close();
-        }, 1500, false);
-
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveSuccesfully), {
+            position: 'top left',
+            className: 'success'
+          });
+          $scope.isModified = false;
+        } catch (err) {
+          $element.find('.settings-view').notify(formatMessage(profileSettingsMessages.languageSaveFailedWarning), {
+            position: 'top left',
+            className: 'error'
+          });
+        }
       };
 
       $scope.cancel = function () {
@@ -1162,10 +1231,26 @@
           windowClass: 'spinner-modal centered-dialog',
         });
       }
-
+      $scope.validPass = false;
       $scope.passwordRequirements = function() {
-        passwordRequirements.init($scope, 'password');
+        passwordRequirements.init($scope, 'validPass', 'password', 'top');
       }
+
+      $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options){
+        if ($scope.isModified) {
+          event.preventDefault();
+
+          $scope.confirmationAction = function() {
+            $scope.isModified = false;
+            $state.go(toState.name);
+          };
+
+          $scope.confirmationText = $scope.messages.unSavedConfirmation;
+          $scope.confirmationTitle = $scope.messages.unSavedConfirmationTitle;
+          $scope.confirmationModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
+
+        }
+      });
 
     }
   ]);
@@ -2067,13 +2152,21 @@
   ]);
 
   app.controller('ResetCtrl', [
-    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants',
-    function ($scope, $state, $location, authService, $timeout, $translate, Constants) {
+    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants', 'passwordRequirements', 
+    function ($scope, $state, $location, authService, $timeout, $translate, Constants, passwordRequirements) {
 
       var successDelay = 2500;
       $scope.user = {};
       $scope.passRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/;
       $scope.crafterLogo = Constants.CRAFTER_LOGO;
+      $scope.validPass = false;
+      $scope.messages = {
+        fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+      };
+
+      $scope.passwordRequirements = function() {
+        passwordRequirements.init($scope, "validPass", 'password', 'top');
+      }
 
       authService.validateToken({
         'token': $location.search().token,

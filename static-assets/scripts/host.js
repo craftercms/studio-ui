@@ -36,7 +36,8 @@
     try {
       // For ICE tools panel syncing.
       window.initRegCookie();
-    } catch(e) {}
+    } catch (e) {
+    }
   });
 
   communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function (message) {
@@ -66,10 +67,6 @@
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
 
-  communicator.subscribe(Topics.GUEST_CHECKOUT, function () {
-    // console.log('Guest checked out');
-  });
-
   communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
     var subscribeCallback = function (_message) {
       switch (_message.type) {
@@ -78,15 +75,15 @@
           CStudioAuthoring.InContextEdit.messageDialogs({
             type: 'OPEN_CHILD_COMPONENT',
             key: message.embeddedItemId,
-            iceId: message.iceId? message.iceId: null,
+            iceId: message.iceId ? message.iceId : null,
             edit: true
           });
           break;
         }
       }
-    }
+    };
 
-    if(message.embeddedItemId) {
+    if (message.embeddedItemId) {
       amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
     }
     var isWrite = false;
@@ -102,7 +99,7 @@
         isWrite = false;
         par.push({ name: 'readonly' });
       }
-    }
+    };
     var editCb = {
       success: function (contentTO, editorId, name, value, draft) {
         if (CStudioAuthoringContext.isPreview) {
@@ -151,12 +148,12 @@
               isLockOwner(contentTO.item.lockOwner);
               CStudioAuthoring.Operations.performSimpleIceEdit(
                 contentTO.item,
-                message.embeddedItemId? null : this.iceId, //field
+                message.embeddedItemId ? null : this.iceId, //field
                 isWrite,
                 this.editCb,
                 par,
                 null,
-                message.embeddedItemId? true: false);
+                message.embeddedItemId ? true : false);
             },
             failure: function () {
               callback.failure();
@@ -180,7 +177,7 @@
         }
       }, failure: function () {
       }
-    }
+    };
 
     if (isPermissionCached) {
       var response = {};
@@ -200,13 +197,13 @@
     var params = {
       iceRef: message.iceRef,
       position: message.position
-    }
+    };
     var currentPath = (message.path) ? message.path : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
     var isLockOwner = function (lockOwner) {
       if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
         params.class = 'lock';
       }
-    }
+    };
     var cachePermissionsKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_permissions',
       isPermissionCached = cache.get(cachePermissionsKey),
       cacheContentKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
@@ -236,7 +233,7 @@
               communicator.publish(Topics.ICE_TOOLS_INDICATOR, params);
             }, failure: function () {
             }
-          }
+          };
 
           if (isWrite) {
             if (isContentCached) {
@@ -257,7 +254,7 @@
 
       }, failure: function () {
       }
-    }
+    };
 
     if (isPermissionCached) {
       var response = {};
@@ -279,8 +276,8 @@
 
     if (message.url) {
       var params = {
-            page: message.url,
-            site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
+        page: message.url,
+        site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
       };
 
       var studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
@@ -300,10 +297,10 @@
 
   });
 
-  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function(message, scope){
+  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function (message, scope) {
     if (message.url) {
       var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
-          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
+        studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       selectStudioContent(site, studioPath);
     }
   });
@@ -351,12 +348,19 @@
       message.compPath,
       message.conComp,
       message.model,
-      message.destinationZone
+      message.datasource,
     );
   });
 
   communicator.subscribe(Topics.START_DIALOG, function (message) {
     var newdiv = document.createElement('div');
+    var text;
+
+    if(message.messageKey) {
+      text = CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey])
+    }else {
+      text = message.message;
+    }
 
     newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
     newdiv.className = 'yui-pe-content';
@@ -365,7 +369,7 @@
       /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
       /****/'<div class="contentTypePopupHeader">Notification</div> ' +
       /****/'<div class="contentTypeOuter">' +
-      /****/'<div>' + message.message + '</div> ' +
+      /****/'<div>' + text + '</div> ' +
       /****/'<div></div>' +
       /**/'</div>' +
       /**/'<div class="contentTypePopupBtn"> ' +
@@ -532,11 +536,11 @@
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png')
+    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png');
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png')
+    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png');
   });
 
   amplify.subscribe(cstopic('ICE_TOOLS_ON'), function () {
@@ -558,9 +562,15 @@
             componentsOn: sessionStorage.getItem('components-on')
           });
       }
-    }
+    };
 
     CStudioAuthoring.Utils.isReviewer(callback);
+  });
+
+  communicator.subscribe(Topics.REQUEST_FORM_DEFINITION, function (message) {
+    CStudioForms.Util.loadFormDefinition(message.contentType, { success: function(response){
+        communicator.publish(Topics.REQUEST_FORM_DEFINITION_RESPONSE, response);
+    }});
   });
 
   function setHash(params) {
@@ -589,13 +599,13 @@
     }
 
     if (siteChanged || !hasCheckIn) {
-          win.src = previewAppBaseUri + hash.page;
+      win.src = previewAppBaseUri + hash.page;
     } else {
       communicator.publish(Topics.CHANGE_GUEST_REQUEST, {
         base: previewAppBaseUri,
         url: hash.page
       });
-      }
+    }
 
     var path = hash.page,
       hashPage = hash.page;
@@ -603,7 +613,7 @@
     if (path && path.indexOf('.') != -1) {
       if (path.indexOf('.html') != -1 || path.indexOf('.xml') != -1) {
         path = ('/site/website/' + hashPage).replace('//', '/');
-        path = path.replace('.html', '.xml')
+        path = path.replace('.html', '.xml');
       }
     } else {
       if (hash.page && hash.page.indexOf('?') != -1) {
@@ -674,10 +684,10 @@
     return retVal;
   }
 
-  function selectStudioContent(site, url){
+  function selectStudioContent(site, url) {
     CStudioAuthoring.Service.lookupContentItem(site, url, {
       success: function (content) {
-        if(content.item.isPage) {
+        if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
         }
@@ -689,7 +699,7 @@
   // item: selected item
   // reloadTree: if needed, allows tree to be reloaded. For assets it will be false since reload is not needed.
   function selectContentSet(item, reloadTree) {
-    window.setTimeout(function() {
+    window.setTimeout(function () {
       amplify.publish('SELECTED_CONTENT_SET', {
         contentTO: item,
         reload: reloadTree

@@ -332,8 +332,6 @@
           items.push(dummy);
           Self.drawTree(items, tree, path, instance, pathFlag);
           YDom.removeClass(label, "loading");
-          //add hover effect to nodes
-          Self.nodeHoverEffects(this);
         } else {
           var pathLength;
           if (Object.prototype.toString.call(rootPath) === '[object Array]') {
@@ -366,8 +364,6 @@
                   }
                   Self.drawTree(items, tree, path, instance, pathFlag);
                   pathFlag = false;
-                  //add hover effect to nodes
-                  Self.nodeHoverEffects(this);
 
                   ind++;
                   if (Object.prototype.toString.call(rootPath) === '[object Array]') {
@@ -630,7 +626,11 @@
           zIndex: 100
         });
 
-        oContextMenu.subscribe('beforeShow', function() {
+        this.manualContextMenu(tree, function(tree, target) {
+          self.onTriggerContextMenu(tree, tree.oContextMenu, target);
+        });
+
+        oContextMenu.subscribe('beforeShow', function(e) {
           Self.onTriggerContextMenu(tree, this);
         }, tree, false);
 
@@ -667,6 +667,8 @@
             }, false);
           })(tree, instance);
         }
+
+        tree.oContextMenu = oContextMenu;
 
         tree.draw();
         if (Object.prototype.toString.call(instance.path) === '[object Array]') {
@@ -968,6 +970,78 @@
         return treeNode;
       },
 
+      /**
+       *
+       */
+      manualContextMenu: function(tree, callback) {
+        const $treeParent = $('#' + tree.id).parent(),
+          $dropdownMenu = $('#acn-dropdown-menu').parent();
+
+        let $contextMenuEllipsis;
+
+        if($dropdownMenu.find('.context-menu--ellipsis').length === 0) {
+          $contextMenuEllipsis = $('<span class="context-menu--ellipsis fa fa-ellipsis-h" ></span>').appendTo($dropdownMenu);
+          $sidebarHighlight = $('<span class="sidebar-highlight"></span>').appendTo($dropdownMenu);
+        } else {
+          $contextMenuEllipsis = $dropdownMenu.find('.context-menu--ellipsis');
+          $sidebarHighlight = $dropdownMenu.find('.sidebar-highlight');
+        }
+
+        $treeParent.on('mouseenter', '.ygtvcell', function() {
+          const target = $(this).find('.treenode-label')[0], // it's always one item (label)
+            top =  $(this).closest('.ygtvitem').offset().top - 48;
+
+          $contextMenuEllipsis.show();
+          $contextMenuEllipsis.attr('data-tree', tree.id);
+          $contextMenuEllipsis.data('target', target);
+          $contextMenuEllipsis.css('top', top);
+
+          $sidebarHighlight.show();
+          $sidebarHighlight.css('top', top - 2);
+        });
+
+        $treeParent.on('mouseleave', '.ygtvcell', function() {
+          $contextMenuEllipsis.hide();
+          $sidebarHighlight.hide();
+        });
+
+        // Since context-menu ellipsis element is not under highlighted element, when hovering it, the target
+        // element needs to be highlighted (show highlight element).
+        $dropdownMenu.on('mouseenter', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
+          $sidebarHighlight.show();
+        });
+
+        $dropdownMenu.on('mouseleave', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
+          $sidebarHighlight.hide();
+        });
+
+        $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
+          e.stopPropagation();
+
+          const target = $(this).data().target;
+          const offsetLeft = e.clientX;
+          const offsetTop = e.clientY - 50;
+
+          $(tree.oContextMenu.element).on('contextmenu-rendered', function() {
+            let $contextMenu = $('#' + tree.oContextMenu.id);
+
+            $contextMenu.css('visibility', 'visible');
+            $contextMenu.css('left', offsetLeft + 'px');
+            $contextMenu.css('top', offsetTop + 'px');
+          });
+
+          // // If context menu hasn't been initialized, create it
+          let $contextMenu = $('#' + tree.oContextMenu.id);
+          if ($contextMenu.length === 0) {
+            let $contextMenuContainer = $('#acn-context-menu');
+
+            $contextMenuContainer.append(tree.oContextMenu.element);
+          }
+
+          callback(tree, target);
+        })
+      },
+
       scrollToHighlighted: function() {
         var $highlightedEl = $('#acn-dropdown-menu .highlighted'),
           highlightedElTop = $highlightedEl.length > 0 ? $highlightedEl.offset().top : 0,
@@ -1105,8 +1179,6 @@
                 } else {
                   YDom.removeClass(label, "loading");
                   YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
-                  // Add hover effect to nodes
-                  Self.nodeHoverEffects(this);
                   Self.firePathLoaded(instance);
                 }
               } else {
@@ -1145,8 +1217,6 @@
 
                 YDom.removeClass(label, "loading");
                 YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
-                // Add hover effect to nodes
-                Self.nodeHoverEffects(this);
                 Self.firePathLoaded(instance);
               }
             });
@@ -1362,9 +1432,6 @@
 
             /* wire up new to search items */
             Self.wireUpCannedSearches();
-
-            //add hover effect to nodes
-            Self.nodeHoverEffects(this);
 
             //add blur effect for cut items
             Self.setChildrenStyles(args.node);
@@ -2237,6 +2304,10 @@
 
                   this.args.render();
                   menuId.removeChild(d);
+
+                  if (this.args.manualTrigger) {
+                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+                  }
                 },
                 failure: function() { },
                 args: p_aArgs,
@@ -2251,6 +2322,10 @@
 
               p_aArgs.render();
               menuId.removeChild(d);
+
+              if (this.args.manualTrigger) {
+                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+              }
             }
             else if(!isWrite) {
               p_aArgs.addItems([ menuItems.viewOption ]);
@@ -2319,6 +2394,10 @@
 
               p_aArgs.render();
               menuId.removeChild(d);
+
+              if (this.args.manualTrigger) {
+                $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+              }
             }
             else {
               if (isComponent == true || isLevelDescriptor == true || isTaxonomy == true) {
@@ -2557,6 +2636,10 @@
                   }
 
                   this.args.render();     // Render the site dropdown's context menu
+
+                  if (this.args.manualTrigger) {
+                    $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+                  }
                 },
                 failure: function() { },
                 args: p_aArgs,
@@ -2607,8 +2690,11 @@
       /**
        * load context menu
        */
-      onTriggerContextMenu: function(tree, p_aArgs) {
-        var target = p_aArgs.contextEventTarget;
+      onTriggerContextMenu: function(tree, p_aArgs, target) {
+        var isManualTrigger = target ? true : false,
+            target = target ? target : p_aArgs.contextEventTarget;
+
+        p_aArgs.manualTrigger = isManualTrigger;
 
         /* Get the TextNode instance that that triggered the display of the ContextMenu instance. */
         oCurrentTextNode = tree.getNodeByElement(target);
@@ -3443,74 +3529,6 @@
       /**
        * add hover effect to context nav items.
        */
-      nodeHoverEffects: function(e) {
-        var YDom = YAHOO.util.Dom,
-          highlightWrpClass = "highlight-wrapper",
-          highlightColor = "#e2e2e2",
-          overSetClass = "over-effect-set", // class to identify elements that have their over/out effect initialized
-          spanNodes = YAHOO.util.Selector.query("span.yui-resize-label:not(." + overSetClass + ")", "acn-dropdown-menu-wrapper"),
-          moverFn = function(evt) {
-            var el = this,
-              wrapEl = function(table) {
-                var wrp = document.createElement('div');
-                wrp.setAttribute('style', 'background-color:' + highlightColor);
-                wrp.setAttribute('class', highlightWrpClass);
-                YDom.insertBefore(wrp, table);
-                wrp.appendChild(table);
-                return wrp;
-              };
-            if (YDom.hasClass(el, highlightWrpClass)) {
-              YDom.setStyle(el, 'background-color', highlightColor)
-            } else if (YDom.hasClass(el, 'ygtvitem')) {
-              var firstChild = YDom.getFirstChild(el);
-              YDom.hasClass(firstChild, highlightWrpClass)
-                ? YDom.setStyle(firstChild, 'background-color', highlightColor)
-                : wrapEl(firstChild)
-            } else {
-              var parent = el.parentNode;
-              YDom.hasClass(parent, highlightWrpClass)
-                ? YDom.setStyle(parent, 'background-color', highlightColor)
-                : wrapEl(el);
-            }
-            if(Self.lastSelectedTextNode != null) {
-              var currentlySelectedTextNode = el
-              if(currentlySelectedTextNode == Self.lastSelectedTextNode) return;
-              (YDom.hasClass(Self.lastSelectedTextNode, highlightWrpClass)
-                ? Self.lastSelectedTextNode
-                : (YDom.hasClass(Self.lastSelectedTextNode, 'ygtvitem')
-                  ? YDom.getFirstChild(Self.lastSelectedTextNode)
-                  : Self.lastSelectedTextNode.parentNode))
-                .style.backgroundColor = "";
-
-              Self.lastSelectedTextNode = null;
-            }
-          },
-          moutFn = function(evt) {
-            if(Self.lastSelectedTextNode != null) return;
-            var el = this;
-            (YDom.hasClass(el, highlightWrpClass)
-              ? el
-              : (YDom.hasClass(el, 'ygtvitem')
-                ? YDom.getFirstChild(el)
-                : el.parentNode))
-              .style.backgroundColor = "";
-          };
-        for (var i = 0,
-               l = spanNodes.length,
-               span = spanNodes[0],
-               barItem;
-             i < l;
-             i++,span = spanNodes[i]
-        ) {
-          // span -> td -> tr -> tbody -> table
-          barItem = span.parentNode.parentNode.parentNode.parentNode;
-          if (barItem) {
-            YEvent.addListener(barItem, "mouseover", moverFn);
-            YEvent.addListener(barItem, "mouseout", moutFn);
-            YDom.addClass(span, overSetClass);
-          }
-        }
-      },
 
       setChildrenStyles: function(treeNode) {
         var parentNode = treeNode.getContentEl();
