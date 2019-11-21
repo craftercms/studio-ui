@@ -62,7 +62,6 @@ import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 
-
 const messages = defineMessages({
   privateBlueprints: {
     id: 'createSiteDialog.privateBlueprints',
@@ -301,6 +300,16 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   statePaper: {
     background: '#e7e7e7',
     height: '100%'
+  },
+  loadingStateRoot: {
+    height: '100%',
+  },
+  loadingStateGraphic: {
+    flexGrow: 1,
+    paddingBottom: '100px'
+  },
+  errorPaperRoot: {
+    height: '100%'
   }
 }));
 
@@ -383,21 +392,18 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-      const loginListener = function (event: any) {
-        if (event.detail.state === 'logged') {
-          setDisableEnforceFocus(false);
-        } else if (event.detail.state === 'reLogin') {
-          setDisableEnforceFocus(true);
-        }
-      };
-      document.addEventListener('login', loginListener, false);
-      return () => {
-        document.removeEventListener('login', loginListener, false);
+    const loginListener = function (event: any) {
+      if (event.detail.state === 'logged') {
+        setDisableEnforceFocus(false);
+      } else if (event.detail.state === 'reLogin') {
+        setDisableEnforceFocus(true);
       }
-    },
-    // eslint-disable-next-line
-    []
-  );
+    };
+    document.addEventListener('login', loginListener, false);
+    return () => {
+      document.removeEventListener('login', loginListener, false);
+    }
+  }, []);
 
   useEffect(() => {
       if (tab === 0 && blueprints === null && !apiState.error) {
@@ -779,7 +785,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         disableEnforceFocus={disableEnforceFocus}
       />
       {
-        (apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ? (
+        (
+          (apiState.creatingSite) ||
+          (apiState.error && apiState.global) ||
+          (site.details.blueprint)
+        ) ? (
 
           (
             apiState.creatingSite &&
@@ -787,15 +797,19 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               <LoadingState
                 title={formatMessage(messages.creatingSite)}
                 subtitle={formatMessage(messages.pleaseWait)}
-                subtitle2={formatMessage(messages.createInBackground)}
+                classes={{
+                  root: classes.loadingStateRoot,
+                  graphicRoot: classes.loadingStateGraphic
+                }}
               />
             </div>
           ) || (
             apiState.error &&
             <ErrorState
+              classes={{ root: classes.errorPaperRoot }}
               error={apiState.errorResponse}
               onBack={handleErrorBack}
-              background={backgroundColor}/>
+            />
           ) || (
             site.details &&
             <PluginDetailsView
@@ -884,7 +898,10 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 </DialogContent>
                 : (
                   (apiState.error) ? (
-                    <ErrorState error={apiState.errorResponse}/>
+                    <ErrorState
+                      classes={{ root: classes.errorPaperRoot }}
+                      error={apiState.errorResponse}
+                    />
                   ) : (
                     <div className={classes.loading}>
                       <Spinner/>

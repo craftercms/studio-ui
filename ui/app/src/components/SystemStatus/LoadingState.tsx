@@ -15,25 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
-import Gears from "./Gears";
-import { backgroundColor } from "../../styles/theme";
+import React, { ElementType } from 'react';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import Gears from './Gears';
+import clsx from 'clsx';
 
 const useStyles = makeStyles(() => ({
   loadingView: {
-    height: '100%',
-    background: backgroundColor,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },
   gearContainer: {
-    flexGrow: 1,
     display: 'flex',
-    justifyContent: 'center',
-    paddingBottom: '100px'
+    justifyContent: 'center'
   },
   title: {
     marginTop: '40px',
@@ -41,34 +37,58 @@ const useStyles = makeStyles(() => ({
   },
   paragraph: {
     marginBottom: '10px'
-  },
-  footerText: {
-    marginBottom: '60px'
   }
 }));
 
 interface LoadingStateProps {
-  title: string,
-  subtitle?: string
-  subtitle2?: string
+  title: string;
+  subtitle?: string;
+  Graphic?: ElementType<any>;
+  classes?: {
+    root?: string;
+    title?: string;
+    subtitle?: string;
+    graphic?: string;
+    graphicRoot?: string;
+  }
 }
 
 export default function LoadingState(props: LoadingStateProps) {
+
   const classes = useStyles({});
+  const { Graphic } = props;
+  const propClasses = Object.assign({
+    root: '',
+    title: '',
+    subtitle: '',
+    graphic: '',
+    graphicRoot: ''
+  }, props.classes || {});
+
   return (
-    <div className={classes.loadingView}>
-      <Typography variant="h5" component="h1" className={classes.title}>
-        {props.title}
-      </Typography>
+    <div className={clsx(classes.loadingView, { [propClasses.root]: !!propClasses.root })}>
+      {
+        props.title &&
+        <Typography variant="h5" component="h1"
+                    className={clsx(classes.title, { [propClasses.title]: !!propClasses.title })}>
+          {props.title}
+        </Typography>
+      }
       {
         props.subtitle &&
-        <Typography variant="subtitle1" component="p" className={classes.paragraph}>
+        <Typography variant="subtitle1" component="p"
+                    className={clsx(classes.paragraph, { [propClasses.subtitle]: !!propClasses.subtitle })}>
           {props.subtitle}
         </Typography>
       }
-      <div className={classes.gearContainer}>
-        <Gears width={'250px'}/>
+      <div className={clsx(classes.gearContainer, { [propClasses.graphicRoot]: !!propClasses.graphicRoot })}>
+        <Graphic width={'250px'}/>
       </div>
     </div>
-  )
+  );
+
 }
+
+LoadingState.defaultProps = {
+  Graphic: Gears
+};
