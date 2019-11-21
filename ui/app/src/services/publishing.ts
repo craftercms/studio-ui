@@ -36,9 +36,17 @@ export function fetchEnvironments(siteId: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`)
 }
 
+export function submitToGoLive(siteId: string, user:string, data) {
+  return post(`/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`, data,
+  {
+    'Content-Type': 'application/json'
+  });
+}
+
 export default {
   fetchPackages,
   fetchPackage,
   cancelPackage,
-  fetchEnvironments
+  fetchEnvironments,
+  submitToGoLive
 }

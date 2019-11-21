@@ -12,19 +12,9 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from '@material-ui/core/Collapse';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import DateFnsUtils from '@date-io/date-fns';
-import 'date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
-import InputBase from '@material-ui/core/InputBase';
 
-import { fetchPublishingChannels } from "../../../services/content";
 import DateTimePicker from './DateTimePicker';
 
 interface PublishFormProps {
@@ -32,30 +22,14 @@ interface PublishFormProps {
   setInputs(state: any): any;
   showEmailCheckbox: boolean;
   siteId: string;
+  publishingChannels: any[];
 }
 
 function PublishForm(props: PublishFormProps) {
-  const { inputs, setInputs, showEmailCheckbox, siteId } = props;
-  const [publishingChannels, setPublishingChannels] = useState(null);
-  // const { formatMessage } = useIntl();
-
-  useEffect(getPublishingChannels,[]);
-
-  function getPublishingChannels() {
-    fetchPublishingChannels(siteId)
-      .subscribe(
-        ({response}) => {
-          setPublishingChannels(response.availablePublishChannels);
-        },
-        ({response}) => {
-
-        }
-      );
-  }
+  const { inputs, setInputs, showEmailCheckbox, siteId, publishingChannels } = props;
 
   const handleInputChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
-    console.log(e.target.type);
 
     if (e.target.type === 'checkbox') {
       setInputs({ ...inputs, [name]: e.target.checked });
@@ -96,36 +70,30 @@ function PublishForm(props: PublishFormProps) {
           label="Now"
         />
         <FormControlLabel
-          value="later"
+          value="custom"
           control={<Radio color="primary" />}
           label="Later"
         />
       </RadioGroup>
 
-      <Collapse in={inputs.scheduling === 'later'} timeout={300}>
+      <Collapse in={inputs.scheduling === 'custom'} timeout={300}>
         <DateTimePicker inputs={inputs} setInputs={setInputs}/>
       </Collapse>
 
-      {
-        publishingChannels === null ? (null) : (
-          <>
-            <FormControl>
-              <InputLabel>Environment</InputLabel>
-              <Select
-                fullWidth
-                value={inputs.environment}
-                onChange={handleSelectChange('environment')}
-              >
-                {
-                  publishingChannels.map((publishingChannel: any) =>
-                    <MenuItem key={publishingChannel.name} value={publishingChannel.name}>{publishingChannel.name}</MenuItem>
-                  )
-                }
-              </Select>
-            </FormControl>
-          </>
-        )
-      }
+      <FormControl>
+        <InputLabel>Environment</InputLabel>
+        <Select
+          fullWidth
+          value={inputs.environment}
+          onChange={handleSelectChange('environment')}
+        >
+          {
+            publishingChannels.map((publishingChannel: any) =>
+              <MenuItem key={publishingChannel.name} value={publishingChannel.name}>{publishingChannel.name}</MenuItem>
+            )
+          }
+        </Select>
+      </FormControl>
 
       <TextField
         id="sandboxBranch"
