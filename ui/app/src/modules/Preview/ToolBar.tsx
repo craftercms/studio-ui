@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -16,11 +33,14 @@ import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
+  toolBar: {
+    placeContent: 'center space-between'
+  },
+  addressBarInput: {
+    width: 400,
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 400
   },
   inputContainer: {
     marginLeft: theme.spacing(1),
@@ -41,10 +61,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     margin: 4
   },
 
-  grow: {
-    flexGrow: 1,
+  addressBarContainer: {
     display: 'flex',
-    justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   emptyPlaceholder: {
     width: 48,
@@ -69,7 +89,7 @@ export function AddressBar() {
       <IconButton className={classes.iconButton} aria-label="search">
         <RefreshRounded/>
       </IconButton>
-      <Paper className={classes.root}>
+      <Paper className={classes.addressBarInput}>
         <Select value={site} classes={{ select: classes.input }} onChange={(e: any) => setSite(e.target.value)}>
           <MenuItem value="editorial">
             editorial
@@ -112,14 +132,14 @@ export function ToolBarUI(props: any) {
   const classes = useStyles({});
   return (
     <AppBar position="static" color="inherit">
-      <Toolbar>
+      <Toolbar className={classes.toolBar}>
         <IconButton
           aria-label="Open drawer"
           onClick={onMenuButtonClicked}
         >
           <MenuIcon/>
         </IconButton>
-        <section className={classes.grow}>
+        <section className={classes.addressBarContainer}>
           <AddressBar/>
         </section>
         <div className={classes.emptyPlaceholder}/>
