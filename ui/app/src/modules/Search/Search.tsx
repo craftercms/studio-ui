@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme, InputBase, MenuItem, Select, Avatar } from "@material-ui/core";
@@ -24,7 +24,9 @@ import AppsIcon from '@material-ui/icons/Apps';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from "@material-ui/core/Grid";
-import MediaCard from './MediaCard';
+import MediaCard from '../../components/MediaCard';
+import { fetchSearch } from "../../services/search";
+import { setRequestForgeryToken } from "../../utils/auth";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -74,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       width: '100%'
     }
   },
-  selectRoot:{
+  selectRoot: {
     width: '100%',
     color: '#007AFF',
     background: 'none',
@@ -112,6 +114,26 @@ const useStyles = makeStyles((theme: Theme) => ({
 function Search() {
   const classes = useStyles({});
 
+  setRequestForgeryToken();
+
+  useEffect(() => {
+    fetchSearch('editorialdnd', {
+      query: '',
+      keywords: '',
+      offset: 0,
+      limit: 20,
+      sortBy: 'internalName',
+      sortOrder: 'asc'
+    }).subscribe(
+      ({response}) => {
+        console.log(response);
+      },
+      ({response}) => {
+        console.log(response);
+      }
+    );
+  }, []);
+
   function renderMediaCards() {
     return (
       <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
@@ -148,7 +170,7 @@ function Search() {
               root: classes.inputRoot,
               input: classes.inputInput,
             }}
-            inputProps={{ 'aria-label': 'search' }}
+            inputProps={{'aria-label': 'search'}}
           />
           <SearchIcon className={classes.searchIcon}/>
         </div>
