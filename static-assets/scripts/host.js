@@ -309,6 +309,7 @@
   });
 
   communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
+    expandContractChannel();
     CStudioAuthoring.PreviewTools.panel.element.style.visibility = 'visible';
     $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function () {
 
@@ -466,6 +467,7 @@
 
   var initialContentModel;
   amplify.subscribe(cstopic('START_DRAG_AND_DROP'), function (config) {
+    expandContractChannel('expand');
     previewWidth = $('.studio-preview').css('right');
     $('.studio-preview').css('right', 0);
     $(CStudioAuthoring.PreviewTools.panel.element).hide('fast', function () {
@@ -727,5 +729,22 @@
     }
 
   }, false);
+
+  function expandContractChannel(opt) {
+    var
+      $studioChannelPortrait = $('.studio-device-preview-portrait')[0],
+      $studioChannelLandscape = $('.studio-device-preview-landscape')[0];
+    if ($studioChannelPortrait || $studioChannelLandscape) {
+      var
+        inputChannelWidth = $('[data-axis="x"]', parent.document),
+        width = inputChannelWidth.val() || 'auto',
+        $engine = $('#engineWindow', parent.document);
+
+      width = opt === 'expand' ? parseInt(width) + 265 : parseInt(width);
+      $engine.width(
+        (width === 'auto' || width === '')
+          ? '' : parseInt(width));
+    }
+  }
 
 })(jQuery, window, amplify, CStudioAuthoring);
