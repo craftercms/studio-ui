@@ -560,15 +560,15 @@ const dragAndDropMessages = defineMessages({
   },
   contentTypeNotFound: {
     id: 'dragAndDropMessages.contentTypeNotFound',
-    defaultMessage: 'The content type id was not found in your template. Please check your templates. See docs for more info.'
+    defaultMessage: 'The content type id was not found in your template. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   },
   pathNotFound: {
     id: 'dragAndDropMessages.pathNotFound',
-    defaultMessage: 'Path is missing. Drag and drop will not work properly. Please check your templates. See docs for more info.'
+    defaultMessage: 'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   },
   objectIdNotFound: {
     id:'dragAndDropMessages.objectIdNotFound',
-    defaultMessage: 'Object id is missing. Drag and drop will not work properly. Please check your templates. See docs for more info.'
+    defaultMessage: 'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
   }
 });
 
