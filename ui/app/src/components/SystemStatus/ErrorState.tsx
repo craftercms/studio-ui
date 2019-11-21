@@ -96,7 +96,6 @@ export default function ErrorState(props: ErrorStateProps) {
   const { error, onBack } = props;
   const { formatMessage } = useIntl();
   const { code, documentationUrl, message, remedialAction } = error;
-  console.log(props, propClasses.root)
   return (
     <div className={clsx(classes.errorView, propClasses.root)}>
       <img className={propClasses.graphic} src={crack} alt=""/>

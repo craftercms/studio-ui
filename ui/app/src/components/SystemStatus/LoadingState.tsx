@@ -25,7 +25,8 @@ const useStyles = makeStyles(() => ({
   loadingView: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    textAlign: 'center'
   },
   gearContainer: {
     display: 'flex',
@@ -44,6 +45,7 @@ interface LoadingStateProps {
   title: string;
   subtitle?: string;
   Graphic?: ElementType<any>;
+  graphicProps?: any;
   classes?: {
     root?: string;
     title?: string;
@@ -69,20 +71,24 @@ export default function LoadingState(props: LoadingStateProps) {
     <div className={clsx(classes.loadingView, { [propClasses.root]: !!propClasses.root })}>
       {
         props.title &&
-        <Typography variant="h5" component="h1"
-                    className={clsx(classes.title, { [propClasses.title]: !!propClasses.title })}>
+        <Typography
+          variant="h5" component="h1"
+          className={clsx(classes.title, { [propClasses.title]: !!propClasses.title })}>
           {props.title}
         </Typography>
       }
       {
         props.subtitle &&
-        <Typography variant="subtitle1" component="p"
-                    className={clsx(classes.paragraph, { [propClasses.subtitle]: !!propClasses.subtitle })}>
+        <Typography
+          variant="subtitle1"
+          component="p"
+          className={clsx(classes.paragraph, { [propClasses.subtitle]: !!propClasses.subtitle })}
+        >
           {props.subtitle}
         </Typography>
       }
       <div className={clsx(classes.gearContainer, { [propClasses.graphicRoot]: !!propClasses.graphicRoot })}>
-        <Graphic width={'250px'}/>
+        <Graphic {...props.graphicProps}/>
       </div>
     </div>
   );
@@ -90,5 +96,6 @@ export default function LoadingState(props: LoadingStateProps) {
 }
 
 LoadingState.defaultProps = {
-  Graphic: Gears
+  Graphic: Gears,
+  graphicProps: { width: '250px' }
 };
