@@ -359,11 +359,15 @@
   communicator.subscribe(Topics.START_DIALOG, function (message) {
     var newdiv = document.createElement('div');
     var text;
+    var link = "";
 
     if(message.messageKey) {
       text = CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey])
     }else {
       text = message.message;
+    }
+    if(message.link) {
+      link = message.link;
     }
 
     newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
@@ -373,7 +377,8 @@
       /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
       /****/'<div class="contentTypePopupHeader">Notification</div> ' +
       /****/'<div class="contentTypeOuter">' +
-      /****/'<div>' + text + '</div> ' +
+      /****/'<div>' + text +'</div> ' +
+      /****/'<div>' + link +'</div> ' +
       /****/'<div></div>' +
       /**/'</div>' +
       /**/'<div class="contentTypePopupBtn"> ' +

@@ -135,8 +135,17 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       $(this).removeClass('studio-pointer-over');
     });
 
-    function restrictions($dropZone, $component, isZoneEmbedded) {
+    function restrictions($dropZone, $component, isZoneEmbedded, DestContentType) {
       var valid = true;
+
+      if(!DestContentType) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'contentTypeNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
+        });
+      }
 
       if(isZoneEmbedded) {
         valid = false;
@@ -187,14 +196,15 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         compPath = $component.uri,
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
         compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
-        isZoneEmbedded = $dropZone.parent().attr('data-studio-embedded-item-id') || false;
+        isZoneEmbedded = $dropZone.parent().attr('data-studio-embedded-item-id') || false,
+        DestContentType = $dropZone.attr('data-studio-zone-content-type') || null;
 
       var destContentType = $dropZone.attr('data-studio-zone-content-type') || null;
       var componentType = 'shared-content';
       var zone = $dropZone.attr('data-studio-components-target') || null;
 
       if (compPath != zonePath && compPathChild != compPath) {
-        if(restrictions($dropZone, $component, isZoneEmbedded)) {
+        if(restrictions($dropZone, $component, isZoneEmbedded, DestContentType)) {
           var callback = function(response) {
             validation($dropZone, $component, destContentType, zone, componentType, response).then((response) => {
               if (response.supported) {
