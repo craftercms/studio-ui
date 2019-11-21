@@ -154,7 +154,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         this.getAnimator($p).slideOutRight(function () {
           $o.detach();
           $p.detach();
-            expandContractChannel();
         });
 
         $('.removeComp').remove();
@@ -223,9 +222,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     renderPalette.call(this, components, browse);
 
     this.getAnimator($o).fadeIn();
-    this.getAnimator($p).slideInRight(function () {
-        expandContractChannel('expand');
-    });
+    this.getAnimator($p).slideInRight();
 
     $("[data-studio-components-size='small']").each(function (index) {
       $(this).width($(this).width() / 2);
@@ -489,23 +486,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       $(this).append(delControl);
     });
 
-  }
-
-  function expandContractChannel(opt) {
-    var
-      $studioChannelPortrait = $('.studio-device-preview-portrait', parent.document)[0],
-      $studioChannelLandscape = $('.studio-device-preview-landscape', parent.document)[0];
-    if ($studioChannelPortrait || $studioChannelLandscape) {
-      var
-        inputChannelWidth = $('[data-axis="x"]', parent.document),
-        width = inputChannelWidth.val() || 'auto',
-        $engine = $('#engineWindow', parent.document);
-
-      width = opt === 'expand' ? parseInt(width) + 265 : parseInt(width);
-      $engine.width(
-        (width === 'auto' || width === '')
-          ? '' : parseInt(width));
-    }
   }
 
   function componentDropped($dropZone, $component, datasource) {
