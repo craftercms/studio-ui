@@ -141,7 +141,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       if(isZoneEmbedded) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
-          messageKey: 'embeddedComponentsNotSupported',
+          messageKey: 'embeddedComponentsDndNotSupported',
           height: 'auto'
         });
       }
@@ -201,7 +201,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
                 componentDropped.call(me, $dropZone, $component, response.ds);
               } else{
                 publish.call(me, Topics.START_DIALOG, {
-                  messageKey: 'contentTypeNotSupported',
+                  messageKey: 'componentNotWelcomeWithinDropZone',
                   height: 'auto'
                 });
               }

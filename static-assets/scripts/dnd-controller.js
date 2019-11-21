@@ -251,44 +251,53 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         return temp;
       }
       var valid = true;
-      var isZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var isDestZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var isCurrentZoneEmbedded = $dropZone.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
       var isItemEmbedded;
       var originPath;
       var destPath;
 
       //we are moving a component
-      if(!isNew) {
+      if (!isNew) {
         isItemEmbedded = $component.attr('data-studio-embedded-item-id') || false;
         originPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
         destPath = $component.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
-      }else {
+      } else {
         let path =  $component.attr('data-studio-component-path');
         isItemEmbedded = path ? false: true;
       }
-
-      if(isZoneEmbedded) {
+      if (isDestZoneEmbedded) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
-          messageKey: 'embeddedComponentsNotSupported',
+          messageKey: 'embeddedComponentsDndNotSupported',
           height: 'auto'
         });
-      }else if(isItemEmbedded && originPath !== destPath){
+      } else if (isItemEmbedded && originPath !== destPath) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
-          messageKey: 'embeddedComponentsDrag',
+          messageKey: 'embeddedComponentsDragWithinParentOnly',
+          height: 'auto'
+        });
+      } else if (isCurrentZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'moveOutEmbeddedComponentsNotSupported',
           height: 'auto'
         });
       }
 
-      if(!valid){
-        if(isNew) {
+      if (!valid) {
+        if (isNew) {
           $component.remove();
-        }else {
+        } else {
           $(DROPPABLE_SELECTION).sortable("cancel");
         }
       }
 
-      if(!isNew) dndInProgress = valid;
+      //if it is a move it is doing 2 calls
+      if (!isNew) dndInProgress = valid;
+      //if it is a move within the same dropzone is doing 1 call
+      if(originPath === destPath) dndInProgress = null;
       return valid;
     }
 
@@ -353,7 +362,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
                 componentDropped.call(me, $dropZone, $component, response.ds);
               } else{
                 publish.call(me, Topics.START_DIALOG, {
-                  messageKey: 'contentTypeNotSupported',
+                  messageKey: 'componentNotWelcomeWithinDropZone',
                   height: 'auto'
                 });
                 if(isNew) {
@@ -437,6 +446,14 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         var dropName = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-components-target');
         var trackingZone = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-zone-tracking');
         var index = 0, currentTag = "", zone;
+        var isCurrentZoneEmbedded = $(this).parent().parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+        if (isCurrentZoneEmbedded) {
+          publish.call(me, Topics.START_DIALOG, {
+            messageKey: 'embeddedComponentsDeleteChildNotSupported',
+            height: 'auto'
+          });
+          return false;
+        }
         removeComponent(this, function () {
           var zones = {};
           var conRepeat = 0;

@@ -538,19 +538,27 @@ const formEngineMessages = defineMessages({
 });
 
 const dragAndDropMessages = defineMessages({
-  contentTypeNotSupported: {
-    id: 'dragAndDropMessages.contentTypeNotSupported',
+  componentNotWelcomeWithinDropZone: {
+    id: 'dragAndDropMessages.componentNotWelcomeWithinDropZone',
     defaultMessage: 'The drop zone does not support this type of component. Check your content model.'
   },
-  embeddedComponentsNotSupported: {
-    id: 'dragAndDropMessages.embeddedComponentsNotSupported',
+  embeddedComponentsDndNotSupported: {
+    id: 'dragAndDropMessages.embeddedComponentsDndNotSupported',
     defaultMessage: 'Drag and drop on embedded components it\'s not supported yet. Please use the forms to edit content.'
   },
-  embeddedComponentsDrag: {
-    id: 'dragAndDropMessages.embeddedComponentsDrag',
-    defaultMessage: 'In this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
+  embeddedComponentsDragWithinParentOnly: {
+    id: 'dragAndDropMessages.embeddedComponentsDragWithinParentOnly',
+    defaultMessage: 'On this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
   },
-})
+  moveOutEmbeddedComponentsNotSupported: {
+    id: 'dragAndDropMessages.moveOutEmbeddedComponentsNotSupported',
+    defaultMessage: 'Moving components out of an embedded drop zone component is not supported yet. Please use the forms to edit content.'
+  },
+  embeddedComponentsDeleteChildNotSupported: {
+    id:'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
+    defaultMessage: 'Deleting components from an embedded drop zone component is not supported yet. Please use the forms to edit content.'
+  }
+});
 
 export default {
   approveDialogMessages,
