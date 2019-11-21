@@ -1435,11 +1435,7 @@ var nodeOpen = false,
                 var previewFrameEl = document.getElementById("engineWindow");
                 if(previewFrameEl){
                     if(!context || context.isComponent){
-                        try{
-                            previewFrameEl.contentWindow.location.reload();
-                        }catch(err){
-                            previewFrameEl.src += '';
-                        }
+                        amplify.publish(crafter.studio.preview.cstopic(crafter.studio.preview.Topics.REFRESH_PREVIEW));
                     }else{
                         if (context && context.browserUri) {
                             amplify.publish(crafter.studio.preview.Topics.GUEST_CHECKIN, CStudioAuthoring.Operations.getPreviewUrl(context, false));
