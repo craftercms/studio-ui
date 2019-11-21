@@ -192,11 +192,11 @@ const profileSettingsMessages = defineMessages({
 const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
-    defaultMessage: 'Minimun'
+    defaultMessage: 'Minimum'
   },
   maximun: {
     id: 'numericInputControl.maximun',
-    defaultMessage: 'Maximun'
+    defaultMessage: 'Maximum'
   }
 });
 

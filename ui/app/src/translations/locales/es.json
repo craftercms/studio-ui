@@ -165,7 +165,7 @@
 	"groupsAdmin.displayName": "Nombre para mostrar",
 	"groupsAdmin.maxLengthError": "{field} no puede tener más de {size} caracteres",
 	"numericInputControl.childContent": "Mínimo",
-	"numericInputControl.maximun": "Maximun",
+	"numericInputControl.maximun": "Máximo",
 	"passwordRequirement.fulfillAllReqErrorMessage": "Por favor, cumpla con todos los requisitos de contraseña.",
 	"passwordRequirement.hasLowercase": "Debe contener al menos una letra minúscula",
 	"passwordRequirement.hasNumbers": "Debe contener al menos un número",
