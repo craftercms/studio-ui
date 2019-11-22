@@ -192,11 +192,11 @@ const profileSettingsMessages = defineMessages({
 const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
-    defaultMessage: 'Minimun'
+    defaultMessage: 'Minimum'
   },
   maximun: {
     id: 'numericInputControl.maximun',
-    defaultMessage: 'Maximun'
+    defaultMessage: 'Maximum'
   }
 });
 
@@ -565,19 +565,39 @@ const formEngineMessages = defineMessages({
 });
 
 const dragAndDropMessages = defineMessages({
-  contentTypeNotSupported: {
-    id: 'dragAndDropMessages.contentTypeNotSupported',
+  componentNotWelcomeWithinDropZone: {
+    id: 'dragAndDropMessages.componentNotWelcomeWithinDropZone',
     defaultMessage: 'The drop zone does not support this type of component. Check your content model.'
   },
-  embeddedComponentsNotSupported: {
-    id: 'dragAndDropMessages.embeddedComponentsNotSupported',
+  embeddedComponentsDndNotSupported: {
+    id: 'dragAndDropMessages.embeddedComponentsDndNotSupported',
     defaultMessage: 'Drag and drop on embedded components it\'s not supported yet. Please use the forms to edit content.'
   },
-  embeddedComponentsDrag: {
-    id: 'dragAndDropMessages.embeddedComponentsDrag',
-    defaultMessage: 'In this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
+  embeddedComponentsDragWithinParentOnly: {
+    id: 'dragAndDropMessages.embeddedComponentsDragWithinParentOnly',
+    defaultMessage: 'On this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
   },
-})
+  moveOutEmbeddedComponentsNotSupported: {
+    id: 'dragAndDropMessages.moveOutEmbeddedComponentsNotSupported',
+    defaultMessage: 'Moving components out of an embedded drop zone component is not supported yet. Please use the forms to edit content.'
+  },
+  embeddedComponentsDeleteChildNotSupported: {
+    id:'dragAndDropMessages.embeddedComponentsDeleteChildNotSupported',
+    defaultMessage: 'Deleting components from an embedded drop zone component is not supported yet. Please use the forms to edit content.'
+  },
+  contentTypeNotFound: {
+    id: 'dragAndDropMessages.contentTypeNotFound',
+    defaultMessage: 'The content type id was not found in your template. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+  },
+  pathNotFound: {
+    id: 'dragAndDropMessages.pathNotFound',
+    defaultMessage: 'Path is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+  },
+  objectIdNotFound: {
+    id:'dragAndDropMessages.objectIdNotFound',
+    defaultMessage: 'Object id is missing. Drag and drop will be impaired. More info at docs.craftercms.org/en/3.1/system-administrators/upgrade/index.html.'
+  }
+});
 
 export default {
   approveDialogMessages,
