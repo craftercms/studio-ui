@@ -48,7 +48,10 @@ interface PreviewToolsConfig {
   modules: Array<PreviewToolsModuleDescriptor>;
 }
 
-interface AudiencesPanelDescriptor {
+
+// region AudiencesPanelConfig
+
+export interface AudiencesPanelDescriptor {
   name: string;
   label: string;
   description: string;
@@ -57,7 +60,7 @@ interface AudiencesPanelDescriptor {
   hint: string;
 }
 
-interface AudiencesPanelConfig {
+export interface AudiencesPanelConfig {
   properties: Array<AudiencesPanelDescriptor>;
 }
 
@@ -119,13 +122,24 @@ export function getAudiencesPanelConfig(site: string): Observable<AudiencesPanel
         const xml = fromString(content);
         audiencesPanelConfig.properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
 
-          const name = elem.getElementsByTagName('name')[0].innerHTML,
-          label = elem.getElementsByTagName('label')[0].innerHTML,
-          description = elem.getElementsByTagName('description')[0].innerHTML,
-          type = elem.getElementsByTagName('type')[0].innerHTML,
-          possible_values = "test",
-          default_value = elem.getElementsByTagName('default_value')[0].innerHTML,
-          hint = elem.getElementsByTagName('hint')[0].innerHTML;
+          const name = getInnerHtml(elem.querySelector('name')),
+          label = getInnerHtml(elem.querySelector('label')),
+          description = getInnerHtml(elem.querySelector('description')),
+          type = getInnerHtml(elem.querySelector('type')),
+          default_value = getInnerHtml(elem.querySelector('default_value')),
+          hint = getInnerHtml(elem.querySelector('hint'));
+          let possible_values = {};
+
+          if(elem.querySelectorAll('value').length > 0){
+            possible_values = Array.from(elem.querySelectorAll('value')).map((element) => {
+              const value = getInnerHtml(element);
+              return {
+                value: value
+              }
+          });
+          }else{
+            possible_values = null;
+          }
 
           return {
             name : name,

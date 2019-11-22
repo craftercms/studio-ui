@@ -14,19 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Typography from '@material-ui/core/Typography';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles';
 import { get } from '../../../utils/ajax';
-import { getAudiencesPanelConfig } from '../../../services/configuration';
+import { getAudiencesPanelConfig, AudiencesPanelDescriptor, AudiencesPanelConfig } from '../../../services/configuration';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Checkbox from '@material-ui/core/Checkbox';
+import Grid from '@material-ui/core/Grid';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
+import InfoIcon from '@material-ui/icons/Info';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    fab: {
+      margin: theme.spacing(1),
+    },
+  }),
+);
 
 const translations = defineMessages({
   audiencesPanel: {
@@ -34,10 +52,6 @@ const translations = defineMessages({
     defaultMessage: 'Audience Targeting'
   }
 });
-
-const useStyles = makeStyles((theme) => createStyles({
-
-}));
 
 interface AudiencesPanelUIProps {
   properties: any;
@@ -47,90 +61,8 @@ interface AudiencesPanelProps {
   siteId: string;
 }
 
-interface ResultObject {
-  properties: []
-}
-
-interface CodeDependingTypeProps {
-  type: string;
-}
-
-function getCodeDependingType(props: CodeDependingTypeProps) {
-
-  const {
-    type
-  } = props;
-
-  switch (type) {
-    case "input":
-      return (
-        <FormControl component="fieldset">
-          <FormLabel component="legend">input</FormLabel>
-          <TextField
-              id= "standard-basic"
-              label= "input"
-              type= "text"
-              name= "input"
-              margin= "normal"
-              placeholder= "auto"
-              onKeyUp= {}
-              onChange= {}
-              value= {}
-            />
-        </FormControl>
-      )
-    case "dropdown":
-      return (
-        <FormControl component="fieldset">
-          <FormLabel component="legend">input</FormLabel>
-          <TextField
-              id= "standard-basic"
-              label= "input"
-              type= "text"
-              name= "input"
-              margin= "normal"
-              placeholder= "auto"
-              onKeyUp= {}
-              onChange= {}
-              value= {}
-            />
-        </FormControl>
-      )
-    case "checkboxes":
-      return (
-        <FormControl component="fieldset">
-          <FormLabel component="legend">input</FormLabel>
-          <TextField
-              id= "standard-basic"
-              label= "input"
-              type= "text"
-              name= "input"
-              margin= "normal"
-              placeholder= "auto"
-              onKeyUp= {}
-              onChange= {}
-              value= {}
-            />
-        </FormControl>
-      )
-    case "dateTime":
-      return (
-        <FormControl component="fieldset">
-          <FormLabel component="legend">input</FormLabel>
-          <TextField
-              id= "standard-basic"
-              label= "input"
-              type= "text"
-              name= "input"
-              margin= "normal"
-              placeholder= "auto"
-              onKeyUp= {}
-              onChange= {}
-              value= {}
-            />
-        </FormControl>
-      )
-  }
+interface AudiencesFormProps {
+  properties: AudiencesPanelDescriptor;
 }
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
@@ -142,20 +74,12 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   return (
     <ToolPanel title={translations.audiencesPanel}>
-      <Typography component="h2" variant="subtitle1" style={{ padding: '10px' }}>
-        <FormattedMessage
-          id="craftercms.ice.audiences.audiencesPanel"
-          defaultMessage={`Audiences Panel`}
-        />
-      </Typography>
       {
         properties ? (
           properties.map((property: any) => (
-            property.name === "input" ? (
-              <div>
-                {property.name}
-              </div>
-            ) : (null)
+            <GetCodeDependingType
+              properties={property}
+            />
           ))
         ) : (null)
       }
@@ -196,4 +120,126 @@ export default function AudiencesPanel() {
     </div>
   );
 
+}
+
+function GetCodeDependingType(props: AudiencesFormProps) {
+
+  const classes = useStyles({});
+  const {
+    properties
+  } = props;
+
+  switch (properties.type) {
+    case "dropdown":
+      return (
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+
+            {/* <FormControl variant="outlined">
+              <InputLabel id="test-label">
+                {properties.label}
+              </InputLabel>
+              <Select
+                labelId={properties.label}
+                id={properties.name}
+                value={properties.name}
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+              <FormHelperText>{properties.description}</FormHelperText>
+            </FormControl> */}
+
+            <InputLabel>{properties.label}</InputLabel>
+            <Tooltip title={properties.hint} placement="top" >
+              <IconButton aria-label={properties.hint}>
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
+            <Select
+              labelId={properties.label}
+              id={properties.name}
+              value={properties.name}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+            <FormHelperText>{properties.description}</FormHelperText>
+          </Grid>
+        </Grid>
+      )
+    case "checkboxes":
+      return (
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <InputLabel>{properties.label}</InputLabel>
+            <Tooltip title={properties.hint} placement="top" >
+              <IconButton aria-label={properties.hint}>
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={properties.name}
+                  color="primary"
+                />
+              }
+              label={properties.label} />
+            <FormHelperText>{properties.description}</FormHelperText>
+          </Grid>
+        </Grid>
+      )
+    case "datetime":
+      return (
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <InputLabel>{properties.label}</InputLabel>
+            <Tooltip title={properties.hint} placement="top" >
+              <IconButton aria-label={properties.hint}>
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
+            <TextField
+              id={properties.name}
+              type="text"
+              name="input"
+              margin="normal"
+              placeholder="auto"
+              helperText={properties.description}
+            />
+          </Grid>
+        </Grid>
+      )
+    default:
+      return (
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <InputLabel>{properties.label}</InputLabel>
+            <Tooltip title={properties.hint} placement="top" >
+              <IconButton aria-label={properties.hint}>
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
+            <TextField
+              id={properties.name}
+              type="text"
+              name="input"
+              margin="normal"
+              placeholder="auto"
+              helperText={properties.description}
+            />
+          </Grid>
+        </Grid>
+      )
+  }
 }
