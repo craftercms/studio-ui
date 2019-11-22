@@ -56,6 +56,7 @@ export interface AudiencesPanelDescriptor {
   label: string;
   description: string;
   type: string;
+  possible_values: any[];
   default_value: string;
   hint: string;
 }
@@ -128,7 +129,7 @@ export function getAudiencesPanelConfig(site: string): Observable<AudiencesPanel
           type = getInnerHtml(elem.querySelector('type')),
           default_value = getInnerHtml(elem.querySelector('default_value')),
           hint = getInnerHtml(elem.querySelector('hint'));
-          let possible_values = {};
+          let possible_values: any[] | { value: string; }[];
 
           if(elem.querySelectorAll('value').length > 0){
             possible_values = Array.from(elem.querySelectorAll('value')).map((element) => {
@@ -138,7 +139,7 @@ export function getAudiencesPanelConfig(site: string): Observable<AudiencesPanel
               }
           });
           }else{
-            possible_values = null;
+            possible_values = [];
           }
 
           return {

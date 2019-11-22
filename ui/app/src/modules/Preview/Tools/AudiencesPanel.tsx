@@ -166,12 +166,13 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               id={properties.name}
               value={properties.name}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              {
+                properties.possible_values ? (
+                  properties.possible_values.map((possible_value: any) => (
+                    <MenuItem value={possible_value.value}>{possible_value.value}</MenuItem>
+                  ))
+                ) : (null)
+              }
             </Select>
             <FormHelperText>{properties.description}</FormHelperText>
           </Grid>
@@ -187,14 +188,20 @@ function GetCodeDependingType(props: AudiencesFormProps) {
                 <InfoIcon />
               </IconButton>
             </Tooltip>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  value={properties.name}
-                  color="primary"
-                />
-              }
-              label={properties.label} />
+            {
+              properties.possible_values ? (
+                properties.possible_values.map((possible_value: any) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        value={possible_value.value}
+                        color="primary"
+                      />
+                    }
+                    label={possible_value.value} />
+                ))
+              ) : (null)
+            }
             <FormHelperText>{properties.description}</FormHelperText>
           </Grid>
         </Grid>
