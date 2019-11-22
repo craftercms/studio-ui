@@ -26,6 +26,8 @@ import { Theme } from "@material-ui/core";
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import clsx from 'clsx';
+import { MediaItem } from '../models/Search';
+import { useIntl } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -57,8 +59,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-function MediaCard(props: any) {
+interface MediaCardProps {
+  item: MediaItem;
+}
+
+function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
+  const { name, path, lastModified } = props.item;
+  const { formatDate } = useIntl();
+  const dateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+  const siteUrl = 'http://authoring.sample.com:8080';
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -67,14 +83,14 @@ function MediaCard(props: any) {
             <MoreVertIcon />
           </IconButton>
         }
-        title="Placeholder no muy bonito"
-        subheader="350x200px, Edited Today"
+        title={name}
+        subheader={formatDate(lastModified, dateTimeFormatOptions)}
         titleTypographyProps={{variant: "subtitle2", component: "h2", className: 'cardTitle'}}
         subheaderTypographyProps={{variant: "subtitle2", component: "h2", className: 'cardSubtitle', color: "textSecondary"}}
       />
       <CardMedia
         className={classes.media}
-        image="https://via.placeholder.com/350x200"
+        image={`${siteUrl}${path}`}
         title="Paella dish"
       />
       <CardActions disableSpacing>

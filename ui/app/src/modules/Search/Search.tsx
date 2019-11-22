@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme, InputBase, MenuItem, Select, Avatar } from "@material-ui/core";
@@ -27,6 +27,8 @@ import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
 import { fetchSearch } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
+import { MediaItem, SearchParameters } from "../../models/Search";
+import Spinner from "../../components/SystemStatus/Spinner";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -111,35 +113,56 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-function Search() {
+const initialSearchParameters: SearchParameters = {
+  query: '',
+  keywords: '',
+  offset: 0,
+  limit: 20,
+  sortBy: 'internalName',
+  sortOrder: 'asc',
+  filters: {
+    'mime-type': ['image/png', 'image/jpeg']
+  }
+};
+
+function Search(props: any) {
   const classes = useStyles({});
+  const [searchParameters, setSearchParameters] = useState(initialSearchParameters);
+  const [searchResults, setSearchResults] = useState(null);
 
   setRequestForgeryToken();
 
   useEffect(() => {
-    fetchSearch('editorialdnd', {
-      query: '',
-      keywords: '',
-      offset: 0,
-      limit: 20,
-      sortBy: 'internalName',
-      sortOrder: 'asc'
-    }).subscribe(
-      ({response}) => {
-        console.log(response);
-      },
-      ({response}) => {
-        console.log(response);
-      }
-    );
+    if(searchResults === null) {
+      fetchSearch('editorialdnd', searchParameters).subscribe(
+        ({response}) => {
+          setSearchResults(response.result);
+        },
+        ({response}) => {
+          console.log(response);
+        }
+      );
+    }
   }, []);
 
   function renderMediaCards() {
-    return (
-      <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-        <MediaCard/>
-      </Grid>
-    )
+    if (searchResults.total > 0) {
+      return searchResults.items.map((item: MediaItem, i: number) => {
+        return (
+          <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
+            <MediaCard item={item}/>
+          </Grid>
+        )
+      });
+
+    } else {
+      return (<p>Empty</p>)
+    }
+  }
+
+  function handleSearchKeyword(event: React.ChangeEvent<HTMLInputElement>) {
+    event.persist();
+    console.log(event.target.value);
   }
 
   return (
@@ -165,6 +188,7 @@ function Search() {
         </div>
         <div className={classes.search}>
           <InputBase
+            onChange={handleSearchKeyword}
             placeholder="Search…"
             classes={{
               root: classes.inputRoot,
@@ -185,7 +209,7 @@ function Search() {
       </header>
       <section className={classes.content}>
         <Grid container spacing={3}>
-          {renderMediaCards()}
+          {searchResults === null ?  <Spinner/> : renderMediaCards()}
         </Grid>
       </section>
     </section>

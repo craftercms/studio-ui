@@ -33,7 +33,7 @@ import {
   PROCESSING,
   READY_FOR_LIVE,
   Selected
-} from "../../../../models/publishing";
+} from "../../../../models/Publishing";
 import ConfirmDropdown from "../../../../components/UserControl/ConfirmDropdown";
 import FilterDropdown from "../../Sites/Create/FilterDropdown";
 import { setRequestForgeryToken } from "../../../../utils/auth";
