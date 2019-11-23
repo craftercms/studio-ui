@@ -19,7 +19,6 @@ import Typography from '@material-ui/core/Typography';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { get } from '../../../utils/ajax';
 import { getAudiencesPanelConfig, AudiencesPanelDescriptor, AudiencesPanelConfig } from '../../../services/configuration';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
@@ -37,11 +36,33 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
 import InfoIcon from '@material-ui/icons/Info';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     fab: {
       margin: theme.spacing(1),
+    },
+    formControl: {
+      width: '100%',
+      '& .MuiFormGroup-root': {
+        marginLeft: '10px',
+      },
+      'label + .MuiInputBase-root': {
+        marginTop: '0px',
+      }
+    },
+    IconButton: {
+      //maxWidth: '15px'
+    },
+    InputLabel: {
+      position: 'relative'
+    },
+    PannelMargin: {
+      margin: '0 15px',
+    },
+    textField: {
+      width: '100%',
     },
   }),
 );
@@ -55,10 +76,6 @@ const translations = defineMessages({
 
 interface AudiencesPanelUIProps {
   properties: any;
-}
-
-interface AudiencesPanelProps {
-  siteId: string;
 }
 
 interface AudiencesFormProps {
@@ -76,11 +93,28 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     <ToolPanel title={translations.audiencesPanel}>
       {
         properties ? (
-          properties.map((property: any) => (
-            <GetCodeDependingType
-              properties={property}
-            />
-          ))
+          <>
+            <Grid className={classes.PannelMargin}>
+              {
+                properties.map((property: any) => (
+                  <>
+                    <GetCodeDependingType
+                      properties={property}
+                    />
+                    <Divider />
+                  </>
+                ))
+              }
+            </Grid>
+            <div>
+              <Button variant="contained">
+                Defaults
+            </Button>
+              <Button variant="contained" color="primary" >
+                Apply
+            </Button>
+            </div>
+          </>
         ) : (null)
       }
     </ToolPanel>
@@ -97,6 +131,7 @@ export default function AudiencesPanel() {
     getAudiencesPanelConfig(site)
       .subscribe(
         (response: any) => {
+          console.log(response);
           setItems(
             response.properties
           );
@@ -132,39 +167,21 @@ function GetCodeDependingType(props: AudiencesFormProps) {
   switch (properties.type) {
     case "dropdown":
       return (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-
-            {/* <FormControl variant="outlined">
-              <InputLabel id="test-label">
-                {properties.label}
-              </InputLabel>
-              <Select
-                labelId={properties.label}
-                id={properties.name}
-                value={properties.name}
-                onChange={handleChange}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
-              </Select>
-              <FormHelperText>{properties.description}</FormHelperText>
-            </FormControl> */}
-
-            <InputLabel>{properties.label}</InputLabel>
-            <Tooltip title={properties.hint} placement="top" >
-              <IconButton aria-label={properties.hint}>
-                <InfoIcon />
-              </IconButton>
-            </Tooltip>
+        <Grid item xs={12}>
+          <FormControl className={classes.formControl} >
+            <InputLabel className={classes.InputLabel}>
+              {properties.label}
+              <Tooltip title={properties.hint} placement="top" >
+                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+                  <InfoIcon />
+                </IconButton>
+              </Tooltip>
+            </InputLabel>
             <Select
               labelId={properties.label}
               id={properties.name}
-              value={properties.name}
+              value={properties.default_value}
+              defaultValue={properties.default_value}
             >
               {
                 properties.possible_values ? (
@@ -175,25 +192,28 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               }
             </Select>
             <FormHelperText>{properties.description}</FormHelperText>
-          </Grid>
+          </FormControl>
         </Grid>
       )
     case "checkboxes":
       return (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <InputLabel>{properties.label}</InputLabel>
-            <Tooltip title={properties.hint} placement="top" >
-              <IconButton aria-label={properties.hint}>
-                <InfoIcon />
-              </IconButton>
-            </Tooltip>
+        <Grid item xs={12}>
+          <FormControl className={classes.formControl} >
+            <InputLabel className={classes.InputLabel}>
+              {properties.label}
+              <Tooltip title={properties.hint} placement="top" >
+                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+                  <InfoIcon />
+                </IconButton>
+              </Tooltip>
+            </InputLabel>
             {
               properties.possible_values ? (
                 properties.possible_values.map((possible_value: any) => (
                   <FormControlLabel
                     control={
                       <Checkbox
+                        checked={possible_value.value === properties.default_value}
                         value={possible_value.value}
                         color="primary"
                       />
@@ -203,49 +223,55 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               ) : (null)
             }
             <FormHelperText>{properties.description}</FormHelperText>
-          </Grid>
+          </FormControl>
         </Grid>
       )
     case "datetime":
       return (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <InputLabel>{properties.label}</InputLabel>
-            <Tooltip title={properties.hint} placement="top" >
-              <IconButton aria-label={properties.hint}>
-                <InfoIcon />
-              </IconButton>
-            </Tooltip>
+        <Grid item xs={12}>
+          <FormControl className={classes.formControl} >
+            <InputLabel className={classes.InputLabel} >
+              {properties.label}
+              <Tooltip title={properties.hint} placement="top" >
+                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+                  <InfoIcon />
+                </IconButton>
+              </Tooltip>
+            </InputLabel>
             <TextField
               id={properties.name}
               type="text"
               name="input"
               margin="normal"
               placeholder="auto"
+              fullWidth
               helperText={properties.description}
             />
-          </Grid>
+          </FormControl>
         </Grid>
       )
     default:
       return (
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <InputLabel>{properties.label}</InputLabel>
-            <Tooltip title={properties.hint} placement="top" >
-              <IconButton aria-label={properties.hint}>
-                <InfoIcon />
-              </IconButton>
-            </Tooltip>
+        <Grid item xs={12}>
+          <FormControl className={classes.formControl} >
+            <InputLabel className={classes.InputLabel}>
+              {properties.label}
+              <Tooltip title={properties.hint} placement="top" >
+                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+                  <InfoIcon />
+                </IconButton>
+              </Tooltip>
+            </InputLabel>
             <TextField
               id={properties.name}
               type="text"
               name="input"
               margin="normal"
               placeholder="auto"
+              fullWidth
               helperText={properties.description}
             />
-          </Grid>
+          </FormControl>
         </Grid>
       )
   }
