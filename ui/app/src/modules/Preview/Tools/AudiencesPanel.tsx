@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
       }
     },
     IconButton: {
-      //maxWidth: '15px'
+      padding: '6px'
     },
     InputLabel: {
       position: 'relative'
@@ -169,7 +169,11 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel className={classes.InputLabel}>
+            <InputLabel 
+              className={classes.InputLabel}
+              focused={true}
+              htmlFor={properties.name}
+            >
               {properties.label}
               <Tooltip title={properties.hint} placement="top" >
                 <IconButton aria-label={properties.hint} className={classes.IconButton}>
@@ -178,7 +182,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               </Tooltip>
             </InputLabel>
             <Select
-              labelId={properties.label}
+              labelId={properties.name}
               id={properties.name}
               value={properties.default_value}
               defaultValue={properties.default_value}
@@ -199,7 +203,11 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel className={classes.InputLabel}>
+            <InputLabel 
+              className={classes.InputLabel}
+              focused={true}
+              htmlFor={properties.name}
+            >
               {properties.label}
               <Tooltip title={properties.hint} placement="top" >
                 <IconButton aria-label={properties.hint} className={classes.IconButton}>
@@ -211,6 +219,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               properties.possible_values ? (
                 properties.possible_values.map((possible_value: any) => (
                   <FormControlLabel
+                    htmlFor={properties.name}
                     control={
                       <Checkbox
                         checked={possible_value.value === properties.default_value}
@@ -230,7 +239,11 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel className={classes.InputLabel} >
+            <InputLabel 
+              className={classes.InputLabel} 
+              focused={true}
+              htmlFor={properties.name}
+            >
               {properties.label}
               <Tooltip title={properties.hint} placement="top" >
                 <IconButton aria-label={properties.hint} className={classes.IconButton}>
@@ -254,7 +267,11 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel className={classes.InputLabel}>
+            <InputLabel 
+              className={classes.InputLabel}
+              focused={true}
+              htmlFor={properties.name}
+            >
               {properties.label}
               <Tooltip title={properties.hint} placement="top" >
                 <IconButton aria-label={properties.hint} className={classes.IconButton}>
