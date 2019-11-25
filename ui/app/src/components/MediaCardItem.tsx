@@ -31,6 +31,7 @@ import { useIntl } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
+    display: 'flex',
     '& .cardTitle': {
       fontWeight: '600',
       lineHeight: '1.5rem',
@@ -48,12 +49,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   media: {
-    height: 0,
-    paddingTop: '56.25%', // 16:9
+    height: '80px',
+    width: '80px'
   },
   mediaIcon: {
     backgroundColor: '#f3f3f3',
-    paddingTop: '56.25%',
+    height: '80px',
+    width: '80px',
     position: 'relative',
     '& .media-icon':{
       position: 'absolute',
@@ -63,6 +65,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       color: 'rgba(0, 0, 0, 0.54)',
       fontSize: '50px'
     }
+  },
+  cardActions: {
+    marginLeft: 'auto'
   },
   favorites: {
     marginLeft: 'auto',
@@ -76,17 +81,10 @@ interface MediaCardProps {
   item: MediaItem;
 }
 
-function MediaCard(props: MediaCardProps) {
+function MediaCardItem(props: MediaCardProps) {
   const classes = useStyles({});
-  const {name, path, lastModified, type} = props.item;
-  const {formatDate} = useIntl();
-  const dateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  };
+  const {name, path, type} = props.item;
+
   const siteUrl = 'http://localhost:8080';
 
   function renderIcon(type: string) {
@@ -120,12 +118,16 @@ function MediaCard(props: MediaCardProps) {
 
   return (
     <Card className={classes.card}>
+      {
+        type === 'Image' ?
+          <CardMedia
+            className={classes.media}
+            image={`${siteUrl}${path}`}
+            title="Paella dish"
+          /> :
+          renderIcon(type)
+      }
       <CardHeader
-        action={
-          <IconButton aria-label="details">
-            <MoreVertIcon/>
-          </IconButton>
-        }
         title={name}
         subheader={type}
         titleTypographyProps={{variant: "subtitle2", component: "h2", className: 'cardTitle'}}
@@ -136,16 +138,7 @@ function MediaCard(props: MediaCardProps) {
           color: "textSecondary"
         }}
       />
-      {
-        type === 'Image' ?
-          <CardMedia
-            className={classes.media}
-            image={`${siteUrl}${path}`}
-            title="Paella dish"
-          /> :
-          renderIcon(type)
-      }
-      <CardActions disableSpacing>
+      <CardActions disableSpacing className={classes.cardActions}>
         <IconButton aria-label="view details">
           <VisibilityIcon/>
         </IconButton>
@@ -157,4 +150,4 @@ function MediaCard(props: MediaCardProps) {
   )
 }
 
-export default MediaCard;
+export default MediaCardItem;
