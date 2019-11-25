@@ -253,18 +253,20 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       var DestContentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type') || null;
       var currentContentType = $dropZone.attr('data-studio-zone-content-type') || null;
       var isItemEmbedded;
-      var originZone;
-      var destZone;
+      var currentTrackingNumber;
+      var destTrackingNumber;
 
-      //we are moving a component
+      // We are moving a component
       if (!isNew) {
+        currentTrackingNumber = $dropZone.attr('data-studio-zone-tracking');
+        destTrackingNumber = $component.parents('[data-studio-zone-tracking]').attr('data-studio-zone-tracking');
         isItemEmbedded = $component.attr('data-studio-embedded-item-id') || false;
-        originZone = $dropZone.attr('data-studio-components-target') || null;
-        destZone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target') || null;
       } else {
         let path =  $component.attr('data-studio-component-path');
         isItemEmbedded = path ? false: true;
       }
+
+      var sameDropZone = (currentTrackingNumber === destTrackingNumber);
 
       //checking if both have contentType
       if(!DestContentType || !currentContentType) {
@@ -282,7 +284,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
           messageKey: 'embeddedComponentsDndNotSupported',
           height: 'auto'
         });
-      } else if (isItemEmbedded && originZone !== destZone) {
+      } else if (isItemEmbedded && !sameDropZone) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
           messageKey: 'embeddedComponentsDragWithinParentOnly',
@@ -306,9 +308,13 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       }
 
       //if it is a move it is doing 2 calls
-      if (!isNew) dndInProgress = valid;
+      if (!isNew) {
+        dndInProgress = valid;
+      }
       //if it is a move within the same dropzone is doing 1 call
-      if(originZone === destZone) dndInProgress = null;
+      if(sameDropZone) {
+        dndInProgress = null;
+      }
       return valid;
     }
 
@@ -433,7 +439,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
             updateDop(self, me, ui);
           }, 300);
         }
-
       }
     });
 
