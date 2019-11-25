@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
+import PublicIcon from '@material-ui/icons/Public';
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
 import {
@@ -16,8 +18,31 @@ import {
 interface DateTimePickerProps {
   inputs: any;
   setInputs(state: any): any;
-
+  classes?: any;
 }
+
+const dateTimePickerStyles = () => ({
+  root: {
+    width: 'auto'
+  },
+  picker: {
+    width: '100%'
+  },
+  pickerInput: {
+    padding: '8px 12px'
+  },
+  pickerButton: {
+    position: 'absolute' as 'absolute',
+    right: 0
+  },
+  select: {
+    padding: '8px 12px',
+    borderRadius: '4px'
+  },
+  selectIcon: {
+    right: '12px'
+  }
+});
 
 const timezones = [
   {
@@ -34,8 +59,8 @@ const timezones = [
   }
 ]
 
-function DateTimePicker(props: DateTimePickerProps) {
-  const { inputs, setInputs } = props;
+const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerProps) => {
+  const { inputs, setInputs, classes } = props;
   const [ selectedDateTime, setSelectedDateTime ] = useState(moment());
 
   const handleDateChange = (name: string) => (date: Date | null) => {
@@ -72,29 +97,44 @@ function DateTimePicker(props: DateTimePickerProps) {
           format="MM/dd/yyyy"
           margin="normal"
           id="date-picker"
-          label="Date"
           value={selectedDateTime}
           onChange={handleDateChange('scheduledDate')}
-          InputLabelProps={{
-            shrink: true,
+          className={classes.picker}
+          InputAdornmentProps={{
+            className: classes.pickerButton
           }}
+          inputProps={{
+            className: classes.pickerInput
+          }}
+          placeholder="Date"
         />
         <KeyboardTimePicker
           margin="normal"
           id="time-picker"
-          label="Time"
           value={selectedDateTime}
           onChange={handleDateChange('scheduledTime')}
-          InputLabelProps={{
-            shrink: true,
-          }}
           keyboardIcon={<AccessTimeIcon />}
+          className={classes.picker}
+          InputAdornmentProps={{
+            className: classes.pickerButton
+          }}
+          inputProps={{
+            className: classes.pickerInput
+          }}
+          placeholder="Time"
         />
       </MuiPickersUtilsProvider>
       <Select
           fullWidth
           value={inputs.scheduledTimeZone}
+          inputProps={{
+            className: classes.select
+          }}
           onChange={handleSelectChange('scheduledTimeZone')}
+          IconComponent={ PublicIcon }
+          classes={{
+            icon: classes.selectIcon
+          }}
         >
           { timezones &&
             timezones.map((timezone: any) =>
@@ -104,6 +144,6 @@ function DateTimePicker(props: DateTimePickerProps) {
         </Select>
     </>
   )
-}
+});
 
 export default DateTimePicker;

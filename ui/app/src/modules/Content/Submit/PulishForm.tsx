@@ -25,27 +25,43 @@ const publishFormStyles = () => ({
     alignItems: 'center'
   },
   formSection: {
-    marginBottom: '10px'
+    marginBottom: '20px'
   },
   sectionLabel :{
     color: '#000',
     width: '100%'
+  },
+  checkboxInput: {
+    paddingTop: 0,
+    paddingBottom: 0
   },
   selectInput: {
     padding: '10px 12px'
   },
   datePicker: {
     position: 'relative' as 'relative',
+    paddingLeft: '30px',
+    paddingBottom: '20px',
     "&::before": {
-      content: '',
+      content: "''",
       position: 'absolute' as 'absolute',
       width: '5px',
       height: '100%',
       top: '0',
-      left: '0',
+      left: '7px',
       backgroundColor: '#F2F2F7',
       borderRadius: '5px'
     }
+  },
+  radioGroup: {
+    paddingTop: '10px'
+  },
+  radioInput: {
+    paddingBottom: '4px',
+    paddingTop: '4px'
+  },
+  selectIcon: {
+    right: '12px'
   }
 });
 
@@ -88,8 +104,6 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
     } else if (e.target.type === 'radio' || e.target.type === 'textarea') {
       setInputs({ ...inputs, [name]: e.target.value })
     };
-
-    console.log(e.target.type)
   };
 
   const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -104,6 +118,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
           <FormControlLabel className={classes.sectionLabel}
             control={
               <Checkbox
+                className={classes.checkboxInput}
                 checked={inputs.emailOnApprove}
                 onChange={handleInputChange('emailOnApprove')}
                 value="emailOnApprove"
@@ -118,22 +133,23 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
       <div className={classes.formSection}>
         <InputLabel htmlFor="environmentSelect" className={classes.sectionLabel}>Scheduling</InputLabel>
         <RadioGroup
+          className={ classes.radioGroup }
           value={inputs.scheduling}
           onChange={handleInputChange('scheduling')}
         >
           <FormControlLabel
             value="now"
-            control={<Radio color="primary" />}
+            control={<Radio color="primary" className={ classes.radioInput } />}
             label="Now"
           />
           <FormControlLabel
             value="custom"
-            control={<Radio color="primary" />}
+            control={<Radio color="primary" className={ classes.radioInput } />}
             label="Later"
           />
         </RadioGroup>
+        <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={ inputs.scheduling === 'custom' ? (classes.datePicker) : '' }>
 
-        <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={classes.datePicker}>
           <DateTimePicker inputs={inputs} setInputs={setInputs}/>
         </Collapse>
       </div>
@@ -146,7 +162,8 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
             style={{ borderRadius: '4px' }}
             value={inputs.environment}
             classes={{
-              select: classes.selectInput
+              select: classes.selectInput,
+              icon: classes.selectIcon
             }}
             onChange={handleSelectChange('environment')}
             input={<SelectInput />}
