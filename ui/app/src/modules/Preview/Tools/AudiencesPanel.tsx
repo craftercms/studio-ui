@@ -22,7 +22,6 @@ import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/s
 import { getAudiencesPanelConfig, AudiencesPanelDescriptor, AudiencesPanelConfig } from '../../../services/configuration';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
@@ -33,8 +32,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
 import InfoIcon from '@material-ui/icons/Info';
 import Button from '@material-ui/core/Button';
 
@@ -133,7 +130,6 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
 export default function AudiencesPanel() {
 
-  const classes = useStyles({});
   const [items, setItems] = useState();
   const site = 'editorial';
 
@@ -194,7 +190,6 @@ function GetCodeDependingType(props: AudiencesFormProps) {
             <Select
               labelId={properties.name}
               id={properties.name}
-              value={properties.default_value}
               defaultValue={properties.default_value}
             >
               {
@@ -232,8 +227,6 @@ function GetCodeDependingType(props: AudiencesFormProps) {
                     htmlFor={properties.name}
                     control={
                       <Checkbox
-                        checked={possible_value.value === properties.default_value}
-                        value={possible_value.value}
                         color="primary"
                       />
                     }
