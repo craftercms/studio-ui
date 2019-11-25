@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import moment from 'moment-timezone';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
@@ -15,44 +16,53 @@ import {
 interface DateTimePickerProps {
   inputs: any;
   setInputs(state: any): any;
+
 }
 
 const timezones = [
   {
     timezoneName: 'Africa/Asmera',
-    timezoneOffset: 3
+    timezoneOffset: "+03:00"
   },
   {
     timezoneName: 'America/Costa_Rica',
-    timezoneOffset: -6
+    timezoneOffset: "-06:00"
   },
   {
     timezoneName: 'America/Los_Angeles',
-    timezoneOffset: -8
+    timezoneOffset: "-08:00"
   }
 ]
 
 function DateTimePicker(props: DateTimePickerProps) {
   const { inputs, setInputs } = props;
-  const [ selectedDateTime, setSelectedDateTime ] = useState(new Date());
+  const [ selectedDateTime, setSelectedDateTime ] = useState(moment());
 
   const handleDateChange = (name: string) => (date: Date | null) => {
-    var updatedDateTime = selectedDateTime;
+    let updatedDateTime = selectedDateTime;
+
     switch (name) {
       case 'scheduledDate':
-        updatedDateTime.setDate(date.getDate());
-        updatedDateTime.setMonth(date.getMonth());
-        updatedDateTime.setFullYear(date.getFullYear());
+        updatedDateTime.date(date.getDate());
+        updatedDateTime.month(date.getMonth());
+        updatedDateTime.year(date.getFullYear());
         break;
       case 'scheduledTime':
-        updatedDateTime.setHours(date.getHours());
-        updatedDateTime.setMinutes(date.getMinutes());
+        updatedDateTime.hours(date.getHours());
+        updatedDateTime.minutes(date.getMinutes());
         break;
     }
 
     setSelectedDateTime(updatedDateTime);
-
     setInputs({ ...inputs, "scheduledDateTime": selectedDateTime });
+  };
+
+  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
+    const timezone = event.target.value;
+    setInputs({ ...inputs, [name]: timezone });
+
+    const updatedDateTime = moment.tz(selectedDateTime.format(), 'YYYY-MM-DD HH:mm A', timezone);
+    setSelectedDateTime(updatedDateTime);
   };
 
   return (
@@ -61,34 +71,34 @@ function DateTimePicker(props: DateTimePickerProps) {
         <KeyboardDatePicker
           format="MM/dd/yyyy"
           margin="normal"
-          id="date-picker-inline"
-          label="Date picker inline"
+          id="date-picker"
+          label="Date"
           value={selectedDateTime}
           onChange={handleDateChange('scheduledDate')}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
+          InputLabelProps={{
+            shrink: true,
           }}
         />
         <KeyboardTimePicker
           margin="normal"
           id="time-picker"
-          label="Time picker"
+          label="Time"
           value={selectedDateTime}
           onChange={handleDateChange('scheduledTime')}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
+          InputLabelProps={{
+            shrink: true,
           }}
           keyboardIcon={<AccessTimeIcon />}
         />
       </MuiPickersUtilsProvider>
       <Select
           fullWidth
-          value={inputs.environment}
-          // onChange={handleSelectChange('environment')}
+          value={inputs.scheduledTimeZone}
+          onChange={handleSelectChange('scheduledTimeZone')}
         >
           { timezones &&
             timezones.map((timezone: any) =>
-              <MenuItem key={timezone.timezoneName} value={timezone.timezoneOffset}>{timezone.timezoneName}</MenuItem>
+              <MenuItem key={timezone.timezoneName} value={timezone.timezoneName}>{timezone.timezoneName} (GMT{timezone.timezoneOffset})</MenuItem>
             )
           }
         </Select>
