@@ -17,8 +17,8 @@
  *
  */
 
-import React, { MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { Theme, withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -29,56 +29,56 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import { FormattedMessage } from "react-intl";
 import Grid from "@material-ui/core/Grid";
+import moment from 'moment';
 
 import { Item } from '../../../models/Item';
 import DependencySelection from '../Dependencies/DependencySelection';
 import { fetchPublishingChannels } from "../../../services/content";
 import { submitToGoLive } from '../../../services/publishing';
 import PublishForm from './PulishForm';
-import { copyFile } from 'fs';
-import { Publish } from '@material-ui/icons';
+import { backgroundColor } from '../../../styles/theme';
 
 const dialogInitialState: any = {
   emailOnApprove: false,
   environment: '',
   submissionComment: '',
   scheduling: 'now',
-  scheduledDateTime: new Date(),
-  scheduledTimeZone: '',
+  scheduledDateTime: moment(),
+  scheduledTimeZone: 'America/Costa_Rica',
   publishingChannel: null,
   selectedItems: null
 };
 
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      margin: 0,
-      padding: theme.spacing(2),
-    },
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
-    },
-  });
+const dialogTitleStyles = () => ({
+  root: {
+    margin: 0,
+    padding: '20px',
+    paddingBottom: '20px',
+    background: backgroundColor
+  },
+  title: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  }
+});
 
-interface DialogTitleProps extends WithStyles<typeof styles> {
-  id: string;
-  children: React.ReactNode;
-  onClose: () => void;
-}
-
-const DialogTitle = withStyles(styles)((props: DialogTitleProps) => {
-  const { children, classes, onClose, ...other } = props;
+const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
+  const { classes, onClose, title, subtitle } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      ) : null}
+    <MuiDialogTitle disableTypography className={classes.root}>
+      <div className={classes.title}>
+        <Typography variant="h6">{title}</Typography>
+        {onClose ? (
+          <IconButton aria-label="close" onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        ) : null}
+      </div>
+      {
+        subtitle &&
+        <Typography variant="subtitle1">{subtitle}</Typography>
+      }
     </MuiDialogTitle>
   );
 });
@@ -106,6 +106,8 @@ interface PublishDialogUIProps {
   setDialog: any;
   siteId: string;
   open: boolean;
+  title: string;
+  subtitle?: string;
 }
 
 export function PublishDialogUI(props: PublishDialogUIProps) {
@@ -118,25 +120,23 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     dialog,
     setDialog,
     siteId,
-    open
+    open,
+    title,
+    subtitle
   } = props;
 
   return (
     <Dialog onClose={handleClose} aria-labelledby="requestPublishDialogTitle" open={open} disableBackdropClick={true}
             fullWidth={true} maxWidth={'md'}>
-      <DialogTitle id="requestPublishDialogTitle" onClose={handleClose}>
-        <FormattedMessage
-          id="requestPublishDialog.dialogTitle"
-          defaultMessage={`Request Publish`}
-        />
-      </DialogTitle>
+      <DialogTitle id="requestPublishDialogTitle" onClose={handleClose}
+                   title={title} subtitle={subtitle}/>
       <DialogContent dividers>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={7} md={8} lg={8} xl={8}>
+          <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
             <DependencySelection items={items} siteId={'editorial'} onChange={(result: any) => { setSelectedItems(result) }} />
           </Grid>
 
-          <Grid item xs={12} sm={5} md={4} lg={4} xl={4}>
+          <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
             <PublishForm
               inputs={dialog}
               setInputs={setDialog}
@@ -176,7 +176,6 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
   const [publishingChannels, setPublishingChannels] = useState(null);
-
   useEffect(getPublishingChannels, []);
 
   function getPublishingChannels() {
@@ -200,8 +199,6 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   };
 
   const handleSubmit = () => {
-    console.log("DIALOG DATA", dialog);
-
     const data = {
       environment: dialog.environment,
       items: dialog.selectedItems,
@@ -218,6 +215,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
     submitToGoLive(siteId, 'author', data).subscribe(
       ({ response }) => {
         console.log("SUBMIT RESPONSE", response);
+        setOpen(false);
       },
       ({ response }) => {
 
@@ -239,6 +237,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
           setDialog={setDialog}
           siteId={siteId}
           open={open}
+          title={'Request Publish'}
         />
       }
     </>
