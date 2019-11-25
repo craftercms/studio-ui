@@ -14,6 +14,7 @@ import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
 
 import DateTimePicker from './DateTimePicker';
+import moment from 'moment';
 
 const publishFormStyles = () => ({
   root: {
@@ -110,6 +111,10 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
     setInputs({ ...inputs, [name]: event.target.value as string });
   };
 
+  const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
+    setInputs({ ...inputs, 'scheduledDateTime': scheduledDateTime.format() });
+  }
+
   return (
     <form className={classes.root}>
       {
@@ -149,8 +154,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
           />
         </RadioGroup>
         <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={ inputs.scheduling === 'custom' ? (classes.datePicker) : '' }>
-
-          <DateTimePicker inputs={inputs} setInputs={setInputs}/>
+          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone}/>
         </Collapse>
       </div>
 

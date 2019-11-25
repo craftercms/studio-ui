@@ -43,7 +43,7 @@ const dialogInitialState: any = {
   environment: '',
   submissionComment: '',
   scheduling: 'now',
-  scheduledDateTime: moment(),
+  scheduledDateTime: moment().format(),
   scheduledTimeZone: 'America/Costa_Rica',
   publishingChannel: null,
   selectedItems: null
