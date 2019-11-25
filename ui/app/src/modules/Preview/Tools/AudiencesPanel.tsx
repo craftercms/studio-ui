@@ -34,6 +34,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import Button from '@material-ui/core/Button';
+import { get } from '../../../utils/ajax';
+import { forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -131,19 +134,29 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 export default function AudiencesPanel() {
 
   const [items, setItems] = useState();
+  const [currentItems, setCurrentItems] = useState();
   const site = 'editorial';
 
   useEffect(() => {
-    getAudiencesPanelConfig(site)
-      .subscribe(
-        (response: any) => {
-          console.log(response);
+
+    forkJoin(
+      getAudiencesPanelConfig(site),
+      get(`/api/1/profile/get`).pipe(map(response => response.response))
+    ).subscribe(
+        // Here code that needs both files
+        ([config, profile]) => {
           setItems(
-            response.properties
+            config.properties
+          );
+          setCurrentItems(
+            profile.response
           );
         },
         () => {
           setItems(
+            []
+          );
+          setCurrentItems(
             []
           );
         }
