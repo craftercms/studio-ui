@@ -48,12 +48,13 @@ const useStyles = makeStyles((theme: Theme) =>
       '& .MuiFormGroup-root': {
         marginLeft: '10px',
       },
-      'label + .MuiInputBase-root': {
-        marginTop: '0px',
+      '& .MuiInputBase-root': {
+        marginTop: '12px !important',
       }
     },
     IconButton: {
-      padding: '6px'
+      padding: '6px',
+      marginLeft: '5px'
     },
     InputLabel: {
       position: 'relative'
@@ -64,6 +65,15 @@ const useStyles = makeStyles((theme: Theme) =>
     textField: {
       width: '100%',
     },
+    actionBTN:{
+      margin:'18px 0 80px 15px',
+      '& .MuiButton-contained':{
+        marginRight: '8px',
+      }
+    },
+    divider: {
+      margin: '23px 0 10px',
+    }
   }),
 );
 
@@ -101,19 +111,19 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                     <GetCodeDependingType
                       properties={property}
                     />
-                    <Divider />
+                    <Divider className={classes.divider} />
                   </>
                 ))
               }
             </Grid>
-            <div>
+            <Grid className={classes.actionBTN} >
               <Button variant="contained">
                 Defaults
             </Button>
               <Button variant="contained" color="primary" >
                 Apply
             </Button>
-            </div>
+            </Grid>
           </>
         ) : (null)
       }
@@ -255,7 +265,6 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               id={properties.name}
               type="text"
               name="input"
-              margin="normal"
               placeholder="auto"
               fullWidth
               helperText={properties.description}
@@ -283,7 +292,6 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               id={properties.name}
               type="text"
               name="input"
-              margin="normal"
               placeholder="auto"
               fullWidth
               helperText={properties.description}
