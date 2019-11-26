@@ -25,7 +25,6 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
-import MediaCardItem from '../../components/MediaCardItem';
 import { fetchSearch } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
 import { MediaItem, SearchParameters } from "../../models/Search";
@@ -159,7 +158,7 @@ function Search(props: any) {
   const classes = useStyles({});
   const [keyword, setKeyword] = useState("");
   const [searchParameters, setSearchParameters] = useState(initialSearchParameters);
-  const [currentView, setCurrentView] = useState('list');
+  const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const { formatMessage } = useIntl();
@@ -191,11 +190,11 @@ function Search(props: any) {
         return (
           (currentView === 'grid')?
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
-              <MediaCard item={item}/>
+              <MediaCard item={item} currentView={currentView}/>
             </Grid>
             :
             <Grid key={i} item xs={12}>
-              <MediaCardItem item={item}/>
+              <MediaCard item={item} currentView={currentView}/>
             </Grid>
         )
       });

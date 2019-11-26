@@ -23,11 +23,14 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme } from "@material-ui/core";
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
 import { useIntl } from "react-intl";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -45,11 +48,24 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: '-webkit-box',
       '-webkit-line-clamp': 1,
       '-webkit-box-orient': 'vertical',
+    },
+    '&.list':{
+      display: 'flex',
     }
+  },
+  cardHeader: {
+    display: 'flex',
+    alignItems: 'center'
   },
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
+    '&.list':{
+      paddingTop: 0,
+      height: '80px',
+      width: '80px',
+      order: -1
+    }
   },
   mediaIcon: {
     backgroundColor: '#f3f3f3',
@@ -62,23 +78,42 @@ const useStyles = makeStyles((theme: Theme) => ({
       transform: 'translate(-50%, -50%)',
       color: 'rgba(0, 0, 0, 0.54)',
       fontSize: '50px'
+    },
+    '&.list':{
+      height: '80px',
+      width: '80px',
+      paddingTop: '0',
+      order: -1
     }
   },
-  favorites: {
+  deleteIcon: {
     marginLeft: 'auto',
-    '&.fav': {
-      color: '#FF2D55'
+  },
+  mLa: {
+    marginLeft: 'auto'
+  },
+  checkbox: {
+    marginLeft: '28px',
+    '& label': {
+      marginRight: 0
+    },
+    '&.list': {
+      justifyContent: 'center',
+      order: -2,
+      marginRight: '16px'
     }
-  }
+  },
 }));
 
 interface MediaCardProps {
   item: MediaItem;
+  currentView: string;
 }
 
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
   const {name, path, lastModified, type} = props.item;
+  const isList =  props.currentView === 'list'? true: false;
   const {formatDate} = useIntl();
   const dateTimeFormatOptions = {
     year: 'numeric',
@@ -112,45 +147,66 @@ function MediaCard(props: MediaCardProps) {
         break;
     }
     return (
-      <div className={classes.mediaIcon}>
+      <div className={clsx(classes.mediaIcon, isList && 'list')}>
         <i className={iconName}></i>
       </div>
     )
   }
 
   return (
-    <Card className={classes.card}>
-      <CardHeader
-        action={
-          <IconButton aria-label="details">
-            <MoreVertIcon/>
-          </IconButton>
+    <Card className={clsx(classes.card, isList && 'list')}>
+      {
+        isList &&
+        <FormGroup className={clsx(classes.checkbox, 'list')}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                color="primary"/>
+            }
+            label={''}
+          />
+        </FormGroup>
+      }
+      <header className={classes.cardHeader}>
+        {
+          !isList &&
+          <FormGroup className={classes.checkbox}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  color="primary"/>
+              }
+              label={''}
+            />
+          </FormGroup>
         }
-        title={name}
-        subheader={type}
-        titleTypographyProps={{variant: "subtitle2", component: "h2", className: 'cardTitle'}}
-        subheaderTypographyProps={{
-          variant: "subtitle2",
-          component: "h2",
-          className: 'cardSubtitle',
-          color: "textSecondary"
-        }}
-      />
+        <CardHeader
+          title={name}
+          subheader={type}
+          titleTypographyProps={{variant: "subtitle2", component: "h2", className: 'cardTitle'}}
+          subheaderTypographyProps={{
+            variant: "subtitle2",
+            component: "h2",
+            className: 'cardSubtitle',
+            color: "textSecondary"
+          }}
+        />
+      </header>
       {
         type === 'Image' ?
           <CardMedia
-            className={classes.media}
+            className={clsx(classes.media, isList && 'list')}
             image={`${siteUrl}${path}`}
             title="Paella dish"
           /> :
           renderIcon(type)
       }
-      <CardActions disableSpacing>
+      <CardActions disableSpacing className={isList? classes.mLa : ''}>
         <IconButton aria-label="view details">
           <VisibilityIcon/>
         </IconButton>
-        <IconButton aria-label="add to favorites" className={clsx(classes.favorites, true && 'fav')}>
-          <FavoriteIcon/>
+        <IconButton aria-label="add to favorites" className={classes.deleteIcon}>
+          <DeleteIcon/>
         </IconButton>
       </CardActions>
     </Card>
