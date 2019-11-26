@@ -620,7 +620,7 @@
     var path = hash.page,
       hashPage = hash.page;
 
-    if (path.match('^((\/static-assets)|(\/remote-assets)|(\/api))')) {
+    if (path.match(/^((\/static-assets)|(\/remote-assets)|(\/api))/)) {
       hasCheckIn = false;
     }
 
