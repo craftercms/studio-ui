@@ -859,14 +859,21 @@ var nodeOpen = false,
             },
 
             submitContent: function(site, items) {
-                CSA.Operations._showDialogueView({
-                    fn: CSA.Service.getRequestPublishView,
-                    controller: 'viewcontroller-requestpublish',
-                    callback: function(dialogue) {
-                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                        this.loadItems(items, dialogue);
-                    }
-                }, true, '800px');
+                // CSA.Operations._showDialogueView({
+                //     fn: CSA.Service.getRequestPublishView,
+                //     controller: 'viewcontroller-requestpublish',
+                //     callback: function(dialogue) {
+                //         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
+                //         this.loadItems(items, dialogue);
+                //     }
+                // }, true, '800px');
+              var container = ($('<div class="request-publish-container"></div>').appendTo('body'))[0];
+              CrafterCMSNext.render(container, 'RequestPublishDialog',
+                {
+                  items: items,
+                  siteId: site
+                }
+              );
             },
 
             /**

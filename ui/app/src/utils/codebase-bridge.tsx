@@ -102,7 +102,8 @@ export function createCodebaseBridge() {
           }))
       )),
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue'))
+      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
+      RequestPublishDialog: lazy(() => import('../modules/Content/Submit/DateTimePicker'))
     },
 
     assets: {

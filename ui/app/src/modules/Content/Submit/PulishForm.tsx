@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import { FormattedMessage } from "react-intl";
+import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from "@material-ui/core/Checkbox";
 import { InputLabel } from "@material-ui/core";
@@ -15,6 +15,33 @@ import InputBase from '@material-ui/core/InputBase';
 
 import DateTimePicker from './DateTimePicker';
 import moment from 'moment';
+
+const messages = defineMessages({
+  emailLabel: {
+    id: 'publishForm.emailLabel',
+    defaultMessage: 'Email me when items are approved'
+  },
+  scheduling: {
+    id: 'publishForm.scheduling',
+    defaultMessage: 'Scheduling'
+  },
+  schedulingNow: {
+    id: 'publishForm.schedulingNow',
+    defaultMessage: 'Now'
+  },
+  schedulingLater: {
+    id: 'publishForm.schedulingLater',
+    defaultMessage: 'Later'
+  },
+  environment: {
+    id: 'publishForm.environment',
+    defaultMessage: 'Environment'
+  },
+  submissionComment: {
+    id: 'publishForm.submissionComment',
+    defaultMessage: 'Submission Comment'
+  }
+});
 
 const publishFormStyles = () => ({
   root: {
@@ -78,14 +105,14 @@ interface PublishFormProps {
   inputs: any;
   setInputs(state: any): any;
   showEmailCheckbox: boolean;
-  siteId: string;
   publishingChannels: any[];
   classes?: any;
 }
 
 const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
 
-  const { classes, inputs, setInputs, showEmailCheckbox, siteId, publishingChannels } = props;
+  const { classes, inputs, setInputs, showEmailCheckbox, publishingChannels } = props;
+  const { formatMessage } = useIntl();
 
   useEffect(
     () => {
@@ -130,13 +157,13 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
                 color="primary"
               />
             }
-            label="Email me when items are approved"
+            label={formatMessage(messages.emailLabel)}
           />
         </div>
       }
 
       <div className={classes.formSection}>
-        <InputLabel htmlFor="environmentSelect" className={classes.sectionLabel}>Scheduling</InputLabel>
+        <InputLabel htmlFor="environmentSelect" className={classes.sectionLabel}>{ formatMessage(messages.scheduling) }</InputLabel>
         <RadioGroup
           className={ classes.radioGroup }
           value={inputs.scheduling}
@@ -145,12 +172,12 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
           <FormControlLabel
             value="now"
             control={<Radio color="primary" className={ classes.radioInput } />}
-            label="Now"
+            label={ formatMessage(messages.schedulingNow) }
           />
           <FormControlLabel
             value="custom"
             control={<Radio color="primary" className={ classes.radioInput } />}
-            label="Later"
+            label={ formatMessage(messages.schedulingLater) }
           />
         </RadioGroup>
         <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={ inputs.scheduling === 'custom' ? (classes.datePicker) : '' }>
@@ -160,7 +187,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
 
       <div className={classes.formSection}>
         <FormControl fullWidth>
-          <InputLabel className={classes.sectionLabel}>Environment</InputLabel>
+          <InputLabel className={classes.sectionLabel}>{ formatMessage(messages.submissionComment) }</InputLabel>
           <Select
             fullWidth
             style={{ borderRadius: '4px' }}

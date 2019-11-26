@@ -54,7 +54,7 @@ const dateTimePickerStyles = () => ({
   },
   selectIcon: {
     right: '12px',
-    top: '20px'
+    top: '22px'
   }
 });
 

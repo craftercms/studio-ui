@@ -27,7 +27,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from "react-intl";
+import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import Grid from "@material-ui/core/Grid";
 import moment from 'moment';
 
@@ -37,6 +37,13 @@ import { fetchPublishingChannels } from "../../../services/content";
 import { submitToGoLive } from '../../../services/publishing';
 import PublishForm from './PulishForm';
 import { backgroundColor } from '../../../styles/theme';
+
+const messages = defineMessages({
+  title: {
+    id: 'requestPublishDialog.title',
+    defaultMessage: 'Request Publish'
+  }
+});
 
 const dialogInitialState: any = {
   emailOnApprove: false,
@@ -141,7 +148,6 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
               inputs={dialog}
               setInputs={setDialog}
               showEmailCheckbox={true}
-              siteId={siteId}
               publishingChannels={publishingChannels}
             />
           </Grid>
@@ -176,6 +182,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
   const [publishingChannels, setPublishingChannels] = useState(null);
+  const { formatMessage } = useIntl();
   useEffect(getPublishingChannels, []);
 
   function getPublishingChannels() {
@@ -237,7 +244,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
           setDialog={setDialog}
           siteId={siteId}
           open={open}
-          title={'Request Publish'}
+          title={formatMessage(messages.title)}
         />
       }
     </>
