@@ -34,6 +34,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import CloseIcon from '@material-ui/icons/Close';
 import EmptyState from "../../components/SystemStatus/EmptyState";
 import ViewListIcon from '@material-ui/icons/ViewList';
+import FilterSearchDropdown from "./FilterSearchDropdown";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -49,6 +50,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  searchDropdown: {
+    marginRight: '7px'
+  },
   search: {
     position: 'relative',
     background: '#EBEBF0',
@@ -56,7 +60,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '10px 12px',
-    borderRadius: '0px 5px 5px 0px'
+    //borderRadius: '0px 5px 5px 0px',
+    borderRadius: '5px',
+    marginLeft: 'auto',
   },
   searchIcon: {
     marginLeft: '10px',
@@ -81,10 +87,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   assetSelector: {
+    display: 'none',
     minWidth: '187px',
     padding: '10px 12px',
     background: 'rgba(0, 122, 255, 0.1)',
-    display: 'flex',
+    //display: 'flex',
     borderRadius: '5px 0 0 5px',
     alignItems: 'center',
     marginLeft: 'auto',
@@ -113,6 +120,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   helperContainer: {
     display: 'flex',
     marginLeft: 'auto',
+    alignItems: 'center'
   },
   avatarContent: {
     margin: 5,
@@ -256,6 +264,7 @@ function Search(props: any) {
           }
         </div>
         <div className={classes.helperContainer}>
+          { searchResults && searchResults.facets && <FilterSearchDropdown text={'Filters'} className={classes.searchDropdown} facets={searchResults.facets}/>}
           <IconButton className={classes.avatarContent} onClick={handleChangeView}>
             <Avatar className={classes.avatar}>
               {
