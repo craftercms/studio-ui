@@ -137,7 +137,7 @@ export default function FilterSearchDropdown(props: any) {
   };
 
   const handleExpandClick = (item: string) => {
-    setExpanded({...expanded, [item]: !expanded['sortBy']})
+    setExpanded({...expanded, [item]: !expanded[item]})
   };
 
   const renderSortBy = () => {
@@ -170,6 +170,32 @@ export default function FilterSearchDropdown(props: any) {
     )
   };
 
+  const renderFilters = () => {
+    return (
+      filterKeys.map((key:string, i:number) => {
+        let name = camelize(key);
+        return (
+          <div key={i}>
+            <ListItem button classes={{root: classes.listPadding}} onClick={() => handleExpandClick(name)}>
+              <header className={classes.header}>
+                <Typography variant="body1">
+                  <strong>{formatMessage(messages[name])}</strong>
+                </Typography>
+                <ExpandMoreIcon
+                  className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)}/>
+              </header>
+            </ListItem>
+            <Collapse in={!!(expanded && expanded[name])} timeout={300}>
+              <div className={classes.body}>
+                {name}
+              </div>
+            </Collapse>
+          </div>
+        )
+      })
+    )
+  };
+
   return (
     <div>
       <Button variant="outlined" onClick={handleClick} className={className}>
@@ -193,21 +219,24 @@ export default function FilterSearchDropdown(props: any) {
         }}
       >
         <List classes={{padding: classes.listPadding}}>
-          <ListItem button classes={{root: classes.listPadding}} onClick={() => handleExpandClick('sortBy')}>
-            <header className={classes.header}>
-              <Typography variant="body1">
-                <strong>{formatMessage(messages.sortBy)}</strong>
-              </Typography>
-              <ExpandMoreIcon
-                className={clsx(classes.expand, !!(expanded && expanded['sortBy']) && classes.expandOpen)}/>
-            </header>
-          </ListItem>
-          <Collapse in={!!(expanded && expanded['sortBy'])} timeout={300}>
-            <div className={classes.body}>
-              {renderSortBy()}
-              {renderSortOrder()}
-            </div>
-          </Collapse>
+          <div>
+            <ListItem button classes={{root: classes.listPadding}} onClick={() => handleExpandClick('sortBy')}>
+              <header className={classes.header}>
+                <Typography variant="body1">
+                  <strong>{formatMessage(messages.sortBy)}</strong>
+                </Typography>
+                <ExpandMoreIcon
+                  className={clsx(classes.expand, !!(expanded && expanded['sortBy']) && classes.expandOpen)}/>
+              </header>
+            </ListItem>
+            <Collapse in={!!(expanded && expanded['sortBy'])} timeout={300}>
+              <div className={classes.body}>
+                {renderSortBy()}
+                {renderSortOrder()}
+              </div>
+            </Collapse>
+          </div>
+          {renderFilters()}
         </List>
       </Popover>
     </div>
