@@ -2201,11 +2201,9 @@ var CStudioForms = CStudioForms || function() {
                   for (var k = 0; k < formField.form.sections[0].fields.length; k++) {
                     var elt = formField.form.sections[0].fields[k].inputEl;
                     if (elt && !elt.disabled) {
-
-                      var position = $('html').scrollTop();
-                      formField.form.sections[0].fields[k].inputEl.focus();
-                      $('html').scrollTop(position);
-
+                      if (!['input', 'button', 'iframe', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) {
+                        formField.form.sections[0].fields[k].inputEl.focus({preventScroll: true});
+                      }
                       return
                     }
                   }
