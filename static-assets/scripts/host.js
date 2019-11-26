@@ -609,16 +609,20 @@
     }
 
     if (siteChanged || !hasCheckIn) {
-          win.src = previewAppBaseUri + hash.page;
+      win.src = previewAppBaseUri + hash.page;
     } else {
       communicator.publish(Topics.CHANGE_GUEST_REQUEST, {
         base: previewAppBaseUri,
         url: hash.page
       });
-      }
+    }
 
     var path = hash.page,
       hashPage = hash.page;
+
+    if (path.startsWith('/static-assets/')) {
+      hasCheckIn = false;
+    }
 
     if (path && path.indexOf('.') != -1) {
       if (path.indexOf('.html') != -1 || path.indexOf('.xml') != -1) {
