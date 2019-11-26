@@ -171,15 +171,19 @@
       <div class="col-md-12">
         <div class="form-group">
           <label for="identifier" class="control-label">{{ 'admin.groups.DISPLAY_NAME' | translate }}</label>
-          <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.name" ng-change="" autofocus focus-me="true" required>
-        </div>
+          <input type="text" class="form-control" id="identifier" name="identifier" ng-model="group.name" ng-change="" autofocus focus-me="true" ng-maxlength="groups.maxInputLength" required>
 
-        <div class="error-container"
-             ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">
-          <small class="error"
-                 ng-show="createNameForm.identifier.$error.required">
-            {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
-          </small>
+          <div class="error-container"
+               ng-show="(createNameForm.identifier.$dirty && createNameForm.identifier.$invalid) || (createNameForm.identifier.$touched && createNameForm.identifier.$invalid)">
+            <small class="error"
+                   ng-show="createNameForm.identifier.$error.required">
+              {{ 'admin.groups.GROUP_ID_ERROR_MESSAGE' | translate }}
+            </small>
+            <small class="error ng-binding"
+                   ng-show="createNameForm.identifier.$error.maxlength">
+              {{ groups.messages.groupNameMaxLength }}
+            </small>
+          </div>
         </div>
 
         <div class="form-group">
@@ -196,7 +200,7 @@
         </div>
 
         <div class="alert alert-danger" ng-if="groupsError">
-          {{groupsError.message}}
+          {{groupsError}}
         </div>
       </div>
     </div>

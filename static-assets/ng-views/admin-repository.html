@@ -17,7 +17,7 @@
 
 <div class="container-fluid admin-view repositories">
   <div class="row full">
-    <div class="col-md-12">
+    <div class="col-md-12 mb20">
       <h2 class="page-header">{{ 'admin.repositories.REMOTES' | translate }}</h2>
 
       <div class="actions clearfix pull-right mb10">
@@ -30,14 +30,29 @@
           <i class="fa fa-info-circle mr10" aria-hidden="true"></i>
           {{ 'admin.repositories.NO_CONFLICTS' | translate }}
         </h5>
-        <h5 class="text-warning" ng-show="!repositories.status.clean">
+        <h5 class="text-warning" ng-show="!repositories.status.clean && repositories.status.conflicting.length > 0">
           <i class="fa fa-exclamation-triangle mr10" aria-hidden="true"></i>
           {{ 'admin.repositories.CONFLICTS_EXIST' | translate }}
         </h5>
+        <h5 class="text-warning" ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length > 0
+          && repositories.status.conflicting.length < 1">
+          <i class="fa fa-exclamation-triangle mr10" aria-hidden="true"></i>
+            {{ repositories.repoMessages.pendingCommit }}
+        </h5>
+        <h5 class="text-warning" ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length < 1
+          && repositories.status.conflicting.length < 1">
+          <i class="fa fa-exclamation-triangle mr10" aria-hidden="true"></i>
+            {{ repositories.repoMessages.unstagedFiles }}
+        </h5>
       </div>
 
-      <div class="repositories-table" ng-show="repositories.status.clean">
-        <table class="table table-striped">
+      <div class="mb25" ng-show="!repositories.status.clean && repositories.status.uncommittedChanges.length < 1
+        && repositories.status.conflicting.length < 1">
+        <hr class="hr"> 
+      </div>
+
+      <div class="repositories-table" ng-show="repositories.status.conflicting.length < 1">
+        <table class="table table-striped mb0">
           <thead>
           <tr>
             <th>{{ 'admin.repositories.NAME' | translate }}</th>
@@ -73,8 +88,15 @@
         </table>
       </div>
     </div>
+    <div class="col-md-12 mb25" ng-show="!repositories.status.clean && 
+      (repositories.status.conflicting.length > 0 || 
+      repositories.status.uncommittedChanges.length > 0)">
+      <hr class="hr"> 
+    </div>
     <div class="col-md-12">
-      <div class="repository-status" ng-show="!repositories.status.clean">
+      <div class="repository-status" ng-show="!repositories.status.clean && 
+        (repositories.status.conflicting.length > 0 || 
+        repositories.status.uncommittedChanges.length > 0)">
         <h3 class="header header--inline">{{ 'admin.repositories.REPOSITORY_STATUS' | translate }}</h3>
         <div class="actions clearfix pull-right">
           <div class="btn-group studio-dropdown mr10" dropdown>

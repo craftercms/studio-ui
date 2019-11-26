@@ -31,7 +31,7 @@
                     <input id="username" type="text"
                            ng-model="credentials.username"
                            class="form-control" placeholder="john@example.com"
-                           ng-model="credentials.username"
+                           ng-change="userInputChange()"
                            autofocus focus-me="true"/>
                 </div>
             </div>
@@ -57,11 +57,7 @@
                             ng-model="langSelect"
                             ng-options="opt.id as opt.label for opt in languagesAvailable">
                         <option value="" ng-if="false"></option>
-                        <!--<option ng-selected="opt.selected" ng-repeat="opt in languagesAvailable" value="{{opt.id}}">
-                            {{opt.label}}
-                        </option>-->
                     </select>
-                    <!-- <a ui-sref="login.recover">Forgot your Password?</a> -->
                 </div>
             </div>
         </div>

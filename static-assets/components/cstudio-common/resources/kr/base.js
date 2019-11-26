@@ -153,7 +153,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "kr", {
     publishStatus: "게시 상태",
     idle: "게으른",
     busy: "바쁜",
+    ready: "준비된",
     stopped: "중지됨",
+    started: "시작",
     quickCreateEmpty:"빠른 작성을위한 아무 것도 구성되어 있지 않습니다. 시스템 관리자에게 문의하여 원하는 빠른 작성 컨텐츠 유형을 구성하십시오."
 
 });
@@ -384,7 +386,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     historyDialogCompare: "비교",
 
     deleteDialogTitle:"삭제",
-    deleteDialogSubTitle:"다음 선택 항목이 삭제됩니다 :",
+    deleteDialogSubTitle:"선택한 항목이 해당 항목과 함께 삭제됩니다. 종속 항목은 삭제하기 전에 끊어진 링크 참조로 종료되므로 검토하십시오.",
     deleteDialogSetLink:'이제"모든 것을 설정',
     deleteDialogPage:"페이지",
     deleteDialogDelete:"삭제",
@@ -429,8 +431,15 @@ CStudioAuthoring.Messages.registerBundle("forms", "kr", {
     softDependencies:"소프트 종속성",
     submissionOptional:"제출 옵션",
     showAllDependencies:"S모든 종속성 표시",
-    changesSelectioItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
+    changesSelectionItems:'게시 할 항목 선택을 변경하면 "모든 종속성"을 다시 계산해야합니다.',
     loadingDependencies:"종속성로드 중입니다. 잠시만 기다려주십시오 ...",
+
+    childItemsText:"아동 용품",
+    willGetDeleted:"삭제됩니다",
+    dependendtItems:"종속 품목",
+    brokenItems:"참조가 깨질 것입니다",
+    deleteItems:"항목 삭제",
+    uploadingDepenedents:"부양 가족 업데이트 중입니다. 잠시만 기다려주십시오.",
 
     newContTypeDialogTitle: "콘텐츠 형식 만들기",
     newContTypeDialogDisplayLabel: "표시 라벨",
@@ -659,6 +668,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
 
     /*Datasources */
     childContent: "자식 내용",
+    embeddedContent: "임베디드 컨텐츠",
     imageUploadedDesktop: "이미지 바탕 화면에서 업로드",
     WebDAVUploadImage: "WebDav 저장소에 업로드 된 이미지",
     WebDAVUploadVideo: "WebDav 저장소에 업로드 된 비디오",
@@ -697,6 +707,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     maxLength: "최대 길이s",
     width: "폭",
     height: "신장",
+    autoGrow: "자동 성장",
     allowResize: "크기 조정 허용",
     forceRootBlockP: "강제 루트 블록 p 태그",
     forcePNewLines: "강제 p는 신규 라인 태그",
@@ -760,6 +771,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     inputProfileId: "입력 프로파일 ID",
     outputProfileId: "출력 프로필 ID",
     postfixes: "포스트 픽스",
+    enableCreateNew: "쇼 새로 만들기",
+    enableBrowseExisting: "쇼 기존 항목 찾아보기",
+    enableSearchExisting: "쇼 기존 검색",
+    useSearch: "검색 사용",
 
     /*Restrictions*/
     required: "필요",
@@ -818,6 +833,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     confTabRTEConfDesc: "서식있는 텍스트 편집기는 형태로 구성을 정의",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) 구성",
     confTabRTEtMCE5Desc: "서식있는 텍스트 편집기는 형태로 구성을 정의",
+    confTabCodeEditorConf: "코드 편집기 구성",
+    confTabCodeEditorConfDesc: "코드 편집기 구성을 정의합니다",
     confTabPreviewAssetConf: "자산 미리 구성",
     confTabPreviewAssetConfDesc: "XML 컨텐츠와 연관된 편집 자산 목록을 정의",
     confTabPreviewComponentsConf: "구성 요소 구성 미리보기",
@@ -886,6 +903,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "kr", {
     edit: "편집하다",
     createNew: "새로 만들기",
     browseExisting: "기존 항목 찾아보기",
+    searchExisting: "기존 검색",
 
     /*help popover*/
     pattern: "무늬",

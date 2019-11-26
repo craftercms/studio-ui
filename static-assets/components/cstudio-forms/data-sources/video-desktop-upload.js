@@ -61,7 +61,7 @@ YAHOO.extend(CStudioForms.Datasources.VideoDesktopUpload, CStudioForms.CStudioFo
 			context: this
 		};
 
-		CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+		CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback, ["video/*"]);
 	},
 
 	/**

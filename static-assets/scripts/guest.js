@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('guest', [
+crafterDefine('guest', [
   'crafter', 'jquery', 'communicator', 'ice-overlay',
 ], function (crafter, $, Communicator, ICEOverlay) {
   'use strict';
@@ -59,10 +59,8 @@ define('guest', [
       origin: origin
     }, origin);
 
-    this.test = config.test
-
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {
-      require(['dnd-controller'], function (DnDController) {
+      crafterRequire(['dnd-controller'], function (DnDController) {
 
         (typeof dndController === 'undefined') && (dndController = new DnDController({
           communicator: communicator
@@ -88,7 +86,7 @@ define('guest', [
     });
 
     communicator.on(Topics.DND_COMPONENTS_PANEL_OFF, function (message) {
-      require(['dnd-controller'], function (DnDController) {
+      crafterRequire(['dnd-controller'], function (DnDController) {
 
         (typeof dndController === 'undefined') && (dndController = new DnDController({
           communicator: communicator
@@ -99,7 +97,7 @@ define('guest', [
     });
 
     communicator.on(Topics.DND_CREATE_BROWSE_COMP, function (message) {
-      require(['pointer-controller'], function (pointerController) {
+      crafterRequire(['pointer-controller'], function (pointerController) {
 
         (typeof pointerControllerVar === 'undefined') && (pointerControllerVar = new pointerController({
           communicator: communicator
@@ -125,7 +123,7 @@ define('guest', [
     });
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function (message) {
-      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '=' + message.region + ']')[0];
+      var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
       if (elt) {
         elt.scrollIntoView();
         window.scrollBy(0, -150);
@@ -166,6 +164,13 @@ define('guest', [
 
     communicator.on(Topics.RESIZE_ICE_REGIONS, initIceRegions_resizeIceRegions_handler);
 
+    communicator.on(Topics.CHANGE_GUEST_REQUEST, (params) => {
+      const locationOrigin = window.location.origin;
+      if (window.location.href.replace(locationOrigin, '') !== params.url) {
+        window.location.href = `${locationOrigin}${params.url}`;
+      }
+    });
+
     // When the page has successfully loaded, notify the host window of it's readiness
     communicator.publish(Topics.GUEST_SITE_LOAD, {
       location: window.location.href,
@@ -189,11 +194,24 @@ define('guest', [
     });
 
     $document.on('click', '.studio-ice-indicator', function (e) {
+      let pencilClasses =  'fa-pencil icon-yellow';
+      let spinnerClases = 'fa-spinner fa-spin icon-default';
+
+      if($(e.target).hasClass(spinnerClases)) return false;
+
+      $(e.target).removeClass(pencilClasses);
+      $(e.target).addClass(spinnerClases);
+
+      setTimeout(function () {
+        $(e.target).removeClass(spinnerClases);
+        $(e.target).addClass(pencilClasses);
+      }, 4000);
 
       var $i = $(this);
       var $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
       var iceId = $e.data('studioIce');
       var icePath = $e.data('studioIcePath');
+      var iceEmbeddedItemId = $e.data('studioEmbeddedItemId');
 
       var position = $e.offset(),
         props = {
@@ -205,6 +223,7 @@ define('guest', [
 
       props.iceId = iceId;
       props.itemId = icePath;
+      props.embeddedItemId = iceEmbeddedItemId;
       props.scrollTop = $window.scrollTop();
       props.scrollLeft = $window.scrollLeft();
 

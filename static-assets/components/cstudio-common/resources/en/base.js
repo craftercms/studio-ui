@@ -162,7 +162,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "en", {
     publishStatus: "Publish Status",
     idle: "Idle",
     busy: "Busy",
+    ready: "Ready",
     stopped: "Stopped",
+    started: "Started",
     quickCreateEmpty:"Nothing is configured for Quick Create. Please ask your system administrator to configure your desired quick create content types."
 
 });
@@ -413,7 +415,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     historyDialogCompare: "Compare",
 
     deleteDialogTitle: "Delete",
-    deleteDialogSubTitle: "The following checked items will be deleted:",
+    deleteDialogSubTitle: "Selected items will be deleted along with their items. Please review dependent items before deleting as these will end-up with broken link references.",
     deleteDialogSetLink: 'Set everything to "Now"',
     deleteDialogPage: "Page",
     deleteDialogDelete: "Delete",
@@ -458,8 +460,15 @@ CStudioAuthoring.Messages.registerBundle("forms", "en", {
     softDependencies:"Soft Dependencies",
     submissionOptional:"Submission optional",
     showAllDependencies:"Show All Dependencies",
-    changesSelectioItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
+    changesSelectionItems:'Changes in the selection of items to publish will require "all dependencies" to be recalculated.',
     loadingDependencies:"Loading Dependencies, please wait...",
+
+    childItemsText:"Child Items",
+    willGetDeleted:"Will get deleted",
+    dependendtItems:"Dependent Items",
+    brokenItems:"Will have broken references",
+    deleteItems:"Delete Items",
+    uploadingDepenedents:"Updating dependents, please wait...",
 
     newContTypeDialogTitle: "Create Content Type",
     newContTypeDialogDisplayLabel: "Display Label",
@@ -710,6 +719,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
 
     /*Datasources */
     childContent: "Child Content",
+    embeddedContent: "Embedded Content",
     imageUploadedDesktop: "Image Uploaded From Desktop",
     WebDAVUploadImage: "Image Uploaded to WebDav Repository",
     WebDAVUploadVideo: "Video Uploaded to WebDav Repository",
@@ -749,6 +759,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     maxLength: "Max Length",
     width: "Width",
     height: "Height",
+    autoGrow: "Auto Grow",
     allowResize: "Allow Resize",
     forceRootBlockP: "Force Root Block p Tag",
     forcePNewLines: "Force p tags New Lines",
@@ -801,6 +812,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     showKeys: "Show keys (item sel. only)",
     taxonomyName: "Taxonomy Name",
     defaultType: "Default Type",
+    contentType: "Content Type",
     displayTemplate: "Display Template",
     noTemplateRequired: "No Template Required",
     mergeStrategy: "Merge Strategy",
@@ -815,6 +827,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     inputProfileId: "Input Profile Id",
     outputProfileId: "Output Profile Id",
     postfixes: "Postfixes",
+    enableCreateNew: "Enable Create New",
+    enableBrowseExisting: "Enable Browse Existing",
+    enableSearchExisting: "Enable Search Existing",
+    useSearch: "Use Search",
 
     /*Restrictions*/
     required: "Required",
@@ -886,6 +902,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     confTabRTEConfDesc: "Defines Rich Text Editors configurations in form",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) Configuration",
     confTabRTEtMCE5ConfDesc: "Defines Rich Text Editors configurations in form",
+    confTabCodeEditorConf: "Code Editor Configuration",
+    confTabCodeEditorConfDesc: "Defines Code Editor configurations",
     confTabPreviewAssetConf: "Preview Asset Configuration",
     confTabPreviewAssetConfDesc: "Defines a list of editable assets associated with XML contents",
     confTabPreviewComponentsConf: "Preview Components Configuration",
@@ -964,6 +982,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "en", {
     edit: "Edit",
     createNew: "Create New",
     browseExisting: "Browse for Existing",
+    searchExisting: "Search for Existing",
 
     /*help popover*/
     pattern: "Pattern",

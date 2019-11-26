@@ -18,10 +18,9 @@
 /**
  * Created by rart on 18/02/15.
  */
-(window.define || function (a, b, f) {
+(window.crafterDefine || function (a, b, f) {
     f(crafter, $);
 })('animator', ['crafter', 'jquery'], function (crafter, $) {
-
     var ANIMATE_CLASS = 'animated',
         END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 

@@ -21,10 +21,16 @@
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins";
 
 #formContainer {
-
   padding: 20px 0 80px;
+  &.padded-top {
+    padding-top: 80px;
+  }
+}
 
-
+#formHeader {
+  &.padded-top {
+    padding-top: 50px;
+  }
 }
 
 header {
@@ -113,6 +119,43 @@ div.xdsoft_datetimepicker {
 
 /*******************/
 
+// RTE (tinymce 5) custom styles
+.tox-dialog.fullscreen {
+	width: 100% !important;
+	max-width: 100% !important;
+	height: 100% !important;
+}
+
+.tox-dialog.fullscreen .tox-dialog__body-content {
+	max-height: 100% !important;
+	border: 1px solid #cccccc;
+}
+
+.tox.tox-tinymce:not(.tox-fullscreen) .tox-menubar,
+.tox.tox-tinymce:not(.tox-fullscreen) .tox-toolbar{
+  display: none;
+}
+
+.tox-tinymce.focused:not(.tox-fullscreen) .tox-menubar{
+  display: flex;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  z-index: 1001;
+}
+
+.tox-tinymce.focused:not(.tox-fullscreen) .tox-toolbar{
+  display: flex;
+  position: fixed;
+  left: 0;
+  top: 39px;
+  width: 100%;
+  z-index: 1000;
+  -webkit-box-shadow: 0px 1px 6px -3px rgba(0,0,0,0.57);
+  -moz-box-shadow: 0px 1px 6px -3px rgba(0,0,0,0.57);
+  box-shadow: 0px 1px 6px -3px rgba(0,0,0,0.57);
+}
 
 // Reset and dependencies
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/normalize";
@@ -123,7 +166,6 @@ div.xdsoft_datetimepicker {
 // Reset and dependencies
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/normalize";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/print";
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/glyphicons";
 
 // Core CSS
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/scaffolding";
@@ -161,12 +203,10 @@ div.xdsoft_datetimepicker {
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/modals";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/tooltip";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/popovers";
-@import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/carousel";
 
 // Utility classes
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/utilities";
 @import "../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/responsive-utilities";
-
 
 body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6, .yui-panel.yui-overlay {
   font-family: 'Open Sans', sans-serif;

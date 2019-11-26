@@ -61,7 +61,7 @@
         "CHOOSE_A_BLUEPRINT":"Elige un plano",
         "CREATING_SITE": "Creando Sitio",
         "CREATE_ERROR": "No se puede crear el sitio. Por favor, póngase en contacto con el administrador del sistema.",
-        "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, que consta de: letras minúsculas, números, guión (-) y guión bajo (_) )",
+        "SITE_ID_VALIDATION": "(Longitud máxima: 50 caracteres, que consta de: letras minúsculas, números, guión (-) y guión bajo (_), no puede comenzar con: guión (-) y guión bajo (_) )",
         "LENGTH_VALIDATION_4000": "(Longitud máxima: 4000 caracteres)",
         "BRANCH_DEFAULTS": "(El branch por defecto es 'master' si el espacio esta en blanco)",
         "ERROR": "Error:",
@@ -92,6 +92,7 @@
         "RECOMMENDED":"(Recomendada)",
         "IS_REQUIRED":"es requerido.",
         "ALREADY_EXIST":"ya existe.",
+        "NUMERIC_ERROR":"Si la identificación del sitio es numérica, no puede comenzar con 0",
         "CHOOSE_BLUEPRINT":"Elegir plano",
         "PREVIOUS_STEP":"Paso previo"
       }
@@ -226,6 +227,7 @@
       "ORDER":"Orden",
       "ALL_ORIGINS":"Todos los orígenes",
       "SORT":"Ordenar",
+      "OPTIONS":"Opciones",
       "COLLAPSE":"Colapso",
       "EXPAND":"Expandir",
       "TIMESTAMP":"Marca de tiempo",
@@ -239,15 +241,22 @@
     "publishing": {
         "PUBLISHING": "Publicación",
         "STATUS": "Estado",
+        "IDLE": "Desocupado",
+        "BUSY": "Ocupado",
+        "READY": "Listo",
+        "STOPPED": "Detenido",
+        "STARTED": "Empezado",
         "BULKPUBLISH": "Publicación Masiva",
         "PATHPUBLISH": "Camino a publicar",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "Ambiente",
+        "PUBLISHINGSUBMISSIONCOMMENT": "Comentario",
         "PUBLISH": "Publicar",
         "PATH":"Ruta",
         "CHANNEL":"Canal",
         "WARNINGBP":"Advertencia: Publicación Masiva",
         "WRNINGGPBODY":"La publicación masiva obligará a publicar todos los artículos que coincidan con el patrón solicitado, incluidas sus dependencias. Asegúrese de que todos los elementos modificados (incluido el trabajo potencialmente en progreso) estén listos para publicarse antes de continuar.",
+        "PUBLISHQUEUE":"Cola de publicación",
         "PUBLISHSTARTED":"El proceso de publicación masiva se ha iniciado.",
         "PUBLISHBYCOMMITS": "Públicar por id(s) de commit",
         "PUBLISHBYCOMMITS_SUCCESS": "Publicado exitosamente",
@@ -339,7 +348,9 @@
       "LEVEL": "Nivel",
       "THREAD": "Hilo",
       "SITE": "Sitio",
-      "EXCEPTION": "Excepción"
+      "EXCEPTION": "Excepción",
+      "DETAILS": "Detalles",
+      "LOG_DETAILS": "Detalles de Registro"
     }
   },
   "common": {
@@ -351,6 +362,7 @@
     "EDIT": "Modificar",
     "SAVE": "Guardar",
     "VIEW": "view",
+    "FROM": "de",
     "IS_REQUIRED_LABEL": "es requerido.",
     "REQUIRED_LABEL": "requerido.",
     "ALL_LABEL": "Todos",
@@ -376,6 +388,7 @@
     "DELETE_QUESTION":"Quieres borrar",
     "GLOBAL_MENU": "Menu Global",
     "MAIN_MENU": "Menu Principal",
-    "RESET_PASSWORD": "Restablecer la contraseña"
+    "RESET_PASSWORD": "Restablecer la contraseña",
+    "CLOSE": "Cerrar"
   }
 }

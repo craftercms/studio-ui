@@ -68,6 +68,10 @@
 
 }
 
+.green .modal-body .notificationBody .icon{
+  color: $success-green;
+}
+
 .createSitesBtn{
   width: 194px;
 
@@ -187,6 +191,10 @@
 .validationComment{
   color: gray;
   font-size: 9px;
+}
+
+.submission-comment{
+  height: 65px;
 }
 
 .word-wrap{

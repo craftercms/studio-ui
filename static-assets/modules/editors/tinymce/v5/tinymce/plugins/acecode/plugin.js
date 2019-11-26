@@ -1,4 +1,4 @@
-/* 
+/*
  * Ace Editor Plugin for TinyMCE 5.0
  * By Jose Vega
  */
@@ -6,10 +6,10 @@
 (function () {
 	var acecode = (function () {
 			'use strict';
-	
+
 			var global = tinymce.util.Tools.resolve('tinymce.PluginManager'),
 				mce_editor;
-	
+
 			var setContent = function (editor, html) {
 				editor.focus();
 				editor.undoManager.transact(function () {
@@ -62,6 +62,9 @@
 			var Dialog = { open: function(editor){
 				open(editor);
 
+				var dialog = document.getElementsByClassName('tox-dialog--width-lg')[0];
+				dialog.classList.add('fullscreen');
+
 				mce_editor = ace.edit('mce-ace-editor-block');
 				mce_editor.setTheme("ace/theme/eclipse");
 				mce_editor.getSession().setMode("ace/mode/html");
@@ -70,14 +73,14 @@
 				});
 				mce_editor.getSession().setValue(Content.getContent(editor));
 			} };
-	
+
 			var register = function (editor) {
 				editor.addCommand('mceace_codeEditor', function () {
-					Dialog.open(editor);	
+					Dialog.open(editor);
 				});
 			};
 			var Commands = { register: register };
-	
+
 			var register$1 = function (editor) {
 				editor.ui.registry.addButton('acecode', {
                     icon: 'sourcecode',
@@ -95,7 +98,7 @@
 				});
 			};
 			var Buttons = { register: register$1 };
-	
+
 			global.add('acecode', function (editor) {
 				Commands.register(editor);
 				Buttons.register(editor);
@@ -103,9 +106,8 @@
 			});
 			function Plugin () {
 			}
-	
+
 			return Plugin;
-	
+
 	}());
 })();
-	

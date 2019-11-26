@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator'], function (crafter, $, $ui, Animator, Communicator) {
+crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator'], function (crafter, $, $ui, Animator, Communicator) {
   'use strict';
 
   var Topics = crafter.studio.preview.Topics,
@@ -154,7 +154,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         this.getAnimator($p).slideOutRight(function () {
           $o.detach();
           $p.detach();
-            expandContractChannel();
         });
 
         $('.removeComp').remove();
@@ -198,6 +197,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
   function enableDnD(components, initialComponentModel, browse) {
     amplify.publish(Topics.ICE_TOOLS_OFF);
+    var communicator = this.cfg('communicator');
 
     publish.call(this, Topics.SET_SESSION_STORAGE_ITEM, {
       key: 'components-on',
@@ -222,9 +222,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     renderPalette.call(this, components, browse);
 
     this.getAnimator($o).fadeIn();
-    this.getAnimator($p).slideInRight(function () {
-        expandContractChannel('expand');
-    });
+    this.getAnimator($p).slideInRight();
 
     $("[data-studio-components-size='small']").each(function (index) {
       $(this).width($(this).width() / 2);
@@ -239,6 +237,115 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
       zIndex: 1030
     });
 
+    let dndInProgress = null;
+    let validationInProgress = null;
+    var cacheValidation = {};
+
+    function restrictions($dropZone, $component, isNew) {
+      if(dndInProgress !== null) {
+        let temp  = dndInProgress;
+        dndInProgress = null;
+        return temp;
+      }
+      var valid = true;
+      var isDestZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var isCurrentZoneEmbedded = $dropZone.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var DestContentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type') || null;
+      var currentContentType = $dropZone.attr('data-studio-zone-content-type') || null;
+      var isItemEmbedded;
+      var currentTrackingNumber;
+      var destTrackingNumber;
+
+      // We are moving a component
+      if (!isNew) {
+        currentTrackingNumber = $dropZone.attr('data-studio-zone-tracking');
+        destTrackingNumber = $component.parents('[data-studio-zone-tracking]').attr('data-studio-zone-tracking');
+        isItemEmbedded = $component.attr('data-studio-embedded-item-id') || false;
+      } else {
+        let path =  $component.attr('data-studio-component-path');
+        isItemEmbedded = path ? false: true;
+      }
+
+      var sameDropZone = (currentTrackingNumber === destTrackingNumber);
+
+      //checking if both have contentType
+      if(!DestContentType || !currentContentType) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'contentTypeNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
+        });
+      }
+
+      if (isDestZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsDndNotSupported',
+          height: 'auto'
+        });
+      } else if (isItemEmbedded && !sameDropZone) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsDragWithinParentOnly',
+          height: 'auto'
+        });
+      } else if (isCurrentZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'moveOutEmbeddedComponentsNotSupported',
+          height: 'auto'
+        });
+      }
+
+      if (!valid) {
+        if (isNew) {
+          $component.remove();
+          window.location.reload();
+        } else {
+          $(DROPPABLE_SELECTION).sortable("cancel");
+        }
+      }
+
+      //if it is a move it is doing 2 calls
+      if (!isNew) {
+        dndInProgress = valid;
+      }
+      //if it is a move within the same dropzone is doing 1 call
+      if(sameDropZone) {
+        dndInProgress = null;
+      }
+      return valid;
+    }
+
+    function validation($dropZone, $component, contentType, zone, componentType, response) {
+      var childContent = componentType === 'shared-content'? 'child-content' : null;
+      var key = `${zone}-${componentType}`;
+
+      return new Promise((resolve, reject) => {
+        if (cacheValidation[key]) {
+          resolve(cacheValidation[key]);
+        } else {
+          cacheValidation[key] = {supported: false, ds: null};
+        }
+        var selector;
+        response.sections.forEach(section => {
+          var _selector = section.fields.find(item => item.id === zone);
+          if (_selector) selector = _selector;
+        });
+        var selectorDS = selector.properties.find(item => item.name === "itemManager");
+        selectorDS.value.split(',').forEach(ds => {
+          var type = response.datasources.find(formDS => formDS.id === ds).type;
+          if (type === componentType || type === childContent) cacheValidation[key] = {
+            supported: true,
+            ds: ds
+          };
+          return true;
+        });
+        resolve(cacheValidation[key]);
+      });
+    }
+
     function updateDop(self, me, ui) {
       var $dropZone = $(self),
         $component = ui.item,
@@ -246,13 +353,57 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
         orgZoneComp = ui.item.parents('[data-studio-components-target]').parents('[data-studio-component-path]'),
         destZoneComp = $dropZone.parents('[data-studio-component-path]');
-      if (compPath != zonePath && ((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
+
+      var isNew = $component.hasClass('studio-component-drag-target');
+      var destContentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type') || null;
+      var componentType;
+      var zone = $component.parents('[data-studio-components-target]').attr('data-studio-components-target') || null;
+      if(!isNew) {
+        componentType = $component.attr('data-studio-embedded-item-id')? 'embedded-content' : 'shared-content';
+      }else {
+        let path =  $component.attr('data-studio-component-path');
+        componentType = path ? 'shared-content': 'embedded-content';
+      }
+
+      if (((orgZoneComp.attr('data-studio-component-path') != destZoneComp.attr('data-studio-component-path') ||
         (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
           $dropZone.attr('data-studio-components-objectid') != ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid')) ||
         (orgZoneComp.attr('data-studio-component-path') == destZoneComp.attr('data-studio-component-path') &&
           orgZoneComp.attr('data-studio-tracking-number') == destZoneComp.attr('data-studio-tracking-number') &&
           $dropZone.attr('data-studio-components-objectid') == ui.item.parents('[data-studio-components-target]').attr('data-studio-components-objectid'))))) {
-        componentDropped.call(me, $dropZone, $component);
+        if(restrictions($dropZone, $component, isNew)) {
+          var callback = function(response) {
+            validation($dropZone, $component, destContentType, zone, componentType, response).then((response) => {
+              validationInProgress = null;
+              if (response.supported) {
+                componentDropped.call(me, $dropZone, $component, response.ds);
+              } else {
+                publish.call(me, Topics.START_DIALOG, {
+                  messageKey: 'componentNotWelcomeWithinDropZone',
+                  height: 'auto'
+                });
+                if(isNew) {
+                  $component.remove();
+                  window.location.reload();
+                }else {
+                  $(DROPPABLE_SELECTION).sortable("cancel");
+                }
+              }
+            });
+            communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+          };
+          communicator.on(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+
+          //Validation with cache avoiding doble validation...
+          let key = `${zone}-${componentType}`;
+          if(cacheValidation[key] && cacheValidation[key].supported) {
+            communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+            componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds);
+          } else if(validationInProgress === null) {
+            validationInProgress = true;
+            publish.call(me, Topics.REQUEST_FORM_DEFINITION, {contentType: destContentType});
+          }
+        }
       } else {
         $(DROPPABLE_SELECTION).sortable("cancel");
       }
@@ -288,7 +439,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
             updateDop(self, me, ui);
           }, 300);
         }
-
       }
     });
 
@@ -313,6 +463,14 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         var dropName = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-components-target');
         var trackingZone = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-zone-tracking');
         var index = 0, currentTag = "", zone;
+        var isCurrentZoneEmbedded = $(this).parent().parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+        if (isCurrentZoneEmbedded) {
+          publish.call(me, Topics.START_DIALOG, {
+            messageKey: 'embeddedComponentsDeleteChildNotSupported',
+            height: 'auto'
+          });
+          return false;
+        }
         removeComponent(this, function () {
           var zones = {};
           var conRepeat = 0;
@@ -367,25 +525,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
 
   }
 
-  function expandContractChannel(opt) {
-    var
-      $studioChannelPortrait = $('.studio-device-preview-portrait', parent.document)[0],
-      $studioChannelLandscape = $('.studio-device-preview-landscape', parent.document)[0];
-    if ($studioChannelPortrait || $studioChannelLandscape) {
-      var
-        inputChannelWidth = $('[data-axis="x"]', parent.document),
-        width = inputChannelWidth.val() || 'auto',
-        $engine = $('#engineWindow', parent.document);
-
-      width = opt === 'expand' ? parseInt(width) + 265 : parseInt(width);
-      $engine.width(
-        (width === 'auto' || width === '')
-          ? '' : parseInt(width));
-    }
-  }
-
-  function componentDropped($dropZone, $component) {
-
+  function componentDropped($dropZone, $component, datasource) {
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
     var objectId = $dropZone.attr('data-studio-components-objectid');
@@ -403,7 +543,7 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
       name = $component.text();
       tracking = crafter.guid();
       $component.before(
-        string('<div data-studio-component="%@" data-studio-component-path="%@" data-studio-tracking-number="%@">%@</div>')
+        string('<div data-studio-component="%@" data-studio-component-path="%@" data-studio-tracking-number="%@">%@ <span class="fa fa-spinner fa-spin"></span></div>')
           .fmt(type, path, tracking, name));
       $component.remove();
     } else {
@@ -416,7 +556,6 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     // need a timeout to grab out the updated DOM structure
     var conRepeat = 0;
     setTimeout(function () {
-
       $('[data-studio-components-target]').each(function () {
         zone = $(this).attr("data-studio-components-target");
         if (currentTag !== zone) {
@@ -453,7 +592,8 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         zones: zones,
         trackingNumber: tracking,
         compPath: compPath,
-        conComp: (conRepeat > 1) ? true : false
+        conComp: (conRepeat > 1) ? true : false,
+        datasource: datasource
       });
 
     });
@@ -463,12 +603,13 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
     $('[data-studio-tracking-number="' + tracking + '"]').data('model', data);
   }
 
+  var contentTypeValidationInProgress = null;
   function componentsModelLoad(data) {
-    //console.log("test");
     var aNotFound = [],
       me = this,
       noObjectid = 0,
-      structure1, structure2, index = 0, currentTag = "";
+      structure1, structure2, index = 0, currentTag = "",
+      noContentType = 0;
 
     $('[data-studio-components-target]').each(function () {
       var $el = $(this),
@@ -477,61 +618,66 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         name = $el.attr('data-studio-components-target'),
         path = $el.parents('[data-studio-component-path]').attr('data-studio-component-path'),
         id = objectId + "-" + name;
-      if (name.indexOf('.') < 0) {
-        if (objectId) {
-          if (!found[id] || objectId == data['objectId']) {
-            if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
-              found[id] = true;
-              $el.find('> [data-studio-component]').each(function (i, el) {
-                $(this).data('model', data[name][i]);
-              });
-            } else {
-              var repeated = false;
-              for (var j = 0; j < aNotFound.length; j++) {
-                if (aNotFound[j].path == path && aNotFound[j].name == name) {
-                  repeated = true;
+        if(!$el.attr('data-studio-zone-content-type')) {
+          noContentType++;
+        }
+        //avoid searching if the item is embedded;
+        if(!$el.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id')) {
+          if (name.indexOf('.') < 0) {
+            if (objectId) {
+              if (!found[id] || objectId == data['objectId']) {
+                if ((data[name] || data[name] == "") && objectId == data['objectId']) { ///objid?
+                  found[id] = true;
+                  $el.find('> [data-studio-component]').each(function (i, el) {
+                    $(this).data('model', data[name][i]);
+                  });
+                } else {
+                  var repeated = false;
+                  for (var j = 0; j < aNotFound.length; j++) {
+                    if (aNotFound[j].path == path && aNotFound[j].name == name) {
+                      repeated = true;
+                    }
+                  }
+                  if (!repeated) {
+                    aNotFound.push({ path: path, name: name });
+                  }
                 }
               }
-              if (!repeated) {
-                aNotFound.push({ path: path, name: name });
-              }
-            }
-          }
-        } else {
-          noObjectid++
-        }
-      } else {
-        if (currentTag !== name) {
-          index = 0;
-          currentTag = name;
-        }
-        structure1 = name.split('.')[0];
-        structure2 = name.split('.')[1];
-        if (objectId) {
-          if (!found[id] || objectId == data['objectId']) {
-            if ((data[structure1][index][structure2] || data[structure1][index][structure2] == "") && objectId == data['objectId']) { ///objid?
-              found[id] = true;
-              $el.find('> [data-studio-component]').each(function (i, el) {
-                $(this).data('model', data[structure1][index][structure2][i]);
-              });
             } else {
-              var repeated = false;
-              for (var j = 0; j < aNotFound.length; j++) {
-                if (aNotFound[j].path == path && aNotFound[j].name == name) {
-                  repeated = true;
-                }
-              }
-              if (!repeated) {
-                aNotFound.push({ path: path, name: name });
-              }
+              noObjectid++
             }
-            index++;
+          } else {
+            if (currentTag !== name) {
+              index = 0;
+              currentTag = name;
+            }
+            structure1 = name.split('.')[0];
+            structure2 = name.split('.')[1];
+            if (objectId) {
+              if (!found[id] || objectId == data['objectId']) {
+                if ((data[structure1][index][structure2] || data[structure1][index][structure2] == "") && objectId == data['objectId']) { ///objid?
+                  found[id] = true;
+                  $el.find('> [data-studio-component]').each(function (i, el) {
+                    $(this).data('model', data[structure1][index][structure2][i]);
+                  });
+                } else {
+                  var repeated = false;
+                  for (var j = 0; j < aNotFound.length; j++) {
+                    if (aNotFound[j].path == path && aNotFound[j].name == name) {
+                      repeated = true;
+                    }
+                  }
+                  if (!repeated) {
+                    aNotFound.push({ path: path, name: name });
+                  }
+                }
+                index++;
+              }
+            } else {
+              noObjectid++
+            }
           }
-        } else {
-          noObjectid++
         }
-      }
-
     });
 
     var isSearched = false;
@@ -550,14 +696,29 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         }
       } else {
         publish.call(me, Topics.START_DIALOG, {
-          message: 'Model is incomplete. Drag and Drop is not going to work properly.'
+          messageKey: 'pathNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
         });
       }
     }
     if (noObjectid > 0) {
       publish.call(me, Topics.START_DIALOG, {
-        message: 'Object Id is missing. Drag and Drop is not going to work properly.'
+        messageKey: 'objectIdNotFound',
+        link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+        height: 'auto'
       });
+    }
+    if (noContentType > 0) {
+      noContentType = 0;
+      if(contentTypeValidationInProgress == null){
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'contentTypeNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
+        });
+        contentTypeValidationInProgress = true;
+      }
     }
   }
 
@@ -587,11 +748,11 @@ define('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communi
         if (category.components.length) {
           $.each(category.components, function (j, component) {
             html.push(crafter.String(COMPONENT_TPL)
-              .fmt(component.path, component.type, component.label));
+              .fmt(component.path || '', component.type, component.label));
           });
         } else {
           html.push(crafter.String(COMPONENT_TPL)
-            .fmt(category.components.path, category.components.type, category.components.label));
+            .fmt(category.components.path || '', category.components.type, category.components.label));
         }
       }
       html.push('</sul>');

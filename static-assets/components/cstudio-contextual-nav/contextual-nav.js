@@ -34,12 +34,12 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	hookNavOverlayFromAuthoring: function() {
 		if(!this.initialized) {
 			this.initialized = true;
-			this.updateContextualNavOverlay();
+      this.updateContextualNavOverlay();
 		}
 	},
 
 	/**
-	 * Add the contextual navigation overlay / authoring support over 
+	 * Add the contextual navigation overlay / authoring support over
 	 * top of the existing page
 	 * @param content to overlay
 	 */
@@ -53,14 +53,15 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				YAHOO.util.Event.onAvailable("authoringContextNavHeader", function() {
                     document.domain = CStudioAuthoringContext.cookieDomain;
 					CStudioAuthoring.Events.contextNavReady.fire();
-					me.getNavBarContent();
+          me.getNavBarContent();
+          me.addResizeEventToNavbar();
 				}, this);
 			},
 			failure: function() {
 				YAHOO.log("Failed to hook context nav", "error", "authoring nav callback");
 			}
 		});
-	},	
+	},
 
 	/**
 	 * add the contextual nav to the page - first time call
@@ -100,9 +101,6 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
                     CStudioAuthoring.Operations.createNavBarDropDown("help");
                     CStudioAuthoring.Operations.createNavBarDropDown("quick-create");
 				});
-
-                self.addResizeEventToNavbar();
-
 			},
 			failure: function() {},
 			context: this
@@ -122,8 +120,8 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 		};
 
 		CStudioAuthoring.Service.getUserInfo(callback);
-		document.getElementById('account-dropdown').childNodes[0].nodeValue = CStudioAuthoringContext.user;
-	},
+    document.getElementById('account-dropdown').childNodes[0].nodeValue = CStudioAuthoringContext.user;
+  },
 
     /**
      * given a dropdown configuration, build the nav
@@ -141,7 +139,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 		if(navConfig.modules.module.length) {
 			for(var i=0; i<navConfig.modules.module.length; i++) {
 				var module = navConfig.modules.module[i];
-				 
+
 				var cb = {
 					moduleLoaded: function(moduleName, moduleClass, moduleConfig) {
 						try {
@@ -152,7 +150,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 						}
 					}
 				};
-				
+
                 CStudioAuthoring.Module.requireModule(
                     module.moduleName,
                     '/static-assets/components/cstudio-contextual-nav/' + module.moduleName + ".js",
@@ -165,9 +163,9 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 
 	/**
      * Hides/Disables first all the modules, so then when looping configuration, they are shown again
-	 * 
+	 *
      */
-	preProcessModules: function(modulesMap, $barEl, onItem) { 
+	preProcessModules: function(modulesMap, $barEl, onItem) {
 		for (var key in modulesMap) {
 			if (modulesMap.hasOwnProperty(key)) {
 				$barEl.find(modulesMap[key]).addClass('hidden');
@@ -221,7 +219,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 	showModules: function(modulesMap, modules, barEl) {
 		var PREVIEW_CONTAINERS = '.studio-preview, .site-dashboard';
 		var DISABLED = 'disabled-wcm-dropdown';
-		
+
 		var $barEl = $(barEl);
 
 		this.preProcessModules(modulesMap, $barEl, function(key) {
@@ -233,7 +231,7 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 		for (var i = 0; i < modules.length; i++) {
 			var name = modules[i].modulehook;
 			$barEl.find(modulesMap[name]).removeClass('hidden');
-			
+
 			if (name === 'wcm_dropdown') {
 				$(PREVIEW_CONTAINERS).removeClass(DISABLED);
 			}
@@ -241,28 +239,20 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 		};
 	},
 
-    addResizeEventToNavbar: function() {
-        new ResizeSensor($('.navbar-default'), function () {
-            if ($('.navbar-default').height() > 55) {
-                $('.studio-preview').css('top', 100 + "px");
-                $('.site-dashboard').css('top', 100 + "px");
-                if ($('#admin-console').length > 0) {
-                    $('.cstudio-admin-console-item-first').css('margin-top', 110 + "px");
-                    $('#cstudio-admin-console-workarea').css('margin-top', 100 + "px");
-                    $('#content-type-tools').css('top', 50 + "px");
-                }
+  addResizeEventToNavbar: function() {
+    new ResizeSensor($('.navbar-default'), function () {
+      var studioBarHeight = $('#studioBar .navbar').height(),
+      // There will be only .studio-preview, .site-dashboard or #admin-console, not more than 1, so this selector won't fail
+          $content = $('.studio-preview, .site-dashboard, #admin-console'),
+          contentTop = $content.css('top').replace('px', '');
 
-            } else {
-                $('.studio-preview').css('top', 50 + "px");
-                $('.site-dashboard').css('top', 50 + "px");
-                if ($('#admin-console').length > 0) {
-                    $('.cstudio-admin-console-item-first').css('margin-top', 60 + "px");
-                    $('#cstudio-admin-console-workarea').css('margin-top', 0 + "px");
-                    $('#content-type-tools').css('top', 0 + "px");
-                }
-            }
-        });
-    }
+      // sync position of bar and preview/dashboard/site-config
+      if ( studioBarHeight !== parseInt(contentTop) ) {
+        $('.studio-preview, .site-dashboard').css('top', studioBarHeight)
+          .css('height', 'calc(100% - ' + studioBarHeight + 'px)');
+      }
+    });
+  }
 
 };
 

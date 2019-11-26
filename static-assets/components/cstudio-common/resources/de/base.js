@@ -162,7 +162,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "de", {
     publishStatus: "Veröffentlichungsstatus",
     idle: "Leerlauf",
     busy: "Beschäftigt",
+    ready: "Bereit",
     stopped: "Angehalten",
+    started: "Gestartet",
     quickCreateEmpty:"Für das schnelle Erstellen sind keine Content-Typen konfiguriert. Bitten wenden Sie sich an Ihren Systemadministrator."
 
 });
@@ -413,7 +415,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     historyDialogCompare: "Vergleichen",
 
     deleteDialogTitle: "Löschen",
-    deleteDialogSubTitle: "Die ausgewählten Elemente werden gelöscht:",
+    deleteDialogSubTitle: "Ausgewählte Elemente werden zusammen mit ihren Elementen gelöscht. Bitte überprüfen Sie abhängige Elemente vor dem Löschen, da diese mit fehlerhaften Linkverweisen enden.",
     deleteDialogSetLink: 'Setze alles auf "Jetzt"',
     deleteDialogPage: "Seite",
     deleteDialogDelete: "Löschen",
@@ -458,8 +460,15 @@ CStudioAuthoring.Messages.registerBundle("forms", "de", {
     softDependencies:"Weiche Abhängigkeiten",
     submissionOptional:"Einreichung optional",
     showAllDependencies:"Alle Abhängigkeiten anzeigen",
-    changesSelectioItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
+    changesSelectionItems:'Änderungen bei der Auswahl der zu veröffentlichenden Elemente erfordern eine Neuberechnung aller Abhängigkeiten.',
     loadingDependencies:"Abhängigkeiten werden geladen, bitte warten ...",
+
+    childItemsText:"Untergeordnete Elemente",
+    willGetDeleted:"Wird gelöscht",
+    dependendtItems:"Abhängige Gegenstände",
+    brokenItems:"Wird gebrochene Referenzen haben",
+    deleteItems:"Elemente löschen",
+    uploadingDepenedents:"Updating dependents, please wait...",
 
     newContTypeDialogTitle: "Neuen Content-Typ anlegen",
     newContTypeDialogDisplayLabel: "Label",
@@ -710,6 +719,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
 
     /*Datasources */
     childContent: "Komponenten",
+    embeddedContent: "Eingebetteter Inhalt",
     imageUploadedDesktop: "Bilder hochladen",
     WebDAVUploadImage: "Bilder in WebDav Repository hochladen",
     WebDAVUploadVideo: "Videos in WebDav Repository hochladen",
@@ -749,6 +759,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     maxLength: "Maximale Länge",
     width: "Breite",
     height: "Höhe",
+    autoGrow: "Auto wachsen",
     allowResize: "Größenänderung zulassen",
     forceRootBlockP: "<p>-Tag als Root Blockelement erzwingen",
     forcePNewLines: "<p>-Tag als Zeilenumbruch erzwingen",
@@ -815,6 +826,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     inputProfileId: "Eingabeprofil-ID",
     outputProfileId: "Ausgabeprofil-ID",
     postfixes: "Postfixes",
+    enableCreateNew: "Zeige 'Neu anlegen'",
+    enableBrowseExisting: "Zeige 'Auswählen'",
+    enableSearchExisting: "Zeige 'Suchen'",
+    useSearch: "Suche verwenden",
 
     /*Restrictions*/
     required: "Erforderlich",
@@ -886,6 +901,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     confTabRTEConfDesc: "Konfiguriert Profile für Rich Text Editoren",
     confTabRTEtMCE5Conf: "RTE (TinyMCE 5) konfiguration",
     confTabRTEtMCE5ConfDesc: "Definiert Rich Text Editors-Konfigurationen im Formular",
+    confTabCodeEditorConf: "Konfiguration des Code-Editors",
+    confTabCodeEditorConfDesc: "Definiert Code-Editor-Konfigurationen",
     confTabPreviewAssetConf: "Vorschau von Elementen",
     confTabPreviewAssetConfDesc: "Definiert eine Liste von editierbaren Elementen basierend auf XML",
     confTabPreviewComponentsConf: "Vorschau von Komponenten",
@@ -964,6 +981,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "de", {
     edit: "Bearbeiten",
     createNew: "Neu Anlegen",
     browseExisting: "Auswählen",
+    searchExisting: "Suchen",
 
     /*help popover*/
     pattern: "Muster",

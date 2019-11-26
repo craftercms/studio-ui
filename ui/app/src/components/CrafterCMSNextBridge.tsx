@@ -17,14 +17,66 @@
 
 import '../styles/index.scss';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
+import ThemeProvider from '@material-ui/styles/ThemeProvider';
+import { theme } from "../styles/theme";
+import { updateIntl } from '../utils/codebase-bridge';
+import en from '../translations/locales/en.json';
+import es from '../translations/locales/es.json';
+import de from '../translations/locales/de.json';
+import ko from '../translations/locales/ko.json';
+
+const Locales: any = {
+  en,
+  es,
+  de,
+  ko,
+  kr: ko // TODO: Currently studio uses the wrong code for korean
+};
+
+export let intl = getIntl(getCurrentLocale());
+
+// @ts-ignore
+document.addEventListener('setlocale', (e: CustomEvent<string>) => {
+  intl = getIntl(e.detail);
+  updateIntl(intl);
+  document.documentElement.setAttribute('lang', e.detail);
+}, false);
+
+function getIntl(locale: string) {
+  return createIntl({
+    locale: locale,
+    messages: Locales[locale] || en
+  }, createIntlCache());
+}
+
+function getCurrentLocale() {
+  const username = localStorage.getItem('userName');
+  const locale = username
+    ? localStorage.getItem(`${username}_crafterStudioLanguage`)
+    : localStorage.getItem(`crafterStudioLanguage`);
+  return locale ? locale : 'en';
+}
 
 function CrafterCMSNextBridge(props: any) {
+  const [, update] = useState();
+  useEffect(() => {
+    const handler = (e: any) => update({});
+    document.addEventListener('setlocale', handler, false);
+    return () => document.removeEventListener('setlocale', handler, false);
+  }, [update]);
+
   return (
-    <Suspense fallback={'Loading...'}>
-      {props.children}
-    </Suspense>
+    <RawIntlProvider value={intl}>
+      <ThemeProvider theme={theme}>
+        <Suspense fallback="">
+          {props.children}
+        </Suspense>
+      </ThemeProvider>
+    </RawIntlProvider>
   );
+
 }
 
 export default CrafterCMSNextBridge;

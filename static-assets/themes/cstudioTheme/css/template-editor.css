@@ -107,7 +107,8 @@
 
 #template-editor-button-container .edit-buttons-container{
   margin: 12px auto 0 auto;
-  width: 150px;
+  width: 400px;
+  text-align: center;
 }
 
 #template-editor-button-container .edit-buttons-container.viewer{

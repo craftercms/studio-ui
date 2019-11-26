@@ -1600,6 +1600,10 @@ div.acnBox td.acnLiveTableRight div.acnGoLiveSetTime a:hover,
   text-decoration: none;
 }
 
+.admin-delete-view .items-feedback{
+  color: #777;
+}
+
 div.acnBox table.acnLiveTable td div {
   float: left;
   padding: 0 5px 0 0;
@@ -2864,10 +2868,13 @@ span.acn-canned-search {
       float: left;
     }
 
-    .date-container {
+
+    .date-container, .timezone-container {
       display: block;
       padding-left: 100px;
+    }
 
+    .date-container {
       .yui-calcontainer {
         float: none;
         position: relative;
@@ -2882,6 +2889,16 @@ span.acn-canned-search {
         padding: 1px;
         margin-right: 5px;
       }
+    }
+
+    .timezone-container {
+      margin-top: 10px;
+
+      .zone-picker {
+        width: 220px;
+        background-color: white;
+      }
+
     }
   }
 

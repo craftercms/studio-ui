@@ -20,6 +20,14 @@
 
   var app = angular.module('studio');
 
+  const i18n = CrafterCMSNext.i18n,
+        formatMessage = i18n.intl.formatMessage,
+        repoMessages = i18n.messages.reposAdminMessages,
+        passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
+        usersAdminMessages = i18n.messages.usersAdminMessages,
+        groupsAdminMessages = i18n.messages.groupsAdminMessages,
+        publishingMessages = i18n.messages.publishingMessages;
+
   app.service('adminService', [
     '$http', 'Constants', '$cookies', '$timeout', '$window',
     function ($http, Constants, $cookies, $timeout, $window) {
@@ -258,9 +266,10 @@
         return $http.get(bulkPublish('get-available-publishing-channels', 'site=' + site));
       };
 
-      this.bulkGoLive = function(site, path, environmet) {
+      this.bulkGoLive = function(site, path, environmet, submissionComment) {
         environmet = environmet ? environmet : Constants.BULK_ENVIRONMENT;
-        return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet));
+        submissionComment = submissionComment ? submissionComment : '';
+        return $http.post(bulkPublish('bulk-golive', 'site_id=' + site + "&path=" + path + "&environment=" + environmet + "&comment=" + submissionComment));
       };
 
       //COMMITSPUBLISH
@@ -691,8 +700,8 @@
   ]);
 
   app.controller('LogConsoleCtrl', [
-    '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', 'logType',
-    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType) {
+    '$scope', '$state', '$window', 'adminService', '$translate', '$interval', '$timeout', '$location', 'logType', '$uibModal',
+    function ($scope, $state, $window, adminService, $translate, $interval, $timeout, $location, logType, $uibModal) {
       $scope.logs = {
         entries: [],
         running: true,
@@ -716,6 +725,21 @@
         if (angular.isDefined(logs.timer)) {
           $interval.cancel(logs.timer);
         }
+      };
+
+      logs.logDetails = function(log){
+        $scope.logs.selectedLog = log;
+        $scope.logs.detailsModal = $uibModal.open({
+          templateUrl: '/studio/static-assets/ng-views/log-details.html',
+          backdrop: 'static',
+          keyboard: true,
+          scope: $scope,
+          size: 'lg'
+        });
+      };
+
+      logs.closeDetails = function() {
+        $scope.logs.detailsModal.close();
       };
 
       logs.getLogs = function(since) {
@@ -811,6 +835,15 @@
       var publish = $scope.publish;
       publish.error = "";
 
+      publish.initQueque = function() {
+        CrafterCMSNext
+          .render(
+            document.getElementsByClassName('publishingQueue')[0],
+            'PublishingQueue',
+            {siteId: $location.search().site}
+          );
+      };
+
       publish.showModal = function(template, size, verticalCentered, styleClass){
         var modalInstance = $uibModal.open({
           templateUrl: template,
@@ -826,13 +859,15 @@
       };
       publish.hideAdminModal = function() {
         $scope.adminModal.close();
-      }
+      };
+
       publish.hideConfirmationBulkModal = function() {
         $scope.confirmationBulk.close();
-      }
+      };
+
       publish.hideErrorModal = function() {
         $scope.errorDialog.close();
-      }
+      };
 
       publish.notification = function(notificationText, showOnTop, styleClass){
         var verticalAlign = showOnTop ? false : true;
@@ -851,12 +886,28 @@
       publish.startDisabled = false;
       publish.site = $location.search().site;
       publish.timeZone;
+      publish.isValidateCommentOn = false;
+      publish.isValidateCommitPublishCommentOn = false;
 
       adminService.getTimeZone({
         "site" : publish.site,
         "path" : "/site-config.xml"
       }).success(function (data) {
+        var publishing =  data["publishing"];
         publish.timeZone = data["default-timezone"];
+        publish.isValidateCommentOn = publishing && publishing["comments"]
+        ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["bulk-publish-required"] !== "false" )
+          || publishing["comments"]["bulk-publish-required"] === "true"
+          ? true
+          : false)
+        : false;
+        publish.isValidateCommitPublishCommentOn = publishing && publishing["comments"]
+        ? ((publishing["comments"]["required"] === "true" && publishing["comments"]["publish-by-commit-required"] !== "false" )
+          || publishing["comments"]["publish-by-commit-required"] === "true"
+          ? true
+          : false)
+        : false;
+
       });
 
       publish.getPublish = function () {
@@ -886,7 +937,7 @@
             }
             publish.iconColor = currentIconColor;
             publish.message = data.message;
-            publish.statusText = data.status;
+            publish.statusText = formatMessage(publishingMessages[data.status.toLowerCase()]);
           })
           .error(function (err) {
           });
@@ -968,7 +1019,7 @@
         publish.disable = true;
         spinnerOverlay = $scope.spinnerOverlay();
 
-        adminService.bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel)
+        adminService.bulkGoLive(publish.site, publish.pathPublish, publish.selectedChannel, publish.submissionComment)
           .success(function (data) {
             publish.disable = false;
             spinnerOverlay.close();
@@ -1002,7 +1053,7 @@
           .success(function (data) {
             publish.commitIdsDisable = false;
             spinnerOverlay.close();
-            publish.notification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'), '', null,"studioMedium");
+            publish.notification($translate.instant('admin.publishing.PUBLISHBYCOMMITS_SUCCESS'), '', null, 'studioMedium green');
           })
           .error(function (err) {
             publish.error = err.message;
@@ -1017,11 +1068,32 @@
 
   app.controller('UsersCtrl', [
     '$scope', '$state', '$window', '$sce', 'adminService', '$uibModal', '$timeout',
-    '$stateParams', '$translate', '$location',
+    '$stateParams', '$translate', '$location', 'passwordRequirements',
     function ($scope, $state, $window, $sce, adminService, $uibModal, $timeout,
-              $stateParams, $translate, $location) {
+              $stateParams, $translate, $location, passwordRequirements) {
 
-      $scope.users = {};
+      const maxInputLength = 32;
+
+      $scope.users = {
+        maxInputLength: maxInputLength,
+        messages: {
+          userNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
+            field: formatMessage(usersAdminMessages.userName),
+            size: maxInputLength
+          }),
+          firstNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
+            field: formatMessage(usersAdminMessages.firstName),
+            size: maxInputLength
+          }),
+          lastNameMaxLength: formatMessage(usersAdminMessages.maxLengthError, {
+            field: formatMessage(usersAdminMessages.lastName),
+            size: maxInputLength
+          }),
+          fulfillAllReqErrorMessage: formatMessage(passwordRequirementMessages.fulfillAllReqErrorMessage),
+        }
+      };
+      $scope.validPass = false;
+      $scope.validResetPass = false;
       var users = $scope.users;
       $scope.user.enabled = true;
 
@@ -1061,7 +1133,7 @@
         $scope.notification = function(notificationText, showOnTop, styleClass){
           var verticalAlign = showOnTop ? false : true;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = 'check-circle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1070,7 +1142,17 @@
           }, 1500, false);
 
         };
+
       };
+
+      $scope.passwordRequirements = function() {
+        passwordRequirements.init($scope, 'validPass', 'password', 'top');
+      }
+
+      $scope.newPasswordRequirements = function() {
+        passwordRequirements.init($scope, 'validResetPass', 'newPassword', 'top');
+      }
+
       this.init();
 
       //table setup
@@ -1083,7 +1165,13 @@
         getResultsPage(1);
 
         users.pagination = {
-          current: 1
+          current: 1,
+          goToLast: () => {
+            const total = users.totalLogs,
+                  itemsPerPage = users.itemsPerPage,
+                  lastPage = Math.ceil(total/itemsPerPage);
+            users.pagination.current = lastPage;
+          }
         };
 
         users.pageChanged = function(newPage) {
@@ -1147,7 +1235,10 @@
           $scope.hideModal();
           user = data.user;
           $scope.usersCollection.push(user);
-          $scope.notification('\''+ user.username + '\' created.','','studioMedium');
+          $scope.users.totalLogs++;
+          $scope.users.pagination.goToLast();
+
+          $scope.notification('\''+ user.username + '\' created.','','studioMedium green');
         }).error(function(response){
           var response = response.response,
             error = {
@@ -1163,7 +1254,7 @@
         $scope.user = {};
         $scope.okModalFunction = users.editPassword;
 
-        $scope.adminModal = $scope.showModal('resetPassword.html');
+        $scope.adminModal = $scope.showModal('resetPassword.html', null, null, 'modal-top-override modal-reset-pass');
 
         adminService.getUser(user.username).success(function (data) {
           $scope.user = data.user;
@@ -1178,7 +1269,7 @@
           "username" : user.username,
           "new" : user.newPassword
         }).success(function(){
-          $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+          $scope.notification('\''+ user.username + '\' edited.','','studioMedium green');
           $scope.hideModal();
         }).error(function(error){
           $scope.usersError = {
@@ -1225,7 +1316,7 @@
           }
 
           $scope.hideModal();
-          $scope.notification('\''+ user.username + '\' edited.','',"studioMedium");
+          $scope.notification('\''+ user.username + '\' edited.','','studioMedium green');
         }).error(function(error){
           $scope.usersError = {
             message: error.response.message,
@@ -1264,9 +1355,10 @@
             var index = $scope.usersCollection.indexOf(user);
             if (index !== -1) {
               $scope.usersCollection.splice(index, 1);
+              $scope.users.totalLogs--;
             }
 
-            $scope.notification('\''+ user.username + '\' deleted.','',"studioMedium");
+            $scope.notification('\''+ user.username + '\' deleted.','','studioMedium green');
           }).error(function (data) {
             $scope.error = data.response.message;
             $scope.adminModal = $scope.showModal('deleteUserError.html', 'md', true);
@@ -1274,7 +1366,7 @@
         }
 
         $scope.confirmationAction = deleteUser;
-        $scope.confirmationText = "Do you want to delete " + user.username + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${user.username}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
       };
@@ -1364,7 +1456,7 @@
         }
 
         $scope.confirmationAction = deleteClusterMember;
-        $scope.confirmationText = "Do you want to delete " + clusterMember.gitUrl + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${clusterMember.gitUrl}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
       };
@@ -1380,6 +1472,13 @@
       $scope.groups = {};
       var groups = $scope.groups;
       groups.site = $location.search().site;
+      groups.maxInputLength = 32;
+      groups.messages = {
+        groupNameMaxLength: formatMessage(groupsAdminMessages.maxLengthError, {
+          field: formatMessage(groupsAdminMessages.displayName),
+          size: groups.maxInputLength
+        })
+      };
       groups.members = {};
 
       this.init = function() {
@@ -1403,11 +1502,11 @@
           $scope.adminModal.close();
         };
 
-        $scope.notification = function(notificationText, showOnTop, time, styleClass){
+        $scope.notification = function(notificationText, showOnTop, time, styleClass, icon){
           var verticalAlign = showOnTop ? false : true,
             timer = time ? time : 1500;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = icon ? icon : 'exclamation-triangle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1431,7 +1530,13 @@
         getResultsPage(1);
 
         groups.pagination = {
-          current: 1
+          current: 1,
+          goToLast: () => {
+            const total = groups.totalLogs,
+                  itemsPerPage = groups.itemsPerPage,
+                  lastPage = Math.ceil(total/itemsPerPage);
+            groups.pagination.current = lastPage;
+          }
         };
 
         groups.pageChanged = function(newPage) {
@@ -1497,9 +1602,11 @@
         adminService.createGroup(group).success(function (data) {
           $scope.hideModal();
           $scope.groupsCollection.push(data.group);
-          $scope.notification('\''+ group.name + '\' created.', '', null,"studioMedium");
+          $scope.groups.totalLogs++;
+          $scope.groups.pagination.goToLast();
+          $scope.notification('\''+ group.name + '\' created.', '', null, 'studioMedium green', 'check-circle');
         }).error(function(error){
-          $scope.groupsError = error.response.message;
+          $scope.groupsError = `${error.response.message}. ${error.response.remedialAction}`;
         });
 
       };
@@ -1523,7 +1630,7 @@
         //group.site_id = groups.site;
 
         adminService.editGroup(group).success(function (data) {
-          $scope.notification('\''+ group.name + '\' edited.', '', null, "studioMedium");
+          $scope.notification('\''+ group.name + '\' edited.', '', null, 'studioMedium green', 'check-circle');
         }).error(function(error){
           if("Unauthorized" === error.response.message) {
             $scope.notification($translate.instant('admin.groups.UNAUTHORIZED'), false, 2000, "studioMedium");
@@ -1540,12 +1647,13 @@
             var index = $scope.groupsCollection.indexOf(group);
             if (index !== -1) {
               $scope.groupsCollection.splice(index, 1);
+              $scope.groups.totalLogs--;
             }
 
             $scope.usersFromGroupCollection = [];
             $scope.noGroupSelected = true;
 
-            $scope.notification('\''+ group.name + '\' group deleted.', '', null,"studioMedium");
+            $scope.notification('\''+ group.name + '\' group deleted.', '', null, 'studioMedium green', 'check-circle');
 
           }).error(function (error) {
             if("Unauthorized" === error.response.message) {
@@ -1557,7 +1665,7 @@
         };
 
         $scope.confirmationAction = deleteGroup;
-        $scope.confirmationText = "Do you want to delete " + group.name + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${group.name}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', 'sm', true, "studioMedium");
       };
@@ -1611,7 +1719,7 @@
         });
 
         $q.all(calls).then(function() {
-          $scope.notification('Users successfully added.', false, null, "studioMedium");
+          $scope.notification('Users successfully added.', false, null, 'studioMedium green', 'check-circle');
         });
 
         groups.usersToAdd = [];
@@ -1710,7 +1818,7 @@
         var removeUserFromGroup = function() {
           adminService.deleteUserFromGroup(group.id, deleteUserFromGroupParams).success(function () {
             $scope.getGroupMembers(group);
-            $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, "studioMedium");
+            $scope.notification(user.username + ' successfully removed from ' + group.name, false, null, 'studioMedium green', 'check-circle');
           }).error(function (error) {
             $scope.errorTitle = $translate.instant('admin.users.DELETE_ERROR');
             $scope.error = error.response.message;
@@ -1719,7 +1827,7 @@
         };
 
         $scope.confirmationAction = removeUserFromGroup;
-        $scope.confirmationText = "Do you want to delete " + user.username + " from " + group.name + "?";
+        $scope.confirmationText = `${$translate.instant('common.DELETE_QUESTION')} ${user.username} ${$translate.instant('common.FROM')} ${group.name}?`;
 
         $scope.adminModal = $scope.showModal('confirmationModal.html', '', true, "studioMedium");
       };
@@ -1750,10 +1858,15 @@
         site: $location.search().site,
         selectedTab: 'diff',
         status: {
-          clean: false
+          clean: false,
+          conflicting: false
         },
         diff: {},
-        mergeStrategy: 'none'
+        mergeStrategy: 'none',
+        repoMessages: {
+          pendingCommit: formatMessage(repoMessages.pendingCommit),
+          unstagedFiles: formatMessage(repoMessages.unstagedFiles),
+        }
       };
 
       var repositories = $scope.repositories;
@@ -1805,7 +1918,7 @@
         $scope.notification = function(notificationText, showOnTop, styleClass){
           var verticalAlign = showOnTop ? false : true;
           $scope.notificationText = notificationText;
-          $scope.notificationType = 'exclamation-triangle';
+          $scope.notificationType = 'check-circle';
 
           var modal = $scope.showModal('notificationModal.html', 'sm', verticalAlign, styleClass);
 
@@ -1815,10 +1928,14 @@
 
         };
 
+        repositories.spinnerOverlay = $scope.spinnerOverlay();
         repositories.getRepositoryStatus();
 
         adminService.getRepositories(repositories).success(function (data) {
           repositories.repositories = data;
+          if(repositories.spinnerOverlay){
+            repositories.spinnerOverlay.close();
+          }
         }).error(function (error) {
           $scope.showError(error.response);
         });
@@ -1868,7 +1985,7 @@
             if (index !== -1) {
               repositories.repositories.remotes.splice(index, 1);
             }
-            $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', null,"studioMedium");
+            $scope.notification('\''+ repo.name + '\' '+$translate.instant('admin.repositories.REPO_DELETED')+'.', '', 'green');
 
           }).error(function (error) {
             $scope.showError(error.response);
@@ -1895,7 +2012,7 @@
 
             repositories.spinnerOverlay.close();
             repositories.getRepositoryStatus();
-            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', null,"studioMedium");
+            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PULLED'), '', 'green');
 
           }).error(function (error) {
             repositories.getRepositoryStatus();
@@ -1925,7 +2042,7 @@
           adminService.pushRepository(currentRepo).success(function (data) {
 
             repositories.spinnerOverlay.close();
-            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'), '', null,"studioMedium");
+            $scope.notification($translate.instant('admin.repositories.SUCCESSFULLY_PUSHED'), '',  'green');
 
           }).error(function (error) {
             repositories.spinnerOverlay.close();

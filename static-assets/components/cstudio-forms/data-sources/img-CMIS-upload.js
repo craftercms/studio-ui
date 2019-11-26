@@ -21,7 +21,7 @@ function(id, form, properties, constraints)  {
    	this.form = form;
    	this.properties = properties;
    	this.constraints = constraints;
-   	
+
    	for(var i=0; i<properties.length; i++) {
    		if(properties[i].name == "repoPath") {
 			this.repoPath = properties[i].value;
@@ -29,8 +29,8 @@ function(id, form, properties, constraints)  {
 		if(properties[i].name === "repositoryId") {
 			this.repositoryId = properties[i].value;
 		}
-   	} 
-	
+   	}
+
 	return this;
 }
 
@@ -78,7 +78,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgCMISUpload, CStudioForms.CStudioFormDat
 			context: this
 		};
 
-		CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
+		CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback, ["image/*"]);
 
 	},
 

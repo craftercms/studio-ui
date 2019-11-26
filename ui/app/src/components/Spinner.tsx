@@ -15,12 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Cookies from 'js-cookie';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-export function getRequestForgeryToken() {
-  return Cookies.get('XSRF-TOKEN');
+const useStyles = makeStyles(theme => ({
+  progress: {
+    margin: theme.spacing(2),
+  },
+  center: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    background: '#fff',
+    transform: 'translate(-50%, -50%)',
+  }
+}));
+
+export default function Spinner() {
+  // @ts-ignore
+  const classes = useStyles();
+  return (
+    <div className={classes.center}>
+      <CircularProgress className={classes.progress} />
+    </div>
+  );
 }
-
-export default {
-  getRequestForgeryToken
-};

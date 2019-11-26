@@ -61,7 +61,7 @@
         "CHOOSE_A_BLUEPRINT":"청사진 선택",
         "CREATING_SITE": "사이트 만들기",
         "CREATE_ERROR": "사이트를 만들 수 없습니다. 시스템 관리자에게 문의하십시오",
-        "SITE_ID_VALIDATION": "(최대 길이 : 소문자, 숫자, 대시 (-) 및 밑줄 (_)로 구성된 50 자.)",
+        "SITE_ID_VALIDATION": "(최대 길이 : 소문자, 숫자, 대시 (-) 및 밑줄 (_)로 구성된 50 자, 대시 (-) 및 밑줄 (_)로 시작할 수 없습니다.)",
         "LENGTH_VALIDATION_4000": "(최대 길이 : 4000 자)",
         "BRANCH_DEFAULTS": "(비어있을 때 브랜치는 기본적으로 마스터가됩니다)",
         "ERROR": "오류:",
@@ -92,6 +92,7 @@
         "RECOMMENDED":"(권장)",
         "IS_REQUIRED":"필요합니다.",
         "ALREADY_EXIST":"이미 존재합니다.",
+        "NUMERIC_ERROR":"사이트 ID가 숫자 인 경우 0으로 시작할 수 없습니다",
         "CHOOSE_BLUEPRINT":"청사진 선택",
         "PREVIOUS_STEP":"이전 단계"
       }
@@ -226,6 +227,7 @@
       "ORDER":"주문",
       "ALL_ORIGINS":"모든 근원",
       "SORT":"종류",
+      "OPTIONS":"옵션",
       "COLLAPSE":"무너짐",
       "EXPAND":"넓히다",
       "TIMESTAMP":"타임 스탬프",
@@ -239,15 +241,22 @@
     "publishing": {
         "PUBLISHING": "출판",
         "STATUS": "지위",
+        "IDLE": "게으른",
+        "BUSY": "바쁜",
+        "READY": "준비된",
+        "STOPPED": "중지됨",
+        "STARTED": "시작",
         "BULKPUBLISH": "대량 게시",
         "PATHPUBLISH": "게시 경로",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "환경",
+        "PUBLISHINGSUBMISSIONCOMMENT": "제출 코멘트",
         "PUBLISH": "게시",
         "PATH":"통로",
         "CHANNEL":"채널",
         "WARNINGBP":"경고 : 대량 게시",
         "WRNINGGPBODY":" 대량 게시는 요청한 패턴과 일치하는 모든 항목을 해당 종속성을 포함하여 강제로 게시합니다. 잠재적으로 누군가 진행중인 작업을 포함하여 모든 수정 된 항목이 계속되기 전에 게시 될 준비가되었는지 확인하십시오.",
+        "PUBLISHQUEUE":"게시 대기열",
         "PUBLISHSTARTED":"대량 게시 프로세스가 시작되었습니다.",
         "PUBLISHBYCOMMITS": "커밋 ID로 게시",
         "PUBLISHBYCOMMITS_SUCCESS": "성공적으로 커밋 됨",
@@ -339,7 +348,9 @@
       "LEVEL": "수평",
       "THREAD": "실",
       "SITE": "대지",
-      "EXCEPTION": "예외"
+      "EXCEPTION": "예외",
+      "DETAILS": "세부",
+      "LOG_DETAILS": "로그 세부 사항"
     }
   },
   "common": {
@@ -351,6 +362,7 @@
     "EDIT": "편집하다",
     "SAVE": "구하다",
     "VIEW": "view",
+    "FROM": "...에서",
     "IS_REQUIRED_LABEL": "필요하다",
     "REQUIRED_LABEL": "필수",
     "ALL_LABEL": "모든",
@@ -374,6 +386,7 @@
     "DELETE_QUESTION":"삭제 하시겠습니까",
     "GLOBAL_MENU": "글로벌 메뉴",
     "MAIN_MENU": "기본 메뉴",
-    "RESET_PASSWORD": "암호를 재설정"
+    "RESET_PASSWORD": "암호를 재설정",
+    "CLOSE": "닫기"
   }
 }

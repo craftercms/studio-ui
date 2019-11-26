@@ -18,13 +18,20 @@
 import React, { JSXElementConstructor, lazy } from 'react';
 import ReactDOM from 'react-dom';
 
-import CrafterCMSNextBridge from '../components/CrafterCMSNextBridge';
+import CrafterCMSNextBridge, { intl } from '../components/CrafterCMSNextBridge';
 import string from './string';
 import ajax from './ajax';
 import path from './path';
-import storage from './storage';
+import auth from './auth';
+import configuration from '../services/configuration';
+import sites from '../services/sites';
+import marketplace from '../services/marketplace';
+import publishing from '../services/publishing';
+import content from '../services/content';
 import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
+import { IntlShape } from 'react-intl/src/types';
+import messages, { translateElements } from './i18n-legacy';
 
 /**
  *
@@ -53,6 +60,20 @@ interface CodebaseBridge {
   util: object;
   render: Function;
   rxjs: object;
+  i18n: {
+    intl: IntlShape;
+    messages: object;
+    translateElements: Function;
+  }
+  services: object;
+}
+
+export function updateIntl(nextIntl: IntlShape) {
+  // @ts-ignore
+  if (window.CrafterCMSNext) {
+    // @ts-ignore
+    window.CrafterCMSNext.i18n.intl = nextIntl;
+  }
 }
 
 export function createCodebaseBridge() {
@@ -72,7 +93,16 @@ export function createCodebaseBridge() {
     components: {
       AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
       GraphiQL: lazy(() => import('../components/GraphiQL')),
-      DependencySelection: lazy(() => import('../components/DependecySelection'))
+      SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),
+      DependencySelection: lazy(() => import('../components/DependencySelection')),
+      DependecySelectionDelete: lazy(() => (
+        import('../components/DependencySelection')
+          .then(module => ({
+            default: module.DependencySelectionDelete
+          }))
+      )),
+      CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
+      PublishingQueue: lazy(() => import('../components/PublishingQueue'))
     },
 
     assets: {
@@ -83,7 +113,21 @@ export function createCodebaseBridge() {
       ajax,
       path,
       string,
-      storage
+      auth,
+    },
+
+    i18n: {
+      intl,
+      messages,
+      translateElements
+    },
+
+    services: {
+      configuration,
+      sites,
+      marketplace,
+      publishing,
+      content
     },
 
     // Mechanics
@@ -98,7 +142,7 @@ export function createCodebaseBridge() {
       ) {
         throw new Error('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        throw new Error('The supplied component name is not a know component of CrafterCMSNext.');
+        throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       if (typeof container === 'string') {
@@ -113,12 +157,13 @@ export function createCodebaseBridge() {
         new Promise((resolve, reject) => {
           try {
             // @ts-ignore
-            ReactDOM.unstable_createRoot(container)
+            ReactDOM
               .render(
                 // @ts-ignore
                 <CrafterCMSNextBridge>
                   <Component {...props} />
                 </CrafterCMSNextBridge>,
+                container,
                 () => resolve()
               );
           } catch (e) {

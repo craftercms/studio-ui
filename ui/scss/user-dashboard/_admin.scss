@@ -172,7 +172,7 @@ table {
 
     }
   }
-  
+
   .error.ng-binding {
     color: red;
   }
@@ -197,7 +197,7 @@ table {
       width: calc( 100% - 35px );
       display: inline-block;
     }
-    
+
     .add-user {
       border: 1px solid #ccc;
       padding: 4px 4px 5px 5px;
@@ -240,6 +240,54 @@ table {
       visibility: hidden;
     }
   }
+}
+
+.user-management-dialog .popover,
+.modal-reset-pass .popover,
+.settings-view .popover,
+.reset-password-view .popover{
+  max-width: 500px;
+}
+
+.password-popover{
+  padding: 1px 0;
+}
+.password-popover--list{
+  list-style-type: none;
+  padding-left: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.password-popover--list.password-popover--static{
+  list-style-type: circle;
+  overflow: inherit;
+  padding-left: 11px;
+  padding-bottom: 12px;
+}
+.password-popover--list--item{
+  clear: both;
+}
+.password-popover--list-icon{
+  margin-right: 10px;
+  display: block;
+  float: left;
+  width: 2%;
+  position: relative;
+  top: 2px;
+}   
+.password-popover--list-Info {
+  display: block;
+  float: left;
+  width: 94%;
+}
+.password-popover--result{
+  clear: both;
+}
+.password-popover--red{
+  color: red;
+}
+.password-popover--green{
+  color: green;
 }
 
 .audit-view {
@@ -321,7 +369,7 @@ table {
       width: 83%;
       border-top-left-radius:initial;
       border-bottom-left-radius:initial;
-      
+
       &.dateFrom{
         position: relative;
         right: 3px;
@@ -380,6 +428,18 @@ table {
 
 }
 
+.log-details-view {
+  .exception {
+    padding: 20px;
+    max-height: 400px;
+    overflow: auto;
+    margin-bottom: 0;
+    margin-top: 10px;
+    display: block;
+    background: #f8f9fa;
+  }
+}
+
 .logging-levels-view, .log-console-view {
   .actions {
     button {
@@ -401,6 +461,12 @@ table {
       .log {
         .thread {
           min-width: 142px;
+        }
+        .details {
+          .details-icon {
+            cursor: pointer;
+            color: #7e9dbb;
+          }
         }
         .message {
           word-break: break-all;
@@ -460,7 +526,7 @@ table {
   }
 
   .bulkContainer, .commitsContainer{
-    input, select{
+    input, select, textarea{
       max-width: 500px;
     }
     .error.ng-binding{
@@ -744,7 +810,7 @@ table {
   .wizard-item{
     margin-right: 10px;
   }
-  
+
  .wizard-item.ng-hide-add.ng-hide-add-active,
  .wizard-item.ng-hide-remove.ng-hide-remove-active{
    position:absolute; left:30px; right:30px;
@@ -829,7 +895,7 @@ table {
       &.list-gallery{
         height: 258px;
       }
-      
+
       &.list-image{
         height: auto;
       }

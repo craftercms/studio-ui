@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "react-app"
+  ],
+  "plugins": [
+    [
+      "react-intl",
+      {
+        "messagesDir": "./src/translations",
+        "extractSourceLocation": true
+      }
+    ]
+  ]
+}

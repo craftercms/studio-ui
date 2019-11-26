@@ -161,7 +161,9 @@ CStudioAuthoring.Messages.registerBundle("contextnav", "es", {
     publishStatus: "Estado de Publicación",
     idle: "Desocupado",
     busy: "Ocupado",
+    ready: "Listo",
     stopped: "Detenido",
+    started: "Empezado",
     quickCreateEmpty:"No existe configuración para la creación rápida. Solicite al administrador del sistema que configure los tipos de contenido de creación rápida que desee."
 
 });
@@ -410,7 +412,7 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     historyDialogCompare: "Comparar",
 
     deleteDialogTitle:"Eliminar",
-    deleteDialogSubTitle:"Los siguientes elementos seleccionados serán eliminados:",
+    deleteDialogSubTitle:"Los elementos seleccionados se eliminarán junto con sus elementos. Revise los elementos dependientes antes de eliminarlos, ya que estos terminarán con referencias de enlaces rotos.",
     deleteDialogSetLink:'Establecer todo para "Ahora"',
     deleteDialogPage:"Página",
     deleteDialogDelete:"Eliminar",
@@ -455,8 +457,15 @@ CStudioAuthoring.Messages.registerBundle("forms", "es", {
     softDependencies:"Dependencias suaves",
     submissionOptional:"Presentación opcional",
     showAllDependencies:"Mostrar todas las dependencias",
-    changesSelectioItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
+    changesSelectionItems:'Los cambios en la selección de elementos para publicar requerirán que se recalculen "todas las dependencias".',
     loadingDependencies:"Cargando dependencias, por favor espere ...",
+
+    childItemsText:"Artículos hijos",
+    willGetDeleted:"Será eliminado",
+    dependendtItems:"Artículos dependientes",
+    brokenItems:"Habrá referencias rotas",
+    deleteItems:"Eliminar ítems",
+    uploadingDepenedents:"Updating dependents, please wait...",
 
     newContTypeDialogTitle: "Crear Tipo de Contenido",
     newContTypeDialogDisplayLabel: "Etiqueta a Mostrar",
@@ -687,7 +696,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     publishStarted:"Se ha iniciado el proceso de publicación.",
 
     /*Datasources */
-    childContent: "Contenido Hijos",
+    childContent: "Contenido Hijo",
+    embeddedContent: "Contenido Empotrado",
     imageUploadedDesktop: "Imagen Subida Desde El Escritorio",
     WebDAVUploadImage: "Imagen cargada en el repositorio de WebDav",
     WebDAVUploadVideo: "Video cargado en el repositorio de WebDav",
@@ -726,6 +736,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     maxLength: "Tamaño Máximo",
     width: "Ancho",
     height: "Altura",
+    autoGrow: "Auto Crecimiento",
     allowResize: "Permitir Cambio de Tamaño",
     forceRootBlockP: "Forzar Etiqueta p en Bloque ",
     forcePNewLines: "Forzar Etiqueta p en Línea",
@@ -790,6 +801,10 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     inputProfileId: "Id de perfil de entrada",
     outputProfileId: "Id de perfil de salida",
     postfixes: "Postfixes",
+    enableCreateNew: "Mostrar 'Crear nuevo'",
+    enableBrowseExisting: "Mostrar 'Seleccionar Existentes'",
+    enableSearchExisting: "Mostrar 'Buscar Existentes'",
+    useSearch: "Usar Búsqueda",
 
     /*Restrictions*/
     required: "Requerido",
@@ -848,6 +863,8 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     confTabRTEConfDesc: "Define la configuraciones de editores de texto enriquecido en formularios",
     confTabRTEtMCE5Conf: "Configuración RTE (TinyMCE 5)",
     confTabRTEtMCE5Desc: "Define la configuraciones de editores de texto enriquecido en formularios",
+    confTabCodeEditorConf: "Configuración de Editor de Código",
+    confTabCodeEditorConfDesc: "Define las configuraciones del Editor de Código",
     confTabPreviewAssetConf: "Configuración de Vista Previa de Activos",
     confTabPreviewAssetConfDesc: "Define una lista de activos editables asociados con contenido XML",
     confTabPreviewComponentsConf: "Configuración de los Componentes de Vista Previa",
@@ -920,6 +937,7 @@ CStudioAuthoring.Messages.registerBundle("contentTypes", "es", {
     edit: "Editar",
     createNew: "Crear Nuevo",
     browseExisting: "Buscar Existentes",
+    searchExisting: "Buscar Existentes",
 
     /*help popover*/
     pattern: "Patrón",

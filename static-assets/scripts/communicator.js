@@ -17,7 +17,7 @@
 
 (function (window) {
 
-  var define = (typeof window.define === "function" && window.define.amd) ? window.define : function (a, b, f) {
+  var define = (typeof window.crafterDefine === "function" && window.crafterDefine.amd) ? window.crafterDefine : function (a, b, f) {
     f(window.crafter, window.amplify);
   };
 
@@ -176,7 +176,7 @@
         targetWindows = this.getTargetWindows();
 
       for (var i = 0; (!hasWindow) && (i < targetWindows.length); ++i)
-        hasWindow = (targetWindow === targetWindows[i]);
+        hasWindow = (targetWindow.window === targetWindows[i].window);
 
       if (!hasWindow) targetWindows.push(targetWindow);
 
@@ -249,7 +249,7 @@
     function receiveMessage(event) {
       if (this.isAllowedOrigin(event.origin)) {
         var data = event.data;
-        if ('topic' in data) {
+        if (data != null && typeof data === 'object' && 'topic' in data) {
           doLocalPublish(data.topic, data.scope, data.message);
         }
       }

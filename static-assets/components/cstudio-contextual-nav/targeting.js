@@ -15,12 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+if (!$.prototype.timezones) {
+  CStudioAuthoring.Utils.addJavascript("/static-assets/jquery/timezones/timezones.full.js");
+}
+
 /**
  * Preview Tools
  */
 CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.TargetingMod || {
 
 	initialized: false,
+  formatMessage: CrafterCMSNext.i18n.intl.formatMessage,
+  messages: CrafterCMSNext.i18n.messages.targetingDialog,
+  words: CrafterCMSNext.i18n.messages.words,
 
 	/**
 	 * initialize module
@@ -83,9 +90,15 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					containerEl.appendChild(iconEl);
 					el.appendChild(containerEl);
 
-                    containerEl.onclick = function() {
-						me.getTargeting();
-                    }
+          containerEl.onclick = function() {
+            var targetingDialog = $('#cstudioPreviewTargetingOverlay')[0];
+
+            if (targetingDialog) {
+              me.closeDialog(targetingDialog);
+            } else {
+              me.getTargeting();
+            }
+          }
 
 				},
 
@@ -265,9 +278,11 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 					actionButtonsContainer.style.cssText = "position: absolute; bottom: 15px; right: 15px;";
 					YAHOO.util.Dom.addClass(actionButtonsContainer, "action-buttons");
 
+          const targetingMod = CStudioAuthoring.ContextualNav.TargetingMod;
+
 					var clearBtn = document.createElement("a");
 					YAHOO.util.Dom.addClass(clearBtn, "btn btn-primary mr10");
-					clearBtn.innerHTML = CMgs.format(previewLangBundle, "clear");
+					clearBtn.innerHTML = targetingMod.formatMessage(targetingMod.messages.defaults);
 					actionButtonsContainer.appendChild(clearBtn);
 					clearBtn.onclick = function() {
 						CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, '/targeting/targeting-config.xml', {
@@ -308,7 +323,8 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
                       break;
                     case "datetime":
                       var $controlEl = $(controlEl),
-                          $dateTimePicker = $controlEl.find('.date-picker');
+                          $dateTimePicker = $controlEl.find('.date-picker'),
+                          $timeZonePicker = $controlEl.siblings('.timezone-container').find('.zone-picker');
 
                       if (currentProp.default_value === '') {
                         $dateTimePicker.val(currentProp.default_value);
@@ -363,13 +379,13 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 							value = this.model[property];
 							key = property;
 
-							if(value){
+							if(value || value === ''){    // include empty strings to support empty values
                 serviceUri += key + "=" + value + "&";
               }
 						}
 					}
 
-					serviceUri += new Date();
+					serviceUri += 'nocache=' + new Date();
 
 					YConnect.asyncRequest('GET', CStudioAuthoring.Service.createEngineServiceUri(encodeURI(serviceUri)), {
 						success: function() {
@@ -448,46 +464,69 @@ CStudioAuthoring.ContextualNav.TargetingMod = CStudioAuthoring.ContextualNav.Tar
 							key = $(element).find("input").attr("id");
 							value = $(element).find("input").val();
 						} else if ($(element).hasClass("datetime")) {
-              var dateTimeVal = moment($(element).find('.date-picker').val(), 'YYYY-MM-DD HH:mm A');
-
               key = $(element).find('.date-container').attr('id');
-              value = dateTimeVal.toISOString();
-            }
 
+              const timezone = $('.zone-picker option:selected').val(),
+                    valueDate = $(element).find('.date-picker').val(),
+                    pickerDate = valueDate === '' ? '' : moment.tz($(element).find('.date-picker').val(), 'YYYY-MM-DD HH:mm A', timezone);
+
+              value = pickerDate === '' ? '' : pickerDate.toISOString();
+              me.model[`${key}_tz`] = encodeURIComponent(timezone);
+            }
 						me.model[key] = value;
 					});
         },
 
         dateTimeInit: function(controlContainer, currentProp) {
+          const targetingMod = CStudioAuthoring.ContextualNav.TargetingMod;
+
           $(controlContainer).addClass('datetime');
 
-          var timeZone = moment.tz.guess(),   //client timezone (just to display, saved in model as gmt)
-              timestamp = moment(new Date()).unix(),
-              timeZoneAbbr = moment.tz.zone(timeZone).abbr(timestamp),
-              $dateContainer = $('<div class="date-container clearfix" id="' + currentProp.name + '"/>').appendTo(controlContainer),
+          let $dateContainer = $('<div class="date-container clearfix" id="' + currentProp.name + '"/>').appendTo(controlContainer),
+              $timeZoneContainer = $('<div class="timezone-container clearfix"/>').appendTo(controlContainer),
               $dateTimeEl = $('<input readonly class="date-picker mr10" name="' + currentProp.name + '-control" type="datetime" />').appendTo($dateContainer),
-              $timeZone =$('<span class="mr10">' + timeZoneAbbr + '</span>').appendTo($dateContainer),
-              $setNowLink = $('<a href="#">Set Now</a>').appendTo($dateContainer);
+              $timeZonePicker =  $('<select class="zone-picker" data-dateRef="'+ currentProp.name +'"></select>').appendTo($timeZoneContainer),
+              $setNowLink = $('<a href="#">' + targetingMod.formatMessage(targetingMod.messages.setNow) + '</a>').appendTo($dateContainer),
+              $setClearLink = $('<a href="#" class="ml10">' + targetingMod.formatMessage(targetingMod.words.clear) + '</a>').appendTo($dateContainer),
+              timeZone = this.model[`${currentProp.name}_tz`],
+              dateObj,
+              dateValue = new Date(currentProp.default_value);
 
+          $timeZonePicker.timezones();
+
+          if (timeZone) {
+            timeZone = decodeURIComponent(timeZone);
+            $timeZonePicker.val(timeZone);
+            dateObj = moment.tz(currentProp.default_value, timeZone);
+            dateValue = new Date(moment(dateObj).format('YYYY-MM-DDTHH:mm:ss'));
+          }
+
+          $dateTimeEl.datetimepicker({
+            format: 'Y/m/d h:i a',
+            dateFormat: "Y/m/d",
+            formatTime:	'h:i a',
+            step: 15
+          });
+
+          if (currentProp.default_value && currentProp.default_value !== '') {
             $dateTimeEl.datetimepicker({
-              format: 'Y/m/d h:i a',
-              dateFormat: "Y/m/d",
-              formatTime:	'h:i a',
-              step: 15
+              value: dateValue
             });
+          } else {
+            $dateTimeEl.val('');
+          }
 
-            if (currentProp.default_value && currentProp.default_value !== '') {
-              $dateTimeEl.datetimepicker({
-                value: new Date(currentProp.default_value)
-              });
-            }
-
-            $setNowLink.on('click', function(e) {
-              e.preventDefault();
-              $dateTimeEl.datetimepicker({
-                value: new Date()
-              })
+          $setNowLink.on('click', function(e) {
+            e.preventDefault();
+            $dateTimeEl.datetimepicker({
+              value: new Date()
             });
+          });
+
+          $setClearLink.on('click', function(e) {
+            e.preventDefault();
+            $dateTimeEl.val('');
+          })
         }
 			}
 		});

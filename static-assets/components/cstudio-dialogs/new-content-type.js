@@ -292,8 +292,15 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 									'<fields>\r\n' +
 
 
-										'<field>\r\n' +
-											'<type>file-name</type>\r\n' +
+										'<field>\r\n';
+											if(type == "component") {
+												formDefContent +=
+												'<type>auto-filename</type>\r\n';
+											}else{
+												formDefContent +=
+												'<type>file-name</type>\r\n';
+											}
+											formDefContent +=
 											'<id>file-name</id>\r\n' +
 											'<iceId></iceId>\r\n' +
 											'<title>'+fileNameLabel+'</title>\r\n' +
@@ -413,7 +420,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 	writeConfig: function(url, content, cb) {
 		YAHOO.util.Connect.setDefaultPostHeader(false);
 		YAHOO.util.Connect.initHeader("Content-Type", "application/xml; charset=utf-8");
-		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+		YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
 		YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(url), cb, content);
 	},
 

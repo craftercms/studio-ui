@@ -78,6 +78,20 @@
                                         </small>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label for="submissionComment" class="control-label">{{ 'admin.publishing.PUBLISHINGSUBMISSIONCOMMENT' | translate }} 
+                                        <span ng-show="publish.isValidateCommentOn" >*</span>
+                                    </label>
+                                    <textarea class="form-control submission-comment" id="submissionComment" name="submissionComment" ng-model="publish.submissionComment" ng-required="publish.isValidateCommentOn">
+                                    </textarea>
+                                    <div class="error-container"
+                                         ng-show="(bulkOperationForm.submissionComment.$dirty && bulkOperationForm.submissionComment.$invalid) || (bulkOperationForm.submissionComment.$touched && bulkOperationForm.submissionComment.$invalid)">
+                                        <small class="error"
+                                               ng-show="bulkOperationForm.submissionComment.$error.required">
+                                            {{ 'admin.publishing.PUBLISHINGSUBMISSIONCOMMENT' | translate }} {{ 'common.IS_REQUIRED_LABEL' | translate }}
+                                        </small>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -134,10 +148,11 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="publishComment" class="control-label">{{ 'admin.publishing.COMMENT' |
-                                    translate }}</label>
+                                <label for="publishComment" class="control-label">{{ 'admin.publishing.COMMENT' | translate }}
+                                    <span ng-show="publish.isValidateCommitPublishCommentOn" >*</span>
+                                </label>
                                 <textarea class="form-control" id="publishComment" name="publishComment"
-                                          ng-model="publish.publishComment"></textarea>
+                                          ng-model="publish.publishComment" ng-required="publish.isValidateCommitPublishCommentOn"></textarea>
 
                                 <div class="error-container"
                                      ng-show="(commitsForm.publishComment.$dirty && commitsForm.publishComment.$invalid) || (commitsForm.publishComment.$touched && commitsForm.publishComment.$invalid)">
@@ -159,7 +174,13 @@
                 </form>
             </div>
         </tab>
-
+        <tab id="publishingQueue">
+          <tab-heading>
+            <span class="mr10 fa fa-list-alt"></span>{{ 'admin.publishing.PUBLISHQUEUE' | translate }}
+          </tab-heading>
+          <div class="m10 mt25 publishingQueue" ng-init="publish.initQueque()">
+          </div>
+        </tab>
     </tabset>
 
 </div>

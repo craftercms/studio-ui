@@ -21,7 +21,7 @@ function(id, form, properties, constraints)  {
    	this.form = form;
    	this.properties = properties;
    	this.constraints = constraints;
-   	
+
    	for(var i=0; i<properties.length; i++) {
    		if(properties[i].name == "repoPath") {
 			this.repoPath = properties[i].value;
@@ -29,8 +29,8 @@ function(id, form, properties, constraints)  {
 		if(properties[i].name === "repositoryId") {
 			this.repositoryId = properties[i].value;
 		}
-   	} 
-	
+   	}
+
 	return this;
 }
 
@@ -63,8 +63,10 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 						fileName = fileData.url,
 						fileExtension = fileData.fileExtension;
 
-					control.insertItem(item, item, fileExtension);
-					control._renderItems();
+					control.insertItem(item, item, fileExtension, null, me.id);
+					if(control._renderItems){
+						control._renderItems();
+					}
                     CStudioAuthoring.Utils.decreaseFormDialog();
 				}
 			},
@@ -114,12 +116,15 @@ YAHOO.extend(CStudioForms.Datasources.CMISUpload, CStudioForms.CStudioFormDataso
 			createEl.innerHTML = "Upload - " + newElTitle;
 			control.addContainerEl.create.appendChild(createEl);
 
-			var addContainerEl = control.addContainerEl;			
-			YAHOO.util.Event.on(createEl, 'click', function() {
-				control.addContainerEl = null;
-				control.containerEl.removeChild(addContainerEl);
-				CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
-			}, createEl);
+      (function(control, me) {
+        var addContainerEl = control.addContainerEl;
+        YAHOO.util.Event.on(createEl, 'click', function() {
+          control.addContainerEl = null;
+          control.containerEl.removeChild(addContainerEl);
+          CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
+        }, createEl);
+      })(control, me);
+
 		}else{
 			CStudioAuthoring.Operations.uploadCMISAsset(site, path, me.repositoryId, callback);
 		}

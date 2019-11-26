@@ -32,8 +32,8 @@
       root = root[pkg];
     }
     root[componentName] = component;
-    if (typeof define === "function" && define.amd) {
-      define(dasherize(componentName), [], function () {
+    if (typeof window.crafterDefine === "function" && window.crafterDefine.amd) {
+      window.crafterDefine(dasherize(componentName), [], function () {
         return component;
       });
     }
@@ -107,6 +107,9 @@
         "OPEN_BROWSE": "OPEN_BROWSE",
         "DND_CREATE_BROWSE_COMP": "DND_CREATE_BROWSE_COMP",
 
+        "REQUEST_FORM_DEFINITION": "REQUEST_FORM_DEFINITION",
+        "REQUEST_FORM_DEFINITION_RESPONSE": "REQUEST_FORM_DEFINITION_RESPONSE",
+
         "SET_SESSION_STORAGE_ITEM": "SET_SESSION_STORAGE_ITEM",
         "REQUEST_SESSION_STORAGE_ITEM": "REQUEST_SESSION_STORAGE_ITEM",
         "REQUEST_SESSION_STORAGE_ITEM_REPLY": "REQUEST_SESSION_STORAGE_ITEM_REPLY",
@@ -176,8 +179,8 @@
     return join(path, "..");
   }
 
-  if (typeof define === "function" && define.amd) {
-    define('crafter', [], function () {
+  if (typeof window.crafterDefine === "function" && window.crafterDefine.amd) {
+    window.crafterDefine('crafter', [], function () {
       return crafter;
     });
   } else {

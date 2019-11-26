@@ -396,7 +396,7 @@ table.scroll-body {
   border: 1px solid #e7e7e7;
   border-bottom-left-radius: $border-radius-base;
   border-bottom-right-radius: $border-radius-base;
-  transition: height .5s, transform .5s;
+  transition: height .25s, transform .25s;
   > .bd {
 
     &.overlay:before {
@@ -437,7 +437,7 @@ table.scroll-body {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.65);
-    z-index: 3000;
+    z-index: 1035;
   }
 
   .studio-ice-dialog {
@@ -491,7 +491,7 @@ table.scroll-body {
 }
 
 #approve-dialog, #requestDialog{ 
-  .aprove-subtitle{
+  .approve-subtitle{
     font-size: 15px;
   }
   .action-wrapper{
@@ -503,6 +503,10 @@ table.scroll-body {
   height: 111px!important;
 }
 
+.delete-submission-comment{
+  height: 65px!important;
+}
+
 .dependencies-display{
   height: 444px;
 }
@@ -510,3 +514,7 @@ table.scroll-body {
 .yui-module.yui-overlay .cstudio-dialogue-body .dependencies-display {
   @import  '../app/src/styles/dependency-selection.scss';
 } 
+
+.dependencies-display.delete-display{
+  height: 385px;
+}

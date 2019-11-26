@@ -18,7 +18,7 @@
 /**
  * Created by veronicaestrada on 12/21/15.
  */
-define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator', 'noty'], function (crafter, $, $ui, Animator, Communicator, Noty) {
+crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'communicator', 'noty'], function (crafter, $, $ui, Animator, Communicator, noty) {
   'use strict';
 
   var Topics = crafter.studio.preview.Topics,
@@ -90,8 +90,16 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
   }
 
   function enablePointer(components, initialContentModel) {
+    var communicator = this.cfg('communicator');
 
     currentModel = initialContentModel;
+
+    const keyUpHandler = function(e) {
+      if (e.keyCode == 27) { // esc
+        me.done();
+        $window.off( "keyup", keyUpHandler);
+      }
+    };
 
     if (this.active()) return;
     this.active(true);
@@ -112,13 +120,7 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
       $(divMouse).css('top', e.pageY);
     });
     try {
-      $(window.parent.document).keyup(function (e) {
-        var _self = this;
-        if (e.keyCode == 27) { // esc
-          me.done();
-          _self.css('cursor', 'pointer');
-        }
-      });
+      $window.keyup(keyUpHandler);
     } catch (e) {
       console.warn && console.warn(e.message);
     }
@@ -133,22 +135,99 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
       $(this).removeClass('studio-pointer-over');
     });
 
+    function restrictions($dropZone, $component, isZoneEmbedded, DestContentType) {
+      var valid = true;
+
+      if(!DestContentType) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'contentTypeNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
+        });
+      }
+
+      if(isZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsDndNotSupported',
+          height: 'auto'
+        });
+      }
+
+      return valid;
+    }
+
+    var cacheValidation = {};
+
+    function validation($dropZone, $component, contentType, zone, componentType, response) {
+      var childContent = componentType === 'shared-content'? 'child-content' : null;
+      var key = `${zone}-${componentType}`;
+
+      return new Promise((resolve, reject) => {
+        if (cacheValidation[key]) {
+          resolve(cacheValidation[key]);
+        } else {
+          cacheValidation[key] = {supported: false, ds: null};
+        }
+        var selector;
+        response.sections.forEach(section => {
+          var _selector = section.fields.find(item => item.id === zone);
+          if (_selector) selector = _selector;
+        });
+        var selectorDS = selector.properties.find(item => item.name === "itemManager");
+        selectorDS.value.split(',').forEach(ds => {
+          var type = response.datasources.find(formDS => formDS.id === ds).type;
+          if (type === componentType || type === childContent) cacheValidation[key] = {
+            supported: true,
+            ds: ds
+          };
+          return true;
+        });
+        resolve(cacheValidation[key]);
+      });
+    }
+
+
     $(DROPPABLE_SELECTION).bind("click", function (e) {
       e.stopPropagation();
       var $dropZone = $(this),
         $component = components,
         compPath = $component.uri,
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
-        compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path');
+        compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
+        isZoneEmbedded = $dropZone.parent().attr('data-studio-embedded-item-id') || false,
+        DestContentType = $dropZone.attr('data-studio-zone-content-type') || null;
+
+      var destContentType = $dropZone.attr('data-studio-zone-content-type') || null;
+      var componentType = 'shared-content';
+      var zone = $dropZone.attr('data-studio-components-target') || null;
+
       if (compPath != zonePath && compPathChild != compPath) {
-        componentDropped.call(me, $dropZone, $component);
+        if(restrictions($dropZone, $component, isZoneEmbedded, DestContentType)) {
+          var callback = function(response) {
+            validation($dropZone, $component, destContentType, zone, componentType, response).then((response) => {
+              if (response.supported) {
+                componentDropped.call(me, $dropZone, $component, response.ds);
+              } else{
+                publish.call(me, Topics.START_DIALOG, {
+                  messageKey: 'componentNotWelcomeWithinDropZone',
+                  height: 'auto'
+                });
+              }
+            });
+            communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+          };
+          communicator.on(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+          publish.call(me, Topics.REQUEST_FORM_DEFINITION, {contentType: destContentType});
+        }
       } else {
         me.done();
+        $window.off( "keyup", keyUpHandler);
         publish.call(me, Topics.START_DIALOG, {
           message: 'The component cannot be added, it is already in the drop-zone.',
-          height: '208px'
+          height: '248px'
         });
-        //return;
       }
     });
 
@@ -163,9 +242,11 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
     });
     $.notify("Item will be attached by clicking on zone. \n Click Esc to exit event",
       { autoHideDelay: 6000, style: 'studio-notify' });
+
+    $window.focus();
   }
 
-  function componentDropped($dropZone, $component) {
+  function componentDropped($dropZone, $component, datasource) {
 
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
@@ -232,7 +313,8 @@ define('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', 'com
         zones: zones,
         trackingNumber: tracking,
         compPath: compPath,
-        conComp: (conRepeat > 1) ? true : false
+        conComp: (conRepeat > 1) ? true : false,
+        datasource: datasource
       });
 
     });

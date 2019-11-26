@@ -44,194 +44,34 @@
         actions: [".do-delete", ".overlay-close"],
 
         initialise: function(usrCfg) {
-
-            this.createSchedulingOverlay();
-//            this.initItemIndividualScheduling();
-
             Dom.setStyle(this.cfg.getProperty("context"), "overflow", "visible");
 
         },
 
-        // initItemIndividualScheduling: function() {
-        //     var itemsbody = this.getComponent("table.item-listing tbody");
-        //     Event.addListener(itemsbody, "click", function(evt){
-        //         var e = evt.target;
-        //         if (Dom.hasClass(e, "when")) {
-        //             var overlay = this.overlay,
-        //                 schedule = Dom.get(e.getAttribute("checkid")).getAttribute("scheduleddate"),
-        //                 whichRadio;
-        //             if (schedule != "-") {
-        //                 whichRadio = "input[type=radio].scheduled-delete";
-        //                 this.setTimeConfiguration(schedule);
-        //             } else {
-        //                 whichRadio = "input[type=radio].now";
-        //             }
-        //             this.getComponent(whichRadio).checked = true;
-        //             var oatReqTime = this.getComponent("input.scheduled-delete");
-        //             if (oatReqTime && oatReqTime.checked) {
-        //                 Dom.removeClass(this.getComponent("input.date-picker"), "water-marked");
-        //                 Dom.removeClass(this.getComponent("input.time-picker"), "water-marked");
-        //             } else {
-        //                 Dom.addClass(this.getComponent("input.date-picker"), "water-marked");
-        //                 Dom.addClass(this.getComponent("input.time-picker"), "water-marked");
-        //                 this.getComponent("input.date-picker").style.border = "";
-        //                 this.getComponent("input.date-picker").style.color = "";
-        //                 this.getComponent("input.time-picker").style.border = "";
-        //                 this.getComponent("input.time-picker").style.color = "";
-        //             }
-        //             overlay.cfg.setProperty("context", [e, "tr", "br"], null, [0,-10]);
-        //             overlay.show();
-        //         }
-        //     }, null, this);
-        // },
-
-        createSchedulingOverlay: function(){
-            // var overlayel = this.getComponent(".schedule-overlay"),
-            // var overlay;
-            // overlayel.style.display = "";
-            // overlay = this.overlay = new YAHOO.widget.Overlay(overlayel, {
-            //     visible: false,
-            //     width: "270px"
-            // });
-            // overlay.render();
-            // overlay.showEvent.subscribe(function(){
-            //     overlay.hideMacGeckoScrollbars();
-            // });
-
-            // Initialise the timepicker
-            // var _this = this,
-            //     datepickerfield = this.getComponent("input.date-picker"),
-            //     timepickerfield = this.getComponent("input.time-picker"),
-            //     focusFn = function(){
-            //         // Check the schedule radio
-            //         _this.getComponent("input.scheduled-delete").checked = true;
-            //         // Remove the grayed-style text
-            //         Dom.removeClass(_this.getComponent("input.date-picker"), "water-marked");
-            //         Dom.removeClass(_this.getComponent("input.time-picker"), "water-marked");
-            //     };
-
-            // Event.addListener(datepickerfield, "focus", focusFn);
-            // Event.addListener(timepickerfield, "focus", focusFn);
-
-            // // TODO use more usable timepicker
-            // CStudioAuthoring.Utils.textFieldTimeHelper('timepicker', 'blur', 'timepicker');
-            // CStudioAuthoring.Utils.textFieldTimeIncrementHelper('timeIncrementButton', 'click', 'timeIncrementButton');
-            // CStudioAuthoring.Utils.textFieldTimeDecrementHelper('timeDecrementButton', 'click', 'timeDecrementButton');
-
-            // var toggleTimeSetting = function() {
-            //     var oatReqTime = _this.getComponent("input.scheduled-delete");
-            //     if (oatReqTime && oatReqTime.checked) {
-            //         Dom.removeClass(_this.getComponent("input.date-picker"), "water-marked");
-            //         Dom.removeClass(_this.getComponent("input.time-picker"), "water-marked");
-            //     } else {
-            //         Dom.addClass(_this.getComponent("input.date-picker"), "water-marked");
-            //         Dom.addClass(_this.getComponent("input.time-picker"), "water-marked");
-            //         _this.getComponent("input.date-picker").style.border = "";
-            //         _this.getComponent("input.date-picker").style.color = "";
-            //         _this.getComponent("input.time-picker").style.border = "";
-            //         _this.getComponent("input.time-picker").style.color = "";
-            //     }
-            // };
-
-            // var oAsap = this.getComponent("input.now");
-            // var oatReqTime = this.getComponent("input.scheduled-delete");
-            // if (oAsap) {
-            //     Event.addListener(oAsap, "click", toggleTimeSetting);
-            // }
-            // if (oatReqTime) {
-            //     Event.addListener(oatReqTime, "click", toggleTimeSetting);
-            // }
-        },
-
         renderItems: function(items) {
-            var html = [];
-            var depFlag = false;
-            if (items.length) {
-                var getClasses = CStudioAuthoring.Utils.getIconFWClasses,
-                    agent = new TemplateAgent(template),
-                    depth = 0,
-                    iterator, parentUri = "";
-                iterator = function(i, item){
-
-                    var displayName = SUtils.truncate(item.internalName, 39);
-                    if (item.newFile) {
-                        displayName += "*";
+            this.result = [];
+            CrafterCMSNext
+                .render(
+                    this.getComponent('.dependencies-display'),
+                    'DependecySelectionDelete',
+                    {
+                        onChange: (result) => {
+                            this.result = result;
+                            this.deleteValidation();
+                        },
+                        siteId: CStudioAuthoringContext.site,
+                        items: items
                     }
-                    var displayURL = "..." + SUtils.truncate(item.browserUri || item.uri, 50);
-                    //Delete should not assume the item is scheduled.
-                    html.push(agent.get(!depth ? "ROOT_ROW" : "SUB_ROW", {
-                        url: item.browserUri || item.uri,
-                        displayURL: displayURL,
-                        displayName: displayName,
-                        internalName: item.internalName,
-                        classNames: getClasses(item),
-                        data: encodeURIComponent(JSON.stringify(item)),
-                        id: item.browserUri || item.uri,
-                        parent: parentUri,
-                        scheduledDate: "-",
-                        scheduledDateText: CMgs.format(formsLangBundle, "deleteDialogNow"),
-                        checked: "checked"
-                    }));
-                    if (item.children && item.children.length) {
-                        depFlag = true;
-                        depth++;
-                        parentUri = item.browserUri;
-                        eachfn(item.children, iterator);
-                        parentUri = "";
-                        depth--;
-                    }
-                }
-                eachfn(items, iterator);
-            } else {
-                html.push(CMgs.format(formsLangBundle, "deleteDialogNoItemsSelected"));
-            }
-            var depCheckWrn = this.getComponent(".items-feedback");
-            if (depCheckWrn && !depFlag) {
-                depCheckWrn.style.display = "none";
-            }
-            this.getComponent("table.item-listing tbody").innerHTML = html.join("");
-            this.updateSubmitButton();
-            if (items.length) {
-                this.initCheckRules();
-                this.createCalendar();
-            }
+                )
+                .then(() => {
+                    this.getComponent(".delete-display").style.height = 'auto';
+                });
         },
 
         getData: function() {
             return JSON.stringify({
-                items: this._getItemsData()
+                items: this.result
             });
-        },
-        _getItemsData: function() {
-            var checks = this.getComponents("input[type=checkbox].item-check"),
-                checkedItems = [];
-            eachfn(checks, function(i, check){
-                if (check.checked && !check.disabled) {
-                    var parsed = JSON.parse(decodeURIComponent(
-                            check.getAttribute("json")));
-                        //scheduledDate = check.getAttribute("scheduleddate");
-                    //parsed.scheduledDate = scheduledDate == "-" ? "" : scheduledDate;
-                    checkedItems.push(parsed.uri);
-                }
-            });
-            return checkedItems;
-        },
-
-        updateItemSchedule: function(element){
-            // var nowChecked = this.getComponent("input[type=radio].now").checked,
-            //     check = Dom.get(element.getAttribute("checkid")),
-            //     scheduledDate = "-";
-            // if (nowChecked ) {
-            //     element.innerHTML = "Now";
-            // } else {
-            //     var time = this.getComponent("input.time-picker").value,
-            //         dateStr = this.getComponent("input.date-picker").value + " " + time,
-            //         date;
-            //     var dateValue = this.getComponent("input.date-picker").value;
-            //     element.innerHTML = CStudioAuthoring.Utils.getScheduledDateTimeUI(dateValue, time);
-            //     scheduledDate = this.getScheduledDateTimeForJson(dateValue, time);
-            // }
-            // check.setAttribute( "scheduleddate", scheduledDate );
         },
 
         afterSubmit: function(message, dataInf){
@@ -275,7 +115,8 @@
                     url: CStudioAuthoring.Service.createServiceUri(
                         CStudioAuthoring.Service.deleteContentUrl +
                             "?deletedep=true&site=" +CStudioAuthoringContext.site+
-                            "&user="+CStudioAuthoringContext.user),
+                            "&user="+CStudioAuthoringContext.user + "&submissionComment="+ 
+                            _this.getComponent(".delete-submission-comment").value),
                     callback: {
                         success: function(oResponse) {
                             _this.showProcessingOverlay(false);
@@ -296,90 +137,8 @@
             })(data);
         },
         overlayCloseActionClicked: function() {
-            //var fields = [this.getComponent("input.time-picker"), this.getComponent("input.date-picker")];
-            //var timeValue = fields[0].value;
-            //var dateValue = fields[1].value;
-            // if (((dateValue == 'Date...') || (timeValue == 'Time...') || (timeValue == '')) && this.getComponent('input.scheduled-delete').checked) {
-            //     alert('Please provide a date and/or time');
-            //     return false;
-            // }
             var o = this.overlay;
             o.hide();
-//            this.updateItemSchedule(o.cfg.getProperty("context")[0]);
-
-            // fields[0].value = fields[0].getAttribute("default");
-            // fields[1].value = fields[1].getAttribute("default");
-        },
-        setAllNowActionClicked: function(){
-            eachfn(this.getComponents("a.when"), function(i, e){
-                e.innerHTML = CMgs.format(formsLangBundle, "deleteDialogNow");
-            });
-            eachfn(this.getComponents("input.item-check"), function(i, e){
-                e.setAttribute("scheduleddate","-");
-            });
-        },
-        getScheduledDateTimeForJson: function (dateValue, timeValue) {
-            // var dateValueArray = dateValue.split("/");
-            // var timeValueArray = timeValue.split(" ");
-            // var timeSplit = timeValueArray[0].split(":");
-
-            // //converting am/pm to 12 hour time.
-            // var hr = parseInt(timeSplit[0], 10);
-            // if(timeValueArray[1] == "p.m." || timeValueArray[1] == "PM"){
-            //     if(hr != 12) hr = hr + 12;
-            // }else {
-            //     if(hr == 12) hr = hr + 12;
-            // }
-            // timeSplit[0] = hr;
-
-            // var schedDate = new Date(dateValueArray[2], dateValueArray[0] - 1, dateValueArray[1], timeSplit[0], timeSplit[1], timeSplit[2], "");
-
-            // var schedDateMonth = schedDate.getMonth() + 1;
-            // var scheduledDate = schedDate.getFullYear() + '-' + schedDateMonth + '-'
-            //                     + schedDate.getDate() + 'T' + schedDate.getHours() + ':'
-            //                     + schedDate.getMinutes() + ':' + schedDate.getSeconds();
-
-            // return scheduledDate;
-        },
-        setTimeConfiguration: function (scheduledDate) {
-            if (scheduledDate) {
-                var datePick = this.getComponent("input.date-picker");
-                var timePick = this.getComponent("input.time-picker");
-                datePick.value = "Date...";
-                timePick.value = "Time...";
-                if (scheduledDate == "now") {
-
-                } else {
-                    var shedSplit = scheduledDate.split("T");
-                    if(shedSplit.length == 2) {
-                        var dateArray = shedSplit[0].split("-");
-                        if (dateArray.length == 3) {
-                            datePick.value = (isNaN(dateArray[1])?dateArray[1]:parseInt(dateArray[1], 10)) + "/" +
-                                             (isNaN(dateArray[2])?dateArray[2]:parseInt(dateArray[2], 10)) + "/" + dateArray[0];
-                        }
-                        var timeArray = shedSplit[1].split(":");
-                        if (timeArray.length == 3) {
-                            var hours = (isNaN(timeArray[0])?timeArray[0]:parseInt(timeArray[0], 10));
-                            var mins  = (isNaN(timeArray[1])?timeArray[1]:parseInt(timeArray[1], 10));
-                            var secs  = (isNaN(timeArray[2])?timeArray[2]:parseInt(timeArray[2], 10));
-                            var hr = hours;
-                            if (hours == 0) {
-                                hours = 12;
-                            } else if (hours > 12) {
-                                hours = hours - 12;
-                            }
-                            timeString = (hours<10?("0"+hours):hours) + ":" +
-                                         (mins<10?("0"+mins):mins) + ":" +
-                                         (secs<10?("0"+secs):secs);
-                            if (hr >= 12) {
-                                timePick.value = timeString + " p.m.";
-                            } else {
-                                timePick.value = timeString + " a.m.";
-                            }
-                        }
-                    }
-                }
-            }
         },
 
         showProcessingOverlay: function (show) {

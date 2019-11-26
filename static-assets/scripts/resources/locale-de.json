@@ -60,7 +60,7 @@
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Neues Projekt wird angelegt",
         "CREATE_ERROR": "Projekt konnte nicht erstellt werden. Bitte kontaktieren Sie Ihren Systemadministrator.",
-        "SITE_ID_VALIDATION": "(Maximale Länge: 50 Zeichen, bestehend aus Kleinbuchstaben, Zahlen, Bindestrich und Unterstrich)",
+        "SITE_ID_VALIDATION": "(Maximale Länge: 50 Zeichen, bestehend aus Kleinbuchstaben, Zahlen, Bindestrich und Unterstrich, kann nicht beginnen mit: Bindestrich und Unterstrich)",
         "LENGTH_VALIDATION_4000": "(Maximal 4000 Zeichen)",
         "BRANCH_DEFAULTS": "(Standardmäßig wird 'master' als Branch gesetzt)",
         "ERROR": "Fehler:",
@@ -91,6 +91,7 @@
         "RECOMMENDED":"(Empfohlen)",
         "IS_REQUIRED":"Wird benötigt.",
         "ALREADY_EXIST":"existieren bereits.",
+        "NUMERIC_ERROR":"Wenn die Site-ID numerisch ist, kann nicht mit 0 begonnen werden",
         "CHOOSE_BLUEPRINT":"Wählen Sie einen Blueprint",
         "PREVIOUS_STEP":"Vorheriger Schritt"
       }
@@ -238,15 +239,22 @@
     "publishing": {
         "PUBLISHING": "Publizierung",
         "STATUS": "Status",
+        "IDLE": "Leerlauf",
+        "BUSY": "Beschäftigt",
+        "READY": "Bereit",
+        "STOPPED": "Angehalten",
+        "STARTED": "Gestartet",
         "BULKPUBLISH": "Massen-Publizierung",
         "PATHPUBLISH": "Pfad, der publiziert werden soll",
         "PATHEXAMPLE": "(z.B. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "Umgebung",
+        "PUBLISHINGSUBMISSIONCOMMENT": "Submission Kommentar",
         "PUBLISH": "Publizieren",
         "PATH":"Pfad",
         "CHANNEL":"Kanal",
         "WARNINGBP":"Achtung: Massen-Publizierung",
         "WRNINGGPBODY":"Die Massen-Publizierung beinhaltet alle Elemente, die dem angegebenen Pfad entsprechen, inklusive ihrer Abhängigkeiten. Bitte versichern Sie sich, dass alle betroffenem Inhalte publiziert werden dürfen.",
+        "PUBLISHQUEUE":"Veröffentlichung warteschlange",
         "PUBLISHSTARTED":"Massen-Publizierung wurde gestartet.",
         "PUBLISHBYCOMMITS": "Publizierung anhand eines oder mehrerer Commit-Hashs",
         "PUBLISHBYCOMMITS_SUCCESS": "Erfolgreich verpflichtet",
@@ -338,7 +346,9 @@
       "LEVEL": "Level",
       "THREAD": "Thread",
       "SITE": "Projekt",
-      "EXCEPTION": "Exception"
+      "EXCEPTION": "Exception",
+      "DETAILS": "Einzelheiten",
+      "LOG_DETAILS": "Protokolldetails"
     }
   },
   "common": {
@@ -350,6 +360,7 @@
     "EDIT": "Bearbeiten",
     "SAVE": "Speichern",
     "VIEW": "Ansehen",
+    "FROM": "von",
     "IS_REQUIRED_LABEL": "ist notwendig.",
     "REQUIRED_LABEL": "notwendig.",
     "ALL_LABEL": "Alle",
@@ -373,7 +384,7 @@
     "DELETE_QUESTION":"Sind Sie sicher, dass Sie den folgenden Eintrag löschen möchten: ",
     "GLOBAL_MENU": "Globales Menü",
     "MAIN_MENU": "Hauptmenü",
-    "RESET_PASSWORD": "Passwort zurücksetzen"
-
+    "RESET_PASSWORD": "Passwort zurücksetzen",
+    "CLOSE": "Schließen"
   }
 }

@@ -60,7 +60,7 @@
         "BLUEPRINT": "Blueprint",
         "CREATING_SITE": "Creating Site",
         "CREATE_ERROR": "Unable to create site. Please contact your system administrator.",
-        "SITE_ID_VALIDATION": "(Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_) )",
+        "SITE_ID_VALIDATION": "(Max length: 50 characters, consisting of: lowercase letters, numbers, dash (-) and underscore (_), can't starts with: dash (-) nor underscore (_) )",
         "LENGTH_VALIDATION_4000": "(Max length: 4000 characters)",
         "BRANCH_DEFAULTS": "(Branch defaults to 'master' when blank)",
         "ERROR": "Error:",
@@ -92,6 +92,7 @@
         "RECOMMENDED":"(Recommended)",
         "IS_REQUIRED":"is required.",
         "ALREADY_EXIST":"already exist.",
+        "NUMERIC_ERROR":"If site id is numeric, it can't start with 0",
         "CHOOSE_BLUEPRINT":"Choose Blueprint",
         "PREVIOUS_STEP":"Previous step"
       }
@@ -184,20 +185,20 @@
         "REVERT":"Revert",
         "ENABLE":"Enable",
         "DISABLE":"Disable",
-        "ADD_MEMBERS": "Add user to group",
-        "REMOVE_MEMBERS": "Remove user from group",
-        "ADD_REMOTE":"Add remote",
+        "ADD_MEMBERS": "Add User To Group",
+        "REMOVE_MEMBERS": "Remove User From Group",
+        "ADD_REMOTE":"Add Remote",
         "REMOVE_REMOTE":"Remove Remote",
-        "PUSH_TO_REMOTE": "Push to remote",
-        "PULL_FROM_REMOTE": "Pull from remote",
-        "REQUEST_PUBLISH": "Request publish",
+        "PUSH_TO_REMOTE": "Push To Remote",
+        "PULL_FROM_REMOTE": "Pull From Remote",
+        "REQUEST_PUBLISH": "Request Publish",
         "APPROVE": "Approve",
-        "APPROVE_SCHEDULED": "Approve scheduled",
+        "APPROVE_SCHEDULED": "Approve Scheduled",
         "REJECT": "Reject",
         "PUBLISHED": "Publish",
         "STOP_PUBLISHER":"Stop Publisher",
         "START_PUBLISHER":"Start Publisher",
-        "REMOVE_CLUSTER_NODE":"Remove cluster node"
+        "REMOVE_CLUSTER_NODE":"Remove Cluster Node"
       },
       "USER": "User",
       "CONTENT": "Content",
@@ -240,15 +241,22 @@
     "publishing": {
         "PUBLISHING": "Publishing",
         "STATUS": "Status",
+        "IDLE": "Idle",
+        "BUSY": "Busy",
+        "READY": "Ready",
+        "STOPPED": "Stopped",
+        "STARTED": "Started",
         "BULKPUBLISH": "Bulk Publish",
         "PATHPUBLISH": "Path to Publish",
         "PATHEXAMPLE": "(e.g. /site/website/about/index.xml)",
         "PUBLISHINGENVIRONMENT": "Environment",
+        "PUBLISHINGSUBMISSIONCOMMENT": "Submission Comment",
         "PUBLISH": "Publish",
         "PATH":"Path",
         "CHANNEL":"Channel",
         "WARNINGBP":"Warning: Bulk Publish",
         "WRNINGGPBODY":" Bulk publish will force publish all items that match the pattern requested including their dependencies. Please make sure that all modified items (including potentially someone's work in progress) are ready to be published before continuing.",
+        "PUBLISHQUEUE":"Publishing Queue",
         "PUBLISHSTARTED":"Bulk Publish process has been started.",
         "PUBLISHBYCOMMITS": "Publish by Commit ID(s)",
         "PUBLISHBYCOMMITS_SUCCESS": "Committed successfully",
@@ -340,7 +348,9 @@
       "LEVEL": "Level",
       "THREAD": "Thread",
       "SITE": "Site",
-      "EXCEPTION": "Exception"
+      "EXCEPTION": "Exception",
+      "DETAILS": "Details",
+      "LOG_DETAILS": "Log Details"
     }
   },
   "common": {
@@ -352,6 +362,7 @@
     "EDIT": "Edit",
     "SAVE": "Save",
     "VIEW": "view",
+    "FROM": "from",
     "IS_REQUIRED_LABEL": "is required.",
     "REQUIRED_LABEL": "required.",
     "ALL_LABEL": "All",
@@ -377,7 +388,7 @@
     "DELETE_QUESTION":"Do you want to delete",
     "GLOBAL_MENU": "Global Menu",
     "MAIN_MENU": "Main Menu",
-    "RESET_PASSWORD": "Reset Password"
-
+    "RESET_PASSWORD": "Reset Password",
+    "CLOSE": "Close"
   }
 }

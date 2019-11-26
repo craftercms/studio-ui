@@ -49,8 +49,10 @@ YAHOO.extend(CStudioForms.Datasources.S3Repo, CStudioForms.CStudioFormDatasource
                     var fileName = item.internalName;
                     var fileExtension = fileName.split(".").pop();
 
-                    control.insertItem(uri, uri, fileExtension);
-                    control._renderItems();
+                    control.insertItem(uri, uri, fileExtension, null, _self.id);
+                    if(control._renderItems){
+                        control._renderItems();
+                    }
                 }
             },
             failure: function () {

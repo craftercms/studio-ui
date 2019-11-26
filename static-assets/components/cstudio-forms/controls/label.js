@@ -19,7 +19,7 @@ CStudioForms.Controls.Label = CStudioForms.Controls.Label ||
 function(id, form, owner, properties, constraints)  {
 	this.owner = owner;
 	this.owner.registerField(this);
-	this.errors = []; 
+	this.errors = [];
 	this.properties = properties;
 	this.constraints = constraints;
 	this.inputEl = null;
@@ -27,8 +27,9 @@ function(id, form, owner, properties, constraints)  {
 	this.required = false;
 	this.value = "_not-set";
 	this.form = form;
-	this.id = id;
-	
+  this.id = id;
+  this.supportedPostFixes = ["_s"];
+
 	return this;
 }
 
@@ -37,7 +38,7 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
     getLabel: function() {
         return CMgs.format(langBundle, "label");
     },
-    
+
 
 	render: function(config, containerEl) {
 		// we need to make the general layout of a control inherit from common
@@ -49,7 +50,7 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
   		    YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-field-title');
 			titleEl.innerHTML = "&nbsp;";
 			containerEl.appendChild(titleEl);
-		
+
 		var controlWidgetContainerEl = document.createElement("div");
 		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'datum');
 		YAHOO.util.Dom.addClass(controlWidgetContainerEl, 'cstudio-form-control-input-container');
@@ -67,15 +68,15 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
 	getValue: function() {
 		return this.value;
 	},
-	
+
 	setValue: function(value) {
 		this.value = value;
 	},
-		
+
 	getName: function() {
 		return "label";
 	},
-	
+
 	getSupportedProperties: function() {
 		return [
 			{ label: CMgs.format(langBundle, "text"), name: "text", type: "string" }
@@ -85,7 +86,11 @@ YAHOO.extend(CStudioForms.Controls.Label, CStudioForms.CStudioFormField, {
 	getSupportedConstraints: function() {
 		return [
 		];
-	}
+  },
+
+  getSupportedPostFixes: function() {
+    return this.supportedPostFixes;
+  }
 
 });
 

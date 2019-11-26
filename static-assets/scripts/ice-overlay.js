@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-define('ice-overlay', ['crafter', 'jquery', 'animator'], function (crafter, $, Animator) {
+crafterDefine('ice-overlay', ['crafter', 'jquery', 'animator'], function (crafter, $, Animator) {
     'use strict';
-
-    var studio = crafter.studio;
 
     function ICEOverlay() {
 

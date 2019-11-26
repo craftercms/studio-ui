@@ -155,6 +155,13 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     margin-bottom: 10px;
 }
 
+.cstudio-form-control-image-picker-add-container.cstudio-tinymce
+.cstudio-form-control-image-picker-add-container-item,
+.cstudio-form-control-image-picker-add-container.cstudio-tinymce
+.cstudio-form-control-image-picker-add-container-item:first-child{
+    margin-bottom: 5px;
+}
+
 .cstudio-form-control-node-selector-add-container-item:hover,
 .cstudio-form-control-image-picker-add-container-item:hover,
 .cstudio-form-control-flash-picker-add-container-item:hover,
@@ -540,6 +547,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   width: 4%;
   height: 30px;
   font-size: 18px;
+  position: relative;
+  top: 5px;
 }
 
 .fa.fa-times{
@@ -595,6 +604,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     font-weight: normal;
     padding: 2px;
     display: inline;
+    max-width: 60%;
 }
 
 .cstudio-form-control-input-count {
@@ -620,8 +630,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 
 .cstudio-form-control-rte-container {
 	display: block;
-    margin: 24px auto 0 auto;
-    position: relative;
+  margin: 0 auto;
+  position: relative;
 }
 .code-mode .cstudio-form-control-rte-container {
     margin-left: 50px;

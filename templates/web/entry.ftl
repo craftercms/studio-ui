@@ -17,7 +17,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<html class="no-js" lang="" ng-app="studio">
+<html class="no-js" ng-app="studio">
 <head>
     <meta charset="utf-8">
     <meta name="description" content="">
@@ -33,7 +33,15 @@
 
     <script>
         window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
+        const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
+        document.documentElement.setAttribute('lang', (
+            localStorage.getItem('${username!""}_crafterStudioLanguage') ||
+            localStorage.getItem('crafterStudioLanguage') ||
+            'en'
+        ));
     </script>
+
+    <#include "/templates/web/common/js-next-scripts.ftl" />
 
     <link rel="stylesheet" href="/studio/static-assets/styles/main.css?version=${UIBuildId!.now?string('Mddyyyy')}">
     <link rel="stylesheet" href="/studio/static-assets/libs/ng-tags-input/ng-tags-input.min.css?version=${UIBuildId!.now?string('Mddyyyy')}">
@@ -46,6 +54,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="/studio/static-assets/libs/flexslider/jquery.flexslider.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/notify/notify.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/angular/angular.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/angular-translate/angular-translate.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/angular-translate-handler-log/angular-translate-handler-log.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
@@ -63,6 +72,7 @@
     <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/angular-moment/angular-moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/components/cstudio-common/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/admin.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico?version=${UIBuildId!.now?string('Mddyyyy')}">
@@ -77,6 +87,5 @@
         <img class="crafter-studio-logo" alt="Crafter CMS" ng-src="/studio/static-assets/images/logo.svg" src="/studio/static-assets/images/logo.svg">
     </section>
 </div>
-
 </body>
 </html>

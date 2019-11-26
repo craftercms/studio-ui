@@ -24,59 +24,42 @@
 (function(CStudioAuthoring){
 
     var Base = CStudioAuthoring.ViewController.Base,
-        $ = jQuery,
-        currentItems;
+        publishUtil = CStudioAuthoring.Env.ModuleMap.get("publish-util"),
+        $ = jQuery;
 
     Base.extend('RequestPublish', {
 
+        events: ['submitStart', 'submitComplete', 'submitEnd'],
+        
         actions: ['.close-button', '.submit-button'],
 
-        startup: ['initDatePicker'],
+        startup: ['fetchPublishingSettings', 'loadPublishingChannels' ,'initDatePicker', 'initValidation', 'translateUI'],
 
-        renderItems: renderItems,
+        loadItems: publishUtil.loadItems,
 
-        loadPublishingChannels: loadPublishingChannels,
+        renderItems: publishUtil.renderItems,
 
-        populatePublishingOptions: populatePublishingOptions,
+        loadPublishingChannels: publishUtil.loadPublishingChannels,
+
+        populatePublishingOptions: publishUtil.populatePublishingOptions,
 
         submitButtonActionClicked: submit,
 
-        closeButtonActionClicked: closeButtonClicked,
+        closeButtonActionClicked: publishUtil.closeButtonClicked,
 
-        initDatePicker: initDatePicker
+        initDatePicker: publishUtil.initDatePicker,
+
+        fetchPublishingSettings: publishUtil.fetchPublishingSettings,
+
+        initValidation: publishUtil.initValidation,
+
+        publishValidation: publishUtil.publishValidation,
+        
+        translateUI: publishUtil.translateUI,
+
+        getGenDependency: publishUtil.getGenDependency
 
     });
-
-
-    function closeButtonClicked() {
-        $(document).off("keyup");
-        $('.date-picker').datetimepicker('hide');
-        this.end();
-    }
-
-    function populatePublishingOptions(items) {
-        var select = this.getComponent('.publish-option');
-        for (var i = 0, option; i < items.length; ++i) {
-            option = new Option(items[i].name, items[i].name);
-            select.options[i] = option;
-        }
-    }
-
-    function loadPublishingChannels() {
-        var me = this,
-            callback = {
-                success: function (oResponse) {
-                    var respJson = oResponse.responseText;
-                    var allChannels = eval("(" + respJson + ")");
-                    var channels = allChannels.availablePublishChannels;
-                    populatePublishingOptions.call(me, channels);
-                },
-                failure: function (oResponse) {
-
-                }
-            };
-        CStudioAuthoring.Service.getAvailablePublishingChannels(callback);
-    }
 
     function submit() {
         var data = {
@@ -87,20 +70,11 @@
             items: this.result
         };
 
+        var timezone = $('select.zone-picker').find(':selected').attr('data-offset');
+  
         if (data.schedule === 'custom') {
-            data.scheduledDate =  getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
-
-            function pad(number, length){
-                var str = "" + number
-                while (str.length < length) {
-                    str = '0'+str
-                }
-                return str
-            }
-
-            var offset = $("select.zone-picker").find(':selected').attr('data-offset');
-            data.scheduledDate += offset;
-
+        data.scheduledDate = getScheduledDateTimeForJson(this.getComponent('[name="scheduleDate"]').value);
+        data.scheduledDate += timezone;
         }
 
         var loadSpinner = document.getElementById('loadSpinner');
@@ -122,185 +96,19 @@
                 success: function(oResponse) {
                     _this.enableActions();
                     var oResp = JSON.parse(oResponse.responseText);
-                    _this.fire("submitComplete", oResp);
-                    _this.fire("submitEnd", oResp);
-                    loadSpinner.classList.add("hidden");
-                    loadSpinnerMask.classList.add("hidden");
-
-                    eventNS.oldPath = currentItems.uri;
-                    var pageParameter = CStudioAuthoring.Utils.getQueryParameterURL("page");
-                    if(CStudioAuthoringContext.isPreview){
-                        try{
-                            var currentContentTO,
-                                URLBrowseUri = pageParameter,
-                                contentTOBrowseUri = currentItems.browserUri;
-
-                            if (URLBrowseUri == contentTOBrowseUri){
-                                currentContentTO = null;
-                            } else{
-                                currentContentTO = currentItems;
-                            }
-
-                            if(currentContentTO.isPage){
-                                CStudioAuthoring.Operations.refreshPreview(currentContentTO);
-                            }else{
-                                CStudioAuthoring.Operations.refreshPreview();
-                            }
-                        }catch(err) {}
-                    }
-
-                    eventNS.data = currentItems;
-                    eventNS.typeAction = "edit";
-                    document.dispatchEvent(eventNS);
-                    _this.end();
+                    oResp.deps = _this.result;
+                    _this.fire('submitComplete', oResp);
+                    _this.fire('submitEnd', oResp);
+                    loadSpinner.classList.add('hidden');
+                    loadSpinnerMask.classList.add('hidden');
                 },
                 failure: function(oResponse) {
                     var oResp = JSON.parse(oResponse.responseText);
-                    _this.fire("submitEnd", oResp);
+                    _this.fire('submitEnd', oResp);
                     _this.enableActions();
-                    eventNS.data = CStudioAuthoring.SelectedContent.getSelectedContent();
-                    eventNS.typeAction = "edit";
-                    document.dispatchEvent(eventNS);
                 }
             }
         });
-    }
-
-    function calculateDependencies(data, callback){
-        var entities = { "entities" : [] }; 
-
-        if( typeof data === 'string' || data instanceof String ){
-            entities.entities.push({ "item": data });
-        }
-
-        CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), callback);
-    }
-
-    function renderItems(items) {
-        document.getElementById('loadSpinner').classList.add("hidden");
-        this.result = [];
-        CrafterCMSNext
-            .render(
-                this.getComponent('.dependencies-display'), 
-                'DependencySelection', 
-                { 
-                    onChange: (result) => {
-                        if (result.length === 0) {
-                            this.$('#approveSubmit').prop('disabled', true);
-                        } else {
-                            this.$('#approveSubmit').prop('disabled', false);
-                        }
-                        this.result = result;
-                    },
-                    siteId: CStudioAuthoringContext.site,
-                    items: items
-                }
-             );
-        $("#approveSubmit").prop('disabled', false);
-        currentItems = items[0];
-
-        $(document).on("keyup", function(e) {
-            if (e.keyCode === 27) {	// esc
-                me.closeButtonActionClicked();
-                $(document).off("keyup");
-            }
-        });
-    }
-
-    function initDatePicker() {
-
-        var me = this;
-        var dateToday = new Date();
-        var logic = function( currentDateTime, input ){
-            // 'this' is jquery object datetimepicker
-            if(currentDateTime && currentDateTime.getDate() == dateToday.getDate()
-                && currentDateTime.getMonth() == dateToday.getMonth()
-                && currentDateTime.getFullYear() == dateToday.getFullYear()){
-                this.setOptions({
-                    minTime: 0
-                });
-            }else {
-                this.setOptions({
-                    minTime:'12:00 am'
-                });
-            }
-        };
-
-        me.$('[name="schedulingMode"]').change(function () {
-            var $elem = $(this);
-            if ($elem.val() === 'now') {
-                me.$('.date-picker-control').hide();
-                me.$('.date-picker').val('');
-                me.$('#approveSubmit').prop('disabled', false);
-                me.$('#approveSubmitVal').hide;
-            } else {
-                me.$('.date-picker-control').show();
-                me.$('.date-picker').select();
-                me.$('#approveSubmit').prop('disabled', true);
-                me.$('#approveSubmitVal').show();
-            }
-        });
-
-        me.$('.date-picker').datetimepicker({
-            format: 'm/d/Y h:i a',
-            dateFormat: "m/d/Y",
-            formatTime:	'h:i a',
-            minDate: '0',
-            minTime: 0,
-            step: 15,
-            onChangeDateTime: logic
-        });
-
-        me.$('.date-picker').change(function () {
-            var $elem = $(this);
-            if ($elem.val() !=null && $elem.val() != "") {
-                me.$('#approveSubmit').prop('disabled', false);
-                me.$('#approveSubmitVal').hide();
-            }else{
-                me.$('#approveSubmit').prop('disabled', true);
-                me.$('#approveSubmitVal').show();
-            }
-        });
-
-        CStudioAuthoring.Service.getConfiguration(
-            CStudioAuthoringContext.site,
-            "/site-config.xml",
-            {
-                success: function(config) {
-                    var timeZoneText = me.$('.zone-text');
-                    timeZoneText.html("<a class='zone-link'>"+config["default-timezone"] + "</a>");
-                    $( '<select class="zone-picker form-control"></select>' ).insertAfter( timeZoneText );
-                    var zonePicker = $('.zone-picker');
-                    zonePicker.timezones();
-                    zonePicker.hide();
-                    $("select.zone-picker option[value='"+config["default-timezone"]+"']").attr("selected", "selected");
-                    me.$('.zone-link').click(function() {
-                        zonePicker.show();
-                    });
-                    zonePicker.change(function() {
-                        me.$('.zone-link').html($(this).val());
-                    });
-                }
-            });
-
-    }
-
-    function getScheduledDateTimeForJson(dateTimeValue) {
-        var schedDate = new Date(dateTimeValue);
-        var schedDateMonth = schedDate.getMonth() + 1;
-        var scheduledDate = schedDate.getFullYear() + '-';
-        if (schedDateMonth < 10) scheduledDate = scheduledDate + '0';
-        scheduledDate = scheduledDate + schedDateMonth + '-';
-        if (schedDate.getDate() < 10) scheduledDate = scheduledDate + '0';
-        scheduledDate = scheduledDate + schedDate.getDate() + 'T';
-        if (schedDate.getHours() < 10) scheduledDate = scheduledDate + '0';
-        scheduledDate = scheduledDate + schedDate.getHours() + ':';
-        if (schedDate.getMinutes() < 10) scheduledDate = scheduledDate + '0';
-        scheduledDate = scheduledDate + schedDate.getMinutes() + ':';
-        if (schedDate.getSeconds() < 10) scheduledDate = scheduledDate + '0';
-        scheduledDate = scheduledDate + schedDate.getSeconds();
-
-        return scheduledDate;
     }
 
 }) (CStudioAuthoring);

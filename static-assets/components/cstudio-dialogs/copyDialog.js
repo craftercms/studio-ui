@@ -215,7 +215,7 @@ CStudioAuthoring.Dialogs.DialogCopy = CStudioAuthoring.Dialogs.DialogCopy || (fu
 
         YAHOO.util.Connect.setDefaultPostHeader(false);
         YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.storage.getRequestForgeryToken());
+        YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
         YAHOO.util.Connect.asyncRequest('POST', context.request, oncomplete, myJSON);
     }
 
