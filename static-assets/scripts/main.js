@@ -829,7 +829,8 @@
           }
           captureGroups.forEach(captureGroup => {
             let captureGroupName = captureGroup.match(/\?<(.*?)>/g);
-            html += '<li class="password-popover--list--item">'
+            let captureGroupNameClean = captureGroupName[0].replace(/\?<|>/g, "");
+            html += '<li class="password-popover--list--item">';
             if (templateType === "groupsSupported") {
               let isValid;
               if (captureGroupName[0].toLowerCase().indexOf('maxlength') > 0){
@@ -837,7 +838,6 @@
               } else {
                 isValid = content ? content.match(captureGroup) : false;
               }
-              
               if (isValid) {
                 html += '<span class="password-popover--list-icon fa fa-check-circle password-popover--green"></span>';
               } else {
@@ -845,8 +845,8 @@
                 validPass = true;
               }
             }
-            html += '<span class="password-popover--list-Info">' + messages[captureGroupName[0].replace(/\?<|>/g, "")] + '</span>' +
-              '</li>';
+            html += `<span class="password-popover--list-Info">${messages[captureGroupNameClean] || captureGroupNameClean}</span>`;
+            html += '</li>';
           });
           html += '</ul>';
         }
