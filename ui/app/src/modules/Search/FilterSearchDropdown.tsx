@@ -37,10 +37,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     padding: '10px 10px 10px 22px',
     borderTop: '1px solid #dedede',
-    borderBottom: '1px solid #dedede',
+    //borderBottom: '1px solid #dedede',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    '&.open': {
+      borderBottom: '1px solid #dedede',
+    }
   },
   body: {
     padding: '10px'
@@ -116,16 +119,18 @@ interface FilterSearchDropdownProps {
 export default function FilterSearchDropdown(props: any) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
-  const {text, className, facets} = props;
+  const {text, className, facets, handleFilterChange, queryParams} = props;
   const {formatMessage} = useIntl();
   const [expanded, setExpanded] = useState({
     sortBy: true
   });
 
-  let filterKeys = ['internalName'];
+  let filterKeys = [];
+  let facetsLookupTable = {};
 
   facets.forEach((facet) => {
     filterKeys.push(facet.name);
+    facetsLookupTable[facet.name] = facet;
   });
 
   const handleClick = (event: any) => {
@@ -144,9 +149,11 @@ export default function FilterSearchDropdown(props: any) {
     return (
       <Select
         id="sortBy"
-        value={"internalName"}
+        value={queryParams['sortBy'] || "internalName"}
         className={classes.Select}
+        onChange={(event) => handleFilterChange({name: 'sortBy', value: event.target.value})}
       >
+        <MenuItem value='internalName'>{formatMessage(messages[camelize('internalName')])}</MenuItem>
         {
           filterKeys.map((name: string, i: number) => {
             return <MenuItem value={name} key={i}>{formatMessage(messages[camelize(name)])}</MenuItem>
@@ -160,14 +167,21 @@ export default function FilterSearchDropdown(props: any) {
     return (
       <Select
         id="sortOrder"
-        value={"asc"}
+        value={queryParams['sortOrder'] || "asc"}
         className={clsx(classes.Select, 'last')}
+        onChange={(event) => handleFilterChange({name: 'sortOrder', value: event.target.value})}
       >
         <MenuItem value="asc">{formatMessage(messages.asc)}</MenuItem>
         <MenuItem value="desc">{formatMessage(messages.desc)}</MenuItem>
       </Select>
 
     )
+  };
+
+  const renderFilter = (key: string) => {
+    //facetsLookupTable[key];
+    return <p>key</p>;
+    console.log(facetsLookupTable[key])
   };
 
   const renderFilters = () => {
@@ -177,7 +191,7 @@ export default function FilterSearchDropdown(props: any) {
         return (
           <div key={i}>
             <ListItem button classes={{root: classes.listPadding}} onClick={() => handleExpandClick(name)}>
-              <header className={classes.header}>
+              <header className={clsx(classes.header, !!(expanded && expanded[name]) && 'open')}>
                 <Typography variant="body1">
                   <strong>{formatMessage(messages[name])}</strong>
                 </Typography>
@@ -187,7 +201,7 @@ export default function FilterSearchDropdown(props: any) {
             </ListItem>
             <Collapse in={!!(expanded && expanded[name])} timeout={300}>
               <div className={classes.body}>
-                {name}
+                {renderFilter}
               </div>
             </Collapse>
           </div>

@@ -14,30 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import React from 'react';
+import { HashRouter, Route } from 'react-router-dom';
+import Search from './Search';
 
-export interface SearchParameters {
-  query: string;
-  keywords: string;
-  offset: number;
-  limit: number;
-  sortBy: string;
-  sortOrder: string;
-  filters: object;
+
+function SearchApp() {
+  return (
+    <HashRouter>
+      <Route path="/" component={Search} />
+    </HashRouter>
+  )
 }
 
-export interface MediaItem {
-  lastModified: string;
-  lastModifier: string;
-  mimeType: string;
-  name: string;
-  path: string;
-  previewUrl: string;
-  size: number;
-  snippets: string;
-  type: string;
-}
-
-export interface Filter {
-  name: string;
-  value: string;
-}
+export default SearchApp;

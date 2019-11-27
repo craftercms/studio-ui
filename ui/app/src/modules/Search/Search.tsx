@@ -27,7 +27,7 @@ import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
 import { fetchSearch } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
-import { MediaItem, SearchParameters } from "../../models/Search";
+import { MediaItem, SearchParameters, Filter } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -35,6 +35,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import EmptyState from "../../components/SystemStatus/EmptyState";
 import ViewListIcon from '@material-ui/icons/ViewList';
 import FilterSearchDropdown from "./FilterSearchDropdown";
+import queryString from "query-string";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -164,12 +165,17 @@ const messages = defineMessages({
 
 function Search(props: any) {
   const classes = useStyles({});
-  const [keyword, setKeyword] = useState("");
-  const [searchParameters, setSearchParameters] = useState(initialSearchParameters);
+  const { history, location } = props;
+  const queryParams = queryString.parse(location.search);
+  const searchParameters = {...initialSearchParameters, ...queryParams};
+  const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const { formatMessage } = useIntl();
+
+
+
   setRequestForgeryToken();
 
   useEffect(() => {
@@ -181,14 +187,19 @@ function Search(props: any) {
         console.log(response);
       }
     );
-  }, [searchParameters]);
+  }, [location.search]);
 
   useEffect(() => {
     onSearch$.pipe(
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
-      setSearchParameters({...searchParameters, keywords})
+      if(!keywords) keywords = undefined;
+      let qs = createQueryString({name: 'keywords', value: keywords});
+      history.push({
+        pathname: '/',
+        search: `?${qs}`
+      })
     });
   }, []);
 
@@ -223,6 +234,20 @@ function Search(props: any) {
     } else {
       setCurrentView('grid')
     }
+  }
+
+  function handleFilterChange(filter: Filter) {
+    console.log(filter);
+    let qs = createQueryString(filter);
+    history.push({
+      pathname: '/',
+      search: `?${qs}`
+    })
+  }
+
+  function createQueryString(filter:Filter) {
+    let newFilters = {...queryParams, [filter.name]: filter.value};
+    return queryString.stringify(newFilters);
   }
 
   return (
@@ -264,7 +289,16 @@ function Search(props: any) {
           }
         </div>
         <div className={classes.helperContainer}>
-          { searchResults && searchResults.facets && <FilterSearchDropdown text={'Filters'} className={classes.searchDropdown} facets={searchResults.facets}/>}
+          {
+            searchResults && searchResults.facets &&
+            <FilterSearchDropdown
+              text={'Filters'}
+              className={classes.searchDropdown}
+              facets={searchResults.facets}
+              handleFilterChange={handleFilterChange}
+              queryParams={queryParams}
+            />
+          }
           <IconButton className={classes.avatarContent} onClick={handleChangeView}>
             <Avatar className={classes.avatar}>
               {
