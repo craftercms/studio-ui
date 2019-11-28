@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme, InputBase, MenuItem, Select, Avatar } from "@material-ui/core";
@@ -165,6 +165,7 @@ const messages = defineMessages({
 
 function Search(props: any) {
   const classes = useStyles({});
+  const { current: refs } = useRef<any>({});
   const { history, location } = props;
   const queryParams = queryString.parse(location.search);
   const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
@@ -173,6 +174,8 @@ function Search(props: any) {
   const [searchResults, setSearchResults] = useState(null);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const { formatMessage } = useIntl();
+
+  refs.createQueryString = createQueryString;
 
   setRequestForgeryToken();
 
@@ -188,17 +191,18 @@ function Search(props: any) {
   }, [location.search]);
 
   useEffect(() => {
-    onSearch$.pipe(
+    const subscription = onSearch$.pipe(
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
-      if(!keywords) keywords = undefined;
-      let qs = createQueryString({name: 'keywords', value: keywords});
+      if (!keywords) keywords = undefined;
+      let qs = refs.createQueryString({name: 'keywords', value: keywords});
       history.push({
         pathname: '/',
         search: `?${qs}`
       })
     });
+    return () => subscription.unsubscribe();
   }, []);
 
   function renderMediaCards(items: [MediaItem], currentView: string) {

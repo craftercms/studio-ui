@@ -272,7 +272,7 @@ export default function FilterSearchDropdown(props: any) {
               <FormControlLabel
                 key={key}
                 name={key}
-                control={<Checkbox color="primary" checked={checkedFilters && checkedFilters[facetName] && checkedFilters[facetName][key]} value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked , facetName)}/>}
+                control={<Checkbox color="primary" checked={(checkedFilters && checkedFilters[facetName] && checkedFilters[facetName][key]) || false} value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked , facetName)}/>}
                 label={`${key} (${items[key]})`}
                 labelPlacement="start"
                 classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
@@ -299,6 +299,13 @@ export default function FilterSearchDropdown(props: any) {
   };
 
   const handleClearClick = (facet: string) => {
+    if(checkedFilters[facet]){
+      let emptyFilter = {...checkedFilters[facet]};
+      Object.keys(emptyFilter).forEach((name) => {
+        emptyFilter[name] = false;
+      });
+      setCheckedFilters({...checkedFilters, [facet]: emptyFilter});
+    }
     handleFilterChange({name: facet, value: undefined}, true)
   };
 
