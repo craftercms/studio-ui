@@ -28,6 +28,11 @@ interface DependencySelectionProps {
   items: Item[];
   siteId: string;
   onChange: Function;
+  checked: Item[];
+  _setChecked: Function;
+  checkedSoftDep: any[];
+  _setCheckedSoftDep: Function;
+  onClickSetChecked: Function;
 }
 
 interface ResultObject {
@@ -86,12 +91,6 @@ const updateCheckedList = (uri: string[], isChecked: boolean, checked: any) => {
   return nextChecked;
 };
 
-const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
-  e.stopPropagation();
-  e.preventDefault();
-  setChecked([item.uri], !checked[item.uri])
-};
-
 const paths = (checked: any) => (
   Object.entries({ ...checked })
     .filter(([key, value]) => value === true)
@@ -106,10 +105,15 @@ export function DependencySelection(props: DependencySelectionProps) {
 
   const [deps, setDeps] = useState<ResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
-  const { items, siteId } = props;
-  const [checked, _setChecked] = useState<any>(
-    checkState(items)
-  );
+  const {
+    items,
+    siteId,
+    checked,
+    _setChecked,
+    checkedSoftDep,
+    _setCheckedSoftDep,
+    onClickSetChecked
+  } = props;
 
   const setChecked = (uri: string[], isChecked: boolean) => {
     _setChecked(updateCheckedList(uri, isChecked, checked));
@@ -117,8 +121,6 @@ export function DependencySelection(props: DependencySelectionProps) {
     setDeps(null);
     cleanCheckedSoftDep();
   };
-
-  const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({});
 
   const setCheckedSoftDep = (uri: string[], isChecked: boolean) => {
     const nextCheckedSoftDep = { ...checkedSoftDep };
@@ -268,7 +270,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 
 export function DependencySelectionDelete(props: DependencySelectionProps) {
   const [resultItems, setResultItems] = useState<ResultObject>();
-  const { items, siteId } = props;
+  const { items, siteId, onClickSetChecked } = props;
   const [checked, _setChecked] = useState<any>(
     checkState(items)
   );

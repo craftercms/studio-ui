@@ -115,6 +115,11 @@ interface PublishDialogUIProps {
   open: boolean;
   title: string;
   subtitle?: string;
+  checkedItems: Item[];
+  setCheckedItems: Function;
+  checkedSoftDep: any[];
+  setCheckedSoftDep: Function;
+  onClickSetChecked: Function;
 }
 
 export function PublishDialogUI(props: PublishDialogUIProps) {
@@ -126,21 +131,44 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     handleSubmit,
     dialog,
     setDialog,
-    siteId,
     open,
     title,
-    subtitle
+    subtitle,
+    checkedItems,
+    setCheckedItems,
+    checkedSoftDep,
+    setCheckedSoftDep,
+    onClickSetChecked
   } = props;
 
   return (
-    <Dialog onClose={handleClose} aria-labelledby="requestPublishDialogTitle" open={open} disableBackdropClick={true}
-            fullWidth={true} maxWidth={'md'}>
-      <DialogTitle id="requestPublishDialogTitle" onClose={handleClose}
-                   title={title} subtitle={subtitle}/>
+    <Dialog
+      onClose={handleClose}
+      aria-labelledby="requestPublishDialogTitle"
+      open={open}
+      disableBackdropClick={true}
+      fullWidth={true}
+      maxWidth={'md'}
+    >
+      <DialogTitle
+        id="requestPublishDialogTitle"
+        onClose={handleClose}
+        title={title}
+        subtitle={subtitle}
+      />
       <DialogContent dividers>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-            <DependencySelection items={items} siteId={'editorial'} onChange={(result: any) => { setSelectedItems(result) }} />
+            <DependencySelection
+              items={items}
+              siteId={'editorial'}
+              onChange={(result: any) => { setSelectedItems(result) }}
+              checked={checkedItems}
+              _setChecked={setCheckedItems}
+              checkedSoftDep={checkedSoftDep}
+              _setCheckedSoftDep={setCheckedSoftDep}
+              onClickSetChecked={onClickSetChecked}
+            />
           </Grid>
 
           <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
@@ -171,17 +199,33 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   )
 };
 
+const checkState = (items: Item[]) => {
+  return (items || []).reduce(
+    (table: any, item) => {
+      table[item.uri] = true;
+      return table;
+    },
+    {}
+  )
+};
+
 interface RequestPublishDialogProps {
   onClose(): any;
   items: Item[];
   siteId: string;
 }
 
+// TODO: prop onClose -> unmount (check createSiteDialog)
+
 function RequestPublishDialog(props: RequestPublishDialogProps) {
   const { items, siteId } = props;
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
   const [publishingChannels, setPublishingChannels] = useState(null);
+  const [checkedItems, setCheckedItems] = useState<any>(
+    checkState(items)
+  );
+  const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({});
   const { formatMessage } = useIntl();
   useEffect(getPublishingChannels, []);
 
@@ -199,7 +243,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
   const setSelectedItems = (items) => {
     setDialog({ ...dialog, 'selectedItems': items });
-  }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -231,9 +275,18 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
   }
 
+  // dependency selection events
+  const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setChecked([item.uri], !checked[item.uri])
+  };
+  ///////////////////////
+
   return (
     <>
-      { publishingChannels &&
+      {
+        publishingChannels &&
         <PublishDialogUI
           items={items}
           setSelectedItems={setSelectedItems}
@@ -245,6 +298,11 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
           siteId={siteId}
           open={open}
           title={formatMessage(messages.title)}
+          checkedItems={checkedItems}
+          setCheckedItems={setCheckedItems}
+          checkedSoftDep={checkedSoftDep}
+          setCheckedSoftDep={_setCheckedSoftDep}
+          onClickSetChecked={onClickSetChecked}
         />
       }
     </>
