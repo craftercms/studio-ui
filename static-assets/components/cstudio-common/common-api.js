@@ -1463,7 +1463,7 @@ var nodeOpen = false,
             getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
                 var url = "";
                 var baseUri = (useAppBase === false) ? '' : CStudioAuthoringContext.previewAppBaseUri;
-                var filename = escape((contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name);
+                var filename = encodeURI((contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name);
                 if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
                     url = baseUri + contentTO.browserUri;
 
@@ -1474,7 +1474,7 @@ var nodeOpen = false,
                     }
 
                 } else {
-                    url = baseUri + escape(contentTO.uri);
+                    url = baseUri + encodeURI(contentTO.uri);
                 }
                 return url;
             },
@@ -4100,7 +4100,7 @@ var nodeOpen = false,
             getContent: function(path, edit, callback){
                 var serviceUrl = CStudioAuthoring.Service.getContentUri
                     + "?site=" + CStudioAuthoringContext.site
-                    + "&path=" + escape(path) +
+                    + "&path=" + encodeURI(path) +
                     "&edit=" + edit +
                     "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
                     "&nocache=" + new Date();
@@ -4410,7 +4410,7 @@ var nodeOpen = false,
 
             getUserPermissions: function(site, path, callback) {
                 var serviceUrl = this.getPermissionsServiceUrl;
-                serviceUrl += "?site=" + site + "&path=" + escape(path) + "&user=" + CStudioAuthoringContext.user;
+                serviceUrl += "?site=" + site + "&path=" + encodeURI(path) + "&user=" + CStudioAuthoringContext.user;
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
@@ -5079,8 +5079,8 @@ var nodeOpen = false,
              */
             lookupContentItem: function(site, path, callback, isDraft, populateDependencies) {
 
-                path = unescape(path);
-                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + escape(path);
+                path = decodeURI(path);
+                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path);
                 if (isDraft) {
                     serviceUri = serviceUri + "&draft=true";
                 }
@@ -5141,7 +5141,7 @@ var nodeOpen = false,
              */
             lookupSiteContent: function(site, path, depth, order, callback) {
 
-                var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + escape(path) + "&depth=" + depth + "&order=" + order;
+                var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
                 serviceUri = serviceUri + "&nocache="+new Date();
                 serviceUri = encodeURI(serviceUri);
 
