@@ -14,24 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from "@material-ui/core/Button";
 import React, { useState } from "react";
 import Popover from '@material-ui/core/Popover';
 import { defineMessages, useIntl } from "react-intl";
-import { Theme, List, ListItem, MenuItem, Select } from "@material-ui/core";
+import { Theme } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
 import Collapse from '@material-ui/core/Collapse';
-import makeStyles from "@material-ui/styles/makeStyles/makeStyles";
 import clsx from 'clsx';
 import { camelize } from '../../utils/string';
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import FormGroup from "@material-ui/core/FormGroup";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import MenuItem from "@material-ui/core/MenuItem";
+import Select from "@material-ui/core/Select";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
-    width: '300px',
-    borderRadius: '0 !important'
+    borderRadius: '0',
+    marginRight: '50px',
+    minWidth: '300px'
   },
   header: {
     width: '100%',
@@ -59,13 +66,31 @@ const useStyles = makeStyles((theme: Theme) => ({
     transform: 'rotate(180deg)',
   },
   listPadding: {
-    padding: '0 !important'
+    padding: '0'
   },
   Select: {
     width: '100%',
     '&.last': {
       marginTop: '10px'
     }
+  },
+  singleFilter: {
+    '& .filterActions': {
+      textAlign: 'right'
+    }
+  },
+  button: {
+    margin: theme.spacing(1),
+  },
+  checkboxLabel: {
+    width: '100%',
+    overflow: 'hidden',
+    display: '-webkit-box',
+    '-webkit-line-clamp': 2,
+    '-webkit-box-orient': 'vertical',
+  },
+  checkboxRoot: {
+    marginRight: '5px'
   }
 }));
 
@@ -117,13 +142,30 @@ interface FilterSearchDropdownProps {
 }
 
 export default function FilterSearchDropdown(props: any) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const classes = useStyles({});
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const {text, className, facets, handleFilterChange, queryParams} = props;
   const {formatMessage} = useIntl();
   const [expanded, setExpanded] = useState({
     sortBy: true
   });
+
+  const setCheckedParameterFromURL = (queryParams) => {
+    if(queryParams['filters']){
+      let checked = {};
+      Object.keys(queryParams['filters']).forEach((key) => {
+        checked[key] = {};
+        queryParams['filters'][key].forEach((name) => {
+          checked[key][name] = true;
+        });
+      });
+      return checked;
+    } else {
+      return {};
+    }
+  };
+
+  const [checkedFilters, setCheckedFilters] = React.useState(setCheckedParameterFromURL(queryParams));
 
   let filterKeys = [];
   let facetsLookupTable = {};
@@ -179,14 +221,25 @@ export default function FilterSearchDropdown(props: any) {
   };
 
   const renderFilter = (key: string) => {
-    //facetsLookupTable[key];
-    return <p>key</p>;
-    console.log(facetsLookupTable[key])
+    if (key === 'content-type') {
+      return (
+        <div className={classes.singleFilter}>
+          <div className={'filterActions'}>
+            <Button variant="outlined" className={classes.button} onClick={() => handleClearClick(key)}>Clear</Button>
+            <Button variant="contained" color='primary' className={classes.button} onClick={() => handleApplyClick(key)}>Apply</Button>
+          </div>
+          <div className={'filterBody'}>
+            {renderCheckboxes(facetsLookupTable[key].values, key)}
+          </div>
+        </div>)
+    } else {
+      return <p>{key}</p>;
+    }
   };
 
   const renderFilters = () => {
     return (
-      filterKeys.map((key:string, i:number) => {
+      filterKeys.map((key: string, i: number) => {
         let name = camelize(key);
         return (
           <div key={i}>
@@ -201,13 +254,52 @@ export default function FilterSearchDropdown(props: any) {
             </ListItem>
             <Collapse in={!!(expanded && expanded[name])} timeout={300}>
               <div className={classes.body}>
-                {renderFilter}
+                {renderFilter(key)}
               </div>
             </Collapse>
           </div>
         )
       })
     )
+  };
+
+  const renderCheckboxes = (items: object, facetName: string) => {
+    return (
+      <FormGroup>
+        {
+          Object.keys(items).map((key) => {
+            return (
+              <FormControlLabel
+                key={key}
+                name={key}
+                control={<Checkbox color="primary" checked={checkedFilters && checkedFilters[facetName] && checkedFilters[facetName][key]} value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked , facetName)}/>}
+                label={`${key} (${items[key]})`}
+                labelPlacement="start"
+                classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
+              />
+            )
+          })
+        }
+      </FormGroup>
+    )
+  };
+
+  const handleCheckboxClick = (key: string, checked: boolean, facetName: string) => {
+    const facetFilter = checkedFilters[facetName] || {};
+    facetFilter[key] = checked;
+    setCheckedFilters({...checkedFilters, [facetName]: facetFilter});
+  };
+
+  const handleApplyClick = (facet: string) => {
+    let values = Object.keys(checkedFilters[facet]).filter((name) => checkedFilters[facet][name]);
+    if(values.length === 0){
+      values = undefined;
+    }
+    handleFilterChange({name: facet, value: values}, true)
+  };
+
+  const handleClearClick = (facet: string) => {
+    handleFilterChange({name: facet, value: undefined}, true)
   };
 
   return (

@@ -167,14 +167,12 @@ function Search(props: any) {
   const classes = useStyles({});
   const { history, location } = props;
   const queryParams = queryString.parse(location.search);
-  const searchParameters = {...initialSearchParameters, ...queryParams};
+  const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const { formatMessage } = useIntl();
-
-
 
   setRequestForgeryToken();
 
@@ -236,18 +234,40 @@ function Search(props: any) {
     }
   }
 
-  function handleFilterChange(filter: Filter) {
-    console.log(filter);
-    let qs = createQueryString(filter);
+  function handleFilterChange(filter: Filter, isFilter) {
+    let qs = createQueryString(filter, isFilter);
     history.push({
       pathname: '/',
       search: `?${qs}`
     })
   }
 
-  function createQueryString(filter:Filter) {
-    let newFilters = {...queryParams, [filter.name]: filter.value};
+  function createQueryString(filter:Filter, isFilter = false) {
+    let newFilters;
+    let filters =  queryParams['filters'] || {};
+    if(isFilter) {
+      filters[filter.name] = filter.value;
+      queryParams.filters = JSON.stringify(filters);
+      if(queryParams.filters === '{}') {
+        queryParams.filters = undefined;
+      }
+      newFilters = {...queryParams};
+    } else {
+      queryParams.filters = JSON.stringify(filters);
+      if(queryParams.filters === '{}') {
+        queryParams.filters = undefined;
+      }
+      newFilters = {...queryParams, [filter.name]: filter.value};
+    }
     return queryString.stringify(newFilters);
+  }
+
+  function setSearchParameters(initialSearchParameters, queryParams) {
+    let formatParameters = queryParams;
+    if(formatParameters.filters) {
+      formatParameters.filters = JSON.parse(formatParameters.filters);
+    }
+    return {...initialSearchParameters, ...formatParameters};
   }
 
   return (
