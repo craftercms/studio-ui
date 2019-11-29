@@ -5079,6 +5079,9 @@ var nodeOpen = false,
              */
             lookupContentItem: function(site, path, callback, isDraft, populateDependencies) {
 
+                // Path is decoded because it may come encoded or decoded. So, if not encoded, path stays the
+                // same. Then, knowing that path is decoded, gets encoded. That way we avoid encoded paths to be
+                // encoded again.
                 path = decodeURI(path);
                 var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path);
                 if (isDraft) {
