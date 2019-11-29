@@ -37,6 +37,7 @@ import { fetchPublishingChannels } from "../../../services/content";
 import { submitToGoLive } from '../../../services/publishing';
 import PublishForm from './PulishForm';
 import { backgroundColor } from '../../../styles/theme';
+import {get} from "../../../utils/ajax";
 
 const messages = defineMessages({
   title: {
@@ -103,15 +104,18 @@ const DialogActions = withStyles((theme: Theme) => ({
   },
 }))(MuiDialogActions);
 
+export interface DependenciesResultObject {
+  items1: [],
+  items2: []
+}
+
 interface PublishDialogUIProps {
   items: Item[];
-  setSelectedItems: any;
   publishingChannels: any[];
   handleClose: any;
   handleSubmit: any;
   dialog: any;
   setDialog: any;
-  siteId: string;
   open: boolean;
   title: string;
   subtitle?: string;
@@ -120,12 +124,16 @@ interface PublishDialogUIProps {
   checkedSoftDep: any[];
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
+  deps: any,
+  showDepsButton: boolean,
+  selectAllDeps: Function,
+  selectAllSoft: Function,
+  onClickShowAllDeps: Function
 }
 
 export function PublishDialogUI(props: PublishDialogUIProps) {
   const {
     items,
-    setSelectedItems,
     publishingChannels,
     handleClose,
     handleSubmit,
@@ -138,7 +146,12 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     setCheckedItems,
     checkedSoftDep,
     setCheckedSoftDep,
-    onClickSetChecked
+    onClickSetChecked,
+    deps,
+    showDepsButton,
+    selectAllDeps,
+    selectAllSoft,
+    onClickShowAllDeps
   } = props;
 
   return (
@@ -161,13 +174,16 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
           <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
             <DependencySelection
               items={items}
-              siteId={'editorial'}
-              onChange={(result: any) => { setSelectedItems(result) }}
               checked={checkedItems}
-              _setChecked={setCheckedItems}
+              setChecked={setCheckedItems}
               checkedSoftDep={checkedSoftDep}
-              _setCheckedSoftDep={setCheckedSoftDep}
+              setCheckedSoftDep={setCheckedSoftDep}
               onClickSetChecked={onClickSetChecked}
+              deps={deps}
+              showDepsButton={showDepsButton}
+              onSelectAllClicked={selectAllDeps}
+              onSelectAllSoftClicked={selectAllSoft}
+              onClickShowAllDeps={onClickShowAllDeps}
             />
           </Grid>
 
@@ -199,7 +215,8 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   )
 };
 
-const checkState = (items: Item[]) => {
+// dependency selection common methods
+export const checkState = (items: Item[]) => {
   return (items || []).reduce(
     (table: any, item) => {
       table[item.uri] = true;
@@ -209,25 +226,52 @@ const checkState = (items: Item[]) => {
   )
 };
 
+export const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
+  e.stopPropagation();
+  e.preventDefault();
+  setChecked([item.uri], !checked[item.uri])
+};
+
+export const updateCheckedList = (uri: string[], isChecked: boolean, checked: any) => {
+  const nextChecked = { ...checked };
+  (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
+    nextChecked[u] = isChecked;
+  });
+  return nextChecked;
+};
+
+export const selectAllDeps = (setChecked: Function, items: Item[]) => {
+  setChecked(items.map(i => i.uri), true);
+};
+
+export const paths = (checked: any) => (
+  Object.entries({ ...checked })
+    .filter(([key, value]) => value === true)
+    .map(([key]) => key)
+);
+// end of dependency selection common methods
+
 interface RequestPublishDialogProps {
   onClose(): any;
   items: Item[];
   siteId: string;
 }
 
-// TODO: prop onClose -> unmount (check createSiteDialog)
-
 function RequestPublishDialog(props: RequestPublishDialogProps) {
-  const { items, siteId } = props;
+  const { items, siteId, onClose } = props;
+
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
   const [publishingChannels, setPublishingChannels] = useState(null);
-  const [checkedItems, setCheckedItems] = useState<any>(
-    checkState(items)
-  );
-  const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({});
+  const [checkedItems, setCheckedItems] = useState<any>(checkState(items));   // selected deps
+  const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({}); // selected soft deps
+  const [deps, setDeps] = useState<DependenciesResultObject>();
+  const [showDepsButton, setShowDepsButton] = useState(true);
+
   const { formatMessage } = useIntl();
+
   useEffect(getPublishingChannels, []);
+  useEffect(setRef, [checkedItems, checkedSoftDep]);
 
   function getPublishingChannels() {
     fetchPublishingChannels(siteId)
@@ -247,6 +291,9 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
   const handleClose = () => {
     setOpen(false);
+
+    //call externalClose fn
+    onClose();
   };
 
   const handleSubmit = () => {
@@ -275,12 +322,58 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
   }
 
-  // dependency selection events
-  const onClickSetChecked = (e: any, item: any, setChecked: Function, checked: any) => {
-    e.stopPropagation();
-    e.preventDefault();
-    setChecked([item.uri], !checked[item.uri])
+  // dependency selection internal
+  const setChecked = (uri: string[], isChecked: boolean) => {
+    setCheckedItems(updateCheckedList(uri, isChecked, checkedItems));
+    setShowDepsButton(true);
+    setDeps(null);
+    cleanCheckedSoftDep();
   };
+
+  const cleanCheckedSoftDep = () => {
+    const nextCheckedSoftDep = {};
+    _setCheckedSoftDep(nextCheckedSoftDep);
+  };
+
+  const setCheckedSoftDep = (uri: string[], isChecked: boolean) => {
+    const nextCheckedSoftDep = { ...checkedSoftDep };
+    (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
+      nextCheckedSoftDep[u] = isChecked;
+    });
+    _setCheckedSoftDep(nextCheckedSoftDep);
+  };
+
+  function setRef() {
+    const result = (
+      Object.entries({ ...checkedItems, ...checkedSoftDep })
+        .filter(([key, value]) => value === true)
+        .map(([key]) => key)
+    );
+    setSelectedItems(result);
+  }
+
+  function selectAllSoft() {
+    setCheckedSoftDep(deps.items2, true);
+  }
+
+  function showAllDependencies() {
+    setShowDepsButton(false);
+    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths(checkedItems)}`)
+      .subscribe(
+        (response: any) => {
+          setDeps({
+            items1: response.response.items.hardDependencies,
+            items2: response.response.items.softDependencies
+          });
+        },
+        () => {
+          setDeps({
+            items1: [],
+            items2: []
+          });
+        }
+      );
+  }
   ///////////////////////
 
   return (
@@ -289,20 +382,23 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
         publishingChannels &&
         <PublishDialogUI
           items={items}
-          setSelectedItems={setSelectedItems}
           publishingChannels={publishingChannels}
           handleClose={handleClose}
           handleSubmit={handleSubmit}
           dialog={dialog}
           setDialog={setDialog}
-          siteId={siteId}
           open={open}
           title={formatMessage(messages.title)}
           checkedItems={checkedItems}
-          setCheckedItems={setCheckedItems}
+          setCheckedItems={setChecked}
           checkedSoftDep={checkedSoftDep}
-          setCheckedSoftDep={_setCheckedSoftDep}
+          setCheckedSoftDep={setCheckedSoftDep}
           onClickSetChecked={onClickSetChecked}
+          deps={deps}
+          showDepsButton={showDepsButton}
+          selectAllDeps={selectAllDeps}
+          selectAllSoft={selectAllSoft}
+          onClickShowAllDeps={showAllDependencies}
         />
       }
     </>

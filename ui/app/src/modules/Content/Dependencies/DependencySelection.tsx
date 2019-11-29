@@ -24,20 +24,23 @@ import { get } from '../../../utils/ajax';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
 
+//imports for DependencySelectionDelete
+import { checkState, updateCheckedList, selectAllDeps, paths } from "../Submit/RequestPublishDialog";
+
 interface DependencySelectionProps {
   items: Item[];
-  siteId: string;
-  onChange: Function;
+  siteId?: string;      // for dependencySelectionDelete
+  onChange?: Function;  // for dependencySelectionDelete
   checked: Item[];
-  _setChecked: Function;
+  setChecked: Function;
   checkedSoftDep: any[];
-  _setCheckedSoftDep: Function;
+  setCheckedSoftDep: Function;
   onClickSetChecked: Function;
-}
-
-interface ResultObject {
-  items1: [],
-  items2: []
+  deps: any;
+  showDepsButton: boolean;
+  onSelectAllClicked: Function;
+  onSelectAllSoftClicked: Function;
+  onClickShowAllDeps: any;
 }
 
 interface SelectionListProps {
@@ -50,6 +53,11 @@ interface SelectionListProps {
   displayItemTitle: boolean;
   checked?: any;
   setChecked?: Function;
+}
+
+interface ResultObject {
+  items1: [],
+  items2: []
 }
 
 const BlueCheckbox = withStyles({
@@ -73,69 +81,20 @@ const CenterCircularProgress = withStyles({
   }
 })(CircularProgress);
 
-const checkState = (items: Item[]) => {
-  return (items || []).reduce(
-    (table: any, item) => {
-      table[item.uri] = true;
-      return table;
-    },
-    {}
-  )
-};
-
-const updateCheckedList = (uri: string[], isChecked: boolean, checked: any) => {
-  const nextChecked = { ...checked };
-  (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
-    nextChecked[u] = isChecked;
-  });
-  return nextChecked;
-};
-
-const paths = (checked: any) => (
-  Object.entries({ ...checked })
-    .filter(([key, value]) => value === true)
-    .map(([key]) => key)
-);
-
-const selectAll = (setChecked: Function, items: Item[]) => {
-  setChecked(items.map(i => i.uri), true);
-};
-
 export function DependencySelection(props: DependencySelectionProps) {
-
-  const [deps, setDeps] = useState<ResultObject>();
-  const [showDepsButton, setShowDepsButton] = useState(true);
   const {
     items,
-    siteId,
     checked,
-    _setChecked,
+    setChecked,
     checkedSoftDep,
-    _setCheckedSoftDep,
-    onClickSetChecked
+    setCheckedSoftDep,
+    deps,
+    showDepsButton,
+    onClickSetChecked,
+    onSelectAllClicked,
+    onSelectAllSoftClicked,
+    onClickShowAllDeps
   } = props;
-
-  const setChecked = (uri: string[], isChecked: boolean) => {
-    _setChecked(updateCheckedList(uri, isChecked, checked));
-    setShowDepsButton(true);
-    setDeps(null);
-    cleanCheckedSoftDep();
-  };
-
-  const setCheckedSoftDep = (uri: string[], isChecked: boolean) => {
-    const nextCheckedSoftDep = { ...checkedSoftDep };
-    (Array.isArray(uri) ? uri : [uri]).forEach((u) => {
-      nextCheckedSoftDep[u] = isChecked;
-    });
-    _setCheckedSoftDep(nextCheckedSoftDep);
-  };
-
-  const cleanCheckedSoftDep = () => {
-    const nextCheckedSoftDep = {};
-    _setCheckedSoftDep(nextCheckedSoftDep);
-  };
-
-  useEffect(setRef, [checked, checkedSoftDep]);
 
   return (
     <>
@@ -149,7 +108,7 @@ export function DependencySelection(props: DependencySelectionProps) {
           }
           items={items}
           onItemClicked={onClickSetChecked}
-          onSelectAllClicked={selectAll}
+          onSelectAllClicked={onSelectAllClicked}
           displayItemTitle={true}
           checked={checked}
           setChecked={setChecked}
@@ -188,7 +147,7 @@ export function DependencySelection(props: DependencySelectionProps) {
                 }
                 uris={deps.items2}
                 onItemClicked={setCheckedSoftDep}
-                onSelectAllClicked={selectAllSoft}
+                onSelectAllClicked={onSelectAllSoftClicked}
                 displayItemTitle={false}
                 checked={checkedSoftDep}
                 setChecked={setChecked}
@@ -214,7 +173,7 @@ export function DependencySelection(props: DependencySelectionProps) {
             showDepsButton ? (
               <button
                 className="dependency-selection--nav-btn dependency-selection--show-all"
-                onClick={showAllDependencies}
+                onClick={onClickShowAllDeps}
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
@@ -233,40 +192,8 @@ export function DependencySelection(props: DependencySelectionProps) {
       </div>
     </>
   );
-
-  function selectAllSoft() {
-    setCheckedSoftDep(deps.items2, true);
-  }
-
-  function setRef() {
-    const result = (
-      Object.entries({ ...checked, ...checkedSoftDep })
-        .filter(([key, value]) => value === true)
-        .map(([key]) => key)
-    );
-    props.onChange(result);
-  }
-
-  function showAllDependencies() {
-    setShowDepsButton(false);
-    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths(checked)}`)
-      .subscribe(
-        (response: any) => {
-          setDeps({
-            items1: response.response.items.hardDependencies,
-            items2: response.response.items.softDependencies
-          });
-        },
-        () => {
-          setDeps({
-            items1: [],
-            items2: []
-          });
-        }
-      );
-  }
-
 }
+
 
 export function DependencySelectionDelete(props: DependencySelectionProps) {
   const [resultItems, setResultItems] = useState<ResultObject>();
@@ -295,7 +222,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
           }
           items={items}
           onItemClicked={onClickSetChecked}
-          onSelectAllClicked={selectAll}
+          onSelectAllClicked={selectAllDeps}
           displayItemTitle={true}
           checked={checked}
           setChecked={setChecked}

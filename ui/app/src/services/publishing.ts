@@ -43,10 +43,18 @@ export function submitToGoLive(siteId: string, user:string, data) {
   });
 }
 
+export function goLive(siteId: string, user:string, data) {
+  return post(`/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`, data,
+    {
+      'Content-Type': 'application/json'
+    });
+}
+
 export default {
   fetchPackages,
   fetchPackage,
   cancelPackage,
   fetchEnvironments,
-  submitToGoLive
+  submitToGoLive,
+  goLive
 }
