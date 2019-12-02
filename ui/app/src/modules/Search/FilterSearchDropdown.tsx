@@ -24,7 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
 import Collapse from '@material-ui/core/Collapse';
 import clsx from 'clsx';
-import { camelize } from '../../utils/string';
+import { camelize, formatBytes } from '../../utils/string';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import FormGroup from "@material-ui/core/FormGroup";
 import List from "@material-ui/core/List";
@@ -33,6 +33,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import Radio from "@material-ui/core/Radio";
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -135,6 +137,14 @@ const messages: any = defineMessages({
     id: 'searchFilter.desc',
     defaultMessage: 'Descending'
   },
+  under: {
+    id: 'searchFilter.under',
+    defaultMessage: 'Under'
+  },
+  above: {
+    id: 'searchFilter.above',
+    defaultMessage: 'Above'
+  },
 });
 
 interface FilterSearchDropdownProps {
@@ -147,17 +157,23 @@ export default function FilterSearchDropdown(props: any) {
   const {text, className, facets, handleFilterChange, queryParams} = props;
   const {formatMessage} = useIntl();
   const [expanded, setExpanded] = useState({
-    sortBy: true
+    sortBy: false
   });
 
   const setCheckedParameterFromURL = (queryParams) => {
     if(queryParams['filters']){
       let checked = {};
-      Object.keys(queryParams['filters']).forEach((key) => {
-        checked[key] = {};
-        queryParams['filters'][key].forEach((name) => {
-          checked[key][name] = true;
-        });
+      let parseQP = JSON.parse(queryParams['filters']);
+      Object.keys(parseQP).forEach((key) => {
+        if(Array.isArray(parseQP[key])) {
+          checked[key] = {};
+          parseQP[key].forEach((name) => {
+            checked[key][name] = true;
+          });
+        } else {
+          checked[key] = parseQP[key];
+        }
+
       });
       return checked;
     } else {
@@ -221,20 +237,23 @@ export default function FilterSearchDropdown(props: any) {
   };
 
   const renderFilter = (key: string) => {
-    if (key === 'content-type') {
       return (
         <div className={classes.singleFilter}>
           <div className={'filterActions'}>
             <Button variant="outlined" className={classes.button} onClick={() => handleClearClick(key)}>Clear</Button>
-            <Button variant="contained" color='primary' className={classes.button} onClick={() => handleApplyClick(key)}>Apply</Button>
+            {
+              facetsLookupTable[key].multiple &&
+              <Button variant="contained" color='primary' className={classes.button} onClick={() => handleApplyClick(key)}>Apply</Button>
+            }
           </div>
           <div className={'filterBody'}>
-            {renderCheckboxes(facetsLookupTable[key].values, key)}
+            { (facetsLookupTable[key].multiple) ?
+                renderCheckboxes(facetsLookupTable[key].values, key)
+              :
+              renderRadios(facetsLookupTable[key].values, key)
+            }
           </div>
         </div>)
-    } else {
-      return <p>{key}</p>;
-    }
   };
 
   const renderFilters = () => {
@@ -284,27 +303,89 @@ export default function FilterSearchDropdown(props: any) {
     )
   };
 
+  const renderRadios = (items: object, facetName: string) => {
+    return (
+      <RadioGroup>
+        {
+          Object.keys(items).map((key) => {
+            let count = (items[key].count != undefined)? items[key].count : items[key];
+            let label = formatLabel(facetName, key, items[key]);
+            let value =  formatValue(facetName, key, items[key]);
+            return (
+              <FormControlLabel
+                key={key}
+                name={key}
+                onChange={(e: any) => handleRadioClick(e.target.value , facetName)}
+                control={<Radio checked={(checkedFilters && checkedFilters[facetName] === value)} color="primary" value={value}/>}
+                label={`${label} (${count})`}
+                labelPlacement="start"
+                classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
+              />
+            )
+          })
+        }
+      </RadioGroup>
+    )
+  };
+
+  const formatValue = (facet: string, key: string, value: any) => {
+    if(facetsLookupTable[facet].range) {
+      return `${value.from}TO${value.to}`;
+    } else if(facetsLookupTable[facet].date) {
+      return `${value.from}TODATE${value.to}ID${facet}${key}`;
+    } else {
+      return key;
+    }
+  };
+
+  const formatLabel = (facetName: string, key: string, value: any) => {
+    if(facetName === 'size') {
+      if(value.from === '-Infinity'){
+        return `${formatMessage(messages.under)} ${formatBytes(value.to)}`
+      } else if(value.to === 'Infinity'){
+        return `${formatMessage(messages.above)} ${formatBytes(value.from)}`
+      } else {
+        return `${formatBytes(value.from)} - ${formatBytes(value.to)}`
+      }
+    }
+    return key;
+  };
+
   const handleCheckboxClick = (key: string, checked: boolean, facetName: string) => {
     const facetFilter = checkedFilters[facetName] || {};
     facetFilter[key] = checked;
     setCheckedFilters({...checkedFilters, [facetName]: facetFilter});
   };
 
-  const handleApplyClick = (facet: string) => {
-    let values = Object.keys(checkedFilters[facet]).filter((name) => checkedFilters[facet][name]);
-    if(values.length === 0){
-      values = undefined;
+  const handleRadioClick = (value: string, facet: string) => {
+    setCheckedFilters({...checkedFilters, [facet]: value});
+    if(value === ''){
+      value = undefined;
     }
-    handleFilterChange({name: facet, value: values}, true)
+    handleFilterChange({name: facet, value: value}, true)
+  };
+
+  const handleApplyClick = (facet: string) => {
+    if(checkedFilters[facet]) {
+      let values = Object.keys(checkedFilters[facet]).filter((name) => checkedFilters[facet][name]);
+      if(values.length === 0){
+        values = undefined;
+      }
+      handleFilterChange({name: facet, value: values}, true)
+    }
   };
 
   const handleClearClick = (facet: string) => {
     if(checkedFilters[facet]){
-      let emptyFilter = {...checkedFilters[facet]};
-      Object.keys(emptyFilter).forEach((name) => {
-        emptyFilter[name] = false;
-      });
-      setCheckedFilters({...checkedFilters, [facet]: emptyFilter});
+      if(typeof checkedFilters[facet] === 'string') {
+        setCheckedFilters({...checkedFilters, [facet]: ''});
+      } else {
+        let emptyFilter = {...checkedFilters[facet]};
+        Object.keys(emptyFilter).forEach((name) => {
+          emptyFilter[name] = false;
+        });
+        setCheckedFilters({...checkedFilters, [facet]: emptyFilter});
+      }
     }
     handleFilterChange({name: facet, value: undefined}, true)
   };

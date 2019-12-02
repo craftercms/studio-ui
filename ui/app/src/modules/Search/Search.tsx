@@ -30,7 +30,7 @@ import { setRequestForgeryToken } from "../../utils/auth";
 import { MediaItem, SearchParameters, Filter } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import CloseIcon from '@material-ui/icons/Close';
 import EmptyState from "../../components/SystemStatus/EmptyState";
 import ViewListIcon from '@material-ui/icons/ViewList';
@@ -240,15 +240,22 @@ function Search(props: any) {
 
   function handleFilterChange(filter: Filter, isFilter) {
     let qs = createQueryString(filter, isFilter);
-    history.push({
-      pathname: '/',
-      search: `?${qs}`
-    })
+    if(qs || location.search) {
+      history.push({
+        pathname: '/',
+        search: `?${qs}`
+      })
+    } else {
+      return false;
+    }
   }
 
+  // createQueryString:
+  // isFilter: It means that the filter is nested on object filter
   function createQueryString(filter:Filter, isFilter = false) {
     let newFilters;
-    let filters =  queryParams['filters'] || {};
+    let filters:any = queryParams['filters'];
+    filters = filters? JSON.parse(filters): {};
     if(isFilter) {
       filters[filter.name] = filter.value;
       queryParams.filters = JSON.stringify(filters);
@@ -267,9 +274,25 @@ function Search(props: any) {
   }
 
   function setSearchParameters(initialSearchParameters, queryParams) {
-    let formatParameters = queryParams;
+    let formatParameters = {...queryParams};
     if(formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
+      Object.keys(formatParameters.filters).forEach((key) => {
+        if(formatParameters.filters[key].includes('TO')) {
+          let range = formatParameters.filters[key].split('TO');
+          formatParameters.filters[key] = {
+            min: (range[0] !== '-Infinity')?range[0] : null,
+            max: (range[1] !== 'Infinity')?range[1] : null,
+          }
+        } else if (formatParameters.filters[key].includes('TODATE')) {
+          let range = formatParameters.filters[key].split('TODATE');
+          formatParameters.filters[key] = {
+            min: range[0],
+            max: range[1]
+          }
+        }
+
+      })
     }
     return {...initialSearchParameters, ...formatParameters};
   }
