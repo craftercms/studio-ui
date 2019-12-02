@@ -329,10 +329,10 @@ export default function FilterSearchDropdown(props: any) {
   };
 
   const formatValue = (facet: string, key: string, value: any) => {
-    if(facetsLookupTable[facet].range) {
-      return `${value.from}TO${value.to}`;
-    } else if(facetsLookupTable[facet].date) {
+    if(facetsLookupTable[facet].date) {
       return `${value.from}TODATE${value.to}ID${facet}${key}`;
+    } else if(facetsLookupTable[facet].range) {
+      return `${value.from}TO${value.to}`;
     } else {
       return key;
     }
