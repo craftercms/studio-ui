@@ -16,7 +16,7 @@
  */
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from "@material-ui/core/Button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Popover from '@material-ui/core/Popover';
 import { defineMessages, useIntl } from "react-intl";
 import { Theme } from "@material-ui/core";
@@ -188,6 +188,263 @@ interface FilterSearchDropdownProps {
 
 }
 
+function Filter(props: any) {
+  const classes = useStyles({});
+  const {formatMessage} = useIntl();
+  const {facet, handleFilterChange, queryParams, facetsLookupTable} = props;
+  const [checkedFilters, setCheckedFilters] = React.useState({});
+
+  useEffect(function () {
+    setCheckedFilters(setCheckedParameterFromURL(queryParams));
+  }, [queryParams]);
+
+  const setCheckedParameterFromURL = (queryParams) => {
+    if (queryParams['filters']) {
+      let checked = {};
+      let parseQP = JSON.parse(queryParams['filters']);
+      if(parseQP[facet]) {
+        if (Array.isArray(parseQP[facet])) {
+          checked[facet] = {};
+          parseQP[facet].forEach((name) => {
+            checked[facet][name] = true;
+          });
+        } else {
+          checked[facet] = parseQP[facet];
+        }
+      }
+      return checked;
+    } else {
+      return {};
+    }
+  };
+
+  const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
+    const facetFilter = checkedFilters[facet] || {};
+    facetFilter[key] = checked;
+    setCheckedFilters({...checkedFilters, [facet]: facetFilter});
+  };
+
+  const handleRadioClick = (value: string, facet: string) => {
+    if (value === '') {
+      value = undefined;
+    }
+    handleFilterChange({name: facet, value: value}, true)
+  };
+
+  const handleApplyClick = (facet: string) => {
+    if (checkedFilters[facet]) {
+      let values = Object.keys(checkedFilters[facet]).filter((name) => checkedFilters[facet][name]);
+      if (values.length === 0) {
+        values = undefined;
+      }
+      handleFilterChange({name: facet, value: values}, true)
+    }
+  };
+
+  const handleClearClick = (facet: string) => {
+    if (checkedFilters[facet]) {
+      if (typeof checkedFilters[facet] === 'string') {
+        setCheckedFilters({...checkedFilters, [facet]: ''});
+      } else {
+        let emptyFilter = {...checkedFilters[facet]};
+        Object.keys(emptyFilter).forEach((name) => {
+          emptyFilter[name] = false;
+        });
+        setCheckedFilters({...checkedFilters, [facet]: emptyFilter});
+      }
+    }
+    handleFilterChange({name: facet, value: undefined}, true)
+  };
+
+  return (
+    <div className={classes.singleFilter}>
+      <div className={'filterActions'}>
+        <Button variant="outlined" className={classes.button}
+                onClick={() => handleClearClick(facet)}>{formatMessage(messages.clean)}</Button>
+        {
+          facetsLookupTable[facet].multiple &&
+          <Button variant="contained" color='primary' className={classes.button}
+                  onClick={() => handleApplyClick(facet)}>{formatMessage(messages.apply)}</Button>
+        }
+      </div>
+      <div className={'filterBody'}>
+        {(facetsLookupTable[facet].multiple) ?
+          <FilterCheckbox facetData={facetsLookupTable[facet]} facet={facet} handleCheckboxClick={handleCheckboxClick}
+                          checkedFilters={checkedFilters}/>
+          :
+          <div>
+            <FilterRadios facetData={facetsLookupTable[facet]} facet={facet} handleRadioClick={handleRadioClick}
+                          checkedFilters={checkedFilters}/>
+            {
+              (facetsLookupTable[facet].range && !facetsLookupTable[facet].date) &&
+              <RangeSelector facet={facet}/>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  )
+}
+
+function FilterRadios(props: any) {
+  const {facetData, facet, handleRadioClick, checkedFilters} = props;
+  const items = facetData.values;
+  const classes = useStyles({});
+  const {formatMessage} = useIntl();
+
+  const formatValue = (facet: string, key: string, value: any) => {
+    if (facetData.date) {
+      return `${value.from}TODATE${value.to}ID${facet}${key}`;
+    } else if (facetData.range) {
+      return `${value.from}TO${value.to}`;
+    } else {
+      return key;
+    }
+  };
+
+  const formatLabel = (facet: string, key: string, value: any) => {
+    if (facet === 'size') {
+      if (value.from === '-Infinity') {
+        return `${formatMessage(messages.under)} ${formatBytes(value.to)}`
+      } else if (value.to === 'Infinity') {
+        return `${formatMessage(messages.above)} ${formatBytes(value.from)}`
+      } else {
+        return `${formatBytes(value.from)} - ${formatBytes(value.to)}`
+      }
+    } else if (facet === 'width' || facet === 'height') {
+      if (value.from === '-Infinity') {
+        return `${formatMessage(messages.under)} ${value.to}px`
+      } else if (value.to === 'Infinity') {
+        return `${formatMessage(messages.above)} ${value.from}px`
+      } else {
+        return `${value.from}px - ${value.to}px`
+      }
+    }
+    return key;
+  };
+
+  return (
+    <RadioGroup>
+      {
+        Object.keys(items).map((key) => {
+          let count = (items[key].count != undefined) ? items[key].count : items[key];
+          let label = formatLabel(facet, key, items[key]);
+          let value = formatValue(facet, key, items[key]);
+          return (
+            <FormControlLabel
+              key={key}
+              name={key}
+              onChange={(e: any) => handleRadioClick(e.target.value, facet)}
+              control={<Radio checked={(checkedFilters && checkedFilters[facet] === value)} color="primary"
+                              value={value}/>}
+              label={`${label} (${count})`}
+              labelPlacement="start"
+              classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
+            />
+          )
+        })
+      }
+    </RadioGroup>
+  )
+}
+
+function FilterCheckbox(props: any) {
+  const {facetData, facet, handleCheckboxClick, checkedFilters} = props;
+  const items = facetData.values;
+  const classes = useStyles({});
+
+  return (
+    <FormGroup>
+      {
+        Object.keys(items).map((key) => {
+          return (
+            <FormControlLabel
+              key={key}
+              name={key}
+              control={<Checkbox color="primary"
+                                 checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false}
+                                 value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}/>}
+              label={`${key} (${items[key]})`}
+              labelPlacement="start"
+              classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
+            />
+          )
+        })
+      }
+    </FormGroup>
+  )
+}
+
+function RangeSelector(props: any) {
+  const classes = useStyles({});
+  const {formatMessage} = useIntl();
+  const {facet} = props;
+
+  const handleRangeSelector = (facet: string) => {
+
+  };
+
+  return (
+    <div className={classes.rangePicker}>
+      <TextField
+        id={`${facet}min`}
+        name={`${facet}min`}
+        placeholder={formatMessage(messages.min)}
+        margin="normal"
+        className={classes.rangeTextField}
+      />
+      <span className={classes.space}>-</span>
+      <TextField
+        id={`${facet}max`}
+        name={`${facet}max`}
+        placeholder={formatMessage(messages.max)}
+        margin="normal"
+        className={classes.rangeTextField}
+      />
+      <Button variant="contained" color='primary' className={classes.rangeButton}
+              onClick={() => handleRangeSelector(facet)}>{formatMessage(messages.go)}</Button>
+    </div>
+  )
+}
+
+function SortBy(props: any) {
+  const classes = useStyles({});
+  const {formatMessage} = useIntl();
+  const {queryParams, handleFilterChange, filterKeys} = props;
+  return (
+    <Select
+      id="sortBy"
+      value={queryParams['sortBy'] || "internalName"}
+      className={classes.Select}
+      onChange={(event) => handleFilterChange({name: 'sortBy', value: event.target.value})}
+    >
+      <MenuItem value='internalName'>{formatMessage(messages[camelize('internalName')])}</MenuItem>
+      {
+        filterKeys.map((name: string, i: number) => {
+          return <MenuItem value={name} key={i}>{formatMessage(messages[camelize(name)])}</MenuItem>
+        })
+      }
+    </Select>
+  )
+}
+
+function SortOrder(props: any) {
+  const classes = useStyles({});
+  const {formatMessage} = useIntl();
+  const {queryParams, handleFilterChange} = props;
+  return (
+    <Select
+      id="sortOrder"
+      value={queryParams['sortOrder'] || "asc"}
+      className={clsx(classes.Select, 'last')}
+      onChange={(event) => handleFilterChange({name: 'sortOrder', value: event.target.value})}
+    >
+      <MenuItem value="asc">{formatMessage(messages.asc)}</MenuItem>
+      <MenuItem value="desc">{formatMessage(messages.desc)}</MenuItem>
+    </Select>
+  )
+}
+
 export default function FilterSearchDropdown(props: any) {
   const classes = useStyles({});
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -196,29 +453,6 @@ export default function FilterSearchDropdown(props: any) {
   const [expanded, setExpanded] = useState({
     sortBy: false
   });
-
-  const setCheckedParameterFromURL = (queryParams) => {
-    if(queryParams['filters']){
-      let checked = {};
-      let parseQP = JSON.parse(queryParams['filters']);
-      Object.keys(parseQP).forEach((key) => {
-        if(Array.isArray(parseQP[key])) {
-          checked[key] = {};
-          parseQP[key].forEach((name) => {
-            checked[key][name] = true;
-          });
-        } else {
-          checked[key] = parseQP[key];
-        }
-
-      });
-      return checked;
-    } else {
-      return {};
-    }
-  };
-
-  const [checkedFilters, setCheckedFilters] = React.useState(setCheckedParameterFromURL(queryParams));
 
   let filterKeys = [];
   let facetsLookupTable = {};
@@ -240,86 +474,6 @@ export default function FilterSearchDropdown(props: any) {
     setExpanded({...expanded, [item]: !expanded[item]})
   };
 
-  const renderSortBy = () => {
-    return (
-      <Select
-        id="sortBy"
-        value={queryParams['sortBy'] || "internalName"}
-        className={classes.Select}
-        onChange={(event) => handleFilterChange({name: 'sortBy', value: event.target.value})}
-      >
-        <MenuItem value='internalName'>{formatMessage(messages[camelize('internalName')])}</MenuItem>
-        {
-          filterKeys.map((name: string, i: number) => {
-            return <MenuItem value={name} key={i}>{formatMessage(messages[camelize(name)])}</MenuItem>
-          })
-        }
-      </Select>
-    )
-  };
-
-  const renderSortOrder = () => {
-    return (
-      <Select
-        id="sortOrder"
-        value={queryParams['sortOrder'] || "asc"}
-        className={clsx(classes.Select, 'last')}
-        onChange={(event) => handleFilterChange({name: 'sortOrder', value: event.target.value})}
-      >
-        <MenuItem value="asc">{formatMessage(messages.asc)}</MenuItem>
-        <MenuItem value="desc">{formatMessage(messages.desc)}</MenuItem>
-      </Select>
-
-    )
-  };
-
-  const renderFilter = (key: string) => {
-      return (
-        <div className={classes.singleFilter}>
-          <div className={'filterActions'}>
-            <Button variant="outlined" className={classes.button} onClick={() => handleClearClick(key)}>{formatMessage(messages.clean)}</Button>
-            {
-              facetsLookupTable[key].multiple &&
-              <Button variant="contained" color='primary' className={classes.button} onClick={() => handleApplyClick(key)}>{formatMessage(messages.apply)}</Button>
-            }
-          </div>
-          <div className={'filterBody'}>
-            { (facetsLookupTable[key].multiple) ?
-                renderCheckboxes(facetsLookupTable[key].values, key)
-              :
-              <div>
-                {renderRadios(facetsLookupTable[key].values, key)}
-                {
-                  (facetsLookupTable[key].range  && !facetsLookupTable[key].date) &&
-                  renderRangeSelector(key)
-                }
-              </div>
-            }
-          </div>
-        </div>)
-  };
-
-  const renderRangeSelector = (key: string) => {
-    return (
-      <div className={classes.rangePicker}>
-        <TextField
-          id={`${key}min`}
-          placeholder={formatMessage(messages.min)}
-          margin="normal"
-          className={classes.rangeTextField}
-        />
-        <span className={classes.space}>-</span>
-        <TextField
-          id={`${key}max`}
-          placeholder={formatMessage(messages.max)}
-          margin="normal"
-          className={classes.rangeTextField}
-        />
-        <Button variant="contained" color='primary' className={classes.rangeButton} onClick={() => handleRangeSelector(key)}>{formatMessage(messages.go)}</Button>
-      </div>
-    )
-  };
-
   const renderFilters = () => {
     return (
       filterKeys.map((key: string, i: number) => {
@@ -337,133 +491,18 @@ export default function FilterSearchDropdown(props: any) {
             </ListItem>
             <Collapse in={!!(expanded && expanded[name])} timeout={300}>
               <div className={classes.body}>
-                {renderFilter(key)}
+                <Filter
+                  facet={key}
+                  handleFilterChange={handleFilterChange}
+                  queryParams={queryParams}
+                  facetsLookupTable={facetsLookupTable}
+                />
               </div>
             </Collapse>
           </div>
         )
       })
     )
-  };
-
-  const renderCheckboxes = (items: object, facet: string) => {
-    return (
-      <FormGroup>
-        {
-          Object.keys(items).map((key) => {
-            return (
-              <FormControlLabel
-                key={key}
-                name={key}
-                control={<Checkbox color="primary" checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false} value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked , facet)}/>}
-                label={`${key} (${items[key]})`}
-                labelPlacement="start"
-                classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
-              />
-            )
-          })
-        }
-      </FormGroup>
-    )
-  };
-
-  const renderRadios = (items: object, facet: string) => {
-    return (
-      <RadioGroup>
-        {
-          Object.keys(items).map((key) => {
-            let count = (items[key].count != undefined)? items[key].count : items[key];
-            let label = formatLabel(facet, key, items[key]);
-            let value =  formatValue(facet, key, items[key]);
-            return (
-              <FormControlLabel
-                key={key}
-                name={key}
-                onChange={(e: any) => handleRadioClick(e.target.value , facet)}
-                control={<Radio checked={(checkedFilters && checkedFilters[facet] === value)} color="primary" value={value}/>}
-                label={`${label} (${count})`}
-                labelPlacement="start"
-                classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
-              />
-            )
-          })
-        }
-      </RadioGroup>
-    )
-  };
-
-  const formatValue = (facet: string, key: string, value: any) => {
-    if(facetsLookupTable[facet].date) {
-      return `${value.from}TODATE${value.to}ID${facet}${key}`;
-    } else if(facetsLookupTable[facet].range) {
-      return `${value.from}TO${value.to}`;
-    } else {
-      return key;
-    }
-  };
-
-  const formatLabel = (facet: string, key: string, value: any) => {
-    if(facet === 'size') {
-      if(value.from === '-Infinity'){
-        return `${formatMessage(messages.under)} ${formatBytes(value.to)}`
-      } else if(value.to === 'Infinity'){
-        return `${formatMessage(messages.above)} ${formatBytes(value.from)}`
-      } else {
-        return `${formatBytes(value.from)} - ${formatBytes(value.to)}`
-      }
-    } else if (facet === 'width' || facet === 'height') {
-      if(value.from === '-Infinity'){
-        return `${formatMessage(messages.under)} ${value.to}px`
-      } else if(value.to === 'Infinity'){
-        return `${formatMessage(messages.above)} ${value.from}px`
-      } else {
-        return `${value.from}px - ${value.to}px`
-      }
-    }
-    return key;
-  };
-
-  const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
-    const facetFilter = checkedFilters[facet] || {};
-    facetFilter[key] = checked;
-    setCheckedFilters({...checkedFilters, [facet]: facetFilter});
-  };
-
-  const handleRadioClick = (value: string, facet: string) => {
-    setCheckedFilters({...checkedFilters, [facet]: value});
-    if(value === ''){
-      value = undefined;
-    }
-    handleFilterChange({name: facet, value: value}, true)
-  };
-
-  const handleApplyClick = (facet: string) => {
-    if(checkedFilters[facet]) {
-      let values = Object.keys(checkedFilters[facet]).filter((name) => checkedFilters[facet][name]);
-      if(values.length === 0){
-        values = undefined;
-      }
-      handleFilterChange({name: facet, value: values}, true)
-    }
-  };
-
-  const handleClearClick = (facet: string) => {
-    if(checkedFilters[facet]){
-      if(typeof checkedFilters[facet] === 'string') {
-        setCheckedFilters({...checkedFilters, [facet]: ''});
-      } else {
-        let emptyFilter = {...checkedFilters[facet]};
-        Object.keys(emptyFilter).forEach((name) => {
-          emptyFilter[name] = false;
-        });
-        setCheckedFilters({...checkedFilters, [facet]: emptyFilter});
-      }
-    }
-    handleFilterChange({name: facet, value: undefined}, true)
-  };
-
-  const handleRangeSelector = (facet: string) => {
-
   };
 
   return (
@@ -501,8 +540,8 @@ export default function FilterSearchDropdown(props: any) {
             </ListItem>
             <Collapse in={(expanded && expanded['sortBy'])} timeout={300}>
               <div className={classes.body}>
-                {renderSortBy()}
-                {renderSortOrder()}
+                <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange}/>
+                <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange}/>
               </div>
             </Collapse>
           </div>
