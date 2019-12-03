@@ -202,7 +202,7 @@ function Filter(props: any) {
     if (queryParams['filters']) {
       let checked = {};
       let parseQP = JSON.parse(queryParams['filters']);
-      if(parseQP[facet]) {
+      if (parseQP[facet]) {
         if (Array.isArray(parseQP[facet])) {
           checked[facet] = {};
           parseQP[facet].forEach((name) => {
@@ -270,14 +270,14 @@ function Filter(props: any) {
       <div className={'filterBody'}>
         {(facetsLookupTable[facet].multiple) ?
           <FilterCheckboxes facetData={facetsLookupTable[facet]} facet={facet} handleCheckboxClick={handleCheckboxClick}
-                          checkedFilters={checkedFilters}/>
+                            checkedFilters={checkedFilters}/>
           :
           <div>
             <FilterRadios facetData={facetsLookupTable[facet]} facet={facet} handleRadioClick={handleRadioClick}
                           checkedFilters={checkedFilters}/>
             {
               (facetsLookupTable[facet].range && !facetsLookupTable[facet].date) &&
-              <RangeSelector facet={facet}/>
+              <RangeSelector facet={facet} handleFilterChange={handleFilterChange} checkedFilters={checkedFilters} queryParams={queryParams}/>
             }
           </div>
         }
@@ -378,10 +378,43 @@ function FilterCheckboxes(props: any) {
 function RangeSelector(props: any) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {facet} = props;
+  const {facet, handleFilterChange, checkedFilters} = props;
+
+  const getMinMax = () => {
+    if (checkedFilters && checkedFilters[facet]) {
+      let range = checkedFilters[facet].split('TO');
+      return {
+        min: range[0],
+        max: range[1]
+      }
+    } else {
+      return {
+        min: '',
+        max: ''
+      };
+    }
+  };
+
+  const [range, setRange] = useState(
+    {
+      min: '',
+      max: ''
+    });
+
+  useEffect(function () {
+    setRange(getMinMax());
+  }, [checkedFilters]);
 
   const handleRangeSelector = (facet: string) => {
+    let value = `${range.min}TO${range.max}`;
+    if (range.min === '' && range.max === '') {
+      value = undefined;
+    }
+    handleFilterChange({name: facet, value: value}, true)
+  };
 
+  const handleOnChange = (value: string, type: string) => {
+    setRange({...range, [type]: value});
   };
 
   return (
@@ -389,6 +422,8 @@ function RangeSelector(props: any) {
       <TextField
         id={`${facet}min`}
         name={`${facet}min`}
+        value={range.min}
+        onChange={(e) => handleOnChange(e.target.value, 'min')}
         placeholder={formatMessage(messages.min)}
         margin="normal"
         className={classes.rangeTextField}
@@ -397,6 +432,8 @@ function RangeSelector(props: any) {
       <TextField
         id={`${facet}max`}
         name={`${facet}max`}
+        value={range.max}
+        onChange={(e) => handleOnChange(e.target.value, 'max')}
         placeholder={formatMessage(messages.max)}
         margin="normal"
         className={classes.rangeTextField}
