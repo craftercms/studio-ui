@@ -269,7 +269,7 @@ function Filter(props: any) {
       </div>
       <div className={'filterBody'}>
         {(facetsLookupTable[facet].multiple) ?
-          <FilterCheckbox facetData={facetsLookupTable[facet]} facet={facet} handleCheckboxClick={handleCheckboxClick}
+          <FilterCheckboxes facetData={facetsLookupTable[facet]} facet={facet} handleCheckboxClick={handleCheckboxClick}
                           checkedFilters={checkedFilters}/>
           :
           <div>
@@ -348,7 +348,7 @@ function FilterRadios(props: any) {
   )
 }
 
-function FilterCheckbox(props: any) {
+function FilterCheckboxes(props: any) {
   const {facetData, facet, handleCheckboxClick, checkedFilters} = props;
   const items = facetData.values;
   const classes = useStyles({});
