@@ -306,6 +306,7 @@
   });
 
   communicator.subscribe(Topics.STOP_DRAG_AND_DROP, function () {
+    expandContractChannel();
     CStudioAuthoring.PreviewTools.panel.element.style.visibility = 'visible';
     $(CStudioAuthoring.PreviewTools.panel.element).show('slow', function () {
 
@@ -355,11 +356,15 @@
   communicator.subscribe(Topics.START_DIALOG, function (message) {
     var newdiv = document.createElement('div');
     var text;
+    var link = "";
 
     if(message.messageKey) {
       text = CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.dragAndDropMessages[message.messageKey])
     }else {
       text = message.message;
+    }
+    if(message.link) {
+      link = message.link;
     }
 
     newdiv.setAttribute('id', 'cstudio-wcm-popup-div');
@@ -369,7 +374,8 @@
       /**/'<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
       /****/'<div class="contentTypePopupHeader">Notification</div> ' +
       /****/'<div class="contentTypeOuter">' +
-      /****/'<div>' + text + '</div> ' +
+      /****/'<div>' + text +'</div> ' +
+      /****/'<div>' + link +'</div> ' +
       /****/'<div></div>' +
       /**/'</div>' +
       /**/'<div class="contentTypePopupBtn"> ' +
@@ -463,6 +469,7 @@
 
   var initialContentModel;
   amplify.subscribe(cstopic('START_DRAG_AND_DROP'), function (config) {
+    expandContractChannel('expand');
     previewWidth = $('.studio-preview').css('right');
     $('.studio-preview').css('right', 0);
     $(CStudioAuthoring.PreviewTools.panel.element).hide('fast', function () {
@@ -724,5 +731,22 @@
     }
 
   }, false);
+
+  function expandContractChannel(opt) {
+    var
+      $studioChannelPortrait = $('.studio-device-preview-portrait')[0],
+      $studioChannelLandscape = $('.studio-device-preview-landscape')[0];
+    if ($studioChannelPortrait || $studioChannelLandscape) {
+      var
+        inputChannelWidth = $('[data-axis="x"]', parent.document),
+        width = inputChannelWidth.val() || 'auto',
+        $engine = $('#engineWindow', parent.document);
+
+      width = opt === 'expand' ? parseInt(width) + 265 : parseInt(width);
+      $engine.width(
+        (width === 'auto' || width === '')
+          ? '' : parseInt(width));
+    }
+  }
 
 })(jQuery, window, amplify, CStudioAuthoring);

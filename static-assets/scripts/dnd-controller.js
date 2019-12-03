@@ -154,7 +154,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         this.getAnimator($p).slideOutRight(function () {
           $o.detach();
           $p.detach();
-            expandContractChannel();
         });
 
         $('.removeComp').remove();
@@ -223,9 +222,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     renderPalette.call(this, components, browse);
 
     this.getAnimator($o).fadeIn();
-    this.getAnimator($p).slideInRight(function () {
-        expandContractChannel('expand');
-    });
+    this.getAnimator($p).slideInRight();
 
     $("[data-studio-components-size='small']").each(function (index) {
       $(this).width($(this).width() / 2);
@@ -251,44 +248,73 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         return temp;
       }
       var valid = true;
-      var isZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var isDestZoneEmbedded = $component.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var isCurrentZoneEmbedded = $dropZone.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+      var DestContentType = $component.parents('[data-studio-zone-content-type]').attr('data-studio-zone-content-type') || null;
+      var currentContentType = $dropZone.attr('data-studio-zone-content-type') || null;
       var isItemEmbedded;
-      var originPath;
-      var destPath;
+      var currentTrackingNumber;
+      var destTrackingNumber;
 
-      //we are moving a component
-      if(!isNew) {
+      // We are moving a component
+      if (!isNew) {
+        currentTrackingNumber = $dropZone.attr('data-studio-zone-tracking');
+        destTrackingNumber = $component.parents('[data-studio-zone-tracking]').attr('data-studio-zone-tracking');
         isItemEmbedded = $component.attr('data-studio-embedded-item-id') || false;
-        originPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
-        destPath = $component.parents('[data-studio-component-path]').attr('data-studio-component-path') || null;
-      }else {
+      } else {
         let path =  $component.attr('data-studio-component-path');
         isItemEmbedded = path ? false: true;
       }
 
-      if(isZoneEmbedded) {
+      var sameDropZone = (currentTrackingNumber === destTrackingNumber);
+
+      //checking if both have contentType
+      if(!DestContentType || !currentContentType) {
         valid = false;
         publish.call(me, Topics.START_DIALOG, {
-          messageKey: 'embeddedComponentsNotSupported',
-          height: 'auto'
-        });
-      }else if(isItemEmbedded && originPath !== destPath){
-        valid = false;
-        publish.call(me, Topics.START_DIALOG, {
-          messageKey: 'embeddedComponentsDrag',
+          messageKey: 'contentTypeNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
           height: 'auto'
         });
       }
 
-      if(!valid){
-        if(isNew) {
+      if (isDestZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsDndNotSupported',
+          height: 'auto'
+        });
+      } else if (isItemEmbedded && !sameDropZone) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsDragWithinParentOnly',
+          height: 'auto'
+        });
+      } else if (isCurrentZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'moveOutEmbeddedComponentsNotSupported',
+          height: 'auto'
+        });
+      }
+
+      if (!valid) {
+        if (isNew) {
           $component.remove();
-        }else {
+          window.location.reload();
+        } else {
           $(DROPPABLE_SELECTION).sortable("cancel");
         }
       }
 
-      if(!isNew) dndInProgress = valid;
+      //if it is a move it is doing 2 calls
+      if (!isNew) {
+        dndInProgress = valid;
+      }
+      //if it is a move within the same dropzone is doing 1 call
+      if(sameDropZone) {
+        dndInProgress = null;
+      }
       return valid;
     }
 
@@ -351,13 +377,14 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
               validationInProgress = null;
               if (response.supported) {
                 componentDropped.call(me, $dropZone, $component, response.ds);
-              } else{
+              } else {
                 publish.call(me, Topics.START_DIALOG, {
-                  messageKey: 'contentTypeNotSupported',
+                  messageKey: 'componentNotWelcomeWithinDropZone',
                   height: 'auto'
                 });
                 if(isNew) {
                   $component.remove();
+                  window.location.reload();
                 }else {
                   $(DROPPABLE_SELECTION).sortable("cancel");
                 }
@@ -369,7 +396,7 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
 
           //Validation with cache avoiding doble validation...
           let key = `${zone}-${componentType}`;
-          if(cacheValidation[key]) {
+          if(cacheValidation[key] && cacheValidation[key].supported) {
             communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
             componentDropped.call(me, $dropZone, $component, cacheValidation[key].ds);
           } else if(validationInProgress === null) {
@@ -412,7 +439,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
             updateDop(self, me, ui);
           }, 300);
         }
-
       }
     });
 
@@ -437,6 +463,14 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         var dropName = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-components-target');
         var trackingZone = $($(this).parent().parents('[data-studio-components-target]')[0]).attr('data-studio-zone-tracking');
         var index = 0, currentTag = "", zone;
+        var isCurrentZoneEmbedded = $(this).parent().parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id') || false;
+        if (isCurrentZoneEmbedded) {
+          publish.call(me, Topics.START_DIALOG, {
+            messageKey: 'embeddedComponentsDeleteChildNotSupported',
+            height: 'auto'
+          });
+          return false;
+        }
         removeComponent(this, function () {
           var zones = {};
           var conRepeat = 0;
@@ -489,23 +523,6 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
       $(this).append(delControl);
     });
 
-  }
-
-  function expandContractChannel(opt) {
-    var
-      $studioChannelPortrait = $('.studio-device-preview-portrait', parent.document)[0],
-      $studioChannelLandscape = $('.studio-device-preview-landscape', parent.document)[0];
-    if ($studioChannelPortrait || $studioChannelLandscape) {
-      var
-        inputChannelWidth = $('[data-axis="x"]', parent.document),
-        width = inputChannelWidth.val() || 'auto',
-        $engine = $('#engineWindow', parent.document);
-
-      width = opt === 'expand' ? parseInt(width) + 265 : parseInt(width);
-      $engine.width(
-        (width === 'auto' || width === '')
-          ? '' : parseInt(width));
-    }
   }
 
   function componentDropped($dropZone, $component, datasource) {
@@ -586,11 +603,13 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
     $('[data-studio-tracking-number="' + tracking + '"]').data('model', data);
   }
 
+  var contentTypeValidationInProgress = null;
   function componentsModelLoad(data) {
     var aNotFound = [],
       me = this,
       noObjectid = 0,
-      structure1, structure2, index = 0, currentTag = "";
+      structure1, structure2, index = 0, currentTag = "",
+      noContentType = 0;
 
     $('[data-studio-components-target]').each(function () {
       var $el = $(this),
@@ -599,6 +618,9 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         name = $el.attr('data-studio-components-target'),
         path = $el.parents('[data-studio-component-path]').attr('data-studio-component-path'),
         id = objectId + "-" + name;
+        if(!$el.attr('data-studio-zone-content-type')) {
+          noContentType++;
+        }
         //avoid searching if the item is embedded;
         if(!$el.parents('[data-studio-embedded-item-id]').attr('data-studio-embedded-item-id')) {
           if (name.indexOf('.') < 0) {
@@ -674,14 +696,29 @@ crafterDefine('dnd-controller', ['crafter', 'jquery', 'jquery-ui', 'animator', '
         }
       } else {
         publish.call(me, Topics.START_DIALOG, {
-          message: 'Model is incomplete. Drag and Drop is not going to work properly.'
+          messageKey: 'pathNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
         });
       }
     }
     if (noObjectid > 0) {
       publish.call(me, Topics.START_DIALOG, {
-        message: 'Object Id is missing. Drag and Drop is not going to work properly.'
+        messageKey: 'objectIdNotFound',
+        link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+        height: 'auto'
       });
+    }
+    if (noContentType > 0) {
+      noContentType = 0;
+      if(contentTypeValidationInProgress == null){
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'contentTypeNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
+        });
+        contentTypeValidationInProgress = true;
+      }
     }
   }
 

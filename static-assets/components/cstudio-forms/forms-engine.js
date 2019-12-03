@@ -1491,6 +1491,9 @@ var CStudioForms = CStudioForms || function() {
         };
 
         var cancelFn = function () {
+          if (iceWindowCallback && iceWindowCallback.refresh) {
+            iceWindowCallback.refresh();
+          }
 
           if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
             for (var x = 0; x < window.parent.CStudioAuthoring.editDisabled.length; x++) {
