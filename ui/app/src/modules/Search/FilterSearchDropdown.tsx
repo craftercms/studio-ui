@@ -35,6 +35,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -93,6 +94,22 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   checkboxRoot: {
     marginRight: '5px'
+  },
+  rangePicker: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '10px 16px'
+  },
+  space: {
+    margin: '0 5px'
+  },
+  rangeTextField: {
+    width: '60px',
+    margin: '0',
+    flexGrow: 1
+  },
+  rangeButton: {
+    marginLeft: '10px'
   }
 }));
 
@@ -137,6 +154,18 @@ const messages: any = defineMessages({
     id: 'searchFilter.desc',
     defaultMessage: 'Descending'
   },
+  apply: {
+    id: 'searchFilter.apply',
+    defaultMessage: 'Apply'
+  },
+  clean: {
+    id: 'searchFilter.clean',
+    defaultMessage: 'Clean'
+  },
+  go: {
+    id: 'searchFilter.go',
+    defaultMessage: 'Go'
+  },
   under: {
     id: 'searchFilter.under',
     defaultMessage: 'Under'
@@ -144,6 +173,14 @@ const messages: any = defineMessages({
   above: {
     id: 'searchFilter.above',
     defaultMessage: 'Above'
+  },
+  min: {
+    id: 'searchFilter.min',
+    defaultMessage: 'Min'
+  },
+  max: {
+    id: 'searchFilter.max',
+    defaultMessage: 'Max'
   },
 });
 
@@ -240,20 +277,47 @@ export default function FilterSearchDropdown(props: any) {
       return (
         <div className={classes.singleFilter}>
           <div className={'filterActions'}>
-            <Button variant="outlined" className={classes.button} onClick={() => handleClearClick(key)}>Clear</Button>
+            <Button variant="outlined" className={classes.button} onClick={() => handleClearClick(key)}>{formatMessage(messages.clean)}</Button>
             {
               facetsLookupTable[key].multiple &&
-              <Button variant="contained" color='primary' className={classes.button} onClick={() => handleApplyClick(key)}>Apply</Button>
+              <Button variant="contained" color='primary' className={classes.button} onClick={() => handleApplyClick(key)}>{formatMessage(messages.apply)}</Button>
             }
           </div>
           <div className={'filterBody'}>
             { (facetsLookupTable[key].multiple) ?
                 renderCheckboxes(facetsLookupTable[key].values, key)
               :
-              renderRadios(facetsLookupTable[key].values, key)
+              <div>
+                {renderRadios(facetsLookupTable[key].values, key)}
+                {
+                  (facetsLookupTable[key].range  && !facetsLookupTable[key].date) &&
+                  renderRangeSelector(key)
+                }
+              </div>
             }
           </div>
         </div>)
+  };
+
+  const renderRangeSelector = (key: string) => {
+    return (
+      <div className={classes.rangePicker}>
+        <TextField
+          id={`${key}min`}
+          placeholder={formatMessage(messages.min)}
+          margin="normal"
+          className={classes.rangeTextField}
+        />
+        <span className={classes.space}>-</span>
+        <TextField
+          id={`${key}max`}
+          placeholder={formatMessage(messages.max)}
+          margin="normal"
+          className={classes.rangeTextField}
+        />
+        <Button variant="contained" color='primary' className={classes.rangeButton} onClick={() => handleRangeSelector(key)}>{formatMessage(messages.go)}</Button>
+      </div>
+    )
   };
 
   const renderFilters = () => {
@@ -282,7 +346,7 @@ export default function FilterSearchDropdown(props: any) {
     )
   };
 
-  const renderCheckboxes = (items: object, facetName: string) => {
+  const renderCheckboxes = (items: object, facet: string) => {
     return (
       <FormGroup>
         {
@@ -291,7 +355,7 @@ export default function FilterSearchDropdown(props: any) {
               <FormControlLabel
                 key={key}
                 name={key}
-                control={<Checkbox color="primary" checked={(checkedFilters && checkedFilters[facetName] && checkedFilters[facetName][key]) || false} value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked , facetName)}/>}
+                control={<Checkbox color="primary" checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false} value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked , facet)}/>}
                 label={`${key} (${items[key]})`}
                 labelPlacement="start"
                 classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
@@ -303,20 +367,20 @@ export default function FilterSearchDropdown(props: any) {
     )
   };
 
-  const renderRadios = (items: object, facetName: string) => {
+  const renderRadios = (items: object, facet: string) => {
     return (
       <RadioGroup>
         {
           Object.keys(items).map((key) => {
             let count = (items[key].count != undefined)? items[key].count : items[key];
-            let label = formatLabel(facetName, key, items[key]);
-            let value =  formatValue(facetName, key, items[key]);
+            let label = formatLabel(facet, key, items[key]);
+            let value =  formatValue(facet, key, items[key]);
             return (
               <FormControlLabel
                 key={key}
                 name={key}
-                onChange={(e: any) => handleRadioClick(e.target.value , facetName)}
-                control={<Radio checked={(checkedFilters && checkedFilters[facetName] === value)} color="primary" value={value}/>}
+                onChange={(e: any) => handleRadioClick(e.target.value , facet)}
+                control={<Radio checked={(checkedFilters && checkedFilters[facet] === value)} color="primary" value={value}/>}
                 label={`${label} (${count})`}
                 labelPlacement="start"
                 classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
@@ -338,8 +402,8 @@ export default function FilterSearchDropdown(props: any) {
     }
   };
 
-  const formatLabel = (facetName: string, key: string, value: any) => {
-    if(facetName === 'size') {
+  const formatLabel = (facet: string, key: string, value: any) => {
+    if(facet === 'size') {
       if(value.from === '-Infinity'){
         return `${formatMessage(messages.under)} ${formatBytes(value.to)}`
       } else if(value.to === 'Infinity'){
@@ -347,14 +411,22 @@ export default function FilterSearchDropdown(props: any) {
       } else {
         return `${formatBytes(value.from)} - ${formatBytes(value.to)}`
       }
+    } else if (facet === 'width' || facet === 'height') {
+      if(value.from === '-Infinity'){
+        return `${formatMessage(messages.under)} ${value.to}px`
+      } else if(value.to === 'Infinity'){
+        return `${formatMessage(messages.above)} ${value.from}px`
+      } else {
+        return `${value.from}px - ${value.to}px`
+      }
     }
     return key;
   };
 
-  const handleCheckboxClick = (key: string, checked: boolean, facetName: string) => {
-    const facetFilter = checkedFilters[facetName] || {};
+  const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
+    const facetFilter = checkedFilters[facet] || {};
     facetFilter[key] = checked;
-    setCheckedFilters({...checkedFilters, [facetName]: facetFilter});
+    setCheckedFilters({...checkedFilters, [facet]: facetFilter});
   };
 
   const handleRadioClick = (value: string, facet: string) => {
@@ -390,6 +462,10 @@ export default function FilterSearchDropdown(props: any) {
     handleFilterChange({name: facet, value: undefined}, true)
   };
 
+  const handleRangeSelector = (facet: string) => {
+
+  };
+
   return (
     <div>
       <Button variant="outlined" onClick={handleClick} className={className}>
@@ -420,10 +496,10 @@ export default function FilterSearchDropdown(props: any) {
                   <strong>{formatMessage(messages.sortBy)}</strong>
                 </Typography>
                 <ExpandMoreIcon
-                  className={clsx(classes.expand, !!(expanded && expanded['sortBy']) && classes.expandOpen)}/>
+                  className={clsx(classes.expand, (expanded && expanded['sortBy']) && classes.expandOpen)}/>
               </header>
             </ListItem>
-            <Collapse in={!!(expanded && expanded['sortBy'])} timeout={300}>
+            <Collapse in={(expanded && expanded['sortBy'])} timeout={300}>
               <div className={classes.body}>
                 {renderSortBy()}
                 {renderSortOrder()}
