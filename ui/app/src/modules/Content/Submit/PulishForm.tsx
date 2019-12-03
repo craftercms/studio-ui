@@ -57,14 +57,19 @@ const publishFormStyles = () => ({
   },
   sectionLabel :{
     color: '#000',
-    width: '100%'
+    width: '100%',
+    fontSize: '16px'
+  },
+  formInputs: {
+    fontSize: '14px'
   },
   checkboxInput: {
     paddingTop: 0,
     paddingBottom: 0
   },
   selectInput: {
-    padding: '10px 12px'
+    padding: '10px 12px',
+    backgroundColor: '#fff'
   },
   datePicker: {
     position: 'relative' as 'relative',
@@ -82,7 +87,8 @@ const publishFormStyles = () => ({
     }
   },
   radioGroup: {
-    paddingTop: '10px'
+    paddingTop: '10px',
+    fontSize: '14px'
   },
   radioInput: {
     paddingBottom: '4px',
@@ -90,7 +96,10 @@ const publishFormStyles = () => ({
   },
   selectIcon: {
     right: '12px'
-  }
+  },
+  submissionTextField: {
+    paddingBottom: 0
+  },
 });
 
 const SelectInput = withStyles(() =>
@@ -173,11 +182,17 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
             value="now"
             control={<Radio color="primary" className={ classes.radioInput } />}
             label={ formatMessage(messages.schedulingNow) }
+            classes={{
+              label: classes.formInputs
+            }}
           />
           <FormControlLabel
             value="custom"
             control={<Radio color="primary" className={ classes.radioInput } />}
             label={ formatMessage(messages.schedulingLater) }
+            classes={{
+              label: classes.formInputs
+            }}
           />
         </RadioGroup>
         <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={ inputs.scheduling === 'custom' ? (classes.datePicker) : '' }>
@@ -193,7 +208,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
             style={{ borderRadius: '4px' }}
             value={inputs.environment}
             classes={{
-              select: classes.selectInput,
+              select: `${classes.selectInput} ${classes.formInputs}`,
               icon: classes.selectIcon
             }}
             onChange={handleSelectChange('environment')}
@@ -209,6 +224,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
       </div>
 
       <TextField
+        className={classes.submissionTextField}
         id="sandboxBranch"
         name="sandboxBranch"
         label={<span className={classes.sectionLabel}>Submission Comment</span>}
@@ -217,7 +233,10 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
         InputLabelProps={{ shrink: true }}
         value={inputs.submissionComment}
         multiline
-        rows={inputs.scheduling === 'custom' ? '1': '4'}
+        rows={inputs.scheduling === 'custom' ? '1': '6'}
+        classes={{
+
+        }}
       />
     </form>
   )

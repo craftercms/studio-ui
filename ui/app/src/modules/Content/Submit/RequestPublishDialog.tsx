@@ -26,6 +26,7 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import Typography from '@material-ui/core/Typography';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
 import Grid from "@material-ui/core/Grid";
@@ -57,35 +58,46 @@ const dialogInitialState: any = {
   selectedItems: null
 };
 
-const dialogTitleStyles = () => ({
-  root: {
+const dialogStyles = () => ({
+  titleRoot: {
     margin: 0,
-    padding: '20px',
-    paddingBottom: '20px',
-    background: backgroundColor
+    padding: '16px 20px 13px',
+    background: '#fff'
   },
   title: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 10
+  },
+  subtitle: {
+    fontSize: '14px',
+    lineHeight: '18px',
+    paddingRight: '35px'
+  },
+  closeIcon: {
+    padding: 0
+  },
+  leftAlignedAction: {
+    marginRight: 'auto'
   }
 });
 
-const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
+const DialogTitle = withStyles(dialogStyles)((props: any) => {
   const { classes, onClose, title, subtitle } = props;
   return (
-    <MuiDialogTitle disableTypography className={classes.root}>
+    <MuiDialogTitle disableTypography className={classes.titleRoot}>
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" onClick={onClose}>
+          <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
             <CloseIcon />
           </IconButton>
         ) : null}
       </div>
       {
         subtitle &&
-        <Typography variant="subtitle1">{subtitle}</Typography>
+        <Typography variant="subtitle1" className={classes.subtitle}>{subtitle}</Typography>
       }
     </MuiDialogTitle>
   );
@@ -94,6 +106,7 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
 const DialogContent = withStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(2),
+    backgroundColor: '#FAFAFA'
   },
 }))(MuiDialogContent);
 
@@ -102,6 +115,9 @@ const DialogActions = withStyles((theme: Theme) => ({
     margin: 0,
     padding: theme.spacing(1),
   },
+  showAllDeps: {
+
+  }
 }))(MuiDialogActions);
 
 export interface DependenciesResultObject {
@@ -128,10 +144,12 @@ interface PublishDialogUIProps {
   showDepsButton: boolean,
   selectAllDeps: Function,
   selectAllSoft: Function,
-  onClickShowAllDeps: Function
+  onClickShowAllDeps?: any,
+  showEmailCheckbox?: boolean
+  classes?: any;
 }
 
-export function PublishDialogUI(props: PublishDialogUIProps) {
+export const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) => {
   const {
     items,
     publishingChannels,
@@ -151,7 +169,9 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     showDepsButton,
     selectAllDeps,
     selectAllSoft,
-    onClickShowAllDeps
+    onClickShowAllDeps,
+    showEmailCheckbox,
+    classes
   } = props;
 
   return (
@@ -183,7 +203,6 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
               showDepsButton={showDepsButton}
               onSelectAllClicked={selectAllDeps}
               onSelectAllSoftClicked={selectAllSoft}
-              onClickShowAllDeps={onClickShowAllDeps}
             />
           </Grid>
 
@@ -191,20 +210,32 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
             <PublishForm
               inputs={dialog}
               setInputs={setDialog}
-              showEmailCheckbox={true}
+              showEmailCheckbox={showEmailCheckbox}
               publishingChannels={publishingChannels}
             />
           </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleClose} color="primary">
+        <Button
+          color="primary"
+          onClick={ onClickShowAllDeps }
+          className={ classes.leftAlignedAction }
+          startIcon={<InfoOutlinedIcon />}
+        >
+          <FormattedMessage
+            id="publishDialog.showAllDependencies"
+            defaultMessage={`Show All Dependencies`}
+          />
+        </Button>
+
+        <Button variant="contained" onClick={handleClose}>
           <FormattedMessage
             id="requestPublishDialog.cancel"
             defaultMessage={`Cancel`}
           />
         </Button>
-        <Button autoFocus onClick={handleSubmit} color="primary">
+        <Button variant="contained" autoFocus onClick={handleSubmit} color="primary">
           <FormattedMessage
             id="requestPublishDialog.submit"
             defaultMessage={`Submit`}
@@ -213,7 +244,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
       </DialogActions>
     </Dialog>
   )
-};
+});
 
 // dependency selection common methods
 export const checkState = (items: Item[]) => {
@@ -399,6 +430,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
           selectAllDeps={selectAllDeps}
           selectAllSoft={selectAllSoft}
           onClickShowAllDeps={showAllDependencies}
+          showEmailCheckbox={true}
         />
       }
     </>

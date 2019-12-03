@@ -23,6 +23,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { get } from '../../../utils/ajax';
 import { FormattedMessage } from 'react-intl';
 import Checkbox from '@material-ui/core/Checkbox';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
 
 //imports for DependencySelectionDelete
 import { checkState, updateCheckedList, selectAllDeps, paths } from "../Submit/RequestPublishDialog";
@@ -40,7 +45,7 @@ interface DependencySelectionProps {
   showDepsButton: boolean;
   onSelectAllClicked: Function;
   onSelectAllSoftClicked: Function;
-  onClickShowAllDeps: any;
+  onClickShowAllDeps? : any;
 }
 
 interface SelectionListProps {
@@ -59,17 +64,6 @@ interface ResultObject {
   items1: [],
   items2: []
 }
-
-const BlueCheckbox = withStyles({
-  root: {
-    color: '#7e9dbb',
-    padding: '2px',
-    '&$checked': {
-      color: '#7e9dbb'
-    }
-  },
-  checked: {}
-})(Checkbox);
 
 const CenterCircularProgress = withStyles({
   root: {
@@ -170,7 +164,8 @@ export function DependencySelection(props: DependencySelectionProps) {
               </span>
             </div>
           ) : (
-            showDepsButton ? (
+            // if no onClickShowAllDeps function defined, don't show button
+            (showDepsButton && onClickShowAllDeps ) ? (
               <button
                 className="dependency-selection--nav-btn dependency-selection--show-all"
                 onClick={onClickShowAllDeps}
@@ -183,12 +178,14 @@ export function DependencySelection(props: DependencySelectionProps) {
             ) : (null)
           )
         }
-        <p>
-          <FormattedMessage
-            id="publishDialog.changesInSelection"
-            defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
-          />
-        </p>
+        { onClickShowAllDeps &&
+          <p>
+            <FormattedMessage
+              id="publishDialog.changesInSelection"
+              defaultMessage={`Changes in the selection of items to publish will require "all dependencies" to be recalculated.`}
+            />
+          </p>
+        }
       </div>
     </>
   );
@@ -346,67 +343,97 @@ function SelectionList(props: SelectionListProps) {
         ) : (null)
       }
       {
-        items ? (
-          items.map((item) => (
-            <div className="dependency-selection--section-dependencies" key={item.uri}>
-              {
-                onItemClicked ? (
-                  <div className="dependency-selection--checkbox">
-                    <BlueCheckbox
-                      checked={!!checked[item.uri]}
-                      onClick={(e) =>
-                        onItemClicked(e, item, setChecked, checked)
-                      }
-                      onChange={(e) => void 0}
-                      value={item.uri}
-                      color="primary"
-                    />
-                  </div>
-                ) : (null)
-              }
-              <div
-                className="dependency-selection--information"
-                onClick={(e) => onItemClicked(e, item, setChecked, checked)}>
-                {
-                  displayItemTitle ? (
-                    <div className="dependency-selection--information--internal-name">
-                      {item.internalName}
-                    </div>
-                  ) : (null)
-                }
-                <div className="dependency-selection--information--uri">&nbsp;{item.uri}</div>
-              </div>
-            </div>
-          ))
-        ) : (null)
+        items &&
+        <List>
+          {
+            items.map((item: Item) => {
+              const labelId = `checkbox-list-label-${item.uri}`;
+
+              return (
+                <ListItem
+                  key={item.uri}
+                  role={undefined}
+                  // dense
+                  {...onItemClicked ? {
+                    button: true,
+                    onClick: (e) => onItemClicked(e, item, setChecked, checked)
+                  }: null}
+                >
+                  {
+                    onItemClicked &&
+                    <ListItemIcon>
+                      <Checkbox
+                        color="primary"
+                        edge="start"
+                        checked={!!checked[item.uri]}
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{ 'aria-labelledby': item.uri }}
+                      />
+                    </ListItemIcon>
+                  }
+                  <ListItemText
+                    id={labelId}
+                    primary={ item.internalName }
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          color="textPrimary"
+                        >
+                          { item.uri }
+                        </Typography>
+                      </React.Fragment>
+                    }
+
+                  />
+                </ListItem>
+              );
+            })
+          }
+        </List>
       }
       {
         uris ? (
-          <ul className="dependency-selection--list">
+          <List>
             {
-              uris.map((uri: string) => (
-                onItemClicked ? (
-                  <li key={uri}>
-                    <div className="dependency-selection--list--soft-checkbox">
-                      <BlueCheckbox
-                        checked={!!checked[uri]}
-                        onChange={(e) => onItemClicked([uri], e.target.checked, setChecked, checked)}
-                        value={uri}
-                        color="primary"
-                      />
-                    </div>
-                    <div
-                      className="dependency-selection--list--soft-item"
-                      onClick={(e) => onItemClicked([uri], !checked[uri], setChecked, checked)}>
-                      {uri}
-                    </div>
-                  </li>
-                ) : (
-                  <li className="dependency-selection--list--hard" key={uri}>{uri}</li>
-                )
-              ))
+              uris.map((uri: string) => {
+                const labelId = `checkbox-list-label-${uri}`;
+
+                return (
+                  <ListItem
+                    key={uri}
+                    role={undefined}
+                    dense
+                    {...onItemClicked ? {
+                      button: true,
+                      onClick: () => onItemClicked([uri], !checked[uri], setChecked, checked)
+                    }: null}
+                  >
+                    {
+                      onItemClicked &&
+                      <ListItemIcon>
+                        <Checkbox
+                          color="primary"
+                          edge="start"
+                          checked={!!checked[uri]}
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ 'aria-labelledby': uri }}
+                        />
+                      </ListItemIcon>
+                    }
+                    <ListItemText
+                      id={labelId}
+                      primary={ uri }
+
+                    />
+                  </ListItem>
+                );
+              })
             }
-          </ul>
+          </List>
         ) : (null)
       }
     </div>

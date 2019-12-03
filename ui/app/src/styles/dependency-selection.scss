@@ -26,34 +26,14 @@
   padding: 11px 12px;
   background-color: #fff;
   border: 1px solid rgba(0, 0, 0, .125);
-  height: 340px;
+  height: calc(100% - 24px);
   overflow-y: scroll;
 }
 
-.dependency-selection--section-dependencies {
-  clear: both;
-  overflow: hidden;
-  width: 100%;
-  margin-bottom: 5px;
-}
-
-.dependency-selection--checkbox{
-  float: left;
-}
 
 .dependency-selection--information{
   float: left;
   width: 90%;
-}
-
-.dependency-selection--information--internal-name,
-.dependency-selection--information--uri,
-.dependency-selection--list--soft-item{
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: 0 5px;
-  cursor: pointer;
 }
 
 .dependency-selection--title{
@@ -72,31 +52,6 @@
   margin-top: 20px;
   font-size: 14px;
   clear: both;
-}
-
-.dependency-selection--list{
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-.dependency-selection--list--hard{
-  margin: 5px 0;
-}
-
-.dependency-selection--list--soft-checkbox{
-  display: inline-block;
-}
-
-.dependency-selection--list--soft-item {
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 90%;
-  position: relative;
-  top: 5px;
-  margin: 0 3px;
 }
 
 .dependency-selection--nav-btn{
