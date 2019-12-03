@@ -276,7 +276,6 @@
 
       rowEl = document.createElement("span");
       rowEl.className = "checkbox";
-      // rowEl.setAttribute("for", _self.id + "-" + item.key);
 
       labelEl = document.createElement("label");
       labelEl.setAttribute("for", this.id + "-" + item.key);
