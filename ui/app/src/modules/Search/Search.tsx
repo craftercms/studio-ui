@@ -17,17 +17,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Theme, InputBase, MenuItem, Select, Avatar } from "@material-ui/core";
+import { Avatar, InputBase, MenuItem, Select, Theme } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
 import ImageIcon from '@material-ui/icons/Image';
 import AppsIcon from '@material-ui/icons/Apps';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
 import { fetchSearch } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
-import { MediaItem, SearchParameters, Filter } from "../../models/Search";
+import { Filter, MediaItem, SearchParameters } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -38,6 +38,7 @@ import FilterSearchDropdown from "./FilterSearchDropdown";
 import queryString from "query-string";
 import ErrorState from "../../components/SystemStatus/ErrorState";
 import TablePagination from "@material-ui/core/TablePagination";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -142,6 +143,27 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   pagination: {
     padding: '10px 0 !important'
+  },
+  dialogTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: '10px',
+    padding: '10px 0'
+  },
+  dialogCloseButton: {
+    marginLeft: 'auto'
+  },
+  mediaPreview: {
+    maxWidth: '700px',
+    minWidth: '400px',
+    minHeight: '200px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '0 10px 10px 10px',
+    '& img': {
+      maxWidth: '100%'
+    }
   }
 }));
 
@@ -171,12 +193,18 @@ const messages = defineMessages({
 function Search(props: any) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
-  const {history, location, onEdit, onDelete} = props;
+  const {history, location, onEdit, onDelete, onPreview} = props;
   const queryParams = queryString.parse(location.search);
   const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
+  const [preview, setPreview] = useState({
+    url: null,
+    type: null,
+    name: null,
+    open: false
+  });
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const {formatMessage} = useIntl();
   const [apiState, setApiState] = useState({
@@ -223,11 +251,13 @@ function Search(props: any) {
         return (
           (currentView === 'grid') ?
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
-              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}/>
+              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}
+                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}/>
             </Grid>
             :
             <Grid key={i} item xs={12}>
-              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}/>
+              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}
+                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}/>
             </Grid>
         )
       });
@@ -363,6 +393,19 @@ function Search(props: any) {
     onDelete(path, cb);
   }
 
+  function handlePreview(url: string) {
+    onPreview(url);
+  }
+
+  function handlePreviewAsset(url: string, type: string, name: string) {
+    //onPreviewAsset(url, type);
+    setPreview({ url, open: true, type, name});
+  }
+
+  function handleClosePreview() {
+    setPreview({...preview, url: null, open: false, type: null, name: null});
+  }
+
   return (
     <section className={classes.wrapper}>
       <header className={classes.searchHeader}>
@@ -444,7 +487,7 @@ function Search(props: any) {
             className={classes.pagination}
             component="div"
             count={searchResults.total}
-            rowsPerPage={parseInt(searchParameters.limit , 10)}
+            rowsPerPage={parseInt(searchParameters.limit, 10)}
             page={searchParameters.offset / searchParameters.limit}
             backIconButtonProps={{
               'aria-label': 'previous page',
@@ -457,6 +500,17 @@ function Search(props: any) {
           />
         }
       </section>
+      <Dialog onClose={handleClosePreview} aria-labelledby="preview" open={preview.open} maxWidth='md'>
+        <div className={classes.dialogTitle}>
+          <Typography variant="h6">{preview.name}</Typography>
+          <IconButton aria-label="close" className={classes.dialogCloseButton} onClick={handleClosePreview}>
+            <CloseIcon />
+          </IconButton>
+        </div>
+        <div className={classes.mediaPreview}>
+          <img src={preview.url}/>
+        </div>
+      </Dialog>
     </section>
   )
 }

@@ -19,12 +19,13 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardActions from '@material-ui/core/CardActions';
+import CardActionArea from '@material-ui/core/CardActionArea';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
 import { useIntl } from "react-intl";
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       '-webkit-line-clamp': 1,
       '-webkit-box-orient': 'vertical',
     },
-    '&.list':{
+    '&.list': {
       display: 'flex',
     }
   },
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
-    '&.list':{
+    '&.list': {
       paddingTop: 0,
       height: '80px',
       width: '80px',
@@ -71,7 +72,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#f3f3f3',
     paddingTop: '56.25%',
     position: 'relative',
-    '& .media-icon':{
+    '& .media-icon': {
       position: 'absolute',
       top: '50%',
       left: '50%',
@@ -79,7 +80,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       color: 'rgba(0, 0, 0, 0.54)',
       fontSize: '50px'
     },
-    '&.list':{
+    '&.list': {
       height: '80px',
       width: '80px',
       paddingTop: '0',
@@ -108,16 +109,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface MediaCardProps {
   item: MediaItem;
   currentView: string;
+
   handleEdit(path: string): any;
+
   handleDelete(path: string): any;
+
+  handlePreview(url: string): any;
+
+  handlePreviewAsset(url: string, type: string, name: string): any;
 }
 
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
 
-  const {handleEdit, handleDelete, item, } = props;
+  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, item} = props;
   const {name, path, lastModified, type} = item;
-  const isList =  props.currentView === 'list'? true: false;
+  const isList = props.currentView === 'list';
   const {formatDate} = useIntl();
   const dateTimeFormatOptions = {
     year: 'numeric',
@@ -128,12 +135,14 @@ function MediaCard(props: MediaCardProps) {
   };
   const siteUrl = 'http://localhost:8080';
 
-  function renderIcon(type: string) {
+  function renderIcon(type: string, path: string) {
     let iconClass = 'fa media-icon';
     let iconName = `${iconClass} fa-file`;
+    let actionArea = false;
     switch (type) {
       case 'Page':
         iconName = `${iconClass} fa fa-file`;
+        actionArea = true;
         break;
       case 'Template':
         iconName = `${iconClass} fa-file-code-o`;
@@ -151,22 +160,24 @@ function MediaCard(props: MediaCardProps) {
         break;
     }
     return (
-      <div className={clsx(classes.mediaIcon, isList && 'list')}>
-        <i className={iconName}></i>
-      </div>
+        actionArea ?
+          <CardActionArea onClick={() => handlePreview(path)}>
+            <div className={clsx(classes.mediaIcon, isList && 'list')}>
+              <i className={iconName}></i>
+            </div>
+          </CardActionArea>
+          :
+          <div className={clsx(classes.mediaIcon, isList && 'list')}>
+            <i className={iconName}></i>
+          </div>
     )
   }
 
-  const handleDetailsClick = (path: string, type: string) => {
-    console.log(path, type);
-    switch (type) {
-      case 'Image':
-        break;
-      case 'Video':
-        break;
-      default:
-        handleEdit(path);
-        break;
+  const handleDetailsClick = (path: string, type: string, name: string) => {
+    if (type === 'Image' || type === 'Video') {
+      handlePreviewAsset(path, type, name);
+    } else {
+      handleEdit(path);
     }
   };
 
@@ -211,16 +222,21 @@ function MediaCard(props: MediaCardProps) {
       </header>
       {
         type === 'Image' ?
-          <CardMedia
-            className={clsx(classes.media, isList && 'list')}
-            image={`${siteUrl}${path}`}
-            title="Paella dish"
-          /> :
-          renderIcon(type)
+          <CardActionArea onClick={() => handlePreview(path)}>
+            <CardMedia
+              className={clsx(classes.media, isList && 'list')}
+              image={`${siteUrl}${path}`}
+              title="Paella dish"
+            />
+          </CardActionArea>
+          :
+          renderIcon(type, path)
       }
-      <CardActions disableSpacing className={isList? classes.mLa : ''}>
-        <IconButton aria-label="view details" onClick={() => handleDetailsClick(path, type)}>
-          <VisibilityIcon/>
+      <CardActions disableSpacing className={isList ? classes.mLa : ''}>
+        <IconButton aria-label="view details" onClick={() => handleDetailsClick(path, type, name)}>
+          {
+            (type === 'Image' || type === 'Video') ? <VisibilityIcon/> : <EditIcon/>
+          }
         </IconButton>
         <IconButton aria-label="add to favorites" className={classes.deleteIcon} onClick={() => handleDelete(path)}>
           <DeleteIcon/>
