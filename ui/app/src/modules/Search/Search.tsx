@@ -39,6 +39,7 @@ import queryString from "query-string";
 import ErrorState from "../../components/SystemStatus/ErrorState";
 import TablePagination from "@material-ui/core/TablePagination";
 import Typography from "@material-ui/core/Typography";
+import AsyncVideoPlayer from '../../components/AsyncVideoPlayer';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -164,6 +165,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& img': {
       maxWidth: '100%'
     }
+  },
+  videoPreview: {
+
   }
 }));
 
@@ -188,6 +192,10 @@ const messages = defineMessages({
     id: 'search.changeQuery',
     defaultMessage: 'Try changing your query.'
   },
+  videoProcessed: {
+    id: 'search.videoProcessed',
+    defaultMessage: 'Video is being processed, preview will be available when processing is complete'
+  }
 });
 
 function Search(props: any) {
@@ -494,7 +502,12 @@ function Search(props: any) {
           </IconButton>
         </div>
         <div className={classes.mediaPreview}>
-          <img src={preview.url}/>
+          {
+            preview.type === 'Image'?
+              <img src={preview.url}/>
+              :
+              <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}} nonPlayableMessage={formatMessage(messages.videoProcessed)}/>
+          }
         </div>
       </Dialog>
     </section>

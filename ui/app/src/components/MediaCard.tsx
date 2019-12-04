@@ -28,7 +28,6 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
-import { useIntl } from "react-intl";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -61,6 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
+    backgroundSize: 'auto',
     '&.list': {
       paddingTop: 0,
       height: '80px',
@@ -123,16 +123,8 @@ function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
 
   const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, item} = props;
-  const {name, path, lastModified, type} = item;
+  const {name, path, type} = item;
   const isList = props.currentView === 'list';
-  const {formatDate} = useIntl();
-  const dateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-  };
   const siteUrl = 'http://localhost:8080';
 
   function renderIcon(type: string, path: string) {
@@ -141,17 +133,20 @@ function MediaCard(props: MediaCardProps) {
     let actionArea = false;
     switch (type) {
       case 'Page':
-        iconName = `${iconClass} fa fa-file`;
+        iconName = `${iconClass} fa-file`;
         actionArea = true;
+        break;
+      case 'Video':
+        iconName = `${iconClass} fa-file-video-o`;
         break;
       case 'Template':
         iconName = `${iconClass} fa-file-code-o`;
         break;
       case 'Taxonomy':
-        iconName = `${iconClass} fa-file-code-o`;
+        iconName = `${iconClass} fa-tag`;
         break;
       case 'Component':
-        iconName = `${iconClass} fa-file-code-o`;
+        iconName = `${iconClass} fa-puzzle-piece`;
         break;
       case 'Groovy':
         iconName = `${iconClass} fa-file-code-o`;
@@ -160,16 +155,16 @@ function MediaCard(props: MediaCardProps) {
         break;
     }
     return (
-        actionArea ?
-          <CardActionArea onClick={() => handlePreview(path)}>
-            <div className={clsx(classes.mediaIcon, isList && 'list')}>
-              <i className={iconName}></i>
-            </div>
-          </CardActionArea>
-          :
+      actionArea ?
+        <CardActionArea onClick={() => handlePreview(path)}>
           <div className={clsx(classes.mediaIcon, isList && 'list')}>
             <i className={iconName}></i>
           </div>
+        </CardActionArea>
+        :
+        <div className={clsx(classes.mediaIcon, isList && 'list')}>
+          <i className={iconName}></i>
+        </div>
     )
   }
 
