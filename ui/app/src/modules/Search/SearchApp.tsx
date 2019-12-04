@@ -20,10 +20,10 @@ import Search from './Search';
 
 
 function SearchApp(props: any) {
-  const {onEdit, onDelete, onPreview} = props;
+  const {onEdit, onDelete, onPreview, siteId} = props;
   return (
     <HashRouter>
-      <Route path="/" render={(props) => <Search {...props} onEdit={onEdit} onDelete={onDelete} onPreview={onPreview}/>}/>
+      <Route path="/" render={(props) => <Search {...props} onEdit={onEdit} onDelete={onDelete} onPreview={onPreview} siteId={siteId}/>}/>
     </HashRouter>
   )
 }

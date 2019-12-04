@@ -193,7 +193,7 @@ const messages = defineMessages({
 function Search(props: any) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
-  const {history, location, onEdit, onDelete, onPreview} = props;
+  const {history, location, onEdit, onDelete, onPreview, siteId} = props;
   const queryParams = queryString.parse(location.search);
   const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -217,7 +217,7 @@ function Search(props: any) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    fetchSearch('editorialdnd', searchParameters).subscribe(
+    fetchSearch(siteId, searchParameters).subscribe(
       ({response}) => {
         setSearchResults(response.result);
       },
@@ -359,38 +359,25 @@ function Search(props: any) {
     })
   }
 
-  // handleEdit:
-  // It Calls the onEdit prop sending a new callback
-  function handleEdit(path: string) {
-    let cb = () => {
-      fetchSearch('editorialdnd', searchParameters).subscribe(
-        ({response}) => {
-          setSearchResults(response.result);
-        },
-        ({response}) => {
-          if (response) {
-            setApiState({error: true, errorResponse: response})
-          }
+  function refreshSearch() {
+    fetchSearch(siteId, searchParameters).subscribe(
+      ({response}) => {
+        setSearchResults(response.result);
+      },
+      ({response}) => {
+        if (response) {
+          setApiState({error: true, errorResponse: response})
         }
-      );
-    };
-    onEdit(path, cb);
+      }
+    );
+  }
+
+  function handleEdit(path: string) {
+    onEdit(path, refreshSearch);
   }
 
   function handleDelete(path: string) {
-    let cb = () => {
-      fetchSearch('editorialdnd', searchParameters).subscribe(
-        ({response}) => {
-          setSearchResults(response.result);
-        },
-        ({response}) => {
-          if (response) {
-            setApiState({error: true, errorResponse: response})
-          }
-        }
-      );
-    };
-    onDelete(path, cb);
+    onDelete(path, refreshSearch);
   }
 
   function handlePreview(url: string) {
@@ -398,8 +385,7 @@ function Search(props: any) {
   }
 
   function handlePreviewAsset(url: string, type: string, name: string) {
-    //onPreviewAsset(url, type);
-    setPreview({ url, open: true, type, name});
+    setPreview({url, open: true, type, name});
   }
 
   function handleClosePreview() {
@@ -504,7 +490,7 @@ function Search(props: any) {
         <div className={classes.dialogTitle}>
           <Typography variant="h6">{preview.name}</Typography>
           <IconButton aria-label="close" className={classes.dialogCloseButton} onClick={handleClosePreview}>
-            <CloseIcon />
+            <CloseIcon/>
           </IconButton>
         </div>
         <div className={classes.mediaPreview}>
