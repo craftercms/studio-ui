@@ -149,7 +149,7 @@ const initialSearchParameters: SearchParameters = {
   query: '',
   keywords: '',
   offset: 0,
-  limit: 18,
+  limit: 21,
   sortBy: 'internalName',
   sortOrder: 'asc',
   filters: {
@@ -171,7 +171,7 @@ const messages = defineMessages({
 function Search(props: any) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
-  const {history, location} = props;
+  const {history, location, onEdit, onDelete} = props;
   const queryParams = queryString.parse(location.search);
   const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -223,11 +223,11 @@ function Search(props: any) {
         return (
           (currentView === 'grid') ?
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
-              <MediaCard item={item} currentView={currentView}/>
+              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}/>
             </Grid>
             :
             <Grid key={i} item xs={12}>
-              <MediaCard item={item} currentView={currentView}/>
+              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}/>
             </Grid>
         )
       });
@@ -329,6 +329,40 @@ function Search(props: any) {
     })
   }
 
+  // handleEdit:
+  // It Calls the onEdit prop sending a new callback
+  function handleEdit(path: string) {
+    let cb = () => {
+      fetchSearch('editorialdnd', searchParameters).subscribe(
+        ({response}) => {
+          setSearchResults(response.result);
+        },
+        ({response}) => {
+          if (response) {
+            setApiState({error: true, errorResponse: response})
+          }
+        }
+      );
+    };
+    onEdit(path, cb);
+  }
+
+  function handleDelete(path: string) {
+    let cb = () => {
+      fetchSearch('editorialdnd', searchParameters).subscribe(
+        ({response}) => {
+          setSearchResults(response.result);
+        },
+        ({response}) => {
+          if (response) {
+            setApiState({error: true, errorResponse: response})
+          }
+        }
+      );
+    };
+    onDelete(path, cb);
+  }
+
   return (
     <section className={classes.wrapper}>
       <header className={classes.searchHeader}>
@@ -388,9 +422,9 @@ function Search(props: any) {
               }
             </Avatar>
           </IconButton>
-          <IconButton className={classes.avatarContent}>
-            <Avatar className={classes.avatar}><HelpOutlineIcon/></Avatar>
-          </IconButton>
+          {/*<IconButton className={classes.avatarContent}>*/}
+          {/*  <Avatar className={classes.avatar}><HelpOutlineIcon/></Avatar>*/}
+          {/*</IconButton>*/}
         </div>
       </header>
       <section className={classes.content}>

@@ -97,6 +97,17 @@
         CStudioAuthoring.Operations.translateContent(langBundle, null, 'data-trans');
         this.performSearch();
         this.bindEvents();
+        console.log('cstudio-search', CrafterCMSNext);
+        const container = document.getElementsByClassName('cstudio-search')[0];
+        CrafterCMSNext
+          .render(
+            container,
+            'SearchApp',
+            {
+              onEdit: CStudioSearch.editElement,
+              onDelete: CStudioSearch.deleteElement,
+            }
+          );
     };
 
     CStudioSearch.bindEvents = function() {
@@ -914,10 +925,10 @@
         }
     }
 
-    CStudioSearch.editElement = function(path){
+    CStudioSearch.editElement = function(path, refreshSearch){
         var editCallback = {
                 success: function(){
-                    CStudioSearch.performSearch();      // to re-render with changes
+                  refreshSearch();
                 }
             },
             callback = {
@@ -938,24 +949,21 @@
         }
 
         CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-    }
+    };
 
-    CStudioSearch.deleteElement = function(path){
-        // TODO: reload items on deletion
+    CStudioSearch.deleteElement = function(path, refreshSearch){
         var callback = {
             success: function (contentTO) {
                 var contentTO = contentTO.item;
-
-                CStudioAuthoring.Operations.deleteContent(
-                    [contentTO]);
+                CStudioAuthoring.Operations.deleteContent([contentTO], null, refreshSearch);
             },
             failure: function (error) {
                 console.error(error);
             }
-        }
+        };
 
         CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-    }
+    };
 
     CStudioSearch.previewElement = function(url){
         CStudioAuthoring.Service.lookupContentItem(

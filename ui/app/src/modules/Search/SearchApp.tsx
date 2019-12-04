@@ -19,10 +19,11 @@ import { HashRouter, Route } from 'react-router-dom';
 import Search from './Search';
 
 
-function SearchApp() {
+function SearchApp(props: any) {
+  const {onEdit, onDelete} = props;
   return (
     <HashRouter>
-      <Route path="/" component={Search} />
+      <Route path="/" render={(props) => <Search {...props} onEdit={onEdit} onDelete={onDelete}/>}/>
     </HashRouter>
   )
 }

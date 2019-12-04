@@ -108,11 +108,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface MediaCardProps {
   item: MediaItem;
   currentView: string;
+  handleEdit(path: string): any;
+  handleDelete(path: string): any;
 }
 
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
-  const {name, path, lastModified, type} = props.item;
+
+  const {handleEdit, handleDelete, item, } = props;
+  const {name, path, lastModified, type} = item;
   const isList =  props.currentView === 'list'? true: false;
   const {formatDate} = useIntl();
   const dateTimeFormatOptions = {
@@ -152,6 +156,19 @@ function MediaCard(props: MediaCardProps) {
       </div>
     )
   }
+
+  const handleDetailsClick = (path: string, type: string) => {
+    console.log(path, type);
+    switch (type) {
+      case 'Image':
+        break;
+      case 'Video':
+        break;
+      default:
+        handleEdit(path);
+        break;
+    }
+  };
 
   return (
     <Card className={clsx(classes.card, isList && 'list')}>
@@ -202,10 +219,10 @@ function MediaCard(props: MediaCardProps) {
           renderIcon(type)
       }
       <CardActions disableSpacing className={isList? classes.mLa : ''}>
-        <IconButton aria-label="view details">
+        <IconButton aria-label="view details" onClick={() => handleDetailsClick(path, type)}>
           <VisibilityIcon/>
         </IconButton>
-        <IconButton aria-label="add to favorites" className={classes.deleteIcon}>
+        <IconButton aria-label="add to favorites" className={classes.deleteIcon} onClick={() => handleDelete(path)}>
           <DeleteIcon/>
         </IconButton>
       </CardActions>
