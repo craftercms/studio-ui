@@ -40,6 +40,11 @@ import ErrorState from "../../components/SystemStatus/ErrorState";
 import TablePagination from "@material-ui/core/TablePagination";
 import Typography from "@material-ui/core/Typography";
 import AsyncVideoPlayer from '../../components/AsyncVideoPlayer';
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { Package } from "../../models/Publishing";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -122,6 +127,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: '30px',
     marginRight: '15px',
   },
+  searchHelperBar: {
+    width: '100%',
+    padding: '0 10px',
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  resultsSelected: {
+    marginRight: '10px',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  clearSelected: {
+    marginLeft: '5px',
+    cursor: 'pointer'
+  },
   helperContainer: {
     display: 'flex',
     marginLeft: 'auto',
@@ -137,7 +157,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: '50px 30px'
+    padding: '25px 30px 50px 30px'
   },
   container: {
     height: '100%'
@@ -166,9 +186,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       maxWidth: '100%'
     }
   },
-  videoPreview: {
-
-  }
+  videoPreview: {}
 }));
 
 const initialSearchParameters: SearchParameters = {
@@ -195,18 +213,31 @@ const messages = defineMessages({
   videoProcessed: {
     id: 'search.videoProcessed',
     defaultMessage: 'Video is being processed, preview will be available when processing is complete'
+  },
+  selectAll: {
+    id: 'search.selectAll',
+    defaultMessage: 'Select all on this page'
+  },
+  resultsSelected: {
+    id: 'search.resultsSelected',
+    defaultMessage: '{count, plural, one {{count} Result selected of {total}} other {{count} Results selected of {total}}}',
+  },
+  totalResults: {
+    id: 'search.resultsSelected',
+    defaultMessage: '{total, plural, one {{total} Result} other {{total} Results}}',
   }
 });
 
 function Search(props: any) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
-  const {history, location, onEdit, onDelete, onPreview, siteId} = props;
+  const {history, location, onEdit, onDelete, onPreview, onSelect, siteId} = props;
   const queryParams = queryString.parse(location.search);
   const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
+  const [selected, setSelected] = useState([]);
   const [preview, setPreview] = useState({
     url: null,
     type: null,
@@ -240,7 +271,7 @@ function Search(props: any) {
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
-      debounceTime(300),
+      debounceTime(400),
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
       if (!keywords) keywords = undefined;
@@ -260,12 +291,14 @@ function Search(props: any) {
           (currentView === 'grid') ?
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
               <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}
-                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}/>
+                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}
+                         handleSelect={handleSelect} selected={selected}/>
             </Grid>
             :
             <Grid key={i} item xs={12}>
               <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}
-                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}/>
+                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}
+                         handleSelect={handleSelect} selected={selected}/>
             </Grid>
         )
       });
@@ -400,6 +433,53 @@ function Search(props: any) {
     setPreview({...preview, url: null, open: false, type: null, name: null});
   }
 
+  function handleSelect(path: string, isSelected: boolean) {
+    if (isSelected) {
+      setSelected([...selected, path])
+    } else {
+      let selectedItems = [...selected];
+      let index = selectedItems.indexOf(path);
+      selectedItems.splice(index, 1);
+      setSelected(selectedItems);
+    }
+    onSelect(path, isSelected);
+  }
+
+  function handleSelectAll(checked: boolean) {
+    if (checked) {
+      let selectedItems = [];
+      searchResults.items.forEach((item) => {
+        if (selected.indexOf(item.path) === -1) {
+          selectedItems.push(item.path);
+          onSelect(item.path, true);
+        }
+      });
+      setSelected([...selected, ...selectedItems]);
+    } else {
+      let newSelectedItems = [...selected];
+      searchResults.items.forEach((item) => {
+        let index = newSelectedItems.indexOf(item.path);
+        if (index >= 0) {
+          newSelectedItems.splice(index, 1);
+          onSelect(item.path, false);
+        }
+      });
+      setSelected(newSelectedItems);
+    }
+  }
+
+  function handleClearSelected() {
+    selected.forEach(path => {
+      onSelect(path, false);
+    });
+    setSelected([]);
+  }
+
+  function areAllSelected() {
+    if (!searchResults || searchResults.items.length === 0) return false;
+    return !searchResults.items.some((item) => !selected.includes(item.path));
+  }
+
   return (
     <section className={classes.wrapper}>
       <header className={classes.searchHeader}>
@@ -470,6 +550,33 @@ function Search(props: any) {
             <ErrorState error={apiState.errorResponse}/> :
             (
               <Grid container spacing={3} className={classes.container}>
+                {
+                  (searchResults && !!searchResults.total) &&
+                  <div className={classes.searchHelperBar}>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Checkbox color="primary" checked={areAllSelected()}
+                                           onClick={(e: any) => handleSelectAll(e.target.checked)}/>}
+                        label={formatMessage(messages.selectAll)}
+                      />
+                    </FormGroup>
+                    {
+                      (selected.length > 0) ?
+                        <Typography variant="body2" className={classes.resultsSelected} color={"textSecondary"}>
+                          {formatMessage(messages.resultsSelected, {
+                            count: selected.length,
+                            total: searchResults.total
+                          })}
+                          <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected}/>
+                        </Typography> :
+                        <Typography variant="body2" className={classes.resultsSelected} color={"textSecondary"}>
+                          {formatMessage(messages.totalResults, {
+                            total: searchResults.total
+                          })}
+                        </Typography>
+                    }
+                  </div>
+                }
                 {searchResults === null ? <Spinner/> : renderMediaCards(searchResults.items, currentView)}
               </Grid>
             )
@@ -503,10 +610,11 @@ function Search(props: any) {
         </div>
         <div className={classes.mediaPreview}>
           {
-            preview.type === 'Image'?
+            preview.type === 'Image' ?
               <img src={preview.url}/>
               :
-              <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}} nonPlayableMessage={formatMessage(messages.videoProcessed)}/>
+              <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
+                                nonPlayableMessage={formatMessage(messages.videoProcessed)}/>
           }
         </div>
       </Dialog>

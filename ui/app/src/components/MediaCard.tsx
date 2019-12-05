@@ -109,6 +109,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface MediaCardProps {
   item: MediaItem;
   currentView: string;
+  selected: Array<string>;
 
   handleEdit(path: string): any;
 
@@ -117,12 +118,14 @@ interface MediaCardProps {
   handlePreview(url: string): any;
 
   handlePreviewAsset(url: string, type: string, name: string): any;
+
+  handleSelect(path: string, selected: boolean): void;
 }
 
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
 
-  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, item} = props;
+  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, handleSelect, selected, item} = props;
   const {name, path, type} = item;
   const isList = props.currentView === 'list';
   const siteUrl = 'http://localhost:8080';
@@ -184,6 +187,8 @@ function MediaCard(props: MediaCardProps) {
           <FormControlLabel
             control={
               <Checkbox
+                checked={selected.includes(path)}
+                onClick={(e: any) => handleSelect(path, e.target.checked)}
                 color="primary"/>
             }
             label={''}
@@ -197,6 +202,8 @@ function MediaCard(props: MediaCardProps) {
             <FormControlLabel
               control={
                 <Checkbox
+                  checked={selected.includes(path)}
+                  onClick={(e: any) => handleSelect(path, e.target.checked)}
                   color="primary"/>
               }
               label={''}

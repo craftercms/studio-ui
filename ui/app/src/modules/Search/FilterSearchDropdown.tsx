@@ -36,6 +36,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
 import TextField from "@material-ui/core/TextField";
+import { Facet, SearchParameters, Filter as FilterType, QueryParams } from '../../models/Search';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -185,7 +186,11 @@ const messages: any = defineMessages({
 });
 
 interface FilterSearchDropdownProps {
-
+  text: string;
+  className: any;
+  facets: [Facet];
+  handleFilterChange(filter: FilterType, isFilter: boolean): any;
+  queryParams: QueryParams;
 }
 
 function Filter(props: any) {
@@ -482,7 +487,7 @@ function SortOrder(props: any) {
   )
 }
 
-export default function FilterSearchDropdown(props: any) {
+export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   const classes = useStyles({});
   const [anchorEl, setAnchorEl] = React.useState(null);
   const {text, className, facets, handleFilterChange, queryParams} = props;

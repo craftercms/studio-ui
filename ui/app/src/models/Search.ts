@@ -22,7 +22,21 @@ export interface SearchParameters {
   limit: number;
   sortBy: string;
   sortOrder: string;
-  filters: object;
+  filters:  {
+    [key: string]: any;
+  };
+}
+
+export interface QueryParams {
+  query?: string;
+  keywords?: string;
+  offset?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: string;
+  filters?:  {
+    [key: string]: any;
+  };
 }
 
 export interface MediaItem {
@@ -40,4 +54,14 @@ export interface MediaItem {
 export interface Filter {
   name: string;
   value: string;
+}
+
+export interface Facet {
+  date: boolean;
+  multiple: boolean
+  name: string;
+  range: boolean;
+  values: {
+    [key: string]: any;
+  }
 }
