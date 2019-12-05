@@ -577,7 +577,7 @@ function Search(props: any) {
                     }
                   </div>
                 }
-                {searchResults === null ? <Spinner/> : renderMediaCards(searchResults.items, currentView)}
+                {searchResults === null ? <Spinner background="#F3F3F3"/> : renderMediaCards(searchResults.items, currentView)}
               </Grid>
             )
         }
