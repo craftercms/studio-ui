@@ -106,8 +106,10 @@ YAHOO.extend(CStudioForms.Controls.numericInput, CStudioForms.CStudioFormField, 
 	 * @param el element
 	 */
 	count: function(evt, countEl, el) {
-		var max = el.maxValue,
+		var el = (el) ? el : this,
+        max = el.maxValue,
 			  min = el.minValue;
+
 		if(max && max !== '' && parseInt(this.value) > max){
 			this.value = max;
 		} else if(min && min !== '' && parseInt(this.value) < min){
