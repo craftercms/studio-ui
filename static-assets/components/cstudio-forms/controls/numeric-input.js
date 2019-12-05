@@ -106,11 +106,12 @@ YAHOO.extend(CStudioForms.Controls.numericInput, CStudioForms.CStudioFormField, 
 	 * @param el element
 	 */
 	count: function(evt, countEl, el) {
-		var max = this.getAttribute("max") ,
-			min = this.getAttribute("min");
-		if(max && parseInt(this.value) > max){
+	  var el = (el) ? el : this,
+        max = this.getAttribute("max") ,
+			  min = this.getAttribute("min");
+		if(max && parseFloat(this.value) > max){
 			this.value = max;
-		} else if(min && parseInt(this.value) < min){
+		} else if(min && parseFloat(this.value) < min){
 			this.value = min;
 		}
 
@@ -219,8 +220,8 @@ YAHOO.extend(CStudioForms.Controls.numericInput, CStudioForms.CStudioFormField, 
 	getSupportedProperties: function() {
 		return [
 			{ label: CMgs.format(langBundle, "displaySize"), name: "size", type: "int", defaultValue: "50" },
-			{ label: this.formatMessage(this.numericInputControlMessages.maximun), name: "maxValue", type: "int"},
-			{ label: this.formatMessage(this.numericInputControlMessages.minimun), name: "minValue", type: "int"},
+			{ label: this.formatMessage(this.numericInputControlMessages.maximun), name: "maxValue", type: "float"},
+			{ label: this.formatMessage(this.numericInputControlMessages.minimun), name: "minValue", type: "float"},
 			{ label: CMgs.format(langBundle, "readonly"), name: "readonly", type: "boolean" },
 			{ label: "Tokenize for Indexing", name: "tokenize", type: "boolean",  defaultValue: "false" }
 			];
