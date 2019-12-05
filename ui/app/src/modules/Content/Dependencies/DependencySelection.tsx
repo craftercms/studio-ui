@@ -17,7 +17,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Item } from '../../../models/Item';
-import '../../../styles/dependency-selection.scss';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { get } from '../../../utils/ajax';
@@ -31,6 +30,9 @@ import Typography from '@material-ui/core/Typography';
 
 //imports for DependencySelectionDelete
 import { checkState, updateCheckedList, selectAllDeps, paths } from "../Submit/RequestPublishDialog";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import {Theme} from "@material-ui/core/styles/createMuiTheme";
+import Button from '@material-ui/core/Button';
 
 interface DependencySelectionProps {
   items: Item[];
@@ -75,6 +77,49 @@ const CenterCircularProgress = withStyles({
   }
 })(CircularProgress);
 
+const useStyles = makeStyles((theme: Theme) => ({
+  dependencySelection: {
+    padding: '11px 12px',
+    backgroundColor: '#fff',
+    border: '1px solid rgba(0, 0, 0, .125)',
+    height: 'calc(100% - 24px)',
+    overflowY: 'scroll'
+  },
+  selectionListTitle: {
+    margin: '6px auto 6px',
+    display: 'inline-block',
+    fontSize: '16px',
+    fontWeight: 400
+  },
+  selectAllBtn: {
+    marginLeft: '17px',
+    fontWeight: 'bold',
+    verticalAlign: 'baseline'
+  },
+  showAllBtn: {
+    marginLeft: 0,
+    verticalAlign: 'baseline'
+  },
+  bottomSection: {
+    marginTop: '20px',
+    marginLeft: '10px',
+    color: '#777'
+  },
+  circularProgressText: {
+    position: 'relative',
+    bottom: '9px'
+  },
+  selectionList: {
+    paddingTop: 0
+  },
+  listItem: {
+    padding: '0 5px'
+  },
+  listItemIcon: {
+    minWidth: '36px'
+  }
+}));
+
 export function DependencySelection(props: DependencySelectionProps) {
   const {
     items,
@@ -90,9 +135,11 @@ export function DependencySelection(props: DependencySelectionProps) {
     onClickShowAllDeps
   } = props;
 
+  const classes = useStyles({});
+
   return (
     <>
-      <div className="dependency-selection">
+      <div className={ classes.dependencySelection }>
         <SelectionList
           title={
             <FormattedMessage
@@ -150,12 +197,12 @@ export function DependencySelection(props: DependencySelectionProps) {
           )
         }
       </div>
-      <div className="dependency-selection--bottom-section">
+      <div className={ classes.bottomSection }>
         {
           (deps == null && !showDepsButton) ? (
             <div className="centerCircularProgress">
               <CenterCircularProgress/>
-              <span className="dependency-selection--center-circular-progress-text">
+              <span className={ classes.circularProgressText }>
                 <FormattedMessage
                   id="publishDialog.loadingDependencies"
                   defaultMessage={`Loading Dependencies, please wait{ellipsis}`}
@@ -166,15 +213,17 @@ export function DependencySelection(props: DependencySelectionProps) {
           ) : (
             // if no onClickShowAllDeps function defined, don't show button
             (showDepsButton && onClickShowAllDeps ) ? (
-              <button
-                className="dependency-selection--nav-btn dependency-selection--show-all"
+              <Button
+                color="primary"
                 onClick={onClickShowAllDeps}
+                size="small"
+                className={ classes.showAllBtn }
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
                   defaultMessage={`Show All Dependencies`}
                 />
-              </button>
+              </Button>
             ) : (null)
           )
         }
@@ -204,11 +253,13 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
     setResultItems(null);
   };
 
+  const classes = useStyles({});
+
   useEffect(checkedChange, [checked]);
 
   return (
     <>
-      <div className="dependency-selection">
+      <div className={ classes.dependencySelection }>
 
         <SelectionList
           title={
@@ -263,12 +314,12 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
           )
         }
       </div>
-      <div className="dependency-selection--bottom-section">
+      <div className={ classes.bottomSection }>
         {
           (resultItems == null) ? (
             <div className="centerCircularProgress">
               <CenterCircularProgress/>
-              <span className="dependency-selection--center-circular-progress-text">
+              <span className={ classes.circularProgressText }>
                 <FormattedMessage
                   id="deleteDialog.uploadingDepenedents"
                   defaultMessage={`Updating dependents, please wait...`}
@@ -318,42 +369,48 @@ function SelectionList(props: SelectionListProps) {
 
   const { title, subtitle, items, uris, onItemClicked, onSelectAllClicked, displayItemTitle, checked, setChecked } = props;
 
+  const classes = useStyles({});
+
   return (
     <div>
-      <h2 className="dependency-selection--title dependency-selection--publish-title">
+      <Typography variant="h2" component="h2" className={ classes.selectionListTitle }>
         {title}
-      </h2>
+      </Typography>
       {
         subtitle ? (
-          <span>
+          <Typography component="span">
             {` • `}
             {subtitle}
-          </span>
+          </Typography>
         ) : (null)
       }
       {
         onSelectAllClicked ? (
-          <button className="dependency-selection--nav-btn dependency-selection--select-all"
-                  onClick={() => onSelectAllClicked(setChecked, items)}>
+          <Button
+            color="primary"
+            onClick={() => onSelectAllClicked(setChecked, items)}
+            size="small"
+            className={ classes.selectAllBtn }
+          >
             <FormattedMessage
               id="common.selectAll"
               defaultMessage={`Select All`}
             />
-          </button>
+          </Button>
         ) : (null)
       }
       {
         items &&
-        <List>
+        <List className={ classes.selectionList }>
           {
             items.map((item: Item) => {
               const labelId = `checkbox-list-label-${item.uri}`;
 
               return (
                 <ListItem
+                  className={ classes.listItem }
                   key={item.uri}
                   role={undefined}
-                  // dense
                   {...onItemClicked ? {
                     button: true,
                     onClick: (e) => onItemClicked(e, item, setChecked, checked)
@@ -361,7 +418,7 @@ function SelectionList(props: SelectionListProps) {
                 >
                   {
                     onItemClicked &&
-                    <ListItemIcon>
+                    <ListItemIcon className={ classes.listItemIcon }>
                       <Checkbox
                         color="primary"
                         edge="start"
@@ -377,13 +434,7 @@ function SelectionList(props: SelectionListProps) {
                     primary={ item.internalName }
                     secondary={
                       <React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="textPrimary"
-                        >
-                          { item.uri }
-                        </Typography>
+                        { item.uri }
                       </React.Fragment>
                     }
 
@@ -403,6 +454,7 @@ function SelectionList(props: SelectionListProps) {
 
                 return (
                   <ListItem
+                    className={ classes.listItem }
                     key={uri}
                     role={undefined}
                     dense
@@ -413,7 +465,7 @@ function SelectionList(props: SelectionListProps) {
                   >
                     {
                       onItemClicked &&
-                      <ListItemIcon>
+                      <ListItemIcon className={ classes.listItemIcon }>
                         <Checkbox
                           color="primary"
                           edge="start"
