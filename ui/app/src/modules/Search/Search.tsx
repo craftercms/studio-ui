@@ -44,7 +44,6 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { Package } from "../../models/Publishing";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -611,11 +610,13 @@ function Search(props: any) {
         </div>
         <div className={classes.mediaPreview}>
           {
-            preview.type === 'Image' ?
-              <img src={preview.url}/>
-              :
-              <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
-                                nonPlayableMessage={formatMessage(messages.videoProcessed)}/>
+            preview.type === 'Image' &&
+            <img src={preview.url}/>
+          }
+          {
+            preview.type === 'Video' &&
+            <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
+                              nonPlayableMessage={formatMessage(messages.videoProcessed)}/>
           }
         </div>
       </Dialog>
