@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
-    backgroundSize: 'auto',
+    //backgroundSize: 'auto',
     '&.list': {
       paddingTop: 0,
       height: '80px',
@@ -159,7 +159,7 @@ function MediaCard(props: MediaCardProps) {
     }
     return (
       actionArea ?
-        <CardActionArea onClick={() => handlePreview(path)}>
+        <CardActionArea onClick={() => handlePreview(path)} className={clsx(classes.media, isList && 'list')}>
           <div className={clsx(classes.mediaIcon, isList && 'list')}>
             <i className={iconName}></i>
           </div>
@@ -224,7 +224,7 @@ function MediaCard(props: MediaCardProps) {
       </header>
       {
         type === 'Image' ?
-          <CardActionArea onClick={() => handlePreview(path)}>
+          <CardActionArea onClick={() => handlePreview(path)} className={clsx(classes.media, isList && 'list')}>
             <CardMedia
               className={clsx(classes.media, isList && 'list')}
               image={`${siteUrl}${path}`}

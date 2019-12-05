@@ -157,7 +157,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: '25px 30px 50px 30px'
+    padding: '25px 30px 50px 30px',
+    background: '#F3F3F3'
   },
   container: {
     height: '100%'
