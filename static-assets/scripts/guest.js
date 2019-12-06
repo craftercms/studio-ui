@@ -60,10 +60,13 @@ crafterDefine('guest', [
     }
 
     origin = config.hostOrigin;
+    // origin = 'http://localhost:3000';
+    if (location.origin.endsWith(':3000'))
+      origin = '*';
 
     communicator = new Communicator({
       window: window.parent,
-      origin: origin
+      origin
     }, origin);
 
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {

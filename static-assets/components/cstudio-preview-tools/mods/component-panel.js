@@ -312,7 +312,7 @@
                             success: function (contentTO, editorId, name, value, draft) {
                               amplify.publish(cstopic('REFRESH_PREVIEW'));
                             },
-                            cancelled: function() {
+                            refresh: function() {
                               amplify.publish(cstopic('REFRESH_PREVIEW'));
                             }
 

@@ -17,7 +17,6 @@
 
 import React from 'react';
 import CrafterCMSNextBridge from './CrafterCMSNextBridge';
-import { hot } from 'react-hot-loader';
 
 function App() {
   return (
@@ -26,5 +25,3 @@ function App() {
     </CrafterCMSNextBridge>
   );
 }
-
-export default hot(module)(App);
