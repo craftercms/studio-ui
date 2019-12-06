@@ -44,12 +44,17 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
+    height: '100%',
+    '&.hasContent': {
+      height: 'inherit'
+    }
   },
   searchHeader: {
     padding: '15px 20px',
@@ -157,7 +162,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: '#F3F3F3'
   },
   container: {
-    height: '100%'
   },
   pagination: {
     padding: '10px 0 !important'
@@ -478,7 +482,7 @@ function Search(props: any) {
   }
 
   return (
-    <section className={classes.wrapper}>
+    <section className={clsx(classes.wrapper, (searchResults && searchResults.total) && 'hasContent')}>
       <header className={classes.searchHeader}>
         <div className={classes.assetSelector}>
           <ImageIcon className={classes.assetImage}/>
@@ -574,7 +578,7 @@ function Search(props: any) {
                     }
                   </div>
                 }
-                {searchResults === null ? <Spinner background="#F3F3F3"/> : renderMediaCards(searchResults.items, currentView)}
+                {searchResults === null ? <Spinner background="inherit"/> : renderMediaCards(searchResults.items, currentView)}
               </Grid>
             )
         }

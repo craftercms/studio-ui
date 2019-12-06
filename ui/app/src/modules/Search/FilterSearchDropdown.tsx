@@ -16,7 +16,7 @@
  */
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import Button from "@material-ui/core/Button";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Popover from '@material-ui/core/Popover';
 import { defineMessages, useIntl } from "react-intl";
 import { Theme } from "@material-ui/core";
@@ -36,7 +36,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
 import TextField from "@material-ui/core/TextField";
-import { Facet, SearchParameters, Filter as FilterType, QueryParams } from '../../models/Search';
+import { Facet, Filter as FilterType, QueryParams } from '../../models/Search';
+import CheckIcon from '@material-ui/icons/Check';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -58,6 +59,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   body: {
     padding: '10px'
+  },
+  filterChecked: {
+    marginLeft: '10px'
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -189,39 +193,41 @@ interface FilterSearchDropdownProps {
   text: string;
   className: any;
   facets: [Facet];
+
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
+
   queryParams: QueryParams;
 }
 
 function Filter(props: any) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {facet, handleFilterChange, queryParams, facetsLookupTable} = props;
-  const [checkedFilters, setCheckedFilters] = React.useState({});
-
-  useEffect(function () {
-    setCheckedFilters(setCheckedParameterFromURL(queryParams));
-  }, [queryParams]);
-
-  const setCheckedParameterFromURL = (queryParams) => {
-    if (queryParams['filters']) {
-      let checked = {};
-      let parseQP = JSON.parse(queryParams['filters']);
-      if (parseQP[facet]) {
-        if (Array.isArray(parseQP[facet])) {
-          checked[facet] = {};
-          parseQP[facet].forEach((name) => {
-            checked[facet][name] = true;
-          });
-        } else {
-          checked[facet] = parseQP[facet];
-        }
-      }
-      return checked;
-    } else {
-      return {};
-    }
-  };
+  const {facet, handleFilterChange, queryParams, facetsLookupTable, checkedFilters, setCheckedFilters} = props;
+  // const [checkedFilters, setCheckedFilters] = React.useState({});
+  //
+  // useEffect(function () {
+  //   setCheckedFilters(setCheckedParameterFromURL(queryParams));
+  // }, [queryParams]);
+  //
+  // const setCheckedParameterFromURL = (queryParams) => {
+  //   if (queryParams['filters']) {
+  //     let checked = {};
+  //     let parseQP = JSON.parse(queryParams['filters']);
+  //     if (parseQP[facet]) {
+  //       if (Array.isArray(parseQP[facet])) {
+  //         checked[facet] = {};
+  //         parseQP[facet].forEach((name) => {
+  //           checked[facet][name] = true;
+  //         });
+  //       } else {
+  //         checked[facet] = parseQP[facet];
+  //       }
+  //     }
+  //     return checked;
+  //   } else {
+  //     return {};
+  //   }
+  // };
 
   const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
     const facetFilter = checkedFilters[facet] || {};
@@ -282,7 +288,8 @@ function Filter(props: any) {
                           checkedFilters={checkedFilters}/>
             {
               (facetsLookupTable[facet].range && !facetsLookupTable[facet].date) &&
-              <RangeSelector facet={facet} handleFilterChange={handleFilterChange} checkedFilters={checkedFilters} queryParams={queryParams}/>
+              <RangeSelector facet={facet} handleFilterChange={handleFilterChange} checkedFilters={checkedFilters}
+                             queryParams={queryParams}/>
             }
           </div>
         }
@@ -495,6 +502,34 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   const [expanded, setExpanded] = useState({
     sortBy: false
   });
+  const [checkedFilters, setCheckedFilters] = React.useState({});
+
+  useEffect(function () {
+    setCheckedFilters(setCheckedParameterFromURL(queryParams));
+  }, [queryParams]);
+
+  const setCheckedParameterFromURL = (queryParams) => {
+    if (queryParams['filters']) {
+      let checked = {};
+      let parseQP = JSON.parse(queryParams['filters']);
+      Object.keys(parseQP).forEach((facet) => {
+        if (Array.isArray(parseQP[facet])) {
+          checked[facet] = {};
+          parseQP[facet].forEach((name) => {
+            checked[facet][name] = true;
+          });
+        } else {
+          checked[facet] = parseQP[facet];
+        }
+      });
+      return checked;
+    } else {
+      return {};
+    }
+  };
+
+  const popoverAction = useRef(null);
+  const popover = useRef(null);
 
   let filterKeys = [];
   let facetsLookupTable = {};
@@ -527,16 +562,21 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                 <Typography variant="body1">
                   <strong>{formatMessage(messages[name])}</strong>
                 </Typography>
+                {
+                  checkedFilters[key] &&
+                  <CheckIcon className={classes.filterChecked}/>
+                }
                 <ExpandMoreIcon
                   className={clsx(classes.expand, !!(expanded && expanded[name]) && classes.expandOpen)}/>
               </header>
             </ListItem>
-            <Collapse in={!!(expanded && expanded[name])} timeout={300}>
+            <Collapse in={!!(expanded && expanded[name])} timeout={300} onEntered={refreshPopover}>
               <div className={classes.body}>
                 <Filter
                   facet={key}
                   handleFilterChange={handleFilterChange}
-                  queryParams={queryParams}
+                  checkedFilters={checkedFilters}
+                  setCheckedFilters={setCheckedFilters}
                   facetsLookupTable={facetsLookupTable}
                 />
               </div>
@@ -547,6 +587,12 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
     )
   };
 
+  const refreshPopover = () => {
+    if (popover.current.offsetHeight < popover.current.scrollHeight) {
+      popoverAction.current.updatePosition();
+    }
+  };
+
   return (
     <div>
       <Button variant="outlined" onClick={handleClick} className={className}>
@@ -554,6 +600,8 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
       </Button>
       <Popover
         id="simple-menu"
+        action={popoverAction}
+        ref={popover}
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         classes={{paper: classes.paper}}
@@ -580,7 +628,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
                   className={clsx(classes.expand, (expanded && expanded['sortBy']) && classes.expandOpen)}/>
               </header>
             </ListItem>
-            <Collapse in={(expanded && expanded['sortBy'])} timeout={300}>
+            <Collapse in={(expanded && expanded['sortBy'])} timeout={300} onEntered={refreshPopover}>
               <div className={classes.body}>
                 <SortBy queryParams={queryParams} filterKeys={filterKeys} handleFilterChange={handleFilterChange}/>
                 <SortOrder queryParams={queryParams} handleFilterChange={handleFilterChange}/>
