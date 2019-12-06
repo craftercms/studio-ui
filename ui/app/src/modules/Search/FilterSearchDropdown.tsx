@@ -203,31 +203,6 @@ function Filter(props: any) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
   const {facet, handleFilterChange, queryParams, facetsLookupTable, checkedFilters, setCheckedFilters} = props;
-  // const [checkedFilters, setCheckedFilters] = React.useState({});
-  //
-  // useEffect(function () {
-  //   setCheckedFilters(setCheckedParameterFromURL(queryParams));
-  // }, [queryParams]);
-  //
-  // const setCheckedParameterFromURL = (queryParams) => {
-  //   if (queryParams['filters']) {
-  //     let checked = {};
-  //     let parseQP = JSON.parse(queryParams['filters']);
-  //     if (parseQP[facet]) {
-  //       if (Array.isArray(parseQP[facet])) {
-  //         checked[facet] = {};
-  //         parseQP[facet].forEach((name) => {
-  //           checked[facet][name] = true;
-  //         });
-  //       } else {
-  //         checked[facet] = parseQP[facet];
-  //       }
-  //     }
-  //     return checked;
-  //   } else {
-  //     return {};
-  //   }
-  // };
 
   const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
     const facetFilter = checkedFilters[facet] || {};
@@ -308,7 +283,7 @@ function FilterRadios(props: any) {
     if (facetData.date) {
       return `${value.from}TODATE${value.to}ID${facet}${key}`;
     } else if (facetData.range) {
-      return `${value.from}TO${value.to}`;
+      return `${(value.from !== '-Infinity')? value.from: ''}TO${(value.to !== 'Infinity')? value.to: ''}`;
     } else {
       return key;
     }
