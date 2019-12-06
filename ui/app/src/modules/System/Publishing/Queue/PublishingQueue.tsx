@@ -73,7 +73,7 @@ const messages = defineMessages({
   },
   noPackagesTitle: {
     id: 'publishingDashboard.noPackagesTitle',
-    defaultMessage: 'No Packages Where Found'
+    defaultMessage: 'No Packages Were Found'
   },
   noPackagesSubtitle: {
     id: 'publishingDashboard.noPackagesSubtitle',

@@ -15,33 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ToolsPanel from './ToolsPanel';
-import { PreviewProvider } from './previewContext';
-import Host from './Host';
-import ToolBar from './ToolBar';
-import { PreviewConcierge } from './PreviewConcierge';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
+export function forEach<T = any>(
+  array: T[],
+  fn: (item: T, index: number, array: T[]) => any,
+  emptyReturnValue: any = undefined
+): any {
+  if ((emptyReturnValue != null) && (array?.length === 0)) {
+    return emptyReturnValue;
   }
-}));
-
-export default function Preview() {
-  const classes = useStyles({});
-  return (
-    <PreviewProvider>
-      <section className={classes.root}>
-        <ToolBar />
-        <Host />
-        <ToolsPanel />
-      </section>
-      <PreviewConcierge />
-    </PreviewProvider>
-  );
+  for (let i = 0, l = array.length; i < l; i++) {
+    const result = fn(array[i], i, array);
+    if (result === 'continue') {
+      continue;
+    } else if (result === 'break') {
+      break;
+    } else if (result !== undefined) {
+      return result;
+    }
+  }
+  return emptyReturnValue;
 }
-

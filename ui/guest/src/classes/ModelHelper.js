@@ -15,33 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ToolsPanel from './ToolsPanel';
-import { PreviewProvider } from './previewContext';
-import Host from './Host';
-import ToolBar from './ToolBar';
-import { PreviewConcierge } from './PreviewConcierge';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
+export class ModelHelper {
+  static prop(model, propName) {
+    if (model == null) {
+      return null;
+    } else if (propName === 'id') {
+      return model.craftercms.id;
+    }
+    return model[propName];
   }
-}));
 
-export default function Preview() {
-  const classes = useStyles({});
-  return (
-    <PreviewProvider>
-      <section className={classes.root}>
-        <ToolBar />
-        <Host />
-        <ToolsPanel />
-      </section>
-      <PreviewConcierge />
-    </PreviewProvider>
-  );
+  static value(model, fieldId, newValue) {
+    if (newValue != null) {
+      model[fieldId] = newValue;
+    }
+    // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
+    return model[fieldId] || model[fieldId.replace(/-/g, '__')];
+  }
+
+  static getContentTypeId(model) {
+    return model?.craftercms?.contentType;
+  }
 }
-

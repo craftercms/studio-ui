@@ -15,33 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ToolsPanel from './ToolsPanel';
-import { PreviewProvider } from './previewContext';
-import Host from './Host';
-import ToolBar from './ToolBar';
-import { PreviewConcierge } from './PreviewConcierge';
+import React, { useLayoutEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-  }
-}));
+export default function CrafterCMSPortal(props) {
 
-export default function Preview() {
-  const classes = useStyles({});
-  return (
-    <PreviewProvider>
-      <section className={classes.root}>
-        <ToolBar />
-        <Host />
-        <ToolsPanel />
-      </section>
-      <PreviewConcierge />
-    </PreviewProvider>
+  const portalRef = useRef(document.createElement('craftercms-portal'));
+
+  useLayoutEffect(() => {
+    const body = document.body;
+    const portal = portalRef.current;
+    body.appendChild(portal);
+    return () => {
+      body.removeChild(portal);
+    };
+  }, []);
+
+  return ReactDOM.createPortal(
+    props.children,
+    portalRef.current
   );
-}
 
+}

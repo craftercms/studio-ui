@@ -577,7 +577,7 @@ const dragAndDropMessages = defineMessages({
     id: 'dragAndDropMessages.embeddedComponentsDrag',
     defaultMessage: 'In this release, embedded components may only be dragged within their current parent. Please use the forms to edit content.'
   },
-})
+});
 
 export default {
   approveDialogMessages,

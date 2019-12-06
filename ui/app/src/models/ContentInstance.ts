@@ -18,11 +18,11 @@
 export interface ContentInstanceSystemProps {
   id: string;
   path: string;
+  label: string; // Internal name
   locale: string;
   dateCreated: string;
   dateModified: string;
   contentType: string;
-  name: string; // Internal name
 }
 
 export interface ContentInstance {

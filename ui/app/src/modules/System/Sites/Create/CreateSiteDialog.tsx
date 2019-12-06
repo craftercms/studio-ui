@@ -81,7 +81,7 @@ const messages = defineMessages({
   },
   noBlueprints: {
     id: 'createSiteDialog.noBlueprints',
-    defaultMessage: 'No Blueprints Where Found'
+    defaultMessage: 'No Blueprints Were Found'
   },
   changeQuery: {
     id: 'createSiteDialog.changeQuery',
@@ -518,7 +518,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     setSite({ selectedView: back });
   }
 
-  function handleChange(e: Object, value: number) {
+  function handleChange(e: object, value: number) {
     setTab(value);
   }
 

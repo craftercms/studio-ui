@@ -17,7 +17,7 @@
 
 import { selectTool, usePreviewContext } from '../previewContext';
 import { MessageDescriptor, useIntl } from 'react-intl';
-import React, { FunctionComponent, PropsWithChildren, ReactElement } from 'react';
+import React, { FunctionComponent, PropsWithChildren, ElementType, ReactElement } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
@@ -34,21 +34,26 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-type ToolPanelProps = PropsWithChildren<{ title: string | MessageDescriptor; }>;
+type ToolPanelProps = PropsWithChildren<{
+  title: string | MessageDescriptor;
+  BackIcon?: ElementType,
+  onBack?: () => void
+}>;
 
 interface PanelHeaderProps {
   title: string;
+  BackIcon?: ElementType,
   onBack: () => void
 }
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
   const classes = useStyles({});
-  const { title, onBack } = props;
+  const { title, BackIcon = ChevronLeftRounded, onBack } = props;
   return (
     <>
       <header className={classes.panelHeader}>
         <IconButton onClick={onBack}>
-          <ChevronLeftRounded/>
+          <BackIcon/>
         </IconButton>
         <Typography component="h2">
           {title}
@@ -62,12 +67,17 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const [, dispatch] = usePreviewContext();
   const { formatMessage } = useIntl();
-  const { title } = props;
+  const {
+    title,
+    BackIcon,
+    onBack = () => dispatch(selectTool())
+  } = props;
   return (
     <>
       <PanelHeader
-        title={typeof title === 'string' ? title : formatMessage(title)}
-        onBack={() => dispatch(selectTool())}
+        title={typeof title === 'object' ? formatMessage(title) : title}
+        BackIcon={BackIcon}
+        onBack={onBack}
       />
       <section>
         {props.children}

@@ -16,32 +16,28 @@
  */
 
 import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ToolsPanel from './ToolsPanel';
-import { PreviewProvider } from './previewContext';
-import Host from './Host';
-import ToolBar from './ToolBar';
-import { PreviewConcierge } from './PreviewConcierge';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-  }
-}));
-
-export default function Preview() {
-  const classes = useStyles({});
+export function Spinner(props) {
   return (
-    <PreviewProvider>
-      <section className={classes.root}>
-        <ToolBar />
-        <Host />
-        <ToolsPanel />
-      </section>
-      <PreviewConcierge />
-    </PreviewProvider>
+    <svg className={props.className}
+         width={props.width}
+         height={props.height}
+         viewBox="0 0 66 66"
+         xmlns="http://www.w3.org/2000/svg">
+      <circle className={props.circleClassName}
+              fill="none"
+              strokeWidth={props.strokeWidth}
+              strokeLinecap={props.strokeLineCap}
+              cx="33" cy="33" r="30"/>
+    </svg>
   );
 }
 
+Spinner.defaultProps = {
+  width: 50,
+  height: 50,
+  strokeWidth: 6,
+  className: 'spinner',
+  strokeLineCap: 'round',
+  circleClassName: 'path'
+};

@@ -15,33 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import ToolsPanel from './ToolsPanel';
-import { PreviewProvider } from './previewContext';
-import Host from './Host';
-import ToolBar from './ToolBar';
-import { PreviewConcierge } from './PreviewConcierge';
+import React, { useEffect, useState } from 'react';
+import { Markers } from '../classes/Markers';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column'
-  }
-}));
+export function ZoneMarker(props) {
 
-export default function Preview() {
-  const classes = useStyles({});
-  return (
-    <PreviewProvider>
-      <section className={classes.root}>
-        <ToolBar />
-        <Host />
-        <ToolsPanel />
-      </section>
-      <PreviewConcierge />
-    </PreviewProvider>
+  const //
+    { rect, label } = props,
+    [zoneStyle, setZoneStyle] = useState(),
+    [labelStyle, setLabelStyle] = useState();
+
+  useEffect(
+    () => {
+      setZoneStyle(Markers.getZoneMarkerStyle(rect));
+      setLabelStyle(Markers.getZoneMarkerLabelStyle(rect));
+    },
+    [rect]
   );
-}
 
+  return (
+    <craftercms-zone-marker style={zoneStyle}>
+      <craftercms-zone-marker-label style={labelStyle}>{label}</craftercms-zone-marker-label>
+    </craftercms-zone-marker>
+  );
+
+}
