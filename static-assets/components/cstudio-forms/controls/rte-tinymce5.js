@@ -112,7 +112,7 @@ CStudioAuthoring.Module.requireModule(
 		},
 
 		updateModel: function(value) {
-			this.form.updateModel(this.id, CStudioForms.Util.unEscapeXml(value));
+      this.form.updateModel(this.id, value);
 		},
 
 		/**
