@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    height: '100%'
   },
   searchHeader: {
     padding: '15px 20px',
@@ -69,7 +68,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     padding: '10px 12px',
-    //borderRadius: '0px 5px 5px 0px',
     borderRadius: '5px',
     marginLeft: 'auto',
   },
@@ -100,7 +98,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     minWidth: '187px',
     padding: '10px 12px',
     background: 'rgba(0, 122, 255, 0.1)',
-    //display: 'flex',
     borderRadius: '5px 0 0 5px',
     alignItems: 'center',
     marginLeft: 'auto',
@@ -156,7 +153,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: '25px 30px 50px 30px',
+    padding: '25px 30px 0px 30px',
     background: '#F3F3F3'
   },
   container: {

@@ -35,6 +35,11 @@
         CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
         CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
+        this.messages = {
+          browseSearchMessages: CrafterCMSNext.i18n.messages.browseSearchMessages,
+          words: CrafterCMSNext.i18n.messages.words
+        };
+
         this.searchContext.mode = CStudioAuthoring.Utils.getQueryVariable(document.location.search, "mode") || 'default';
         this.searchContext.searchId = CStudioAuthoring.Utils.getQueryVariable(document.location.search, "searchId");
         $('section.cstudio-search').addClass(this.searchContext.mode);
@@ -82,7 +87,7 @@
 
         html = template(result);
         $(html).appendTo($formControlContainer);
-    }
+    };
 
     CStudioSearch.changeSelectStatus = function(path, selected){
         var callback = {
@@ -103,9 +108,10 @@
         }
 
         CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
-    }
+    };
 
     CStudioSearch.saveContent = function() {
+        var _self = this;
         var searchId = this.searchContext ? this.searchContext.searchId : "" ;
         var crossServerAccess = false;
         var opener = window.opener ? window.opener : parent.iframeOpener;
@@ -143,8 +149,8 @@
                         CStudioAuthoring.Operations.showSimpleDialog(
                           "lookUpChildError-dialog",
                           CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                          CMgs.format(langBundle, "notification"),
-                          CMgs.format(langBundle, "lookUpChildError") + searchId,
+                          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
+                          CrafterCMSNext.i18n.intl.formatMessage(_self.messages.browseSearchMessages.lookUpChildError, { searchId }),
                           [{ text: "OK",  handler:function(){
                               this.hide();
                               window.close();
@@ -159,7 +165,8 @@
                       "lookUpParentError-dialog",
                       CStudioAuthoring.Operations.simpleDialogTypeINFO,
                       CMgs.format(langBundle, "notification"),
-                      CMgs.format(langBundle, "lookUpParentError") + searchId,
+                      CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
+                      CrafterCMSNext.i18n.intl.formatMessage(_self.messages.browseSearchMessages.lookUpParentError, { searchId }),
                       [{ text: "OK",  handler:function(){
                           this.hide();
                           window.close();
