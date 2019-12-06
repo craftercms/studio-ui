@@ -18,26 +18,13 @@
  */
 
 import React, { useEffect, useReducer, useState } from 'react';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import Typography from '@material-ui/core/Typography';
 import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
-import Grid from "@material-ui/core/Grid";
 import moment from 'moment';
 
 import { Item } from '../../../models/Item';
-import DependencySelection from '../Dependencies/DependencySelection';
+import PublishDialogUI from "./PublishDialogUI";
 import { fetchPublishingChannels } from "../../../services/content";
 import { submitToGoLive } from '../../../services/publishing';
-import PublishForm from './PulishForm';
-import { backgroundColor } from '../../../styles/theme';
 import {get} from "../../../utils/ajax";
 
 const messages = defineMessages({
@@ -58,193 +45,10 @@ const dialogInitialState: any = {
   selectedItems: null
 };
 
-const dialogStyles = () => ({
-  titleRoot: {
-    margin: 0,
-    padding: '16px 20px 13px',
-    background: '#fff'
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 10
-  },
-  subtitle: {
-    fontSize: '14px',
-    lineHeight: '18px',
-    paddingRight: '35px'
-  },
-  closeIcon: {
-    padding: 0
-  },
-  leftAlignedAction: {
-    marginRight: 'auto'
-  }
-});
-
-const DialogTitle = withStyles(dialogStyles)((props: any) => {
-  const { classes, onClose, title, subtitle } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.titleRoot}>
-      <div className={classes.title}>
-        <Typography variant="h6">{title}</Typography>
-        {onClose ? (
-          <IconButton aria-label="close" onClick={onClose} className={classes.closeIcon}>
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </div>
-      {
-        subtitle &&
-        <Typography variant="subtitle1" className={classes.subtitle}>{subtitle}</Typography>
-      }
-    </MuiDialogTitle>
-  );
-});
-
-const DialogContent = withStyles((theme: Theme) => ({
-  root: {
-    padding: theme.spacing(2),
-    backgroundColor: '#FAFAFA'
-  },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles((theme: Theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(1),
-  },
-  showAllDeps: {
-
-  }
-}))(MuiDialogActions);
-
 export interface DependenciesResultObject {
   items1: [],
   items2: []
 }
-
-interface PublishDialogUIProps {
-  items: Item[];
-  publishingChannels: any[];
-  handleClose: any;
-  handleSubmit: any;
-  dialog: any;
-  setDialog: any;
-  open: boolean;
-  title: string;
-  subtitle?: string;
-  checkedItems: Item[];
-  setCheckedItems: Function;
-  checkedSoftDep: any[];
-  setCheckedSoftDep: Function;
-  onClickSetChecked: Function;
-  deps: any,
-  showDepsButton: boolean,
-  selectAllDeps: Function,
-  selectAllSoft: Function,
-  onClickShowAllDeps?: any,
-  showEmailCheckbox?: boolean
-  classes?: any;
-}
-
-export const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) => {
-  const {
-    items,
-    publishingChannels,
-    handleClose,
-    handleSubmit,
-    dialog,
-    setDialog,
-    open,
-    title,
-    subtitle,
-    checkedItems,
-    setCheckedItems,
-    checkedSoftDep,
-    setCheckedSoftDep,
-    onClickSetChecked,
-    deps,
-    showDepsButton,
-    selectAllDeps,
-    selectAllSoft,
-    onClickShowAllDeps,
-    showEmailCheckbox,
-    classes
-  } = props;
-
-  return (
-    <Dialog
-      onClose={handleClose}
-      aria-labelledby="requestPublishDialogTitle"
-      open={open}
-      disableBackdropClick={true}
-      fullWidth={true}
-      maxWidth={'md'}
-    >
-      <DialogTitle
-        id="requestPublishDialogTitle"
-        onClose={handleClose}
-        title={title}
-        subtitle={subtitle}
-      />
-      <DialogContent dividers>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-            <DependencySelection
-              items={items}
-              checked={checkedItems}
-              setChecked={setCheckedItems}
-              checkedSoftDep={checkedSoftDep}
-              setCheckedSoftDep={setCheckedSoftDep}
-              onClickSetChecked={onClickSetChecked}
-              deps={deps}
-              showDepsButton={showDepsButton}
-              onSelectAllClicked={selectAllDeps}
-              onSelectAllSoftClicked={selectAllSoft}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
-            <PublishForm
-              inputs={dialog}
-              setInputs={setDialog}
-              showEmailCheckbox={showEmailCheckbox}
-              publishingChannels={publishingChannels}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          color="primary"
-          onClick={ onClickShowAllDeps }
-          className={ classes.leftAlignedAction }
-          startIcon={<InfoOutlinedIcon />}
-        >
-          <FormattedMessage
-            id="publishDialog.showAllDependencies"
-            defaultMessage={`Show All Dependencies`}
-          />
-        </Button>
-
-        <Button variant="contained" onClick={handleClose}>
-          <FormattedMessage
-            id="requestPublishDialog.cancel"
-            defaultMessage={`Cancel`}
-          />
-        </Button>
-        <Button variant="contained" autoFocus onClick={handleSubmit} color="primary">
-          <FormattedMessage
-            id="requestPublishDialog.submit"
-            defaultMessage={`Submit`}
-          />
-        </Button>
-      </DialogActions>
-    </Dialog>
-  )
-});
 
 // dependency selection common methods
 export const checkState = (items: Item[]) => {

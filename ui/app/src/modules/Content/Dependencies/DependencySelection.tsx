@@ -411,10 +411,10 @@ function SelectionList(props: SelectionListProps) {
                   className={ classes.listItem }
                   key={item.uri}
                   role={undefined}
-                  {...onItemClicked ? {
+                  {... (onItemClicked ? {
                     button: true,
                     onClick: (e) => onItemClicked(e, item, setChecked, checked)
-                  }: null}
+                  }: null) }
                 >
                   {
                     onItemClicked &&
@@ -458,10 +458,10 @@ function SelectionList(props: SelectionListProps) {
                     key={uri}
                     role={undefined}
                     dense
-                    {...onItemClicked ? {
+                    {... (onItemClicked ? {
                       button: true,
                       onClick: () => onItemClicked([uri], !checked[uri], setChecked, checked)
-                    }: null}
+                    }: null)}
                   >
                     {
                       onItemClicked &&

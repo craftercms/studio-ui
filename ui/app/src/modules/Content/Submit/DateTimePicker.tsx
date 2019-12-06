@@ -6,7 +6,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import PublicIcon from '@material-ui/icons/Public';
 import DateFnsUtils from '@date-io/date-fns';
-import 'date-fns';
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -83,13 +82,12 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     onChangeDate,
     onChangeTime,
     onChangeTimezone,
-    initialDate,
-    timezone,
-    controls
+    initialDate = moment(),
+    timezone = moment.tz.guess(),
+    controls = ['date', 'time', 'timezone']
   } = props;
-  const [ selectedDateTime, setSelectedDateTime ] = useState(initialDate ? initialDate : moment());
-  const [ selectedTimezone, setSelectedTimezone ] = useState(timezone ? timezone : moment.tz.guess());
-  const showAll = !controls;
+  const [ selectedDateTime, setSelectedDateTime ] = useState(initialDate);
+  const [ selectedTimezone, setSelectedTimezone ] = useState(timezone);
 
   const handleDateChange = (name: string) => (date: Date | null) => {
     let updatedDateTime = selectedDateTime;
@@ -124,7 +122,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   return (
     <>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        { (controls && controls.includes('date') || showAll) &&
+        { controls.includes('date') &&
           <KeyboardDatePicker
             format="MM/dd/yyyy"
             margin="normal"
@@ -142,7 +140,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           />
         }
 
-        { (controls && controls.includes('time') || showAll) &&
+        { controls.includes('time') &&
           <KeyboardTimePicker
             margin="normal"
             id="time-picker"
@@ -161,7 +159,8 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         }
       </MuiPickersUtilsProvider>
 
-      { (controls && controls.includes('timezone') || showAll) &&
+      {
+        controls.includes('timezone') &&
         <Select
           fullWidth
           value={selectedTimezone}
@@ -174,7 +173,8 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
             icon: classes.selectIcon
           }}
         >
-          { timezones &&
+          {
+            timezones &&
             timezones.map((timezone: any) =>
               <MenuItem key={timezone.timezoneName} value={timezone.timezoneName}>
                 {timezone.timezoneName} (GMT{timezone.timezoneOffset})

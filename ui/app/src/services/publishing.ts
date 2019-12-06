@@ -27,9 +27,13 @@ export function fetchPackage(siteId: string, packageId: string) {
 }
 
 export function cancelPackage(siteId: string, packageIds: any) {
-  return post('/studio/api/2/publish/cancel', {siteId, packageIds}, {
-    'Content-Type': 'application/json'
-  })
+  return post(
+    '/studio/api/2/publish/cancel',
+    {siteId, packageIds},
+    {
+      'Content-Type': 'application/json'
+    }
+  );
 }
 
 export function fetchEnvironments(siteId: string) {
@@ -37,17 +41,23 @@ export function fetchEnvironments(siteId: string) {
 }
 
 export function submitToGoLive(siteId: string, user:string, data) {
-  return post(`/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`, data,
-  {
-    'Content-Type': 'application/json'
-  });
+  return post(
+    `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
+    data,
+    {
+      'Content-Type': 'application/json'
+    }
+  );
 }
 
 export function goLive(siteId: string, user:string, data) {
-  return post(`/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`, data,
+  return post(
+    `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
+    data,
     {
       'Content-Type': 'application/json'
-    });
+    }
+  );
 }
 
 export default {

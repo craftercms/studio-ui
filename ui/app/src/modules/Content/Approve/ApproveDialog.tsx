@@ -26,11 +26,11 @@ import {
   checkState,
   onClickSetChecked,
   paths,
-  PublishDialogUI,
   selectAllDeps,
   updateCheckedList,
   DependenciesResultObject
 } from "../Submit/RequestPublishDialog";
+import PublishDialogUI from "../Submit/PublishDialogUI";
 import {Item} from "../../../models/Item";
 import moment from "moment";
 
@@ -41,7 +41,7 @@ const messages = defineMessages({
   },
   subtitle: {
     id: 'approveDialog.subtitle',
-    defaultMessage: 'Selected files will go live upon submission. Hard dependencies are automatically submitted with the' +
+    defaultMessage: 'Selected files will go live upon submission. Hard dependencies are automatically submitted with the ' +
       'main items. You may choose whether to submit or not soft dependencies'
   }
 });

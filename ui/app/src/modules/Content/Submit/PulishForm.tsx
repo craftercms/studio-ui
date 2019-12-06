@@ -196,7 +196,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
           />
         </RadioGroup>
         <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={ inputs.scheduling === 'custom' ? (classes.datePicker) : '' }>
-          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone}/>
+          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone} />
         </Collapse>
       </div>
 
