@@ -1,6 +1,22 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { defineMessages, useIntl } from 'react-intl';
-import React, { useEffect, useMemo, useState } from 'react';
-import { fromString } from '../../../utils/xml';
+import React, { useEffect, useMemo, useReducer } from 'react';
 import { DRAWER_WIDTH, setHostSize, usePreviewContext } from '../previewContext';
 import { getTranslation } from '../../../utils/i18n';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -79,6 +95,14 @@ function cleanseConfigNumericValue(element) {
   }
 }
 
+const INITIAL_STATE = {
+  width: '',
+  height: '',
+  preset: SIMULATOR_PANEL_RESPONSIVE_MODE
+};
+
+const reducer = (a: any, b: any) => ({ ...a, ...b });
+
 export default function SimulatorPanel(props: any) {
 
   const classes = useStyles({});
@@ -86,27 +110,23 @@ export default function SimulatorPanel(props: any) {
   const maxWidth = window.innerWidth - DRAWER_WIDTH;
 
   const channels = useMemo(() => {
-    const xml = fromString(props.config);
-    return Array.from(xml.querySelectorAll('channel')).map((channel) => ({
-      title: channel.querySelector('title').innerHTML,
-      value: channel.querySelector('value').innerHTML,
-      width: cleanseConfigNumericValue(channel.querySelector('width')),
-      height: cleanseConfigNumericValue(channel.querySelector('height'))
-    })).filter((channel) => {
-      if (channel.width === null && channel.height === null) {
-        console.warn(
-          `Filtered out config item titled '${channel.title}' with value '${channel.value}' ` +
-          `since both width and height values are blank/null.` +
-          `Both values in blank is equivalent to the tool's default preset.`
-        );
-        return false;
-      } else {
-        return true;
+    const _channels = props.config && props.config.channels;
+    if (_channels) {
+      if (!Array.isArray(_channels)) {
+        console.log(`[SimulatorPanel] Expected channels to be array but instead got "${typeof _channels}"`);
       }
-    });
+      return _channels.map((channel) => ({
+        ...channel,
+        value: `${channel.width}_${channel.height}`
+      }));
+    }
+    return [];
   }, [props.config]);
 
-  const [preset, setPreset] = useState(SIMULATOR_PANEL_RESPONSIVE_MODE);
+  const [{ width, height, preset }, setState] = useReducer(reducer, INITIAL_STATE);
+  const setWidth = (value) => setState({ width: value });
+  const setHeight = (value) => setState({ height: value });
+
   const handlePresetChange = (e: any) => {
     const value = e.target.value;
     if (value === SIMULATOR_PANEL_RESPONSIVE_MODE) {
@@ -124,8 +144,6 @@ export default function SimulatorPanel(props: any) {
   };
 
   const [{ hostSize }, dispatch] = usePreviewContext();
-  const [width, setWidth] = useState('');
-  const [height, setHeight] = useState('');
   const onDimensionKeyUp = (e: any) => {
     if (e.key === 'Enter') {
 
@@ -156,26 +174,30 @@ export default function SimulatorPanel(props: any) {
   };
 
   useEffect(() => {
+    const nextState: any = {};
     if (hostSize.width != null) {
-      setWidth(`${hostSize.width}`);
+      nextState.width = `${hostSize.width}`;
+    } else {
+      nextState.width = '';
     }
     if (hostSize.height != null) {
-      setHeight(`${hostSize.height}`);
+      nextState.height = `${hostSize.height}`;
+    } else {
+      nextState.height = '';
     }
-    if (hostSize.width || hostSize.height) {
+    if (hostSize.width != null || hostSize.height != null) {
       const matchingPreset = channels.find((channel) =>
         // @ts-ignore
         channel.width == hostSize.width && channel.height == hostSize.height
       );
-      (matchingPreset)
-        ? setPreset(matchingPreset.value)
-        : setPreset(SIMULATOR_PANEL_CUSTOM_MODE);
+      nextState.preset = (matchingPreset)
+        ? matchingPreset.value
+        : SIMULATOR_PANEL_CUSTOM_MODE;
     } else {
-      setWidth('');
-      setHeight('');
-      setPreset(SIMULATOR_PANEL_RESPONSIVE_MODE)
+      nextState.preset = SIMULATOR_PANEL_RESPONSIVE_MODE;
     }
-  }, [hostSize]);
+    setState(nextState);
+  }, [hostSize, props.config]);
 
   const onFlipDimensions = () => {
     const nextWidth = parseInt(height);

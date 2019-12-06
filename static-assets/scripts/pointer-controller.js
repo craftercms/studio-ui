@@ -90,6 +90,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
   }
 
   function enablePointer(components, initialContentModel) {
+    var communicator = this.cfg('communicator');
 
     currentModel = initialContentModel;
 
@@ -134,6 +135,60 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
       $(this).removeClass('studio-pointer-over');
     });
 
+    function restrictions($dropZone, $component, isZoneEmbedded, DestContentType) {
+      var valid = true;
+
+      if(!DestContentType) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'contentTypeNotFound',
+          link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+          height: 'auto'
+        });
+      }
+
+      if(isZoneEmbedded) {
+        valid = false;
+        publish.call(me, Topics.START_DIALOG, {
+          messageKey: 'embeddedComponentsDndNotSupported',
+          height: 'auto'
+        });
+      }
+
+      return valid;
+    }
+
+    var cacheValidation = {};
+
+    function validation($dropZone, $component, contentType, zone, componentType, response) {
+      var childContent = componentType === 'shared-content'? 'child-content' : null;
+      var key = `${zone}-${componentType}`;
+
+      return new Promise((resolve, reject) => {
+        if (cacheValidation[key]) {
+          resolve(cacheValidation[key]);
+        } else {
+          cacheValidation[key] = {supported: false, ds: null};
+        }
+        var selector;
+        response.sections.forEach(section => {
+          var _selector = section.fields.find(item => item.id === zone);
+          if (_selector) selector = _selector;
+        });
+        var selectorDS = selector.properties.find(item => item.name === "itemManager");
+        selectorDS.value.split(',').forEach(ds => {
+          var type = response.datasources.find(formDS => formDS.id === ds).type;
+          if (type === componentType || type === childContent) cacheValidation[key] = {
+            supported: true,
+            ds: ds
+          };
+          return true;
+        });
+        resolve(cacheValidation[key]);
+      });
+    }
+
+
     $(DROPPABLE_SELECTION).bind("click", function (e) {
       e.stopPropagation();
       var $dropZone = $(this),
@@ -141,9 +196,31 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         compPath = $component.uri,
         zonePath = $dropZone.parents('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
         compPathChild = $dropZone.children('[data-studio-component-path="' + compPath + '"]').attr('data-studio-component-path'),
-        destinationZone = $dropZone.attr('data-studio-components-target');
+        isZoneEmbedded = $dropZone.parent().attr('data-studio-embedded-item-id') || false,
+        DestContentType = $dropZone.attr('data-studio-zone-content-type') || null;
+
+      var destContentType = $dropZone.attr('data-studio-zone-content-type') || null;
+      var componentType = 'shared-content';
+      var zone = $dropZone.attr('data-studio-components-target') || null;
+
       if (compPath != zonePath && compPathChild != compPath) {
-        componentDropped.call(me, $dropZone, $component, destinationZone);
+        if(restrictions($dropZone, $component, isZoneEmbedded, DestContentType)) {
+          var callback = function(response) {
+            validation($dropZone, $component, destContentType, zone, componentType, response).then((response) => {
+              if (response.supported) {
+                componentDropped.call(me, $dropZone, $component, response.ds);
+              } else{
+                publish.call(me, Topics.START_DIALOG, {
+                  messageKey: 'componentNotWelcomeWithinDropZone',
+                  height: 'auto'
+                });
+              }
+            });
+            communicator.unsubscribe(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+          };
+          communicator.on(Topics.REQUEST_FORM_DEFINITION_RESPONSE, callback);
+          publish.call(me, Topics.REQUEST_FORM_DEFINITION, {contentType: destContentType});
+        }
       } else {
         me.done();
         $window.off( "keyup", keyUpHandler);
@@ -169,7 +246,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
     $window.focus();
   }
 
-  function componentDropped($dropZone, $component, destinationZone) {
+  function componentDropped($dropZone, $component, datasource) {
 
     var compPath = $dropZone.parents('[data-studio-component-path]').attr('data-studio-component-path');
     var compTracking = $dropZone.parents('[data-studio-component-path]').attr('data-studio-tracking-number');
@@ -237,7 +314,7 @@ crafterDefine('pointer-controller', ['crafter', 'jquery', 'jquery-ui', 'animator
         trackingNumber: tracking,
         compPath: compPath,
         conComp: (conRepeat > 1) ? true : false,
-        destinationZone: destinationZone
+        datasource: datasource
       });
 
     });

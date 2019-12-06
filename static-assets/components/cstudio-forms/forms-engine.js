@@ -844,8 +844,15 @@ var CStudioForms = CStudioForms || function() {
               FlattenerState[objectId] = nextComponentDOM.outerHTML;
               const name = nextComponentDOM.querySelector('internal-name').innerHTML;
               if (message.draft) {
-                amplify.publish('UPDATE_NODE_SELECTOR', {objId: objectId, value: name});
-                cfe.engine.saveForm(false, message.draft);
+                if(message.edit) {
+                  amplify.publish('UPDATE_NODE_SELECTOR', {objId: objectId, value: name});
+                  cfe.engine.saveForm(false, message.draft, false);
+                } else {
+                  CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
+                  if(!CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).type){
+                    cfe.engine.saveForm(false, message.draft, false);
+                  }
+                }
               } else if (CStudioAuthoring.InContextEdit.unstackDialog(message.editorId)) {
                 CStudioAuthoring.InContextEdit.getIceCallback(message.editorId).success({}, message.editorId, objectId, name, message.draft);
               }
@@ -860,10 +867,11 @@ var CStudioForms = CStudioForms || function() {
                   ds: message.ds,
                   order: message.order
                 });
-              } else{
+                cfe.engine.saveForm(false, message.draft, false);
+              }else {
                 amplify.publish('UPDATE_NODE_SELECTOR', message );
+                cfe.engine.saveForm(false, message.draft, true);
               }
-              cfe.engine.saveForm(false, message.draft, true);
               break;
             }
             case FORM_CANCEL_REQUEST: {
@@ -1292,7 +1300,8 @@ var CStudioForms = CStudioForms || function() {
               editorId: editorId,
               payload: xml,
               preview,
-              draft
+              draft,
+              edit
             });
           } else {
             YAHOO.util.Connect.setDefaultPostHeader(false);
@@ -1455,7 +1464,7 @@ var CStudioForms = CStudioForms || function() {
           CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
             success: function (itemTO) {
               //Unlock if the item is locked by the user
-              if (itemTO.item.lockOwner == CStudioAuthoringContext.user) {
+              if (itemTO.item && itemTO.item.lockOwner == CStudioAuthoringContext.user) {
                 CStudioAuthoring.Service.unlockContentItem(CStudioAuthoringContext.site, path, {
                   success: function () {
                     _notifyServer = false;
@@ -1482,12 +1491,8 @@ var CStudioForms = CStudioForms || function() {
         };
 
         var cancelFn = function () {
-
-          //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
-          sendMessage({type: FORM_CANCEL});
-
-          if (iceWindowCallback && iceWindowCallback.cancelled) {
-            iceWindowCallback.cancelled();
+          if (iceWindowCallback && iceWindowCallback.refresh) {
+            iceWindowCallback.refresh();
           }
 
           if (typeof window.parent.CStudioAuthoring.editDisabled !== 'undefined') {
@@ -1520,6 +1525,10 @@ var CStudioForms = CStudioForms || function() {
                   buttons: [
                     {
                       text: CMgs.format(formsLangBundle, 'yes'), handler: function () {
+                        if (iceWindowCallback && iceWindowCallback.cancelled) {
+                          iceWindowCallback.cancelled();
+                        }
+                        sendMessage({type: FORM_CANCEL});
                         this.destroy();
                         var entityId = buildEntityIdFn(null);
                         showWarnMsg = false;
@@ -1540,6 +1549,9 @@ var CStudioForms = CStudioForms || function() {
                     },
                     {
                       text: CMgs.format(formsLangBundle, 'no'), handler: function () {
+                        if (iceWindowCallback && iceWindowCallback.cancelled) {
+                          iceWindowCallback.cancelled();
+                        }
                         this.destroy();
                       }, isDefault: true
                     }
@@ -1552,7 +1564,11 @@ var CStudioForms = CStudioForms || function() {
             }
             dialogEl.dialog.show();
           } else {
-
+            if (iceWindowCallback && iceWindowCallback.cancelled) {
+              iceWindowCallback.cancelled();
+            }
+            //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
+            sendMessage({type: FORM_CANCEL});
             var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0];
             if (acnDraftContent) {
               unlockBeforeCancel(path);
@@ -1724,6 +1740,9 @@ var CStudioForms = CStudioForms || function() {
                       },
                       cancelled: function() {
                         sendMessage({type: FORM_CANCEL_REQUEST});
+                      },
+                      type: function () {
+                        return 'dnd'
                       }
                     },
                     [
@@ -2185,11 +2204,9 @@ var CStudioForms = CStudioForms || function() {
                   for (var k = 0; k < formField.form.sections[0].fields.length; k++) {
                     var elt = formField.form.sections[0].fields[k].inputEl;
                     if (elt && !elt.disabled) {
-
-                      var position = $('html').scrollTop();
-                      formField.form.sections[0].fields[k].inputEl.focus();
-                      $('html').scrollTop(position);
-
+                      if (!['input', 'button', 'iframe', 'textarea', 'select'].includes(document.activeElement.tagName.toLowerCase())) {
+                        formField.form.sections[0].fields[k].inputEl.focus({ preventScroll: true });
+                      }
                       return
                     }
                   }

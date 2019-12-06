@@ -611,7 +611,7 @@ div[id*="expandComponentError"].yui-dialog {
 
 #cstudio-wcm-popup-div .contentTypePopupBtn, #cstudio-wcm-popup-div-login .contentTypePopupBtn {
   margin: 15px 0 0 0;
-  padding: 0;
+  padding: 0 0 20px 0;
   text-align: center;
 }
 
