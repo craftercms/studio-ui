@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import $ from 'jquery/dist/jquery.slim';
 import contentController from './ContentController';
 import {
   not,
@@ -23,10 +24,13 @@ import {
   notNullOrUndefined,
   forEach,
   getChildArrangement,
-  insertDropMarker, getInRectStats, HORIZONTAL, VERTICAL
+  insertDropMarker,
+  getInRectStats,
+  HORIZONTAL,
+  VERTICAL
 } from '../util';
 import iceRegistry from './ICERegistry';
-import { Markers } from './Markers';
+// import { Markers } from './Markers';
 import { ComponentEditor } from './ComponentEditor';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { delay, debounceTime, filter } from 'rxjs/operators';
@@ -201,7 +205,9 @@ export class DOMController {
         $(elem).attr('draggable', true);
       }
 
+      // eslint-disable-next-line
       Markers.removeZoneMarkers();
+      // eslint-disable-next-line
       Markers.markZone(elem);
 
     }
@@ -215,6 +221,7 @@ export class DOMController {
     const elem = this.activeElement;
 
     if (elem) {
+      // eslint-disable-next-line
       Markers.removeZoneMarkers();
       $(elem)
         .attr('draggable', false)
@@ -281,6 +288,7 @@ export class DOMController {
       draggedElement = element,
       draggedElementIndex = currentDZChildren.findIndex(child => child === element),
       childArrangement = getChildArrangement(currentDZChildren, currentDZChildrenRects),
+      // eslint-disable-next-line
       $dropMarker = Markers.createDropMaker(),
       scrolling$ = new BehaviorSubject(false);
     // endregion
@@ -316,6 +324,7 @@ export class DOMController {
 
     $(document).bind('scroll', this.onScroll);
 
+    // eslint-disable-next-line
     dropZones.forEach((e) => Markers.markZone(e));
 
     this.dragStats = {
@@ -491,12 +500,15 @@ export class DOMController {
     }
 
     // Insert new component
+    // eslint-disable-next-line
     if (Markers.draggedComponent) {
       const newComponent = document.createElement('div');
       $dropMarker.after(newComponent);
       // noinspection JSXNamespaceValidation
       render(
+        // eslint-disable-next-line
         <DroppedComponentPlaceholder
+          // eslint-disable-next-line
           component={Markers.draggedComponent}
           node={newComponent}/>,
         newComponent);
@@ -505,6 +517,7 @@ export class DOMController {
 
     // noinspection JSCheckFunctionSignatures
     if (
+      // eslint-disable-next-line
       notNullOrUndefined(Markers.draggedElement) &&
       not($.contains(document, $dropMarker[0]))
     ) {

@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { capitalize, TOLERANCE_PERCENTS } from '../util';
-import { DOMController } from './DOMController';
+import $ from 'jquery/dist/jquery.slim';
+
+const TOLERANCE_PERCENTS = { x: 5, y: 5 };
+
+function capitalize(str) {
+  return `${str.charAt(0).toUpperCase()}${str.substr(1)}`;
+}
 
 export const
   HORIZONTAL = 'horizontal',
@@ -610,6 +615,7 @@ export class Markers {
   }
 
   static getZoneLabel($element, type = 'user') {
+    // eslint-disable-next-line
     const zone = DOMController.getZoneFor($element[0]);
     if (zone) {
       return zone.label;

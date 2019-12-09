@@ -159,10 +159,6 @@ export function PreviewConcierge() {
   }, [site, dispatch, contentTypes, contentTypes$, guest]);
 
   useEffect(() => {
-    console.log('Dispatch has changed.');
-  }, [dispatch]);
-
-  useEffect(() => {
 
     // Retrieve all content types in the system
     const fetchSubscription = (!contentTypes) && fetchContentTypes(site).pipe(

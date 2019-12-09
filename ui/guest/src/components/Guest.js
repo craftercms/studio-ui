@@ -387,6 +387,10 @@ export function Guest(props) {
 
     },
 
+    onHostComponentDragEnd() {
+      fn.dragOk() && fn.onDragEnd();
+    },
+
     dragover(e, record) {
       let element = record.element;
       if (
@@ -851,7 +855,7 @@ export function Guest(props) {
         case COMPONENT_DRAG_STARTED:
           return fn.onComponentDragStarted(payload);
         case COMPONENT_DRAG_ENDED:
-          return fn.onDragEnd();
+          return fn.onHostComponentDragEnd();
         case TRASHED:
           return fn.onTrashDrop(payload);
         case CLEAR_SELECTED_ZONES:
