@@ -19,7 +19,12 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { fromEvent, NEVER, Observable } from 'rxjs';
 import clsx from 'clsx';
-import { StandardAction, getHostToGuestBus, usePreviewContext } from './previewContext';
+import {
+  StandardAction,
+  getHostToGuestBus,
+  usePreviewContext,
+  getGuestToHostBus
+} from './previewContext';
 import { DRAWER_WIDTH } from './previewContext';
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
@@ -36,7 +41,7 @@ const useStyles = makeStyles((theme) => createStyles({
   },
   iframeWithBorder: {
     borderRadius: 20,
-    borderColor: '#555',
+    borderColor: '#555'
   },
   iframeWithBorderLandscape: {
     borderWidth: '10px 50px'
@@ -76,6 +81,7 @@ const translations = defineMessages({
 
 interface HostProps {
   url: string;
+  onLocationChange: () => void,
   className?: string;
   guestOrigin?: string;
   onMessage?: (value: StandardAction) => void;
@@ -98,7 +104,8 @@ export function HostUI(props: HostProps) {
     className,
     onMessage,
     postMessage$ = NEVER,
-    guestOrigin = 'http://localhost:8080'
+    // TODO: Hardcoded value
+    guestOrigin = 'http://authoring.sample.com:8080'
   } = props;
   const iframeRef = useRef(null);
   const cls = clsx(classes.iframe, {
@@ -125,10 +132,19 @@ export function HostUI(props: HostProps) {
 
   function setUpGuestCommunications() {
 
+    const broadcastChannel = (window.BroadcastChannel !== undefined)
+      ? new BroadcastChannel('org.craftercms.accommodationChannel')
+      : null;
+
+    broadcastChannel && broadcastChannel.addEventListener('message', (e) => {
+      onMessage(e.data);
+    }, false);
+
     const guestToHostSubscription = message$.pipe(
       filter((e) => e.data && (e.data.type || e.data.topic)),
       pluck('data'),
       map((data) => ({
+        ...data,
         type: (data.type || data.topic),
         ...(data.message === undefined ? {} : { payload: data.message })
       }))
@@ -136,12 +152,14 @@ export function HostUI(props: HostProps) {
 
     const hostToGuestSubscription = postMessage$.subscribe((action) => {
       const contentWindow = iframeRef.current.contentWindow;
-      contentWindow.postMessage({ topic: action.type, message: action.payload }, guestOrigin);
+      contentWindow.postMessage(action, guestOrigin);
+      broadcastChannel && broadcastChannel.postMessage(action);
     });
 
     return () => {
       guestToHostSubscription.unsubscribe();
       hostToGuestSubscription.unsubscribe();
+      broadcastChannel && broadcastChannel.close();
     };
 
   }
@@ -151,24 +169,28 @@ export function HostUI(props: HostProps) {
 export default function Host() {
 
   const classes = useStyles({});
-  const [{ showToolsPanel, hostSize }] = usePreviewContext();
-
-  const hostToGuest$ = useMemo(() => getHostToGuestBus().asObservable(), []);
-  const onMessage = useMemo(() => (action: StandardAction) => {
-    const { type, payload } = action;
-    switch (type) {
-      case 'GUEST_SITE_LOAD':
-
+  const [
+    {
+      showToolsPanel,
+      hostSize,
+      currentUrl
     }
+  ] = usePreviewContext();
+
+  const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
+  const onMessage = useMemo(() => {
+    const guestToHost$ = getGuestToHostBus();
+    return (action: StandardAction) => guestToHost$.next(action);
   }, []);
 
   return (
     <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>
       <HostUI
         {...hostSize}
+        url={currentUrl}
         onMessage={onMessage}
-        postMessage$={hostToGuest$}
-        url={'http://localhost:8080'}
+        postMessage$={postMessage$}
+        onLocationChange={() => null}
       />
     </div>
   );

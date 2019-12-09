@@ -26,6 +26,7 @@ import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
+import { setRequestForgeryToken } from '../utils/auth';
 
 const Locales: any = {
   en,
@@ -60,12 +61,11 @@ function getCurrentLocale() {
 }
 
 function CrafterCMSNextBridge(props: any) {
+
   const [, update] = useState();
-  useEffect(() => {
-    const handler = (e: any) => update({});
-    document.addEventListener('setlocale', handler, false);
-    return () => document.removeEventListener('setlocale', handler, false);
-  }, [update]);
+
+  useEffect(setRequestForgeryToken, []);
+  useEffect(() => setUpLocaleChangeListener(update), [update]);
 
   return (
     <RawIntlProvider value={intl}>
@@ -77,6 +77,12 @@ function CrafterCMSNextBridge(props: any) {
     </RawIntlProvider>
   );
 
+}
+
+function setUpLocaleChangeListener(update) {
+  const handler = (e: any) => update({});
+  document.addEventListener('setlocale', handler, false);
+  return () => document.removeEventListener('setlocale', handler, false);
 }
 
 export default CrafterCMSNextBridge;

@@ -63,7 +63,7 @@ crafterDefine('guest', [
 
     communicator = new Communicator({
       window: window.parent,
-      origin: origin
+      origin
     }, origin);
 
     communicator.on(Topics.START_DRAG_AND_DROP, function (message) {

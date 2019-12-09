@@ -40,6 +40,7 @@ import ComponentsPanel from './Tools/ComponentsPanel';
 import SimulatorPanel from './Tools/SimulatorPanel';
 import ICEPanel from './Tools/ICEPanel';
 import { getTranslation } from '../../utils/i18n';
+import EditFormPanel from './Tools/EditFormPanel';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -47,8 +48,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     width: DRAWER_WIDTH
   },
   drawerPaper: {
-    width: DRAWER_WIDTH,
     top: 64,
+    bottom: 0,
+    height: 'auto',
+    width: DRAWER_WIDTH,
     zIndex: (theme.zIndex.appBar - 1)
   },
   itemIconRoot: {
@@ -183,32 +186,42 @@ const componentMap: any = {
   'craftercms.ice.assets': AssetsPanel,
   'craftercms.ice.audiences': AudiencesPanel,
   'craftercms.ice.simulator': SimulatorPanel,
-  'craftercms.ice.ice': ICEPanel
+  'craftercms.ice.ice': ICEPanel,
+  'craftercms.ice.editForm': EditFormPanel
 };
 
 export default function ToolsPanel() {
 
   const classes = useStyles({});
-  const [{ tools, showToolsPanel, selectedTool }, dispatch] = usePreviewContext();
+  const [
+    {
+      tools,
+      showToolsPanel,
+      selectedTool,
+      guest,
+      site
+    },
+    dispatch
+  ] = usePreviewContext();
 
-  let Tool = selectedTool ? componentMap[selectedTool] || UnknownPanel : ToolSelector;
-  let toolMeta = tools ? tools.find((desc) => desc.id === selectedTool) : null;
-  let config = tools ? (toolMeta || { config: null }).config : null;
+  let Tool = guest?.selected ? EditFormPanel : (selectedTool ? (componentMap[selectedTool] || UnknownPanel) : ToolSelector);
+  let toolMeta = tools?.find((desc) => desc.id === selectedTool);
+  let config = toolMeta?.config;
 
-  const site = 'editorial';
   useEffect(() => {
-    !tools && getPreviewToolsConfig(site)
-      .subscribe(
-        (tools) => {
-          dispatch(toolsLoaded(tools.modules));
-        },
-        (e) => {
-          // TODO: Show error view.
-          console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
-        }
-      )
-
-  }, []);
+    const fetchConfigSubscription = (!tools) && getPreviewToolsConfig(site).subscribe(
+      (tools) => {
+        dispatch(toolsLoaded(tools.modules));
+      },
+      (e) => {
+        // TODO: Show error view.
+        console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
+      }
+    );
+    return () => {
+      fetchConfigSubscription?.unsubscribe();
+    };
+  }, [site, dispatch, tools]);
 
   return (
     <Drawer
@@ -218,7 +231,7 @@ export default function ToolsPanel() {
       className={classes.drawer}
       classes={{ paper: classes.drawerPaper }}
     >
-      <Tool id={toolMeta ? toolMeta.id : null} config={config}/>
+      <Tool id={toolMeta?.id} config={config}/>
     </Drawer>
   );
 
