@@ -61,20 +61,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     borderBottom: '1px solid #EBEBF0',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    background: '#F3F3F3'
   },
   searchDropdown: {
     marginRight: '7px'
   },
   search: {
     position: 'relative',
-    background: '#EBEBF0',
+    background: '#d8d8dc',
     width: '500px',
     display: 'flex',
     alignItems: 'center',
-    padding: '10px 12px',
+    padding: '5px 12px',
     borderRadius: '5px',
-    marginLeft: 'auto',
   },
   searchIcon: {
     marginLeft: '10px',
@@ -129,10 +129,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: '15px',
   },
   searchHelperBar: {
-    width: '100%',
-    padding: '0 10px',
     display: 'flex',
-    justifyContent: 'space-between'
+    padding: '0 6px 0 20px',
+    alignItems: 'center'
   },
   resultsSelected: {
     marginRight: '10px',
@@ -161,10 +160,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: '25px 30px 0px 30px',
     background: '#F3F3F3'
   },
-  container: {
-  },
+  container: {},
   pagination: {
-    padding: '10px 0 !important'
+    marginLeft: 'auto'
   },
   dialogTitle: {
     display: 'flex',
@@ -205,7 +203,7 @@ const initialSearchParameters: SearchParameters = {
 const messages = defineMessages({
   noResults: {
     id: 'search.noResults',
-    defaultMessage: 'No Results Where Found.'
+    defaultMessage: 'No Results Were Found.'
   },
   changeQuery: {
     id: 'search.changeQuery',
@@ -221,18 +219,14 @@ const messages = defineMessages({
   },
   resultsSelected: {
     id: 'search.resultsSelected',
-    defaultMessage: '{count, plural, one {{count} Result selected of {total}} other {{count} Results selected of {total}}}',
+    defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}',
   },
-  totalResults: {
-    id: 'search.resultsSelected',
-    defaultMessage: '{total, plural, one {{total} Result} other {{total} Results}}',
-  }
 });
 
 function Search(props: any) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
-  const {history, location, onEdit, onDelete, onPreview, onSelect, siteId} = props;
+  const {history, location, onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId} = props;
   const queryParams = queryString.parse(location.search);
   const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -291,15 +285,33 @@ function Search(props: any) {
         return (
           (currentView === 'grid') ?
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
-              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}
-                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}
-                         handleSelect={handleSelect} selected={selected}/>
+              <MediaCard
+                item={item}
+                currentView={currentView}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                handlePreview={handlePreview}
+                handlePreviewAsset={handlePreviewAsset}
+                handleSelect={handleSelect}
+                selected={selected}
+                onGetUserPermissions={onGetUserPermissions}
+                mode={mode}
+              />
             </Grid>
             :
             <Grid key={i} item xs={12}>
-              <MediaCard item={item} currentView={currentView} handleEdit={handleEdit} handleDelete={handleDelete}
-                         handlePreview={handlePreview} handlePreviewAsset={handlePreviewAsset}
-                         handleSelect={handleSelect} selected={selected}/>
+              <MediaCard
+                item={item}
+                currentView={currentView}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                handlePreview={handlePreview}
+                handlePreviewAsset={handlePreviewAsset}
+                handleSelect={handleSelect}
+                selected={selected}
+                onGetUserPermissions={onGetUserPermissions}
+                mode={mode}
+              />
             </Grid>
         )
       });
@@ -545,45 +557,26 @@ function Search(props: any) {
           {/*</IconButton>*/}
         </div>
       </header>
-      <section className={classes.content}>
-        {
-          apiState.error ?
-            <ErrorState error={apiState.errorResponse}/> :
-            (
-              <Grid container spacing={3} className={classes.container}>
-                {
-                  (searchResults && !!searchResults.total) &&
-                  <div className={classes.searchHelperBar}>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Checkbox color="primary" checked={areAllSelected()}
-                                           onClick={(e: any) => handleSelectAll(e.target.checked)}/>}
-                        label={formatMessage(messages.selectAll)}
-                      />
-                    </FormGroup>
-                    {
-                      (selected.length > 0) ?
-                        <Typography variant="body2" className={classes.resultsSelected} color={"textSecondary"}>
-                          {formatMessage(messages.resultsSelected, {
-                            count: selected.length,
-                            total: searchResults.total
-                          })}
-                          <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected}/>
-                        </Typography> :
-                        <Typography variant="body2" className={classes.resultsSelected} color={"textSecondary"}>
-                          {formatMessage(messages.totalResults, {
-                            total: searchResults.total
-                          })}
-                        </Typography>
-                    }
-                  </div>
-                }
-                {searchResults === null ? <Spinner background="inherit"/> : renderMediaCards(searchResults.items, currentView)}
-              </Grid>
-            )
-        }
-        {
-          (searchResults && !!searchResults.total) &&
+      {
+        (searchResults && !!searchResults.total) &&
+        <div className={classes.searchHelperBar}>
+          <FormGroup>
+            <FormControlLabel
+              control={<Checkbox color="primary" checked={areAllSelected()}
+                                 onClick={(e: any) => handleSelectAll(e.target.checked)}/>}
+              label={formatMessage(messages.selectAll)}
+            />
+          </FormGroup>
+          {
+            (selected.length > 0) &&
+            <Typography variant="body2" className={classes.resultsSelected} color={"textSecondary"}>
+              {formatMessage(messages.resultsSelected, {
+                count: selected.length,
+                total: searchResults.total
+              })}
+              <HighlightOffIcon className={classes.clearSelected} onClick={handleClearSelected}/>
+            </Typography>
+          }
           <TablePagination
             rowsPerPageOptions={[9, 15, 21]}
             className={classes.pagination}
@@ -600,6 +593,18 @@ function Search(props: any) {
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
+        </div>
+      }
+      <section className={classes.content}>
+        {
+          apiState.error ?
+            <ErrorState error={apiState.errorResponse}/> :
+            (
+              <Grid container spacing={3} className={classes.container}>
+                {searchResults === null ?
+                  <Spinner background="inherit"/> : renderMediaCards(searchResults.items, currentView)}
+              </Grid>
+            )
         }
       </section>
       <Dialog onClose={handleClosePreview} aria-labelledby="preview" open={preview.open} maxWidth='md'>

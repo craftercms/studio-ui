@@ -41,6 +41,18 @@ export function getPathFromPreviewURL(previewURL: string) {
   return `/site/website${pagePath}`;
 }
 
+export function isEditableFormAsset (path: string) {
+  return path.indexOf(".ftl") != -1
+    || path.indexOf(".css") != -1
+    || path.indexOf(".js") != -1
+    || path.indexOf(".groovy") != -1
+    || path.indexOf(".txt") != -1
+    || path.indexOf(".html") != -1
+    || path.indexOf(".hbs") != -1
+    || path.indexOf(".xml") != -1;
+}
+
 export default {
-  getPathFromPreviewURL
+  getPathFromPreviewURL,
+  isEditableFormAsset
 };

@@ -64,6 +64,8 @@
               onDelete: CStudioSearch.deleteElement,
               onPreview: CStudioSearch.previewElement,
               onSelect: CStudioSearch.changeSelectStatus,
+              onGetUserPermissions: CStudioSearch.getUserPermissions,
+              mode: this.searchContext.mode,
               siteId: CStudioAuthoringContext.siteId,
             }
           );
@@ -183,7 +185,7 @@
             window.close();
             $(window.frameElement.parentElement).closest('.studio-ice-dialog').parent().remove(); //TODO: find a better way
         }
-    }
+    };
 
     CStudioSearch.editElement = function(path, refreshSearch){
         var editCallback = {
@@ -234,6 +236,20 @@
             },
             failure: function() {}
         }, false);
+    };
+
+    CStudioSearch.getUserPermissions = function (path) {
+     return new Promise((resolve, reject) => {
+       CStudioAuthoring.Service.getUserPermissions(CStudioAuthoringContext.site, path, {
+         success: function (results) {
+           resolve(results);
+         },
+         failure: function () {
+           reject('unableToRetrieveUserPermissions');
+         }
+       });
+     });
+
     }
 
 }) (window, jQuery, Handlebars);

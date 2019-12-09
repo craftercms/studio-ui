@@ -14,23 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardActions from '@material-ui/core/CardActions';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import IconButton from '@material-ui/core/IconButton';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { isEditableFormAsset } from "../utils/path";
+import { defineMessages, useIntl } from "react-intl";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -41,7 +44,11 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: '-webkit-box',
       '-webkit-line-clamp': 1,
       '-webkit-box-orient': 'vertical',
-      marginBottom: 0
+      marginBottom: 0,
+      '&.clickable': {
+        textDecoration: 'underline',
+        cursor: 'pointer',
+      }
     },
     '& .cardSubtitle': {
       overflow: 'hidden',
@@ -53,9 +60,19 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'flex',
     }
   },
+  cardHeaderRoot: {
+    padding: '9px 0'
+  },
   cardHeader: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: '100%',
+    '&.list': {
+      marginLeft: '15px'
+    }
+  },
+  cardOptions: {
+    marginLeft: 'auto'
   },
   media: {
     height: 0,
@@ -93,21 +110,20 @@ const useStyles = makeStyles((theme: Theme) => ({
       order: -1
     }
   },
-  deleteIcon: {
-    marginLeft: 'auto',
-  },
-  mLa: {
-    marginLeft: 'auto'
+  optionIcon: {
+    color: '#828282',
+    marginRight: '5px'
   },
   checkbox: {
-    marginLeft: '28px',
+    marginLeft: '11px',
     '& label': {
       marginRight: 0
     },
     '&.list': {
       justifyContent: 'center',
       order: -2,
-      marginRight: '16px'
+      marginRight: '5px',
+      marginLeft: '16px'
     }
   },
 }));
@@ -116,6 +132,7 @@ interface MediaCardProps {
   item: MediaItem;
   currentView: string;
   selected: Array<string>;
+  mode: string;
 
   handleEdit(path: string): any;
 
@@ -125,28 +142,66 @@ interface MediaCardProps {
 
   handlePreviewAsset(url: string, type: string, name: string): any;
 
-  handleSelect(path: string, selected: boolean): void;
+  handleSelect(path: string, selected: boolean): any;
+
+  onGetUserPermissions(path: string): any;
 }
+
+const messages = defineMessages({
+  noPermissions: {
+    id: 'mediaCard.noPermissions',
+    defaultMessage: 'No permissions available.'
+  },
+  loadingPermissions: {
+    id: 'mediaCard.loadingPermissions',
+    defaultMessage: 'Loading permissions...'
+  },
+});
 
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
-
-  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, handleSelect, selected, item} = props;
+  const [permissions, setPermissions] = useState({
+    edit: null,
+    delete: null,
+  });
+  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, handleSelect, onGetUserPermissions, selected, item, mode} = props;
   const {name, path, type} = item;
   const isList = props.currentView === 'list';
   const siteUrl = 'http://localhost:8080';
+  const {formatMessage} = useIntl();
 
-  function renderIcon(type: string, path: string) {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, path) => {
+    setAnchorEl(event.currentTarget);
+    onGetUserPermissions(path).then(
+      ({permissions}) => {
+        let editable = isEditableFormAsset(path);
+        let isWriteAllowed = permissions.includes('write') || false;
+        let isDeleteAllowed = permissions.includes('delete') || false;
+        setPermissions({edit: editable && isWriteAllowed, delete: isDeleteAllowed && mode === 'default'});
+      },
+      (response) => {
+        console.log(response)
+      },
+    )
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const renderIcon = (type: string, path: string, name: string) => {
     let iconClass = 'fa media-icon';
     let iconName = `${iconClass} fa-file`;
     let actionArea = false;
     switch (type) {
       case 'Page':
         iconName = `${iconClass} fa-file`;
-        actionArea = true;
         break;
       case 'Video':
         iconName = `${iconClass} fa-file-video-o`;
+        actionArea = true;
         break;
       case 'Template':
         iconName = `${iconClass} fa-file-code-o`;
@@ -165,7 +220,8 @@ function MediaCard(props: MediaCardProps) {
     }
     return (
       actionArea ?
-        <CardActionArea onClick={() => handlePreview(path)} className={clsx(isList && classes.listActionArea)}>
+        <CardActionArea onClick={() => handlePreviewAsset(path, type, name)}
+                        className={clsx(isList && classes.listActionArea)}>
           <div className={clsx(classes.mediaIcon, isList && 'list')}>
             <i className={iconName}></i>
           </div>
@@ -175,14 +231,6 @@ function MediaCard(props: MediaCardProps) {
           <i className={iconName}></i>
         </div>
     )
-  }
-
-  const handleDetailsClick = (path: string, type: string, name: string) => {
-    if (type === 'Image' || type === 'Video') {
-      handlePreviewAsset(path, type, name);
-    } else {
-      handleEdit(path);
-    }
   };
 
   return (
@@ -201,7 +249,7 @@ function MediaCard(props: MediaCardProps) {
           />
         </FormGroup>
       }
-      <header className={classes.cardHeader}>
+      <header className={clsx(classes.cardHeader, isList && 'list')}>
         {
           !isList &&
           <FormGroup className={classes.checkbox}>
@@ -219,7 +267,13 @@ function MediaCard(props: MediaCardProps) {
         <CardHeader
           title={name}
           subheader={type}
-          titleTypographyProps={{variant: "subtitle2", component: "h2", className: 'cardTitle'}}
+          classes={{root: classes.cardHeaderRoot}}
+          onClick={(type === 'Image' || type === 'Video' || type === 'Page') ? () => handlePreview(path) : null}
+          titleTypographyProps={{
+            variant: "subtitle2",
+            component: "h2",
+            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && 'clickable')
+          }}
           subheaderTypographyProps={{
             variant: "subtitle2",
             component: "h2",
@@ -227,10 +281,34 @@ function MediaCard(props: MediaCardProps) {
             color: "textSecondary"
           }}
         />
+        <IconButton aria-label="options" className={classes.cardOptions} onClick={(e) => handleClick(e, path)}>
+          <MoreVertIcon/>
+        </IconButton>
+        <Menu
+          id="options-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          {permissions.edit === true &&
+          <MenuItem onClick={() => handleEdit(path)}><EditIcon className={classes.optionIcon}/>Edit</MenuItem>}
+          {permissions.delete === true &&
+          <MenuItem onClick={() => handleDelete(path)}><DeleteIcon className={classes.optionIcon}/>Delete</MenuItem>}
+          {
+            (permissions.edit === false && permissions.delete === false) &&
+            <MenuItem>{formatMessage(messages.noPermissions)}</MenuItem>
+          }
+          {
+            permissions.edit === null &&
+            <MenuItem>{formatMessage(messages.loadingPermissions)}</MenuItem>
+          }
+        </Menu>
       </header>
       {
-        type === 'Image' ?
-          <CardActionArea onClick={() => handlePreview(path)} className={clsx(isList && classes.listActionArea)}>
+        (type === 'Image') ?
+          <CardActionArea onClick={() => handlePreviewAsset(path, type, name)}
+                          className={clsx(isList && classes.listActionArea)}>
             <CardMedia
               className={clsx(classes.media, isList && 'list')}
               image={`${siteUrl}${path}`}
@@ -238,18 +316,8 @@ function MediaCard(props: MediaCardProps) {
             />
           </CardActionArea>
           :
-          renderIcon(type, path)
+          renderIcon(type, path, name)
       }
-      <CardActions disableSpacing className={isList ? classes.mLa : ''}>
-        <IconButton aria-label="view details" onClick={() => handleDetailsClick(path, type, name)}>
-          {
-            (type === 'Image' || type === 'Video') ? <VisibilityIcon/> : <EditIcon/>
-          }
-        </IconButton>
-        <IconButton aria-label="add to favorites" className={classes.deleteIcon} onClick={() => handleDelete(path)}>
-          <DeleteIcon/>
-        </IconButton>
-      </CardActions>
     </Card>
   )
 }
