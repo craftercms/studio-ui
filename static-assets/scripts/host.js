@@ -617,6 +617,10 @@
     var path = hash.page,
       hashPage = hash.page;
 
+    if (path.match(/^((\/static-assets)|(\/remote-assets)|(\/api))/)) {
+      hasCheckIn = false;
+    }
+
     if (path && path.indexOf('.') != -1) {
       if (path.indexOf('.html') != -1 || path.indexOf('.xml') != -1) {
         path = ('/site/website/' + hashPage).replace('//', '/');
