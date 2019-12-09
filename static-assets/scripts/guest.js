@@ -182,14 +182,11 @@ crafterDefine('guest', [
     $document.on('mouseover', '.studio-ice-indicator', function (e) {
 
       var $i = $(this),
-        $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger'))),
-        iceId = $e.data('studio-ice-indicator');
+          $e = $(crafter.String('[data-studio-ice-target="%@"]').fmt($i.data('studioIceTrigger')));
 
       initOverlay($e);
 
-    });
-
-    $document.on('mouseout', '.studio-ice-indicator', function (e) {
+    }).on('mouseout', '.studio-ice-indicator', function (e) {
       overlay.hide();
     });
 
@@ -329,12 +326,41 @@ crafterDefine('guest', [
     communicator.publish(Topics.ICE_ZONES, params);
   }
 
+  function renderICESection(elem) {
+    const $elem = $(elem),
+          position = $elem.offset(),
+          iceRef = $elem.data('studioIce') + '-' + count++,
+          path = $elem.data('studioIcePath');
+
+    $elem.attr('data-studio-ice-target', iceRef);
+
+    let flag = false;
+    const compElement = $("[data-studio-ice-target='" + iceRef + "']");
+    // if element exists -> set flag true to avoid re-rendering
+    $('.studio-ice-indicator').each(function () {
+      if ($(this).data("studioIceTrigger") == iceRef) {
+        flag = true;
+      }
+    });
+
+    if (!flag && compElement.is(':visible')) {
+      const aux = $(crafter.String('<i class="studio-ice-indicator fa fa-pencil f18 icon-yellow" data-studio-ice-trigger="%@"></i>').fmt(iceRef))
+        .css({
+          top: position.top,
+          left: position.left
+        });
+      aux.appendTo('body');
+    }
+  }
+
   function initICERegions() {
     removeICERegions();
     var elems = document.querySelectorAll('[data-studio-ice]');
 
     for (var i = 0; i < elems.length; ++i) {
-      initICETarget(elems[i]);
+      // initICETarget(elems[i]);
+
+      renderICESection(elems[i]);
       if (elems[i].getAttribute("data-studio-ice-label")) {
         elems[i].setAttribute("data-studio-ice-label", elems[i].getAttribute("data-studio-ice-label").replace(/ /g, "__"));
       }
