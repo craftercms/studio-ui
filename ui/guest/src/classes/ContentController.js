@@ -551,7 +551,7 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
               ...on component_articles__widget {
                 title_t
                 max_articles_i
-                
+
               }
               ...on component_contact__widget {
                 title_t
