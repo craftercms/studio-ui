@@ -90,7 +90,7 @@ export function findDocumentElement(element: Element) {
     if (element instanceof XMLDocument) {
       return element;
     }
-    element = element.parentNode as Element;
+    element = element?.parentNode as Element;
   } while (element);
   return null;
 }
