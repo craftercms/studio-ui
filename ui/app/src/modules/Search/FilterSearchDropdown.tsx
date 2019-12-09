@@ -245,28 +245,52 @@ function Filter(props: any) {
   return (
     <div className={classes.singleFilter}>
       <div className={'filterActions'}>
-        <Button variant="outlined" className={classes.button}
-                onClick={() => handleClearClick(facet)}>{formatMessage(messages.clean)}</Button>
+        <Button variant="outlined"
+                className={classes.button}
+                onClick={() => handleClearClick(facet)}
+        >
+          {formatMessage(messages.clean)}
+        </Button>
         {
           facetsLookupTable[facet].multiple &&
-          <Button variant="contained" color='primary' className={classes.button}
-                  onClick={() => handleApplyClick(facet)}>{formatMessage(messages.apply)}</Button>
+          <Button
+            variant="contained"
+            color='primary'
+            className={classes.button}
+            onClick={() => handleApplyClick(facet)}
+          >
+            {formatMessage(messages.apply)}
+          </Button>
         }
       </div>
       <div className={'filterBody'}>
-        {(facetsLookupTable[facet].multiple) ?
-          <FilterCheckboxes facetData={facetsLookupTable[facet]} facet={facet} handleCheckboxClick={handleCheckboxClick}
-                            checkedFilters={checkedFilters}/>
-          :
-          <div>
-            <FilterRadios facetData={facetsLookupTable[facet]} facet={facet} handleRadioClick={handleRadioClick}
-                          checkedFilters={checkedFilters}/>
-            {
-              (facetsLookupTable[facet].range && !facetsLookupTable[facet].date) &&
-              <RangeSelector facet={facet} handleFilterChange={handleFilterChange} checkedFilters={checkedFilters}
-                             queryParams={queryParams}/>
-            }
-          </div>
+        {
+          (facetsLookupTable[facet].multiple) ? (
+            <FilterCheckboxes
+              facetData={facetsLookupTable[facet]}
+              facet={facet}
+              handleCheckboxClick={handleCheckboxClick}
+              checkedFilters={checkedFilters}
+            />
+          ) : (
+            <>
+              <FilterRadios
+                facetData={facetsLookupTable[facet]}
+                facet={facet}
+                handleRadioClick={handleRadioClick}
+                checkedFilters={checkedFilters}
+              />
+              {
+                (facetsLookupTable[facet].range && !facetsLookupTable[facet].date) &&
+                <RangeSelector
+                  facet={facet}
+                  handleFilterChange={handleFilterChange}
+                  checkedFilters={checkedFilters}
+                  queryParams={queryParams}
+                />
+              }
+            </>
+          )
         }
       </div>
     </div>
@@ -283,7 +307,7 @@ function FilterRadios(props: any) {
     if (facetData.date) {
       return `${value.from}TODATE${value.to}ID${facet}${key}`;
     } else if (facetData.range) {
-      return `${(value.from !== '-Infinity')? value.from: ''}TO${(value.to !== 'Infinity')? value.to: ''}`;
+      return `${(value.from !== '-Infinity') ? value.from : ''}TO${(value.to !== 'Infinity') ? value.to : ''}`;
     } else {
       return key;
     }
@@ -322,8 +346,13 @@ function FilterRadios(props: any) {
               key={key}
               name={key}
               onChange={(e: any) => handleRadioClick(e.target.value, facet)}
-              control={<Radio checked={(checkedFilters && checkedFilters[facet] === value)} color="primary"
-                              value={value}/>}
+              control={
+                <Radio
+                  checked={(checkedFilters && checkedFilters[facet] === value)}
+                  color="primary"
+                  value={value}
+                />
+              }
               label={`${label} (${count})`}
               labelPlacement="start"
               classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
@@ -348,9 +377,16 @@ function FilterCheckboxes(props: any) {
             <FormControlLabel
               key={key}
               name={key}
-              control={<Checkbox color="primary"
-                                 checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false}
-                                 value={key} onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}/>}
+              control={
+                <Checkbox
+                  color="primary"
+
+                  checked={(checkedFilters && checkedFilters[facet] && checkedFilters[facet][key]) || false}
+
+                  value={key}
+                  onChange={(e) => handleCheckboxClick(key, e.target.checked, facet)}
+                />
+              }
               label={`${key} (${items[key]})`}
               labelPlacement="start"
               classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
@@ -382,11 +418,10 @@ function RangeSelector(props: any) {
     }
   };
 
-  const [range, setRange] = useState(
-    {
-      min: '',
-      max: ''
-    });
+  const [range, setRange] = useState({
+    min: '',
+    max: ''
+  });
 
   useEffect(function () {
     setRange(getMinMax());
@@ -425,8 +460,14 @@ function RangeSelector(props: any) {
         margin="normal"
         className={classes.rangeTextField}
       />
-      <Button variant="contained" color='primary' className={classes.rangeButton}
-              onClick={() => handleRangeSelector(facet)}>{formatMessage(messages.go)}</Button>
+      <Button
+        variant="contained"
+        color='primary'
+        className={classes.rangeButton}
+        onClick={() => handleRangeSelector(facet)}
+      >
+        {formatMessage(messages.go)}
+      </Button>
     </div>
   )
 }
