@@ -349,7 +349,6 @@ const previewProviderReducer: Reducer<PreviewState, StandardAction> = (state, ac
           selected: [payload]
         }
       };
-      break;
     }
     case CLEAR_SELECT_FOR_EDIT: {
       if (state.guest === null) {

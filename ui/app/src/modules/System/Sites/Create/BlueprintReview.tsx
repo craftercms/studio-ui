@@ -16,18 +16,18 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import IconButton from "@material-ui/core/IconButton";
+import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
-import { SiteState } from "../../../../models/Site";
-import { Blueprint, Parameter } from "../../../../models/Blueprint";
-import { defineMessages, useIntl } from "react-intl";
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-
+import { SiteState } from '../../../../models/Site';
+import { Blueprint, Parameter } from '../../../../models/Blueprint';
+import { defineMessages, useIntl } from 'react-intl';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { palette } from '../../../../styles/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   review: {
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   noDescription: {
-    color: '#a2a2a2'
+    color: palette.gray.medium2
   },
   showPassword: {
     color: theme.palette.primary.main,
@@ -63,9 +63,9 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface BlueprintReviewProps {
-  inputs: SiteState,
-  onGoTo(step: number): any,
-  blueprint: Blueprint,
+  inputs: SiteState;
+  onGoTo(step: number): any;
+  blueprint: Blueprint;
 }
 
 const messages = defineMessages({
@@ -158,35 +158,34 @@ const messages = defineMessages({
 function BlueprintReview(props: BlueprintReviewProps) {
   const classes = useStyles({});
   const { onGoTo, inputs, blueprint } = props;
-  const [ passswordFields, setPasswordFields ] = useState(null);
+  const [passwordFields, setPasswordFields] = useState(null);
   const { formatMessage } = useIntl();
 
 
   useEffect(() => {
-    if(blueprint.parameters){
-      let fields:any = {};
+    if (blueprint.parameters) {
+      let fields: any = {};
       blueprint.parameters.forEach((parameter: Parameter) => {
-        if(parameter.type === 'PASSWORD'){
+        if (parameter.type === 'PASSWORD') {
           fields[parameter.name] = false;
         }
       });
       setPasswordFields(fields);
     }
-    // eslint-disable-next-line
-  }, []);
+  }, [blueprint]);
 
-  function renderAuth(type:string) {
-    if(type === 'basic') {
+  function renderAuth(type: string) {
+    if (type === 'basic') {
       return formatMessage(messages.userNameAndPassword);
-    }else if (type === 'token'){
+    } else if (type === 'token') {
       return formatMessage(messages.token);
-    }else {
+    } else {
       return formatMessage(messages.privateKey);
     }
   }
 
   function showPassword(parameter: Parameter) {
-    setPasswordFields({...passswordFields, [parameter.name]: !passswordFields[parameter.name]})
+    setPasswordFields({ ...passwordFields, [parameter.name]: !passwordFields[parameter.name] })
   }
 
   function renderSingleParameter(parameter: Parameter) {
@@ -196,16 +195,18 @@ function BlueprintReview(props: BlueprintReviewProps) {
       return parameter.defaultValue;
     } else if (inputs.blueprintFields[parameter.name] && parameter.type === 'PASSWORD') {
       return (
-        <span >
-          {(passswordFields && passswordFields[parameter.name])? inputs.blueprintFields[parameter.name]: '********'}
+        <span>
+          {(passwordFields && passwordFields[parameter.name]) ? inputs.blueprintFields[parameter.name] : '********'}
           <IconButton
             edge="end"
             className={classes.showPassword}
             aria-label="toggle password visibility"
-            onClick={() => { showPassword(parameter) }}
+            onClick={() => {
+              showPassword(parameter)
+            }}
           >
-              {(passswordFields && passswordFields[parameter.name]) ? <VisibilityOff/> : <Visibility/>}
-            </IconButton>
+            {(passwordFields && passwordFields[parameter.name]) ? <VisibilityOff/> : <Visibility/>}
+          </IconButton>
         </span>)
     } else {
       return '********';
@@ -219,7 +220,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
           <Typography variant="body2" gutterBottom key={index}>
             <span className={classes.bold}>{parameter.label}: </span>
             {renderSingleParameter(parameter)}
-            </Typography>
+          </Typography>
         )
       })
     )
@@ -233,16 +234,22 @@ function BlueprintReview(props: BlueprintReviewProps) {
             <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repoUrl}
           </Typography>
         }
-          <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span> {inputs.repoRemoteName? inputs.repoRemoteName : 'origin'}
-          </Typography>
-          <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch? inputs.repoRemoteBranch : 'master'}
-          </Typography>
+        <Typography variant="body2" gutterBottom>
+          <span className={classes.bold}>
+            {formatMessage(messages.remoteName)}:
+          </span>
+          {inputs.repoRemoteName ? inputs.repoRemoteName : 'origin'}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          <span
+            className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span> {inputs.repoRemoteBranch ? inputs.repoRemoteBranch : 'master'}
+        </Typography>
         {
           inputs.repoAuthentication !== 'none' &&
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.authentication)}: </span> {renderAuth(inputs.repoAuthentication)}
+            <span className={classes.bold}>
+              {formatMessage(messages.authentication)}:
+            </span> {renderAuth(inputs.repoAuthentication)}
           </Typography>
         }
       </div>
@@ -260,21 +267,22 @@ function BlueprintReview(props: BlueprintReviewProps) {
             </IconButton>
           </Typography>
           {
-            (blueprint.id !== "GIT") ?
-            <div>
-              <Typography variant="body2" gutterBottom>
-                {formatMessage(messages.blueprintStrategy)}
-              </Typography>
-              <Typography variant="body2" gutterBottom>
-                <span className={classes.bold}>{formatMessage(messages.blueprint)}: </span> {blueprint && blueprint.name}
-              </Typography>
-            </div>
-            :
-            <div>
-              <Typography variant="body2" gutterBottom>
-                {formatMessage(messages.gitStrategy)}
-              </Typography>
-            </div>
+            (blueprint.id !== 'GIT') ?
+              <div>
+                <Typography variant="body2" gutterBottom>
+                  {formatMessage(messages.blueprintStrategy)}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <span
+                    className={classes.bold}>{formatMessage(messages.blueprint)}: </span> {blueprint && blueprint.name}
+                </Typography>
+              </div>
+              :
+              <div>
+                <Typography variant="body2" gutterBottom>
+                  {formatMessage(messages.gitStrategy)}
+                </Typography>
+              </div>
           }
         </Grid>
         <Grid item xs={12}>
@@ -288,31 +296,37 @@ function BlueprintReview(props: BlueprintReviewProps) {
             <span className={classes.bold}>{formatMessage(messages.siteId)}: </span> {inputs.siteId}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.description)}: </span> {inputs.description ? inputs.description :
+            <span className={classes.bold}>
+              {formatMessage(messages.description)}:
+            </span>
+            {inputs.description ? inputs.description :
             <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>}
           </Typography>
-          {blueprint.source !== 'GIT' && ( blueprint.id === "GIT" || inputs.pushSite) && renderGitOptions()}
+          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span> {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
+            <span className={classes.bold}>
+              {formatMessage(messages.sandboxBranch)}:
+            </span>
+            {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
           </Typography>
           {
-            (blueprint.id !== "GIT" && inputs.pushSite) &&
-              <div>
-                <Typography variant="body2" gutterBottom>
-                  {formatMessage(messages.pushSite)}
-                </Typography>
-              </div>
+            (blueprint.id !== 'GIT' && inputs.pushSite) &&
+            <div>
+              <Typography variant="body2" gutterBottom>
+                {formatMessage(messages.pushSite)}
+              </Typography>
+            </div>
           }
         </Grid>
         {
           (blueprint.parameters && !!blueprint.parameters.length) &&
           <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom className={classes.section}>
-                {formatMessage(messages.blueprintParameters)}
-                  <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
-                      <EditIcon/>
-                  </IconButton>
-              </Typography>
+            <Typography variant="h6" gutterBottom className={classes.section}>
+              {formatMessage(messages.blueprintParameters)}
+              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)}>
+                <EditIcon/>
+              </IconButton>
+            </Typography>
             {renderBlueprintParameters()}
           </Grid>
         }

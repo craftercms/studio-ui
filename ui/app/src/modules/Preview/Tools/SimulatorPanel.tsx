@@ -82,19 +82,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   }
 }));
 
-function cleanseConfigNumericValue(element) {
-  if (element) {
-    const value = element.innerHTML.trim();
-    if (value !== '') {
-      return parseInt(value.replace(/px|em|pt/g, ''));
-    } else {
-      return null;
-    }
-  } else {
-    return null;
-  }
-}
-
 const INITIAL_STATE = {
   width: '',
   height: '',
@@ -188,7 +175,8 @@ export default function SimulatorPanel(props: any) {
     if (hostSize.width != null || hostSize.height != null) {
       const matchingPreset = channels.find((channel) =>
         // @ts-ignore
-        channel.width == hostSize.width && channel.height == hostSize.height
+        // eslint-disable-next-line
+        (channel.width == hostSize.width) && (channel.height == hostSize.height)
       );
       nextState.preset = (matchingPreset)
         ? matchingPreset.value
@@ -197,7 +185,7 @@ export default function SimulatorPanel(props: any) {
       nextState.preset = SIMULATOR_PANEL_RESPONSIVE_MODE;
     }
     setState(nextState);
-  }, [hostSize, props.config]);
+  }, [hostSize, props.config, channels]);
 
   const onFlipDimensions = () => {
     const nextWidth = parseInt(height);

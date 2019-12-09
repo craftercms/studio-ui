@@ -17,6 +17,7 @@
 
 import { createLookupTable, retrieveProperty } from './object';
 import ContentType, { ContentTypeField } from '../models/ContentType';
+import { EffectCallback, useEffect } from 'react';
 
 export class ContentTypeHelper {
 
@@ -40,7 +41,8 @@ export class ContentTypeHelper {
   }
 
   static doesFieldAccept(contentType: ContentType, fieldId: string) {
-    const field = ContentTypeHelper.getField(contentType, fieldId);
+    // const field = ContentTypeHelper.getField(contentType, fieldId);
+    throw new Error('[doesFieldAccept] Not implemented');
   }
 
   static getField(type: ContentType, fieldId: string): ContentTypeField {
@@ -84,4 +86,8 @@ export class ContentTypeHelper {
     this.descriptor = descriptor;
   }
 
+}
+
+export function useOnMount(componentDidMount: EffectCallback) {
+  useEffect(componentDidMount, []);
 }

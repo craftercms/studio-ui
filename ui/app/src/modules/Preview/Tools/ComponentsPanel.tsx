@@ -217,11 +217,11 @@ function RubbishBin(props: any) {
   const [over, setOver] = useState(false);
   const [trashed, setTrashed] = useState(false);
   useEffect(() => {
-    if ((props.in) && (over || trashed)) {
+    if (props.in) {
       setOver(false);
       setTrashed(false);
     }
-  }, [props.in === true]);
+  }, [props.in]);
   return (
     <Grow in={props.in}>
       <Paper

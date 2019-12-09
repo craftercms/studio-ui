@@ -61,6 +61,7 @@ import Cookies from 'js-cookie';
 import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
+import { Subscription } from 'rxjs';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -405,19 +406,59 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
   }, []);
 
-  useEffect(() => {
+  useEffect(
+    () => {
+      let subscriptions: Subscription[] = [];
       if (tab === 0 && blueprints === null && !apiState.error) {
-        getBlueprints();
+        subscriptions.push(fetchBuiltInBlueprints().subscribe(
+          ({ response }) => {
+            const _blueprints: [Blueprint] = [{
+              id: 'GIT',
+              name: formatMessage(messages.gitBlueprintName),
+              description: formatMessage(messages.gitBlueprintDescription),
+              media: {
+                screenshots: [
+                  {
+                    description: '',
+                    title: formatMessage(messages.gitBlueprintName),
+                    url: gitLogo
+                  }
+                ],
+                videos: []
+              }
+            }];
+            response.blueprints.forEach((bp: any) => {
+              _blueprints.push(bp.plugin);
+            });
+            setBlueprints(_blueprints);
+          },
+          ({ response }) => {
+            if (response) {
+              setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+            }
+          }
+        ));
       }
       if (tab === 1 && marketplace === null && !apiState.error) {
-        getMarketPlace()
+        subscriptions.push(fetchMarketplaceBlueprints().subscribe(
+          ({ response }) => {
+            setMarketplace(response.plugins);
+          },
+          ({ response }) => {
+            if (response) {
+              setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+            }
+          }
+        ));
       }
       if (finishRef && finishRef.current && site.selectedView === 2) {
         finishRef.current.focus();
       }
+      return () => {
+        subscriptions.forEach(sub => sub.unsubscribe());
+      }
     },
-    // eslint-disable-next-line
-    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView]
+    [tab, filteredBlueprints, filteredMarketplace, search, site, blueprints, marketplace, apiState, formatMessage]
   );
 
   function handleClose(event?: any, reason?: string) {
@@ -677,52 +718,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           }
         }
       )
-  }
-
-  function getMarketPlace() {
-    fetchMarketplaceBlueprints()
-      .subscribe(
-        ({ response }) => {
-          setMarketplace(response.plugins);
-        },
-        ({ response }) => {
-          if (response) {
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
-          }
-        }
-      );
-  }
-
-  function getBlueprints() {
-    fetchBuiltInBlueprints()
-      .subscribe(
-        ({ response }) => {
-          const _blueprints: [Blueprint] = [{
-            id: 'GIT',
-            name: formatMessage(messages.gitBlueprintName),
-            description: formatMessage(messages.gitBlueprintDescription),
-            media: {
-              screenshots: [
-                {
-                  description: '',
-                  title: formatMessage(messages.gitBlueprintName),
-                  url: gitLogo
-                }
-              ],
-              videos: []
-            }
-          }];
-          response.blueprints.forEach((bp: any) => {
-            _blueprints.push(bp.plugin);
-          });
-          setBlueprints(_blueprints);
-        },
-        ({ response }) => {
-          if (response) {
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
-          }
-        }
-      );
   }
 
   function checkNameExist(siteId: string) {

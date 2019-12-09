@@ -198,18 +198,18 @@ export default function ToolsPanel() {
       tools,
       showToolsPanel,
       selectedTool,
-      guest
+      guest,
+      site
     },
     dispatch
   ] = usePreviewContext();
 
   let Tool = guest?.selected ? EditFormPanel : (selectedTool ? (componentMap[selectedTool] || UnknownPanel) : ToolSelector);
-  let toolMeta = tools ? tools.find((desc) => desc.id === selectedTool) : null;
-  let config = tools ? (toolMeta || { config: null }).config : null;
+  let toolMeta = tools?.find((desc) => desc.id === selectedTool);
+  let config = toolMeta?.config;
 
-  const site = 'editorial';
   useEffect(() => {
-    !tools && getPreviewToolsConfig(site).subscribe(
+    const fetchConfigSubscription = (!tools) && getPreviewToolsConfig(site).subscribe(
       (tools) => {
         dispatch(toolsLoaded(tools.modules));
       },
@@ -218,7 +218,10 @@ export default function ToolsPanel() {
         console.error(`AAAWWHHGG!! Tools panel config didn't load`, e);
       }
     );
-  }, []);
+    return () => {
+      fetchConfigSubscription?.unsubscribe();
+    };
+  }, [site, dispatch, tools]);
 
   return (
     <Drawer
@@ -228,7 +231,7 @@ export default function ToolsPanel() {
       className={classes.drawer}
       classes={{ paper: classes.drawerPaper }}
     >
-      <Tool id={toolMeta ? toolMeta.id : null} config={config}/>
+      <Tool id={toolMeta?.id} config={config}/>
     </Drawer>
   );
 

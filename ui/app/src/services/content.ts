@@ -18,7 +18,7 @@
 import { get, post } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { beautify, createElements, fromString, getInnerHtml } from '../utils/xml';
+import { createElements, fromString, getInnerHtml } from '../utils/xml';
 import {
   ContentType, ContentTypeField,
   LegacyContentTypeDescriptorCamelized, LegacyDataSource,
@@ -98,7 +98,7 @@ export function fetchById(site: string, id: string): Observable<any> {
               ...on component_articles__widget {
                 title_t
                 max_articles_i
-                
+
               }
               ...on component_contact__widget {
                 title_t
@@ -600,21 +600,20 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
   } : {}), (data || {}));
 }
 
-function createContentDocument(type: string, data: object): XMLDocument {
-
-  const now = new Date().toISOString();
-  const tags = mergeContentDocumentProps(type, data);
-
-  const doc = fromString(
-    `<?xml version='1.0' encoding='UTF-8' ?>` +
-    `<${type} version="1.1"/>`
-  );
-
-  createElements(doc, doc.documentElement, tags);
-
-  return doc;
-
-}
+// function createContentDocument(type: string, data: object): XMLDocument {
+//
+//   const tags = mergeContentDocumentProps(type, data);
+//
+//   const doc = fromString(
+//     `<?xml version='1.0' encoding='UTF-8' ?>` +
+//     `<${type} version="1.1"/>`
+//   );
+//
+//   createElements(doc, doc.documentElement, tags);
+//
+//   return doc;
+//
+// }
 
 export default {
   getContent,
