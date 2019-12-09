@@ -18,7 +18,7 @@
 import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
 import { interval, fromEvent } from 'rxjs';
-import { switchMap, take, takeUntil } from 'rxjs/operators';
+import { switchMap, take, takeUntil, filter } from 'rxjs/operators';
 
 export const foo = () => void null;
 export const
