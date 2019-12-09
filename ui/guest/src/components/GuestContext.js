@@ -45,14 +45,12 @@ const reducer = (state, action) => {
   }
 };
 
-const INITIAL_STATE = {
-
-};
+const INITIAL_STATE = {};
 
 export function useGuestContext() {
   const context = useContext(GuestContext);
   if (!context) {
-    throw new Error(`useGuestContext should be used inside a GuestContextProvider`);
+    throw new Error('useGuestContext should be used inside a GuestContextProvider');
   }
   return context;
 }

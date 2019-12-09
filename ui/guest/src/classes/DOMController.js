@@ -465,7 +465,7 @@ export class DOMController {
         this.setCurrentDZStats(dropZones[index]);
 
       } else {
-        $dropMarker.detach()
+        $dropMarker.detach();
       }
 
     }
@@ -498,8 +498,8 @@ export class DOMController {
       render(
         <DroppedComponentPlaceholder
           component={Markers.draggedComponent}
-      node={newComponent}/>,
-      newComponent);
+          node={newComponent}/>,
+        newComponent);
       return;
     }
 
