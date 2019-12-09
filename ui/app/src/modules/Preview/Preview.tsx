@@ -21,6 +21,7 @@ import ToolsPanel from './ToolsPanel';
 import { PreviewProvider } from './previewContext';
 import Host from './Host';
 import ToolBar from './ToolBar';
+import { PreviewConcierge } from './PreviewConcierge';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -39,6 +40,8 @@ export default function Preview() {
         <Host />
         <ToolsPanel />
       </section>
+      <PreviewConcierge />
     </PreviewProvider>
   );
 }
+

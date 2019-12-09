@@ -16,9 +16,9 @@
  */
 
 import React, { MouseEvent, useEffect, useReducer, useRef, useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import { createStyles, withStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -28,36 +28,40 @@ import Grid from '@material-ui/core/Grid';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import BlueprintCard from './BlueprintCard';
-import Spinner from "../../../../components/SystemStatus/Spinner";
+import Spinner from '../../../../components/SystemStatus/Spinner';
 import InputBase from '@material-ui/core/InputBase';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import DialogActions from '@material-ui/core/DialogActions';
 import BlueprintForm from './BlueprintForm';
-import BlueprintReview from "./BlueprintReview";
-import LoadingState from "../../../../components/SystemStatus/LoadingState";
-import ErrorState from "../../../../components/SystemStatus/ErrorState";
-import ConfirmDialog from "../../../../components/UserControl/ConfirmDialog";
+import BlueprintReview from './BlueprintReview';
+import LoadingState from '../../../../components/SystemStatus/LoadingState';
+import ErrorState from '../../../../components/SystemStatus/ErrorState';
+import ConfirmDialog from '../../../../components/UserControl/ConfirmDialog';
 import { Blueprint } from '../../../../models/Blueprint';
 import { MarketplaceSite, Site, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
-import { Theme } from "@material-ui/core/styles/createMuiTheme";
-import PluginDetailsView from "../../Publishing/Queue/PluginDetailsView";
-import EmptyState from "../../../../components/SystemStatus/EmptyState";
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import PluginDetailsView from '../../Publishing/Queue/PluginDetailsView';
+import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import { underscore } from '../../../../utils/string';
 import { setRequestForgeryToken } from '../../../../utils/auth';
-import { checkHandleAvailability, createSite, fetchBlueprints as fetchBuiltInBlueprints } from "../../../../services/sites";
+import {
+  checkHandleAvailability,
+  createSite,
+  fetchBlueprints as fetchBuiltInBlueprints
+} from '../../../../services/sites';
 import {
   createSite as createSiteFromMarketplace,
   fetchBlueprints as fetchMarketplaceBlueprints
-} from "../../../../services/marketplace";
-import gitLogo from "../../../../assets/git-logo.svg";
+} from '../../../../services/marketplace';
+import gitLogo from '../../../../assets/git-logo.svg';
 import Cookies from 'js-cookie';
 import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
-
+import { Subscription } from 'rxjs';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -78,7 +82,7 @@ const messages = defineMessages({
   },
   noBlueprints: {
     id: 'createSiteDialog.noBlueprints',
-    defaultMessage: 'No Blueprints Where Found'
+    defaultMessage: 'No Blueprints Were Found'
   },
   changeQuery: {
     id: 'createSiteDialog.changeQuery',
@@ -158,7 +162,7 @@ const siteInitialState: SiteState = {
   repoKey: '',
   submitted: false,
   selectedView: 0,
-  details: {blueprint: null, index: null},
+  details: { blueprint: null, index: null },
   blueprintFields: {}
 };
 
@@ -183,11 +187,11 @@ const dialogTitleStyles = () => ({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => createStyles({
   '@keyframes fadeIn': fadeIn,
   fadeIn: {
     animationName: '$fadeIn',
-    animationDuration: '1s',
+    animationDuration: '1s'
   },
   paperScrollPaper: {
     height: 'calc(100% - 100px)',
@@ -200,7 +204,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     left: '50%',
     transform: 'translate(-50%)',
-    zIndex: 1,
+    zIndex: 1
   },
   search: {
     width: '100%',
@@ -250,7 +254,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     '&.selected': {
       height: '100%',
-      paddingTop: '77px',
+      paddingTop: '77px'
     }
   },
   dialogActions: {
@@ -294,11 +298,25 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: '10px',
     color: theme.palette.text.secondary
   },
+  statePaper: {
+    background: '#e7e7e7',
+    height: '100%'
+  },
+  loadingStateRoot: {
+    height: '100%',
+  },
+  loadingStateGraphic: {
+    flexGrow: 1,
+    paddingBottom: '100px'
+  },
+  errorPaperRoot: {
+    height: '100%'
+  }
 }));
 
 const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
-  const {classes, onClose, selectedView, views} = props;
-  const {title, subtitle} = views[selectedView];
+  const { classes, onClose, selectedView, views } = props;
+  const { title, subtitle } = views[selectedView];
   return (
     <MuiDialogTitle disableTypography className={classes.root}>
       <div className={classes.title}>
@@ -326,19 +344,19 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
   const [dialog, setDialog] = useState({
     open: true,
-    inProgress: false,
+    inProgress: false
   });
   const [apiState, setApiState] = useState({
     creatingSite: false,
     error: false,
     global: false,
-    errorResponse: null,
+    errorResponse: null
   });
   const [search, setSearch] = useState({
     searchKey: '',
     searchSelected: false
   });
-  const [site, setSite] = useReducer((a, b) => ({...a, ...b}), siteInitialState);
+  const [site, setSite] = useReducer((a, b) => ({ ...a, ...b }), siteInitialState);
   const classes = useStyles({});
   const finishRef = useRef(null);
   const { current: refts } = useRef<any>({});
@@ -375,46 +393,83 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-      const loginListener = function (event: any) {
-        if (event.detail.state === 'logged') {
-          setDisableEnforceFocus(false);
-        } else if (event.detail.state === 'reLogin') {
-          setDisableEnforceFocus(true);
-        }
-      };
-      document.addEventListener('login', loginListener, false);
-      return () => {
-        document.removeEventListener('login', loginListener, false);
+    const loginListener = function (event: any) {
+      if (event.detail.state === 'logged') {
+        setDisableEnforceFocus(false);
+      } else if (event.detail.state === 'reLogin') {
+        setDisableEnforceFocus(true);
       }
-    },
-    // eslint-disable-next-line
-    []
-  );
+    };
+    document.addEventListener('login', loginListener, false);
+    return () => {
+      document.removeEventListener('login', loginListener, false);
+    }
+  }, []);
 
-  useEffect(() => {
+  useEffect(
+    () => {
+      let subscriptions: Subscription[] = [];
       if (tab === 0 && blueprints === null && !apiState.error) {
-        getBlueprints();
+        subscriptions.push(fetchBuiltInBlueprints().subscribe(
+          ({ response }) => {
+            const _blueprints: [Blueprint] = [{
+              id: 'GIT',
+              name: formatMessage(messages.gitBlueprintName),
+              description: formatMessage(messages.gitBlueprintDescription),
+              media: {
+                screenshots: [
+                  {
+                    description: '',
+                    title: formatMessage(messages.gitBlueprintName),
+                    url: gitLogo
+                  }
+                ],
+                videos: []
+              }
+            }];
+            response.blueprints.forEach((bp: any) => {
+              _blueprints.push(bp.plugin);
+            });
+            setBlueprints(_blueprints);
+          },
+          ({ response }) => {
+            if (response) {
+              setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+            }
+          }
+        ));
       }
       if (tab === 1 && marketplace === null && !apiState.error) {
-        getMarketPlace()
+        subscriptions.push(fetchMarketplaceBlueprints().subscribe(
+          ({ response }) => {
+            setMarketplace(response.plugins);
+          },
+          ({ response }) => {
+            if (response) {
+              setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response.response });
+            }
+          }
+        ));
       }
       if (finishRef && finishRef.current && site.selectedView === 2) {
         finishRef.current.focus();
       }
+      return () => {
+        subscriptions.forEach(sub => sub.unsubscribe());
+      }
     },
-    // eslint-disable-next-line
-    [tab, filteredBlueprints, filteredMarketplace, search.searchSelected, site.selectedView],
+    [tab, filteredBlueprints, filteredMarketplace, search, site, blueprints, marketplace, apiState, formatMessage]
   );
 
   function handleClose(event?: any, reason?: string) {
     if ((reason === 'escapeKeyDown') && site.details.blueprint) {
       setSite({ details: { blueprint: null, index: null } });
     } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
-      setDialog({...dialog, inProgress: true});
+      setDialog({ ...dialog, inProgress: true });
     } else {
       //call externalClose fn
       props.onClose();
-      setDialog({...dialog, open: false, inProgress: false});
+      setDialog({ ...dialog, open: false, inProgress: false });
     }
   }
 
@@ -423,7 +478,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function onConfirmCancel() {
-    setDialog({...dialog, inProgress: false});
+    setDialog({ ...dialog, inProgress: false });
   }
 
   function isFormOnProgress() {
@@ -458,15 +513,15 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleCloseDetails() {
-    setSite({ details: {blueprint: null, index: null}});
+    setSite({ details: { blueprint: null, index: null } });
   }
 
   function handleErrorBack() {
-    setApiState({...apiState, error: false, global: false});
+    setApiState({ ...apiState, error: false, global: false });
   }
 
   function handleSearchClick() {
-    setSearch({...search, searchSelected: !search.searchSelected, searchKey: ''});
+    setSearch({ ...search, searchSelected: !search.searchSelected, searchKey: '' });
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
@@ -477,7 +532,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         blueprint: blueprint,
         pushSite: false,
         createAsOrphan: false,
-        details: {blueprint: null, index: null}
+        details: { blueprint: null, index: null }
       })
     } else if (blueprint.source === 'GIT') {
       setSite({
@@ -486,7 +541,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         blueprint: blueprint,
         pushSite: false,
         createAsOrphan: true,
-        details: {blueprint: null, index: null}
+        details: { blueprint: null, index: null }
       })
     } else {
       setSite({
@@ -494,35 +549,35 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         submitted: false,
         blueprint: blueprint,
         createAsOrphan: true,
-        details: {blueprint: null, index: null}
+        details: { blueprint: null, index: null }
       })
     }
   }
 
   function handleBack() {
     let back = site.selectedView - 1;
-    setSite({selectedView: back});
+    setSite({ selectedView: back });
   }
 
-  function handleChange(e: Object, value: number) {
+  function handleChange(e: object, value: number) {
     setTab(value);
   }
 
   function handleGoTo(step: number) {
-    setSite({ selectedView: step});
+    setSite({ selectedView: step });
   }
 
   function handleFinish(e: MouseEvent) {
     e && e.preventDefault();
     if (site.selectedView === 1) {
       if (validateForm() && !site.siteIdExist) {
-        setSite({selectedView: 2});
+        setSite({ selectedView: 2 });
       } else {
-        setSite({submitted: true});
+        setSite({ submitted: true });
       }
     }
     if (site.selectedView === 2) {
-      setApiState({...apiState, creatingSite: true});
+      setApiState({ ...apiState, creatingSite: true });
       //it is a marketplace blueprint
       if (site.blueprint.source === 'GIT') {
         const marketplaceParams: MarketplaceSite = createMarketplaceParams();
@@ -569,7 +624,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       blueprintVersion: {
         major: site.blueprint.version.major,
         minor: site.blueprint.version.minor,
-        patch: site.blueprint.version.patch,
+        patch: site.blueprint.version.patch
       }
     };
     if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
@@ -626,7 +681,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     createSite(site)
       .subscribe(
         () => {
-          setApiState({...apiState, creatingSite: false});
+          setApiState({ ...apiState, creatingSite: false });
           handleClose();
           //TODO# Change to site.siteId when create site is on API2
           Cookies.set('crafterSite', site.site_id, {
@@ -635,11 +690,11 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           });
           window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
         },
-        ({response}) => {
+        ({ response }) => {
           if (response) {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
-            const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
-            setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response, global: true});
+            const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response, global: true });
           }
         }
       )
@@ -649,7 +704,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     createSiteFromMarketplace(site)
       .subscribe(
         () => {
-          setApiState({...apiState, creatingSite: false});
+          setApiState({ ...apiState, creatingSite: false });
           handleClose();
           Cookies.set('crafterSite', site.siteId, {
             domain: window.location.hostname.includes('.') ? window.location.hostname : '',
@@ -657,82 +712,36 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           });
           window.location.href = '/studio/preview/#/?page=/&site=' + site.siteId;
         },
-        ({response}) => {
+        ({ response }) => {
           if (response) {
-            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response, global: true});
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response, global: true });
           }
         }
       )
-  }
-
-  function getMarketPlace() {
-    fetchMarketplaceBlueprints()
-      .subscribe(
-        ({response}) => {
-          setMarketplace(response.plugins);
-        },
-        ({response}) => {
-          if (response) {
-            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response.response});
-          }
-        }
-      );
-  }
-
-  function getBlueprints() {
-    fetchBuiltInBlueprints()
-      .subscribe(
-        ({response}) => {
-          const _blueprints: [Blueprint] = [{
-            id: 'GIT',
-            name: formatMessage(messages.gitBlueprintName),
-            description: formatMessage(messages.gitBlueprintDescription),
-            media: {
-              screenshots: [
-                {
-                  description: '',
-                  title: formatMessage(messages.gitBlueprintName),
-                  url: gitLogo
-                }
-              ],
-              videos: []
-            }
-          }];
-          response.blueprints.forEach((bp: any) => {
-            _blueprints.push(bp.plugin);
-          });
-          setBlueprints(_blueprints);
-        },
-        ({response}) => {
-          if (response) {
-            setApiState({...apiState, creatingSite: false, error: true, errorResponse: response.response});
-          }
-        }
-      );
   }
 
   function checkNameExist(siteId: string) {
     if (siteId) {
       checkHandleAvailability(siteId)
         .subscribe(
-          ({response}) => {
+          ({ response }) => {
             if (response.exists) {
-              refts.setSite({siteIdExist: response.exists, selectedView: 1});
+              refts.setSite({ siteIdExist: response.exists, selectedView: 1 });
             } else {
-              refts.setSite({siteIdExist: false});
+              refts.setSite({ siteIdExist: false });
             }
           },
-          ({response}) => {
+          ({ response }) => {
             //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
-            const _response = {...response, code: '', documentationUrl: '', remedialAction: ''};
-            setApiState({...apiState, creatingSite: false, error: true, errorResponse: _response});
+            const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response });
           }
         );
     }
   }
 
   function onDetails(blueprint: Blueprint, index: number) {
-    setSite({details: {blueprint: blueprint, index: index}});
+    setSite({ details: { blueprint: blueprint, index: index } });
   }
 
   function renderBlueprints(list: Blueprint[]) {
@@ -752,98 +761,163 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   return (
-    <Dialog open={dialog.open} onClose={handleClose} aria-labelledby="create-site-dialog" disableBackdropClick={true}
-            fullWidth={true} maxWidth={'lg'} classes={{paperScrollPaper: classes.paperScrollPaper}}
-            disableEnforceFocus={disableEnforceFocus}>
-      <ConfirmDialog open={dialog.inProgress} onOk={onConfirmOk} onClose={onConfirmCancel}
-                     description={formatMessage(messages.dialogCloseMessage)}
-                     title={formatMessage(messages.dialogCloseTitle)} disableEnforceFocus={disableEnforceFocus}/>
-      {(apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint) ?
-        (apiState.creatingSite &&
-            <LoadingState title={formatMessage(messages.creatingSite)} subtitle={formatMessage(messages.pleaseWait)}
-                          subtitle2={formatMessage(messages.createInBackground)}/>) ||
-        (apiState.error &&
-            <ErrorState error={apiState.errorResponse} onBack={handleErrorBack} background={backgroundColor}/>) ||
-        (site.details && <PluginDetailsView blueprint={site.details.blueprint} selectedIndex={site.details.index}
-                                            onBlueprintSelected={handleBlueprintSelected}
-                                            onCloseDetails={handleCloseDetails} interval={5000}/>) :
-        <div className={classes.dialogContainer}>
-          <DialogTitle id="create-site-dialog" onClose={handleClose} views={views} selectedView={site.selectedView}/>
-          {
-            (site.selectedView === 0) &&
-            <div className={classes.tabs}>
-                <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                    <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab}/>
-                    <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab}/>
-                </CustomTabs>
-                <SearchIcon className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
-                            onClick={handleSearchClick}/>
+    <Dialog
+      open={dialog.open}
+      onClose={handleClose}
+      aria-labelledby="create-site-dialog"
+      disableBackdropClick={true}
+      fullWidth={true}
+      maxWidth="lg"
+      classes={{ paperScrollPaper: classes.paperScrollPaper }}
+      disableEnforceFocus={disableEnforceFocus}
+    >
+      <ConfirmDialog
+        open={dialog.inProgress}
+        onOk={onConfirmOk}
+        onClose={onConfirmCancel}
+        description={formatMessage(messages.dialogCloseMessage)}
+        title={formatMessage(messages.dialogCloseTitle)}
+        disableEnforceFocus={disableEnforceFocus}
+      />
+      {
+        (
+          (apiState.creatingSite) ||
+          (apiState.error && apiState.global) ||
+          (site.details.blueprint)
+        ) ? (
+
+          (
+            apiState.creatingSite &&
+            <div className={classes.statePaper}>
+              <LoadingState
+                title={formatMessage(messages.creatingSite)}
+                subtitle={formatMessage(messages.pleaseWait)}
+                classes={{
+                  root: classes.loadingStateRoot,
+                  graphicRoot: classes.loadingStateGraphic
+                }}
+              />
             </div>
-          }
-          {
-            ((tab === 0 && blueprints) || (tab === 1 && marketplace)) ?
-              <DialogContent className={classes.dialogContent}>
-                {
-                  (search.searchSelected && site.selectedView === 0) &&
-                  <div className={classes.searchContainer}>
-                      <div className={classes.search}>
-                          <div className={classes.searchIcon}>
-                              <SearchIcon/>
-                          </div>
-                          <InputBase
-                              placeholder="Search…"
-                              autoFocus={true}
-                              classes={{
-                                root: classes.searchRoot,
-                                input: classes.searchInput,
-                              }}
-                              value={search.searchKey}
-                              onChange={e => setSearch({...search, searchKey: e.target.value})}
-                              inputProps={{'aria-label': 'search'}}
-                          />
-                      </div>
-                  </div>
-                }
-                {(site.selectedView === 0) &&
-                <div className={clsx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
-                  {
-                    (tab === 0) ?
-                      <Grid container spacing={3}>{renderBlueprints(filteredBlueprints)}</Grid>
-                      :
-                      <Grid container spacing={3}>{renderBlueprints(filteredMarketplace)}</Grid>
-                  }
-                </div>}
-                {(site.selectedView === 1) && <div className={clsx(classes.slide, classes.fadeIn)}>
-                  {
-                    site.blueprint &&
-                    <BlueprintForm inputs={site} setInputs={setSite}
-                                   onCheckNameExist={checkNameExist}
-                                   onSubmit={handleFinish}
-                                   blueprint={site.blueprint}/>
-                  }
-                </div>}
-                {(site.selectedView === 2) && <div className={clsx(classes.slide, classes.fadeIn)}>
-                  {site.blueprint &&
-                  <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>}
-                </div>}
-              </DialogContent>
-              : apiState.error ? <ErrorState error={apiState.errorResponse}/> :
-              <div className={classes.loading}>
-                <Spinner/>
+          ) || (
+            apiState.error &&
+            <ErrorState
+              classes={{ root: classes.errorPaperRoot }}
+              error={apiState.errorResponse}
+              onBack={handleErrorBack}
+            />
+          ) || (
+            site.details &&
+            <PluginDetailsView
+              blueprint={site.details.blueprint}
+              selectedIndex={site.details.index}
+              onBlueprintSelected={handleBlueprintSelected}
+              onCloseDetails={handleCloseDetails}
+              interval={5000}
+            />
+          )
+
+        ) : (
+          <div className={classes.dialogContainer}>
+            <DialogTitle id="create-site-dialog" onClose={handleClose} views={views} selectedView={site.selectedView}/>
+            {
+              (site.selectedView === 0) &&
+              <div className={classes.tabs}>
+                <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
+                  <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab}/>
+                  <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab}/>
+                </CustomTabs>
+                <SearchIcon
+                  className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
+                  onClick={handleSearchClick}
+                />
               </div>
-          }
-          {
-            (site.selectedView !== 0) &&
-            <DialogActions className={clsx(classes.dialogActions, classes.fadeIn)}>
+            }
+            {
+              ((tab === 0 && blueprints) || (tab === 1 && marketplace)) ?
+                <DialogContent className={classes.dialogContent}>
+                  {
+                    (search.searchSelected && site.selectedView === 0) &&
+                    <div className={classes.searchContainer}>
+                      <div className={classes.search}>
+                        <div className={classes.searchIcon}>
+                          <SearchIcon/>
+                        </div>
+                        <InputBase
+                          placeholder="Search…"
+                          autoFocus={true}
+                          classes={{
+                            root: classes.searchRoot,
+                            input: classes.searchInput
+                          }}
+                          value={search.searchKey}
+                          onChange={e => setSearch({ ...search, searchKey: e.target.value })}
+                          inputProps={{ 'aria-label': 'search' }}
+                        />
+                      </div>
+                    </div>
+                  }
+                  {
+                    (site.selectedView === 0) &&
+                    <div className={clsx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
+                      {
+                        (tab === 0)
+                          ? <Grid container spacing={3}>{renderBlueprints(filteredBlueprints)}</Grid>
+                          : <Grid container spacing={3}>{renderBlueprints(filteredMarketplace)}</Grid>
+                      }
+                    </div>
+                  }
+                  {
+                    (site.selectedView === 1) &&
+                    <div className={clsx(classes.slide, classes.fadeIn)}>
+                      {
+                        site.blueprint &&
+                        <BlueprintForm
+                          inputs={site}
+                          setInputs={setSite}
+                          onCheckNameExist={checkNameExist}
+                          onSubmit={handleFinish}
+                          blueprint={site.blueprint}
+                        />
+                      }
+                    </div>
+                  }
+                  {
+                    (site.selectedView === 2) &&
+                    <div className={clsx(classes.slide, classes.fadeIn)}>
+                      {
+                        site.blueprint &&
+                        <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint}/>
+                      }
+                    </div>
+                  }
+                </DialogContent>
+                : (
+                  (apiState.error) ? (
+                    <ErrorState
+                      classes={{ root: classes.errorPaperRoot }}
+                      error={apiState.errorResponse}
+                    />
+                  ) : (
+                    <div className={classes.loading}>
+                      <Spinner/>
+                    </div>
+                  )
+                )
+            }
+            {
+              (site.selectedView !== 0) &&
+              <DialogActions className={clsx(classes.dialogActions, classes.fadeIn)}>
                 <Button variant="contained" className={classes.backBtn} onClick={handleBack}>
                   {formatMessage(messages.back)}
                 </Button>
                 <Button ref={finishRef} variant="contained" color="primary" onClick={handleFinish}>
                   {views[site.selectedView].btnText}
                 </Button>
-            </DialogActions>
-          }
-        </div>}
+              </DialogActions>
+            }
+          </div>
+        )
+      }
     </Dialog>
   )
 }

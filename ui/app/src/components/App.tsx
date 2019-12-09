@@ -18,7 +18,7 @@
 import React from 'react';
 import CrafterCMSNextBridge from './CrafterCMSNextBridge';
 
-function App() {
+export default function App() {
   return (
     <CrafterCMSNextBridge>
       Hello World!
