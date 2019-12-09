@@ -15,9 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 import contentController from './ContentController';
+import { findClosestRect, isNullOrUndefined, notNullOrUndefined, forEach, getChildArrangement } from '../util';
+import iceRegistry from './ICERegistry';
+import { Markers } from './Markers';
+import { ComponentEditor } from './ComponentEditor';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { delay, debounceTime, filter } from 'rxjs/operators';
+
+const hostTrashed$ = new Subject();
 
 export class DOMController {
 
@@ -151,7 +157,7 @@ export class DOMController {
             return true;
           }
         }
-      )
+      );
     }
   }
 
@@ -291,7 +297,6 @@ export class DOMController {
           DOMController.updateDragStats();
           scrolling$.next(false);
         },
-        null,
         // Not quite the right place to do this...
         () => trashSub.unsubscribe()
       );

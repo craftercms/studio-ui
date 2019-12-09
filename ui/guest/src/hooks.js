@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { foo, isNullOrUndefined } from './util';
-import { useContext, useRef } from 'react';
+import { foo, isNullOrUndefined, notNullOrUndefined } from './util';
+import { useContext, useEffect, useRef } from 'react';
 import contentController from './classes/ContentController';
+import { GuestContext } from './components/GuestContext';
 
 const fooEvents = {
   ref: foo,
@@ -48,7 +49,7 @@ export function useICE(props) {
     contentReady: false
   });
 
-  const context = useContext(Ctx),
+  const context = useContext(GuestContext),
     {
 
       onEvent,
@@ -62,7 +63,7 @@ export function useICE(props) {
       draggable,
       highlighted,
 
-      ICE_GUEST_INIT
+      // ICE_GUEST_INIT
 
     } = context;
 

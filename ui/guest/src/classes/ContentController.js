@@ -144,25 +144,25 @@ export class ContentController {
   }
 
   insertItem(
-    targetModelId/*: string*/,
-    targetFieldId/*: string*/,
-    targetIndex/*: number*/,
+    modelId/*: string*/,
+    fieldId/*: string*/,
+    index/*: number*/,
     item
   ) {
 
     const models = this.getCachedModels();
-    const model = models[targetModelId];
-    const collection = ModelHelper.value(model, targetFieldId);
+    const model = models[modelId];
+    const collection = ModelHelper.value(model, fieldId);
     const result = collection.slice(0);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, item);
+    result.splice(index, 0, item);
 
     ContentController.models$.next({
       ...models,
-      [targetModelId]: {
+      [modelId]: {
         ...model,
-        [targetFieldId]: result
+        [fieldId]: result
       }
     });
 
@@ -171,7 +171,7 @@ export class ContentController {
       args: arguments
     });
 
-    post(INSERT_ITEM_OPERATION, { modelId, fieldId });
+    post(INSERT_ITEM_OPERATION, { modelId, fieldId, index, item });
 
   }
 
@@ -329,7 +329,14 @@ export class ContentController {
       args: arguments
     });
 
-    post(MOVE_ITEM_OPERATION, { modelId, fieldId });
+    post(MOVE_ITEM_OPERATION, {
+      originalModelId,
+      originalFieldId,
+      originalIndex,
+      targetModelId,
+      targetFieldId,
+      targetIndex
+    });
 
   }
 
