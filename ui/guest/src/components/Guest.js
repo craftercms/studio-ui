@@ -178,7 +178,8 @@ export function Guest(props) {
 
     },
 
-    click: function onClick(e, record) {
+    /*onClick*/
+    click(e, record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
         const highlight = PhysicalRegistry.getHoverData(record.id);
@@ -215,7 +216,8 @@ export function Guest(props) {
       }
     },
 
-    mouseover: function onMouseOver(e, record) {
+    /*onMouseOver*/
+    mouseover(e, record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         clearTimeout(persistence.mouseOverTimeout);
         e.stopPropagation();
@@ -236,7 +238,8 @@ export function Guest(props) {
       }
     },
 
-    mouseout: function onMouseOut(e) {
+    /*onMouseOut*/
+    mouseout(e) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
         e.stopPropagation();
         clearTimeout(persistence.mouseOverTimeout);
@@ -247,7 +250,8 @@ export function Guest(props) {
       }
     },
 
-    dragstart: function onDragStart(e, physicalRecord) {
+    /*onDragStart*/
+    dragstart(e, physicalRecord) {
 
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
@@ -383,7 +387,7 @@ export function Guest(props) {
 
     },
 
-    dragover: function (e, record) {
+    dragover(e, record) {
       let element = record.element;
       if (
         fn.dragOk() &&
@@ -436,7 +440,7 @@ export function Guest(props) {
 
     },
 
-    drop: function (e) {
+    drop(e) {
       if (fn.dragOk()) {
 
         e.preventDefault();
@@ -571,7 +575,8 @@ export function Guest(props) {
 
     // onDragEnd doesn't execute when dropping from Host
     // consider behaviour when running Host Guest-side
-    dragend: function onDragEnd(e) {
+    /*onDragEnd*/
+    dragend(e) {
       if (fn.dragOk()) {
         e.stopPropagation();
         post({ type: INSTANCE_DRAG_ENDED });
@@ -597,7 +602,7 @@ export function Guest(props) {
 
     },
 
-    dragleave: function () {
+    dragleave() {
       if (fn.dragOk()) {
         clearTimeout(persistence.dragLeaveTimeout);
         persistence.dragLeaveTimeout = setTimeout(() => {
@@ -818,7 +823,7 @@ export function Guest(props) {
 
       const record = PhysicalRegistry.get(dispatcher);
       if (isNullOrUndefined(record)) {
-        throw new Error(`No record found for dispatcher element`);
+        throw new Error('No record found for dispatcher element');
       }
 
       handler(event, record);

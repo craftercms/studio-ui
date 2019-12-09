@@ -131,7 +131,7 @@ export function DropMarker(props) {
 
         targetIndex = dropZone.children.findIndex((e) => e === element);
         if (!before) {
-          ++targetIndex
+          ++targetIndex;
         }
 
       } else {

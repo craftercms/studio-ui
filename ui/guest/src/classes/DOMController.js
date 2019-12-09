@@ -16,12 +16,22 @@
  */
 
 import contentController from './ContentController';
-import { findClosestRect, isNullOrUndefined, notNullOrUndefined, forEach, getChildArrangement } from '../util';
+import {
+  not,
+  findClosestRect,
+  isNullOrUndefined,
+  notNullOrUndefined,
+  forEach,
+  getChildArrangement,
+  insertDropMarker, getInRectStats, HORIZONTAL, VERTICAL
+} from '../util';
 import iceRegistry from './ICERegistry';
 import { Markers } from './Markers';
 import { ComponentEditor } from './ComponentEditor';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { delay, debounceTime, filter } from 'rxjs/operators';
+import { ModelHelper } from './ModelHelper';
+import { render } from 'react-dom';
 
 const hostTrashed$ = new Subject();
 
@@ -366,16 +376,16 @@ export class DOMController {
             )
         ;
 
-        setDropMarkerPosition({
-          $dropMarker,
-          arrangement: childArrangement,
-          insertPosition: before ? 'before' : 'after',
-          refElement: closestChild,
-          refElementRect: closestRect,
-          nextOrPrevRect: before
-            ? currentDZChildrenRects[closestChildIndex - 1]
-            : currentDZChildrenRects[closestChildIndex + 1]
-        });
+        // setDropMarkerPosition({
+        //   $dropMarker,
+        //   arrangement: childArrangement,
+        //   insertPosition: before ? 'before' : 'after',
+        //   refElement: closestChild,
+        //   refElementRect: closestRect,
+        //   nextOrPrevRect: before
+        //     ? currentDZChildrenRects[closestChildIndex - 1]
+        //     : currentDZChildrenRects[closestChildIndex + 1]
+        // });
 
         insertDropMarker({
           $dropMarker,
@@ -384,7 +394,8 @@ export class DOMController {
         });
 
       } else {
-
+        // ...
+        console.log('Unhandled case');
       }
 
     } else {
@@ -426,16 +437,16 @@ export class DOMController {
             ) ? 'after' : 'before'
           ;
 
-          setDropMarkerPosition({
-            $dropMarker,
-            insertPosition,
-            arrangement: childArrangement,
-            refElement: currentElement,
-            refElementRect: currentElementRect,
-            nextOrPrevRect: insertPosition === 'before'
-              ? currentDZChildrenRects[i - 1]
-              : currentDZChildrenRects[i + 1]
-          });
+          // setDropMarkerPosition({
+          //   $dropMarker,
+          //   insertPosition,
+          //   arrangement: childArrangement,
+          //   refElement: currentElement,
+          //   refElementRect: currentElementRect,
+          //   nextOrPrevRect: insertPosition === 'before'
+          //     ? currentDZChildrenRects[i - 1]
+          //     : currentDZChildrenRects[i + 1]
+          // });
 
           insertDropMarker({
             $dropMarker,

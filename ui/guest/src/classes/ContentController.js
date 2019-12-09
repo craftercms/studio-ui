@@ -384,7 +384,7 @@ export class ContentController {
           delete this.modelRequestsInFlight[modelId];
           this.modelsResponseReceived(response);
         },
-        (e) => console.log(`Model fetch has failed...`, e)
+        (e) => console.log('Model fetch has failed...', e)
       );
     }
   }
@@ -480,15 +480,15 @@ export class ContentController {
 
 function fetchById(id, site = Cookies.get('crafterSite')) {
   const isArticleRequest = [
-    "f360780a-372f-d005-d736-bcc9d657e50c",
-    "b7a724f1-3422-055d-a244-5fc79a1ca007",
-    "52e8e75d-94f8-ae0b-3317-8d592b3d7dce",
-    "07fc5ac7-05ea-b038-6455-26f895ba8822",
-    "6121741f-8b6f-75ce-151b-75e57f04da13",
-    "8bdd0180-b7c8-1eff-1f20-76ddca377e3c",
-    "d5824453-b743-4575-bb7a-5c49c0fbedbb",
-    "b30875f3-87ce-7b55-fd19-3d5c00508a08",
-    "f1f9c488-67e1-7ec0-d3ca-560b194e64d1"
+    'f360780a-372f-d005-d736-bcc9d657e50c',
+    'b7a724f1-3422-055d-a244-5fc79a1ca007',
+    '52e8e75d-94f8-ae0b-3317-8d592b3d7dce',
+    '07fc5ac7-05ea-b038-6455-26f895ba8822',
+    '6121741f-8b6f-75ce-151b-75e57f04da13',
+    '8bdd0180-b7c8-1eff-1f20-76ddca377e3c',
+    'd5824453-b743-4575-bb7a-5c49c0fbedbb',
+    'b30875f3-87ce-7b55-fd19-3d5c00508a08',
+    'f1f9c488-67e1-7ec0-d3ca-560b194e64d1'
   ].includes(id);
   return ajax.post(
     `/api/1/site/graphql?crafterSite=${site}`,

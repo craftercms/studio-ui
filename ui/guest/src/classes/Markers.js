@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { capitalize, TOLERANCE_PERCENTS } from '../util';
+import { DOMController } from './DOMController';
+
 export const
   HORIZONTAL = 'horizontal',
   VERTICAL = 'vertical';
@@ -543,8 +546,9 @@ export class Markers {
       }
       case 'sibling': {
         this.setZoneMarkerRect($zoneMarker, $element.parent());
-        if ($element.parent().hasClass('craftercms-invalid-drop-zone'))
+        if ($element.parent().hasClass('craftercms-invalid-drop-zone')) {
           $zoneMarker.addClass('invalid');
+        }
         const name = this.getZoneLabel($element.parent());
         $zoneMarker.find('[craftercms-zone-marker-label]').html(name);
         $zoneMarker.attr('craftercms-zone-marker', name.toLowerCase());

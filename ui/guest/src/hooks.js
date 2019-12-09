@@ -16,9 +16,10 @@
  */
 
 import { foo, isNullOrUndefined, notNullOrUndefined } from './util';
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import contentController from './classes/ContentController';
 import { GuestContext } from './components/GuestContext';
+import { skip } from 'rxjs/operators';
 
 const fooEvents = {
   ref: foo,
@@ -132,7 +133,7 @@ export function useICE(props) {
         handlers.ref.current = element;
       }
     } catch (e) {
-
+      console.log(e);
     }
 
     if (

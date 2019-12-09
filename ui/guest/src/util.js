@@ -17,6 +17,8 @@
 
 import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
+import { interval, fromEvent } from 'rxjs';
+import { switchMap, take, takeUntil } from 'rxjs/operators';
 
 export const foo = () => void null;
 export const
@@ -101,7 +103,7 @@ export function forEach(array, fn, emptyReturnValue) {
 
 export function findComponentContainerFields(fields) {
   if (!Array.isArray(fields)) {
-    fields = Object.values(fields)
+    fields = Object.values(fields);
   }
   return fields.filter((field) => {
     if (field.type === 'node-selector') {
@@ -370,22 +372,39 @@ export function createLookupTable(list, idProp = 'id') {
   return table;
 }
 
-export function addClickListener() {
+// Regular click gets triggered even after loooong mouse downs or
+// when mousing-down and dragging cursor - without actually being on
+// a drag and drop of an element - and then mousing-up some other place.
+// This causes the ice zone selection to occur and the UX feels awkward.
+// This is a custom click event with a more opinionated click behaviour
+// that could be used instead of the regular click. The trade-of is that,
+// as is, won't handle preventDefault/stopPropagation correctly as it's a
+// delegate on the document (i.e. the event as bubbled all the way up).
+// Would need to add additional logic to set the delegation in a way that
+// events can still be stopped (see jQuery).
+export function addClickListener(element, type, handler) {
 
-  const mouseDown$ = fromEvent(document, 'mousedown');
-  const mouseDownTimer$ = mouseDown$.pipe(delay(300), share());
-  const mouseUp$ = fromEvent(document, 'mouseup');
-  const click$ = mouseDown$.pipe(
+  if (element === document) {
+    // TODO: set up as delegate, control event propagation & stopping accordingly
+  }
+
+  const mouseDown$ = fromEvent(element, 'mousedown');
+  const mouseUp$ = fromEvent(element, 'mouseup');
+  return mouseDown$.pipe(
     switchMap(() => mouseUp$.pipe(
-      takeUntil(mouseDownTimer$),
+      takeUntil(interval(300)),
       take(1)
+    )),
+    filter((e) => (
+      e.target.hasAttribute('data-craftercms-model-id') ||
+      forEach(e.path, (el) => (
+        (
+          (el !== window) &&
+          (el !== document) &&
+          (el.hasAttribute('data-craftercms-model-id'))
+        ) ? true : 'continue'
+      ), false)
     ))
-  );
-
-  mouseDownTimer$.subscribe((e) => void null);
-
-  click$.subscribe((e) => {
-    console.log('Click!', e);
-  });
+  ).subscribe(handler);
 
 }

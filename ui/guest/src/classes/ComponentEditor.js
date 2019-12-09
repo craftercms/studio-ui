@@ -20,6 +20,7 @@ import { debounceTime, throttleTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 let cmpEditIds = 0;
+const post = () => void null;
 
 export class ComponentEditor {
 
@@ -78,7 +79,7 @@ export class ComponentEditor {
         .focus();
 
     } else {
-      console.log(`Don't know how to edit... yet. Only of type text.`);
+      console.log('Don\'t know how to edit... yet. Only of type text.');
     }
 
   }
@@ -89,11 +90,11 @@ export class ComponentEditor {
       payload: {
         message: 'Discard?',
         buttons: [
-          { text: "Yes", replyId: `componentEditor_${cmpEditIds++}` },
-          { text: "Cancel", replyId: `componentEditor_${cmpEditIds++}` }
+          { text: 'Yes', replyId: `componentEditor_${cmpEditIds++}` },
+          { text: 'Cancel', replyId: `componentEditor_${cmpEditIds++}` }
         ],
       }
-    })
+    });
   }
 
   inputHandler(e) {

@@ -81,7 +81,7 @@ export class ICERegistry {
       )
     ) {
       throw new Error(
-        `Group item registration requires the index within the collection that contains the item to be supplied. ` +
+        'Group item registration requires the index within the collection that contains the item to be supplied. ' +
         `Please supply index for '${data.fieldId}' of the ${this.getReferentialEntries(data).contentType.name} model.`
       );
     }
@@ -377,8 +377,8 @@ export class ICERegistry {
       throw new Error(
         `Unable to find the parent field for instance "${entries.modelId}" of ` +
         `${entries.contentType.name} component${entries.fieldId ? ` (${entries.fieldId} field)` : ''}. ` +
-        `Did you forget to declare the field when creating the content type?\n` +
-        `Check the state of the model data this could mean the data is corrupted.`
+        'Did you forget to declare the field when creating the content type?\n' +
+        'Check the state of the model data this could mean the data is corrupted.'
       );
     }
 
@@ -405,7 +405,7 @@ export class ICERegistry {
       );
       console.warn(
         `Per definition the ${componentName} is sortable but a drop zone for it was not found. ` +
-        `Did you forget to register the zone? Please initialize the drop zone element(s) of ` +
+        'Did you forget to register the zone? Please initialize the drop zone element(s) of ' +
         `the ${componentName} with modelId="${parentModelId}" and fieldId="${parentField.id}".`
       );
       return false;

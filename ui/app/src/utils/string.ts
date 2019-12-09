@@ -38,7 +38,7 @@ export function dasherize(str: string) {
 }
 
 export function isJSON(str: string): boolean {
-  throw new Error('[isJSON] Not implemented.')
+  throw new Error('[isJSON] Not implemented.');
 }
 
 export function getInitials(str: string) {

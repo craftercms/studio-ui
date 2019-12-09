@@ -27,9 +27,11 @@ export class ContentTypeHelper {
           (field.validations != null) &&
           ('validations' in field) &&
           ('contentTypes' in field.validations)
-        ) field.validations.contentTypes.forEach((ctid) =>
-          !accumulator.includes(ctid) && accumulator.push(ctid)
-        );
+        ) {
+          field.validations.contentTypes.forEach((ctid) =>
+            !accumulator.includes(ctid) && accumulator.push(ctid)
+          );
+        }
         return accumulator;
       }, []);
   }
