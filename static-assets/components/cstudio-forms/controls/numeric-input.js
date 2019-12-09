@@ -109,9 +109,9 @@ YAHOO.extend(CStudioForms.Controls.numericInput, CStudioForms.CStudioFormField, 
 	  var el = (el) ? el : this,
         max = this.getAttribute("max") ,
 			  min = this.getAttribute("min");
-		if(max && parseFloat(this.value) > max){
+		if (max != null && parseFloat(this.value) > max) {
 			this.value = max;
-		} else if(min && parseFloat(this.value) < min){
+		} else if (min != null && parseFloat(this.value) < min {
 			this.value = min;
 		}
 
