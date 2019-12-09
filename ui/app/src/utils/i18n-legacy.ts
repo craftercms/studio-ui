@@ -263,7 +263,7 @@ const contentTypesMessages = defineMessages({
   },
   internalNameErrorMessage: {
     id: 'contentType.internalNameErrorMessage',
-    defaultMessage: 'This content type requires an internal name. Please add an "Internal Name" control to this content type definition.'
+    defaultMessage: 'This content type requires an Internal Name.'
   },
   flagTitleError: {
     id: 'contentType.flatTitleError',
@@ -587,6 +587,33 @@ const internalNameControlMessages = defineMessages({
   }
 });
 
+const checkboxGroupControlMessages = defineMessages({
+  datasource: {
+    id: 'checkboxGroupControl.datasource',
+    defaultMessage: 'Data Source'
+  },
+  showSelectAll: {
+    id: 'checkboxGroupControl.showSelectAll',
+    defaultMessage: 'Show "Select All"'
+  },
+  listDirection: {
+    id: 'checkboxGroupControl.listDirection',
+    defaultMessage: 'List Direction'
+  },
+  horizontal: {
+    id: 'checkboxGroupControl.horizontal',
+    defaultMessage: 'Horizonal'
+  },
+  vertical: {
+    id: 'checkboxGroupControl.vertical',
+    defaultMessage: 'Vertical'
+  },
+  readonly: {
+    id: 'checkboxGroupControl.readonly',
+    defaultMessage: 'Read Only'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -609,5 +636,7 @@ export default {
   formEngineMessages,
   browseCMISMessages,
   dragAndDropMessages,
-  internalNameControlMessages
+  internalNameControlMessages,
+  dragAndDropMessages,
+  checkboxGroupControlMessages
 };

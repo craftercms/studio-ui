@@ -326,34 +326,34 @@
                               dialogEl.parentNode.removeChild(dialogEl);
                             }
                             var dialog = new YAHOO.widget.SimpleDialog("errTemplates", {
-                              width: "400px", 
-                              fixedcenter: true, 
-                              visible: false, 
-                              draggable: false, 
-                              close: false, 
+                              width: "400px",
+                              fixedcenter: true,
+                              visible: false,
+                              draggable: false,
+                              close: false,
                               modal: true,
-                              text: formatMessage(contentTypesMessages.noTemplateAssoc), 
+                              text: formatMessage(contentTypesMessages.noTemplateAssoc),
                               icon: YAHOO.widget.SimpleDialog.ICON_WARN,
                               constraintoviewport: true,
                               buttons: [
-                                { 
-                                  text: formatMessage(contentTypesMessages.continueEditing), 
-                                  handler: function () { 
+                                {
+                                  text: formatMessage(contentTypesMessages.continueEditing),
+                                  handler: function () {
                                     this.destroy();
-                                  }, 
-                                  isDefault: false 
+                                  },
+                                  isDefault: false
                                 },
-                                { 
-                                  text: formatMessage(words.save), 
-                                  handler: function () { 
-                                    this.destroy(); 
-                                    saveFn(); 
-                                  }, 
-                                  isDefault: false 
+                                {
+                                  text: formatMessage(words.save),
+                                  handler: function () {
+                                    this.destroy();
+                                    saveFn();
+                                  },
+                                  isDefault: false
                                 }
                               ]
                             });
-                              
+
                             dialog.setHeader(CMgs.format(formsLangBundle, "cancelDialogHeader"));
                             dialog.render(document.body);
                             dialogEl = document.getElementById("errTemplates");
@@ -2104,6 +2104,12 @@
 
               if (itemProperty != null) {
                 value = itemProperty.value ? itemProperty.value : "";
+
+                if(itemProperty.type === 'dropdown' && !(Array.isArray(itemProperty.value))) {
+                  value = itemProperty.value  ? JSON.parse(itemProperty.value) : '';
+                } else {
+                  value = itemProperty.value ? itemProperty.value : '';
+                }
               } else {
                 // The property does not currently exist in the model instance => probably a new property added to the content type
                 // Add it to the model instance, using the property's default values
