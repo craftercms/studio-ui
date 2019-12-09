@@ -157,12 +157,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: '25px 30px 0px 30px',
+    padding: '25px 30px',
     background: '#F3F3F3'
   },
   container: {},
   pagination: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
+    '& p': {
+      padding: 0
+    },
+    '& svg': {
+      top: 'inherit'
+    }
   },
   dialogTitle: {
     display: 'flex',
@@ -221,6 +227,10 @@ const messages = defineMessages({
     id: 'search.resultsSelected',
     defaultMessage: '{count, plural, one {{count} item selected} other {{count} items selected}}',
   },
+  itemsPerPage: {
+    id: 'search.itemsPerPage',
+    defaultMessage: 'Items per page:'
+  }
 });
 
 function Search(props: any) {
@@ -581,6 +591,7 @@ function Search(props: any) {
             rowsPerPageOptions={[9, 15, 21]}
             className={classes.pagination}
             component="div"
+            labelRowsPerPage={formatMessage(messages.itemsPerPage)}
             count={searchResults.total}
             rowsPerPage={parseInt(searchParameters.limit, 10)}
             page={searchParameters.offset / searchParameters.limit}

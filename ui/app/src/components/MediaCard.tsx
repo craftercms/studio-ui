@@ -92,7 +92,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     order: -1
   },
   mediaIcon: {
-    backgroundColor: '#f3f3f3',
     paddingTop: '56.25%',
     position: 'relative',
     '& .media-icon': {
@@ -154,7 +153,7 @@ const messages = defineMessages({
   },
   loadingPermissions: {
     id: 'mediaCard.loadingPermissions',
-    defaultMessage: 'Loading permissions...'
+    defaultMessage: 'loading...'
   },
 });
 

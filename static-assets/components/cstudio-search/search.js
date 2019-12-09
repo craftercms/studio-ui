@@ -203,7 +203,8 @@
                     contentTO.nodeRef,
                     contentTO.uri,
                     false,
-                    editCallback);
+                    editCallback
+                  );
             },
             failure: function (error) {
                 console.error(error);
