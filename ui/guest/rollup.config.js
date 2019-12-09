@@ -45,6 +45,7 @@ const plugins = [
   commonjs({
     include: /node_modules/,
     namedExports: {
+      'react-dom': ['createPortal', 'findDOMNode', 'hydrate', 'render', 'unmountComponentAtNode', 'flushSync'],
       'react-is': ['isValidElementType', 'ForwardRef'],
       'prop-types': ['elementType'],
       'react': [
