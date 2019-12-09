@@ -637,6 +637,5 @@ export default {
   browseCMISMessages,
   dragAndDropMessages,
   internalNameControlMessages,
-  dragAndDropMessages,
   checkboxGroupControlMessages
 };
