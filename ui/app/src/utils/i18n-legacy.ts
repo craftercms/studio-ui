@@ -572,6 +572,21 @@ const dragAndDropMessages = defineMessages({
   }
 });
 
+const internalNameControlMessages = defineMessages({
+  label: {
+    id: 'internalNameControl.label',
+    defaultMessage: 'Internal Name'
+  },
+  displaySize: {
+    id: 'internalNameControl.displaySize',
+    defaultMessage: 'Display Size'
+  },
+  maxLength: {
+    id: 'internalNameControl.maxLength',
+    defaultMessage: 'Max Length'
+  }
+});
+
 const checkboxGroupControlMessages = defineMessages({
   datasource: {
     id: 'checkboxGroupControl.datasource',
@@ -621,5 +636,6 @@ export default {
   formEngineMessages,
   browseCMISMessages,
   dragAndDropMessages,
+  internalNameControlMessages,
   checkboxGroupControlMessages
 };
