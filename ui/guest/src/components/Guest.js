@@ -37,7 +37,7 @@ import { zip, Subject } from 'rxjs';
 import { debounceTime, delay, filter, map, take, tap, throttleTime } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
-import { PhysicalRegistry } from '../classes/PhysicalRegistry';
+import { ElementRegistry } from '../classes/ElementRegistry';
 import $ from 'jquery/dist/jquery';
 import { GuestContext } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -182,7 +182,7 @@ export function Guest(props) {
     click(e, record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
-        const highlight = PhysicalRegistry.getHoverData(record.id);
+        const highlight = ElementRegistry.getHoverData(record.id);
 
         post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
 
@@ -223,8 +223,8 @@ export function Guest(props) {
         e.stopPropagation();
 
         let
-          highlight = PhysicalRegistry.getHoverData(record.id),
-          draggable = PhysicalRegistry.getDraggable(record.id);
+          highlight = ElementRegistry.getHoverData(record.id),
+          draggable = ElementRegistry.getDraggable(record.id);
 
         setState({
           ...stateRef.current,
@@ -280,7 +280,7 @@ export function Guest(props) {
 
       validatedReceptacles.forEach((id) => {
 
-        const dropZone = PhysicalRegistry.compileDropZone(id);
+        const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = dropZone.children.includes(physicalRecord.element);
         dropZones.push(dropZone);
 
@@ -291,7 +291,7 @@ export function Guest(props) {
       });
 
       const highlighted = dropZones.reduce((object, { physicalRecordId: id }) => {
-        object[id] = PhysicalRegistry.getHoverData(id);
+        object[id] = ElementRegistry.getHoverData(id);
         return object;
       }, {});
 
@@ -333,7 +333,7 @@ export function Guest(props) {
         return;
       }
 
-      const firstReceptaclePhyRecord = PhysicalRegistry.fromICEId(receptacles[0].id);
+      const firstReceptaclePhyRecord = ElementRegistry.fromICEId(receptacles[0].id);
       // Scroll the doc to the closest drop zone
       // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
       $(scrollElement).animate({
@@ -347,7 +347,7 @@ export function Guest(props) {
 
       validatedReceptacles.forEach(({ id }) => {
 
-        const dropZone = PhysicalRegistry.compileDropZone(id);
+        const dropZone = ElementRegistry.compileDropZone(id);
         dropZone.origin = null;
         dropZones.push(dropZone);
 
@@ -358,7 +358,7 @@ export function Guest(props) {
       });
 
       const highlighted = dropZones.reduce((object, { physicalRecordId: id }) => {
-        object[id] = PhysicalRegistry.getHoverData(id);
+        object[id] = ElementRegistry.getHoverData(id);
         return object;
       }, {});
 
@@ -414,7 +414,7 @@ export function Guest(props) {
             // No point finding siblings for the drop zone element
             stateRef.current.dragContext.containers.includes(element)
               ? {}
-              : PhysicalRegistry.getSiblingRects(physicalRecord.id);
+              : ElementRegistry.getSiblingRects(physicalRecord.id);
 
         setState({
           dragContext: {
@@ -715,7 +715,7 @@ export function Guest(props) {
       validReceptacles
         .forEach((id) => {
 
-          const dropZone = PhysicalRegistry.compileDropZone(id);
+          const dropZone = ElementRegistry.compileDropZone(id);
           dropZone.origin = false;
           dropZones.push(dropZone);
 
@@ -728,7 +728,7 @@ export function Guest(props) {
       const highlighted = dropZones
         .reduce(
           (object, { physicalRecordId: id }) => {
-            object[id] = PhysicalRegistry.getHoverData(id);
+            object[id] = ElementRegistry.getHoverData(id);
             return object;
           },
           {}
@@ -804,11 +804,11 @@ export function Guest(props) {
   };
 
   function register(payload) {
-    return PhysicalRegistry.register(payload);
+    return ElementRegistry.register(payload);
   }
 
   function deregister(id) {
-    return PhysicalRegistry.deregister(id);
+    return ElementRegistry.deregister(id);
   }
 
   function onEvent(event, dispatcher) {
@@ -821,7 +821,7 @@ export function Guest(props) {
         throw new Error(`No handler implemented for ${type}`);
       }
 
-      const record = PhysicalRegistry.get(dispatcher);
+      const record = ElementRegistry.get(dispatcher);
       if (isNullOrUndefined(record)) {
         throw new Error('No record found for dispatcher element');
       }

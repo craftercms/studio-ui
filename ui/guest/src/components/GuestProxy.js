@@ -19,7 +19,7 @@ import React from 'react';
 import { useEffect, useRef } from 'react';
 import { notNullOrUndefined, forEach, INSERT_COMPONENT_OPERATION, DELETE_ITEM_OPERATION } from '../util';
 import { useGuestContext } from './GuestContext';
-import { PhysicalRegistry } from '../classes/PhysicalRegistry';
+import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery/dist/jquery.slim';
 import contentController, { ContentController } from '../classes/ContentController';
@@ -62,7 +62,7 @@ export function GuestProxy(props) {
     );
 
     const handler = (e) => {
-      let record = PhysicalRegistry.fromElement(e.currentTarget);
+      let record = ElementRegistry.fromElement(e.currentTarget);
       if (notNullOrUndefined(record)) {
         if (['click', 'dblclick'].includes(e.type)) {
           e.preventDefault();
@@ -99,7 +99,7 @@ export function GuestProxy(props) {
             iceId = iceRegistry.exists({ modelId: model[fieldId][newIndex], index });
           }
 
-          const phyRecord = PhysicalRegistry.fromICEId(iceId);
+          const phyRecord = ElementRegistry.fromICEId(iceId);
           const $el = $(phyRecord.element);
           const $targetSibling = $el.parent().children().eq(newIndex);
 
@@ -122,7 +122,7 @@ export function GuestProxy(props) {
 
               $(el).attr('data-craftercms-index', i);
 
-              const pr = PhysicalRegistry.fromElement(el);
+              const pr = ElementRegistry.fromElement(el);
 
               context.deregister(pr.id);
               registerElement(el);
@@ -158,17 +158,17 @@ export function GuestProxy(props) {
           ] = op.args;
 
           const currentDropZoneICEId = iceRegistry.exists({ modelId, fieldId, index: null });
-          const currentDropZonePhyRecord = PhysicalRegistry.fromICEId(currentDropZoneICEId);
+          const currentDropZonePhyRecord = ElementRegistry.fromICEId(currentDropZoneICEId);
 
           const targetDropZoneICEId = iceRegistry.exists({
             modelId: targetModelId,
             fieldId: targetFieldId,
             index: null
           });
-          const targetDropZonePhyRecord = PhysicalRegistry.fromICEId(targetDropZoneICEId);
+          const targetDropZonePhyRecord = ElementRegistry.fromICEId(targetDropZoneICEId);
 
           const moveTargetICEId = iceRegistry.exists({ modelId, fieldId, index });
-          const moveTargetPhyRecord = PhysicalRegistry.fromICEId(moveTargetICEId);
+          const moveTargetPhyRecord = ElementRegistry.fromICEId(moveTargetICEId);
 
           const $targetDropZone = $(targetDropZonePhyRecord.element);
 
@@ -183,7 +183,7 @@ export function GuestProxy(props) {
               fieldId: targetFieldId,
               index: targetIndex
             });
-            const targetIndexOccupantPhyRecord = PhysicalRegistry.fromICEId(targetIndexOccupantICEId);
+            const targetIndexOccupantPhyRecord = ElementRegistry.fromICEId(targetIndexOccupantICEId);
 
             $(moveTargetPhyRecord.element).insertBefore(targetIndexOccupantPhyRecord.element);
 
@@ -194,7 +194,7 @@ export function GuestProxy(props) {
             targetDropZonePhyRecord
           ].forEach((record) => {
             $(record.element).find('> [data-craftercms-index]').each((i, elem) => {
-              PhysicalRegistry.deregister(PhysicalRegistry.fromElement(elem).id);
+              ElementRegistry.deregister(ElementRegistry.fromElement(elem).id);
 
               $(elem).attr('data-craftercms-model-id', record.modelId);
               $(elem).attr('data-craftercms-field-id', record.fieldId);
@@ -211,7 +211,7 @@ export function GuestProxy(props) {
           const [modelId, fieldId, index] = op.args;
 
           const iceId = iceRegistry.exists({ modelId, fieldId, index });
-          const phyRecord = PhysicalRegistry.fromICEId(iceId);
+          const phyRecord = ElementRegistry.fromICEId(iceId);
 
           context.deregister(phyRecord.id);
 
@@ -226,7 +226,7 @@ export function GuestProxy(props) {
 
                 $(el).attr('data-craftercms-index', i);
 
-                const pr = PhysicalRegistry.fromElement(el);
+                const pr = ElementRegistry.fromElement(el);
 
                 context.deregister(pr.id);
                 registerElement(el);
@@ -273,7 +273,7 @@ export function GuestProxy(props) {
 
               $(el).attr('data-craftercms-index', i);
 
-              const pr = PhysicalRegistry.fromElement(el);
+              const pr = ElementRegistry.fromElement(el);
 
               pr && context.deregister(pr.id);
               registerElement(el);
@@ -320,7 +320,7 @@ export function GuestProxy(props) {
       Object.entries(context.draggable),
       ([phyId, iceId]) => {
         if (iceId !== false) {
-          const record = PhysicalRegistry.get(phyId);
+          const record = ElementRegistry.get(phyId);
           // Item deletion incurs in a brief moment where a record has been removed
           // but the context draggable table hasn't been cleaned up.
           if (record != null) {

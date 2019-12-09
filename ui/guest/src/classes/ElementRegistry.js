@@ -22,7 +22,7 @@ import { take } from 'rxjs/operators';
 
 let seq = 0;
 
-export class PhysicalRegistry {
+export class ElementRegistry {
 
   static db = {};
   static registry = {};
