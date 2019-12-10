@@ -296,10 +296,9 @@ function GitForm(props: GitFormProps) {
           value={inputs.repoUrl}
           error={(inputs.submitted && !inputs.repoUrl && (inputs.pushSite || type === 'clone'))}
           helperText={
-            type === 'push' ?
-              renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(pushMessages.push_url_label),true, inputs.submitted, inputs.pushSite)
-              :
-              renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(cloneMessages.clone_url_label),true, inputs.submitted, true)
+            type === 'push' 
+              ? renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(pushMessages.push_url_label),true, inputs.submitted, inputs.pushSite)
+              : renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(cloneMessages.clone_url_label),true, inputs.submitted, true)
           }
         />
       </Grid>
