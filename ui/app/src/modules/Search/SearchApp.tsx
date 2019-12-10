@@ -19,20 +19,15 @@ import { HashRouter, Route } from 'react-router-dom';
 import Search from './Search';
 
 
-function SearchApp(props: any) {
-  const {onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId} = props;
+function SearchApp(topProps: any) {
   return (
     <HashRouter>
-      <Route path="/" render={(props) =>
-        <Search {...props}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onPreview={onPreview}
-                onSelect={onSelect}
-                onGetUserPermissions={onGetUserPermissions}
-                mode={mode}
-                siteId={siteId}
-        />}/>
+      <Route 
+        path="/" 
+        render={(routeProps: any) =>
+          <Search {...topProps} {...routeProps} />
+        }
+      />
     </HashRouter>
   )
 }
