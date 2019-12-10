@@ -106,16 +106,17 @@ YAHOO.extend(CStudioForms.Controls.numericInput, CStudioForms.CStudioFormField, 
 	 * @param el element
 	 */
 	count: function(evt, countEl, el) {
-	  var el = (el) ? el : this,
-        max = this.getAttribute("max") ,
-			  min = this.getAttribute("min");
-		if(max && parseFloat(this.value) > max){
-			this.value = max;
-		} else if(min && parseFloat(this.value) < min){
-			this.value = min;
-		}
+		var el = (el) ? el : this,
+        max = el.maxValue,
+			  min = el.minValue;
 
-    },
+    if(max != null && max !== '' && parseFloat(this.value) > max){
+      this.value = max;
+    } else if(min != null && min !== '' && parseFloat(this.value) < min){
+      this.value = min;
+    }
+
+  },
 
 	render: function(config, containerEl) {
 		// we need to make the general layout of a control inherit from common

@@ -572,6 +572,48 @@ const dragAndDropMessages = defineMessages({
   }
 });
 
+const internalNameControlMessages = defineMessages({
+  label: {
+    id: 'internalNameControl.label',
+    defaultMessage: 'Internal Name'
+  },
+  displaySize: {
+    id: 'internalNameControl.displaySize',
+    defaultMessage: 'Display Size'
+  },
+  maxLength: {
+    id: 'internalNameControl.maxLength',
+    defaultMessage: 'Max Length'
+  }
+});
+
+const checkboxGroupControlMessages = defineMessages({
+  datasource: {
+    id: 'checkboxGroupControl.datasource',
+    defaultMessage: 'Data Source'
+  },
+  showSelectAll: {
+    id: 'checkboxGroupControl.showSelectAll',
+    defaultMessage: 'Show "Select All"'
+  },
+  listDirection: {
+    id: 'checkboxGroupControl.listDirection',
+    defaultMessage: 'List Direction'
+  },
+  horizontal: {
+    id: 'checkboxGroupControl.horizontal',
+    defaultMessage: 'Horizonal'
+  },
+  vertical: {
+    id: 'checkboxGroupControl.vertical',
+    defaultMessage: 'Vertical'
+  },
+  readonly: {
+    id: 'checkboxGroupControl.readonly',
+    defaultMessage: 'Read Only'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -593,5 +635,7 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
-  dragAndDropMessages
+  dragAndDropMessages,
+  internalNameControlMessages,
+  checkboxGroupControlMessages
 };
