@@ -47,6 +47,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from "clsx";
 import Editor from "../../components/Editor";
 import Iframe from '../../components/Iframe';
+import { getPreviewURLFromPath } from '../../utils/path';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -56,6 +57,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '100%',
     '&.hasContent': {
       height: 'inherit'
+    },
+    '&.select': {
+      paddingBottom: '60px'
     }
   },
   searchHeader: {
@@ -200,7 +204,7 @@ const initialSearchParameters: SearchParameters = {
   keywords: '',
   offset: 0,
   limit: 21,
-  sortBy: 'internalName',
+  sortBy: '_score',
   sortOrder: 'asc',
   filters: {
     //'mime-type': ['image/png', 'image/jpeg']
@@ -514,7 +518,8 @@ function Search(props: any) {
         return <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
                                  nonPlayableMessage={formatMessage(messages.videoProcessed)}/>;
       case 'Page':
-        return <Iframe url={preview.url} name={preview.name} width={960} height={600}/>;
+        return <Iframe url={getPreviewURLFromPath(previewAppBaseUri, preview.url)} name={preview.name} width={960}
+                       height={600}/>;
       case 'Template':
         return <Editor url={preview.url} siteId={siteId} mode={'ace/mode/html'}/>;
       case 'Groovy':
@@ -525,7 +530,12 @@ function Search(props: any) {
   }
 
   return (
-    <section className={clsx(classes.wrapper, (searchResults && searchResults.total) && 'hasContent')}>
+    <section className={
+      clsx(classes.wrapper, {
+        'hasContent': (searchResults && searchResults.total),
+        'select': mode === 'select'
+      })
+    }>
       <header className={classes.searchHeader}>
         <div className={classes.assetSelector}>
           <ImageIcon className={classes.assetImage}/>

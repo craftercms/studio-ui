@@ -24,7 +24,8 @@ const useStyles = makeStyles(() => ({
     width: '930px',
     height: '600px',
     margin: '0',
-    backgroundColor: '#EEEEEE'
+    backgroundColor: '#EEEEEE',
+    border: 'none'
   }
 }));
 

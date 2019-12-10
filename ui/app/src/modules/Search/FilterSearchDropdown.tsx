@@ -123,6 +123,10 @@ const messages: any = defineMessages({
     id: 'searchFilter.sortBy',
     defaultMessage: 'Sort By'
   },
+  revelance: {
+    id: 'searchFilter.revelance',
+    defaultMessage: 'Revelance'
+  },
   internalName: {
     id: 'searchFilter.internalName',
     defaultMessage: 'Name'
@@ -479,11 +483,12 @@ function SortBy(props: any) {
   return (
     <Select
       id="sortBy"
-      value={queryParams['sortBy'] || "internalName"}
+      value={queryParams['sortBy'] || "_score"}
       className={classes.Select}
       onChange={(event) => handleFilterChange({name: 'sortBy', value: event.target.value})}
     >
-      <MenuItem value='internalName'>{formatMessage(messages[camelize('internalName')])}</MenuItem>
+      <MenuItem value='_score'>{formatMessage(messages.revelance)}</MenuItem>
+      <MenuItem value='internalName'>{formatMessage(messages.internalName)}</MenuItem>
       {
         filterKeys.map((name: string, i: number) => {
           return <MenuItem value={name} key={i}>{formatMessage(messages[camelize(name)])}</MenuItem>
@@ -526,7 +531,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
 
   const setCheckedParameterFromURL = (queryParams: QueryParams) => {
     if (queryParams['filters']) {
-      let checked: any  = {};
+      let checked: any = {};
       let parseQP = JSON.parse(queryParams['filters']);
       Object.keys(parseQP).forEach((facet) => {
         if (Array.isArray(parseQP[facet])) {

@@ -205,13 +205,13 @@
                     contentTO.uri,
                     false,
                     editCallback,
-                    readonly? ['readonly'] : null
+                    readonly? [{name: 'readonly'}] : null
                   );
             },
             failure: function (error) {
                 console.error(error);
             }
-        }
+        };
 
         CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, callback, false, false);
     };
