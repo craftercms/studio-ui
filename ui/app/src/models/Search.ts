@@ -58,7 +58,7 @@ export interface MediaItem {
 
 export interface Filter {
   name: string;
-  value: string;
+  value: string | string[] | any;
 }
 
 export interface Facet {

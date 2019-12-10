@@ -38,6 +38,7 @@ import Radio from "@material-ui/core/Radio";
 import TextField from "@material-ui/core/TextField";
 import { Facet, Filter as FilterType, QueryParams } from '../../models/Search';
 import CheckIcon from '@material-ui/icons/Check';
+import { LookupTable } from "../../models/LookupTable";
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -203,10 +204,21 @@ interface FilterSearchDropdownProps {
   queryParams: QueryParams;
 }
 
-function Filter(props: any) {
+interface FilterProps {
+  facet: string;
+
+  handleFilterChange(filter: FilterType, isFilter: boolean): any,
+
+  facetsLookupTable: LookupTable,
+  checkedFilters: LookupTable,
+
+  setCheckedFilters(checkedFilters: object): any;
+}
+
+function Filter(props: FilterProps) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
-  const {facet, handleFilterChange, queryParams, facetsLookupTable, checkedFilters, setCheckedFilters} = props;
+  const {facet, handleFilterChange, facetsLookupTable, checkedFilters, setCheckedFilters} = props;
 
   const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
     const facetFilter = checkedFilters[facet] || {};
@@ -290,7 +302,6 @@ function Filter(props: any) {
                   facet={facet}
                   handleFilterChange={handleFilterChange}
                   checkedFilters={checkedFilters}
-                  queryParams={queryParams}
                 />
               }
             </>
@@ -301,7 +312,16 @@ function Filter(props: any) {
   )
 }
 
-function FilterRadios(props: any) {
+interface FilterRadiosProps {
+  facetData: Facet;
+  facet: string;
+
+  handleRadioClick(value: string, facet: string): any;
+
+  checkedFilters: LookupTable;
+}
+
+function FilterRadios(props: FilterRadiosProps) {
   const {facetData, facet, handleRadioClick, checkedFilters} = props;
   const items = facetData.values;
   const classes = useStyles({});
@@ -368,7 +388,16 @@ function FilterRadios(props: any) {
   )
 }
 
-function FilterCheckboxes(props: any) {
+interface FilterCheckboxesProps {
+  facetData: Facet;
+  facet: string;
+
+  handleCheckboxClick(key: string, checked: boolean, facet: string): any;
+
+  checkedFilters: LookupTable;
+}
+
+function FilterCheckboxes(props: FilterCheckboxesProps) {
   const {facetData, facet, handleCheckboxClick, checkedFilters} = props;
   const items = facetData.values;
   const classes = useStyles({});
@@ -402,7 +431,15 @@ function FilterCheckboxes(props: any) {
   )
 }
 
-function RangeSelector(props: any) {
+interface RangeSelectorProps {
+  facet: string;
+
+  handleFilterChange(filter: FilterType, isFilter: boolean): any;
+
+  checkedFilters: LookupTable;
+}
+
+function RangeSelector(props: RangeSelectorProps) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
   const {facet, handleFilterChange, checkedFilters} = props;
@@ -476,7 +513,15 @@ function RangeSelector(props: any) {
   )
 }
 
-function SortBy(props: any) {
+interface SortByProps {
+  queryParams: QueryParams;
+
+  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
+
+  filterKeys: string[];
+}
+
+function SortBy(props: SortByProps) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
   const {queryParams, handleFilterChange, filterKeys} = props;
@@ -498,7 +543,13 @@ function SortBy(props: any) {
   )
 }
 
-function SortOrder(props: any) {
+interface SortOrderProps {
+  queryParams: QueryParams;
+
+  handleFilterChange(filter: FilterType, isFilter?: boolean): any;
+}
+
+function SortOrder(props: SortOrderProps) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
   const {queryParams, handleFilterChange} = props;
@@ -552,8 +603,8 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   const popoverAction = useRef(null);
   const popover = useRef(null);
 
-  let filterKeys: any[] = [];
-  let facetsLookupTable: any = {};
+  let filterKeys: string[] = [];
+  let facetsLookupTable: LookupTable = {};
 
   facets.forEach((facet) => {
     filterKeys.push(facet.name);

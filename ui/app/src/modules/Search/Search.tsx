@@ -48,6 +48,7 @@ import clsx from "clsx";
 import Editor from "../../components/Editor";
 import Iframe from '../../components/Iframe';
 import { getPreviewURLFromPath } from '../../utils/path';
+import { History, Location } from 'history';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -238,7 +239,20 @@ const messages = defineMessages({
   }
 });
 
-function Search(props: any) {
+interface SearchProps {
+  history: History;
+  location: Location;
+  onEdit(path: string, refreshSearch:any, readonly: boolean): any;
+  onDelete(path: string, refreshSearch:any): any;
+  onPreview(url: string): any;
+  onSelect(path: string, selected: boolean): any;
+  onGetUserPermissions(path: string): any;
+  mode: string;
+  siteId: string;
+  previewAppBaseUri: string;
+}
+
+function Search(props: SearchProps) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
   const {history, location, onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId, previewAppBaseUri} = props;
@@ -277,7 +291,7 @@ function Search(props: any) {
       }
     );
     return () => setApiState({error: false, errorResponse: null});
-  }, [location.search]);
+  }, [location.search, siteId]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
@@ -292,7 +306,7 @@ function Search(props: any) {
       })
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [history, onSearch$, refs]);
 
   function renderMediaCards(items: [MediaItem], currentView: string) {
     if (items.length > 0) {
@@ -663,6 +677,5 @@ function Search(props: any) {
     </section>
   )
 }
-
 
 export default Search;
