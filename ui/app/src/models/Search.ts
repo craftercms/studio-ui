@@ -34,9 +34,14 @@ export interface QueryParams {
   limit?: number;
   sortBy?: string;
   sortOrder?: string;
-  filters?:  {
-    [key: string]: any;
-  };
+  filters?:  any;
+}
+
+export interface Preview {
+  url: string,
+  type: string,
+  name: string,
+  open: boolean
 }
 
 export interface MediaItem {

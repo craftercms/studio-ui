@@ -524,14 +524,14 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
     setCheckedFilters(setCheckedParameterFromURL(queryParams));
   }, [queryParams]);
 
-  const setCheckedParameterFromURL = (queryParams) => {
+  const setCheckedParameterFromURL = (queryParams: QueryParams) => {
     if (queryParams['filters']) {
-      let checked = {};
+      let checked: any  = {};
       let parseQP = JSON.parse(queryParams['filters']);
       Object.keys(parseQP).forEach((facet) => {
         if (Array.isArray(parseQP[facet])) {
           checked[facet] = {};
-          parseQP[facet].forEach((name) => {
+          parseQP[facet].forEach((name: string) => {
             checked[facet][name] = true;
           });
         } else {
@@ -547,8 +547,8 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   const popoverAction = useRef(null);
   const popover = useRef(null);
 
-  let filterKeys = [];
-  let facetsLookupTable = {};
+  let filterKeys: any[] = [];
+  let facetsLookupTable: any = {};
 
   facets.forEach((facet) => {
     filterKeys.push(facet.name);

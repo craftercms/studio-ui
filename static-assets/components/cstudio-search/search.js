@@ -67,6 +67,7 @@
               onGetUserPermissions: CStudioSearch.getUserPermissions,
               mode: this.searchContext.mode,
               siteId: CStudioAuthoringContext.siteId,
+              previewAppBaseUri: CStudioAuthoringContext.previewAppBaseUri
             }
           );
     };
@@ -187,7 +188,7 @@
         }
     };
 
-    CStudioSearch.editElement = function(path, refreshSearch){
+    CStudioSearch.editElement = function(path, refreshSearch, readonly){
         var editCallback = {
                 success: function(){
                   refreshSearch();
@@ -203,7 +204,8 @@
                     contentTO.nodeRef,
                     contentTO.uri,
                     false,
-                    editCallback
+                    editCallback,
+                    readonly? ['readonly'] : null
                   );
             },
             failure: function (error) {

@@ -27,7 +27,7 @@ import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
 import { fetchSearch } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
-import { Filter, MediaItem, SearchParameters } from "../../models/Search";
+import { Filter, MediaItem, Preview, SearchParameters, QueryParams } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -45,6 +45,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from "clsx";
+import Editor from "../../components/Editor";
+import Iframe from '../../components/Iframe';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -186,7 +188,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '0 10px 10px 10px',
     '& img': {
       maxWidth: '100%'
     }
@@ -236,7 +237,7 @@ const messages = defineMessages({
 function Search(props: any) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
-  const {history, location, onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId} = props;
+  const {history, location, onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId, previewAppBaseUri} = props;
   const queryParams = queryString.parse(location.search);
   const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -306,6 +307,7 @@ function Search(props: any) {
                 selected={selected}
                 onGetUserPermissions={onGetUserPermissions}
                 mode={mode}
+                previewAppBaseUri={previewAppBaseUri}
               />
             </Grid>
             :
@@ -321,6 +323,7 @@ function Search(props: any) {
                 selected={selected}
                 onGetUserPermissions={onGetUserPermissions}
                 mode={mode}
+                previewAppBaseUri={previewAppBaseUri}
               />
             </Grid>
         )
@@ -344,7 +347,7 @@ function Search(props: any) {
     }
   }
 
-  function handleFilterChange(filter: Filter, isFilter) {
+  function handleFilterChange(filter: Filter, isFilter: boolean) {
     let qs = createQueryString(filter, isFilter);
     if (qs || location.search) {
       history.push({
@@ -379,7 +382,7 @@ function Search(props: any) {
     return queryString.stringify(newFilters);
   }
 
-  function setSearchParameters(initialSearchParameters, queryParams) {
+  function setSearchParameters(initialSearchParameters: SearchParameters, queryParams: QueryParams) {
     let formatParameters = {...queryParams};
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
@@ -436,8 +439,8 @@ function Search(props: any) {
     );
   }
 
-  function handleEdit(path: string) {
-    onEdit(path, refreshSearch);
+  function handleEdit(path: string, readonly: boolean) {
+    onEdit(path, refreshSearch, readonly);
   }
 
   function handleDelete(path: string) {
@@ -470,8 +473,8 @@ function Search(props: any) {
 
   function handleSelectAll(checked: boolean) {
     if (checked) {
-      let selectedItems = [];
-      searchResults.items.forEach((item) => {
+      let selectedItems: any[] = [];
+      searchResults.items.forEach((item: any) => {
         if (selected.indexOf(item.path) === -1) {
           selectedItems.push(item.path);
           onSelect(item.path, true);
@@ -480,7 +483,7 @@ function Search(props: any) {
       setSelected([...selected, ...selectedItems]);
     } else {
       let newSelectedItems = [...selected];
-      searchResults.items.forEach((item) => {
+      searchResults.items.forEach((item: any) => {
         let index = newSelectedItems.indexOf(item.path);
         if (index >= 0) {
           newSelectedItems.splice(index, 1);
@@ -500,7 +503,25 @@ function Search(props: any) {
 
   function areAllSelected() {
     if (!searchResults || searchResults.items.length === 0) return false;
-    return !searchResults.items.some((item) => !selected.includes(item.path));
+    return !searchResults.items.some((item: any) => !selected.includes(item.path));
+  }
+
+  function renderPreview(preview: Preview) {
+    switch (preview.type) {
+      case 'Image':
+        return <img src={preview.url}/>
+      case 'Video':
+        return <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
+                                 nonPlayableMessage={formatMessage(messages.videoProcessed)}/>;
+      case 'Page':
+        return <Iframe url={preview.url} name={preview.name} width={960} height={600}/>;
+      case 'Template':
+        return <Editor url={preview.url} siteId={siteId} mode={'ace/mode/html'}/>;
+      case 'Groovy':
+        return <Editor url={preview.url} siteId={siteId} mode={'ace/mode/java'}/>;
+      default:
+        break;
+    }
   }
 
   return (
@@ -593,7 +614,7 @@ function Search(props: any) {
             component="div"
             labelRowsPerPage={formatMessage(messages.itemsPerPage)}
             count={searchResults.total}
-            rowsPerPage={parseInt(searchParameters.limit, 10)}
+            rowsPerPage={searchParameters.limit}
             page={searchParameters.offset / searchParameters.limit}
             backIconButtonProps={{
               'aria-label': 'previous page',
@@ -626,15 +647,7 @@ function Search(props: any) {
           </IconButton>
         </div>
         <div className={classes.mediaPreview}>
-          {
-            preview.type === 'Image' &&
-            <img src={preview.url}/>
-          }
-          {
-            preview.type === 'Video' &&
-            <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
-                              nonPlayableMessage={formatMessage(messages.videoProcessed)}/>
-          }
+          {renderPreview(preview)}
         </div>
       </Dialog>
     </section>

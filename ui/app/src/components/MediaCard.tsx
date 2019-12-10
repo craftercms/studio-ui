@@ -132,8 +132,9 @@ interface MediaCardProps {
   currentView: string;
   selected: Array<string>;
   mode: string;
+  previewAppBaseUri: string;
 
-  handleEdit(path: string): any;
+  handleEdit(path: string, readonly?: boolean): any;
 
   handleDelete(path: string): any;
 
@@ -163,15 +164,14 @@ function MediaCard(props: MediaCardProps) {
     edit: null,
     delete: null,
   });
-  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, handleSelect, onGetUserPermissions, selected, item, mode} = props;
+  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, handleSelect, onGetUserPermissions, selected, item, mode, previewAppBaseUri} = props;
   const {name, path, type} = item;
   const isList = props.currentView === 'list';
-  const siteUrl = 'http://localhost:8080';
   const {formatMessage} = useIntl();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, path) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, path: string) => {
     setAnchorEl(event.currentTarget);
     onGetUserPermissions(path).then(
       ({permissions}) => {
@@ -180,7 +180,7 @@ function MediaCard(props: MediaCardProps) {
         let isDeleteAllowed = permissions.includes('delete') || false;
         setPermissions({edit: editable && isWriteAllowed, delete: isDeleteAllowed && mode === 'default'});
       },
-      (response) => {
+      (response: string) => {
         console.log(response)
       },
     )
@@ -193,17 +193,19 @@ function MediaCard(props: MediaCardProps) {
   const renderIcon = (type: string, path: string, name: string) => {
     let iconClass = 'fa media-icon';
     let iconName = `${iconClass} fa-file`;
-    let actionArea = false;
+    let previewArea = false;
     switch (type) {
       case 'Page':
         iconName = `${iconClass} fa-file`;
+        previewArea = true;
         break;
       case 'Video':
         iconName = `${iconClass} fa-file-video-o`;
-        actionArea = true;
+        previewArea = true;
         break;
       case 'Template':
         iconName = `${iconClass} fa-file-code-o`;
+        previewArea = true;
         break;
       case 'Taxonomy':
         iconName = `${iconClass} fa-tag`;
@@ -213,22 +215,24 @@ function MediaCard(props: MediaCardProps) {
         break;
       case 'Groovy':
         iconName = `${iconClass} fa-file-code-o`;
+        previewArea = true;
         break;
       default:
         break;
     }
     return (
-      actionArea ?
-        <CardActionArea onClick={() => handlePreviewAsset(path, type, name)}
-                        className={clsx(isList && classes.listActionArea)}>
-          <div className={clsx(classes.mediaIcon, isList && 'list')}>
-            <i className={iconName}></i>
-          </div>
-        </CardActionArea>
-        :
+      <CardActionArea
+        onClick={
+          previewArea ?
+            () => handlePreviewAsset(path, type, name)
+            :
+            () => handleEdit(path, true)
+        }
+        className={clsx(isList && classes.listActionArea)}>
         <div className={clsx(classes.mediaIcon, isList && 'list')}>
           <i className={iconName}></i>
         </div>
+      </CardActionArea>
     )
   };
 
@@ -310,7 +314,7 @@ function MediaCard(props: MediaCardProps) {
                           className={clsx(isList && classes.listActionArea)}>
             <CardMedia
               className={clsx(classes.media, isList && 'list')}
-              image={`${siteUrl}${path}`}
+              image={`${previewAppBaseUri}${path}`}
               title="Paella dish"
             />
           </CardActionArea>
