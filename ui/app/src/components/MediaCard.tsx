@@ -293,10 +293,18 @@ function MediaCard(props: MediaCardProps) {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          {permissions.edit === true &&
-          <MenuItem onClick={() => handleEdit(path)}><EditIcon className={classes.optionIcon}/>Edit</MenuItem>}
-          {permissions.delete === true &&
-          <MenuItem onClick={() => handleDelete(path)}><DeleteIcon className={classes.optionIcon}/>Delete</MenuItem>}
+          {
+            permissions.edit === true &&
+            <MenuItem onClick={() => {handleClose(); handleEdit(path)}}>
+              <EditIcon className={classes.optionIcon}/>Edit
+            </MenuItem>
+          }
+          {
+            permissions.delete === true &&
+            <MenuItem onClick={() => { handleClose(); handleDelete(path)}}>
+              <DeleteIcon className={classes.optionIcon}/>Delete
+            </MenuItem>
+          }
           {
             (permissions.edit === false && permissions.delete === false) &&
             <MenuItem>{formatMessage(messages.noPermissions)}</MenuItem>

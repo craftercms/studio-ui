@@ -19,6 +19,7 @@ import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Avatar, InputBase, Theme } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
+import CloseIcon from '@material-ui/icons/Close';
 import AppsIcon from '@material-ui/icons/Apps';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -30,7 +31,6 @@ import { Filter, MediaItem, Preview, QueryParams, SearchParameters } from "../..
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import CloseIcon from '@material-ui/icons/Close';
 import EmptyState from "../../components/SystemStatus/EmptyState";
 import ViewListIcon from '@material-ui/icons/ViewList';
 import FilterSearchDropdown from "./FilterSearchDropdown";
@@ -50,6 +50,7 @@ import { getPreviewURLFromPath } from '../../utils/path';
 import { History, Location } from 'history';
 import { getContent } from "../../services/content";
 import { palette } from '../../styles/theme';
+import SearchBar from "../../components/SearchBar";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -76,35 +77,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: '7px'
   },
   search: {
-    position: 'relative',
-    background: palette.gray.light5,
-    width: '500px',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '5px 12px',
-    borderRadius: '5px',
-  },
-  searchIcon: {
-    marginLeft: '10px',
-    fontSize: '30px',
-    color: theme.palette.text.secondary
-  },
-  closeIcon: {
-    marginLeft: '10px',
-    fontSize: '30px',
-    color: theme.palette.text.secondary,
-    cursor: 'pointer'
-  },
-  inputRoot: {
-    flexGrow: 1,
-  },
-  inputInput: {
-    background: 'none',
-    border: 'none',
-    width: '100%',
-    '&:focus': {
-      boxShadow: 'none'
-    }
+    width: '500px'
   },
   searchHelperBar: {
     display: 'flex',
@@ -136,7 +109,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   content: {
     flexGrow: 1,
     padding: '25px 30px',
-    background: palette.gray.light1
+    background: palette.gray.light0
   },
   container: {},
   pagination: {
@@ -231,8 +204,8 @@ function Search(props: SearchProps) {
   const classes = useStyles({});
   const {current: refs} = useRef<any>({});
   const {history, location, onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId, previewAppBaseUri} = props;
-  const queryParams = queryString.parse(location.search);
-  const searchParameters = setSearchParameters(initialSearchParameters, queryParams);
+  const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
+  const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
   const [currentView, setCurrentView] = useState('grid');
   const [searchResults, setSearchResults] = useState(null);
@@ -267,7 +240,7 @@ function Search(props: SearchProps) {
       }
     );
     return () => setApiState({error: false, errorResponse: null});
-  }, [location.search, siteId]);
+  }, [searchParameters, siteId]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
@@ -536,21 +509,7 @@ function Search(props: SearchProps) {
     }>
       <header className={classes.searchHeader}>
         <div className={classes.search}>
-          <InputBase
-            onChange={e => handleSearchKeyword(e.target.value)}
-            placeholder="Search…"
-            value={keyword}
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-            inputProps={{'aria-label': 'search'}}
-          />
-          {
-            keyword
-              ? <CloseIcon className={classes.closeIcon} onClick={() => handleSearchKeyword('')}/>
-              : <SearchIcon className={classes.searchIcon}/>
-          }
+          <SearchBar onChange={handleSearchKeyword} keyword={keyword} closeIcon={true}/>
         </div>
         <div className={classes.helperContainer}>
           {
