@@ -173,17 +173,19 @@ function MediaCard(props: MediaCardProps) {
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>, path: string) => {
     setAnchorEl(event.currentTarget);
-    onGetUserPermissions(path).then(
-      ({permissions}) => {
-        let editable = isEditableFormAsset(path);
-        let isWriteAllowed = permissions.includes('write') || false;
-        let isDeleteAllowed = permissions.includes('delete') || false;
-        setPermissions({edit: editable && isWriteAllowed, delete: isDeleteAllowed && mode === 'default'});
-      },
-      (response: string) => {
-        console.log(response)
-      },
-    )
+    if(permissions.edit === null && permissions.delete === null) {
+      onGetUserPermissions(path).then(
+        ({permissions}) => {
+          let editable = isEditableFormAsset(path);
+          let isWriteAllowed = permissions.includes('write') || false;
+          let isDeleteAllowed = permissions.includes('delete') || false;
+          setPermissions({edit: editable && isWriteAllowed, delete: isDeleteAllowed && mode === 'default'});
+        },
+        (response: string) => {
+          console.log(response)
+        },
+      )
+    }
   };
 
   const handleClose = () => {

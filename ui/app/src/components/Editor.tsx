@@ -16,7 +16,6 @@
  */
 
 import React, { useEffect } from 'react';
-import { getContent } from '../services/content';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { palette } from "../styles/theme";
 
