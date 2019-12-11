@@ -38,10 +38,11 @@ export interface QueryParams {
 }
 
 export interface Preview {
-  url: string,
-  type: string,
-  name: string,
-  open: boolean
+  url: string;
+  type: string;
+  name: string;
+  open: boolean;
+  data: any;
 }
 
 export interface MediaItem {

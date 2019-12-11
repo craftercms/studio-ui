@@ -31,7 +31,6 @@
 
     CStudioSearch.init = function() {
 
-        //for whatt??
         CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
         CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 

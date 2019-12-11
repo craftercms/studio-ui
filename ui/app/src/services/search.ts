@@ -17,12 +17,12 @@
 
 import { post } from "../utils/ajax";
 
-export function fetchSearch(siteId: string, parameters: any = {}) {
+export function search(siteId: string, parameters: any = {}) {
   return post(`/studio/api/2/search/search.json?siteId=${siteId}`, parameters , {
     'Content-Type': 'application/json'
   })
 }
 
 export default {
-  fetchSearch
+  search
 }

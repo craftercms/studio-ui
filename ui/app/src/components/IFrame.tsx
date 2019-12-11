@@ -39,7 +39,7 @@ const useStyles = makeStyles(() => createStyles({
   }
 }));
 
-interface IframeProps {
+interface IFrameProps {
   url: string;
   name: string;
   width?: string | number;
@@ -48,7 +48,7 @@ interface IframeProps {
   border?: 'portrait' | 'landscape';
 }
 
-export default function Iframe(props: IframeProps) {
+export default function IFrame(props: IFrameProps) {
   const classes = useStyles({});
   const {
     url,

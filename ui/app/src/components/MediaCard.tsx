@@ -315,7 +315,7 @@ function MediaCard(props: MediaCardProps) {
             <CardMedia
               className={clsx(classes.media, isList && 'list')}
               image={`${previewAppBaseUri}${path}`}
-              title="Paella dish"
+              title={name}
             />
           </CardActionArea>
           :

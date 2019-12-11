@@ -25,7 +25,7 @@ import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
-import { fetchSearch } from "../../services/search";
+import { search } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
 import { Filter, MediaItem, Preview, SearchParameters, QueryParams } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
@@ -46,9 +46,10 @@ import Checkbox from "@material-ui/core/Checkbox";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import clsx from "clsx";
 import Editor from "../../components/Editor";
-import Iframe from '../../components/Iframe';
+import IFrame from '../../components/IFrame';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { History, Location } from 'history';
+import { getContent } from "../../services/content";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -242,11 +243,17 @@ const messages = defineMessages({
 interface SearchProps {
   history: History;
   location: Location;
-  onEdit(path: string, refreshSearch:any, readonly: boolean): any;
-  onDelete(path: string, refreshSearch:any): any;
+
+  onEdit(path: string, refreshSearch: any, readonly: boolean): any;
+
+  onDelete(path: string, refreshSearch: any): any;
+
   onPreview(url: string): any;
+
   onSelect(path: string, selected: boolean): any;
+
   onGetUserPermissions(path: string): any;
+
   mode: string;
   siteId: string;
   previewAppBaseUri: string;
@@ -266,7 +273,8 @@ function Search(props: SearchProps) {
     url: null,
     type: null,
     name: null,
-    open: false
+    open: false,
+    data: null
   });
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const {formatMessage} = useIntl();
@@ -280,7 +288,7 @@ function Search(props: SearchProps) {
   setRequestForgeryToken();
 
   useEffect(() => {
-    fetchSearch(siteId, searchParameters).subscribe(
+    search(siteId, searchParameters).subscribe(
       ({response}) => {
         setSearchResults(response.result);
       },
@@ -445,7 +453,7 @@ function Search(props: SearchProps) {
   }
 
   function refreshSearch() {
-    fetchSearch(siteId, searchParameters).subscribe(
+    search(siteId, searchParameters).subscribe(
       ({response}) => {
         setSearchResults(response.result);
       },
@@ -470,11 +478,20 @@ function Search(props: SearchProps) {
   }
 
   function handlePreviewAsset(url: string, type: string, name: string) {
-    setPreview({url, open: true, type, name});
+    if (type === 'Template' || type === 'Groovy') {
+      getContent(siteId, url).subscribe(
+        (response) => {
+          setPreview({url, open: true, type, name, data: response});
+        }
+      );
+    } else
+    {
+      setPreview({url, open: true, type, name, data: null});
+    }
   }
 
   function handleClosePreview() {
-    setPreview({...preview, url: null, open: false, type: null, name: null});
+    setPreview({...preview, url: null, open: false, type: null, name: null, data: null});
   }
 
   function handleSelect(path: string, isSelected: boolean) {
@@ -527,17 +544,17 @@ function Search(props: SearchProps) {
   function renderPreview(preview: Preview) {
     switch (preview.type) {
       case 'Image':
-        return <img src={preview.url}/>
+        return <img src={preview.url} alt=''/>;
       case 'Video':
         return <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
                                  nonPlayableMessage={formatMessage(messages.videoProcessed)}/>;
       case 'Page':
-        return <Iframe url={getPreviewURLFromPath(previewAppBaseUri, preview.url)} name={preview.name} width={960}
+        return <IFrame url={getPreviewURLFromPath(previewAppBaseUri, preview.url)} name={preview.name} width={960}
                        height={600}/>;
       case 'Template':
-        return <Editor url={preview.url} siteId={siteId} mode={'ace/mode/html'}/>;
+        return <Editor mode={'ace/mode/html'} data={preview.data}/>;
       case 'Groovy':
-        return <Editor url={preview.url} siteId={siteId} mode={'ace/mode/java'}/>;
+        return <Editor mode={'ace/mode/java'} data={preview.data}/>;
       default:
         break;
     }
@@ -607,9 +624,6 @@ function Search(props: SearchProps) {
               }
             </Avatar>
           </IconButton>
-          {/*<IconButton className={classes.avatarContent}>*/}
-          {/*  <Avatar className={classes.avatar}><HelpOutlineIcon/></Avatar>*/}
-          {/*</IconButton>*/}
         </div>
       </header>
       {

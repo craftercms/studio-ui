@@ -50,7 +50,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%',
     padding: '10px 10px 10px 22px',
     borderTop: '1px solid #dedede',
-    //borderBottom: '1px solid #dedede',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -178,11 +177,11 @@ const messages: any = defineMessages({
   },
   under: {
     id: 'searchFilter.under',
-    defaultMessage: 'Under'
+    defaultMessage: 'Under {value}{unit}'
   },
   above: {
     id: 'searchFilter.above',
-    defaultMessage: 'Above'
+    defaultMessage: 'Above {value}{unit}'
   },
   min: {
     id: 'searchFilter.min',
@@ -340,17 +339,17 @@ function FilterRadios(props: FilterRadiosProps) {
   const formatLabel = (facet: string, key: string, value: any) => {
     if (facet === 'size') {
       if (value.from === '-Infinity') {
-        return `${formatMessage(messages.under)} ${formatBytes(value.to)}`
+        return `${formatMessage(messages.under, { value: formatBytes(value.to), unit:'' })}`
       } else if (value.to === 'Infinity') {
-        return `${formatMessage(messages.above)} ${formatBytes(value.from)}`
+        return `${formatMessage(messages.above, { value: formatBytes(value.from), unit:'' })}`
       } else {
         return `${formatBytes(value.from)} - ${formatBytes(value.to)}`
       }
     } else if (facet === 'width' || facet === 'height') {
       if (value.from === '-Infinity') {
-        return `${formatMessage(messages.under)} ${value.to}px`
+        return `${formatMessage(messages.under, { value: value.to, unit: 'px'})}`
       } else if (value.to === 'Infinity') {
-        return `${formatMessage(messages.above)} ${value.from}px`
+        return `${formatMessage(messages.above, { value: value.from, unit: 'px'})}`
       } else {
         return `${value.from}px - ${value.to}px`
       }
@@ -450,7 +449,7 @@ function RangeSelector(props: RangeSelectorProps) {
       return {
         min: range[0],
         max: range[1]
-      }
+      };
     } else {
       return {
         min: '',

@@ -51,14 +51,14 @@ export function getPreviewURLFromPath(baseUrl: string, path: string) {
 }
 
 export function isEditableFormAsset (path: string) {
-  return path.indexOf(".ftl") != -1
-    || path.indexOf(".css") != -1
-    || path.indexOf(".js") != -1
-    || path.indexOf(".groovy") != -1
-    || path.indexOf(".txt") != -1
-    || path.indexOf(".html") != -1
-    || path.indexOf(".hbs") != -1
-    || path.indexOf(".xml") != -1;
+  return path.includes(".ftl")
+    || path.includes(".css")
+    || path.includes(".js")
+    || path.includes(".groovy")
+    || path.includes(".txt")
+    || path.includes(".html")
+    || path.includes(".hbs")
+    || path.includes(".xml")
 }
 
 export default {

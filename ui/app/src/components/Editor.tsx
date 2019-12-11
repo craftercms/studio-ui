@@ -30,29 +30,24 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface EditorProps {
-  url: string;
-  siteId: string;
   mode: string;
+  data: any;
 }
 
 export default function Editor(props: EditorProps) {
-  const {url, siteId, mode} = props;
+  const {data, mode} = props;
   const classes = useStyles({});
   useEffect(() => {
-    getContent(siteId, url).subscribe(
-      (response) => {
-        // @ts-ignore
-        var aceEditor = ace.edit('preview-editor', {
-          mode: mode,
-          showPrintMargin: false,
-          fontSize: "12px",
-          readOnly: true,
-        });
-        aceEditor.setValue(response, -1);
-        aceEditor.focus();
-      }
-    );
-  }, [mode, siteId, url]);
+    // @ts-ignore
+    var aceEditor = ace.edit('preview-editor', {
+      mode: mode,
+      showPrintMargin: false,
+      fontSize: "12px",
+      readOnly: true,
+    });
+    aceEditor.setValue(data, -1);
+    aceEditor.focus();
+  }, []);
 
   return (
     <pre id='preview-editor' className={classes.previewEditor}></pre>
