@@ -215,7 +215,7 @@ const checkboxGroupControlMessages = defineMessages({
   },
   horizontal: {
     id: 'checkboxGroupControl.horizontal',
-    defaultMessage: 'Horizonal'
+    defaultMessage: 'Horizontal'
   },
   vertical: {
     id: 'checkboxGroupControl.vertical',
@@ -351,8 +351,11 @@ const contentTypesMessages = defineMessages({
   fileManager: {
     id: 'contentType.fileManager',
     defaultMessage: 'File Manager'
+  },
+  siteConfigLandingMessage: {
+    id: 'siteConfig.landingMessage',
+    defaultMessage: 'Please choose a tool from the left.'
   }
-
 });
 
 const targetingDialog = defineMessages({
@@ -556,7 +559,6 @@ const browseCMISMessages = defineMessages({
   }
 });
 
-
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
@@ -599,6 +601,21 @@ const dragAndDropMessages = defineMessages({
   }
 });
 
+const internalNameControlMessages = defineMessages({
+  label: {
+    id: 'internalNameControl.label',
+    defaultMessage: 'Internal Name'
+  },
+  displaySize: {
+    id: 'internalNameControl.displaySize',
+    defaultMessage: 'Display Size'
+  },
+  maxLength: {
+    id: 'internalNameControl.maxLength',
+    defaultMessage: 'Max Length'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -621,5 +638,6 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
-  dragAndDropMessages
+  dragAndDropMessages,
+  internalNameControlMessages
 };

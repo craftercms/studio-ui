@@ -28,14 +28,15 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
   /**
    * initialize module
    */
-  initialize: function(config) {
+  initialize(config) {
+
   },
 
-  changeTemplateCalled : false,
+  changeTemplateCalled: false,
   /**
    * show dialog
    */
-  showDialog: function(contentTypes, path, asPopup, onSaveCallback, isChangeTemplate) {
+  showDialog(contentTypes, path, asPopup, onSaveCallback, isChangeTemplate, targetElement) {
 
     /**
      * indicating, from where showDialog is called (new/change template).
@@ -44,7 +45,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
 
     this._self = this;
 
-    this.dialog = this.createDialog(path, onSaveCallback);
+    this.dialog = this.createDialog(path, onSaveCallback, targetElement);
 
     this.path = path;
     this.onSaveCallback = onSaveCallback;
@@ -55,17 +56,21 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
     this.setDefaultTemplate(contentTypes);
     this.dialog.show();
 
-    if(0 === contentTypes.length){
-      $("#submitWCMPopup").attr("disabled","disabled");
-    }
+    if (!targetElement) {
 
-    if(window.frameElement){
-      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-      this.formSize = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
-      if(this.formSize < 522){
-        parent.setFormSize(522, id);
-        $($(".studio-ice-container-"+id,parent.document)[0]).attr('data-decrease', true);
+      if (0 === contentTypes.length) {
+        $('#submitWCMPopup').attr('disabled', 'disabled');
       }
+
+      if (window.frameElement) {
+        var id = window.frameElement.getAttribute('id').split('-editor-')[1];
+        this.formSize = typeof getFormSize === 'function' ? getFormSize : parent.getFormSize;
+        if (this.formSize < 522) {
+          parent.setFormSize(522, id);
+          $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease', true);
+        }
+      }
+
     }
 
   },
@@ -73,136 +78,141 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
   /**
    * hide dialog
    */
-  hideDialog: function() {
-    this.dialog.hide();
+  hideDialog() {
+    this.onSaveCallback && this.onSaveCallback.close && this.onSaveCallback.close();
     this.dialog.destroy();
   },
 
   /**
    * create dialog
    */
-  createDialog: function(path, selectTemplateCb) {
-    YDom.removeClass("cstudio-wcm-popup-div", "yui-pe-content");
+  createDialog(path, selectTemplateCb, elem) {
+
+    const isDialog = !elem;
+
+    YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
     var self = this;
 
-    var newdiv = YDom.get("cstudio-wcm-popup-div");
-    if (newdiv == undefined) {
-      newdiv = document.createElement("div");
+    var newdiv = elem || YDom.get('cstudio-wcm-popup-div');
+    if (!newdiv) {
+      newdiv = document.createElement('div');
       document.body.appendChild(newdiv);
     }
 
-    var divIdName = "cstudio-wcm-popup-div";
+    var divIdName = 'cstudio-wcm-popup-div';
     var CMgs = CStudioAuthoring.Messages;
-    var formsLangBundle = CStudioAuthoring.Messages.getBundle("forms", CStudioAuthoringContext.lang);
-    newdiv.setAttribute("id",divIdName);
-    newdiv.className= "yui-pe-content";
-    newdiv.innerHTML = '<div class="contentTypePopupInner" id="ct_contentTypePopupInner" style="width:600px;height:501px;">'+
-      '<div class="contentTypePopupContent" id="ct_contentTypePopupContent"> '+
-      '<form name="contentFromWCM" action=""> '+
-      '<div class="contentTypePopupHeader">'+CMgs.format(formsLangBundle, 'chooseContentType')+'</div> '+
-      '<div>'+CMgs.format(formsLangBundle, 'chooseContentTypeBody')+'</div> '+
-      '<div class="contentTypeOuter"> '+
-      '<div class="templateName" id="templateName"> '+
-      '<div class="contentTypeDropdown">'+
-      '<div>'+CMgs.format(formsLangBundle, 'chooseContentTypeLabel')+'</div><select id="wcm-content-types-dropdown" size="16" class="cstudio-wcm-popup-select-control" style="width:273px; height:275px;"></select> '+
-      '</div></div>'+
-      '<div class="previewImage" id="previewImage">'+
-      '<div class="contentTypePreview">'+
-      '<div>'+CMgs.format(formsLangBundle, 'chooseContentTypePreview')+'</div><img src="'+CStudioAuthoringContext.baseUri+'/static-assets/themes/cstudioTheme/images/default-contentType.jpg'+'" id="contentTypePreviewImg" width="267px" height="275px" /> '+
-      '</div></div>'+
-      '</div> '+
-      '<div class="contentTypePopupBtn"> '+
-      '<input type="submit" class="btn btn-primary cstudio-xform-button ok" id="submitWCMPopup" value="' +CMgs.format(formsLangBundle, 'ok')+ '" />' +
-      '<input type="submit" class="btn btn-default cstudio-xform-button cancel" id="closeWCMPopup" value="' +CMgs.format(formsLangBundle, 'cancel')+ '" />' +
-      '</div>'+
-      '</form> '+
-      '</div> '+
-      '</div>';
+    var formsLangBundle = CStudioAuthoring.Messages.getBundle('forms', CStudioAuthoringContext.lang);
 
-    document.body.appendChild(newdiv);
+    newdiv.setAttribute('id', divIdName);
+    newdiv.className = 'yui-pe-content';
+    newdiv.innerHTML = (
+      `<div class="contentTypePopupInner" id="ct_contentTypePopupInner">` +
+      /**/`<div class="contentTypePopupContent" id="ct_contentTypePopupContent">` +
+      /****/'<form name="contentFromWCM"> ' +
+      /******/`<div class="contentTypePopupHeader">${CMgs.format(formsLangBundle, 'chooseContentType')}</div>` +
+      /******/`<div>${CMgs.format(formsLangBundle, 'chooseContentTypeBody')}</div>` +
+      /******/'<div class="contentTypeOuter"> ' +
+      /********/'<div class="templateName" id="templateName"> ' +
+      /**********/'<div class="contentTypeDropdown">' +
+      /************/'<div>' + CMgs.format(formsLangBundle, 'chooseContentTypeLabel') + '</div>' +
+      /************/'<select id="wcm-content-types-dropdown" size="16" class="cstudio-wcm-popup-select-control" style="width:273px; height:275px;"></select> ' +
+      /**********/'</div>' +
+      /********/'</div>' +
+      /********/'<div class="previewImage" id="previewImage">' +
+      /**********/'<div class="contentTypePreview">' +
+      /************/'<div>' + CMgs.format(formsLangBundle, 'chooseContentTypePreview') + '</div>' +
+      /************/'<img src="' + CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/default-contentType.jpg' + '" id="contentTypePreviewImg" width="267px" height="275px" /> ' +
+      /**********/'</div>' +
+      /********/'</div>' +
+      /******/'</div>' +
+      /******/'<div class="contentTypePopupBtn"> ' +
+      /********/'<input type="submit" class="btn btn-primary cstudio-xform-button ok" id="submitWCMPopup" value="' + CMgs.format(formsLangBundle, 'ok') + '">' +
+      (isDialog ?
+      /********/'<input type="submit" class="btn btn-default cstudio-xform-button cancel" id="closeWCMPopup" value="' + CMgs.format(formsLangBundle, 'cancel') + '">'
+        : '') +
+      /******/'</div>' +
+      /****/'</form> ' +
+      /**/'</div> ' +
+      '</div>'
+    );
+
     // Instantiate the Dialog
-    var content_type_dialog = new YAHOO.widget.Dialog("cstudio-wcm-popup-div", { width : "610px",
-        height : "501px",
-        effect:{
-          effect: YAHOO.widget.ContainerEffect.FADE,
-          duration: 0.25
-        },
-        fixedcenter : true,
-        visible : false,
-        modal:true,
-        close:false,
-        constraintoviewport : true,
-        underlay:"none"
-      });
+    var content_type_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
+      width: '610px',
+      effect: {
+        effect: YAHOO.widget.ContainerEffect.FADE,
+        duration: 0.25
+      },
+      fixedcenter: isDialog,
+      visible: true,
+      modal: isDialog,
+      close: false,
+      constraintoviewport: isDialog,
+      underlay: 'none'
+    });
 
     // Render the Dialog
     content_type_dialog.render();
-    content_type_dialog.cfg.subscribe("configChanged", function (p_sType, p_aArgs) {
+
+    content_type_dialog.cfg.subscribe('configChanged', function (p_sType, p_aArgs) {
       var aProperty = p_aArgs[0],
         sPropertyName = aProperty[0],
         oPropertyValue = aProperty[1];
       if (sPropertyName == 'zindex') {
-        var siteContextNavZIndex=100000;
-        YDom.get("cstudio-wcm-popup-div").parentNode.style.zIndex = oPropertyValue+siteContextNavZIndex;
+        var siteContextNavZIndex = 100000;
+        YDom.get('cstudio-wcm-popup-div').parentNode.style.zIndex = oPropertyValue + siteContextNavZIndex;
       }
     });
 
-    var eventParams = {
-      self: this
-//			path: path,
-//			selectTemplateCb: selectTemplateCb			
-    };
+    YAHOO.util.Event.addListener('submitWCMPopup', 'click', this.contentPopupSubmit, { self: this  });
+    YAHOO.util.Event.addListener('closeWCMPopup', 'click', function () {
+      self.contentPopupCancel();
+    });
 
-    YAHOO.util.Event.addListener("submitWCMPopup", "click", this.contentPopupSubmit, eventParams);
-    //YAHOO.util.Event.addListener("closeWCMPopup", "click", this.closeDialog);
-    YAHOO.util.Event.addListener("closeWCMPopup", "click",
-      function() {
-        self.contentPopupCancel();
+    if (isDialog) {
 
+      // set focus on OK Button.
+      if (YDom.get('submitWCMPopup')) {
+        CStudioAuthoring.Utils.setDefaultFocusOn(YDom.get('submitWCMPopup'));
       }
-    );
 
-    //set focus on OK Button.
-    if (YDom.get("submitWCMPopup")) {
-      CStudioAuthoring.Utils.setDefaultFocusOn(YDom.get("submitWCMPopup"));
+      $(document).on('keyup', function (e) {
+        // esc
+        if (e.keyCode === 27) {
+          self.contentPopupCancel();
+          $(document).off('keyup');
+        }
+      });
+
     }
 
-
-    $(document).on("keyup", function(e) {
-      if (e.keyCode === 27) {	// esc
-        self.contentPopupCancel();
-        $(document).off("keyup");
-      }
-    });
-
-
     return content_type_dialog;
+
   },
 
-  setDefaultTemplate: function(contentTypes) {
+  setDefaultTemplate(contentTypes) {
     var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
-    var contentTypesSelect = YDom.get("wcm-content-types-dropdown");
+    var contentTypesSelect = YDom.get('wcm-content-types-dropdown');
     if (!contentTypesSelect) return;
-    var defaultSrc = CStudioAuthoringContext.baseUri+'/static-assets/themes/cstudioTheme/images/';
-    var defaultImg = "default-contentType.jpg";
-    var contentTypePreviewImg = YDom.get("contentTypePreviewImg");
+    var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
+    var defaultImg = 'default-contentType.jpg';
+    var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
 
-    for(var k=0; k<contentTypes.length; k++) {
-      if(contentTypesSelect.value == contentTypes[k].form){
-        if((contentTypes[k].image && contentTypes[k].image != "") || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != "" && contentTypes[k].imageThumbnail != "undefined")){
+    for (var k = 0; k < contentTypes.length; k++) {
+      if (contentTypesSelect.value == contentTypes[k].form) {
+        if ((contentTypes[k].image && contentTypes[k].image != '') || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != '' && contentTypes[k].imageThumbnail != 'undefined')) {
 
-          var imageName = (contentTypes[k].image && contentTypes[k].image != "") ? contentTypes[k].image : contentTypes[k].imageThumbnail;
+          var imageName = (contentTypes[k].image && contentTypes[k].image != '') ? contentTypes[k].image : contentTypes[k].imageThumbnail;
 
           contentTypePreviewImg.src =
-            CStudioAuthoringContext.baseUri+
+            CStudioAuthoringContext.baseUri +
             '/api/1/services/api/1/content/get-content-at-path.bin?site=' + CStudioAuthoringContext.site +
             '&path=' + configFilesPath +
-            "/content-types" +
+            '/content-types' +
             contentTypesSelect.value +
-            "/"+imageName;
-        }
-        else{
+            '/' + imageName;
+        } else {
           contentTypePreviewImg.src = defaultSrc + defaultImg;
         }
       }
@@ -212,7 +222,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
   /**
    * update the content types
    */
-  updateAvailableTemplates: function(dialog, contentTypes) {
+  updateAvailableTemplates(dialog, contentTypes) {
 
     $('#wcm-content-types-dropdown').hide();
 
@@ -220,57 +230,55 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
     var swapped;
     do {
       swapped = false;
-      for (var i=0; i < contentTypes.length-1; i++) {
-        if (contentTypes[i].label > contentTypes[i+1].label) {
+      for (var i = 0; i < contentTypes.length - 1; i++) {
+        if (contentTypes[i].label > contentTypes[i + 1].label) {
           var temp = contentTypes[i];
-          contentTypes[i] = contentTypes[i+1];
-          contentTypes[i+1] = temp;
+          contentTypes[i] = contentTypes[i + 1];
+          contentTypes[i + 1] = temp;
           swapped = true;
         }
       }
     } while (swapped);
 
     // handle updates
-    var contentTypesSelect = document.getElementById("wcm-content-types-dropdown");
+    var contentTypesSelect = document.getElementById('wcm-content-types-dropdown');
 
-    contentTypesSelect.innerHTML = "";
+    contentTypesSelect.innerHTML = '';
 
-    for(j=0; j<contentTypes.length; j++) {
+    for (j = 0; j < contentTypes.length; j++) {
       var label = contentTypes[j].label;
-      var option = document.createElement("option");
+      var option = document.createElement('option');
       option.text = contentTypes[j].label;
       option.value = contentTypes[j].form;
-      if(j == 0 ) option.selected = "selected";//first template will be selected.
+      if (j == 0) option.selected = 'selected';//first template will be selected.
       contentTypesSelect.options.add(option);
     }
 
-    YAHOO.util.Event.addListener("wcm-content-types-dropdown", "change", function(){
+    YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function () {
 
-      var defaultSrc = CStudioAuthoringContext.baseUri+'/static-assets/themes/cstudioTheme/images/';
-      var defaultImg = "default-contentType.jpg";
-      var contentTypePreviewImg = YDom.get("contentTypePreviewImg");
+      var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
+      var defaultImg = 'default-contentType.jpg';
+      var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
       var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
-      for(var k=0; k<contentTypes.length; k++) {
-        if(this.value == contentTypes[k].form){
-          if((contentTypes[k].image && contentTypes[k].image != "") || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != "" && contentTypes[k].imageThumbnail != "undefined")){
+      for (var k = 0; k < contentTypes.length; k++) {
+        if (this.value == contentTypes[k].form) {
+          if ((contentTypes[k].image && contentTypes[k].image != '') || (contentTypes[k].imageThumbnail && contentTypes[k].imageThumbnail != '' && contentTypes[k].imageThumbnail != 'undefined')) {
 
-            var imageName = (contentTypes[k].image && contentTypes[k].image != "") ? contentTypes[k].image : contentTypes[k].imageThumbnail;
+            var imageName = (contentTypes[k].image && contentTypes[k].image != '') ? contentTypes[k].image : contentTypes[k].imageThumbnail;
 
             contentTypePreviewImg.src =
-              CStudioAuthoringContext.baseUri+
+              CStudioAuthoringContext.baseUri +
               '/api/1/services/api/1/content/get-content-at-path.bin?site=' + CStudioAuthoringContext.site +
               '&path=' + configFilesPath +
-              "/content-types" +
+              '/content-types' +
               contentTypesSelect.value +
-              "/"+imageName;
-          }
-          else{
+              '/' + imageName;
+          } else {
             contentTypePreviewImg.src = defaultSrc + defaultImg;
           }
         }
       }
-
 
 
     });
@@ -278,26 +286,28 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
     $('#wcm-content-types-dropdown').fadeIn('fast');
 
   },
-  closeDialog:function() {
+
+  closeDialog() {
     this.dialog.destroy();
   },
   /**
    * event fired when the ok is pressed
    */
-  contentPopupSubmit: function(event, args) {
-    var contentTypesSelect = document.getElementById("wcm-content-types-dropdown");
+  contentPopupSubmit: function (event, args) {
+    var contentTypesSelect = document.getElementById('wcm-content-types-dropdown');
     var selectedIndex = contentTypesSelect.selectedIndex;
     var selectedType = contentTypesSelect.value;
     /**
      * EMO-8604, calling closeDialog to remove pop up from DOM.
      */
     CStudioAuthoring.Dialogs.DialogSelectContentType.closeDialog();
-    if(CStudioAuthoring.Dialogs.DialogSelectContentType.changeTemplateCalled == true) {
+    if (CStudioAuthoring.Dialogs.DialogSelectContentType.changeTemplateCalled == true) {
       CStudioAuthoring.Service.changeContentType(
         CStudioAuthoringContext.site,
         oCurrentTextNode.data.uri,
-        selectedType, args.self.onSaveCallback);
-    }else {
+        selectedType, args.self.onSaveCallback
+      );
+    } else {
       args.self.onSaveCallback.success(selectedType);
     }
   },
@@ -305,22 +315,19 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
   /**
    * event fired when the cancel is pressed
    */
-  contentPopupCancel: function(event) {
+  contentPopupCancel: function (event) {
     CStudioAuthoring.Dialogs.DialogSelectContentType.hideDialog();
     if (window.frameElement) {
-      var id = window.frameElement.getAttribute("id").split("-editor-")[1];
-      if ($($(".studio-ice-container-" + id, parent.document)[0]).height() > this.formSize &&
-        $($(".studio-ice-container-" + id, parent.document)[0]).attr('data-decrease')) {
+      var id = window.frameElement.getAttribute('id').split('-editor-')[1];
+      if ($($('.studio-ice-container-' + id, parent.document)[0]).height() > this.formSize &&
+        $($('.studio-ice-container-' + id, parent.document)[0]).attr('data-decrease')) {
 
-        $($(".studio-ice-container-" + id, parent.document)[0]).height(this.formSize);
+        $($('.studio-ice-container-' + id, parent.document)[0]).height(this.formSize);
 
       }
     }
   }
 
-
-
-
 };
 
-CStudioAuthoring.Module.moduleLoaded("dialog-select-template", CStudioAuthoring.Dialogs.DialogSelectContentType);
+CStudioAuthoring.Module.moduleLoaded('dialog-select-template', CStudioAuthoring.Dialogs.DialogSelectContentType);
