@@ -324,8 +324,11 @@ const contentTypesMessages = defineMessages({
   fileManager: {
     id: 'contentType.fileManager',
     defaultMessage: 'File Manager'
+  },
+  siteConfigLandingMessage: {
+    id: 'siteConfig.landingMessage',
+    defaultMessage: 'Please choose a tool from the left.'
   }
-
 });
 
 const targetingDialog = defineMessages({
@@ -528,7 +531,6 @@ const browseCMISMessages = defineMessages({
     defaultMessage: 'Cloning CMIS Asset'
   }
 });
-
 
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
