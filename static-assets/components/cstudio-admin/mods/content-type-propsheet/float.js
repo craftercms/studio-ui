@@ -64,8 +64,14 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Float, CStudioAd
   },
 
   isNumberKey: function(charCode) {
+    // subtract sign (keyboard = 189, keyboard = 173 (firefox), numeric pad = 109)
     const isSubtractSign = (charCode === 109 || charCode === 189 || charCode === 173);
+
+    // decimal sign (keyboard = 190, numeric pad = 110)
     const isDecimalSign = (charCode === 190 || charCode === 110);
+
+    // charCode < 48 or > 57 = not numbers
+    // charCode 43 = execute
     return !(charCode != 43 && charCode > 31 && (charCode < 48 || charCode > 57) && !isSubtractSign && !isDecimalSign);
   }
 
