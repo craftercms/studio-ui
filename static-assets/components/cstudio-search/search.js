@@ -31,7 +31,7 @@
         itemsPerPage: 20,
         keywords: "",
         filters: {},
-        sortBy: "internalName",      // sortBy has value by default, so numFilters starts at 1
+        sortBy: "_score",      // sortBy has value by default, so numFilters starts at 1
         sortOrder: "asc",
         numFilters: 1,
         filtersShowing: 10,
@@ -571,14 +571,16 @@
         // sortBy
         var sortByValue = searchContext.sortBy,
             $sortByDropdown = $('.filter-item .sort-dropdown[name="sortBy"]'),
-            optionTpl = '<option value="internalName">Name</option>';;
+            scoreOption = '<option value="_score">Relevance</option>',
+            nameOption = '<option value="internalName">Name</option>';
+
 
         $sortByDropdown.empty();
-        $sortByDropdown.append(optionTpl);
+        $sortByDropdown.append(scoreOption);
+        $sortByDropdown.append(nameOption);
         $.each(searchContext.facets, function(index, facet){
-            var label = CMgs.format(langBundle, facet.name);
-
-            optionTpl = '<option value="' + facet.name + '">' + label + '</option>';
+            let label = CMgs.format(langBundle, facet.name);
+            let optionTpl = '<option value="' + facet.name + '">' + label + '</option>';
             $sortByDropdown.append(optionTpl);
 
         });

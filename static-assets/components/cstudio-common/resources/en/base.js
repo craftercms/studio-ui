@@ -559,6 +559,7 @@ CStudioAuthoring.Messages.registerBundle("search", "en", {
     numResults: "Number of Results",
     selectAll: "Select All",
     filters: "Filters",
+    Relevance: "Relevance",
     asc: "Ascending",
     desc: "Descending",
     sortOrder: "Sort Order",
