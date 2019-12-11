@@ -43,7 +43,7 @@ crafterDefine('guest', [
   return {
     init: init,
     iceRepaint: iceRepaint,
-    updatePencils: initICERegions,
+    repaintPencils: repaintPencils,
     reportNavigation: reportNavigation
   };
 
@@ -123,6 +123,8 @@ crafterDefine('guest', [
       iceToolsOn = true;
       initICERegions();
     });
+
+    communicator.on(Topics.REPAINT_PENCILS, repaintPencils);
 
     communicator.on(Topics.ICE_TOOLS_REGIONS, function (message) {
       var elt = document.querySelectorAll('[data-studio-ice' + message.label + '="' + message.region + '"]')[0];
@@ -336,6 +338,12 @@ crafterDefine('guest', [
   function removeICERegions() {
     if ($('.studio-ice-indicator').length > 0) {
       $('.studio-ice-indicator').remove();
+    }
+  }
+
+  function repaintPencils() {
+    if (iceToolsOn) {
+      initICERegions();
     }
   }
 
