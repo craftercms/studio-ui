@@ -43,6 +43,7 @@ crafterDefine('guest', [
   return {
     init: init,
     iceRepaint: iceRepaint,
+    updatePencils: initICERegions,
     reportNavigation: reportNavigation
   };
 
@@ -148,10 +149,6 @@ crafterDefine('guest', [
       if (window.location.href.replace(locationOrigin, '') !== params.url) {
         window.location.href = `${locationOrigin}${params.url}`;
       }
-    });
-
-    communicator.on(Topics.RENDER_ICE_PENCIL, (elem) => {
-      renderICESection(elem);
     });
 
     // When the page has successfully loaded, notify the host window of it's readiness
