@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderBottom: `1px solid ${palette.gray.light3}`,
     justifyContent: 'center',
     alignItems: 'center',
-    background: palette.gray.light1
+    background: palette.gray.light0
   },
   searchDropdown: {
     marginRight: '7px'
@@ -178,9 +178,7 @@ const initialSearchParameters: SearchParameters = {
   limit: 21,
   sortBy: '_score',
   sortOrder: 'asc',
-  filters: {
-    //'mime-type': ['image/png', 'image/jpeg']
-  }
+  filters: {}
 };
 
 const messages = defineMessages({
