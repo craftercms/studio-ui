@@ -39,6 +39,7 @@ import TextField from "@material-ui/core/TextField";
 import { Facet, Filter as FilterType, QueryParams } from '../../models/Search';
 import CheckIcon from '@material-ui/icons/Check';
 import { LookupTable } from "../../models/LookupTable";
+import { palette } from "../../styles/theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -49,12 +50,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   header: {
     width: '100%',
     padding: '10px 10px 10px 22px',
-    borderTop: '1px solid #dedede',
+    borderTop: `1px solid ${palette.gray.light3}`,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     '&.open': {
-      borderBottom: '1px solid #dedede',
+      borderBottom: `1px solid ${palette.gray.light3}`,
     }
   },
   body: {
@@ -691,7 +692,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
         <List classes={{padding: classes.listPadding}}>
           <div>
             <ListItem button classes={{root: classes.listPadding}} onClick={() => handleExpandClick('sortBy')}>
-              <header className={classes.header}>
+              <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.sortBy)}</strong>
                 </Typography>

@@ -69,7 +69,6 @@ export default function IFrame(props: IFrameProps) {
   return (
     <iframe
       style={{width, height}}
-      id="searchPreviewIframe"
       title={name}
       src={url || 'about:blank'}
       className={cls}

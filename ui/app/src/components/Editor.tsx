@@ -18,13 +18,14 @@
 import React, { useEffect } from 'react';
 import { getContent } from '../services/content';
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import { palette } from "../styles/theme";
 
 const useStyles = makeStyles(() => ({
   previewEditor: {
     width: '930px',
     height: '600px',
     margin: '0',
-    backgroundColor: '#EEEEEE',
+    backgroundColor: palette.gray.medium3,
     border: 'none'
   }
 }));

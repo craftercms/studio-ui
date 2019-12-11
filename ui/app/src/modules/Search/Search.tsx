@@ -17,9 +17,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Avatar, InputBase, MenuItem, Select, Theme } from "@material-ui/core";
+import { Avatar, InputBase, Theme } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
-import ImageIcon from '@material-ui/icons/Image';
 import AppsIcon from '@material-ui/icons/Apps';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
@@ -27,7 +26,7 @@ import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
 import { search } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
-import { Filter, MediaItem, Preview, SearchParameters, QueryParams } from "../../models/Search";
+import { Filter, MediaItem, Preview, QueryParams, SearchParameters } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -50,6 +49,7 @@ import IFrame from '../../components/IFrame';
 import { getPreviewURLFromPath } from '../../utils/path';
 import { History, Location } from 'history';
 import { getContent } from "../../services/content";
+import { palette } from '../../styles/theme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -67,17 +67,17 @@ const useStyles = makeStyles((theme: Theme) => ({
   searchHeader: {
     padding: '15px 20px',
     display: 'flex',
-    borderBottom: '1px solid #EBEBF0',
+    borderBottom: `1px solid ${palette.gray.light3}`,
     justifyContent: 'center',
     alignItems: 'center',
-    background: '#F3F3F3'
+    background: palette.gray.light1
   },
   searchDropdown: {
     marginRight: '7px'
   },
   search: {
     position: 'relative',
-    background: '#d8d8dc',
+    background: palette.gray.light5,
     width: '500px',
     display: 'flex',
     alignItems: 'center',
@@ -106,36 +106,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       boxShadow: 'none'
     }
   },
-  assetSelector: {
-    display: 'none',
-    minWidth: '187px',
-    padding: '10px 12px',
-    background: 'rgba(0, 122, 255, 0.1)',
-    borderRadius: '5px 0 0 5px',
-    alignItems: 'center',
-    marginLeft: 'auto',
-    '& .select': {
-      width: '100%'
-    }
-  },
-  selectRoot: {
-    width: '100%',
-    color: '#007AFF',
-    background: 'none',
-    border: 'none',
-    '&:focus': {
-      boxShadow: 'none',
-      background: 'none'
-    }
-  },
-  selectIcon: {
-    color: '#000000'
-  },
-  assetImage: {
-    color: '#007AFF',
-    fontSize: '30px',
-    marginRight: '15px',
-  },
   searchHelperBar: {
     display: 'flex',
     padding: '0 6px 0 20px',
@@ -160,13 +130,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: 0,
   },
   avatar: {
-    background: '#EBEBF0',
-    color: '#8E8E93'
+    background: palette.gray.light3,
+    color: palette.gray.medium3
   },
   content: {
     flexGrow: 1,
     padding: '25px 30px',
-    background: '#F3F3F3'
+    background: palette.gray.light1
   },
   container: {},
   pagination: {
@@ -484,8 +454,7 @@ function Search(props: SearchProps) {
           setPreview({url, open: true, type, name, data: response});
         }
       );
-    } else
-    {
+    } else {
       setPreview({url, open: true, type, name, data: null});
     }
   }
@@ -568,24 +537,6 @@ function Search(props: SearchProps) {
       })
     }>
       <header className={classes.searchHeader}>
-        <div className={classes.assetSelector}>
-          <ImageIcon className={classes.assetImage}/>
-          <Select
-            labelId="asset-selector-label"
-            id="asset-selector"
-            value="all"
-            className='select'
-            classes={{
-              root: classes.selectRoot,
-              icon: classes.selectIcon
-            }}
-          >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value={10}>Content</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-        </div>
         <div className={classes.search}>
           <InputBase
             onChange={e => handleSearchKeyword(e.target.value)}

@@ -34,6 +34,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { isEditableFormAsset } from "../utils/path";
 import { defineMessages, useIntl } from "react-intl";
+import { palette } from "../styles/theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -77,7 +78,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
-    //backgroundSize: 'auto',
     '&.list': {
       paddingTop: 0,
       height: '80px',
@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      color: 'rgba(0, 0, 0, 0.54)',
+      color: palette.gray.medium4,
       fontSize: '50px'
     },
     '&.list': {
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   optionIcon: {
-    color: '#828282',
+    color: palette.gray.medium3,
     marginRight: '5px'
   },
   checkbox: {
@@ -223,10 +223,9 @@ function MediaCard(props: MediaCardProps) {
     return (
       <CardActionArea
         onClick={
-          previewArea ?
-            () => handlePreviewAsset(path, type, name)
-            :
-            () => handleEdit(path, true)
+          previewArea
+            ? () => handlePreviewAsset(path, type, name)
+            : () => handleEdit(path, true)
         }
         className={clsx(isList && classes.listActionArea)}>
         <div className={clsx(classes.mediaIcon, isList && 'list')}>
@@ -310,8 +309,10 @@ function MediaCard(props: MediaCardProps) {
       </header>
       {
         (type === 'Image') ?
-          <CardActionArea onClick={() => handlePreviewAsset(path, type, name)}
-                          className={clsx(isList && classes.listActionArea)}>
+          <CardActionArea
+            onClick={() => handlePreviewAsset(path, type, name)}
+            className={clsx(isList && classes.listActionArea)}
+          >
             <CardMedia
               className={clsx(classes.media, isList && 'list')}
               image={`${previewAppBaseUri}${path}`}
