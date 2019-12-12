@@ -64,7 +64,7 @@
 
         workareaEl.innerHTML = `
           <section class="content-types-landing-page">
-            <header class="screen-title">
+            <header class="page-header">
               <h1>${CMgs.format(langBundle, 'contentTypes')}</h1>
             </header>
             <div class="mt30 mb10">
