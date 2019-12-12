@@ -875,8 +875,8 @@
               failure: function () {
 
               },
-              close() {
-                if ($('.content-types-landing-page').length) {
+              close(didCreate) {
+                if (!didCreate && $('.content-types-landing-page').length) {
                   $('#openExistingInlineTarget').html('<div/>');
                   context.onOpenExistingClick(true);
                 }
