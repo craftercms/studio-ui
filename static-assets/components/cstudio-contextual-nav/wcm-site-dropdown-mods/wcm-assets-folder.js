@@ -1291,7 +1291,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
               ||  oCurrentTextNode.data.uri.indexOf(".groovy") != -1
               ||  oCurrentTextNode.data.uri.indexOf(".html") != -1
               ||  oCurrentTextNode.data.uri.indexOf(".hbs") != -1
-              ||  oCurrentTextNode.data.uri.indexOf(".xml") != -1) {
+              ||  oCurrentTextNode.data.uri.indexOf(".xml") != -1
+              ||  oCurrentTextNode.data.uri.indexOf(".tmpl") != -1
+              ||  oCurrentTextNode.data.uri.indexOf(".htm") != -1
+              ) {
               // item is a template
 
               this.aMenuItems.push(

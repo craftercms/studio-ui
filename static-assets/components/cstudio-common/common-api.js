@@ -8257,7 +8257,10 @@ var nodeOpen = false,
                 || uri.indexOf(".txt") != -1
                 || uri.indexOf(".html") != -1
                 || uri.indexOf(".hbs") != -1
-                || uri.indexOf(".xml") != -1) {
+                || uri.indexOf(".xml") != -1
+                || uri.indexOf(".tmpl") != -1
+                || uri.indexOf(".htm") != -1
+                ) {
                 return true;
             }else{
                 return false;
