@@ -61,8 +61,7 @@
 </head>
 
 <body>
-    <section class="cstudio-search">
-    </section>
+    <section class="cstudio-search"></section>
 
     <div id="cstudio-command-controls-container"></div>
 
@@ -76,9 +75,7 @@
     </script>
 
     <script type="text/javascript">
-        $(function() {
-            CStudioSearch.init();
-        });
+      CStudioSearch.init();
     </script>
 </body>
 </html>

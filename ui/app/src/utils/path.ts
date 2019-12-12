@@ -50,18 +50,6 @@ export function getPreviewURLFromPath(baseUrl: string, path: string) {
   return baseUrl+url;
 }
 
-export function isEditableFormAsset (path: string) {
-  return path.includes(".ftl")
-    || path.includes(".css")
-    || path.includes(".js")
-    || path.includes(".groovy")
-    || path.includes(".txt")
-    || path.includes(".html")
-    || path.includes(".hbs")
-    || path.includes(".xml")
-}
-
 export default {
-  getPathFromPreviewURL,
-  isEditableFormAsset
+  getPathFromPreviewURL
 };

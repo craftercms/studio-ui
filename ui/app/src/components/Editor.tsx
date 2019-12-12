@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { palette } from "../styles/theme";
 
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
     width: '930px',
     height: '600px',
     margin: '0',
-    backgroundColor: palette.gray.medium3,
+    backgroundColor: palette.gray.light0,
     border: 'none'
   }
 }));
@@ -37,9 +37,10 @@ interface EditorProps {
 export default function Editor(props: EditorProps) {
   const {data, mode} = props;
   const classes = useStyles({});
+  const editor = useRef(null);
   useEffect(() => {
     // @ts-ignore
-    var aceEditor = ace.edit('preview-editor', {
+    var aceEditor = ace.edit(editor.current, {
       mode: mode,
       showPrintMargin: false,
       fontSize: "12px",
@@ -47,10 +48,10 @@ export default function Editor(props: EditorProps) {
     });
     aceEditor.setValue(data, -1);
     aceEditor.focus();
-  }, []);
+  }, [data, mode]);
 
   return (
-    <pre id='preview-editor' className={classes.previewEditor}></pre>
+    <pre ref={editor} className={classes.previewEditor}></pre>
   )
 }
 

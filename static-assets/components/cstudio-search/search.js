@@ -53,7 +53,7 @@
             this.renderFormControls();
 
         this.bindEvents();
-        const container = document.getElementsByClassName('cstudio-search')[0];
+        const container = document.querySelector('.cstudio-search');
         CrafterCMSNext
           .render(
             container,

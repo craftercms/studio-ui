@@ -727,7 +727,7 @@ var nodeOpen = false,
                                     eventNS.typeAction = "";
                                     eventNS.oldPath = null;
                                     document.dispatchEvent(eventNS);
-                                    callback();
+                                    callback && callback();
                                 };
                                 dialogue.hideEvent.subscribe(reloadFn);
                                 dialogue.destroyEvent.subscribe(reloadFn);

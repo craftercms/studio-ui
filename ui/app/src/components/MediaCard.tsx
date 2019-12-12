@@ -27,14 +27,13 @@ import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
 import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { isEditableFormAsset } from "../utils/path";
 import { defineMessages, useIntl } from "react-intl";
 import { palette } from "../styles/theme";
+import { isEditableAsset } from "../utils/content";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -114,10 +113,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: '5px'
   },
   checkbox: {
-    marginLeft: '11px',
-    '& label': {
-      marginRight: 0
-    },
     '&.list': {
       justifyContent: 'center',
       order: -2,
@@ -154,7 +149,7 @@ const messages = defineMessages({
   },
   loadingPermissions: {
     id: 'mediaCard.loadingPermissions',
-    defaultMessage: 'loading...'
+    defaultMessage: 'Loading...'
   },
 });
 
@@ -176,7 +171,7 @@ function MediaCard(props: MediaCardProps) {
     if(permissions.edit === null && permissions.delete === null) {
       onGetUserPermissions(path).then(
         ({permissions}) => {
-          let editable = isEditableFormAsset(path);
+          let editable = isEditableAsset(path);
           let isWriteAllowed = permissions.includes('write') || false;
           let isDeleteAllowed = permissions.includes('delete') || false;
           setPermissions({edit: editable && isWriteAllowed, delete: isDeleteAllowed && mode === 'default'});
@@ -242,30 +237,20 @@ function MediaCard(props: MediaCardProps) {
       {
         isList &&
         <FormGroup className={clsx(classes.checkbox, 'list')}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={selected.includes(path)}
-                onClick={(e: any) => handleSelect(path, e.target.checked)}
-                color="primary"/>
-            }
-            label={''}
-          />
+          <Checkbox
+            checked={selected.includes(path)}
+            onClick={(e: any) => handleSelect(path, e.target.checked)}
+            color="primary"/>
         </FormGroup>
       }
       <header className={clsx(classes.cardHeader, isList && 'list')}>
         {
           !isList &&
           <FormGroup className={classes.checkbox}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selected.includes(path)}
-                  onClick={(e: any) => handleSelect(path, e.target.checked)}
-                  color="primary"/>
-              }
-              label={''}
-            />
+            <Checkbox
+              checked={selected.includes(path)}
+              onClick={(e: any) => handleSelect(path, e.target.checked)}
+              color="primary"/>
           </FormGroup>
         }
         <CardHeader

@@ -17,8 +17,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { Avatar, InputBase, Theme } from "@material-ui/core";
-import SearchIcon from '@material-ui/icons/Search';
+import { Avatar, Theme } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 import AppsIcon from '@material-ui/icons/Apps';
 import Dialog from '@material-ui/core/Dialog';
@@ -27,7 +26,7 @@ import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
 import { search } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
-import { Filter, MediaItem, Preview, QueryParams, SearchParameters } from "../../models/Search";
+import { ElasticParams, Filter, MediaItem, Preview, QueryParams } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -144,7 +143,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   videoPreview: {}
 }));
 
-const initialSearchParameters: SearchParameters = {
+const initialSearchParameters: ElasticParams = {
   query: '',
   keywords: '',
   offset: 0,
@@ -349,7 +348,7 @@ function Search(props: SearchProps) {
     return queryString.stringify(newFilters);
   }
 
-  function setSearchParameters(initialSearchParameters: SearchParameters, queryParams: QueryParams) {
+  function setSearchParameters(initialSearchParameters: ElasticParams, queryParams: QueryParams) {
     let formatParameters = {...queryParams};
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
