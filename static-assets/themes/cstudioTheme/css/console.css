@@ -419,7 +419,7 @@ body, tbody {
 }
 
 .property-wrapper {
-  background-color: #EAEAEA;
+  background-color: #fafafa;
   border-bottom: 1px solid #CCC;
   clear: both;
   position: relative;
@@ -444,7 +444,8 @@ body, tbody {
 
 .content-types-landing-page {
   margin-top: 50px;
-  padding: 10px;
+  padding: 0 20px;
+  overflow: auto;
 }
 
 .content-types-landing-page .contentTypePopupInner {

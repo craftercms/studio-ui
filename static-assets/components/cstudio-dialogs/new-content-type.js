@@ -48,10 +48,11 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   /**
    * hide dialog
    */
-  closeDialog:function() {
+  closeDialog(didCreate) {
+    !didCreate &&
     CStudioAuthoring.Dialogs.NewContentType.cb &&
     CStudioAuthoring.Dialogs.NewContentType.cb.close &&
-    CStudioAuthoring.Dialogs.NewContentType.cb.close();
+    CStudioAuthoring.Dialogs.NewContentType.cb.close(!!didCreate);
     this.dialog.destroy();
   },
 
@@ -394,7 +395,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
             var writeFormDefCb = {
               success: function() {
-                CStudioAuthoring.Dialogs.NewContentType.closeDialog();
+                CStudioAuthoring.Dialogs.NewContentType.closeDialog(true);
                 CStudioAuthoring.Dialogs.NewContentType.cb.success("/"+type + '/' + name);
               },
 
