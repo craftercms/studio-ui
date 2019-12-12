@@ -36,7 +36,8 @@
         passwordRequirementMessages = i18n.messages.passwordRequirementMessages,
         globalConfigMessages = i18n.messages.globalConfigMessages,
         words = i18n.messages.words,
-        profileSettingsMessages = i18n.messages.profileSettingsMessages;
+        profileSettingsMessages = i18n.messages.profileSettingsMessages,
+        globalMenuMessages = i18n.messages.globalMenuMessages;
 
   app.run([
     '$rootScope', '$state', '$stateParams', 'authService', 'sitesService', 'Constants', '$http', '$cookies', '$location',
@@ -1267,7 +1268,13 @@
 
           if($scope.entities.length > 1){
             $scope.entities.forEach(function(entry, i) {
-              entry.tabName = 'tab'+ entry.label.replace(/ /g,'').toLocaleLowerCase();
+              const label = (
+                globalMenuMessages[entry.id]
+                  ? formatMessage(globalMenuMessages[entry.id])
+                  : entry.label
+              );
+
+              entry.label = label;
               if (/globalMenu$/.test($window.location.href) && i < 1) {
                 $scope.view_tab = entry.tabName;
                 $state.go(entry.id);
@@ -2152,7 +2159,7 @@
   ]);
 
   app.controller('ResetCtrl', [
-    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants', 'passwordRequirements', 
+    '$scope', '$state', '$location', 'authService', '$timeout', '$translate', 'Constants', 'passwordRequirements',
     function ($scope, $state, $location, authService, $timeout, $translate, Constants, passwordRequirements) {
 
       var successDelay = 2500;

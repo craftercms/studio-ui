@@ -616,6 +616,41 @@ const checkboxGroupControlMessages = defineMessages({
   }
 });
 
+const globalMenuMessages = defineMessages({
+  'home.globalMenu.sites': {
+    id: 'GlobalMenu.SitesEntryLabel',
+    defaultMessage: 'Sites'
+  },
+  'home.globalMenu.users': {
+    id: 'GlobalMenu.UsersEntryLabel',
+    defaultMessage: 'Users'
+  },
+  'home.globalMenu.groups': {
+    id: 'GlobalMenu.GroupsEntryLabel',
+    defaultMessage: 'Groups'
+  },
+  'home.globalMenu.cluster': {
+    id: 'GlobalMenu.ClusterEntryLabel',
+    defaultMessage: 'Cluster'
+  },
+  'home.globalMenu.audit': {
+    id: 'GlobalMenu.AuditEntryLabel',
+    defaultMessage: 'Audit'
+  },
+  'home.globalMenu.logging-levels': {
+    id: 'GlobalMenu.LoggingLevelsEntryLabel',
+    defaultMessage: 'Sites'
+  },
+  'home.globalMenu.log-console': {
+    id: 'GlobalMenu.LogConsoleEntryLabel',
+    defaultMessage: 'Logging Levels'
+  },
+  'home.globalMenu.globalConfig': {
+    id: 'GlobalMenu.GlobalConfigEntryLabel',
+    defaultMessage: 'Global Config'
+  },
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -639,5 +674,6 @@ export default {
   browseCMISMessages,
   dragAndDropMessages,
   internalNameControlMessages,
-  checkboxGroupControlMessages
+  checkboxGroupControlMessages,
+  globalMenuMessages
 };
