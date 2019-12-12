@@ -15,7 +15,7 @@
     "@types/video.js": "^7.2.10",
     "@videojs/http-streaming": "^1.10.3",
     "clsx": "^1.0.4",
-    "graphiql": "^0.14.2",
+    "graphiql": "^0.17.5",
     "graphiql-explorer": "^0.4.4",
     "graphql": "^14.5.4",
     "intl-messageformat": "^7.2.1",
