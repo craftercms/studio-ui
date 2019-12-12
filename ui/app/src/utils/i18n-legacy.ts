@@ -639,11 +639,11 @@ const globalMenuMessages = defineMessages({
   },
   'home.globalMenu.logging-levels': {
     id: 'GlobalMenu.LoggingLevelsEntryLabel',
-    defaultMessage: 'Sites'
+    defaultMessage: 'Logging Levels'
   },
   'home.globalMenu.log-console': {
     id: 'GlobalMenu.LogConsoleEntryLabel',
-    defaultMessage: 'Logging Levels'
+    defaultMessage: 'Log Console'
   },
   'home.globalMenu.globalConfig': {
     id: 'GlobalMenu.GlobalConfigEntryLabel',

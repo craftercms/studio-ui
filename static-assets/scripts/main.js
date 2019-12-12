@@ -98,6 +98,9 @@
 
         }
 
+        document.title = globalMenuMessages[toState.name]
+          ? `${ formatMessage(globalMenuMessages[toState.name]) } - Crafter CMS`
+          : 'Crafter CMS';
       });
 
       sitesService.getLanguages($rootScope, true);
