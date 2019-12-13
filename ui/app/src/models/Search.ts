@@ -22,19 +22,7 @@ export interface ElasticParams {
   limit: number;
   sortBy: string;
   sortOrder: string;
-  filters:  {
-    [key: string]: any;
-  };
-}
-
-export interface QueryParams {
-  query?: string;
-  keywords?: string;
-  offset?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: string;
-  filters?:  any;
+  filters:  any;
 }
 
 export interface Preview {

@@ -26,7 +26,7 @@ import Grid from "@material-ui/core/Grid";
 import MediaCard from '../../components/MediaCard';
 import { search } from "../../services/search";
 import { setRequestForgeryToken } from "../../utils/auth";
-import { ElasticParams, Filter, MediaItem, Preview, QueryParams } from "../../models/Search";
+import { ElasticParams, Filter, MediaItem, Preview } from "../../models/Search";
 import Spinner from "../../components/SystemStatus/Spinner";
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -260,7 +260,7 @@ function Search(props: SearchProps) {
     if (items.length > 0) {
       return items.map((item: MediaItem, i: number) => {
         return (
-          (currentView === 'grid') ?
+          (currentView === 'grid') ? (
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
               <MediaCard
                 item={item}
@@ -276,7 +276,7 @@ function Search(props: SearchProps) {
                 previewAppBaseUri={previewAppBaseUri}
               />
             </Grid>
-            :
+          ) : (
             <Grid key={i} item xs={12}>
               <MediaCard
                 item={item}
@@ -292,6 +292,7 @@ function Search(props: SearchProps) {
                 previewAppBaseUri={previewAppBaseUri}
               />
             </Grid>
+          )
         )
       });
 
@@ -348,7 +349,7 @@ function Search(props: SearchProps) {
     return queryString.stringify(newFilters);
   }
 
-  function setSearchParameters(initialSearchParameters: ElasticParams, queryParams: QueryParams) {
+  function setSearchParameters(initialSearchParameters: ElasticParams, queryParams: Partial<ElasticParams>) {
     let formatParameters = {...queryParams};
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
@@ -485,11 +486,19 @@ function Search(props: SearchProps) {
       case 'Image':
         return <img src={preview.url} alt=''/>;
       case 'Video':
-        return <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
-                                 nonPlayableMessage={formatMessage(messages.videoProcessed)}/>;
+        return (
+          <AsyncVideoPlayer
+            playerOptions={{src: preview.url, autoplay: true}}
+            nonPlayableMessage={formatMessage(messages.videoProcessed)}
+          />);
       case 'Page':
-        return <IFrame url={getPreviewURLFromPath(previewAppBaseUri, preview.url)} name={preview.name} width={960}
-                       height={600}/>;
+        return (
+          <IFrame
+            url={getPreviewURLFromPath(previewAppBaseUri, preview.url)}
+            name={preview.name}
+            width={960}
+            height={600}
+          />);
       case 'Template':
         return <Editor mode={'ace/mode/html'} data={preview.data}/>;
       case 'Groovy':
@@ -524,10 +533,9 @@ function Search(props: SearchProps) {
           <IconButton className={classes.avatarContent} onClick={handleChangeView}>
             <Avatar className={classes.avatar}>
               {
-                currentView === 'grid' ?
-                  <ViewListIcon/>
-                  :
-                  <AppsIcon/>
+                currentView === 'grid'
+                  ? <ViewListIcon/>
+                  : <AppsIcon/>
               }
             </Avatar>
           </IconButton>
@@ -575,11 +583,15 @@ function Search(props: SearchProps) {
       <section className={classes.content}>
         {
           apiState.error ?
-            <ErrorState error={apiState.errorResponse}/> :
+            <ErrorState error={apiState.errorResponse}/>
+            :
             (
               <Grid container spacing={3} className={classes.container}>
-                {searchResults === null ?
-                  <Spinner background="inherit"/> : renderMediaCards(searchResults.items, currentView)}
+                {
+                  searchResults === null
+                    ? <Spinner background="inherit"/>
+                    : renderMediaCards(searchResults.items, currentView)
+                }
               </Grid>
             )
         }
