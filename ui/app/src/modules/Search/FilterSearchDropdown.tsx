@@ -36,7 +36,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
 import TextField from "@material-ui/core/TextField";
-import { Facet, Filter as FilterType, QueryParams } from '../../models/Search';
+import { ElasticParams, Facet, Filter as FilterType } from '../../models/Search';
 import CheckIcon from '@material-ui/icons/Check';
 import { LookupTable } from "../../models/LookupTable";
 import { palette } from "../../styles/theme";
@@ -201,7 +201,7 @@ interface FilterSearchDropdownProps {
 
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
 
-  queryParams: QueryParams;
+  queryParams:  Partial<ElasticParams>;
 }
 
 interface FilterProps {
@@ -512,7 +512,7 @@ function RangeSelector(props: RangeSelectorProps) {
 }
 
 interface SortByProps {
-  queryParams: QueryParams;
+  queryParams:  Partial<ElasticParams>;
 
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 
@@ -525,7 +525,6 @@ function SortBy(props: SortByProps) {
   const {queryParams, handleFilterChange, filterKeys} = props;
   return (
     <Select
-      id="sortBy"
       value={queryParams['sortBy'] || "_score"}
       className={classes.Select}
       onChange={(event) => handleFilterChange({name: 'sortBy', value: event.target.value})}
@@ -542,7 +541,7 @@ function SortBy(props: SortByProps) {
 }
 
 interface SortOrderProps {
-  queryParams: QueryParams;
+  queryParams:  Partial<ElasticParams>;
 
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
@@ -553,7 +552,6 @@ function SortOrder(props: SortOrderProps) {
   const {queryParams, handleFilterChange} = props;
   return (
     <Select
-      id="sortOrder"
       value={queryParams['sortOrder'] || "asc"}
       className={clsx(classes.Select, 'last')}
       onChange={(event) => handleFilterChange({name: 'sortOrder', value: event.target.value})}
@@ -578,7 +576,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
     setCheckedFilters(setCheckedParameterFromURL(queryParams));
   }, [queryParams]);
 
-  const setCheckedParameterFromURL = (queryParams: QueryParams) => {
+  const setCheckedParameterFromURL = (queryParams:  Partial<ElasticParams>) => {
     if (queryParams['filters']) {
       let checked: any = {};
       let parseQP = JSON.parse(queryParams['filters']);
@@ -669,7 +667,6 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
         {text} <ArrowDropDownIcon/>
       </Button>
       <Popover
-        id="simple-menu"
         action={popoverAction}
         ref={popover}
         anchorEl={anchorEl}
