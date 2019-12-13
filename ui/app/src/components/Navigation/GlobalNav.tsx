@@ -27,10 +27,11 @@ import TitleCard from "../TitleCard";
 import HomeIcon from '@material-ui/icons/Home';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import clsx from 'clsx';
+import { getGlobalMenuitems } from '../../services/configuration';
 
 const useStyles = makeStyles(() => ({
   popover: {
-    maxWidth: '834px',
+    maxWidth: '920px',
     width: '100%',
     maxHeight: '656px',
     backgroundColor: palette.white,
@@ -39,7 +40,9 @@ const useStyles = makeStyles(() => ({
   },
   sitesPanel: {
     backgroundColor: palette.gray.light1,
-    padding: '30px 24px 30px 30px'
+    padding: '30px 24px 30px 30px',
+    height: '600px',
+    overflow: 'auto'
   },
   sitesContent: {
     backgroundColor: palette.white,
@@ -59,7 +62,8 @@ const useStyles = makeStyles(() => ({
     flexWrap: 'wrap'
   },
   tile: {
-    width: '100px',
+    padding: '10px',
+    width: '120px',
     height: '100px',
     display: 'flex',
     alignItems: 'center',
@@ -136,7 +140,7 @@ function Tile(props: TileProps) {
       <div className={classes.tile}>
         {
           typeof Icon === 'string'
-            ? <i className={clsx(classes.icon, Icon)}></i>
+            ? <i className={clsx(classes.icon, `fa ${Icon}`)}></i>
             : <Icon className={classes.icon}/>
         }
         <Typography variant="subtitle1" color="textSecondary" className={classes.tileTitle}>
@@ -157,6 +161,7 @@ export default function GlobalNav(props: GlobalNavProps) {
   const classes = useStyles({});
   const {formatMessage} = useIntl();
   const [sites, setSites] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
 
   function handleClose() {
     setOpen(false);
@@ -166,6 +171,11 @@ export default function GlobalNav(props: GlobalNavProps) {
     fetchSites().subscribe(
       ({response}) => {
         setSites(response.sites);
+      }
+    );
+    getGlobalMenuitems().subscribe(
+      ({response}) => {
+        setMenuItems(response.menuItems);
       }
     )
   }, []);
@@ -202,15 +212,11 @@ export default function GlobalNav(props: GlobalNavProps) {
             {formatMessage(messages.apps)}
           </Typography>
           <div className={classes.sitesApps}>
-            <Tile title={formatMessage(messages.preview)} icon={VisibilityIcon} />
-            <Tile title={formatMessage(messages.sites)} icon='fa fa-sitemap' />
-            <Tile title={formatMessage(messages.users)} icon='fa fa-user' />
-            <Tile title={formatMessage(messages.groups)} icon='fa fa-users' />
-            <Tile title={formatMessage(messages.cluster)} icon='fa fa-database' />
-            <Tile title={formatMessage(messages.audit)} icon='fa fa-bars' />
-            <Tile title={formatMessage(messages.loggingLevels)} icon='fa fa-level-down' />
-            <Tile title={formatMessage(messages.logConsole)} icon='fa fa-align-left' />
-            <Tile title={formatMessage(messages.globalConfig)} icon='fa fa-globe' />
+            {
+              menuItems.map((item, i) =>
+                <Tile key={i} title={item.label} icon={item.icon} />
+              )
+            }
           </div>
         </Grid>
       </Grid>
