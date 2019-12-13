@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { ElementType } from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import cardTitleStyles from "../styles/card";
-import HomeIcon from '@material-ui/icons/Home';
 import { palette } from "../styles/theme";
+import clsx from "clsx";
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -33,28 +33,32 @@ const useStyles = makeStyles(() => ({
   },
   avatar: {
     color: palette.red.main
+  },
+  action: {
+    marginTop: 0,
+    alignSelf: 'inherit'
+  },
+  root: {
+    padding: '0 16px',
+    height: '70px'
   }
 }));
 
-
 interface TitleCardProps {
   title: string;
-  icon?: any;
+  icon?: ElementType<any>;
   options?: boolean;
+  classes?: any;
 }
 
 export default function TitleCard(props: TitleCardProps) {
-  const {title, options, icon} = props;
+  const {title, options, icon: Icon} = props;
   const classes = useStyles({});
-
   return (
-    <Card className={classes.card}>
+    <Card className={clsx(classes.card, props.classes?.root && props.classes.root )}>
       <CardHeader
-        classes={{avatar: classes.avatar}}
-        avatar={
-          icon &&
-            <HomeIcon/>
-        }
+        classes={{root: classes.root, avatar: classes.avatar, action: classes.action}}
+        avatar={Icon && <Icon/>}
         action={
           options &&
           <IconButton aria-label="settings">
