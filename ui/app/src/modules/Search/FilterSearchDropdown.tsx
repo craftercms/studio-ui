@@ -483,7 +483,6 @@ function RangeSelector(props: RangeSelectorProps) {
   return (
     <div className={classes.rangePicker}>
       <TextField
-        id={`${facet}min`}
         name={`${facet}min`}
         value={range.min}
         onChange={(e) => handleOnChange(e.target.value, 'min')}
@@ -493,7 +492,6 @@ function RangeSelector(props: RangeSelectorProps) {
       />
       <span className={classes.space}>-</span>
       <TextField
-        id={`${facet}max`}
         name={`${facet}max`}
         value={range.max}
         onChange={(e) => handleOnChange(e.target.value, 'max')}

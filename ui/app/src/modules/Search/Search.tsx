@@ -485,11 +485,19 @@ function Search(props: SearchProps) {
       case 'Image':
         return <img src={preview.url} alt=''/>;
       case 'Video':
-        return <AsyncVideoPlayer playerOptions={{src: preview.url, autoplay: true}}
-                                 nonPlayableMessage={formatMessage(messages.videoProcessed)}/>;
+        return (
+          <AsyncVideoPlayer
+            playerOptions={{src: preview.url, autoplay: true}}
+            nonPlayableMessage={formatMessage(messages.videoProcessed)}
+          />);
       case 'Page':
-        return <IFrame url={getPreviewURLFromPath(previewAppBaseUri, preview.url)} name={preview.name} width={960}
-                       height={600}/>;
+        return (
+          <IFrame
+            url={getPreviewURLFromPath(previewAppBaseUri, preview.url)}
+            name={preview.name}
+            width={960}
+            height={600}
+          />);
       case 'Template':
         return <Editor mode={'ace/mode/html'} data={preview.data}/>;
       case 'Groovy':
@@ -575,11 +583,15 @@ function Search(props: SearchProps) {
       <section className={classes.content}>
         {
           apiState.error ?
-            <ErrorState error={apiState.errorResponse}/> :
+            <ErrorState error={apiState.errorResponse}/>
+            :
             (
               <Grid container spacing={3} className={classes.container}>
-                {searchResults === null ?
-                  <Spinner background="inherit"/> : renderMediaCards(searchResults.items, currentView)}
+                {
+                  searchResults === null
+                    ? <Spinner background="inherit"/>
+                    : renderMediaCards(searchResults.items, currentView)
+                }
               </Grid>
             )
         }
