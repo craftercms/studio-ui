@@ -559,6 +559,17 @@ const browseCMISMessages = defineMessages({
   }
 });
 
+const browseSearchMessages = defineMessages({
+  lookUpParentError: {
+    id: 'browseSearchMessages.lookUpChildError',
+    defaultMessage: 'Unable to lookup child form callback for search: {searchId}'
+  },
+  lookUpChildError: {
+    id: 'browseSearchMessages.lookUpParentError',
+    defaultMessage: 'Unable to lookup parent context for search: {searchId}'
+  }
+});
+
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
@@ -638,6 +649,7 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
+  browseSearchMessages,
   dragAndDropMessages,
   internalNameControlMessages
 };

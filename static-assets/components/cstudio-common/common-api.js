@@ -697,7 +697,7 @@ var nodeOpen = false,
                 }
             },
 
-            deleteContent: function(items, requestDelete) {
+            deleteContent: function(items, requestDelete, callback) {
                 var controller, view;
                 if(requestDelete == true) {
                     controller = "viewcontroller-submitfordelete";
@@ -723,11 +723,11 @@ var nodeOpen = false,
                         (function (items) {
                             _self.on("submitComplete", function (evt, args) {
                                 var reloadFn = function () {
-                                    //window.location.reload();
                                     eventNS.data = items;
                                     eventNS.typeAction = "";
                                     eventNS.oldPath = null;
                                     document.dispatchEvent(eventNS);
+                                    callback && callback();
                                 };
                                 dialogue.hideEvent.subscribe(reloadFn);
                                 dialogue.destroyEvent.subscribe(reloadFn);

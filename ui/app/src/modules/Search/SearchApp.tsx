@@ -14,34 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { HashRouter, Route } from 'react-router-dom';
+import Search from './Search';
 
-const useStyles = makeStyles(theme => ({
-  progress: {
-    margin: theme.spacing(2),
-  },
-  center: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    background: (props: any) => props.background,
-    transform: 'translate(-50%, -50%)',
-  }
-}));
 
-interface SpinnerProps {
-  background?: string,
-}
-
-export default function Spinner(props: SpinnerProps) {
-  const classes = useStyles({ background: props.background || '#fff' });
-  // @ts-ignore
+function SearchApp(topProps: any) {
   return (
-    <div className={classes.center}>
-      <CircularProgress className={classes.progress} />
-    </div>
-  );
+    <HashRouter>
+      <Route 
+        path="/" 
+        render={(routeProps: any) =>
+          <Search {...topProps} {...routeProps} />
+        }
+      />
+    </HashRouter>
+  )
 }
+
+export default SearchApp;
