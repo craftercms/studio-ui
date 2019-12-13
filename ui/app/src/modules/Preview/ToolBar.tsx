@@ -31,11 +31,11 @@ import KeyboardArrowLeftRounded from '@material-ui/icons/KeyboardArrowLeftRounde
 import KeyboardArrowRightRounded from '@material-ui/icons/KeyboardArrowRightRounded';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
-// import { palette } from '../../styles/theme';
+import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   toolBar: {
-    placeContent: 'center space-between',
+    placeContent: 'center space-between'
     // background: palette.gray.dark4
   },
   addressBarInput: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     padding: '2px 4px',
     // margin: '0 5px 0 0 ',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
     // backgroundColor: palette.gray.dark6
   },
   inputContainer: {
@@ -73,9 +73,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  emptyPlaceholder: {
-    width: 48,
-    height: '100%'
+  globalNavSection: {
+    display: 'flex',
+    alignItems: 'center'
   }
 
 }));
@@ -149,7 +149,9 @@ export function ToolBarUI(props: any) {
         <section className={classes.addressBarContainer}>
           <AddressBar/>
         </section>
-        <div className={classes.emptyPlaceholder}/>
+        <div className={classes.globalNavSection}>
+          <ToolbarGlobalNav/>
+        </div>
       </Toolbar>
     </AppBar>
   );
