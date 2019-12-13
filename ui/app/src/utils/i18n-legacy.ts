@@ -663,7 +663,7 @@ const globalMenuMessages = defineMessages({
   },
   'login.recover': {
     id: 'GlobalMenu.Recover',
-    defaultMessage: 'Recover'
+    defaultMessage: 'Password Recovery'
   }
 });
 

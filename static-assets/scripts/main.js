@@ -108,7 +108,7 @@
           if (globalMenuItem) {
             docTitle = globalMenuMessages[globalMenuItem.id]
               ? `${ formatMessage(globalMenuMessages[globalMenuItem.id]) } - Crafter CMS`
-              : `${ formatMessage(globalMenuMessages[globalMenuItem.label]) } - Crafter CMS`;
+              : `${ globalMenuItem.label } - Crafter CMS`;
           } else {  // if not a globalMenuItem, use state id, if not in globalMenuMessages => just 'Crafter CMS'
             docTitle = globalMenuMessages[toState.name]
               ? `${ formatMessage(globalMenuMessages[toState.name]) } - Crafter CMS`
@@ -1325,9 +1325,6 @@
           }
         }
       }
-
-      // $scope.entities;
-
     }
 
   ]);
