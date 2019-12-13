@@ -616,6 +616,57 @@ const checkboxGroupControlMessages = defineMessages({
   }
 });
 
+const globalMenuMessages = defineMessages({
+  'home.globalMenu.sites': {
+    id: 'GlobalMenu.SitesEntryLabel',
+    defaultMessage: 'Sites'
+  },
+  'home.globalMenu.users': {
+    id: 'GlobalMenu.UsersEntryLabel',
+    defaultMessage: 'Users'
+  },
+  'home.globalMenu.groups': {
+    id: 'GlobalMenu.GroupsEntryLabel',
+    defaultMessage: 'Groups'
+  },
+  'home.globalMenu.cluster': {
+    id: 'GlobalMenu.ClusterEntryLabel',
+    defaultMessage: 'Cluster'
+  },
+  'home.globalMenu.audit': {
+    id: 'GlobalMenu.AuditEntryLabel',
+    defaultMessage: 'Audit'
+  },
+  'home.globalMenu.logging-levels': {
+    id: 'GlobalMenu.LoggingLevelsEntryLabel',
+    defaultMessage: 'Logging Levels'
+  },
+  'home.globalMenu.log-console': {
+    id: 'GlobalMenu.LogConsoleEntryLabel',
+    defaultMessage: 'Log Console'
+  },
+  'home.globalMenu.globalConfig': {
+    id: 'GlobalMenu.GlobalConfigEntryLabel',
+    defaultMessage: 'Global Config'
+  },
+  'home.about-us': {
+    id: 'GlobalMenu.AboutUs',
+    defaultMessage: 'About'
+  },
+  'home.settings': {
+    id: 'GlobalMenu.Settings',
+    defaultMessage: 'Account Management'
+  },
+  'login': {
+    id: 'GlobalMenu.Login',
+    defaultMessage: 'Login'
+  },
+  'login.recover': {
+    id: 'GlobalMenu.Recover',
+    defaultMessage: 'Password Recovery'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -639,5 +690,6 @@ export default {
   browseCMISMessages,
   dragAndDropMessages,
   internalNameControlMessages,
-  checkboxGroupControlMessages
+  checkboxGroupControlMessages,
+  globalMenuMessages
 };
