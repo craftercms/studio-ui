@@ -16,16 +16,18 @@
  */
 
 export function isEditableAsset(path: string) {
-  return path.includes(".ftl")
-    || path.includes(".css")
-    || path.includes(".js")
-    || path.includes(".groovy")
-    || path.includes(".txt")
-    || path.includes(".html")
-    || path.includes(".hbs")
-    || path.includes(".xml")
-    || path.includes(".tmpl")
-    || path.includes(".htm")
+  return (
+       path.includes('.ftl')
+    || path.includes('.css')
+    || path.includes('.js')
+    || path.includes('.groovy')
+    || path.includes('.txt')
+    || path.includes('.html')
+    || path.includes('.hbs')
+    || path.includes('.xml')
+    || path.includes('.tmpl')
+    || path.includes('.htm')
+  );
 }
 
 
