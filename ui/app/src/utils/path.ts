@@ -47,7 +47,7 @@ export function getPreviewURLFromPath(baseUrl: string, path: string) {
     url.replace('.xml', '.html');
   }
   url.replace('/site/website','');
-  return baseUrl+url;
+  return `${baseUrl}${url}`;
 }
 
 export default {

@@ -303,7 +303,7 @@ function MediaCard(props: MediaCardProps) {
         </Menu>
       </header>
       {
-        (type === 'Image') ?
+        (type === 'Image') ? (
           <CardActionArea
             onClick={() => handlePreviewAsset(path, type, name)}
             className={clsx(isList && classes.listActionArea)}
@@ -314,8 +314,9 @@ function MediaCard(props: MediaCardProps) {
               title={name}
             />
           </CardActionArea>
-          :
+        ) : (
           renderIcon(type, path, name)
+        )
       }
     </Card>
   )
