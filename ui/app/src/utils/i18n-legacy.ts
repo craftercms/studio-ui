@@ -649,6 +649,22 @@ const globalMenuMessages = defineMessages({
     id: 'GlobalMenu.GlobalConfigEntryLabel',
     defaultMessage: 'Global Config'
   },
+  'home.about-us': {
+    id: 'GlobalMenu.AboutUs',
+    defaultMessage: 'About'
+  },
+  'home.settings': {
+    id: 'GlobalMenu.Settings',
+    defaultMessage: 'Account Management'
+  },
+  'login': {
+    id: 'GlobalMenu.Login',
+    defaultMessage: 'Login'
+  },
+  'login.recover': {
+    id: 'GlobalMenu.Recover',
+    defaultMessage: 'Recover'
+  }
 });
 
 export default {

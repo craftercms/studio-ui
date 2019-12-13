@@ -98,9 +98,35 @@
 
         }
 
-        document.title = globalMenuMessages[toState.name]
-          ? `${ formatMessage(globalMenuMessages[toState.name]) } - Crafter CMS`
-          : 'Crafter CMS';
+        function setDocTitle(globalMenuData, toState) {
+          let docTitle;
+
+          // check if state is a globalMenu Item
+          const globalMenuItem = globalMenuData.find(o => o.id === toState.name);
+
+          // if globalMenuItem exists => check if globalMenuMessages has the id, or use the label as docTitle
+          if (globalMenuItem) {
+            docTitle = globalMenuMessages[globalMenuItem.id]
+              ? `${ formatMessage(globalMenuMessages[globalMenuItem.id]) } - Crafter CMS`
+              : `${ formatMessage(globalMenuMessages[globalMenuItem.label]) } - Crafter CMS`;
+          } else {  // if not a globalMenuItem, use state id, if not in globalMenuMessages => just 'Crafter CMS'
+            docTitle = globalMenuMessages[toState.name]
+              ? `${ formatMessage(globalMenuMessages[toState.name]) } - Crafter CMS`
+              : 'Crafter CMS';
+          }
+
+          document.title = docTitle;
+        }
+
+        if ($rootScope.globalMenuData) {
+          setDocTitle($rootScope.globalMenuData, toState);
+        } else {
+          sitesService.getGlobalMenu()
+            .success(function (data) {
+              $rootScope.globalMenuData = data.menuItems;
+              setDocTitle(data.menuItems, toState);
+            });
+        }
       });
 
       sitesService.getLanguages($rootScope, true);
@@ -1260,39 +1286,48 @@
   ]);
 
   app.controller('GlobalMenuCtrl', [
-    '$scope', '$state', '$location', 'sitesService', '$window',
+    '$rootScope', '$scope', '$state', '$location', 'sitesService', '$window',
+    function ($rootScope, $scope, $state, $location, sitesService, $window) {
 
-    function ($scope, $state, $location, sitesService, $window) {
+      if ($rootScope.globalMenuData) {
+        initGlobalMenu($rootScope.globalMenuData);
+      } else {
+        sitesService.getGlobalMenu()
+          .success(function (data) {
+            $rootScope.globalMenuData = data.menuItems;
+            initGlobalMenu(data.menuItems);
+          })
+          .error(function (er) {
+            console.log(er);
+          });
+      }
 
-      $scope.entities;
-      sitesService.getGlobalMenu()
-        .success(function (data) {
-          $scope.entities = data.menuItems;
+      function initGlobalMenu(data) {
+        $scope.entities = data;
 
-          if($scope.entities.length > 1){
-            $scope.entities.forEach(function(entry, i) {
-              const label = (
-                globalMenuMessages[entry.id]
-                  ? formatMessage(globalMenuMessages[entry.id])
-                  : entry.label
-              );
+        if($scope.entities.length > 1){
+          $scope.entities.forEach(function(entry, i) {
+            const label = (
+              globalMenuMessages[entry.id]
+                ? formatMessage(globalMenuMessages[entry.id])
+                : entry.label
+            );
 
-              entry.label = label;
-              if (/globalMenu$/.test($window.location.href) && i < 1) {
-                $scope.view_tab = entry.tabName;
-                $state.go(entry.id);
-              }
-            });
-          }else{
-            if($scope.entities.length > 0) {
-              $state.go(data.menuItems[0].id.replace("globalMenu.", ""));
+            entry.label = label;
+            if (/globalMenu$/.test($window.location.href) && i < 1) {
+              $scope.view_tab = entry.tabName;
+              $state.go(entry.id);
             }
+          });
+        }else{
+          if($scope.entities.length > 0) {
+            $state.go(data.menuItems[0].id.replace("globalMenu.", ""));
           }
+        }
+      }
 
-        })
-        .error(function (er) {
-          console.log(er);
-        });
+      // $scope.entities;
+
     }
 
   ]);
