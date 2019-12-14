@@ -21,7 +21,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Crafter Studio</title>
+  <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 
     <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
     <script src="/studio/static-assets/libs/handlebars/handlebars.js"></script>

@@ -17,8 +17,8 @@
   -->
 
 <page>
-  <internal-name>Site Dashboard</internal-name>
-  <content-type>/page/browse</content-type>	
+  <internal-name>Preview</internal-name>
+  <content-type>/page/browse</content-type>
   <display-template>/templates/web/preview.ftl</display-template>
   <merge-strategy>inherit-levels</merge-strategy>
 </page>
