@@ -148,7 +148,7 @@ export function createCodebaseBridge() {
       ) {
         console.warn('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        console.error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+        console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       if (typeof container === 'string') {
