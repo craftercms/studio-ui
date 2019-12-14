@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   },
   gitInfo: {
     width: '100%',
-    '& .MuiGrid-item':{
+    '& .MuiGrid-item': {
       padding: '12px'
     }
   },
@@ -69,10 +69,13 @@ interface Expanded {
 
 interface GitFormProps {
   inputs: SiteState;
+
   handleInputChange(event: React.ChangeEvent): any;
+
   onKeyPress(event: any): any;
-  setExpanded(expanded: Expanded): any;
-  expanded: Expanded;
+
+  setInputs(state: any): any;
+
   type?: string;
 }
 
@@ -155,34 +158,34 @@ const messages = defineMessages({
 
 function GitForm(props: GitFormProps) {
   const classes = useStyles({});
-  const {inputs, handleInputChange, type, expanded, setExpanded, onKeyPress} = props;
+  const {inputs, setInputs, handleInputChange, type, onKeyPress} = props;
   const [showPassword, setShowPassword] = useState(false);
-  const { formatMessage } = useIntl();
+  const {formatMessage} = useIntl();
 
   const viewAuth = (type: string) => {
-    const _expanded: any = {...expanded};
-    Object.keys(expanded).map((key: string) => {
+    const _expanded: any = {...inputs.expanded};
+    Object.keys(inputs.expanded).map((key: string) => {
       if (key === type) {
         return _expanded[key] = !_expanded[key];
       }
       return _expanded[key] = false;
     });
-    setExpanded(_expanded);
+    setInputs({...inputs, expanded: _expanded});
   };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  function renderHelperText(name:string, value:string = '', helperText:string, required:boolean, submitted:boolean, pushSite: boolean) {
-    if(required && !value && submitted && pushSite) {
+  function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean, pushSite: boolean) {
+    if (required && !value && submitted && pushSite) {
       return formatMessage(messages.required, {name: name})
     } else {
       return helperText;
     }
   }
 
-  function renderAuth(type: string) {
+  function renderAuth(type: string, gitType: string) {
     return (
       <div className={classes.authBox}>
         {
@@ -196,8 +199,8 @@ function GitForm(props: GitFormProps) {
             value={inputs.repoUsername}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
-            error={(inputs.submitted && !inputs.repoUsername && inputs.pushSite)}
-            helperText={renderHelperText(formatMessage(messages.userName), inputs.repoUsername, "",true, inputs.submitted, inputs.pushSite)}
+            error={(inputs.submitted && !inputs.repoUsername && (gitType === 'clone' || inputs.pushSite))}
+            helperText={renderHelperText(formatMessage(messages.userName), inputs.repoUsername, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
           />
         }
         {
@@ -212,8 +215,8 @@ function GitForm(props: GitFormProps) {
             value={inputs.repoPassword}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
-            error={(inputs.submitted && !inputs.repoPassword && inputs.pushSite)}
-            helperText={renderHelperText(formatMessage(messages.password), inputs.repoPassword, "",true, inputs.submitted, inputs.pushSite)}
+            error={(inputs.submitted && !inputs.repoPassword && (gitType === 'clone' || inputs.pushSite))}
+            helperText={renderHelperText(formatMessage(messages.password), inputs.repoPassword, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -239,8 +242,8 @@ function GitForm(props: GitFormProps) {
             label={formatMessage(messages.token)}
             required
             value={inputs.repoToken}
-            error={(inputs.submitted && !inputs.repoToken && inputs.pushSite)}
-            helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, "",true, inputs.submitted, inputs.pushSite)}
+            error={(inputs.submitted && !inputs.repoToken && (gitType === 'clone' || inputs.pushSite))}
+            helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
             InputProps={{
@@ -261,18 +264,18 @@ function GitForm(props: GitFormProps) {
         {
           (type === 'key') &&
           <TextField
-              id="repoKey"
-              name="repoKey"
-              label={formatMessage(messages.privateKey)}
-              required
-              fullWidth
-              multiline
-              className={classes.margin}
-              error={(inputs.submitted && !inputs.repoKey && inputs.pushSite)}
-              helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, "",true, inputs.submitted, inputs.pushSite)}
-              onKeyPress={onKeyPress}
-              onChange={handleInputChange}
-              value={inputs.repoKey}
+            id="repoKey"
+            name="repoKey"
+            label={formatMessage(messages.privateKey)}
+            required
+            fullWidth
+            multiline
+            className={classes.margin}
+            error={(inputs.submitted && !inputs.repoKey && inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
+            onKeyPress={onKeyPress}
+            onChange={handleInputChange}
+            value={inputs.repoKey}
           />
         }
       </div>
@@ -296,9 +299,9 @@ function GitForm(props: GitFormProps) {
           value={inputs.repoUrl}
           error={(inputs.submitted && !inputs.repoUrl && (inputs.pushSite || type === 'clone'))}
           helperText={
-            type === 'push' 
-              ? renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(pushMessages.push_url_label),true, inputs.submitted, inputs.pushSite)
-              : renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(cloneMessages.clone_url_label),true, inputs.submitted, true)
+            type === 'push'
+              ? renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(pushMessages.push_url_label), true, inputs.submitted, inputs.pushSite)
+              : renderHelperText(formatMessage(messages.repoUrl), inputs.repoUrl, formatMessage(cloneMessages.clone_url_label), true, inputs.submitted, true)
           }
         />
       </Grid>
@@ -313,18 +316,18 @@ function GitForm(props: GitFormProps) {
                               label={formatMessage(messages.authenticationNoRequired)}/>
             <FormControlLabel value="basic" control={<Radio color="primary" onChange={() => viewAuth('basic')}/>}
                               label={formatMessage(messages.usernameAndPassword)}/>
-            <Collapse in={expanded.basic} timeout={300}>
-              {expanded.basic && renderAuth(inputs.repoAuthentication)}
+            <Collapse in={inputs.expanded.basic} timeout={300}>
+              {inputs.expanded.basic && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
             <FormControlLabel value="token" control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
                               label={formatMessage(messages.token)}/>
-            <Collapse in={expanded.token} timeout={300} unmountOnExit>
-              {expanded.token && renderAuth(inputs.repoAuthentication)}
+            <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
+              {inputs.expanded.token && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
             <FormControlLabel value="key" control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
                               label={formatMessage(messages.privateKey)}/>
-            <Collapse in={expanded.key} timeout={300} unmountOnExit>
-              {expanded.key && renderAuth(inputs.repoAuthentication)}
+            <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
+              {inputs.expanded.key && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
           </RadioGroup>
         </div>
@@ -340,7 +343,7 @@ function GitForm(props: GitFormProps) {
           onKeyPress={onKeyPress}
           onChange={handleInputChange}
           value={inputs.repoRemoteBranch}
-          helperText={type === 'push'? formatMessage(pushMessages.push_remoteBranch_label) : formatMessage(cloneMessages.clone_remoteBranch_label)}
+          helperText={type === 'push' ? formatMessage(pushMessages.push_remoteBranch_label) : formatMessage(cloneMessages.clone_remoteBranch_label)}
         />
       </Grid>
       <Grid item xs={12}>
@@ -354,7 +357,7 @@ function GitForm(props: GitFormProps) {
           onKeyPress={onKeyPress}
           onChange={handleInputChange}
           value={inputs.repoRemoteName}
-          helperText={type === 'push'? formatMessage(pushMessages.push_remoteName_label) : formatMessage(cloneMessages.clone_remoteName_label)}
+          helperText={type === 'push' ? formatMessage(pushMessages.push_remoteName_label) : formatMessage(cloneMessages.clone_remoteName_label)}
         />
       </Grid>
     </Grid>

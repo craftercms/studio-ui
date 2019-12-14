@@ -25,8 +25,8 @@
   <title>${contentModel['common-title']!'Crafter CMS'}</title>
   <#-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-  <#if userEmail??><script type="application/json" id="user">{"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
-
+  <#if userEmail??>
+  <script type="application/json" id="user">{"firstName":"${userFirstName!""}","lastName":"${userLastName!""}","email":"${userEmail!""}","authenticationType":"${authenticationType!""}","username":"${username!""}" }</script>
   </#if>
 
   <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
@@ -35,9 +35,9 @@
     window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
     const passwordRequirementsRegex = "${passwordRequirementsRegex?js_string}";
     document.documentElement.setAttribute('lang', (
-            localStorage.getItem('${username!""}_crafterStudioLanguage') ||
-            localStorage.getItem('crafterStudioLanguage') ||
-            'en'
+      localStorage.getItem('${username!""}_crafterStudioLanguage') ||
+      localStorage.getItem('crafterStudioLanguage') ||
+      'en'
     ));
   </script>
 

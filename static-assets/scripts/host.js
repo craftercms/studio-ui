@@ -67,6 +67,7 @@
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
 
+  // Opens studio form on pencil click
   communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
     var subscribeCallback = function (_message) {
       switch (_message.type) {
@@ -192,83 +193,6 @@
 
   });
 
-  communicator.subscribe(Topics.ICE_ZONES, function (message) {
-
-    var params = {
-      iceRef: message.iceRef,
-      position: message.position
-    };
-    var currentPath = (message.path) ? message.path : CStudioAuthoring.SelectedContent.getSelectedContent()[0].uri;
-    var isLockOwner = function (lockOwner) {
-      if (lockOwner != '' && lockOwner != null && CStudioAuthoringContext.user != lockOwner) {
-        params.class = 'lock';
-      }
-    };
-    var cachePermissionsKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_permissions',
-      isPermissionCached = cache.get(cachePermissionsKey),
-      cacheContentKey = CStudioAuthoringContext.site + '_' + currentPath + '_' + CStudioAuthoringContext.user + '_content',
-      isContentCached = cache.get(cacheContentKey);
-
-    var permsCallback = {
-      success: function (response) {
-        if (!isPermissionCached) {
-          cache.set(cachePermissionsKey, response.permissions, CStudioAuthoring.Constants.CACHE_TIME_PERMISSION);
-        }
-        var isWrite = CStudioAuthoring.Service.isWrite(response.permissions);
-
-        if (!message.path) {
-          if (isWrite) {
-            isLockOwner(CStudioAuthoring.SelectedContent.getSelectedContent()[0].lockOwner);
-          } else {
-            params.class = 'read';
-          }
-          communicator.publish(Topics.ICE_TOOLS_INDICATOR, params);
-        } else {
-          var itemCallback = {
-            success: function (contentTO) {
-              if (!isContentCached) {
-                cache.set(cacheContentKey, contentTO.item, CStudioAuthoring.Constants.CACHE_TIME_GET_CONTENT_ITEM);
-              }
-              isLockOwner(contentTO.item.lockOwner);
-              communicator.publish(Topics.ICE_TOOLS_INDICATOR, params);
-            }, failure: function () {
-            }
-          };
-
-          if (isWrite) {
-            if (isContentCached) {
-              var contentTO = {};
-              contentTO.item = isContentCached;
-              itemCallback.success(contentTO);
-            } else {
-              CStudioAuthoring.Service.lookupContentItem(
-                CStudioAuthoringContext.site,
-                currentPath,
-                itemCallback,
-                false, false);
-            }
-          } else {
-            params.class = 'read';
-          }
-        }
-
-      }, failure: function () {
-      }
-    };
-
-    if (isPermissionCached) {
-      var response = {};
-      response.permissions = isPermissionCached;
-      permsCallback.success(response);
-    } else {
-      CStudioAuthoring.Service.getUserPermissions(
-        CStudioAuthoringContext.site,
-        currentPath,
-        permsCallback);
-    }
-
-  });
-
   // Listen to the guest site load
   communicator.subscribe(Topics.GUEST_SITE_LOAD, function (message, scope) {
 
@@ -299,7 +223,8 @@
 
   communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function (message, scope) {
     if (message.url) {
-      var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
+      var
+        site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
         studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       selectStudioContent(site, studioPath);
     }
