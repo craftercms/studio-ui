@@ -104,9 +104,8 @@ CStudioAdminConsole = {
             '/static-assets/components/cstudio-admin/mods/' + config.tools.tool[j].name + ".js",
             { config: config.tools.tool[j] },
             cb);
-        }
-        catch(err) {
-          //alert(err);
+        } catch(err) {
+          console.log(err);
         }
       }
     }
