@@ -15,33 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-const useStyles = makeStyles(theme => ({
-  progress: {
-    margin: theme.spacing(2),
-  },
-  center: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    background: (props: any) => props.background,
-    transform: 'translate(-50%, -50%)',
-  }
-}));
-
-interface SpinnerProps {
-  background?: string,
+export interface ElasticParams {
+  query: string;
+  keywords: string;
+  offset: number;
+  limit: number;
+  sortBy: string;
+  sortOrder: string;
+  filters:  any;
 }
 
-export default function Spinner(props: SpinnerProps) {
-  const classes = useStyles({ background: props.background || '#fff' });
-  // @ts-ignore
-  return (
-    <div className={classes.center}>
-      <CircularProgress className={classes.progress} />
-    </div>
-  );
+export interface Preview {
+  url: string;
+  type: string;
+  name: string;
+  open: boolean;
+  data: any;
+}
+
+export interface MediaItem {
+  lastModified: string;
+  lastModifier: string;
+  mimeType: string;
+  name: string;
+  path: string;
+  previewUrl: string;
+  size: number;
+  snippets: string;
+  type: string;
+}
+
+export interface Filter {
+  name: string;
+  value: string | string[] | any;
+}
+
+export interface Facet {
+  date: boolean;
+  multiple: boolean
+  name: string;
+  range: boolean;
+  values: {
+    [key: string]: any;
+  }
 }

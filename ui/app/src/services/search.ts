@@ -15,33 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { post } from "../utils/ajax";
 
-const useStyles = makeStyles(theme => ({
-  progress: {
-    margin: theme.spacing(2),
-  },
-  center: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    background: (props: any) => props.background,
-    transform: 'translate(-50%, -50%)',
-  }
-}));
-
-interface SpinnerProps {
-  background?: string,
+export function search(siteId: string, parameters: any = {}) {
+  return post(`/studio/api/2/search/search.json?siteId=${siteId}`, parameters , {
+    'Content-Type': 'application/json'
+  })
 }
 
-export default function Spinner(props: SpinnerProps) {
-  const classes = useStyles({ background: props.background || '#fff' });
-  // @ts-ignore
-  return (
-    <div className={classes.center}>
-      <CircularProgress className={classes.progress} />
-    </div>
-  );
+export default {
+  search
 }

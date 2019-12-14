@@ -31,6 +31,7 @@ export const palette = {
   teal: { tint: '#70D7FF', main: '#5AC8FA', shade: '#0071A4' },
   yellow: { tint: '#FFD426', main: '#FFCC00', shade: '#A05A00' },
   gray: {
+    light0: '#FAFAFA',
     light1: '#F3F3F3',
     light2: '#F2F2F7',
     light3: '#EBEBF0',

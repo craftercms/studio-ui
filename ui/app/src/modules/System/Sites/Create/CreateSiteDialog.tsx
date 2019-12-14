@@ -62,6 +62,7 @@ import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
+import SearchBar from "../../../../components/SearchBar";
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -210,37 +211,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     left: '50%',
     transform: 'translate(-50%)',
     zIndex: 1
-  },
-  search: {
-    width: '100%',
-    margin: 'auto',
-    position: 'relative'
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    color: '#828282',
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1
-  },
-  searchRoot: {
-    color: 'inherit',
-    width: '100%'
-  },
-  searchInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    width: '100%',
-    backgroundColor: backgroundColor,
-    borderRadius: '5px',
-    border: 0,
-    '&:focus': {
-      backgroundColor: '#FFFFFF',
-      boxShadow: '0px 0px 3px rgba(65, 69, 73, 0.15), 0px 4px 4px rgba(65, 69, 73, 0.15)'
-    }
   },
   dialogContainer: {
     display: 'flex',
@@ -527,6 +497,10 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function handleSearchClick() {
     setSearch({ ...search, searchSelected: !search.searchSelected, searchKey: '' });
+  }
+
+  function handleOnSearchChange(searchKey: string) {
+    setSearch({ ...search, searchKey});
   }
 
   function handleBlueprintSelected(blueprint: Blueprint, view: number) {
@@ -843,22 +817,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   {
                     (search.searchSelected && site.selectedView === 0) &&
                     <div className={classes.searchContainer}>
-                      <div className={classes.search}>
-                        <div className={classes.searchIcon}>
-                          <SearchIcon/>
-                        </div>
-                        <InputBase
-                          placeholder="Search…"
-                          autoFocus={true}
-                          classes={{
-                            root: classes.searchRoot,
-                            input: classes.searchInput
-                          }}
-                          value={search.searchKey}
-                          onChange={e => setSearch({ ...search, searchKey: e.target.value })}
-                          inputProps={{ 'aria-label': 'search' }}
-                        />
-                      </div>
+                      <SearchBar onChange={handleOnSearchChange} keyword={search.searchKey} autofocus={true} backgroundColor={backgroundColor}/>
                     </div>
                   }
                   {
