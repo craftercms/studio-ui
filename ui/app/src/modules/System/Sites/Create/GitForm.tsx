@@ -310,22 +310,43 @@ function GitForm(props: GitFormProps) {
           {formatMessage(messages.authentication)}
         </Typography>
         <div className={classes.formControl}>
-          <RadioGroup aria-label="repoAuthentication" name="repoAuthentication"
-                      value={inputs.repoAuthentication} onChange={handleInputChange} onKeyPress={onKeyPress}>
-            <FormControlLabel value="none" control={<Radio color="primary" onChange={() => viewAuth('none')}/>}
-                              label={formatMessage(messages.authenticationNoRequired)}/>
-            <FormControlLabel value="basic" control={<Radio color="primary" onChange={() => viewAuth('basic')}/>}
-                              label={formatMessage(messages.usernameAndPassword)}/>
+          <RadioGroup
+            aria-label="repoAuthentication"
+            name="repoAuthentication"
+            value={inputs.repoAuthentication}
+            onChange={handleInputChange}
+            onKeyPress={onKeyPress}
+          >
+            <FormControlLabel
+              value="none"
+              control={
+                <Radio color="primary" onChange={() => viewAuth('none')}/>
+              }
+              label={formatMessage(messages.authenticationNoRequired)}
+            />
+            <FormControlLabel
+              value="basic"
+              control={
+                <Radio color="primary" onChange={() => viewAuth('basic')}/>
+              }
+              label={formatMessage(messages.usernameAndPassword)}
+            />
             <Collapse in={inputs.expanded.basic} timeout={300}>
               {inputs.expanded.basic && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
-            <FormControlLabel value="token" control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
-                              label={formatMessage(messages.token)}/>
+            <FormControlLabel
+              value="token"
+              control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
+              label={formatMessage(messages.token)}
+            />
             <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
               {inputs.expanded.token && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
-            <FormControlLabel value="key" control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
-                              label={formatMessage(messages.privateKey)}/>
+            <FormControlLabel
+              value="key"
+              control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
+              label={formatMessage(messages.privateKey)}
+            />
             <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
               {inputs.expanded.key && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
