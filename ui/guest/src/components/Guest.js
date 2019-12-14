@@ -46,16 +46,21 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 
-// TODO: Temp. To be removed.
-document.domain = 'authoring.sample.com';
-
 // TODO:
 // - add "modePreview" and bypass all
 export function Guest(props) {
 
   // TODO: support path driven Guest.
-  // TODO: consider supporting developer to provide the data source (promise or observable)
-  const { children, modelId, path, isAuthoring = true, scrollElement = 'html, body' } = props;
+  // TODO: consider supporting developer to provide the data source (promise/observable?)
+  const {
+    path,
+    styles,
+    modelId,
+    children,
+    documentDomain,
+    isAuthoring = true,
+    scrollElement = 'html, body'
+  } = props;
   const { current: persistence } = useRef({
     contentReady: false,
     dragLeaveTimeout: null,
@@ -319,7 +324,7 @@ export function Guest(props) {
 
     },
 
-    onComponentDragStarted(contentType) {
+    onHostComponentDragStarted(contentType) {
 
       let players = [];
       let siblings = [];
@@ -839,7 +844,16 @@ export function Guest(props) {
 
   // 1. Subscribes to accommodation messages and routes them.
   // 2. Appends the Guest stylesheet
+  // 3. Sets document domain
   useEffect(() => {
+
+    if (documentDomain) {
+      try {
+        document.domain = documentDomain;
+      } catch (e) {
+        console.log(e);
+      }
+    }
 
     const sub = message$.pipe(
       filter((e) => (e.data?.type) != null),
@@ -853,7 +867,7 @@ export function Guest(props) {
         case ASSET_DRAG_ENDED:
           return fn.onAssetDragEnded(payload);
         case COMPONENT_DRAG_STARTED:
-          return fn.onComponentDragStarted(payload);
+          return fn.onHostComponentDragStarted(payload);
         case COMPONENT_DRAG_ENDED:
           return fn.onHostComponentDragEnd();
         case TRASHED:
@@ -868,10 +882,12 @@ export function Guest(props) {
             }
           });
           break;
+        default:
+          console.warn(`[message$] Unhandled host message "${type}".`);
       }
     });
 
-    const stylesheet = appendStyleSheet();
+    const stylesheet = appendStyleSheet({ styles });
 
     return () => {
       stylesheet.detach();
