@@ -226,7 +226,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   // In some cases, the back end parser seems to return this as "   " 🤷
   if (typeof definition.datasources !== 'string') {
     const propsToPluck = ['browsePath', 'repoPath', 'enableSearchExisting', 'enableBrowseExisting', 'enableCreateNew'];
-    asArray<LegacyDataSource>(definition.datasources.datasource).forEach((legacyDS) => {
+    definition.datasources?.datasource && asArray<LegacyDataSource>(definition.datasources.datasource).forEach((legacyDS) => {
 
       dataSources[legacyDS.id] = {
         id: legacyDS.id,
@@ -256,10 +256,10 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
   }
 
   // Parse Sections & Fields
-  asArray<LegacyFormDefinitionSection>(definition.sections.section).forEach((legacySection) => {
+  definition.sections?.section && asArray<LegacyFormDefinitionSection>(definition.sections.section).forEach((legacySection) => {
     const fieldIds = [];
 
-    asArray<LegacyFormDefinitionField>(legacySection.fields.field).forEach((legacyField) => {
+    legacySection.fields?.field && asArray<LegacyFormDefinitionField>(legacySection.fields.field).forEach((legacyField) => {
 
       const fieldId = camelize(legacyField.id);
 
@@ -349,7 +349,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
   });
 
-  const topLevelProps = asArray(definition.properties.property);
+  const topLevelProps: LegacyFormDefinitionProperty[] = definition.properties?.property ? asArray(definition.properties.property) : [];
 
   return {
     // Find display template
@@ -551,6 +551,38 @@ export function deleteItem(
       );
 
     })
+  );
+}
+
+interface PaginationOptions {
+  limit: number;
+  offset: number;
+}
+
+export function getContentByContentType(site: string, contentType: string, options?: PaginationOptions): Observable<ContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[], options?: PaginationOptions): Observable<ContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[] | string, options?: PaginationOptions): Observable<ContentInstance> {
+  if (typeof contentTypes === 'string') {
+    contentTypes = [contentTypes];
+  }
+  return post(
+    `/studio/api/2/search/search.json?siteId=${site}`,
+    {
+      filters: { 'content-type': contentTypes }
+    }
+  ).pipe(
+    map<any, ContentInstance>(({ response: { result: { items } } }) => items.map((item) => ({
+      craftercms: {
+        id: null,
+        path: item.path,
+        label: item.name,
+        locale: null,
+        dateCreated: null,
+        dateModified: item.lastModified,
+        contentType: null
+      }
+      // ...Search doesn't return all content props. Need to fetch separately 😞.
+    })))
   );
 }
 
