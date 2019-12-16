@@ -41,11 +41,11 @@ interface ConfirmDialogProps {
   onClose(): any;
   description: string;
   title: string;
-  disableEnforceFocus: boolean;
+  disableEnforceFocus?: boolean;
 }
 
 export default function ConfirmDialog(props: ConfirmDialogProps) {
-  const {open, onOk, onClose, description, title, disableEnforceFocus} = props;
+  const {open, onOk, onClose, description, title, disableEnforceFocus = false} = props;
   const {formatMessage} = useIntl();
 
   return (

@@ -32,6 +32,12 @@ export function createSite(site: Site) {
   })
 }
 
+export function deleteSite(id: string) {
+  return post('/studio/api/1/services/api/1/site/delete-site.json', {siteId: id}, {
+    'Content-Type': 'application/json'
+  })
+}
+
 export function checkHandleAvailability(name: string) {
   return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
 }

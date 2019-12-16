@@ -24,6 +24,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import cardTitleStyles from "../styles/card";
 import { palette } from "../styles/theme";
 import clsx from "clsx";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -51,11 +53,29 @@ interface TitleCardProps {
   options?: boolean;
   classes?: any;
   onCardClick(id: string): any;
+  cardActions?: any;
 }
 
 export default function TitleCard(props: TitleCardProps) {
-  const {title, options, icon: Icon, onCardClick} = props;
+  const {title, options, icon: Icon, onCardClick, cardActions = []} = props;
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
+
+  const handleClose = (event: any) => {
+    event.stopPropagation();
+    setAnchorEl(null);
+  };
+
+  const handleOptions = (event: any) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleOptionClick = (event: any, action: any, id: string) => {
+    event.stopPropagation();
+    action.onClick(id);
+  };
+
   return (
     <Card className={clsx(classes.card, props.classes?.root && props.classes.root )} onClick={() => onCardClick(title)}>
       <CardHeader
@@ -63,7 +83,7 @@ export default function TitleCard(props: TitleCardProps) {
         avatar={Icon && <Icon/>}
         action={
           options &&
-          <IconButton aria-label="settings">
+          <IconButton aria-label="settings" onClick={(e) => handleOptions(e)}>
             <MoreVertIcon/>
           </IconButton>
         }
@@ -74,6 +94,19 @@ export default function TitleCard(props: TitleCardProps) {
           className: 'cardTitle'
         }}
       />
+      <Menu
+        id="options-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={(e) => handleClose(e)}
+      >
+        {
+          cardActions.map((action, i) =>
+            <MenuItem key={i} onClick={(e) => handleOptionClick(e, action, title)}>{action.name}</MenuItem>
+          )
+        }
+      </Menu>
     </Card>
   )
 }
