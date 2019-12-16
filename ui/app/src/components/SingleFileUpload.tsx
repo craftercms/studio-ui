@@ -65,16 +65,6 @@ function SingleFileUpload(props: UppyProps) {
       fileTypes
     } = props;
 
-  const uppyConfig: object = {
-    autoProceed: true,
-    ...(
-      (fileTypes)
-        ? { restrictions: { allowedFileTypes: fileTypes } }
-        : {}
-    )
-  };
-
-  const uppy = Core(uppyConfig);
   const { formatMessage } = useIntl();
   const [description, setDescription] = useState(
     formatMessage(messages.selectFileMessage)
@@ -84,6 +74,15 @@ function SingleFileUpload(props: UppyProps) {
 
   useEffect(
     () => {
+
+      const uppy = Core({
+        autoProceed: true,
+        ...(
+          (fileTypes)
+            ? { restrictions: { allowedFileTypes: fileTypes } }
+            : {}
+        )
+      });
 
       let uploadBtn: HTMLInputElement;
 
@@ -141,7 +140,7 @@ function SingleFileUpload(props: UppyProps) {
       };
 
     },
-    [formTarget, formatMessage, onComplete, onError, onUploadStart, uppy, url]
+    [fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, url]
   );
 
   return (
