@@ -31,7 +31,7 @@ import { getDOM, getGlobalMenuitems } from '../../services/configuration';
 import Cookies from "js-cookie";
 import ErrorState from "../SystemStatus/ErrorState";
 import { useOnMount } from '../../utils/helpers';
-import Preview from '../Icons/preview';
+import Preview from '../Icons/Preview';
 import Link from '@material-ui/core/Link';
 import IconButton from "@material-ui/core/IconButton";
 
@@ -332,8 +332,11 @@ export default function GlobalNav(props: GlobalNavProps) {
         horizontal: 'right',
       }}
     >
-      <IconButton aria-label="close" className={classes.closeButton}
-                  onClick={(event) => handleClose(event)}>
+      <IconButton
+        aria-label="close"
+        className={classes.closeButton}
+        onClick={(event) => handleClose(event)}
+      >
         <CloseIcon/>
       </IconButton>
       {
