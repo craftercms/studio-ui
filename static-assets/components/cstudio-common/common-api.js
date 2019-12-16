@@ -830,14 +830,19 @@ var nodeOpen = false,
           },
 
             approveCommon: function (site, items, approveType) {
-                CSA.Operations._showDialogueView({
-                    fn: CSA.Service.getApproveView,
-                    controller: 'viewcontroller-approve',
-                    callback: function(dialogue) {
-                        CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                        this.loadItems(items, dialogue);
-                    }
-                }, true, '800px', approveType);
+              const container = ($('<div class="approve-dialog-container"/>').appendTo('body'))[0];
+
+              const onClose = () => {
+                CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
+              };
+
+              CrafterCMSNext.render(container, 'ApproveDialog',
+                {
+                  onClose: onClose,
+                  items: items,
+                  siteId: site
+                }
+              );
 
             },
 

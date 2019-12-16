@@ -108,7 +108,8 @@ export function createCodebaseBridge() {
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
       SearchApp: lazy(() => import('../modules/Search/SearchApp')),
       Preview: lazy(() => import('../modules/Preview/Preview')),
-      RequestPublishDialog: lazy(() => import('../modules/Content/Submit/DateTimePicker'))
+      RequestPublishDialog: lazy(() => import('../modules/Content/Submit/RequestPublishDialog')),
+      ApproveDialog: lazy(() => import('../modules/Content/Approve/ApproveDialog'))
     },
 
     assets: {

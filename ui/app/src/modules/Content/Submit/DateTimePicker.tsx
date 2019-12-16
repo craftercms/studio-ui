@@ -40,7 +40,8 @@ const dateTimePickerStyles = () => ({
   },
   pickerInput: {
     padding: '8px 12px',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    fontSize: '14px'
   },
   pickerButton: {
     position: 'absolute' as 'absolute',

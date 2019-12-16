@@ -100,6 +100,10 @@ const publishFormStyles = () => ({
   submissionTextField: {
     paddingBottom: 0
   },
+  textField: {
+    backgroundColor: '#ffffff',
+    padding: 0
+  }
 });
 
 const SelectInput = withStyles(() =>
@@ -234,8 +238,8 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
         value={inputs.submissionComment}
         multiline
         rows={inputs.scheduling === 'custom' ? '1': '6'}
-        classes={{
-
+        InputProps={{
+          className: classes.textField
         }}
       />
     </form>
