@@ -200,33 +200,6 @@ const numericInputControlMessages = defineMessages({
   }
 });
 
-const checkboxGroupControlMessages = defineMessages({
-  datasource: {
-    id: 'checkboxGroupControl.datasource',
-    defaultMessage: 'Data Source'
-  },
-  showSelectAll: {
-    id: 'checkboxGroupControl.showSelectAll',
-    defaultMessage: 'Show "Select All"'
-  },
-  listDirection: {
-    id: 'checkboxGroupControl.listDirection',
-    defaultMessage: 'List Direction'
-  },
-  horizontal: {
-    id: 'checkboxGroupControl.horizontal',
-    defaultMessage: 'Horizonal'
-  },
-  vertical: {
-    id: 'checkboxGroupControl.vertical',
-    defaultMessage: 'Vertical'
-  },
-  readonly: {
-    id: 'checkboxGroupControl.readonly',
-    defaultMessage: 'Read Only'
-  }
-});
-
 const reposAdminMessages = defineMessages({
   pendingCommit: {
     id: 'reposAdmin.pendingCommit',
@@ -351,8 +324,11 @@ const contentTypesMessages = defineMessages({
   fileManager: {
     id: 'contentType.fileManager',
     defaultMessage: 'File Manager'
+  },
+  siteConfigLandingMessage: {
+    id: 'siteConfig.landingMessage',
+    defaultMessage: 'Please choose a tool from the left.'
   }
-
 });
 
 const targetingDialog = defineMessages({
@@ -556,6 +532,16 @@ const browseCMISMessages = defineMessages({
   }
 });
 
+const browseSearchMessages = defineMessages({
+  lookUpParentError: {
+    id: 'browseSearchMessages.lookUpChildError',
+    defaultMessage: 'Unable to lookup child form callback for search: {searchId}'
+  },
+  lookUpChildError: {
+    id: 'browseSearchMessages.lookUpParentError',
+    defaultMessage: 'Unable to lookup parent context for search: {searchId}'
+  }
+});
 
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
@@ -599,6 +585,99 @@ const dragAndDropMessages = defineMessages({
   }
 });
 
+const internalNameControlMessages = defineMessages({
+  label: {
+    id: 'internalNameControl.label',
+    defaultMessage: 'Internal Name'
+  },
+  displaySize: {
+    id: 'internalNameControl.displaySize',
+    defaultMessage: 'Display Size'
+  },
+  maxLength: {
+    id: 'internalNameControl.maxLength',
+    defaultMessage: 'Max Length'
+  }
+});
+
+const checkboxGroupControlMessages = defineMessages({
+  datasource: {
+    id: 'checkboxGroupControl.datasource',
+    defaultMessage: 'Data Source'
+  },
+  showSelectAll: {
+    id: 'checkboxGroupControl.showSelectAll',
+    defaultMessage: 'Show "Select All"'
+  },
+  listDirection: {
+    id: 'checkboxGroupControl.listDirection',
+    defaultMessage: 'List Direction'
+  },
+  horizontal: {
+    id: 'checkboxGroupControl.horizontal',
+    defaultMessage: 'Horizonal'
+  },
+  vertical: {
+    id: 'checkboxGroupControl.vertical',
+    defaultMessage: 'Vertical'
+  },
+  readonly: {
+    id: 'checkboxGroupControl.readonly',
+    defaultMessage: 'Read Only'
+  }
+});
+
+const globalMenuMessages = defineMessages({
+  'home.globalMenu.sites': {
+    id: 'GlobalMenu.SitesEntryLabel',
+    defaultMessage: 'Sites'
+  },
+  'home.globalMenu.users': {
+    id: 'GlobalMenu.UsersEntryLabel',
+    defaultMessage: 'Users'
+  },
+  'home.globalMenu.groups': {
+    id: 'GlobalMenu.GroupsEntryLabel',
+    defaultMessage: 'Groups'
+  },
+  'home.globalMenu.cluster': {
+    id: 'GlobalMenu.ClusterEntryLabel',
+    defaultMessage: 'Cluster'
+  },
+  'home.globalMenu.audit': {
+    id: 'GlobalMenu.AuditEntryLabel',
+    defaultMessage: 'Audit'
+  },
+  'home.globalMenu.logging-levels': {
+    id: 'GlobalMenu.LoggingLevelsEntryLabel',
+    defaultMessage: 'Logging Levels'
+  },
+  'home.globalMenu.log-console': {
+    id: 'GlobalMenu.LogConsoleEntryLabel',
+    defaultMessage: 'Log Console'
+  },
+  'home.globalMenu.globalConfig': {
+    id: 'GlobalMenu.GlobalConfigEntryLabel',
+    defaultMessage: 'Global Config'
+  },
+  'home.about-us': {
+    id: 'GlobalMenu.AboutUs',
+    defaultMessage: 'About'
+  },
+  'home.settings': {
+    id: 'GlobalMenu.Settings',
+    defaultMessage: 'Account Management'
+  },
+  'login': {
+    id: 'GlobalMenu.Login',
+    defaultMessage: 'Login'
+  },
+  'login.recover': {
+    id: 'GlobalMenu.Recover',
+    defaultMessage: 'Password Recovery'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -608,7 +687,6 @@ export default {
   groupsAdminMessages,
   profileSettingsMessages,
   numericInputControlMessages,
-  checkboxGroupControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
@@ -621,5 +699,9 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
-  dragAndDropMessages
+  browseSearchMessages,
+  dragAndDropMessages,
+  internalNameControlMessages,
+  checkboxGroupControlMessages,
+  globalMenuMessages
 };

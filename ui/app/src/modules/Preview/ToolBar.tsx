@@ -31,16 +31,20 @@ import KeyboardArrowLeftRounded from '@material-ui/icons/KeyboardArrowLeftRounde
 import KeyboardArrowRightRounded from '@material-ui/icons/KeyboardArrowRightRounded';
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   toolBar: {
     placeContent: 'center space-between'
+    // background: palette.gray.dark4
   },
   addressBarInput: {
     width: 400,
     padding: '2px 4px',
+    // margin: '0 5px 0 0 ',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
+    // backgroundColor: palette.gray.dark6
   },
   inputContainer: {
     marginLeft: theme.spacing(1),
@@ -54,7 +58,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     }
   },
   iconButton: {
-
+    // padding: 5,
+    // margin: '0 5px 0 0',
+    // color: palette.gray.light4,
+    // backgroundColor: palette.gray.dark2
   },
   divider: {
     height: 28,
@@ -66,9 +73,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  emptyPlaceholder: {
-    width: 48,
-    height: '100%'
+  globalNavSection: {
+    display: 'flex',
+    alignItems: 'center'
   }
 
 }));
@@ -107,7 +114,7 @@ export function AddressBar() {
           classes={{ input: classes.input }}
           inputProps={{ 'aria-label': '' }}
         />
-        <IconButton className={classes.iconButton} aria-label="search">
+        <IconButton aria-label="search">
           <KeyboardArrowDownRounded/>
         </IconButton>
       </Paper>
@@ -142,7 +149,9 @@ export function ToolBarUI(props: any) {
         <section className={classes.addressBarContainer}>
           <AddressBar/>
         </section>
-        <div className={classes.emptyPlaceholder}/>
+        <div className={classes.globalNavSection}>
+          <ToolbarGlobalNav/>
+        </div>
       </Toolbar>
     </AppBar>
   );

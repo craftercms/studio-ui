@@ -17,7 +17,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Core, FileInput, XHRUpload, ProgressBar, Form } from 'uppy';
-import { defineMessages, useIntl } from "react-intl";
+import { defineMessages, useIntl } from 'react-intl';
 
 import 'uppy/src/style.scss';
 
@@ -43,9 +43,13 @@ const messages = defineMessages({
 interface UppyProps {
   formTarget: string;
   url: string;
+
   onUploadStart?(): void;
+
   onComplete?(result: any): void;
+
   onError?(file: any, error: any, response: any): void;
+
   fileTypes?: [string];
 }
 
@@ -61,16 +65,6 @@ function SingleFileUpload(props: UppyProps) {
       fileTypes
     } = props;
 
-  const uppyConfig: object = {
-    autoProceed: true,
-    ...(
-      (fileTypes)
-        ? { restrictions: { allowedFileTypes: fileTypes } }
-        : {}
-    )
-  };
-
-  const uppy = Core(uppyConfig);
   const { formatMessage } = useIntl();
   const [description, setDescription] = useState(
     formatMessage(messages.selectFileMessage)
@@ -78,17 +72,27 @@ function SingleFileUpload(props: UppyProps) {
   const [fileName, setFileName] = useState();
   const [fileNameErrorClass, setFileNameErrorClass] = useState();
 
-  let uploadBtn: HTMLInputElement;
-
   useEffect(
     () => {
-      const instance =uppy
+
+      const uppy = Core({
+        autoProceed: true,
+        ...(
+          (fileTypes)
+            ? { restrictions: { allowedFileTypes: fileTypes } }
+            : {}
+        )
+      });
+
+      let uploadBtn: HTMLInputElement;
+
+      const instance = uppy
         .use(FileInput, {
           target: '.uppy-file-input-container',
           replaceTargetContent: false,
           locale: {
             strings: {
-              chooseFiles: formatMessage(messages.chooseFile),
+              chooseFiles: formatMessage(messages.chooseFile)
             }
           }
         })
@@ -107,35 +111,36 @@ function SingleFileUpload(props: UppyProps) {
           endpoint: url,
           formData: true,
           fieldName: 'file'
-        })
-        uppy.on('file-added', (file) => {
-          uploadBtn = document.querySelector('.uppy-FileInput-btn');
-          setDescription(`${formatMessage(messages.uploadingFile)}:`);
-          setFileName(file.name);
-          setFileNameErrorClass('');
-          uploadBtn.disabled = true;
-          onUploadStart();
-        })
-        uppy.on('upload-success', (file) => {
-          setDescription(`${formatMessage(messages.uploadedFile)}:`);
-          uploadBtn.disabled = false;
-        })
-        uppy.on('complete', onComplete);
-        uppy.on('upload-error', (file, error, response) => {
-          uppy.cancelAll();
-          uploadBtn.disabled = false;
-          setFileNameErrorClass('text-danger');
-          onError && onError(file, error, response);
-        })
+        });
+
+      uppy.on('file-added', (file) => {
+        uploadBtn = document.querySelector('.uppy-FileInput-btn');
+        setDescription(`${formatMessage(messages.uploadingFile)}:`);
+        setFileName(file.name);
+        setFileNameErrorClass('');
+        uploadBtn.disabled = true;
+        onUploadStart();
+      });
+      uppy.on('upload-success', (file) => {
+        setDescription(`${formatMessage(messages.uploadedFile)}:`);
+        uploadBtn.disabled = false;
+      });
+      uppy.on('complete', onComplete);
+      uppy.on('upload-error', (file, error, response) => {
+        uppy.cancelAll();
+        uploadBtn.disabled = false;
+        setFileNameErrorClass('text-danger');
+        onError && onError(file, error, response);
+      });
 
       return () => {
         // https://uppy.io/docs/uppy/#uppy-close
         instance.reset();
         instance.close();
-      }
+      };
 
     },
-    [formTarget, onComplete, url]
+    [fileTypes, formTarget, formatMessage, onComplete, onError, onUploadStart, url]
   );
 
   return (
@@ -148,7 +153,7 @@ function SingleFileUpload(props: UppyProps) {
         <div className="uppy-file-input-container"></div>
         {
           fileName &&
-          <em className={"single-file-upload--file-name " + fileNameErrorClass }>{fileName}</em>
+          <em className={'single-file-upload--file-name ' + fileNameErrorClass}>{fileName}</em>
         }
       </div>
     </>

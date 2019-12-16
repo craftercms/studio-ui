@@ -519,6 +519,7 @@ CStudioAuthoring.Messages.registerBundle("search", "kr", {
     numResults: "결과 수",
     selectAll: "모두 선택",
     filters: "필터",
+    relevance: "관련성",
     asc: "오름차순",
     desc: "내림차순",
     sortOrder: "정렬 순서",

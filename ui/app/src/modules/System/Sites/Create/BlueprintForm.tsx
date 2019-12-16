@@ -106,28 +106,18 @@ function BlueprintForm(props: BlueprintFormProps) {
   const classes = useStyles({});
   const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist } = props;
   const [sites, setSites] = useState(null);
-  const [expanded, setExpanded] = useState({
-    basic: false,
-    token: false,
-    key: false
-  });
   const { formatMessage } = useIntl();
   const maxLength = 4000;
 
-  useEffect(
-    () => {
-      if (sites === null) {
-        fetchSites()
-          .subscribe(
-            ({ response }) => {
-              setSites(response.sites);
-            }
-          );
-      }
-    },
-    // eslint-disable-next-line
-    []
-  );
+  useEffect(() => {
+    if (sites === null) {
+      fetchSites().subscribe(
+        ({ response }) => {
+          setSites(response.sites);
+        }
+      );
+    }
+  }, [sites]);
 
   const handleInputChange = (e: any, type?: string) => {
     e.persist();
@@ -243,7 +233,11 @@ function BlueprintForm(props: BlueprintFormProps) {
               }
               label={formatMessage(messages.createAsOrphan)}
             />
-            <Typography variant="subtitle2" component="small" className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}>
+            <Typography
+              variant="subtitle2"
+              component="small"
+              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
+            >
               {formatMessage(messages.createAsOrphanHelpText)}
             </Typography>
           </Grid>
@@ -278,8 +272,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             (inputs.pushSite && blueprint.source !== 'GIT') &&
             <GitForm
               inputs={inputs}
-              expanded={expanded}
-              setExpanded={setExpanded}
+              setInputs={setInputs}
               type="push"
               handleInputChange={handleInputChange}
               onKeyPress={onKeyPress}
@@ -291,8 +284,7 @@ function BlueprintForm(props: BlueprintFormProps) {
           <GitForm
             type="clone"
             inputs={inputs}
-            expanded={expanded}
-            setExpanded={setExpanded}
+            setInputs={setInputs}
             handleInputChange={handleInputChange}
             onKeyPress={onKeyPress}
           />

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <!--
   ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
   ~
@@ -16,46 +15,28 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-
-    <title>Crafter Studio</title>
-
-    <#include "/templates/web/common/page-fragments/head.ftl" />
-    <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/components/cstudio-common/resources/es/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/components/cstudio-common/resources/de/base.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-
-    <#include "/templates/web/common/page-fragments/studio-context.ftl" />
-    <script>CStudioAuthoringContext.isPreview = true</script>
-    <#include "/templates/web/common/page-fragments/context-nav.ftl" />
-
-    <script>
-        CMgs = CStudioAuthoring.Messages;
-        langBundle = CMgs.getBundle("siteDashboard", CStudioAuthoringContext.lang);
-        formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
-        previewLangBundle = CMgs.getBundle("previewTools", CStudioAuthoringContext.lang);
-        siteDropdownLangBundle = CMgs.getBundle("siteDropdown", CStudioAuthoringContext.lang);
-    </script>
-
-    <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
-
-    <script src="/studio/static-assets/scripts/crafter.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/js-cache/cache.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/scripts/communicator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/scripts/animator.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/scripts/host.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap" rel="stylesheet">
+  <style>
+    html, body, #root {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-
-<div class="studio-preview">
-    <iframe id="engineWindow"></iframe>
-</div>
-
+<div id="root"></div>
+<#include "/templates/web/common/js-next-scripts.ftl" />
+<script>
+  CrafterCMSNext.render('#root', 'Preview');
+</script>
 </body>
 </html>

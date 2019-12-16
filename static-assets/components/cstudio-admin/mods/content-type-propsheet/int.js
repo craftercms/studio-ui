@@ -26,18 +26,18 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int, CStudioAdmi
 		var _self = this;
 		var containerEl = this.containerEl;
 		var valueEl = document.createElement("input");
-		YAHOO.util.Dom.addClass(valueEl, "content-type-property-sheet-property-value");		
+		YAHOO.util.Dom.addClass(valueEl, "content-type-property-sheet-property-value");
 		containerEl.appendChild(valueEl);
 		valueEl.value = value;
 		valueEl.fieldName = this.fieldName;
-	
+
 		var validFn = function(evt, el) {
 			if (evt && evt != null) {
 				var charCode = (evt.which) ? evt.which : event.keyCode
-				
+
 				if(!_self.isNumberKey(charCode)) {
 	          		if(evt)
-	          			YAHOO.util.Event.stopEvent(evt);			
+	          			YAHOO.util.Event.stopEvent(evt);
 				}
 			}
 		};
@@ -49,21 +49,22 @@ YAHOO.extend(CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int, CStudioAdmi
 				updateFn(event, el);
 				CStudioAdminConsole.Tool.ContentTypes.visualization.render();
 			};
-			
+
 			YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
 		}
-		
+
 		this.valueEl = valueEl;
 	},
-	
+
 	getValue: function() {
-		return this.valueEl.value;	
+		return this.valueEl.value;
 	},
 
 	isNumberKey: function(charCode) {
-		return !(charCode != 43 && charCode > 31 && (charCode < 48 || charCode > 57));
+	  const isSubtractSign = (charCode === 109 || charCode === 189 || charCode === 173);
+		return !(charCode != 43 && charCode > 31 && (charCode < 48 || charCode > 57) && !isSubtractSign);
 	}
-	
+
 });
 
 CStudioAuthoring.Module.moduleLoaded("cstudio-console-tools-content-types-proptype-int", CStudioAdminConsole.Tool.ContentTypes.PropertyType.Int);

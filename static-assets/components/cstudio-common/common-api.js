@@ -697,7 +697,7 @@ var nodeOpen = false,
                 }
             },
 
-            deleteContent: function(items, requestDelete) {
+            deleteContent: function(items, requestDelete, callback) {
                 var controller, view;
                 if(requestDelete == true) {
                     controller = "viewcontroller-submitfordelete";
@@ -723,11 +723,11 @@ var nodeOpen = false,
                         (function (items) {
                             _self.on("submitComplete", function (evt, args) {
                                 var reloadFn = function () {
-                                    //window.location.reload();
                                     eventNS.data = items;
                                     eventNS.typeAction = "";
                                     eventNS.oldPath = null;
                                     document.dispatchEvent(eventNS);
+                                    callback && callback();
                                 };
                                 dialogue.hideEvent.subscribe(reloadFn);
                                 dialogue.destroyEvent.subscribe(reloadFn);
@@ -1470,7 +1470,7 @@ var nodeOpen = false,
             getPreviewUrl: function(contentTO, useAppBase, noReplaceExtension) {
                 var url = "";
                 var baseUri = (useAppBase === false) ? '' : CStudioAuthoringContext.previewAppBaseUri;
-                var filename = escape((contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name);
+                var filename = encodeURI((contentTO.pathSegment) ? contentTO.pathSegment : contentTO.name);
                 if (CStudioAuthoring.Utils.endsWith(filename, ".xml")) {
                     url = baseUri + contentTO.browserUri;
 
@@ -1481,7 +1481,7 @@ var nodeOpen = false,
                     }
 
                 } else {
-                    url = baseUri + escape(contentTO.uri);
+                    url = baseUri + encodeURI(contentTO.uri);
                 }
                 return url;
             },
@@ -4107,7 +4107,7 @@ var nodeOpen = false,
             getContent: function(path, edit, callback){
                 var serviceUrl = CStudioAuthoring.Service.getContentUri
                     + "?site=" + CStudioAuthoringContext.site
-                    + "&path=" + escape(path) +
+                    + "&path=" + encodeURI(path) +
                     "&edit=" + edit +
                     "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
                     "&nocache=" + new Date();
@@ -4417,7 +4417,7 @@ var nodeOpen = false,
 
             getUserPermissions: function(site, path, callback) {
                 var serviceUrl = this.getPermissionsServiceUrl;
-                serviceUrl += "?site=" + site + "&path=" + escape(path) + "&user=" + CStudioAuthoringContext.user;
+                serviceUrl += "?site=" + site + "&path=" + encodeURI(path) + "&user=" + CStudioAuthoringContext.user;
                 var serviceCallback = {
                     success: function(jsonResponse) {
                         var results = eval("(" + jsonResponse.responseText + ")");
@@ -5086,8 +5086,11 @@ var nodeOpen = false,
              */
             lookupContentItem: function(site, path, callback, isDraft, populateDependencies) {
 
-                path = unescape(path);
-                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + escape(path);
+                // Path is decoded because it may come encoded or decoded. So, if not encoded, path stays the
+                // same. Then, knowing that path is decoded, gets encoded. That way we avoid encoded paths to be
+                // encoded again.
+                path = decodeURI(path);
+                var serviceUri = this.lookupContentItemServiceUri + "?site=" + site + "&path=" + encodeURI(path);
                 if (isDraft) {
                     serviceUri = serviceUri + "&draft=true";
                 }
@@ -5148,7 +5151,7 @@ var nodeOpen = false,
              */
             lookupSiteContent: function(site, path, depth, order, callback) {
 
-                var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + escape(path) + "&depth=" + depth + "&order=" + order;
+                var serviceUri = this.lookupContentServiceUri + "?site=" + site + "&path=" + path + "&depth=" + depth + "&order=" + order;
                 serviceUri = serviceUri + "&nocache="+new Date();
                 serviceUri = encodeURI(serviceUri);
 
@@ -8261,7 +8264,10 @@ var nodeOpen = false,
                 || uri.indexOf(".txt") != -1
                 || uri.indexOf(".html") != -1
                 || uri.indexOf(".hbs") != -1
-                || uri.indexOf(".xml") != -1) {
+                || uri.indexOf(".xml") != -1
+                || uri.indexOf(".tmpl") != -1
+                || uri.indexOf(".htm") != -1
+                ) {
                 return true;
             }else{
                 return false;
