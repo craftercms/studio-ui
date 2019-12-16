@@ -34,6 +34,7 @@ import { useOnMount } from '../../utils/helpers';
 import Preview from '../Icons/Preview';
 import Link from '@material-ui/core/Link';
 import IconButton from "@material-ui/core/IconButton";
+import LoadingState from "../SystemStatus/LoadingState";
 
 const useStyles = makeStyles(() => ({
   popover: {
@@ -48,11 +49,11 @@ const useStyles = makeStyles(() => ({
     backgroundColor: palette.gray.light1,
     padding: '30px 24px 30px 30px',
     height: '600px',
-    overflow: 'auto'
+    overflow: 'auto',
   },
   sitesContent: {
     backgroundColor: palette.white,
-    padding: '86px 24px 30px 30px'
+    padding: '86px 24px 30px 30px',
   },
   title: {
     textTransform: 'uppercase',
@@ -97,6 +98,15 @@ const useStyles = makeStyles(() => ({
     position: 'absolute',
     top: '10px',
     right: '10px'
+  },
+  simpleGear: {
+    margin: 'auto'
+  },
+  loadingContainer: {
+    height: '600px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 }));
 
@@ -179,6 +189,19 @@ const messages = defineMessages({
   }
 });
 
+const globalNavUrlMapping = {
+  'home.globalMenu.logging-levels': '/#/globalMenu/logging',
+  'home.globalMenu.log-console': '/#/globalMenu/log',
+  'home.globalMenu.users': '/#/globalMenu/users',
+  'home.globalMenu.sites': '/#/globalMenu/sites',
+  'home.globalMenu.audit': '/#/globalMenu/audit',
+  'home.globalMenu.groups': '/#/globalMenu/groups',
+  'home.globalMenu.globalConfig': '/#/globalMenu/global-config',
+  'home.globalMenu.cluster': '/#/globalMenu/cluster',
+  'preview': '/preview',
+  'siteConfig': '/site-config',
+};
+
 interface TileProps {
   icon: ElementType<any> | string;
   title: string;
@@ -186,7 +209,7 @@ interface TileProps {
 }
 
 function Tile(props: TileProps) {
-  const { title, icon: Icon, link} = props;
+  const {title, icon: Icon, link} = props;
   const classes = useStyles({});
 
   return (
@@ -212,72 +235,29 @@ export default function GlobalNav(props: GlobalNavProps) {
   const {anchor, onMenuClose} = props;
   const [open, setOpen] = useState(true);
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
-  const [sites, setSites] = useState([]);
-  const [menuItems, setMenuItems] = useState([]);
+  const [sites, setSites] = useState(null);
+  const [menuItems, setMenuItems] = useState(null);
   const [siteConfig, setSiteConfig] = useState(null);
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
   });
-
-  const globalNavUrlMapping = {
-    'home.globalMenu.logging-levels': '/#/globalMenu/logging',
-    'home.globalMenu.log-console': '/#/globalMenu/log',
-    'home.globalMenu.users': '/#/globalMenu/users',
-    'home.globalMenu.sites': '/#/globalMenu/sites',
-    'home.globalMenu.audit': '/#/globalMenu/audit',
-    'home.globalMenu.groups': '/#/globalMenu/groups',
-    'home.globalMenu.globalConfig': '/#/globalMenu/global-config',
-    'home.globalMenu.cluster': '/#/globalMenu/cluster',
-    'preview': '/preview',
-    'siteConfig': '/site-config',
-  };
+  const {formatMessage} = useIntl();
 
   const cardActions = [
     {
       name: formatMessage(messages.preview),
-      confirm: false,
       onClick: onPreviewClick
     },
     {
       name: formatMessage(messages.dashboard),
-      confirm: false,
-      onClick: onPreviewClick
+      onClick: onDashboardClick
     },
   ];
 
   function handleClose(event) {
     setOpen(false);
     onMenuClose(event)
-  }
-
-  function getLink(id: string) {
-    const base = window.location.host.replace('3000', '8080');
-    return `//${base}/studio${globalNavUrlMapping[id]}`;
-  }
-
-  function onPreviewClick(id: string) {
-    Cookies.set('crafterSite', id, {
-      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-      path: '/'
-    });
-    const url = `/preview/#/?page=/&site=${id}`;
-    const base = window.location.host.replace('3000', '8080');
-    window.location.href = `//${base}/studio${url}`;
-  }
-
-  function onDashboardClick(id: string) {
-    if(id !== formatMessage(messages.myDashboard)) {
-      Cookies.set('crafterSite', id, {
-        domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-        path: '/'
-      });
-    }
-
-    const url = '/studio/site-dashboard';
-    const base = window.location.host.replace('3000', '8080');
-    window.location.href = `//${base}${url}`;
   }
 
   function handleErrorBack() {
@@ -290,7 +270,7 @@ export default function GlobalNav(props: GlobalNavProps) {
         setSites(response.sites);
       },
       ({response}) => {
-        setApiState({ error: true, errorResponse: response});
+        setApiState({error: true, errorResponse: response});
       }
     );
     getGlobalMenuitems().subscribe(
@@ -298,23 +278,25 @@ export default function GlobalNav(props: GlobalNavProps) {
         setMenuItems(response.menuItems);
       },
       ({response}) => {
-        setApiState({ error: true, errorResponse: response});
+        setApiState({error: true, errorResponse: response});
       }
     );
     getDOM(Cookies.get('crafterSite'), '/context-nav/sidebar.xml', 'studio').subscribe(
       (xml) => {
-        let modules = xml.querySelectorAll('modulehook');
-        modules.forEach((module) => {
-          if(module.querySelector('name').innerHTML === 'site-config') {
-            module.querySelectorAll('role').forEach((role) => {
-              if(role.innerHTML === 'admin') {
-                setSiteConfig(true);
-              }
-            });
-          }
-        })
+        if (xml) {
+          let modules = xml.querySelectorAll('modulehook');
+          modules.forEach((module) => {
+            if (module.querySelector('name').innerHTML === 'site-config') {
+              module.querySelectorAll('role').forEach((role) => {
+                if (role.innerHTML === 'admin') {
+                  setSiteConfig(true);
+                }
+              });
+            }
+          })
+        }
       }
-    )
+    );
   });
 
   return (
@@ -346,13 +328,14 @@ export default function GlobalNav(props: GlobalNavProps) {
             error={apiState.errorResponse}
             onBack={handleErrorBack}
           />
-        ) : (
+        ) : (sites && siteConfig && menuItems) ? (
           <Grid container spacing={0}>
             <Grid item xs={5} className={classes.sitesPanel}>
               <Typography variant="subtitle1" component="h2" className={classes.title} style={{marginBottom: '24px'}}>
                 {formatMessage(messages.mySites)}
               </Typography>
               {
+                sites &&
                 sites.map((site, i) =>
                   <SiteCard
                     key={i}
@@ -371,24 +354,70 @@ export default function GlobalNav(props: GlobalNavProps) {
                 icon={HomeIcon}
                 onCardClick={onDashboardClick}
               />
-              <Typography variant="subtitle1" component="h2" className={classes.title} style={{margin: '34px 0 10px 0'}}>
+              <Typography variant="subtitle1" component="h2" className={classes.title}
+                          style={{margin: '34px 0 10px 0'}}>
                 {formatMessage(messages.apps)}
               </Typography>
               <nav className={classes.sitesApps}>
-                <Tile title={formatMessage(messages.preview)} icon={Preview} link={getLink('preview')}/>
                 {
-                  siteConfig && <Tile title={formatMessage(messages.siteConfig)} icon='fa fa-sliders' link={getLink('siteConfig')}/>
-                }
-                {
-                  menuItems.map((item, i) =>
-                    <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>
-                  )
+                  (siteConfig && menuItems) &&
+                  <>
+                    <Tile
+                      title={formatMessage(messages.preview)}
+                      icon={Preview}
+                      link={getLink('preview')}
+                    />
+                    <Tile
+                      title={formatMessage(messages.siteConfig)}
+                      icon='fa fa-sliders'
+                      link={getLink('siteConfig')}
+                    />
+                    {
+                      menuItems.map((item, i) =>
+                        <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>
+                      )
+                    }
+                  </>
                 }
               </nav>
             </Grid>
           </Grid>
+        ) : (
+          <div className={classes.loadingContainer}>
+            <LoadingState title=''/>
+          </div>
         )
       }
     </Popover>
   )
+}
+
+
+function getLink(id: string) {
+  const base = window.location.host.replace('3000', '8080');
+  return `//${base}/studio${globalNavUrlMapping[id]}`;
+}
+
+function onPreviewClick(id: string, type: string) {
+  if (type === 'option') {
+    Cookies.set('crafterSite', id, {
+      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+      path: '/'
+    });
+  }
+  const url = '/studio/preview/';
+  const base = window.location.host.replace('3000', '8080');
+  window.location.href = `//${base}${url}`;
+}
+
+function onDashboardClick(id: string, type: string) {
+  if (type === 'option') {
+    Cookies.set('crafterSite', id, {
+      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+      path: '/'
+    });
+  }
+  const url = '/studio/site-dashboard';
+  const base = window.location.host.replace('3000', '8080');
+  window.location.href = `//${base}${url}`;
 }

@@ -55,7 +55,7 @@ interface TitleCardProps {
   icon?: ElementType<any>;
   options?: boolean;
   classes?: any;
-  onCardClick(id: string): any;
+  onCardClick(id: string, type?: string): any;
   cardActions?: any;
 }
 
@@ -76,7 +76,7 @@ export default function SiteCard(props: TitleCardProps) {
 
   const handleOptionClick = (event: any, action: any, id: string) => {
     event.stopPropagation();
-    action.onClick(id);
+    action.onClick(id, 'option');
   };
 
   return (
