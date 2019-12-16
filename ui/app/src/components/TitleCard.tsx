@@ -27,6 +27,7 @@ import clsx from "clsx";
 
 const useStyles = makeStyles(() => ({
   card: {
+    cursor: 'pointer',
     '& .cardTitle': {
       ...cardTitleStyles
     },
@@ -49,13 +50,14 @@ interface TitleCardProps {
   icon?: ElementType<any>;
   options?: boolean;
   classes?: any;
+  onCardClick(id: string): any;
 }
 
 export default function TitleCard(props: TitleCardProps) {
-  const {title, options, icon: Icon} = props;
+  const {title, options, icon: Icon, onCardClick} = props;
   const classes = useStyles({});
   return (
-    <Card className={clsx(classes.card, props.classes?.root && props.classes.root )}>
+    <Card className={clsx(classes.card, props.classes?.root && props.classes.root )} onClick={() => onCardClick(title)}>
       <CardHeader
         classes={{root: classes.root, avatar: classes.avatar, action: classes.action}}
         avatar={Icon && <Icon/>}
