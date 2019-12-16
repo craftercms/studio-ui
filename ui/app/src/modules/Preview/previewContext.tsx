@@ -168,10 +168,10 @@ export interface StandardAction {
 
 export type Tools =
   'craftercms.ice.components' |
-  'craftercms.ice.assets'     |
-  'craftercms.ice.audiences'  |
-  'craftercms.ice.simulator'  |
-  'craftercms.ice.ice'        |
+  'craftercms.ice.assets' |
+  'craftercms.ice.audiences' |
+  'craftercms.ice.simulator' |
+  'craftercms.ice.ice' |
   'craftercms.ice.editForm';
 
 export interface EditSelection {
@@ -398,5 +398,9 @@ export function PreviewProvider(props: any) {
   return <PreviewContext.Provider value={value} {...props} />
 }
 
-// TODO: Temp. To be removed.
-document.domain = 'authoring.sample.com';
+try {
+  // TODO: Temp. To be removed.
+  document.domain = 'authoring.sample.com';
+} catch {
+
+}
