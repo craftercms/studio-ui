@@ -29,7 +29,6 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import BlueprintCard from './BlueprintCard';
 import Spinner from '../../../../components/SystemStatus/Spinner';
-import InputBase from '@material-ui/core/InputBase';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
@@ -292,8 +291,10 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton}
-                      onClick={(event) => onClose(event, 'closeButton')}>
+          <IconButton
+            aria-label="close"
+            onClick={(event) => onClose(event, 'closeButton')}
+          >
             <CloseIcon/>
           </IconButton>
         ) : null}

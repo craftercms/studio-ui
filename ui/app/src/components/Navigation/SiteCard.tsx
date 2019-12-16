@@ -19,10 +19,10 @@ import React, { ElementType } from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import cardTitleStyles from "../styles/card";
-import { palette } from "../styles/theme";
+import cardTitleStyles from "../../styles/card";
+import { palette } from "../../styles/theme";
 import clsx from "clsx";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -33,6 +33,9 @@ const useStyles = makeStyles(() => ({
     '& .cardTitle': {
       ...cardTitleStyles
     },
+    '&:hover': {
+      backgroundColor: palette.gray.light1
+    }
   },
   avatar: {
     color: palette.red.main
@@ -56,7 +59,7 @@ interface TitleCardProps {
   cardActions?: any;
 }
 
-export default function TitleCard(props: TitleCardProps) {
+export default function SiteCard(props: TitleCardProps) {
   const {title, options, icon: Icon, onCardClick, cardActions = []} = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
