@@ -16,12 +16,9 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<levelDescriptor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <header xsi:nil="false">/static-assets/html/header.html</header>
-  <footer xsi:nil="false">/static-assets/html/footer.html</footer>
-  <css-group xsi:nil="true">
-    <css>/static-assets/css/style.css</css>
-  </css-group>
-  <content-type>/acme-com/component/level-descriptor</content-type>
-  <common-title>Crafter CMS</common-title>
-</levelDescriptor>
+<page>
+  <internal-name>Preview (Legacy)</internal-name>
+  <content-type>/page/browse</content-type>
+  <display-template>/templates/web/legacy/preview.ftl</display-template>
+  <merge-strategy>inherit-levels</merge-strategy>
+</page>

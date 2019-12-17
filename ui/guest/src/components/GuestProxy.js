@@ -23,8 +23,8 @@ import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
 import $ from 'jquery/dist/jquery.slim';
 import contentController, { ContentController } from '../classes/ContentController';
-import { fromEvent, zip, interval } from 'rxjs';
-import { switchMap, take, takeUntil, filter } from 'rxjs/operators';
+import { zip } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 export function GuestProxy(props) {
 

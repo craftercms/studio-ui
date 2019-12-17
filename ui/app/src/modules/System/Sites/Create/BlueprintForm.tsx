@@ -106,11 +106,6 @@ function BlueprintForm(props: BlueprintFormProps) {
   const classes = useStyles({});
   const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist } = props;
   const [sites, setSites] = useState(null);
-  const [expanded, setExpanded] = useState({
-    basic: false,
-    token: false,
-    key: false
-  });
   const { formatMessage } = useIntl();
   const maxLength = 4000;
 
@@ -277,8 +272,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             (inputs.pushSite && blueprint.source !== 'GIT') &&
             <GitForm
               inputs={inputs}
-              expanded={expanded}
-              setExpanded={setExpanded}
+              setInputs={setInputs}
               type="push"
               handleInputChange={handleInputChange}
               onKeyPress={onKeyPress}
@@ -290,8 +284,7 @@ function BlueprintForm(props: BlueprintFormProps) {
           <GitForm
             type="clone"
             inputs={inputs}
-            expanded={expanded}
-            setExpanded={setExpanded}
+            setInputs={setInputs}
             handleInputChange={handleInputChange}
             onKeyPress={onKeyPress}
           />

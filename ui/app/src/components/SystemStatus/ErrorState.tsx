@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }));
 
 interface ErrorStateProps {
+  graphicUrl?: string;
   onBack?(event: any): any;
   classes?: {
     root?: string;
@@ -93,12 +94,12 @@ export default function ErrorState(props: ErrorStateProps) {
     root: '',
     graphic: ''
   }, props.classes || {});
-  const { error, onBack } = props;
+  const { error, onBack, graphicUrl = crack } = props;
   const { formatMessage } = useIntl();
   const { code, documentationUrl, message, remedialAction } = error;
   return (
     <div className={clsx(classes.errorView, propClasses.root)}>
-      <img className={propClasses.graphic} src={crack} alt=""/>
+      <img className={propClasses.graphic} src={graphicUrl} alt=""/>
       {
         code &&
         <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>

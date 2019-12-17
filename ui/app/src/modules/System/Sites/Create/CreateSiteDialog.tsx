@@ -163,7 +163,12 @@ const siteInitialState: SiteState = {
   submitted: false,
   selectedView: 0,
   details: { blueprint: null, index: null },
-  blueprintFields: {}
+  blueprintFields: {},
+  expanded: {
+    basic: false,
+    token: false,
+    key: false
+  }
 };
 
 const CustomTabs = withStyles({
@@ -581,7 +586,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       return false;
     } else if (!site.repoUrl && site.blueprint.id === 'GIT') {
       return false;
-    } else if (site.pushSite) {
+    } else if (site.pushSite || site.blueprint.id === 'GIT') {
       if (!site.repoUrl) return false;
       else if (site.repoAuthentication === 'basic' && (!site.repoUsername || !site.repoPassword)) return false;
       else if (site.repoAuthentication === 'token' && (!site.repoUsername || !site.repoToken)) return false;
