@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import { defineMessages, useIntl, FormattedMessage } from 'react-intl';
+import React, { useEffect } from 'react';
+import { createStyles, withStyles } from '@material-ui/core/styles';
+import { defineMessages, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from "@material-ui/core/Checkbox";
-import { InputLabel } from "@material-ui/core";
+import { InputLabel, Typography } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
+import Link from '@material-ui/core/Link';
 
 import DateTimePicker from './DateTimePicker';
 import moment from 'moment';
@@ -36,6 +37,22 @@ const messages = defineMessages({
   environment: {
     id: 'publishForm.environment',
     defaultMessage: 'Environment'
+  },
+  environmentLoading: {
+    id: 'publishForm.environmentLoading',
+    defaultMessage: 'Loading...'
+  },
+  environmentError: {
+    id: 'publishForm.environmentError',
+    defaultMessage: 'Failed to load environments.'
+  },
+  environmentRetry: {
+    id: 'publishForm.environmentRetry',
+    defaultMessage: 'retry'
+  },
+  environmentSuccess: {
+    id: 'publishForm.environmentSuccess',
+    defaultMessage: 'Success'
   },
   submissionComment: {
     id: 'publishForm.submissionComment',
@@ -70,6 +87,16 @@ const publishFormStyles = () => ({
   selectInput: {
     padding: '10px 12px',
     backgroundColor: '#fff'
+  },
+  environmentLoaderContainer: {
+    paddingTop: '24px',
+    display: 'inline-flex'
+  },
+  environmentLoader: {
+    border: '1px solid #ced4da',
+    padding: '10px 12px',
+    borderRadius: '4px',
+    width: '100%'
   },
   datePicker: {
     position: 'relative' as 'relative',
@@ -119,22 +146,32 @@ interface PublishFormProps {
   setInputs(state: any): any;
   showEmailCheckbox: boolean;
   publishingChannels: any[];
+  publishingChannelsStatus: string;
+  getPublishingChannels: Function;
   classes?: any;
 }
 
 const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
 
-  const { classes, inputs, setInputs, showEmailCheckbox, publishingChannels } = props;
+  const {
+    classes,
+    inputs,
+    setInputs,
+    showEmailCheckbox,
+    publishingChannels,
+    publishingChannelsStatus,
+    getPublishingChannels
+  } = props;
   const { formatMessage } = useIntl();
 
   useEffect(
     () => {
-      if (publishingChannels.length > 0) {
+      if (publishingChannels && publishingChannels.length > 0) {
         setInputs({ ...inputs, 'environment': publishingChannels[0].name });
       }
     },
     // eslint-disable-next-line
-    []
+    [publishingChannels]
   );
 
   const handleInputChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,24 +243,51 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
 
       <div className={classes.formSection}>
         <FormControl fullWidth>
-          <InputLabel className={classes.sectionLabel}>{ formatMessage(messages.submissionComment) }</InputLabel>
-          <Select
-            fullWidth
-            style={{ borderRadius: '4px' }}
-            value={inputs.environment}
-            classes={{
-              select: `${classes.selectInput} ${classes.formInputs}`,
-              icon: classes.selectIcon
-            }}
-            onChange={handleSelectChange('environment')}
-            input={<SelectInput />}
-          >
-            {
-              publishingChannels.map((publishingChannel: any) =>
-                <MenuItem key={publishingChannel.name} value={publishingChannel.name}>{publishingChannel.name}</MenuItem>
-              )
-            }
-          </Select>
+          <InputLabel className={classes.sectionLabel}>{ formatMessage(messages.environment) }</InputLabel>
+          {
+            !publishingChannels &&
+            <>
+
+              <div className={ classes.environmentLoaderContainer }>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  className={ `${classes.environmentLoader} ${classes.formInputs}` }
+                  color={ publishingChannelsStatus === 'Error' ? 'error' : 'initial' }
+                >
+                  { formatMessage(messages[`environment${publishingChannelsStatus}`])  }
+                  {
+                    publishingChannelsStatus === 'Error' &&
+                    <Link href="#" onClick={() => getPublishingChannels()}>
+                      ({ formatMessage(messages.environmentRetry)})
+                    </Link>
+                  }
+                </Typography>
+              </div>
+            </>
+          }
+
+          {
+            publishingChannels &&
+            <Select
+              fullWidth
+              style={{ borderRadius: '4px' }}
+              value={inputs.environment}
+              classes={{
+                select: `${classes.selectInput} ${classes.formInputs}`,
+                icon: classes.selectIcon
+              }}
+              onChange={handleSelectChange('environment')}
+              input={<SelectInput />}
+            >
+              {
+                publishingChannels.map((publishingChannel: any) =>
+                  <MenuItem key={publishingChannel.name} value={publishingChannel.name}>{publishingChannel.name}</MenuItem>
+                )
+              }
+            </Select>
+          }
+
         </FormControl>
       </div>
 

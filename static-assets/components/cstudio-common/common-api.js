@@ -832,17 +832,16 @@ var nodeOpen = false,
             approveCommon: function (site, items, approveType) {
               const container = ($('<div class="approve-dialog-container"/>').appendTo('body'))[0];
 
-              const onClose = () => {
-                CrafterCMSNext.ReactDOM.unmountComponentAtNode(container);
-              };
-
-              CrafterCMSNext.render(container, 'ApproveDialog',
+              let unmount;
+              CrafterCMSNext.render(
+                container,
+                'ApproveDialog',
                 {
-                  onClose: onClose,
+                  onClose: () => unmount(),
                   items: items,
                   siteId: site
                 }
-              );
+              ).then(done => unmount = done.unmount);
 
             },
 

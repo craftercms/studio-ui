@@ -99,6 +99,8 @@ const DialogActions = withStyles((theme: Theme) => ({
 interface PublishDialogUIProps {
   items: Item[];
   publishingChannels: any[];
+  publishingChannelsStatus: string;
+  getPublishingChannels: Function;
   handleClose: any;
   handleSubmit: any;
   dialog: any;
@@ -124,6 +126,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
   const {
     items,
     publishingChannels,
+    publishingChannelsStatus,
+    getPublishingChannels,
     handleClose,
     handleSubmit,
     dialog,
@@ -183,6 +187,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
               setInputs={setDialog}
               showEmailCheckbox={showEmailCheckbox}
               publishingChannels={publishingChannels}
+              publishingChannelsStatus={publishingChannelsStatus}
+              getPublishingChannels={getPublishingChannels}
             />
           </Grid>
         </Grid>

@@ -52,7 +52,6 @@ const dialogInitialState: any = {
   submissionComment: '',
   scheduling: 'now',
   scheduledDateTime: moment().format(),
-  scheduledTimeZone: 'America/Costa_Rica',
   publishingChannel: null,
   selectedItems: null
 };
@@ -69,6 +68,7 @@ function ApproveDialog(props: ApproveDialogProps) {
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
   const [publishingChannels, setPublishingChannels] = useState(null);
+  const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
   const [checkedItems, setCheckedItems] = useState<any>(checkState(items));   // selected deps
   const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({}); // selected soft deps
   const [deps, setDeps] = useState<DependenciesResultObject>();
@@ -80,13 +80,15 @@ function ApproveDialog(props: ApproveDialogProps) {
   useEffect(setRef, [checkedItems, checkedSoftDep]);
 
   function getPublishingChannels() {
+    setPublishingChannelsStatus('Loading');
     fetchPublishingChannels(siteId)
       .subscribe(
         ({ response }) => {
           setPublishingChannels(response.availablePublishChannels);
+          setPublishingChannelsStatus('Success');
         },
         ({ response }) => {
-
+          setPublishingChannelsStatus('Error');
         }
       );
   }
@@ -183,32 +185,29 @@ function ApproveDialog(props: ApproveDialogProps) {
   ///////////////////////
 
   return (
-    <>
-      {
-        publishingChannels &&
-        <PublishDialogUI
-          items={items}
-          publishingChannels={publishingChannels}
-          handleClose={handleClose}
-          handleSubmit={handleSubmit}
-          dialog={dialog}
-          setDialog={setDialog}
-          open={open}
-          title={formatMessage(messages.title)}
-          subtitle={formatMessage(messages.subtitle)}
-          checkedItems={checkedItems}
-          setCheckedItems={setChecked}
-          checkedSoftDep={checkedSoftDep}
-          setCheckedSoftDep={setCheckedSoftDep}
-          onClickSetChecked={onClickSetChecked}
-          deps={deps}
-          showDepsButton={showDepsButton}
-          selectAllDeps={selectAllDeps}
-          selectAllSoft={selectAllSoft}
-          onClickShowAllDeps={showAllDependencies}
-        />
-      }
-    </>
+    <PublishDialogUI
+      items={items}
+      publishingChannels={publishingChannels}
+      publishingChannelsStatus={publishingChannelsStatus}
+      getPublishingChannels={getPublishingChannels}
+      handleClose={handleClose}
+      handleSubmit={handleSubmit}
+      dialog={dialog}
+      setDialog={setDialog}
+      open={open}
+      title={formatMessage(messages.title)}
+      subtitle={formatMessage(messages.subtitle)}
+      checkedItems={checkedItems}
+      setCheckedItems={setChecked}
+      checkedSoftDep={checkedSoftDep}
+      setCheckedSoftDep={setCheckedSoftDep}
+      onClickSetChecked={onClickSetChecked}
+      deps={deps}
+      showDepsButton={showDepsButton}
+      selectAllDeps={selectAllDeps}
+      selectAllSoft={selectAllSoft}
+      onClickShowAllDeps={showAllDependencies}
+    />
   );
 }
 

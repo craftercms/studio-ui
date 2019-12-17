@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import PublicIcon from '@material-ui/icons/Public';
 import DateFnsUtils from '@date-io/date-fns';
@@ -11,13 +9,17 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+/* eslint-disable no-use-before-define */
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { getTimezones } from "../../../utils/timezones";
 
 // TODO: this component will be moved to another folder
 interface DateTimePickerProps {
-  onChange?: any;
-  onChangeDate?: any;
-  onChangeTime?: any;
-  onChangeTimezone?: any;
+  onChange?: Function;
+  onChangeDate?: Function;
+  onChangeTime?: Function;
+  onChangeTimezone?: Function;
   format?: string;
   initialDate?: string | moment.Moment;
   timezone?: string;
@@ -58,23 +60,31 @@ const dateTimePickerStyles = () => ({
   selectIcon: {
     right: '12px',
     top: '22px'
+  },
+  autocompleteRoot: {
+    marginTop: '16px',
+    backgroundColor: '#fff'
+  },
+  autocompleteInputRoot: {
+    paddingTop: '4px !important',
+    paddingBottom: '4px !important',
+    border: 'none'
+  },
+  autocompleteInput: {
+    border: 'none',
+    fontSize: '14px'
+  },
+  autocompleteEndAdornment: {
+    right: '12px !important'
   }
 });
 
-const timezones = [
-  {
-    timezoneName: 'Africa/Asmera',
-    timezoneOffset: "+03:00"
-  },
-  {
-    timezoneName: 'America/Costa_Rica',
-    timezoneOffset: "-06:00"
-  },
-  {
-    timezoneName: 'America/Los_Angeles',
-    timezoneOffset: "-08:00"
-  }
-]
+interface timezoneType {
+  timezoneName: string;
+  timezoneOffset: string;
+}
+
+const timezones = getTimezones();
 
 const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerProps) => {
   const {
@@ -87,8 +97,10 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     timezone = moment.tz.guess(),
     controls = ['date', 'time', 'timezone']
   } = props;
+
+  const timezoneObj = timezones.find( tz => (tz.timezoneName === timezone) );
   const [ selectedDateTime, setSelectedDateTime ] = useState(initialDate);
-  const [ selectedTimezone, setSelectedTimezone ] = useState(timezone);
+  const [ selectedTimezone, setSelectedTimezone ] = useState(timezoneObj);
 
   const handleDateChange = (name: string) => (date: Date | null) => {
     let updatedDateTime = selectedDateTime;
@@ -110,14 +122,14 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     onChange && onChange(updatedDateTime);
   };
 
-  const handleSelectChange = () => (event: React.ChangeEvent<{ value: unknown }>) => {
-    const timezone = event.target.value,
+  const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
+    const timezone = timezoneObj.timezoneName,
           updatedDateTime = moment.tz(selectedDateTime.format(), 'YYYY-MM-DD HH:mm A', timezone);
     setSelectedDateTime(updatedDateTime);
-    setSelectedTimezone(timezone);
+    setSelectedTimezone(timezoneObj);
 
     onChange && onChange(updatedDateTime);
-    onChangeTimezone && onChangeTimezone(timezone);
+    onChangeTimezone && onChangeTimezone(timezoneObj);
   };
 
   return (
@@ -162,27 +174,24 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
       {
         controls.includes('timezone') &&
-        <Select
-          fullWidth
-          value={selectedTimezone}
-          inputProps={{
-            className: classes.select
-          }}
-          onChange={handleSelectChange()}
-          IconComponent={ PublicIcon }
+        <Autocomplete
+          options={timezones}
+          getOptionLabel={(timezone: timezoneType) => ( `${timezone.timezoneName} (GMT${timezone.timezoneOffset})` )}
+          defaultValue={selectedTimezone}
+          onChange={handleTimezoneChange()}
+          size="small"
           classes={{
-            icon: classes.selectIcon
+            root: classes.autocompleteRoot,
+            inputRoot: classes.autocompleteInputRoot,
+            input: classes.autocompleteInput,
+            endAdornment: classes.autocompleteEndAdornment
           }}
-        >
-          {
-            timezones &&
-            timezones.map((timezone: any) =>
-              <MenuItem key={timezone.timezoneName} value={timezone.timezoneName}>
-                {timezone.timezoneName} (GMT{timezone.timezoneOffset})
-              </MenuItem>
-            )
-          }
-        </Select>
+          popupIcon={ <PublicIcon/> }
+          disableClearable={true}
+          renderInput={params => (
+            <TextField {...params} variant="outlined" fullWidth />
+          )}
+        />
       }
     </>
   )
