@@ -27,20 +27,25 @@ import SiteCard from "./SiteCard";
 import HomeIcon from '@material-ui/icons/Home';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
-import { getDOM, getGlobalMenuitems } from '../../services/configuration';
+import { getDOM, getGlobalMenuItems } from '../../services/configuration';
 import Cookies from "js-cookie";
 import ErrorState from "../SystemStatus/ErrorState";
 import { useOnMount } from '../../utils/helpers';
 import Preview from '../Icons/Preview';
+import About from '../Icons/About';
+import Docs from '../Icons/Docs';
+import DevicesIcon from '@material-ui/icons/Devices';
 import Link from '@material-ui/core/Link';
 import IconButton from "@material-ui/core/IconButton";
 import LoadingState from "../SystemStatus/LoadingState";
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import Hidden from '@material-ui/core/Hidden';
 
 const useStyles = makeStyles(() => ({
   popover: {
     maxWidth: '920px',
-    width: '100%',
-    maxHeight: '656px',
+    width: 'calc(100% - 32px)',
+    maxHeight: '658px',
     backgroundColor: palette.white,
     borderRadius: '20px',
     boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.25), 0px 0px 4px rgba(0, 0, 0, 0.25)'
@@ -48,7 +53,7 @@ const useStyles = makeStyles(() => ({
   sitesPanel: {
     backgroundColor: palette.gray.light1,
     padding: '30px 24px 30px 30px',
-    height: '600px',
+    height: '658px',
     overflow: 'auto',
   },
   sitesContent: {
@@ -68,15 +73,15 @@ const useStyles = makeStyles(() => ({
     flexWrap: 'wrap',
   },
   tile: {
-    padding: '10px',
     width: '120px',
     height: '100px',
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
-    color: palette.gray.dark1,
+    color: palette.gray.medium5,
     cursor: 'pointer',
+    textAlign: 'center',
     '&:hover': {
       textDecoration: 'none',
       '& .MuiTypography-root': {
@@ -86,10 +91,10 @@ const useStyles = makeStyles(() => ({
   },
   icon: {
     fontSize: '35px',
-    color: palette.gray.dark1
+    color: palette.gray.medium5
   },
   tileTitle: {
-    color: palette.gray.dark1
+    color: palette.gray.medium5
   },
   errorPaperRoot: {
     height: '100%'
@@ -126,6 +131,18 @@ const messages = defineMessages({
   preview: {
     id: 'globalMenu.preview',
     defaultMessage: 'Preview'
+  },
+  legacyPreview: {
+    id: 'globalMenu.legacyPreview',
+    defaultMessage: 'Legacy Preview'
+  },
+  about: {
+    id: 'globalMenu.about',
+    defaultMessage: 'About'
+  },
+  docs: {
+    id: 'globalMenu.docs',
+    defaultMessage: 'Documentation'
   },
   siteConfig: {
     id: 'globalMenu.siteConfig',
@@ -199,6 +216,8 @@ const globalNavUrlMapping = {
   'home.globalMenu.globalConfig': '/#/globalMenu/global-config',
   'home.globalMenu.cluster': '/#/globalMenu/cluster',
   'preview': '/preview',
+  'about': '/#/about-us',
+  'legacy.preview': '/legacy/preview',
   'siteConfig': '/site-config',
 };
 
@@ -206,17 +225,18 @@ interface TileProps {
   icon: ElementType<any> | string;
   title: string;
   link?: string;
+  target?: string;
 }
 
 function Tile(props: TileProps) {
-  const {title, icon: Icon, link} = props;
+  const { title, icon: Icon, link, target } = props;
   const classes = useStyles({});
 
   return (
-    <Link className={classes.tile} href={link}>
+    <Link className={classes.tile} href={link} target={target? target: '_self'}>
       {
         typeof Icon === 'string'
-          ? <i className={clsx(classes.icon, `fa ${Icon}`)}></i>
+          ? <i className={clsx(classes.icon, 'fa' , Icon)}></i>
           : <Icon className={classes.icon}/>
       }
       <Typography variant="subtitle1" color="textSecondary" className={classes.tileTitle}>
@@ -228,12 +248,12 @@ function Tile(props: TileProps) {
 
 interface GlobalNavProps {
   anchor: Element;
-  onMenuClose: (e: React.MouseEvent<any>) => void;
+  onMenuClose: (e: any) => void;
+  roles: string | [string];
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
-  const {anchor, onMenuClose} = props;
-  const [open, setOpen] = useState(true);
+  const { anchor, onMenuClose, roles } = props;
   const classes = useStyles({});
   const [sites, setSites] = useState(null);
   const [menuItems, setMenuItems] = useState(null);
@@ -242,7 +262,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     error: false,
     errorResponse: null
   });
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
 
   const cardActions = [
     {
@@ -255,56 +275,49 @@ export default function GlobalNav(props: GlobalNavProps) {
     },
   ];
 
-  function handleClose(event) {
-    setOpen(false);
-    onMenuClose(event)
-  }
-
   function handleErrorBack() {
-    setApiState({...apiState, error: false});
+    setApiState({ ...apiState, error: false });
   }
 
   useOnMount(() => {
-    fetchSites().subscribe(
-      ({response}) => {
-        setSites(response.sites);
-      },
-      ({response}) => {
-        setApiState({error: true, errorResponse: response});
-      }
-    );
-    getGlobalMenuitems().subscribe(
-      ({response}) => {
-        setMenuItems(response.menuItems);
-      },
-      ({response}) => {
-        setApiState({error: true, errorResponse: response});
-      }
-    );
-    getDOM(Cookies.get('crafterSite'), '/context-nav/sidebar.xml', 'studio').subscribe(
-      (xml) => {
+    forkJoin([
+      fetchSites(),
+      getGlobalMenuItems(),
+      getDOM(Cookies.get('crafterSite'), '/context-nav/sidebar.xml', 'studio')
+    ]).subscribe(
+      ([sitesResponse, globalMenuItemsResponse, xml]) => {
+        setSites(sitesResponse.response.sites);
+        setMenuItems(globalMenuItemsResponse.response.menuItems);
         if (xml) {
           let modules = xml.querySelectorAll('modulehook');
           modules.forEach((module) => {
             if (module.querySelector('name').innerHTML === 'site-config') {
               module.querySelectorAll('role').forEach((role) => {
-                if (role.innerHTML === 'admin') {
+                if (roles.includes(role.innerHTML)) {
                   setSiteConfig(true);
                 }
               });
             }
           })
+        } else {
+          setSiteConfig(false);
         }
-      }
-    );
+      },
+      ({ response }) => {
+        if (response) {
+          const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+          setApiState({ error: true, errorResponse: _response });
+        }
+      },
+    )
   });
 
   return (
     <Popover
-      open={open}
+      open={!!anchor}
       anchorEl={anchor}
-      onClose={(e) => handleClose(e)}
-      classes={{paper: classes.popover}}
+      onClose={(e) => onMenuClose(e)}
+      classes={{ paper: classes.popover }}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
@@ -317,68 +330,84 @@ export default function GlobalNav(props: GlobalNavProps) {
       <IconButton
         aria-label="close"
         className={classes.closeButton}
-        onClick={(event) => handleClose(event)}
+        onClick={(event) => onMenuClose(event)}
       >
         <CloseIcon/>
       </IconButton>
       {
         apiState.error ? (
           <ErrorState
-            classes={{root: classes.errorPaperRoot}}
+            classes={{ root: classes.errorPaperRoot }}
             error={apiState.errorResponse}
             onBack={handleErrorBack}
           />
-        ) : (sites && siteConfig && menuItems) ? (
+        ) : (sites !== null && siteConfig !== null && menuItems !== null) ? (
           <Grid container spacing={0}>
-            <Grid item xs={5} className={classes.sitesPanel}>
-              <Typography variant="subtitle1" component="h2" className={classes.title} style={{marginBottom: '24px'}}>
-                {formatMessage(messages.mySites)}
-              </Typography>
-              {
-                sites &&
-                sites.map((site, i) =>
-                  <SiteCard
-                    key={i}
-                    title={site.siteId}
-                    options={true}
-                    classes={{root: classes.titleCard}}
-                    onCardClick={onPreviewClick}
-                    cardActions={cardActions}
-                  />
-                )
-              }
-            </Grid>
-            <Grid item xs={7} className={classes.sitesContent}>
+            <Hidden only={['xs', 'sm']}>
+              <Grid item md={5} className={classes.sitesPanel}>
+                <Typography variant="subtitle1" component="h2" className={classes.title} style={{ marginBottom: '24px' }}>
+                  {formatMessage(messages.mySites)}
+                </Typography>
+                {
+                  sites.map((site, i) =>
+                    <SiteCard
+                      key={i}
+                      title={site.siteId}
+                      options={true}
+                      classes={{ root: classes.titleCard }}
+                      onCardClick={onPreviewClick}
+                      cardActions={cardActions}
+                    />
+                  )
+                }
+              </Grid>
+            </Hidden>
+            <Grid item xs={12} md={7} className={classes.sitesContent}>
               <SiteCard
                 title={formatMessage(messages.myDashboard)}
                 icon={HomeIcon}
                 onCardClick={onDashboardClick}
               />
               <Typography variant="subtitle1" component="h2" className={classes.title}
-                          style={{margin: '34px 0 10px 0'}}>
+                          style={{ margin: '34px 0 10px 0' }}>
                 {formatMessage(messages.apps)}
               </Typography>
               <nav className={classes.sitesApps}>
+                <Tile
+                  title={formatMessage(messages.preview)}
+                  icon={Preview}
+                  link={getLink('preview')}
+                />
+                <Tile
+                  title={formatMessage(messages.legacyPreview)}
+                  icon={DevicesIcon}
+                  link={getLink('legacy.preview')}
+                />
                 {
-                  (siteConfig && menuItems) &&
-                  <>
-                    <Tile
-                      title={formatMessage(messages.preview)}
-                      icon={Preview}
-                      link={getLink('preview')}
-                    />
-                    <Tile
-                      title={formatMessage(messages.siteConfig)}
-                      icon='fa fa-sliders'
-                      link={getLink('siteConfig')}
-                    />
-                    {
-                      menuItems.map((item, i) =>
-                        <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>
-                      )
-                    }
-                  </>
+                  siteConfig &&
+                  <Tile
+                    title={formatMessage(messages.siteConfig)}
+                    icon='fa fa-sliders'
+                    link={getLink('siteConfig')}
+                  />
                 }
+                {
+                  menuItems.map((item, i) =>
+                    <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>
+                  )
+                }
+                <Tile
+                  title={formatMessage(messages.docs)}
+                  icon={Docs}
+                  link="https://docs.craftercms.org/en/3.1/index.html"
+                  target="_blank"
+                />
+                <Tile
+                  title={formatMessage(messages.about)}
+                  icon={About}
+                  link={getLink('about')}
+                  target="_blank"
+                />
               </nav>
             </Grid>
           </Grid>
@@ -399,12 +428,10 @@ function getLink(id: string) {
 }
 
 function onPreviewClick(id: string, type: string) {
-  if (type === 'option') {
-    Cookies.set('crafterSite', id, {
-      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-      path: '/'
-    });
-  }
+  Cookies.set('crafterSite', id, {
+    domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+    path: '/'
+  });
   const url = '/studio/preview/';
   const base = window.location.host.replace('3000', '8080');
   window.location.href = `//${base}${url}`;

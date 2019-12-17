@@ -139,12 +139,12 @@ function parsePreviewToolsPanelConfig(element: Element) {
 
 // endregion
 
-export function getGlobalMenuitems() {
+export function getGlobalMenuItems() {
   return get('/studio/api/2/ui/views/global_menu.json');
 }
 
 export default {
   getRawContent,
   getDOM,
-  getGlobalMenuitems
+  getGlobalMenuItems
 }

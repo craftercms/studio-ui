@@ -137,6 +137,12 @@ export default function ToolBar() {
 export function ToolBarUI(props: any) {
   const { onMenuButtonClicked } = props;
   const classes = useStyles({});
+  const user = {
+    firstName: 'admin',
+    lastName: 'admin',
+    email: 'admin@example.com',
+    role: 'admin'
+  };
   return (
     <AppBar position="static" color="inherit">
       <Toolbar className={classes.toolBar}>
@@ -150,7 +156,7 @@ export function ToolBarUI(props: any) {
           <AddressBar/>
         </section>
         <div className={classes.globalNavSection}>
-          <ToolbarGlobalNav/>
+          <ToolbarGlobalNav user={user}/>
         </div>
       </Toolbar>
     </AppBar>
