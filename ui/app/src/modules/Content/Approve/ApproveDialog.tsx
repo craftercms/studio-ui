@@ -57,7 +57,7 @@ const dialogInitialState: any = {
 };
 
 interface ApproveDialogProps {
-  onClose(): any;
+  onClose(response?: any): any;
   items: Item[];
   siteId: string;
   user: string;
@@ -117,7 +117,7 @@ function ApproveDialog(props: ApproveDialogProps) {
 
   const handleSubmit = () => {
     const data = {
-      environment: dialog.environment,
+      publishChannel: dialog.environment,
       items: dialog.selectedItems,
       schedule: dialog.scheduling,
       sendEmail: dialog.emailOnApprove,
@@ -132,6 +132,7 @@ function ApproveDialog(props: ApproveDialogProps) {
     goLive(siteId, user, data).subscribe(
       ({ response }) => {
         setOpen(false);
+        onClose(response);
       },
       ({ response }) => {
 

@@ -838,7 +838,42 @@ var nodeOpen = false,
                 container,
                 'ApproveDialog',
                 {
-                  onClose: () => unmount(),
+                  // TODO: receive response if submit complete, on cancel won't receive anything
+                  onClose: () => {
+
+                    var entities = { 'entities': [] };
+
+                    if (typeof items === 'string' || items instanceof String) {
+                      entities.entities.push({ 'item': items });
+                    } else {
+                      $.each(items, function () {
+                        entities.entities.push({ 'item': this.uri });
+                      });
+                    }
+
+                    CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
+                      success: function(response) {
+                        var dependenciesObj = JSON.parse(response.responseText).entities,
+                          dependencies = [];
+
+                        $.each(dependenciesObj, function(){
+                          $.each(this.dependencies, function(){
+                            dependencies.push(this.item);
+                          });
+                        });
+
+                        // TODO: CHECK THIS - from response
+                        // var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
+                        // dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos});
+
+                        eventNS.dependencies = dependencies;
+                        document.dispatchEvent(eventNS);
+                        eventNS.dependencies = null;
+                      }
+                    });
+
+                    unmount();
+                  },
                   items: items,
                   siteId: site,
                   user: user

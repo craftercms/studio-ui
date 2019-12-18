@@ -86,7 +86,7 @@ export const paths = (checked: any) => (
 // end of dependency selection common methods
 
 interface RequestPublishDialogProps {
-  onClose(): any;
+  onClose(response?: any): any;
   items: Item[];
   siteId: string;
   user: string;
@@ -146,7 +146,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
   const handleSubmit = () => {
     const data = {
-      environment: dialog.environment,
+      publishChannel: dialog.environment,
       items: dialog.selectedItems,
       schedule: dialog.scheduling,
       sendEmail: dialog.emailOnApprove,
@@ -161,6 +161,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
     submitToGoLive(siteId, user, data).subscribe(
       ({ response }) => {
         setOpen(false);
+        onClose(response);
       },
       ({ response }) => {
 
