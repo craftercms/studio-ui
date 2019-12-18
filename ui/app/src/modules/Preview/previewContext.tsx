@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useContext, useMemo } from 'react';
 import { Subject } from 'rxjs';
 import ContentInstance from '../../models/ContentInstance';
 import { LookupTable } from '../../models/LookupTable';
@@ -25,7 +24,6 @@ import { StandardAction } from '../../models/StandardAction';
 
 export const DRAWER_WIDTH = 240;
 
-const PreviewContext = React.createContext<PreviewContextValue>(undefined);
 let hostToGuest$: Subject<StandardAction>;
 let GuestToHost$: Subject<StandardAction>;
 
@@ -49,16 +47,6 @@ export interface GuestData {
   itemBeingDragged: boolean;
 }
 
-type PreviewProviderProps = PropsWithChildren<{
-  site?: string;
-  url?: string;
-}>;
-
-interface PreviewContextValue {
-  hostToGuest$: Subject<StandardAction>;
-  guestToHost$: Subject<StandardAction>;
-}
-
 // endregion
 
 export function getHostToGuestBus() {
@@ -75,18 +63,3 @@ export function getGuestToHostBus() {
   return GuestToHost$;
 }
 
-export function usePreviewContext() {
-  const context = useContext(PreviewContext);
-  if (!context) {
-    throw new Error(`usePreviewContext should be used inside a PreviewProvider`);
-  }
-  return context;
-}
-
-export function PreviewProvider(props: PreviewProviderProps) {
-  const value = useMemo<PreviewContextValue>(() => ({
-    hostToGuest$: getHostToGuestBus(),
-    guestToHost$: getGuestToHostBus()
-  }), []);
-  return <PreviewContext.Provider value={value} {...props} />;
-}

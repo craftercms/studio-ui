@@ -205,6 +205,7 @@ export function PreviewConcierge(props: any) {
 
   return (
     <>
+      {props.children}
       {
         (snack) && <Snackbar
           anchorOrigin={snack.position ?? { vertical: 'bottom', horizontal: 'left' }}

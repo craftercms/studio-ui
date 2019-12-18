@@ -19,7 +19,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { fromEvent, NEVER, Observable } from 'rxjs';
 import clsx from 'clsx';
-import { DRAWER_WIDTH, usePreviewContext } from './previewContext';
+import { DRAWER_WIDTH, getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
@@ -184,12 +184,12 @@ export default function Host() {
       currentUrl: state.preview.currentUrl
     })
   }));
-  const { hostToGuest$, guestToHost$ } = usePreviewContext();
 
-  const postMessage$ = useMemo(() => hostToGuest$.asObservable(), [hostToGuest$]);
+  const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
+    const guestToHost$ = getGuestToHostBus();
     return (action: StandardAction) => guestToHost$.next(action);
-  }, [guestToHost$]);
+  }, []);
 
   return (
     <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>

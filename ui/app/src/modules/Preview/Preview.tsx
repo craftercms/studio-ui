@@ -18,7 +18,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import ToolsPanel from './ToolsPanel';
-import { PreviewProvider } from './previewContext';
 import Host from './Host';
 import ToolBar from './ToolBar';
 import { PreviewConcierge } from './PreviewConcierge';
@@ -38,17 +37,16 @@ export default function Preview(props) {
   const go = useCallback((data) => props.history.push({ search: stringify(data, { encode: false }) }), [props.history]);
   const classes = useStyles({});
   return (
-    <PreviewProvider site={qs.site} url={qs.page}>
+    <PreviewConcierge
+      queryString={qs}
+      onUrlChange={go}
+    >
       <section className={classes.root}>
         <ToolBar/>
         <Host/>
         <ToolsPanel/>
       </section>
-      <PreviewConcierge
-        queryString={qs}
-        onUrlChange={go}
-      />
-    </PreviewProvider>
+    </PreviewConcierge>
   );
 }
 
