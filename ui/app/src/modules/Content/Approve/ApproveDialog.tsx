@@ -60,10 +60,11 @@ interface ApproveDialogProps {
   onClose(): any;
   items: Item[];
   siteId: string;
+  user: string;
 }
 
 function ApproveDialog(props: ApproveDialogProps) {
-  const { items, siteId, onClose } = props;
+  const { items, siteId, user, onClose } = props;
 
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
@@ -128,9 +129,8 @@ function ApproveDialog(props: ApproveDialogProps) {
       )
     };
 
-    goLive(siteId, 'author', data).subscribe(
+    goLive(siteId, user, data).subscribe(
       ({ response }) => {
-        console.log("SUBMIT RESPONSE", response);
         setOpen(false);
       },
       ({ response }) => {

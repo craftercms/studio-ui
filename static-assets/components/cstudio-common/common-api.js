@@ -831,6 +831,7 @@ var nodeOpen = false,
 
             approveCommon: function (site, items, approveType) {
               const container = ($('<div class="approve-dialog-container"/>').appendTo('body'))[0];
+              const user = CStudioAuthoringContext.user;
 
               let unmount;
               CrafterCMSNext.render(
@@ -839,7 +840,8 @@ var nodeOpen = false,
                 {
                   onClose: () => unmount(),
                   items: items,
-                  siteId: site
+                  siteId: site,
+                  user: user
                 }
               ).then(done => unmount = done.unmount);
 

@@ -89,10 +89,11 @@ interface RequestPublishDialogProps {
   onClose(): any;
   items: Item[];
   siteId: string;
+  user: string;
 }
 
 function RequestPublishDialog(props: RequestPublishDialogProps) {
-  const { items, siteId, onClose } = props;
+  const { items, siteId, user, onClose } = props;
 
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
@@ -157,9 +158,8 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
       )
     };
 
-    submitToGoLive(siteId, 'author', data).subscribe(
+    submitToGoLive(siteId, user, data).subscribe(
       ({ response }) => {
-        console.log("SUBMIT RESPONSE", response);
         setOpen(false);
       },
       ({ response }) => {
