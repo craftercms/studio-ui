@@ -20,13 +20,15 @@ import '../styles/index.scss';
 import React, { Suspense, useEffect, useState } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import { theme } from "../styles/theme";
+import { theme } from '../styles/theme';
 import { updateIntl } from '../utils/codebase-bridge';
 import en from '../translations/locales/en.json';
 import es from '../translations/locales/es.json';
 import de from '../translations/locales/de.json';
 import ko from '../translations/locales/ko.json';
 import { setRequestForgeryToken } from '../utils/auth';
+import { Provider } from 'react-redux';
+import store from '../state/store';
 
 const Locales: any = {
   en,
@@ -68,13 +70,15 @@ function CrafterCMSNextBridge(props: any) {
   useEffect(() => setUpLocaleChangeListener(update), [update]);
 
   return (
-    <RawIntlProvider value={intl}>
-      <ThemeProvider theme={theme}>
-        <Suspense fallback="">
-          {props.children}
-        </Suspense>
-      </ThemeProvider>
-    </RawIntlProvider>
+    <Provider store={store}>
+      <RawIntlProvider value={intl}>
+        <ThemeProvider theme={theme}>
+          <Suspense fallback="">
+            {props.children}
+          </Suspense>
+        </ThemeProvider>
+      </RawIntlProvider>
+    </Provider>
   );
 
 }

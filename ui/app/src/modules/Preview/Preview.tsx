@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import ToolsPanel from './ToolsPanel';
-import { PreviewProvider } from './previewContext';
 import Host from './Host';
 import ToolBar from './ToolBar';
 import { PreviewConcierge } from './PreviewConcierge';
+import { parse, stringify } from 'query-string';
+import { LookupTable } from '../../models/LookupTable';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -31,17 +32,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export default function Preview() {
+export default function Preview(props) {
+  const qs = useMemo(() => parse(props.location.search) as LookupTable<string>, [props.location.search]);
+  const go = useCallback((data) => props.history.push({ search: stringify(data, { encode: false }) }), [props.history]);
   const classes = useStyles({});
   return (
-    <PreviewProvider>
+    <PreviewConcierge
+      queryString={qs}
+      onUrlChange={go}
+    >
       <section className={classes.root}>
-        <ToolBar />
-        <Host />
-        <ToolsPanel />
+        <ToolBar/>
+        <Host/>
+        <ToolsPanel/>
       </section>
-      <PreviewConcierge />
-    </PreviewProvider>
+    </PreviewConcierge>
   );
 }
 

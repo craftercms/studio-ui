@@ -15,12 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
-import MenuIcon from '@material-ui/icons/MenuRounded';
 import AppBar from '@material-ui/core/AppBar';
-import { closeTools, openTools, usePreviewContext } from './previewContext';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
@@ -32,6 +30,13 @@ import KeyboardArrowRightRounded from '@material-ui/icons/KeyboardArrowRightRoun
 import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
+import CustomMenu from '../../components/Icons/CustomMenu';
+import { changeCurrentUrl, closeTools, openTools } from '../../state/actions/preview';
+import { useDispatch, useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
+import { changeSite } from '../../state/actions/sites';
+
+const foo = () => void 0;
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   toolBar: {
@@ -80,11 +85,35 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 }));
 
-export function AddressBar() {
+function createOnEnter(handler, argument: 'value' | 'event' = 'event') {
+  return (
+    (argument === 'value')
+      ? (e) => (e.key === 'Enter') && handler(e.target.value)
+      : (e) => (e.key === 'Enter') && handler(e)
+  );
+}
+
+interface AddressBarProps {
+  site: string;
+  url: string;
+  onSiteChange: (siteId: string) => any;
+  onUrlChange: (value: string) => any;
+  sites: { id: string; name: string; } [];
+}
+
+export function AddressBar(props: AddressBarProps) {
   const classes = useStyles({});
-
-  const [site, setSite] = useState('editorial');
-
+  const {
+    site,
+    url = '',
+    sites = [],
+    onSiteChange = foo,
+    onUrlChange = foo
+  } = props;
+  const [internalUrl, setInternalUrl] = useState(url);
+  useEffect(() => {
+    (url) && setInternalUrl(url);
+  }, [url]);
   return (
     <>
       <IconButton className={classes.iconButton} aria-label="search">
@@ -97,18 +126,17 @@ export function AddressBar() {
         <RefreshRounded/>
       </IconButton>
       <Paper className={classes.addressBarInput}>
-        <Select value={site} classes={{ select: classes.input }} onChange={(e: any) => setSite(e.target.value)}>
-          <MenuItem value="editorial">
-            editorial
-          </MenuItem>
-          <MenuItem value="empty">
-            empty
-          </MenuItem>
-          <MenuItem value="ecom">
-            ecommerce
-          </MenuItem>
+        <Select value={site} classes={{ select: classes.input }} onChange={(e: any) => onSiteChange(e.target.value)}>
+          {
+            sites.map(({ id, name }) =>
+              <MenuItem key={id} value={id}>{name}</MenuItem>
+            )
+          }
         </Select>
         <InputBase
+          value={internalUrl}
+          onChange={(e) => setInternalUrl(e.target.value)}
+          onKeyDown={createOnEnter((value) => onUrlChange(value), 'value')}
           placeholder="/"
           className={classes.inputContainer}
           classes={{ input: classes.input }}
@@ -126,16 +154,18 @@ export function AddressBar() {
 }
 
 export default function ToolBar() {
-  const [{ showToolsPanel }, dispatch] = usePreviewContext();
-  return (
-    <ToolBarUI
-      onMenuButtonClicked={() => dispatch(showToolsPanel ? closeTools() : openTools())}
-    />
-  );
-}
-
-export function ToolBarUI(props: any) {
-  const { onMenuButtonClicked } = props;
+  const dispatch = useDispatch();
+  const {
+    site,
+    guest,
+    sites,
+    currentUrl,
+    showToolsPanel
+  } = useSelector<GlobalState, any>(state => ({
+    site: state.sites.active,
+    sites: Object.values(state.sites.byId),
+    ...state.preview
+  }));
   const classes = useStyles({});
   const user = {
     firstName: 'admin',
@@ -145,16 +175,22 @@ export function ToolBarUI(props: any) {
     authType: 'db'
   };
   return (
-    <AppBar position="static" color="inherit">
+    <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
         <IconButton
           aria-label="Open drawer"
-          onClick={onMenuButtonClicked}
+          onClick={() => dispatch(showToolsPanel ? closeTools() : openTools())}
         >
-          <MenuIcon/>
+          <CustomMenu/>
         </IconButton>
         <section className={classes.addressBarContainer}>
-          <AddressBar/>
+          <AddressBar
+            site={site}
+            sites={sites}
+            url={guest?.url ?? currentUrl}
+            onSiteChange={(site) => dispatch(changeSite(site))}
+            onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
+          />
         </section>
         <div className={classes.globalNavSection}>
           <ToolbarGlobalNav user={user}/>

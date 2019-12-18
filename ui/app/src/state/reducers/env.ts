@@ -14,22 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from 'react';
-import { HashRouter, Route } from 'react-router-dom';
-import Search from './Search';
 
+import { createReducer } from '@reduxjs/toolkit';
+import { GlobalState } from '../../models/GlobalState';
 
-function SearchApp(topProps: any) {
-  return (
-    <HashRouter>
-      <Route 
-        path="/" 
-        render={(routeProps: any) =>
-          <Search {...topProps} {...routeProps} />
-        }
-      />
-    </HashRouter>
-  )
-}
+const reducer = createReducer<GlobalState['env']>(null, {
 
-export default SearchApp;
+});
+
+export default reducer;

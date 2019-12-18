@@ -17,18 +17,93 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <title>React App</title>
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="studioSPARoot"></div>
-    <!-- !!!Don't put anything bellow the placeholder script!!! -->
-    <script id="_placeholderscript_"></script>
-  </body>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#000000"/>
+  <title>React App</title>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap"
+        rel="stylesheet">
+  <script type="application/json" id="initialState">
+    {
+      "auth": {
+        "active": true
+      },
+      "user": {
+        "firstName": "Mr.",
+        "lastName": "Admin",
+        "email": "admin@craftercms.org",
+        "username": "admin",
+        "authType": "DB",
+        "rolesBySite": {
+          "editorial": [
+            "author",
+            "admin",
+            "developer",
+            "reviewer",
+            "publisher"
+          ],
+          "headless": [
+            "author",
+            "admin",
+            "developer",
+            "reviewer",
+            "publisher"
+          ],
+          "empty": [
+            "author",
+            "admin",
+            "developer",
+            "reviewer",
+            "publisher"
+          ]
+        },
+        "sites": [
+          "editorial",
+          "headless",
+          "empty"
+        ],
+        "preferences": {
+          "global.lang": "en",
+          "global.theme": "light",
+          "preview.theme": "dark"
+        }
+      },
+      "sites": {
+        "active": null,
+        "byId": {
+          "editorial": {
+            "id": "editorial",
+            "name": "editorial",
+            "description": ""
+          },
+          "headless": {
+            "id": "headless",
+            "name": "headless",
+            "description": ""
+          },
+          "empty": {
+            "id": "empty",
+            "name": "empty",
+            "description": ""
+          }
+        }
+      },
+      "env": {
+        "AUTHORING_BASE": "/studio",
+        "GUEST_BASE": "http://authoring.sample.com:8080",
+        "XSRF_CONFIG_HEADER": "X-XSRF-TOKEN",
+        "XSRF_CONFIG_ARGUMENT": "_csrf",
+        "SITE_COOKIE": "crafterSite"
+      }
+    }
+  </script>
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="studioSPARoot"></div>
+<!-- !!!Don't put anything bellow the placeholder script!!! -->
+<script id="_placeholderscript_"></script>
+</body>
 </html>

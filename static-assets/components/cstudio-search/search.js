@@ -57,7 +57,7 @@
         CrafterCMSNext
           .render(
             container,
-            'SearchApp',
+            'Search',
             {
               onEdit: CStudioSearch.editElement,
               onDelete: CStudioSearch.deleteElement,

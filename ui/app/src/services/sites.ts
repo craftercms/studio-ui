@@ -16,7 +16,7 @@
  */
 
 import { get, post } from "../utils/ajax";
-import { Site } from "../models/Site";
+import { CreateSiteMeta } from "../models/Site";
 
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');
@@ -26,7 +26,7 @@ export function fetchSites() {
   return get('/studio/api/2/users/me/sites');
 }
 
-export function createSite(site: Site) {
+export function createSite(site: CreateSiteMeta) {
   return post('/studio/api/1/services/api/1/site/create.json', site, {
     'Content-Type': 'application/json'
   })

@@ -29,7 +29,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Drawer from '@material-ui/core/Drawer';
-import { DRAWER_WIDTH, selectTool, toolsLoaded, usePreviewContext } from './previewContext';
+import { DRAWER_WIDTH } from './previewContext';
 import Typography from '@material-ui/core/Typography';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getPreviewToolsConfig } from '../../services/configuration';
@@ -41,6 +41,9 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import ICEPanel from './Tools/ICEPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
+import { selectTool, toolsLoaded } from '../../state/actions/preview';
+import { useDispatch, useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -151,7 +154,8 @@ function ToolSelector() {
 
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const [{ tools }, dispatch] = usePreviewContext();
+  const { tools } = useSelector<GlobalState, any>(state => state.preview);
+  const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
 
   return (
@@ -193,16 +197,17 @@ const componentMap: any = {
 export default function ToolsPanel() {
 
   const classes = useStyles({});
-  const [
-    {
-      tools,
-      showToolsPanel,
-      selectedTool,
-      guest,
-      site
-    },
-    dispatch
-  ] = usePreviewContext();
+  const dispatch = useDispatch();
+  const {
+    tools,
+    showToolsPanel,
+    selectedTool,
+    guest,
+    site
+  } = useSelector<GlobalState, any>(state => ({
+    site: state.sites.active,
+    ...state.preview
+  }));
 
   let Tool = guest?.selected ? EditFormPanel : (selectedTool ? (componentMap[selectedTool] || UnknownPanel) : ToolSelector);
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
@@ -219,7 +224,7 @@ export default function ToolsPanel() {
       }
     );
     return () => {
-      fetchConfigSubscription?.unsubscribe();
+      fetchConfigSubscription && fetchConfigSubscription.unsubscribe();
     };
   }, [site, dispatch, tools]);
 
