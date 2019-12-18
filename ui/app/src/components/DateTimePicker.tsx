@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ */
+
 import React, { useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
@@ -12,7 +31,7 @@ import {
 /* eslint-disable no-use-before-define */
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getTimezones } from "../../../utils/timezones";
+import { getTimezones } from "../utils/timezones";
 
 // TODO: this component will be moved to another folder
 interface DateTimePickerProps {
@@ -21,16 +40,11 @@ interface DateTimePickerProps {
   onChangeTime?: Function;
   onChangeTimezone?: Function;
   format?: string;
-  initialDate?: string | moment.Moment;
+  initialDate?: string | moment.Moment | Number;
   timezone?: string;
   classes?: any;
   controls?: string[];    // options: ['date', 'time', 'timezone'], ['date', 'time'], ['date']
 }
-
-// TODO:
-// format as prop
-// initial date as prop -> strings|milliseconds
-// only dates|times|timezone|all|etc -> props
 
 const dateTimePickerStyles = () => ({
   root: {
@@ -98,8 +112,23 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     controls = ['date', 'time', 'timezone']
   } = props;
 
+  let initialDateMoment;
+
+  switch(typeof initialDate) {
+    case 'string':
+    case 'number':
+      initialDateMoment = moment(initialDate);
+      break;
+    case 'object':
+      // moment object, stays the same
+      initialDateMoment = initialDate;
+      break;
+    default:
+      initialDateMoment = moment();
+  }
+
   const timezoneObj = timezones.find( tz => (tz.timezoneName === timezone) );
-  const [ selectedDateTime, setSelectedDateTime ] = useState(initialDate);
+  const [ selectedDateTime, setSelectedDateTime ] = useState(initialDateMoment);
   const [ selectedTimezone, setSelectedTimezone ] = useState(timezoneObj);
 
   const handleDateChange = (name: string) => (date: Date | null) => {
@@ -118,8 +147,10 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     }
 
     setSelectedDateTime(updatedDateTime);
-
     onChange && onChange(updatedDateTime);
+
+    onChangeDate && onChangeDate(updatedDateTime.format('YYYY-MM-DD'));
+    onChangeTime && onChangeTime(updatedDateTime.format('HH:MM:ss'));
   };
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
