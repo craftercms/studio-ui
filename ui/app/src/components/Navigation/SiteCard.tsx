@@ -56,16 +56,17 @@ const useStyles = makeStyles(() => ({
 
 interface TitleCardProps {
   title: string;
+  value?: string;
   icon?: ElementType<any>;
   options?: boolean;
   classes?: any;
-  onCardClick(id: string, type?: string): any;
+  onCardClick(id: string): any;
   cardActions?: any;
   disabled?: boolean;
 }
 
 export default function SiteCard(props: TitleCardProps) {
-  const {title, options, icon: Icon, onCardClick, cardActions = [], disabled = false} = props;
+  const {title, value, options, icon: Icon, onCardClick, cardActions = [], disabled = false} = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
 
@@ -81,11 +82,11 @@ export default function SiteCard(props: TitleCardProps) {
 
   const handleOptionClick = (event: any, action: any, id: string) => {
     event.stopPropagation();
-    action.onClick(id, 'option');
+    action.onClick(id);
   };
 
   return (
-    <Card className={clsx(classes.card, props.classes?.root && props.classes.root, disabled && 'disabled')} onClick={() => disabled? onCardClick(title): null}>
+    <Card className={clsx(classes.card, props.classes?.root && props.classes.root, disabled && 'disabled')} onClick={() => !disabled? onCardClick(value): null}>
       <CardHeader
         classes={{root: classes.root, avatar: classes.avatar, action: classes.action}}
         avatar={Icon && <Icon/>}
@@ -111,7 +112,7 @@ export default function SiteCard(props: TitleCardProps) {
       >
         {
           cardActions.map((action, i) =>
-            <MenuItem key={i} onClick={(e) => handleOptionClick(e, action, title)}>{action.name}</MenuItem>
+            <MenuItem key={i} onClick={(e) => handleOptionClick(e, action, value)}>{action.name}</MenuItem>
           )
         }
       </Menu>

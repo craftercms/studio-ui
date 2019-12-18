@@ -295,15 +295,28 @@ export default function GlobalNav(props: GlobalNavProps) {
     setApiState({ ...apiState, error: false });
   }
 
-  function onPreviewClick(id: string, type: string) {
-    if (!id && !crafterSite) {
+  function onPreviewClick(id: string = crafterSite) {
+    if (!id) {
       id = sites[0].siteId;
     }
-    Cookies.set('crafterSite', id, {
+    Cookies.set(SITE_COOKIE, id, {
       domain: window.location.hostname.includes('.') ? window.location.hostname : '',
       path: '/'
     });
     const url = '/studio/preview/';
+    const base = window.location.host.replace('3000', '8080');
+    window.location.href = `//${base}${url}`;
+  }
+
+  function onDashboardClick(id: string = crafterSite) {
+    if (!id) {
+      id = sites[0].siteId;
+    }
+    Cookies.set(SITE_COOKIE, id, {
+      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+      path: '/'
+    });
+    const url = '/studio/site-dashboard';
     const base = window.location.host.replace('3000', '8080');
     window.location.href = `//${base}${url}`;
   }
@@ -392,6 +405,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                     <SiteCard
                       key={i}
                       title={site.siteId}
+                      value={site.siteId}
                       options={true}
                       classes={{ root: classes.titleCard }}
                       onCardClick={onPreviewClick}
@@ -469,14 +483,3 @@ function getLink(id: string) {
   return `//${base}/studio${globalNavUrlMapping[id]}`;
 }
 
-function onDashboardClick(id: string, type: string) {
-  if (type === 'option') {
-    Cookies.set('crafterSite', id, {
-      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-      path: '/'
-    });
-  }
-  const url = '/studio/site-dashboard';
-  const base = window.location.host.replace('3000', '8080');
-  window.location.href = `//${base}${url}`;
-}
