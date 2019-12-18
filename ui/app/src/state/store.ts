@@ -10,7 +10,6 @@ import epic from './epics/root';
 const epicMiddleware = createEpicMiddleware();
 const middleware = getDefaultMiddleware({ thunk: false }).concat(epicMiddleware);
 
-console.log(middleware);
 epicMiddleware.run(epic);
 
 const store = configureStore<GlobalState, StandardAction>({
@@ -21,7 +20,7 @@ const store = configureStore<GlobalState, StandardAction>({
 
 function createInitialState(): GlobalState {
   let state = {} as GlobalState;
-  const script = document.querySelector('#initialGlobalContext');
+  const script = document.querySelector('#initialState');
   if (script) {
     try {
       state = JSON.parse(script.innerHTML);
