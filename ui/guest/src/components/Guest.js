@@ -28,10 +28,13 @@ import {
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   TRASHED,
+  COMPONENT_DRAG_ENDED,
+  INSTANCE_DRAG_ENDED,
+  RELOAD_REQUEST,
   not,
   isNullOrUndefined,
   notNullOrUndefined,
-  pluckProps, COMPONENT_DRAG_ENDED, INSTANCE_DRAG_ENDED
+  pluckProps
 } from '../util';
 import { zip, Subject } from 'rxjs';
 import { debounceTime, delay, filter, map, take, tap, throttleTime } from 'rxjs/operators';
@@ -882,6 +885,9 @@ export function Guest(props) {
             }
           });
           break;
+        case RELOAD_REQUEST: {
+          return window.location.reload();
+        }
         default:
           console.warn(`[message$] Unhandled host message "${type}".`);
       }
@@ -906,8 +912,9 @@ export function Guest(props) {
       .pipe(take(1))
       .subscribe((models) => {
 
-        const url = window.location.href;
+        const location = window.location.href;
         const origin = window.location.origin;
+        const url = location.replace(origin, '');
 
         let timeout;
 
@@ -915,7 +922,7 @@ export function Guest(props) {
           clearTimeout(timeout);
         });
 
-        post(GUEST_CHECK_IN, { url, origin, models, modelId, path });
+        post(GUEST_CHECK_IN, { url, location, origin, models, modelId, path });
 
         timeout = setTimeout(() => {
           hostDetectionSubscription.unsubscribe();
