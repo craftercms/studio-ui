@@ -86,11 +86,12 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const { formatMessage } = useIntl();
 
   const user = useSelector<GlobalState, any>(state => state.user);
+  if (!user) {
+    window.location.reload();
+  }
 
   useOnMount(() => {
-    if (!user) {
-      window.location.reload();
-    }
+
     if (user.authType === authHeaders) {
       getLogoutInfoURL().subscribe(({ response }) => {
         setLogoutInfo({ ...logout, url: response.logoutUrl ? response.logoutUrl : false, show: !!response.logoutUrl });
