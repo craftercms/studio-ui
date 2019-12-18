@@ -88,7 +88,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   //selector to user
 
   useOnMount(() => {
-    if (user.authenticationType === authHeaders) {
+    if (user.authType === authHeaders) {
       getLogoutInfoURL().subscribe(({ response }) => {
         setLogoutInfo({ ...logout, url: response.logoutUrl ? response.logoutUrl : false, show: !!response.logoutUrl });
       })
