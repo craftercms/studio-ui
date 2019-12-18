@@ -214,16 +214,16 @@ const messages = defineMessages({
 });
 
 const globalNavUrlMapping = {
-  'home.globalMenu.logging-levels': '/#/globalMenu/logging',
-  'home.globalMenu.log-console': '/#/globalMenu/log',
-  'home.globalMenu.users': '/#/globalMenu/users',
-  'home.globalMenu.sites': '/#/globalMenu/sites',
-  'home.globalMenu.audit': '/#/globalMenu/audit',
-  'home.globalMenu.groups': '/#/globalMenu/groups',
-  'home.globalMenu.globalConfig': '/#/globalMenu/global-config',
-  'home.globalMenu.cluster': '/#/globalMenu/cluster',
+  'home.globalMenu.logging-levels': '#/globalMenu/logging',
+  'home.globalMenu.log-console': '#/globalMenu/log',
+  'home.globalMenu.users': '#/globalMenu/users',
+  'home.globalMenu.sites': '#/globalMenu/sites',
+  'home.globalMenu.audit': '#/globalMenu/audit',
+  'home.globalMenu.groups': '#/globalMenu/groups',
+  'home.globalMenu.globalConfig': '#/globalMenu/global-config',
+  'home.globalMenu.cluster': '#/globalMenu/cluster',
   'preview': '/preview',
-  'about': '/#/about-us',
+  'about': '#/about-us',
   'legacy.preview': '/legacy/preview',
   'siteConfig': '/site-config',
 };
