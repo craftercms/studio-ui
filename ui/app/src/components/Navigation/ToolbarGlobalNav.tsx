@@ -104,7 +104,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
       if(logoutInfo.url) {
         window.location.href = logoutInfo.url;
       } else {
-        window.location.href = '/login';
+        window.location.href = '/studio';
       }
     });
   }
