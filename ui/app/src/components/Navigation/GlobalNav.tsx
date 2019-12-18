@@ -447,6 +447,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                     title={formatMessage(messages.siteConfig)}
                     icon='fa fa-sliders'
                     link={getLink('siteConfig')}
+                    onClick={onMenuClose}
                   />
                 }
                 {
