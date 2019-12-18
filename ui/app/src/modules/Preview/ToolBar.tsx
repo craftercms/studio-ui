@@ -141,7 +141,8 @@ export function ToolBarUI(props: any) {
     firstName: 'admin',
     lastName: 'admin',
     email: 'admin@example.com',
-    role: 'admin'
+    role: 'admin',
+    authenticationType: 'db'
   };
   return (
     <AppBar position="static" color="inherit">

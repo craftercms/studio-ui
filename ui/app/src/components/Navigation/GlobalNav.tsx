@@ -40,6 +40,7 @@ import IconButton from "@material-ui/core/IconButton";
 import LoadingState from "../SystemStatus/LoadingState";
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import Hidden from '@material-ui/core/Hidden';
+import { Observable } from "rxjs";
 
 const useStyles = makeStyles(() => ({
   popover: {
@@ -87,10 +88,14 @@ const useStyles = makeStyles(() => ({
       '& .MuiTypography-root': {
         textDecoration: 'underline'
       }
+    },
+    '&.disabled': {
+      opacity: '0.5',
+      pointerEvents: 'none'
     }
   },
   icon: {
-    fontSize: '35px',
+    fontSize: '35px !important',
     color: palette.gray.medium5
   },
   tileTitle: {
@@ -226,17 +231,22 @@ interface TileProps {
   title: string;
   link?: string;
   target?: string;
+
+  onClick?(id?: string, type?: string): any;
+
+  disabled?: any;
 }
 
 function Tile(props: TileProps) {
-  const { title, icon: Icon, link, target } = props;
+  const { title, icon: Icon, link, target, onClick, disabled = false } = props;
   const classes = useStyles({});
 
   return (
-    <Link className={classes.tile} href={link} target={target? target: '_self'}>
+    <Link className={clsx(classes.tile, disabled && 'disabled')} href={disabled ? null : link}
+          onClick={() => (disabled && onClick) ? onClick() : null} target={target ? target : '_self'}>
       {
         typeof Icon === 'string'
-          ? <i className={clsx(classes.icon, 'fa' , Icon)}></i>
+          ? <i className={clsx(classes.icon, 'fa', Icon)}></i>
           : <Icon className={classes.icon}/>
       }
       <Typography variant="subtitle1" color="textSecondary" className={classes.tileTitle}>
@@ -264,6 +274,8 @@ export default function GlobalNav(props: GlobalNavProps) {
   });
   const { formatMessage } = useIntl();
 
+  const crafterSite = Cookies.get('crafterSite');
+
   const cardActions = [
     {
       name: formatMessage(messages.preview),
@@ -279,13 +291,29 @@ export default function GlobalNav(props: GlobalNavProps) {
     setApiState({ ...apiState, error: false });
   }
 
+  function onPreviewClick(id: string, type: string) {
+    if (!id && !crafterSite) {
+      id = sites[0].siteId;
+    }
+    Cookies.set('crafterSite', id, {
+      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+      path: '/'
+    });
+    const url = '/studio/preview/';
+    const base = window.location.host.replace('3000', '8080');
+    window.location.href = `//${base}${url}`;
+  }
+
   useOnMount(() => {
-    forkJoin([
+    const requests: Observable<any>[] = [
       fetchSites(),
-      getGlobalMenuItems(),
-      getDOM(Cookies.get('crafterSite'), '/context-nav/sidebar.xml', 'studio')
-    ]).subscribe(
-      ([sitesResponse, globalMenuItemsResponse, xml]) => {
+      getGlobalMenuItems()
+    ];
+    if (crafterSite) {
+      requests.push(getDOM(crafterSite, '/context-nav/sidebar.xml', 'studio'));
+    }
+    forkJoin(requests).subscribe(
+      ([sitesResponse, globalMenuItemsResponse, xml]: any) => {
         setSites(sitesResponse.response.sites);
         setMenuItems(globalMenuItemsResponse.response.menuItems);
         if (xml) {
@@ -345,7 +373,8 @@ export default function GlobalNav(props: GlobalNavProps) {
           <Grid container spacing={0}>
             <Hidden only={['xs', 'sm']}>
               <Grid item md={5} className={classes.sitesPanel}>
-                <Typography variant="subtitle1" component="h2" className={classes.title} style={{ marginBottom: '24px' }}>
+                <Typography variant="subtitle1" component="h2" className={classes.title}
+                            style={{ marginBottom: '24px' }}>
                   {formatMessage(messages.mySites)}
                 </Typography>
                 {
@@ -367,6 +396,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                 title={formatMessage(messages.myDashboard)}
                 icon={HomeIcon}
                 onCardClick={onDashboardClick}
+                disabled={!crafterSite}
               />
               <Typography variant="subtitle1" component="h2" className={classes.title}
                           style={{ margin: '34px 0 10px 0' }}>
@@ -376,21 +406,20 @@ export default function GlobalNav(props: GlobalNavProps) {
                 <Tile
                   title={formatMessage(messages.preview)}
                   icon={Preview}
-                  link={getLink('preview')}
+                  onClick={onPreviewClick}
                 />
                 <Tile
                   title={formatMessage(messages.legacyPreview)}
                   icon={DevicesIcon}
                   link={getLink('legacy.preview')}
+                  disabled={!crafterSite}
                 />
-                {
-                  siteConfig &&
-                  <Tile
-                    title={formatMessage(messages.siteConfig)}
-                    icon='fa fa-sliders'
-                    link={getLink('siteConfig')}
-                  />
-                }
+                <Tile
+                  title={formatMessage(messages.siteConfig)}
+                  icon='fa fa-sliders'
+                  link={getLink('siteConfig')}
+                  disabled={!siteConfig}
+                />
                 {
                   menuItems.map((item, i) =>
                     <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>
@@ -421,20 +450,9 @@ export default function GlobalNav(props: GlobalNavProps) {
   )
 }
 
-
 function getLink(id: string) {
   const base = window.location.host.replace('3000', '8080');
   return `//${base}/studio${globalNavUrlMapping[id]}`;
-}
-
-function onPreviewClick(id: string, type: string) {
-  Cookies.set('crafterSite', id, {
-    domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-    path: '/'
-  });
-  const url = '/studio/preview/';
-  const base = window.location.host.replace('3000', '8080');
-  window.location.href = `//${base}${url}`;
 }
 
 function onDashboardClick(id: string, type: string) {

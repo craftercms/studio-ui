@@ -35,6 +35,10 @@ const useStyles = makeStyles(() => ({
     },
     '&:hover': {
       backgroundColor: palette.gray.light1
+    },
+    '&.disabled': {
+      opacity: '0.5',
+      pointerEvents: 'none'
     }
   },
   avatar: {
@@ -57,10 +61,11 @@ interface TitleCardProps {
   classes?: any;
   onCardClick(id: string, type?: string): any;
   cardActions?: any;
+  disabled?: boolean;
 }
 
 export default function SiteCard(props: TitleCardProps) {
-  const {title, options, icon: Icon, onCardClick, cardActions = []} = props;
+  const {title, options, icon: Icon, onCardClick, cardActions = [], disabled = false} = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
 
@@ -80,7 +85,7 @@ export default function SiteCard(props: TitleCardProps) {
   };
 
   return (
-    <Card className={clsx(classes.card, props.classes?.root && props.classes.root )} onClick={() => onCardClick(title)}>
+    <Card className={clsx(classes.card, props.classes?.root && props.classes.root, disabled && 'disabled')} onClick={() => disabled? onCardClick(title): null}>
       <CardHeader
         classes={{root: classes.root, avatar: classes.avatar, action: classes.action}}
         avatar={Icon && <Icon/>}

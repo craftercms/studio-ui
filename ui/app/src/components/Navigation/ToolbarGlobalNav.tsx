@@ -27,6 +27,9 @@ import { palette } from "../../styles/theme";
 import { useIntl, defineMessages } from "react-intl";
 import Typography from '@material-ui/core/Typography';
 import Link from "@material-ui/core/Link";
+import { useOnMount } from "../../utils/helpers";
+import { getLogoutInfoURL, logout } from "../../services/auth";
+import Cookies from "js-cookie";
 
 const useStyles = makeStyles(() => ({
   avatarClickable: {
@@ -43,7 +46,7 @@ const useStyles = makeStyles(() => ({
     padding: '10px 16px'
   },
   anchor: {
-    '&:hover':{
+    '&:hover': {
       textDecoration: 'none',
       color: 'inherit'
     }
@@ -64,6 +67,7 @@ const messages = defineMessages({
 interface ToolBarGlobalNavProps {
   // TODO: Remove line 👇🏻 once props are defined.
   [prop: string]: any;
+  authHeaders?: string;
 }
 
 export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
@@ -73,9 +77,38 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const onAvatarClick = (e) => setAnchorAvatar(e.target);
   const onAvatarClose = () => setAnchorAvatar(null);
   const onMenuClose = () => setAnchor(null);
-  const user = props.user;
+  const [logoutInfo, setLogoutInfo] = useState({
+    url: null,
+    show: false
+  });
+  const { user, authHeaders = "AUTH_HEADERS" } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
+
+  //selector to user
+
+  useOnMount(() => {
+    if (user.authenticationType === authHeaders) {
+      getLogoutInfoURL().subscribe(({ response }) => {
+        setLogoutInfo({ ...logout, url: response.logoutUrl ? response.logoutUrl : false, show: !!response.logoutUrl });
+      })
+    } else {
+      setLogoutInfo({ ...logout, url: false, show: true });
+    }
+  });
+
+  function onLogout() {
+    setAnchorAvatar(null);
+    logout().subscribe(() => {
+      Cookies.set('userSession', null);
+      if(logoutInfo.url) {
+        window.location.href = logoutInfo.url;
+      } else {
+        window.location.href = '/login';
+      }
+    });
+  }
+
   return (
     <>
       <IconButton
@@ -91,6 +124,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         keepMounted
         open={!!anchorAvatar}
         onClose={() => onAvatarClose()}
+        disableEnforceFocus={true}
       >
         <div className={classes.userInfo}>
           <Typography variant="subtitle2" gutterBottom className={classes.bold}>
@@ -100,8 +134,17 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
             {user.email}
           </Typography>
         </div>
-        <MenuItem><Link href="/studio/#/settings" color="textPrimary" className={classes.anchor}>{formatMessage(messages.settings)}</Link></MenuItem>
-        <MenuItem id="acn-logout-link" className="hide">{formatMessage(messages.signOut)}</MenuItem>
+        <MenuItem>
+          <Link
+            href="/studio/#/settings"
+            color="textPrimary"
+            className={classes.anchor}>{formatMessage(messages.settings)}
+          </Link>
+        </MenuItem>
+        {
+          logoutInfo.show &&
+          <MenuItem onClick={onLogout}>{formatMessage(messages.signOut)}</MenuItem>
+        }
       </Menu>
       <GlobalNav anchor={anchor} onMenuClose={onMenuClose} roles={user.role}/>
     </>
