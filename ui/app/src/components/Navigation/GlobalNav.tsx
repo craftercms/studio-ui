@@ -38,9 +38,8 @@ import DevicesIcon from '@material-ui/icons/Devices';
 import Link from '@material-ui/core/Link';
 import IconButton from "@material-ui/core/IconButton";
 import LoadingState from "../SystemStatus/LoadingState";
-import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import Hidden from '@material-ui/core/Hidden';
-import { Observable } from "rxjs";
+import { Observable, forkJoin } from "rxjs";
 import { LookupTable } from "../../models/LookupTable";
 import { useSelector } from "react-redux";
 import GlobalState from "../../models/GlobalState";
@@ -276,7 +275,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const {SITE_COOKIE} = useSelector<GlobalState, any>(state => state.env);
+  const { SITE_COOKIE } = useSelector<GlobalState, any>(state => state.env);
 
   const crafterSite = Cookies.get(SITE_COOKIE);
 
@@ -350,9 +349,9 @@ export default function GlobalNav(props: GlobalNavProps) {
           setSiteConfig(false);
         }
       },
-      ({ response }) => {
-        if (response) {
-          const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
+      (error) => {
+        if (error.response) {
+          const _response = { ...error.response, code: '', documentationUrl: '', remedialAction: '' };
           setApiState({ error: true, errorResponse: _response });
         }
       },
@@ -442,12 +441,14 @@ export default function GlobalNav(props: GlobalNavProps) {
                   link={getLink('legacy.preview')}
                   disabled={!crafterSite}
                 />
-                <Tile
-                  title={formatMessage(messages.siteConfig)}
-                  icon='fa fa-sliders'
-                  link={getLink('siteConfig')}
-                  disabled={!siteConfig}
-                />
+                {
+                  siteConfig &&
+                  <Tile
+                    title={formatMessage(messages.siteConfig)}
+                    icon='fa fa-sliders'
+                    link={getLink('siteConfig')}
+                  />
+                }
                 {
                   menuItems.map((item, i) =>
                     <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>

@@ -88,6 +88,9 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const user = useSelector<GlobalState, any>(state => state.user);
 
   useOnMount(() => {
+    if (!user) {
+      window.location.reload();
+    }
     if (user.authType === authHeaders) {
       getLogoutInfoURL().subscribe(({ response }) => {
         setLogoutInfo({ ...logout, url: response.logoutUrl ? response.logoutUrl : false, show: !!response.logoutUrl });
@@ -101,7 +104,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
     setAnchorAvatar(null);
     logout().subscribe(() => {
       Cookies.set('userSession', null);
-      if(logoutInfo.url) {
+      if (logoutInfo.url) {
         window.location.href = logoutInfo.url;
       } else {
         window.location.href = '/studio';
