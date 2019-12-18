@@ -30,6 +30,8 @@ import Link from "@material-ui/core/Link";
 import { useOnMount } from "../../utils/helpers";
 import { getLogoutInfoURL, logout } from "../../services/auth";
 import Cookies from "js-cookie";
+import { useSelector } from "react-redux";
+import GlobalState from "../../models/GlobalState";
 
 const useStyles = makeStyles(() => ({
   avatarClickable: {
@@ -65,8 +67,6 @@ const messages = defineMessages({
 });
 
 interface ToolBarGlobalNavProps {
-  // TODO: Remove line 👇🏻 once props are defined.
-  [prop: string]: any;
   authHeaders?: string;
 }
 
@@ -81,11 +81,11 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
     url: null,
     show: false
   });
-  const { user, authHeaders = "AUTH_HEADERS" } = props;
+  const { authHeaders = "AUTH_HEADERS" } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
 
-  //selector to user
+  const user = useSelector<GlobalState, any>(state => state.user);
 
   useOnMount(() => {
     if (user.authType === authHeaders) {
@@ -146,7 +146,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
           <MenuItem onClick={onLogout}>{formatMessage(messages.signOut)}</MenuItem>
         }
       </Menu>
-      <GlobalNav anchor={anchor} onMenuClose={onMenuClose} roles={user.role}/>
+      <GlobalNav anchor={anchor} onMenuClose={onMenuClose} rolesBySite={user.rolesBySite}/>
     </>
   )
 }

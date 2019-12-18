@@ -51,9 +51,18 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 			success: function(navContent) {
 				CStudioAuthoring.ContextualNav.addNavContent(navContent);
 				YAHOO.util.Event.onAvailable("authoringContextNavHeader", function() {
-                    document.domain = CStudioAuthoringContext.cookieDomain;
+				  document.domain = CStudioAuthoringContext.cookieDomain;
 					CStudioAuthoring.Events.contextNavReady.fire();
-          me.getNavBarContent();
+          const userJson = JSON.parse(document.querySelector('#userJSON').innerHTML);
+          const container = document.querySelector('#toolbarGlobalNav');
+          CrafterCMSNext
+            .render(
+              container,
+              'ToolbarGlobalNav', {
+                user: userJson.user,
+                authHeaders: CStudioAuthoring.Constants.AUTH_HEADERS
+              }
+            );
           me.addResizeEventToNavbar();
 				}, this);
 			},
@@ -97,32 +106,13 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 						});
 
 					me.context.buildModules(config, bar);
-
-                    CStudioAuthoring.Operations.createNavBarDropDown("help");
-                    CStudioAuthoring.Operations.createNavBarDropDown("quick-create");
+          CStudioAuthoring.Operations.createNavBarDropDown("quick-create");
 				});
 			},
 			failure: function() {},
 			context: this
 		});
 	},
-
-	getNavBarContent: function() {
-		var callback = {
-			success: function(results) {
-                document.getElementById('nav-user-name').innerHTML = results.firstName + " " + results.lastName;
-				document.getElementById('nav-user-email').innerHTML = results.email;
-				document.getElementById('account-dropdown').childNodes[0].nodeValue = results.username;
-			},
-			failure: function(response) {
-
-			}
-		};
-
-		CStudioAuthoring.Service.getUserInfo(callback);
-    document.getElementById('account-dropdown').childNodes[0].nodeValue = CStudioAuthoringContext.user;
-  },
-
     /**
      * given a dropdown configuration, build the nav
      */
@@ -269,7 +259,7 @@ CStudioAuthoring.ContextualNav.RightModulesMap = {
 	'preview_tools': '#acn-preview-tools',
 	'targeting': '#acn-persona',
 	'search': '[role="search"]',
-    'status': '#acn-status',
+  'status': '#acn-status',
 	'logout': '#acn-logout-link'
 };
 

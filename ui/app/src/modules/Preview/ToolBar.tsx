@@ -167,13 +167,6 @@ export default function ToolBar() {
     ...state.preview
   }));
   const classes = useStyles({});
-  const user = {
-    firstName: 'admin',
-    lastName: 'admin',
-    email: 'admin@example.com',
-    role: 'admin',
-    authType: 'db'
-  };
   return (
     <AppBar position="static" color="default">
       <Toolbar className={classes.toolBar}>
@@ -193,7 +186,7 @@ export default function ToolBar() {
           />
         </section>
         <div className={classes.globalNavSection}>
-          <ToolbarGlobalNav user={user}/>
+          <ToolbarGlobalNav/>
         </div>
       </Toolbar>
     </AppBar>

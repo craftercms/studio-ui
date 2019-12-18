@@ -41,6 +41,9 @@ import LoadingState from "../SystemStatus/LoadingState";
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import Hidden from '@material-ui/core/Hidden';
 import { Observable } from "rxjs";
+import { LookupTable } from "../../models/LookupTable";
+import { useSelector } from "react-redux";
+import GlobalState from "../../models/GlobalState";
 
 const useStyles = makeStyles(() => ({
   popover: {
@@ -259,11 +262,11 @@ function Tile(props: TileProps) {
 interface GlobalNavProps {
   anchor: Element;
   onMenuClose: (e: any) => void;
-  roles: string | [string];
+  rolesBySite: LookupTable<string[]>;
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
-  const { anchor, onMenuClose, roles } = props;
+  const { anchor, onMenuClose, rolesBySite } = props;
   const classes = useStyles({});
   const [sites, setSites] = useState(null);
   const [menuItems, setMenuItems] = useState(null);
@@ -273,8 +276,9 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
+  const {SITE_COOKIE} = useSelector<GlobalState, any>(state => state.env);
 
-  const crafterSite = Cookies.get('crafterSite');
+  const crafterSite = Cookies.get(SITE_COOKIE);
 
   const cardActions = [
     {
@@ -321,8 +325,10 @@ export default function GlobalNav(props: GlobalNavProps) {
           modules.forEach((module) => {
             if (module.querySelector('name').innerHTML === 'site-config') {
               module.querySelectorAll('role').forEach((role) => {
-                if (roles.includes(role.innerHTML)) {
+                if (rolesBySite[crafterSite] && rolesBySite[crafterSite].includes(role.innerHTML)) {
                   setSiteConfig(true);
+                } else {
+                  setSiteConfig(false)
                 }
               });
             }
@@ -373,8 +379,12 @@ export default function GlobalNav(props: GlobalNavProps) {
           <Grid container spacing={0}>
             <Hidden only={['xs', 'sm']}>
               <Grid item md={5} className={classes.sitesPanel}>
-                <Typography variant="subtitle1" component="h2" className={classes.title}
-                            style={{ marginBottom: '24px' }}>
+                <Typography
+                  variant="subtitle1"
+                  component="h2"
+                  className={classes.title}
+                  style={{ marginBottom: '24px' }}
+                >
                   {formatMessage(messages.mySites)}
                 </Typography>
                 {
@@ -398,8 +408,12 @@ export default function GlobalNav(props: GlobalNavProps) {
                 onCardClick={onDashboardClick}
                 disabled={!crafterSite}
               />
-              <Typography variant="subtitle1" component="h2" className={classes.title}
-                          style={{ margin: '34px 0 10px 0' }}>
+              <Typography
+                variant="subtitle1"
+                component="h2"
+                className={classes.title}
+                style={{ margin: '34px 0 10px 0' }}
+              >
                 {formatMessage(messages.apps)}
               </Typography>
               <nav className={classes.sitesApps}>

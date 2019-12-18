@@ -35,39 +35,7 @@
             </div>
 
             <div ng-if="authenticated" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li ui-sref-active="active">
-                        <a id="homeSites" class="nav-link" ng-click='loadHomeState()'
-                           ng-mouseover="mouseOverTopMenu($event)" ng-mouseleave="mouseLeaveTopMenu($event)">
-                            <span class="nav-icon fa fa-bars" tooltip-placement="bottom"
-                                  uib-tooltip="{{ 'common.MAIN_MENU' | translate }}"
-                                  aria-label="{{ 'common.MAIN_MENU' | translate }}"></span>
-                        </a>
-                    </li>
-                    <li id="help-dropdown" class="dropdown" uib-dropdown is-open="isHelpDropdownOpen">
-                        <a class="nav-link dropdown-toggle" uib-dropdown-toggle >
-                            <span class="nav-icon fa fa-life-ring pointer" tooltip-placement="bottom"
-                                  uib-tooltip="{{ 'common.HELP' | translate }}" tooltip-is-open="helpTooltipIsOpen"
-                                  ng-click="helpTooltipIsOpen = !helpTooltipIsOpen" tooltip-enable="!isHelpDropdownOpen"
-                                  aria-label= "{{ 'common.HELP' | translate }}"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a class="documentation" href="{{helpUrl}}" target="_blank">{{ 'common.DOCUMENTATION' | translate }}</a></li>
-                            <li><a class="about" ui-sref-active="active" ui-sref="home.about-us" >{{ 'common.ABOUT' | translate }}</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown" uib-dropdown>
-                        <a id="account-dropdown" class="dropdown-toggle pointer" uib-dropdown-toggle>{{user.username}} <span class="caret"></span></a>
-                        <ul id="account-dropdown-container" class="dropdown-menu" role="menu">
-                            <li class="user-display">
-                                <div class="first-name" ng-if="user.firstName">{{user.firstName}} {{user.lastName}}</div>
-                                <div class="email">{{user.email}}</div>
-                            </li>
-                            <li><a class="settings" ui-sref-active="active" ui-sref="home.settings">{{ 'common.SETTINGS' | translate }}</a></li>
-                            <li><a ng-show="showLogoutLink" class="sign-out" ng-click="logout()">{{ 'common.SIGN_OUT' | translate }}</a></li>
-                        </ul>
-                    </li>
-                </ul>
+              <div id="toolbarGlobalNav"></div>
             </div>
         </div>
     </nav>
@@ -78,7 +46,7 @@
     <div class="modal-body">
         <div class="contentTypePopupHeader loginHeader">
             <img src="/studio/static-assets/images/logo.svg" alt="Crafter CMS" id="crafterLogo"/>
-        </div> 
+        </div>
         <form id="login_form">
             <p class="subtitleErr">Your session has expired due to inactivity</p>
             <div class="contentTypeOuter">
@@ -94,20 +62,20 @@
                     {{reLoginError.message}}
                 </div>
             </div>
-            <div class="contentTypePopupBtn"> 
+            <div class="contentTypePopupBtn">
                 <input type="submit" class="btn btn-primary cstudio-xform-button" ng-click="reLogin()" id="loginButton" value="Sign in to continue working"/>
                 <input type="button" class="btn btn-default cstudio-xform-button" ng-click="reLoginSignOut()" id="loginCancelButton" value="I'm done, signout"/>
             </div>
         </form>
-    </div> 
+    </div>
 
-    
+
 </script>
 
 <script type="text/ng-template" id="spinnerModal.html">
 
     <div class="modal-body">
         <i class="fa fa-spinner fa-spin spinner" aria-hidden="true"></i>
-    </div> 
-    
+    </div>
+
 </script>
