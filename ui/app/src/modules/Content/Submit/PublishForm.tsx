@@ -14,7 +14,7 @@ import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
 import Link from '@material-ui/core/Link';
 
-import DateTimePicker from './DateTimePicker';
+import DateTimePicker from '../../../components/DateTimePicker';
 import moment from 'moment';
 
 const messages = defineMessages({
@@ -301,7 +301,6 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
         InputLabelProps={{ shrink: true }}
         value={inputs.submissionComment}
         multiline
-        rows={inputs.scheduling === 'custom' ? '1': '6'}
         InputProps={{
           className: classes.textField
         }}

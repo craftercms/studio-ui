@@ -102,6 +102,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({}); // selected soft deps
   const [deps, setDeps] = useState<DependenciesResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
 
   const { formatMessage } = useIntl();
 
@@ -109,19 +110,29 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   useEffect(setRef, [checkedItems, checkedSoftDep]);
 
   function getPublishingChannels() {
+    setPublishingChannelsStatus('Loading');
+    setSubmitDisabled(true);
     fetchPublishingChannels(siteId)
       .subscribe(
         ({ response }) => {
           setPublishingChannels(response.availablePublishChannels);
           setPublishingChannelsStatus('Success');
+          setSubmitDisabled(false);
         },
         ({ response }) => {
           setPublishingChannelsStatus('Error');
+          setSubmitDisabled(true);
         }
       );
   }
 
   const setSelectedItems = (items) => {
+    if (!items || items.length === 0) {
+      setSubmitDisabled(true);
+    } else {
+      setSubmitDisabled(false);
+    }
+
     setDialog({ ...dialog, 'selectedItems': items });
   };
 
@@ -220,6 +231,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
       getPublishingChannels={getPublishingChannels}
       handleClose={handleClose}
       handleSubmit={handleSubmit}
+      submitDisabled={submitDisabled}
       dialog={dialog}
       setDialog={setDialog}
       open={open}

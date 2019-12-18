@@ -83,6 +83,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#fff',
     border: '1px solid rgba(0, 0, 0, .125)',
     height: 'calc(100% - 24px)',
+    minHeight: '374px',
     overflowY: 'scroll'
   },
   selectionListTitle: {
@@ -367,7 +368,7 @@ export function DependencySelectionDelete(props: DependencySelectionProps) {
 
 function SelectionList(props: SelectionListProps) {
 
-  const { title, subtitle, items, uris, onItemClicked, onSelectAllClicked, displayItemTitle, checked, setChecked } = props;
+  const { title, subtitle, items, uris, onItemClicked, onSelectAllClicked, checked, setChecked } = props;
 
   const classes = useStyles({});
 

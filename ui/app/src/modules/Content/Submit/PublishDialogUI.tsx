@@ -22,7 +22,7 @@ import {Theme, withStyles} from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import Grid from "@material-ui/core/Grid";
 import DependencySelection from "../Dependencies/DependencySelection";
-import PublishForm from "./PulishForm";
+import PublishForm from "./PublishForm";
 import Button from "@material-ui/core/Button";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import {FormattedMessage} from "react-intl";
@@ -37,7 +37,7 @@ import MuiDialogActions from "@material-ui/core/DialogActions";
 const dialogStyles = () => ({
   titleRoot: {
     margin: 0,
-    padding: '16px 20px 13px',
+    padding: '13px 20px 11px',
     background: '#fff'
   },
   title: {
@@ -53,6 +53,9 @@ const dialogStyles = () => ({
   },
   closeIcon: {
     padding: 0
+  },
+  dialogActions: {
+    padding: '10px 22px'
   },
   leftAlignedAction: {
     marginRight: 'auto'
@@ -103,6 +106,7 @@ interface PublishDialogUIProps {
   getPublishingChannels: Function;
   handleClose: any;
   handleSubmit: any;
+  submitDisabled: boolean;
   dialog: any;
   setDialog: any;
   open: boolean;
@@ -118,7 +122,7 @@ interface PublishDialogUIProps {
   selectAllDeps: Function,
   selectAllSoft: Function,
   onClickShowAllDeps?: any,
-  showEmailCheckbox?: boolean
+  showEmailCheckbox?: boolean,
   classes?: any;
 }
 
@@ -130,6 +134,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     getPublishingChannels,
     handleClose,
     handleSubmit,
+    submitDisabled,
     dialog,
     setDialog,
     open,
@@ -193,7 +198,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className={ classes.dialogActions }>
         <Button
           color="primary"
           onClick={ onClickShowAllDeps }
@@ -212,7 +217,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
             defaultMessage={`Cancel`}
           />
         </Button>
-        <Button variant="contained" autoFocus onClick={handleSubmit} color="primary">
+        <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled}>
           <FormattedMessage
             id="requestPublishDialog.submit"
             defaultMessage={`Submit`}

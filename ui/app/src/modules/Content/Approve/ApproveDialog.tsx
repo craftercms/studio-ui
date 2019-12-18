@@ -73,6 +73,7 @@ function ApproveDialog(props: ApproveDialogProps) {
   const [checkedSoftDep, _setCheckedSoftDep] = useState<any>({}); // selected soft deps
   const [deps, setDeps] = useState<DependenciesResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
 
   const { formatMessage } = useIntl();
 
@@ -81,19 +82,28 @@ function ApproveDialog(props: ApproveDialogProps) {
 
   function getPublishingChannels() {
     setPublishingChannelsStatus('Loading');
+    setSubmitDisabled(true);
     fetchPublishingChannels(siteId)
       .subscribe(
         ({ response }) => {
           setPublishingChannels(response.availablePublishChannels);
           setPublishingChannelsStatus('Success');
+          setSubmitDisabled(false);
         },
         ({ response }) => {
           setPublishingChannelsStatus('Error');
+          setSubmitDisabled(true);
         }
       );
   }
 
   const setSelectedItems = (items) => {
+    if (!items || items.length === 0) {
+      setSubmitDisabled(true);
+    } else {
+      setSubmitDisabled(false);
+    }
+
     setDialog({ ...dialog, 'selectedItems': items });
   };
 
@@ -192,6 +202,7 @@ function ApproveDialog(props: ApproveDialogProps) {
       getPublishingChannels={getPublishingChannels}
       handleClose={handleClose}
       handleSubmit={handleSubmit}
+      submitDisabled={submitDisabled}
       dialog={dialog}
       setDialog={setDialog}
       open={open}
