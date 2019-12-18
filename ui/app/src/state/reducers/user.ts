@@ -15,30 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { CreateSiteMeta } from "../models/Site";
+import { createReducer } from '@reduxjs/toolkit';
+import { User } from '../../models/User';
 
-export function fetchBlueprints() {
-  return get('/studio/api/2/sites/available_blueprints');
-}
+const reducer = createReducer<User>(null, {
 
-export function fetchSites() {
-  return get('/studio/api/2/users/me/sites');
-}
+});
 
-export function createSite(site: CreateSiteMeta) {
-  return post('/studio/api/1/services/api/1/site/create.json', site, {
-    'Content-Type': 'application/json'
-  })
-}
-
-export function checkHandleAvailability(name: string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
-}
-
-export default {
-  fetchBlueprints,
-  fetchSites,
-  createSite,
-  checkHandleAvailability
-}
+export default reducer;

@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { nnou } from '../../utils/object';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import React, { useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import AppsRounded from '@material-ui/icons/AppsRounded';

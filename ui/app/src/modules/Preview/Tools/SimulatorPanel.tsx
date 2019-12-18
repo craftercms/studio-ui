@@ -17,7 +17,7 @@
 
 import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
-import { DRAWER_WIDTH, setHostSize, usePreviewContext } from '../previewContext';
+import { DRAWER_WIDTH } from '../previewContext';
 import { getTranslation } from '../../../utils/i18n';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
@@ -31,6 +31,9 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import TextField from '@material-ui/core/TextField';
 import ToolPanel from './ToolPanel';
+import { setHostSize } from '../../../state/actions/preview';
+import { useDispatch, useSelector } from 'react-redux';
+import GlobalState from '../../../models/GlobalState';
 
 const SIMULATOR_PANEL_RESPONSIVE_MODE = 'craftercms.ice.simulator.previewWindowSize';
 const SIMULATOR_PANEL_CUSTOM_MODE = 'craftercms.ice.simulator.custom';
@@ -130,7 +133,8 @@ export default function SimulatorPanel(props: any) {
     }
   };
 
-  const [{ hostSize }, dispatch] = usePreviewContext();
+  const dispatch = useDispatch();
+  const hostSize = useSelector<GlobalState, any>(state => state.preview.hostSize);
   const onDimensionKeyUp = (e: any) => {
     if (e.key === 'Enter') {
 

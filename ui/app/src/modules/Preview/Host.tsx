@@ -19,15 +19,12 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { fromEvent, NEVER, Observable } from 'rxjs';
 import clsx from 'clsx';
-import {
-  StandardAction,
-  getHostToGuestBus,
-  usePreviewContext,
-  getGuestToHostBus
-} from './previewContext';
-import { DRAWER_WIDTH } from './previewContext';
+import { DRAWER_WIDTH, getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
+import { StandardAction } from '../../models/StandardAction';
+import { useSelector } from 'react-redux';
+import GlobalState from '../../models/GlobalState';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 
@@ -81,6 +78,7 @@ const translations = defineMessages({
 
 interface HostProps {
   url: string;
+  site: string;
   onLocationChange: () => void,
   className?: string;
   guestOrigin?: string;
@@ -98,6 +96,7 @@ export function HostUI(props: HostProps) {
 
   const {
     url,
+    site,
     width,
     height,
     border,
@@ -120,6 +119,7 @@ export function HostUI(props: HostProps) {
   return (
     <>
       <iframe
+        key={site}
         style={{ width, height }}
         id="crafterCMSPreviewIframe"
         title={formatMessage(translations.iframeTitle)}
@@ -169,13 +169,21 @@ export function HostUI(props: HostProps) {
 export default function Host() {
 
   const classes = useStyles({});
-  const [
-    {
-      showToolsPanel,
-      hostSize,
-      currentUrl
-    }
-  ] = usePreviewContext();
+  const {
+    site,
+    GUEST_BASE,
+    showToolsPanel,
+    hostSize,
+    currentUrl
+  } = useSelector<GlobalState, any>(state => ({
+    site: state.sites.active,
+    GUEST_BASE: state.env.GUEST_BASE,
+    ...({
+      showToolsPanel: state.preview.showToolsPanel,
+      hostSize: state.preview.hostSize,
+      currentUrl: state.preview.currentUrl
+    })
+  }));
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
@@ -186,8 +194,9 @@ export default function Host() {
   return (
     <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>
       <HostUI
+        site={site}
         {...hostSize}
-        url={currentUrl}
+        url={`${GUEST_BASE}${currentUrl}`}
         onMessage={onMessage}
         postMessage$={postMessage$}
         onLocationChange={() => null}

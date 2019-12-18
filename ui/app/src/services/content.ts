@@ -20,16 +20,20 @@ import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { createElements, fromString, getInnerHtml } from '../utils/xml';
 import {
-  ContentType, ContentTypeField,
-  LegacyContentTypeDescriptorCamelized, LegacyDataSource,
-  LegacyFormDefinition, LegacyFormDefinitionField, LegacyFormDefinitionProperty,
+  ContentType,
+  ContentTypeField,
+  LegacyContentTypeDescriptorCamelized,
+  LegacyFormDefinition,
+  LegacyFormDefinitionField,
+  LegacyFormDefinitionProperty,
   LegacyFormDefinitionSection
 } from '../models/ContentType';
-import { camelizeProps, pluckProps, reversePluckProps } from '../utils/object';
+import { camelizeProps, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { camelize } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
+import { AjaxResponse } from 'rxjs/ajax';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -43,26 +47,26 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
 
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
   return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`).pipe(
-    map(({ response }) =>
-      (query?.type)
-        ? response.filter((contentType) => contentType.type === query.type && contentType.name !== '/component/level-descriptor')
-        : response.filter((contentType) => contentType.name !== '/component/level-descriptor')
+    map<AjaxResponse, ContentType[]>(({ response }) => (
+        (query?.type)
+          ? response.filter((contentType) => contentType.type === query.type && contentType.name !== '/component/level-descriptor')
+          : response.filter((contentType) => contentType.name !== '/component/level-descriptor')
+      ).map((data) => {
+        const legacy = camelizeProps(data) as LegacyContentTypeDescriptorCamelized;
+        return {
+          id: legacy.form,
+          name: legacy.label,
+          quickCreate: legacy.quickCreate,
+          quickCreatePath: legacy.quickCreatePath,
+          type: legacy.type,
+          fields: null,
+          sections: null,
+          displayTemplate: null,
+          dataSources: null,
+          mergeStrategy: null
+        };
+      })
     ),
-    map<any[], ContentType[]>((response) => response.map((data) => {
-      const legacy = camelizeProps(data) as LegacyContentTypeDescriptorCamelized;
-      return {
-        id: legacy.form,
-        name: legacy.label,
-        quickCreate: legacy.quickCreate,
-        quickCreatePath: legacy.quickCreatePath,
-        type: legacy.type,
-        fields: null,
-        sections: null,
-        displayTemplate: null,
-        dataSources: null,
-        mergeStrategy: null
-      };
-    })),
     switchMap((contentTypes) => zip(
       of(contentTypes),
       forkJoin(
@@ -217,43 +221,47 @@ function asArray<T = any>(object: Array<T> | T): Array<T> {
   return Array.isArray(object) ? object : [object];
 }
 
+// TODO: Temporarily disabled data sources until needed and read properly (images, and others?)
 function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentType> {
+  if (nou(definition)) {
+    return {};
+  }
 
   const fields = {};
   const sections = [];
-  const dataSources = {};
+  // const dataSources = {};
 
   // In some cases, the back end parser seems to return this as "   " 🤷
-  if (typeof definition.datasources !== 'string') {
-    const propsToPluck = ['browsePath', 'repoPath', 'enableSearchExisting', 'enableBrowseExisting', 'enableCreateNew'];
-    definition.datasources?.datasource && asArray<LegacyDataSource>(definition.datasources.datasource).forEach((legacyDS) => {
-
-      dataSources[legacyDS.id] = {
-        id: legacyDS.id,
-        name: legacyDS.title,
-        type: typeMap[legacyDS.type] || legacyDS.type, // e.g. shared-content, embedded-content, img-desktop-upload, img-repository-upload
-        contentTypes: null,
-        repoPath: null,
-        browsePath: null,
-        enableSearchExisting: null,
-        enableBrowseExisting: null,
-        enableCreateNew: null
-      };
-
-      asArray<LegacyFormDefinitionProperty>(legacyDS.properties.property).forEach(prop => {
-        if (prop.name === 'contentType') {
-          if (dataSources[legacyDS.id].contentTypes === null) {
-            dataSources[legacyDS.id].contentTypes = [];
-          }
-          dataSources[legacyDS.id].contentTypes.push(...prop.value.split(','));
-        } else if (propsToPluck.includes(prop.name)) {
-          // TODO: Figure out how to reliable extract this for the purpose of validating welcomed content types.
-          dataSources[legacyDS.id][prop.name] = prop.value;
-        }
-      });
-
-    });
-  }
+  // if (typeof definition.datasources !== 'string') {
+  //   const propsToPluck = ['browsePath', 'repoPath', 'enableSearchExisting', 'enableBrowseExisting', 'enableCreateNew'];
+  //   definition.datasources?.datasource && asArray<LegacyDataSource>(definition.datasources.datasource).forEach((legacyDS) => {
+  //
+  //     dataSources[legacyDS.id] = {
+  //       id: legacyDS.id,
+  //       name: legacyDS.title,
+  //       type: typeMap[legacyDS.type] || legacyDS.type, // e.g. shared-content, embedded-content, img-desktop-upload, img-repository-upload
+  //       contentTypes: null,
+  //       repoPath: null,
+  //       browsePath: null,
+  //       enableSearchExisting: null,
+  //       enableBrowseExisting: null,
+  //       enableCreateNew: null
+  //     };
+  //
+  //     asArray<LegacyFormDefinitionProperty>(legacyDS.properties.property).forEach(prop => {
+  //       if (prop.name === 'contentType') {
+  //         if (dataSources[legacyDS.id].contentTypes === null) {
+  //           dataSources[legacyDS.id].contentTypes = [];
+  //         }
+  //         dataSources[legacyDS.id].contentTypes.push(...prop.value.split(','));
+  //       } else if (propsToPluck.includes(prop.name)) {
+  //         // TODO: Figure out how to reliable extract this for the purpose of validating welcomed content types.
+  //         dataSources[legacyDS.id][prop.name] = prop.value;
+  //       }
+  //     });
+  //
+  //   });
+  // }
 
   // Parse Sections & Fields
   definition.sections?.section && asArray<LegacyFormDefinitionSection>(definition.sections.section).forEach((legacySection) => {
@@ -316,17 +324,18 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
           }, {});
 
         field.validations = {
-          contentTypes: []
+          // tags: (map.tags?.value || '').split(','),
+          contentTypes: (map.contentTypes?.value || '').split(',')
         };
 
         // Different data sources come as CSV
-        map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
-          if (dataSources[value] && dataSources[value].contentTypes) {
-            field.validations.contentTypes.push.apply(
-              field.validations.contentTypes,
-              dataSources[value].contentTypes);
-          }
-        });
+        // map.itemManager?.value && map.itemManager.value.split(',').forEach((value) => {
+        //   if (dataSources[value] && dataSources[value].contentTypes) {
+        //     field.validations.contentTypes.push.apply(
+        //       field.validations.contentTypes,
+        //       dataSources[value].contentTypes);
+        //   }
+        // });
 
         // field.validations = {
         //   limit: { min: null, max: null, message: null },
@@ -355,7 +364,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
     // Find display template
     displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
     mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
-    dataSources: Object.values(dataSources),
+    // dataSources: Object.values(dataSources),
     sections,
     fields
   };

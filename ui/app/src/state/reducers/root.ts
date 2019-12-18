@@ -15,30 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { CreateSiteMeta } from "../models/Site";
+import { ReducersMapObject } from 'redux';
+import GlobalState from '../../models/GlobalState';
+import { StandardAction } from '../../models/StandardAction';
+import auth from './auth';
+import user from './user';
+import sites from './sites';
+import env from './env';
+import preview from './preview';
 
-export function fetchBlueprints() {
-  return get('/studio/api/2/sites/available_blueprints');
-}
+const reducer: ReducersMapObject<GlobalState, StandardAction> = {
+  auth,
+  user,
+  sites,
+  env,
+  preview
+};
 
-export function fetchSites() {
-  return get('/studio/api/2/users/me/sites');
-}
-
-export function createSite(site: CreateSiteMeta) {
-  return post('/studio/api/1/services/api/1/site/create.json', site, {
-    'Content-Type': 'application/json'
-  })
-}
-
-export function checkHandleAvailability(name: string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
-}
-
-export default {
-  fetchBlueprints,
-  fetchSites,
-  createSite,
-  checkHandleAvailability
-}
+export default reducer;

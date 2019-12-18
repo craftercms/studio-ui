@@ -16,7 +16,8 @@
  */
 
 // @ts-ignore
-import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
+// import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
+import prettierXmlPlugin from './prettierPluginXml';
 import prettier from 'prettier/standalone';
 
 export function fromString(xml: string) {

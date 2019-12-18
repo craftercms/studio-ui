@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectTool, usePreviewContext } from '../previewContext';
 import { MessageDescriptor, useIntl } from 'react-intl';
 import React, { FunctionComponent, PropsWithChildren, ElementType, ReactElement } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
@@ -23,6 +22,8 @@ import Typography from '@material-ui/core/Typography';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import { selectTool } from '../../../state/actions/preview';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   panelHeader: {
@@ -65,7 +66,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 };
 
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
-  const [, dispatch] = usePreviewContext();
+  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const {
     title,
