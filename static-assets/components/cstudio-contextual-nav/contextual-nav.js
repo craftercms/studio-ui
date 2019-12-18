@@ -53,13 +53,11 @@ CStudioAuthoring.ContextualNav = CStudioAuthoring.ContextualNav || {
 				YAHOO.util.Event.onAvailable("authoringContextNavHeader", function() {
 				  document.domain = CStudioAuthoringContext.cookieDomain;
 					CStudioAuthoring.Events.contextNavReady.fire();
-          const userJson = JSON.parse(document.querySelector('#userJSON').innerHTML);
           const container = document.querySelector('#toolbarGlobalNav');
           CrafterCMSNext
             .render(
               container,
               'ToolbarGlobalNav', {
-                user: userJson.user,
                 authHeaders: CStudioAuthoring.Constants.AUTH_HEADERS
               }
             );
