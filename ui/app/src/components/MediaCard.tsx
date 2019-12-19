@@ -34,17 +34,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { defineMessages, useIntl } from "react-intl";
 import { palette } from "../styles/theme";
 import { isEditableAsset } from "../utils/content";
+import cardTitleStyles from "../styles/card";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
     '& .cardTitle': {
-      fontWeight: '600',
-      lineHeight: '1.5rem',
-      overflow: 'hidden',
-      display: '-webkit-box',
-      '-webkit-line-clamp': 1,
-      '-webkit-box-orient': 'vertical',
-      marginBottom: 0,
+      ...cardTitleStyles,
       '&.clickable': {
         textDecoration: 'underline',
         cursor: 'pointer',

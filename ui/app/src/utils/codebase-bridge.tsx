@@ -107,7 +107,8 @@ export function createCodebaseBridge() {
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
       Search: lazy(() => import('../pages/Search')),
-      Preview: lazy(() => import('../pages/Preview'))
+      Preview: lazy(() => import('../pages/Preview')),
+      ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav'))
     },
 
     assets: {

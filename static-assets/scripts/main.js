@@ -963,6 +963,15 @@
         $rootScope.isFooter = false;
       }
 
+      const container = document.querySelector('#toolbarGlobalNav');
+      CrafterCMSNext
+        .render(
+          container,
+          'ToolbarGlobalNav', {
+            authHeaders: Constants.AUTH_HEADERS
+          }
+        );
+
       if(authService.getUser()){
         authService.getCurrentUserData('me').then(
           function successCallback(response) {
