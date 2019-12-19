@@ -38,6 +38,7 @@ export interface GlobalState {
     XSRF_CONFIG_HEADER: string;
     XSRF_CONFIG_ARGUMENT: string;
     SITE_COOKIE: string;
+    PREVIEW_LANDING_BASE: string;
   };
   preview: {
     currentUrl: string;

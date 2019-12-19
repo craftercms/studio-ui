@@ -17,9 +17,17 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
+import { CHANGE_SITE } from '../actions/sites';
 
 const reducer = createReducer<GlobalState['sites']>({ byId: {}, active: null }, {
-
+  [CHANGE_SITE]: (state, { payload }) => (
+    payload.nextSite === state.active
+      ? state
+      : ({
+        ...state,
+        active: payload.nextSite
+      })
+  )
 });
 
 export default reducer;

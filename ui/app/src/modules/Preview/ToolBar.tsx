@@ -161,11 +161,16 @@ export default function ToolBar() {
   const site = useActiveSiteId();
   const sitesTable = useSelector<GlobalState, LookupTable<Site>>(state => state.sites.byId);
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
+  const PREVIEW_LANDING_BASE = useSelector<GlobalState, string>(state => state.env.PREVIEW_LANDING_BASE);
   const {
     guest,
     currentUrl,
     showToolsPanel
   } = usePreviewState();
+  let addressBarUrl = guest?.url ?? currentUrl;
+  if (addressBarUrl === PREVIEW_LANDING_BASE) {
+    addressBarUrl = '';
+  }
   const classes = useStyles({});
   return (
     <AppBar position="static" color="default">
@@ -178,9 +183,9 @@ export default function ToolBar() {
         </IconButton>
         <section className={classes.addressBarContainer}>
           <AddressBar
-            site={site}
+            site={site ?? ''}
             sites={sites}
-            url={guest?.url ?? currentUrl}
+            url={addressBarUrl}
             onSiteChange={(site) => dispatch(changeSite(site))}
             onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
           />

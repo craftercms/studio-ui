@@ -42,8 +42,11 @@ import ICEPanel from './Tools/ICEPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import { selectTool, toolsLoaded } from '../../state/actions/preview';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
+import LoadingState from '../../components/SystemStatus/LoadingState';
+import EmptyState from '../../components/SystemStatus/EmptyState';
+import GlobalState from '../../models/GlobalState';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -95,8 +98,15 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     textOverflow: 'ellipsis',
     whitespace: 'no-wrap',
     overflow: 'hidden'
-  }
+  },
 
+  emptyState: {
+    margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+  },
+  emptyStateImage: {
+    width: '50%',
+    marginBottom: theme.spacing(1)
+  },
 }));
 
 const translations = defineMessages({
@@ -159,9 +169,9 @@ function ToolSelector() {
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
 
   return (
-    (tools == null) ? <>
-      Loading...
-    </> : <List>
+    (tools == null) ? (
+      <LoadingState title="Loading..." graphicProps={{ width: 150 }}/>
+    ) : <List>
       {tools.map((tool) => ({
         ...tool,
         Icon: componentIconMap[tool.id] || WarningRounded,
@@ -205,13 +215,14 @@ export default function ToolsPanel() {
     selectedTool,
     showToolsPanel
   } = usePreviewState();
+  const AUTHORING_BASE = useSelector<GlobalState, string>(state => state.env.AUTHORING_BASE);
 
   let Tool = guest?.selected ? EditFormPanel : (selectedTool ? (componentMap[selectedTool] || UnknownPanel) : ToolSelector);
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
   let config = toolMeta?.config;
 
   useEffect(() => {
-    const fetchConfigSubscription = (!tools) && getPreviewToolsConfig(site).subscribe(
+    const fetchConfigSubscription = (!tools && site) && getPreviewToolsConfig(site).subscribe(
       (tools) => {
         dispatch(toolsLoaded(tools.modules));
       },
@@ -233,7 +244,17 @@ export default function ToolsPanel() {
       className={classes.drawer}
       classes={{ paper: classes.drawerPaper }}
     >
-      <Tool id={toolMeta?.id} config={config}/>
+      {
+        site
+          ? <Tool id={toolMeta?.id} config={config}/>
+          : (
+            <EmptyState
+              title="Please choose site."
+              image={`${AUTHORING_BASE}/static-assets/images/choose_option.svg`}
+              classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
+            />
+          )
+      }
     </Drawer>
   );
 

@@ -52,10 +52,11 @@
   </#if>
   "env": {
     "AUTHORING_BASE": "${env_config.authoringServerUrl!"/studio"}",
-    "GUEST_BASE": "${env_config.previewServerUrl!""}",
-    "XSRF_CONFIG_HEADER": "${env_config.headerName!""}",
-    "XSRF_CONFIG_ARGUMENT": "${env_config.parameterName!""}",
-    "SITE_COOKIE": "crafterSite"
+    "GUEST_BASE": "${env_config.previewServerUrl!"http://localhost:8080"}",
+    "XSRF_CONFIG_HEADER": "${env_config.headerName!"X-XSRF-TOKEN"}",
+    "XSRF_CONFIG_ARGUMENT": "${env_config.parameterName!"_csrf"}",
+    "SITE_COOKIE": "crafterSite",
+    "PREVIEW_LANDING_BASE": "/studio/preview-landing"
   }
 }
 </script>
