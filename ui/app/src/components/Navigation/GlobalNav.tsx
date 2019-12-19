@@ -244,8 +244,12 @@ function Tile(props: TileProps) {
   const classes = useStyles({});
 
   return (
-    <Link className={clsx(classes.tile, disabled && 'disabled')} href={disabled ? null : link}
-          onClick={() => (!disabled && onClick) ? onClick() : null} target={target ? target : '_self'}>
+    <Link
+      className={clsx(classes.tile, disabled && 'disabled')}
+      href={disabled ? null : link}
+      onClick={() => (!disabled && onClick) ? onClick() : null}
+      target={target ? target : '_self'}
+    >
       {
         typeof Icon === 'string'
           ? <i className={clsx(classes.icon, 'fa', Icon)}></i>
