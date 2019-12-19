@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, useState } from 'react';
+import React, { ElementType, useEffect, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { palette } from "../../styles/theme";
@@ -43,38 +43,12 @@ import { Observable, forkJoin } from "rxjs";
 import { LookupTable } from "../../models/LookupTable";
 import { useSelector } from "react-redux";
 import GlobalState from "../../models/GlobalState";
+import { useActiveSiteId } from "../../utils/hooks";
+import { forEach } from '../../utils/array';
+import { getInnerHtml } from '../../utils/xml';
+import { createStyles } from "@material-ui/core";
 
-const useStyles = makeStyles(() => ({
-  popover: {
-    maxWidth: '920px',
-    width: 'calc(100% - 32px)',
-    maxHeight: '658px',
-    backgroundColor: palette.white,
-    borderRadius: '20px',
-    boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.25), 0px 0px 4px rgba(0, 0, 0, 0.25)'
-  },
-  sitesPanel: {
-    backgroundColor: palette.gray.light1,
-    padding: '30px 24px 30px 30px',
-    height: '658px',
-    overflow: 'auto',
-  },
-  sitesContent: {
-    backgroundColor: palette.white,
-    padding: '86px 24px 30px 30px',
-  },
-  title: {
-    textTransform: 'uppercase',
-    color: palette.gray.dark1,
-    fontWeight: 600,
-  },
-  titleCard: {
-    marginBottom: '20px',
-  },
-  sitesApps: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
+const tileStyles = makeStyles(() => createStyles({
   tile: {
     width: '120px',
     height: '100px',
@@ -102,23 +76,6 @@ const useStyles = makeStyles(() => ({
   },
   tileTitle: {
     color: palette.gray.medium5
-  },
-  errorPaperRoot: {
-    height: '100%'
-  },
-  closeButton: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px'
-  },
-  simpleGear: {
-    margin: 'auto'
-  },
-  loadingContainer: {
-    height: '600px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
   }
 }));
 
@@ -127,13 +84,13 @@ const messages = defineMessages({
     id: 'globalMenu.mySites',
     defaultMessage: 'My Sites'
   },
-  myDashboard: {
-    id: 'globalMenu.myDashboard',
-    defaultMessage: 'My Dashboard'
+  site: {
+    id: 'globalMenu.site',
+    defaultMessage: 'Site'
   },
-  apps: {
-    id: 'globalMenu.apps',
-    defaultMessage: 'Apps'
+  global: {
+    id: 'globalMenu.global',
+    defaultMessage: 'Global'
   },
   preview: {
     id: 'globalMenu.preview',
@@ -213,21 +170,6 @@ const messages = defineMessages({
   }
 });
 
-const globalNavUrlMapping = {
-  'home.globalMenu.logging-levels': '#/globalMenu/logging',
-  'home.globalMenu.log-console': '#/globalMenu/log',
-  'home.globalMenu.users': '#/globalMenu/users',
-  'home.globalMenu.sites': '#/globalMenu/sites',
-  'home.globalMenu.audit': '#/globalMenu/audit',
-  'home.globalMenu.groups': '#/globalMenu/groups',
-  'home.globalMenu.globalConfig': '#/globalMenu/global-config',
-  'home.globalMenu.cluster': '#/globalMenu/cluster',
-  'preview': '/preview',
-  'about': '#/about-us',
-  'legacy.preview': '/legacy/preview',
-  'siteConfig': '/site-config',
-};
-
 interface TileProps {
   icon: ElementType<any> | string;
   title: string;
@@ -241,7 +183,7 @@ interface TileProps {
 
 function Tile(props: TileProps) {
   const { title, icon: Icon, link, target, onClick, disabled = false } = props;
-  const classes = useStyles({});
+  const classes = tileStyles({});
 
   return (
     <Link
@@ -262,6 +204,76 @@ function Tile(props: TileProps) {
   )
 }
 
+const globalNavUrlMapping = {
+  'home.globalMenu.logging-levels': '#/globalMenu/logging',
+  'home.globalMenu.log-console': '#/globalMenu/log',
+  'home.globalMenu.users': '#/globalMenu/users',
+  'home.globalMenu.sites': '#/globalMenu/sites',
+  'home.globalMenu.audit': '#/globalMenu/audit',
+  'home.globalMenu.groups': '#/globalMenu/groups',
+  'home.globalMenu.globalConfig': '#/globalMenu/global-config',
+  'home.globalMenu.cluster': '#/globalMenu/cluster',
+  'preview': '/preview',
+  'about': '#/about-us',
+  'legacy.preview': '/legacy/preview',
+  'siteConfig': '/site-config',
+};
+
+const siteMenuKeys = {
+  dashboard: 'dashboard',
+  siteConfig: 'site-config'
+};
+
+const globalNavStyles = makeStyles(() => createStyles({
+  popover: {
+    maxWidth: '820px',
+    width: 'calc(100% - 32px)',
+    maxHeight: '658px',
+    backgroundColor: palette.white,
+    borderRadius: '20px',
+    boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.25), 0px 0px 4px rgba(0, 0, 0, 0.25)'
+  },
+  sitesPanel: {
+    backgroundColor: palette.gray.light1,
+    padding: '30px 24px 30px 30px',
+    height: '658px',
+    overflow: 'auto',
+  },
+  sitesContent: {
+    backgroundColor: palette.white,
+    padding: '30px 24px 30px 30px',
+  },
+  title: {
+    textTransform: 'uppercase',
+    color: palette.gray.dark1,
+    fontWeight: 600,
+  },
+  titleCard: {
+    marginBottom: '20px',
+  },
+  sitesApps: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  errorPaperRoot: {
+    height: '100%'
+  },
+  closeButton: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px'
+  },
+  simpleGear: {
+    margin: 'auto'
+  },
+  loadingContainer: {
+    height: '600px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+}));
+
 interface GlobalNavProps {
   anchor: Element;
   onMenuClose: (e: any) => void;
@@ -270,18 +282,17 @@ interface GlobalNavProps {
 
 export default function GlobalNav(props: GlobalNavProps) {
   const { anchor, onMenuClose, rolesBySite } = props;
-  const classes = useStyles({});
+  const classes = globalNavStyles({});
   const [sites, setSites] = useState(null);
   const [menuItems, setMenuItems] = useState(null);
-  const [siteConfig, setSiteConfig] = useState(null);
+  const [siteMenu, setSiteMenu] = useState(null);
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null
   });
   const { formatMessage } = useIntl();
   const { SITE_COOKIE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
-
-  const crafterSite = Cookies.get(SITE_COOKIE);
+  const crafterSite = useActiveSiteId();
 
   const cardActions = [
     {
@@ -324,7 +335,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     window.location.href = `//${base}${url}`;
   }
 
-  useOnMount(() => {
+  useEffect(() => {
     const requests: Observable<any>[] = [
       fetchSites(),
       getGlobalMenuItems()
@@ -336,22 +347,33 @@ export default function GlobalNav(props: GlobalNavProps) {
       ([sitesResponse, globalMenuItemsResponse, xml]: any) => {
         setSites(sitesResponse.response.sites);
         setMenuItems(globalMenuItemsResponse.response.menuItems);
+        let roleFound = {
+          [siteMenuKeys.dashboard]: false,
+          [siteMenuKeys.siteConfig]: false,
+        };
         if (xml) {
-          let modules = xml.querySelectorAll('modulehook');
-          modules.forEach((module) => {
-            if (module.querySelector('name').innerHTML === 'site-config') {
-              module.querySelectorAll('role').forEach((role) => {
-                if (rolesBySite[crafterSite] && rolesBySite[crafterSite].includes(role.innerHTML)) {
-                  setSiteConfig(true);
-                } else {
-                  setSiteConfig(false)
-                }
-              });
+          forEach(
+            xml.querySelectorAll('modulehook'),
+            (module) => {
+              if (getInnerHtml(module.querySelector('name')) === siteMenuKeys.siteConfig || getInnerHtml(module.querySelector('name')) === siteMenuKeys.dashboard) {
+                const roles = module.querySelectorAll('role');
+                roleFound[getInnerHtml(module.querySelector('name'))] = roles.length? forEach(
+                  roles,
+                  (role) => {
+                    if (
+                      rolesBySite[crafterSite] &&
+                      rolesBySite[crafterSite].includes(getInnerHtml(role))
+                    ) {
+                      return true
+                    }
+                  },
+                  false
+                ) : true;
+              }
             }
-          })
-        } else {
-          setSiteConfig(false);
+          );
         }
+        setSiteMenu(roleFound);
       },
       (error) => {
         if (error.response) {
@@ -360,7 +382,7 @@ export default function GlobalNav(props: GlobalNavProps) {
         }
       },
     )
-  });
+  }, [crafterSite]);
 
   return (
     <Popover
@@ -391,10 +413,10 @@ export default function GlobalNav(props: GlobalNavProps) {
             error={apiState.errorResponse}
             onBack={handleErrorBack}
           />
-        ) : (sites !== null && siteConfig !== null && menuItems !== null) ? (
+        ) : (sites !== null && siteMenu !== null && menuItems !== null) ? (
           <Grid container spacing={0}>
             <Hidden only={['xs', 'sm']}>
-              <Grid item md={5} className={classes.sitesPanel}>
+              <Grid item md={4} className={classes.sitesPanel}>
                 <Typography
                   variant="subtitle1"
                   component="h2"
@@ -418,42 +440,16 @@ export default function GlobalNav(props: GlobalNavProps) {
                 }
               </Grid>
             </Hidden>
-            <Grid item xs={12} md={7} className={classes.sitesContent}>
-              <SiteCard
-                title={formatMessage(messages.myDashboard)}
-                icon={HomeIcon}
-                onCardClick={onDashboardClick}
-                disabled={!crafterSite}
-              />
+            <Grid item xs={12} md={8} className={classes.sitesContent}>
               <Typography
                 variant="subtitle1"
                 component="h2"
                 className={classes.title}
-                style={{ margin: '34px 0 10px 0' }}
+                style={{ margin: '0px 0 10px 0' }}
               >
-                {formatMessage(messages.apps)}
+                {formatMessage(messages.global)}
               </Typography>
               <nav className={classes.sitesApps}>
-                <Tile
-                  title={formatMessage(messages.preview)}
-                  icon={Preview}
-                  onClick={onPreviewClick}
-                />
-                <Tile
-                  title={formatMessage(messages.legacyPreview)}
-                  icon={DevicesIcon}
-                  link={getLink('legacy.preview')}
-                  disabled={!crafterSite}
-                />
-                {
-                  siteConfig &&
-                  <Tile
-                    title={formatMessage(messages.siteConfig)}
-                    icon='fa fa-sliders'
-                    link={getLink('siteConfig')}
-                    onClick={onMenuClose}
-                  />
-                }
                 {
                   menuItems.map((item, i) =>
                     <Tile key={i} title={item.label} icon={item.icon} link={getLink(item.id)}/>
@@ -471,6 +467,44 @@ export default function GlobalNav(props: GlobalNavProps) {
                   link={getLink('about')}
                   target="_blank"
                 />
+              </nav>
+              <Typography
+                variant="subtitle1"
+                component="h2"
+                className={classes.title}
+                style={{ margin: '34px 0 10px 0' }}
+              >
+                {formatMessage(messages.site)}
+              </Typography>
+              <nav className={classes.sitesApps}>
+                <Tile
+                  title={formatMessage(messages.preview)}
+                  icon={Preview}
+                  onClick={onPreviewClick}
+                />
+                <Tile
+                  title={formatMessage(messages.legacyPreview)}
+                  icon={DevicesIcon}
+                  link={getLink('legacy.preview')}
+                  disabled={!crafterSite}
+                />
+                {
+                  siteMenu?.[siteMenuKeys.dashboard] &&
+                  <Tile
+                    title={formatMessage(messages.dashboard)}
+                    icon='fa-tasks'
+                    onClick={onDashboardClick}
+                  />
+                }
+                {
+                  siteMenu?.[siteMenuKeys.siteConfig] &&
+                  <Tile
+                    title={formatMessage(messages.siteConfig)}
+                    icon='fa-sliders'
+                    link={getLink('siteConfig')}
+                    onClick={onMenuClose}
+                  />
+                }
               </nav>
             </Grid>
           </Grid>
