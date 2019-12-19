@@ -22,8 +22,8 @@ import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { ContentTypeHelper } from '../../../utils/helpers';
 import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
-import { useSelector, useDispatch } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
+import { useDispatch } from 'react-redux';
+import { usePreviewState } from '../../../utils/hooks';
 
 export default function EditFormPanel() {
 
@@ -31,7 +31,7 @@ export default function EditFormPanel() {
   const {
     contentTypes,
     guest: { selected, models }
-  } = useSelector<GlobalState, any>(state => state.preview);
+  } = usePreviewState();
   const hostToGuest$ = getHostToGuestBus();
 
   const onBack = () => {

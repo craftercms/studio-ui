@@ -117,3 +117,16 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
     }
   });
 }
+
+export default {
+  fromString,
+  deserialize,
+  minify,
+  beautify,
+  getInnerHtml,
+  getInnerHtmlNumber,
+  extractLocalizedElements,
+  commentless,
+  findDocumentElement,
+  createElements
+};

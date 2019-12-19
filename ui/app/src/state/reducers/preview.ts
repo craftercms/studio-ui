@@ -37,9 +37,10 @@ import {
   TOOLS_LOADED
 } from '../actions/preview';
 import { nou } from '../../utils/object';
+import { CHANGE_SITE } from '../actions/sites';
 
 const reducer = createReducer<GlobalState['preview']>({
-  currentUrl: '/',
+  currentUrl: '/studio/preview-landing',
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
@@ -135,14 +136,18 @@ const reducer = createReducer<GlobalState['preview']>({
       ...state,
       // Setting URL causes dual reload when guest navigation occurs
       // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
-      guest: { ...payload, itemBeingDragged: false, selected: null }
+      guest: { ...(state.guest ? state.guest : {}), ...payload, itemBeingDragged: false, selected: null }
     }
   },
   [GUEST_CHECK_OUT]: (state, { payload }) => {
-    return {
-      ...state,
-      guest: null
+    let nextState = state;
+    if (state.guest) {
+      nextState = { ...nextState, guest: null };
     }
+    if (state.contentTypes) {
+      nextState = { ...nextState, contentTypes: null };
+    }
+    return nextState;
   },
   [GUEST_MODELS_RECEIVED]: (state, { payload }) => {
     // If guest hasn't checked in, these models will come later when it does check in.
@@ -158,7 +163,16 @@ const reducer = createReducer<GlobalState['preview']>({
         }
       };
     } else {
-      return state;
+      // TODO: Currently getting models before check in some cases when coming from a different site.
+      return {
+        ...state,
+        guest: {
+          ...state.guest,
+          models: {
+            ...payload
+          }
+        }
+      };
     }
   },
   [SELECT_FOR_EDIT]: (state, { payload }) => {
@@ -197,12 +211,27 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   },
-  [CHANGE_CURRENT_URL]: (state, { payload }) => {
-    if (state.currentUrl === payload) return state;
-    return {
-      ...state,
-      currentUrl: payload
+  [CHANGE_CURRENT_URL]: (state, { payload }) => (
+    (state.currentUrl === payload)
+      ? state
+      : {
+        ...state,
+        currentUrl: payload
+      }
+  ),
+  [CHANGE_SITE]: (state, { payload }) => {
+    let nextState = state;
+    // TODO: If there's a guest it would have checked out?
+    // if (state.guest) {
+    //   nextState = { ...nextState, guest: null };
+    // }
+    if (state.contentTypes) {
+      nextState = { ...nextState, contentTypes: null };
     }
+    if (payload.nextUrl !== nextState.currentUrl) {
+      nextState = { ...nextState, currentUrl: payload.nextUrl };
+    }
+    return nextState;
   }
 });
 

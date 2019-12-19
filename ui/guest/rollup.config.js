@@ -80,7 +80,10 @@ const plugins = [
     }
   }),
   copy({
-    targets: [{ src: 'dist/*.umd.js', dest: '../app/public' }],
+    targets: [
+      { src: 'dist/*.umd.js', dest: '../app/public' },
+      { src: 'dist/*.umd.js', dest: '../../static-assets/scripts' }
+    ],
     hook: 'writeBundle'
   })
 ];
@@ -102,6 +105,20 @@ export default [
       file: pkg.browser,
       format: 'umd',
       amd: { id: pkg.craftercms.id },
+      globals
+    }
+  },
+  /* UMD build for preview landing controller */
+  {
+    input: 'src/index.preview.js',
+    external,
+    plugins,
+    output: {
+      sourcemap: 'inline',
+      name: 'preview-landing',
+      file: 'dist/preview-landing.umd.js',
+      format: 'umd',
+      amd: { id: 'org.craftercms.previewLanding' },
       globals
     }
   },

@@ -25,7 +25,8 @@ function createInitialState(): GlobalState {
     try {
       state = JSON.parse(script.innerHTML);
       if (nou(state.sites.active)) {
-        state.sites.active = Cookies.get(state.env.SITE_COOKIE);
+        const cookie = Cookies.get(state.env.SITE_COOKIE);
+        cookie && (state.sites.active = Cookies.get(state.env.SITE_COOKIE));
       }
     } catch {
       console.error('[GlobalContext] Malformed initial global state.');

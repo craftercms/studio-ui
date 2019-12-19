@@ -17,7 +17,7 @@
 
 import { StandardAction } from '../../models/StandardAction';
 
-const CHANGE_SITE = 'CHANGE_SITE';
+export const CHANGE_SITE = 'CHANGE_SITE';
 
 export function changeSite(nextSite: string, nextUrl: string = '/'): StandardAction {
   return {

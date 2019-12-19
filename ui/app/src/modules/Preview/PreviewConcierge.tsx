@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CONTENT_TYPES_RESPONSE,
   GUEST_CHECK_IN,
@@ -30,7 +30,8 @@ import {
   MOVE_ITEM_OPERATION,
   INSERT_ITEM_OPERATION,
   INSTANCE_DRAG_BEGUN,
-  INSTANCE_DRAG_ENDED
+  INSTANCE_DRAG_ENDED,
+  NAVIGATION_REQUEST
 } from '../../state/actions/preview';
 import { deleteItem, fetchContentTypes, insertComponent, sortItem } from '../../services/content';
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators';
@@ -48,28 +49,26 @@ import {
   guestModelsReceived, selectForEdit, setItemBeingDragged
 } from '../../state/actions/preview';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
-import { useSelector, useDispatch } from 'react-redux';
-import { changeSite } from '../../state/actions/sites';
+import { useDispatch, useSelector } from 'react-redux';
+import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
+import { nnou } from '../../utils/object';
 import GlobalState from '../../models/GlobalState';
 
 export function PreviewConcierge(props: any) {
 
   const [snack, setSnack] = useState<any>(null);
-
   const { queryString: qs, onUrlChange } = props;
-
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
   const {
-    site,
     guest,
     currentUrl,
     contentTypes
-  } = useSelector<GlobalState, any>(state => ({
-    site: state.sites.active,
-    guest: state.preview.guest,
-    currentUrl: state.preview.currentUrl,
-    contentTypes: state.preview.contentTypes
-  }));
+  } = usePreviewState();
+  const GUEST_BASE = useSelector<GlobalState, string>(state => state.env.GUEST_BASE);
+
+  const previousSite = useRef(site);
+  const previousQS = useRef(qs);
 
   // This subject helps keep the async nature of content type fetching and guest
   // check in events. The idea is that it keeps things in sync despite the timing of
@@ -90,14 +89,20 @@ export function PreviewConcierge(props: any) {
 
           dispatch(checkInGuest(payload));
 
-          onUrlChange?.({ page: payload.url, site });
+          if (payload.url === '/studio/preview-landing') {
+            nnou(site) && dispatch(changeCurrentUrl('/'));
+          } else {
 
-          // If the content types have already been loaded, contentTypes$ subject
-          // will emit immediately. If not, it will emit when the content type fetch
-          // payload does arrive.
-          contentTypes$.pipe(take(1)).subscribe((payload) => {
-            hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
-          });
+            onUrlChange?.({ page: payload.url, site });
+
+            // If the content types have already been loaded, contentTypes$ subject
+            // will emit immediately. If not, it will emit when the content type fetch
+            // payload does arrive.
+            contentTypes$.pipe(take(1)).subscribe((payload) => {
+              hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
+            });
+
+          }
 
           break;
         }
@@ -175,7 +180,7 @@ export function PreviewConcierge(props: any) {
     });
 
     // Retrieve all content types in the system
-    const fetchSubscription = (!contentTypes) && fetchContentTypes(site).pipe(
+    const fetchSubscription = (!contentTypes && site) && fetchContentTypes(site).pipe(
       // Remove the "Component - " prefix that is so common...
       map(types => types.map((type) => ({ ...type, name: type.name.replace('Component - ', '') })))
     ).subscribe((contentTypes) => {
@@ -191,17 +196,51 @@ export function PreviewConcierge(props: any) {
   }, [site, dispatch, contentTypes, contentTypes$, guest, onUrlChange]);
 
   useEffect(() => {
-    if ((qs.site) && (qs.site !== site)) {
-      setSiteCookie(qs.site);
-      dispatch(changeSite(qs.site));
-    }
-    (qs.url) && (qs.url !== currentUrl) && dispatch(changeCurrentUrl(qs.url));
-  }, [currentUrl, dispatch, qs.site, qs.url, site]);
 
-  useEffect(() => {
-    setSiteCookie(site);
-    beginGuestDetection(setSnack);
-  }, [site, currentUrl]);
+    let nextSite;
+    const qsChanged = (qs.site !== previousQS.current.site);
+    const siteChanged = (site !== previousSite.current);
+
+    qsChanged && console.log(`qsChanged from ${previousQS.current.site} to ${qs.site}`);
+    siteChanged && console.log(`Site changed from ${previousSite.current} to ${site}`);
+    previousQS.current.site = qs.site;
+    previousSite.current = site;
+
+    let cookie = Cookies.get('crafterSite');
+
+    if (qs.site === site && site === cookie) {
+      console.log('QS site, site and cookie all the same');
+      return;
+    }
+
+    if (qsChanged) {
+      nextSite = qs.site;
+    } else if (siteChanged) {
+      nextSite = site;
+      onUrlChange?.({ page: '/', site });
+    }
+
+    if (qsChanged || siteChanged) {
+      const hostToGuest$ = getHostToGuestBus();
+      nextSite && setSiteCookie(nextSite);
+      beginGuestDetection(setSnack);
+      if (guest) {
+        hostToGuest$.next({ type: NAVIGATION_REQUEST, payload: { url: GUEST_BASE } });
+      }
+      // TODO: handle qs changes...
+      // qsChanged && setTimeout(() => {
+      //   dispatch(changeSite(qs.site));
+      // });
+    }
+
+  }, [site, qs.site, currentUrl, guest, GUEST_BASE, dispatch, onUrlChange]);
+
+  // TODO: Handle URL change (from address bar)
+  // useEffect(() => {
+  //   if ((qs.url) && (qs.url !== currentUrl)) {
+  //     dispatch(changeCurrentUrl(qs.url));
+  //   }
+  // }, [currentUrl, qs.url, dispatch]);
 
   return (
     <>
