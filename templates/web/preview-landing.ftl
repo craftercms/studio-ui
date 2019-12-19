@@ -23,21 +23,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#000000"/>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+  <script src="${contentModel.script_s}"></script>
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i&display=swap"
         rel="stylesheet">
   <style>
-    html, body, #root {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      background: #fafafa;
+    }
+    .preview-landing {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      place-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .preview-landing img {
+      max-width: 80%;
     }
   </style>
 </head>
 <body>
-<div id="root"></div>
-<#include "/templates/web/common/js-next-scripts.ftl" />
-<script>
-  CrafterCMSNext.render('#root', 'Preview');
-</script>
+<div class="preview-landing">
+  <img style="display: none" src="${contentModel.image_s}" alt="">
+</div>
 </body>
 </html>

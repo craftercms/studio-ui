@@ -16,21 +16,22 @@
  */
 
 import React from 'react';
-import { CLEAR_SELECTED_ZONES, clearSelectForEdit, getHostToGuestBus, usePreviewContext } from '../previewContext';
+import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import Typography from '@material-ui/core/Typography';
 import { ContentTypeHelper } from '../../../utils/helpers';
+import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
+import { useDispatch } from 'react-redux';
+import { usePreviewState } from '../../../utils/hooks';
 
 export default function EditFormPanel() {
 
-  const [
-    {
-      contentTypes,
-      guest: { selected, models }
-    },
-    dispatch
-  ] = usePreviewContext();
+  const dispatch = useDispatch();
+  const {
+    contentTypes,
+    guest: { selected, models }
+  } = usePreviewState();
   const hostToGuest$ = getHostToGuestBus();
 
   const onBack = () => {

@@ -16,7 +16,8 @@
  */
 
 // @ts-ignore
-import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
+// import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
+import prettierXmlPlugin from './prettierPluginXml';
 import prettier from 'prettier/standalone';
 
 export function fromString(xml: string) {
@@ -116,3 +117,16 @@ export function createElements(doc: XMLDocument, element: Element, data: object)
     }
   });
 }
+
+export default {
+  fromString,
+  deserialize,
+  minify,
+  beautify,
+  getInnerHtml,
+  getInnerHtmlNumber,
+  extractLocalizedElements,
+  commentless,
+  findDocumentElement,
+  createElements
+};

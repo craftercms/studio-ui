@@ -29,7 +29,6 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import BlueprintCard from './BlueprintCard';
 import Spinner from '../../../../components/SystemStatus/Spinner';
-import InputBase from '@material-ui/core/InputBase';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
@@ -40,7 +39,7 @@ import LoadingState from '../../../../components/SystemStatus/LoadingState';
 import ErrorState from '../../../../components/SystemStatus/ErrorState';
 import ConfirmDialog from '../../../../components/UserControl/ConfirmDialog';
 import { Blueprint } from '../../../../models/Blueprint';
-import { MarketplaceSite, Site, SiteState, Views } from '../../../../models/Site';
+import { MarketplaceSite, CreateSiteMeta, SiteState, Views } from '../../../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import PluginDetailsView from '../../Publishing/Queue/PluginDetailsView';
@@ -613,7 +612,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function createParams() {
     if (site.blueprint) {
-      const params: Site = {
+      const params: CreateSiteMeta = {
         siteId: site.siteId,
         singleBranch: false,
         createAsOrphan: site.createAsOrphan
@@ -656,7 +655,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
   }
 
-  function createNewSite(site: Site) {
+  function createNewSite(site: CreateSiteMeta) {
     createSite(site)
       .subscribe(
         () => {

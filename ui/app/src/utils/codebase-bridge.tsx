@@ -106,8 +106,8 @@ export function createCodebaseBridge() {
       )),
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
-      SearchApp: lazy(() => import('../modules/Search/SearchApp')),
-      Preview: lazy(() => import('../modules/Preview/Preview')),
+      Search: lazy(() => import('../pages/Search')),
+      Preview: lazy(() => import('../pages/Preview')),
       RequestPublishDialog: lazy(() => import('../modules/Content/Submit/RequestPublishDialog')),
       ApproveDialog: lazy(() => import('../modules/Content/Approve/ApproveDialog'))
     },

@@ -34,17 +34,18 @@ import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import {
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
-  getHostToGuestBus, TRASHED,
-  usePreviewContext
-} from '../previewContext';
+import { getHostToGuestBus } from '../previewContext';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import { palette } from '../../../styles/theme';
 import { Typography } from '@material-ui/core';
-import DeleteRoundedTilted from '../../../components/DeleteRoundedTilted';
+import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
+import {
+  TRASHED,
+  COMPONENT_DRAG_ENDED,
+  COMPONENT_DRAG_STARTED,
+} from '../../../state/actions/preview';
+import { usePreviewState } from '../../../utils/hooks';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -58,7 +59,8 @@ const useStyles = makeStyles((theme) => createStyles({
   noWrapping: {
     overflow: 'hidden',
     whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis'
+    textOverflow: 'ellipsis',
+    display: 'block'
   },
   component: {
     cursor: 'move'
@@ -98,7 +100,7 @@ export default function ComponentsPanel() {
 
   const classes = useStyles({});
   const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
-  const [{ contentTypes, guest }] = usePreviewContext();
+  const { contentTypes, guest } = usePreviewState();
   const hostToGuest$ = getHostToGuestBus();
   const componentTypes = useMemo(
     () => contentTypes?.filter((contentType) => contentType.type === 'component'),

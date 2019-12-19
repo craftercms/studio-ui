@@ -15,31 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import Button from "@material-ui/core/Button";
-import React, { useEffect, useRef, useState } from "react";
+import Button from '@material-ui/core/Button';
+import React, { useEffect, useRef, useState } from 'react';
 import Popover from '@material-ui/core/Popover';
-import { defineMessages, useIntl } from "react-intl";
-import { Theme } from "@material-ui/core";
+import { defineMessages, useIntl } from 'react-intl';
+import { Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/KeyboardArrowDown';
 import Collapse from '@material-ui/core/Collapse';
 import clsx from 'clsx';
 import { camelize, formatBytes } from '../../utils/string';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import FormGroup from "@material-ui/core/FormGroup";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import Radio from "@material-ui/core/Radio";
-import TextField from "@material-ui/core/TextField";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import FormGroup from '@material-ui/core/FormGroup';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import TextField from '@material-ui/core/TextField';
 import { ElasticParams, Facet, Filter as FilterType } from '../../models/Search';
 import CheckIcon from '@material-ui/icons/Check';
-import { LookupTable } from "../../models/LookupTable";
-import { palette } from "../../styles/theme";
+import { LookupTable } from '../../models/LookupTable';
+import { palette } from '../../styles/theme';
+import { nnou } from '../../utils/object';
 
 const useStyles = makeStyles((theme: Theme) => ({
   paper: {
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     '&.open': {
-      borderBottom: `1px solid ${palette.gray.light3}`,
+      borderBottom: `1px solid ${palette.gray.light3}`
     }
   },
   body: {
@@ -68,11 +69,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     transform: 'rotate(0deg)',
     marginLeft: 'auto',
     transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
+      duration: theme.transitions.duration.shortest
+    })
   },
   expandOpen: {
-    transform: 'rotate(180deg)',
+    transform: 'rotate(180deg)'
   },
   listPadding: {
     padding: '0'
@@ -89,14 +90,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1)
   },
   checkboxLabel: {
     width: '100%',
     overflow: 'hidden',
     display: '-webkit-box',
     '-webkit-line-clamp': 2,
-    '-webkit-box-orient': 'vertical',
+    '-webkit-box-orient': 'vertical'
   },
   checkboxRoot: {
     marginRight: '5px'
@@ -191,7 +192,7 @@ const messages: any = defineMessages({
   max: {
     id: 'searchFilter.max',
     defaultMessage: 'Max'
-  },
+  }
 });
 
 interface FilterSearchDropdownProps {
@@ -201,7 +202,7 @@ interface FilterSearchDropdownProps {
 
   handleFilterChange(filter: FilterType, isFilter: boolean): any;
 
-  queryParams:  Partial<ElasticParams>;
+  queryParams: Partial<ElasticParams>;
 }
 
 interface FilterProps {
@@ -217,20 +218,20 @@ interface FilterProps {
 
 function Filter(props: FilterProps) {
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
-  const {facet, handleFilterChange, facetsLookupTable, checkedFilters, setCheckedFilters} = props;
+  const { formatMessage } = useIntl();
+  const { facet, handleFilterChange, facetsLookupTable, checkedFilters, setCheckedFilters } = props;
 
   const handleCheckboxClick = (key: string, checked: boolean, facet: string) => {
     const facetFilter = checkedFilters[facet] || {};
     facetFilter[key] = checked;
-    setCheckedFilters({...checkedFilters, [facet]: facetFilter});
+    setCheckedFilters({ ...checkedFilters, [facet]: facetFilter });
   };
 
   const handleRadioClick = (value: string, facet: string) => {
     if (value === '') {
       value = undefined;
     }
-    handleFilterChange({name: facet, value: value}, true)
+    handleFilterChange({ name: facet, value: value }, true)
   };
 
   const handleApplyClick = (facet: string) => {
@@ -239,23 +240,23 @@ function Filter(props: FilterProps) {
       if (values.length === 0) {
         values = undefined;
       }
-      handleFilterChange({name: facet, value: values}, true)
+      handleFilterChange({ name: facet, value: values }, true)
     }
   };
 
   const handleClearClick = (facet: string) => {
     if (checkedFilters[facet]) {
       if (typeof checkedFilters[facet] === 'string') {
-        setCheckedFilters({...checkedFilters, [facet]: ''});
+        setCheckedFilters({ ...checkedFilters, [facet]: '' });
       } else {
-        let emptyFilter = {...checkedFilters[facet]};
+        let emptyFilter = { ...checkedFilters[facet] };
         Object.keys(emptyFilter).forEach((name) => {
           emptyFilter[name] = false;
         });
-        setCheckedFilters({...checkedFilters, [facet]: emptyFilter});
+        setCheckedFilters({ ...checkedFilters, [facet]: emptyFilter });
       }
     }
-    handleFilterChange({name: facet, value: undefined}, true)
+    handleFilterChange({ name: facet, value: undefined }, true)
   };
 
   return (
@@ -322,10 +323,10 @@ interface FilterRadiosProps {
 }
 
 function FilterRadios(props: FilterRadiosProps) {
-  const {facetData, facet, handleRadioClick, checkedFilters} = props;
+  const { facetData, facet, handleRadioClick, checkedFilters } = props;
   const items = facetData.values;
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
 
   const formatValue = (facet: string, key: string, value: any) => {
     if (facetData.date) {
@@ -340,17 +341,17 @@ function FilterRadios(props: FilterRadiosProps) {
   const formatLabel = (facet: string, key: string, value: any) => {
     if (facet === 'size') {
       if (value.from === '-Infinity') {
-        return `${formatMessage(messages.under, { value: formatBytes(value.to), unit:'' })}`
+        return `${formatMessage(messages.under, { value: formatBytes(value.to), unit: '' })}`
       } else if (value.to === 'Infinity') {
-        return `${formatMessage(messages.above, { value: formatBytes(value.from), unit:'' })}`
+        return `${formatMessage(messages.above, { value: formatBytes(value.from), unit: '' })}`
       } else {
         return `${formatBytes(value.from)} - ${formatBytes(value.to)}`
       }
     } else if (facet === 'width' || facet === 'height') {
       if (value.from === '-Infinity') {
-        return `${formatMessage(messages.under, { value: value.to, unit: 'px'})}`
+        return `${formatMessage(messages.under, { value: value.to, unit: 'px' })}`
       } else if (value.to === 'Infinity') {
-        return `${formatMessage(messages.above, { value: value.from, unit: 'px'})}`
+        return `${formatMessage(messages.above, { value: value.from, unit: 'px' })}`
       } else {
         return `${value.from}px - ${value.to}px`
       }
@@ -362,7 +363,7 @@ function FilterRadios(props: FilterRadiosProps) {
     <RadioGroup>
       {
         Object.keys(items).map((key) => {
-          let count = (items[key].count != undefined) ? items[key].count : items[key];
+          let count = nnou(items[key].count) ? items[key].count : items[key];
           let label = formatLabel(facet, key, items[key]);
           let value = formatValue(facet, key, items[key]);
           return (
@@ -379,7 +380,7 @@ function FilterRadios(props: FilterRadiosProps) {
               }
               label={`${label} (${count})`}
               labelPlacement="start"
-              classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
+              classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
             />
           )
         })
@@ -398,7 +399,7 @@ interface FilterCheckboxesProps {
 }
 
 function FilterCheckboxes(props: FilterCheckboxesProps) {
-  const {facetData, facet, handleCheckboxClick, checkedFilters} = props;
+  const { facetData, facet, handleCheckboxClick, checkedFilters } = props;
   const items = facetData.values;
   const classes = useStyles({});
 
@@ -422,7 +423,7 @@ function FilterCheckboxes(props: FilterCheckboxesProps) {
               }
               label={`${key} (${items[key]})`}
               labelPlacement="start"
-              classes={{root: classes.checkboxRoot, label: classes.checkboxLabel}}
+              classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
             />
           )
         })
@@ -441,43 +442,32 @@ interface RangeSelectorProps {
 
 function RangeSelector(props: RangeSelectorProps) {
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
-  const {facet, handleFilterChange, checkedFilters} = props;
+  const { formatMessage } = useIntl();
+  const { facet, handleFilterChange, checkedFilters } = props;
+  const [range, setRange] = useState({ min: '', max: '' });
 
-  const getMinMax = () => {
+  useEffect(function () {
+    let minMax = { min: '', max: '' };
     if (checkedFilters && checkedFilters[facet]) {
       let range = checkedFilters[facet].split('TO');
-      return {
+      minMax = {
         min: range[0],
         max: range[1]
       };
-    } else {
-      return {
-        min: '',
-        max: ''
-      };
     }
-  };
-
-  const [range, setRange] = useState({
-    min: '',
-    max: ''
-  });
-
-  useEffect(function () {
-    setRange(getMinMax());
-  }, [checkedFilters]);
+    setRange(minMax);
+  }, [checkedFilters, facet]);
 
   const handleRangeSelector = (facet: string) => {
     let value = `${range.min}TO${range.max}`;
     if (range.min === '' && range.max === '') {
       value = undefined;
     }
-    handleFilterChange({name: facet, value: value}, true)
+    handleFilterChange({ name: facet, value: value }, true)
   };
 
   const handleOnChange = (value: string, type: string) => {
-    setRange({...range, [type]: value});
+    setRange({ ...range, [type]: value });
   };
 
   return (
@@ -512,7 +502,7 @@ function RangeSelector(props: RangeSelectorProps) {
 }
 
 interface SortByProps {
-  queryParams:  Partial<ElasticParams>;
+  queryParams: Partial<ElasticParams>;
 
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 
@@ -521,13 +511,13 @@ interface SortByProps {
 
 function SortBy(props: SortByProps) {
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
-  const {queryParams, handleFilterChange, filterKeys} = props;
+  const { formatMessage } = useIntl();
+  const { queryParams, handleFilterChange, filterKeys } = props;
   return (
     <Select
-      value={queryParams['sortBy'] || "_score"}
+      value={queryParams['sortBy'] || '_score'}
       className={classes.Select}
-      onChange={(event) => handleFilterChange({name: 'sortBy', value: event.target.value})}
+      onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
       <MenuItem value='_score'>{formatMessage(messages.revelance)}</MenuItem>
       <MenuItem value='internalName'>{formatMessage(messages.internalName)}</MenuItem>
@@ -541,20 +531,20 @@ function SortBy(props: SortByProps) {
 }
 
 interface SortOrderProps {
-  queryParams:  Partial<ElasticParams>;
+  queryParams: Partial<ElasticParams>;
 
   handleFilterChange(filter: FilterType, isFilter?: boolean): any;
 }
 
 function SortOrder(props: SortOrderProps) {
   const classes = useStyles({});
-  const {formatMessage} = useIntl();
-  const {queryParams, handleFilterChange} = props;
+  const { formatMessage } = useIntl();
+  const { queryParams, handleFilterChange } = props;
   return (
     <Select
-      value={queryParams['sortOrder'] || "asc"}
+      value={queryParams['sortOrder'] || 'asc'}
       className={clsx(classes.Select, 'last')}
-      onChange={(event) => handleFilterChange({name: 'sortOrder', value: event.target.value})}
+      onChange={(event) => handleFilterChange({ name: 'sortOrder', value: event.target.value })}
     >
       <MenuItem value="asc">{formatMessage(messages.asc)}</MenuItem>
       <MenuItem value="desc">{formatMessage(messages.desc)}</MenuItem>
@@ -565,8 +555,8 @@ function SortOrder(props: SortOrderProps) {
 export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   const classes = useStyles({});
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {text, className, facets, handleFilterChange, queryParams} = props;
-  const {formatMessage} = useIntl();
+  const { text, className, facets, handleFilterChange, queryParams } = props;
+  const { formatMessage } = useIntl();
   const [expanded, setExpanded] = useState({
     sortBy: false
   });
@@ -576,7 +566,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
     setCheckedFilters(setCheckedParameterFromURL(queryParams));
   }, [queryParams]);
 
-  const setCheckedParameterFromURL = (queryParams:  Partial<ElasticParams>) => {
+  const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) => {
     if (queryParams['filters']) {
       let checked: any = {};
       let parseQP = JSON.parse(queryParams['filters']);
@@ -616,7 +606,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
   };
 
   const handleExpandClick = (item: string) => {
-    setExpanded({...expanded, [item]: !expanded[item]})
+    setExpanded({ ...expanded, [item]: !expanded[item] })
   };
 
   const renderFilters = () => {
@@ -625,7 +615,7 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
         let name = camelize(key);
         return (
           <div key={i}>
-            <ListItem button classes={{root: classes.listPadding}} onClick={() => handleExpandClick(name)}>
+            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick(name)}>
               <header className={clsx(classes.header, !!(expanded && expanded[name]) && 'open')}>
                 <Typography variant="body1">
                   <strong>{formatMessage(messages[name])}</strong>
@@ -671,22 +661,22 @@ export default function FilterSearchDropdown(props: FilterSearchDropdownProps) {
         ref={popover}
         anchorEl={anchorEl}
         getContentAnchorEl={null}
-        classes={{paper: classes.paper}}
+        classes={{ paper: classes.paper }}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: 'right'
         }}
       >
-        <List classes={{padding: classes.listPadding}}>
+        <List classes={{ padding: classes.listPadding }}>
           <div>
-            <ListItem button classes={{root: classes.listPadding}} onClick={() => handleExpandClick('sortBy')}>
+            <ListItem button classes={{ root: classes.listPadding }} onClick={() => handleExpandClick('sortBy')}>
               <header className={clsx(classes.header, !!(expanded && expanded['sortBy']) && 'open')}>
                 <Typography variant="body1">
                   <strong>{formatMessage(messages.sortBy)}</strong>

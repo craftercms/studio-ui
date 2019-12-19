@@ -15,30 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
-import { CreateSiteMeta } from "../models/Site";
+import { useSelector } from 'react-redux';
+import GlobalState from '../models/GlobalState';
+import { shallowEqual } from 'react-redux'
 
-export function fetchBlueprints() {
-  return get('/studio/api/2/sites/available_blueprints');
+export function useShallowEqualSelector(selector) {
+  return useSelector(selector, shallowEqual)
 }
 
-export function fetchSites() {
-  return get('/studio/api/2/users/me/sites');
+export function useActiveSiteId(): string {
+  return useSelector<GlobalState, string>(state => state.sites.active);
 }
 
-export function createSite(site: CreateSiteMeta) {
-  return post('/studio/api/1/services/api/1/site/create.json', site, {
-    'Content-Type': 'application/json'
-  })
-}
-
-export function checkHandleAvailability(name: string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
-}
-
-export default {
-  fetchBlueprints,
-  fetchSites,
-  createSite,
-  checkHandleAvailability
+export function usePreviewState(): GlobalState['preview'] {
+  return useSelector<GlobalState, GlobalState['preview']>(state => state.preview);
 }
