@@ -228,7 +228,7 @@ const globalNavStyles = makeStyles(() => createStyles({
   popover: {
     maxWidth: '820px',
     width: 'calc(100% - 32px)',
-    maxHeight: '658px',
+    maxHeight: '550px',
     backgroundColor: palette.white,
     borderRadius: '20px',
     boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.25), 0px 0px 4px rgba(0, 0, 0, 0.25)'
@@ -236,7 +236,7 @@ const globalNavStyles = makeStyles(() => createStyles({
   sitesPanel: {
     backgroundColor: palette.gray.light1,
     padding: '30px 24px 30px 30px',
-    height: '658px',
+    height: '550px',
     overflow: 'auto',
   },
   sitesContent: {
