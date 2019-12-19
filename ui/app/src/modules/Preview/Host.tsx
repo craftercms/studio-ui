@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { fromEvent, NEVER, Observable } from 'rxjs';
 import clsx from 'clsx';
@@ -25,6 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
+import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 
@@ -79,6 +80,7 @@ const translations = defineMessages({
 interface HostProps {
   url: string;
   site: string;
+  forceReloadKey: string;
   onLocationChange: () => void,
   className?: string;
   guestOrigin?: string;
@@ -96,7 +98,6 @@ export function HostUI(props: HostProps) {
 
   const {
     url,
-    site,
     width,
     height,
     border,
@@ -119,7 +120,7 @@ export function HostUI(props: HostProps) {
   return (
     <>
       <iframe
-        key={site}
+        key={props.forceReloadKey}
         style={{ width, height }}
         id="crafterCMSPreviewIframe"
         title={formatMessage(translations.iframeTitle)}
@@ -169,31 +170,32 @@ export function HostUI(props: HostProps) {
 export default function Host() {
 
   const classes = useStyles({});
+  const site = useActiveSiteId();
+  const GUEST_BASE = useSelector<GlobalState, string>(state => state.env.GUEST_BASE);
   const {
-    site,
-    GUEST_BASE,
-    showToolsPanel,
+    guest,
     hostSize,
-    currentUrl
-  } = useSelector<GlobalState, any>(state => ({
-    site: state.sites.active,
-    GUEST_BASE: state.env.GUEST_BASE,
-    ...({
-      showToolsPanel: state.preview.showToolsPanel,
-      hostSize: state.preview.hostSize,
-      currentUrl: state.preview.currentUrl
-    })
-  }));
+    currentUrl,
+    showToolsPanel
+  } = usePreviewState();
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
     const guestToHost$ = getGuestToHostBus();
     return (action: StandardAction) => guestToHost$.next(action);
   }, []);
+  const [key, setKey] = useState<string>(site);
+
+  useEffect(() => {
+    if ((key !== site) && (!guest)) {
+      setKey(site);
+    }
+  }, [site, guest, key]);
 
   return (
     <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>
       <HostUI
+        forceReloadKey={key}
         site={site}
         {...hostSize}
         url={`${GUEST_BASE}${currentUrl}`}

@@ -31,6 +31,8 @@ import {
   COMPONENT_DRAG_ENDED,
   INSTANCE_DRAG_ENDED,
   RELOAD_REQUEST,
+  NAVIGATION_REQUEST,
+  GUEST_CHECK_OUT,
   not,
   isNullOrUndefined,
   notNullOrUndefined,
@@ -48,6 +50,7 @@ import { ZoneMarker } from './ZoneMarker';
 import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
+import Cookies from 'js-cookie';
 
 // TODO:
 // - add "modePreview" and bypass all
@@ -886,7 +889,12 @@ export function Guest(props) {
           });
           break;
         case RELOAD_REQUEST: {
+          post({ type: GUEST_CHECK_OUT });
           return window.location.reload();
+        }
+        case NAVIGATION_REQUEST: {
+          post({ type: GUEST_CHECK_OUT });
+          return window.location.href = payload.url;
         }
         default:
           console.warn(`[message$] Unhandled host message "${type}".`);
@@ -915,6 +923,7 @@ export function Guest(props) {
         const location = window.location.href;
         const origin = window.location.origin;
         const url = location.replace(origin, '');
+        const site = Cookies.get('crafterSite');
 
         let timeout;
 
@@ -922,7 +931,7 @@ export function Guest(props) {
           clearTimeout(timeout);
         });
 
-        post(GUEST_CHECK_IN, { url, location, origin, models, modelId, path });
+        post(GUEST_CHECK_IN, { url, location, origin, models, modelId, path, site });
 
         timeout = setTimeout(() => {
           hostDetectionSubscription.unsubscribe();
