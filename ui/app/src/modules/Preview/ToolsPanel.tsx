@@ -42,8 +42,8 @@ import ICEPanel from './Tools/ICEPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import { selectTool, toolsLoaded } from '../../state/actions/preview';
-import { useDispatch, useSelector } from 'react-redux';
-import GlobalState from '../../models/GlobalState';
+import { useDispatch } from 'react-redux';
+import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -154,7 +154,7 @@ function ToolSelector() {
 
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-  const { tools } = useSelector<GlobalState, any>(state => state.preview);
+  const { tools } = usePreviewState();
   const dispatch = useDispatch();
   const select = (toolChoice: any) => dispatch(selectTool(toolChoice));
 
@@ -198,16 +198,13 @@ export default function ToolsPanel() {
 
   const classes = useStyles({});
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
   const {
-    tools,
-    showToolsPanel,
-    selectedTool,
     guest,
-    site
-  } = useSelector<GlobalState, any>(state => ({
-    site: state.sites.active,
-    ...state.preview
-  }));
+    tools,
+    selectedTool,
+    showToolsPanel
+  } = usePreviewState();
 
   let Tool = guest?.selected ? EditFormPanel : (selectedTool ? (componentMap[selectedTool] || UnknownPanel) : ToolSelector);
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);

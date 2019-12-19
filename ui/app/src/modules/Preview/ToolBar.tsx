@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
@@ -35,6 +35,9 @@ import { changeCurrentUrl, closeTools, openTools } from '../../state/actions/pre
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import { changeSite } from '../../state/actions/sites';
+import { Site } from '../../models/Site';
+import { LookupTable } from '../../models/LookupTable';
+import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
 
 const foo = () => void 0;
 
@@ -155,17 +158,14 @@ export function AddressBar(props: AddressBarProps) {
 
 export default function ToolBar() {
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
+  const sitesTable = useSelector<GlobalState, LookupTable<Site>>(state => state.sites.byId);
+  const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
   const {
-    site,
     guest,
-    sites,
     currentUrl,
     showToolsPanel
-  } = useSelector<GlobalState, any>(state => ({
-    site: state.sites.active,
-    sites: Object.values(state.sites.byId),
-    ...state.preview
-  }));
+  } = usePreviewState();
   const classes = useStyles({});
   return (
     <AppBar position="static" color="default">

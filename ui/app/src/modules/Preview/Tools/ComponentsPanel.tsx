@@ -45,8 +45,7 @@ import {
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
 } from '../../../state/actions/preview';
-import { useSelector } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
+import { usePreviewState } from '../../../utils/hooks';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -101,7 +100,7 @@ export default function ComponentsPanel() {
 
   const classes = useStyles({});
   const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
-  const { contentTypes, guest } = useSelector<GlobalState, any>(state => state.preview);
+  const { contentTypes, guest } = usePreviewState();
   const hostToGuest$ = getHostToGuestBus();
   const componentTypes = useMemo(
     () => contentTypes?.filter((contentType) => contentType.type === 'component'),

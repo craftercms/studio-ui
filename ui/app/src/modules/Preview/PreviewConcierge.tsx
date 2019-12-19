@@ -48,9 +48,9 @@ import {
   guestModelsReceived, selectForEdit, setItemBeingDragged
 } from '../../state/actions/preview';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
-import GlobalState from '../../models/GlobalState';
+import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
 
 export function PreviewConcierge(props: any) {
 
@@ -59,17 +59,12 @@ export function PreviewConcierge(props: any) {
   const { queryString: qs, onUrlChange } = props;
 
   const dispatch = useDispatch();
+  const site = useActiveSiteId();
   const {
-    site,
     guest,
     currentUrl,
     contentTypes
-  } = useSelector<GlobalState, any>(state => ({
-    site: state.sites.active,
-    guest: state.preview.guest,
-    currentUrl: state.preview.currentUrl,
-    contentTypes: state.preview.contentTypes
-  }));
+  } = usePreviewState();
 
   // This subject helps keep the async nature of content type fetching and guest
   // check in events. The idea is that it keeps things in sync despite the timing of

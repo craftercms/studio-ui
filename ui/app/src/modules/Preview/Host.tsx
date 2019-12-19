@@ -25,6 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
+import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 
@@ -169,21 +170,13 @@ export function HostUI(props: HostProps) {
 export default function Host() {
 
   const classes = useStyles({});
+  const site = useActiveSiteId();
+  const GUEST_BASE = useSelector<GlobalState, string>(state => state.env.GUEST_BASE);
   const {
-    site,
-    GUEST_BASE,
-    showToolsPanel,
     hostSize,
-    currentUrl
-  } = useSelector<GlobalState, any>(state => ({
-    site: state.sites.active,
-    GUEST_BASE: state.env.GUEST_BASE,
-    ...({
-      showToolsPanel: state.preview.showToolsPanel,
-      hostSize: state.preview.hostSize,
-      currentUrl: state.preview.currentUrl
-    })
-  }));
+    currentUrl,
+    showToolsPanel
+  } = usePreviewState();
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
