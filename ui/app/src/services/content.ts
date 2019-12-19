@@ -657,7 +657,7 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
 // }
 
 export function fetchPublishingChannels(site: string) {
-  return get(`studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
+  return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
 }
 
 export default {
