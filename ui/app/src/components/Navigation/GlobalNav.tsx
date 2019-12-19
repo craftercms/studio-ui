@@ -144,7 +144,7 @@ const messages = defineMessages({
     defaultMessage: 'Legacy Preview'
   },
   about: {
-    id: 'globalMenu.about',
+    id: 'GlobalMenu.AboutUs',
     defaultMessage: 'About'
   },
   docs: {
@@ -156,35 +156,35 @@ const messages = defineMessages({
     defaultMessage: 'Site Config'
   },
   sites: {
-    id: 'globalMenu.sites',
+    id: 'GlobalMenu.SitesEntryLabel',
     defaultMessage: 'Sites'
   },
   users: {
-    id: 'globalMenu.users',
+    id: 'GlobalMenu.UsersEntryLabel',
     defaultMessage: 'Users'
   },
   groups: {
-    id: 'globalMenu.groups',
+    id: 'GlobalMenu.GroupsEntryLabel',
     defaultMessage: 'Groups'
   },
   cluster: {
-    id: 'globalMenu.cluster',
+    id: 'GlobalMenu.ClusterEntryLabel',
     defaultMessage: 'Cluster'
   },
   audit: {
-    id: 'globalMenu.audit',
+    id: 'GlobalMenu.AuditEntryLabel',
     defaultMessage: 'Audit'
   },
   loggingLevels: {
-    id: 'globalMenu.loggingLevels',
+    id: 'GlobalMenu.LoggingLevelsEntryLabel',
     defaultMessage: 'Logging Levels'
   },
   logConsole: {
-    id: 'globalMenu.logConsole',
+    id: 'GlobalMenu.LogConsoleEntryLabel',
     defaultMessage: 'Log Console'
   },
   globalConfig: {
-    id: 'globalMenu.globalConfig',
+    id: 'GlobalMenu.GlobalConfigEntryLabel',
     defaultMessage: 'Global Config'
   },
   dashboard: {
@@ -252,7 +252,7 @@ function Tile(props: TileProps) {
     >
       {
         typeof Icon === 'string'
-          ? <i className={clsx(classes.icon, 'fa', Icon)}></i>
+          ? <i className={clsx(classes.icon, 'fa', Icon)}/>
           : <Icon className={classes.icon}/>
       }
       <Typography variant="subtitle1" color="textSecondary" className={classes.tileTitle}>
@@ -279,7 +279,7 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const { SITE_COOKIE } = useSelector<GlobalState, any>(state => state.env);
+  const { SITE_COOKIE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
 
   const crafterSite = Cookies.get(SITE_COOKIE);
 

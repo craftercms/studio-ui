@@ -85,7 +85,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
 
-  const user = useSelector<GlobalState, any>(state => state.user);
+  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
   if (!user) {
     window.location.reload();
   }
