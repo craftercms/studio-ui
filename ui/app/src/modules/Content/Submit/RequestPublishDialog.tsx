@@ -104,6 +104,12 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   const [deps, setDeps] = useState<DependenciesResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [apiState, setApiState] = useState({
+    publishing: false,
+    error: false,
+    global: false,
+    errorResponse: null
+  });
 
   const { formatMessage } = useIntl();
 
@@ -160,11 +166,16 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
     submitToGoLive(siteId, user, data).subscribe(
       ({ response }) => {
-        setOpen(false);
-        onClose(response);
+        // Need to handle error from here due to api response
+        if ( response.status === 200 ) {
+          setOpen(false);
+          onClose(response);
+        } else {
+          setApiState({ ...apiState, error: true, errorResponse: response });
+        }
       },
       ({ response }) => {
-
+        setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
       }
     );
 
@@ -224,6 +235,10 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   }
   ///////////////////////
 
+  function handleErrorBack() {
+    setApiState({ ...apiState, error: false, global: false });
+  }
+
   return (
     <PublishDialogUI
       items={items}
@@ -248,6 +263,8 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
       selectAllSoft={selectAllSoft}
       onClickShowAllDeps={showAllDependencies}
       showEmailCheckbox={true}
+      apiState={apiState}
+      handleErrorBack={handleErrorBack}
     />
   );
 }

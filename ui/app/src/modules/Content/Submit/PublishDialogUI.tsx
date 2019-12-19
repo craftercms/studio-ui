@@ -32,6 +32,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import MuiDialogContent from "@material-ui/core/DialogContent";
 import MuiDialogActions from "@material-ui/core/DialogActions";
+import ErrorState from "../../../components/SystemStatus/ErrorState";
 
 const dialogStyles = () => ({
   titleRoot: {
@@ -58,6 +59,11 @@ const dialogStyles = () => ({
   },
   leftAlignedAction: {
     marginRight: 'auto'
+  },
+  errorPaperRoot: {
+    maxHeight: '586px',
+    height: '100vh',
+    padding: 0
   }
 });
 
@@ -117,11 +123,13 @@ interface PublishDialogUIProps {
   setCheckedSoftDep: Function;
   onClickSetChecked: Function;
   deps: any,
-  showDepsButton: boolean,
-  selectAllDeps: Function,
-  selectAllSoft: Function,
-  onClickShowAllDeps?: any,
-  showEmailCheckbox?: boolean,
+  showDepsButton: boolean;
+  selectAllDeps: Function;
+  selectAllSoft: Function;
+  onClickShowAllDeps?: any;
+  showEmailCheckbox?: boolean;
+  apiState: any;
+  handleErrorBack: any;
   classes?: any;
 }
 
@@ -150,6 +158,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     selectAllSoft,
     onClickShowAllDeps,
     showEmailCheckbox,
+    apiState,
+    handleErrorBack,
     classes
   } = props;
 
@@ -162,66 +172,80 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
       fullWidth={true}
       maxWidth={'md'}
     >
-      <DialogTitle
-        id="requestPublishDialogTitle"
-        onClose={handleClose}
-        title={title}
-        subtitle={subtitle}
-      />
-      <DialogContent dividers>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-            <DependencySelection
-              items={items}
-              checked={checkedItems}
-              setChecked={setCheckedItems}
-              checkedSoftDep={checkedSoftDep}
-              setCheckedSoftDep={setCheckedSoftDep}
-              onClickSetChecked={onClickSetChecked}
-              deps={deps}
-              showDepsButton={showDepsButton}
-              onSelectAllClicked={selectAllDeps}
-              onSelectAllSoftClicked={selectAllSoft}
+      {
+        (!apiState.error) ?
+        (
+          <>
+            <DialogTitle
+              id="requestPublishDialogTitle"
+              onClose={handleClose}
+              title={title}
+              subtitle={subtitle}
             />
-          </Grid>
+            <DialogContent dividers>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
+                  <DependencySelection
+                    items={items}
+                    checked={checkedItems}
+                    setChecked={setCheckedItems}
+                    checkedSoftDep={checkedSoftDep}
+                    setCheckedSoftDep={setCheckedSoftDep}
+                    onClickSetChecked={onClickSetChecked}
+                    deps={deps}
+                    showDepsButton={showDepsButton}
+                    onSelectAllClicked={selectAllDeps}
+                    onSelectAllSoftClicked={selectAllSoft}
+                  />
+                </Grid>
 
-          <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
-            <PublishForm
-              inputs={dialog}
-              setInputs={setDialog}
-              showEmailCheckbox={showEmailCheckbox}
-              publishingChannels={publishingChannels}
-              publishingChannelsStatus={publishingChannelsStatus}
-              getPublishingChannels={getPublishingChannels}
+                <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
+                  <PublishForm
+                    inputs={dialog}
+                    setInputs={setDialog}
+                    showEmailCheckbox={showEmailCheckbox}
+                    publishingChannels={publishingChannels}
+                    publishingChannelsStatus={publishingChannelsStatus}
+                    getPublishingChannels={getPublishingChannels}
+                  />
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions className={ classes.dialogActions }>
+              <Button
+                color="primary"
+                onClick={ onClickShowAllDeps }
+                className={ classes.leftAlignedAction }
+              >
+                <FormattedMessage
+                  id="publishDialog.showAllDependencies"
+                  defaultMessage={`Show All Dependencies`}
+                />
+              </Button>
+
+              <Button variant="contained" onClick={handleClose}>
+                <FormattedMessage
+                  id="requestPublishDialog.cancel"
+                  defaultMessage={`Cancel`}
+                />
+              </Button>
+              <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled}>
+                <FormattedMessage
+                  id="requestPublishDialog.submit"
+                  defaultMessage={`Submit`}
+                />
+              </Button>
+            </DialogActions>
+          </>
+        ) : (
+            <ErrorState
+              classes={{ root: classes.errorPaperRoot }}
+              error={apiState.errorResponse}
+              onBack={handleErrorBack}
             />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions className={ classes.dialogActions }>
-        <Button
-          color="primary"
-          onClick={ onClickShowAllDeps }
-          className={ classes.leftAlignedAction }
-        >
-          <FormattedMessage
-            id="publishDialog.showAllDependencies"
-            defaultMessage={`Show All Dependencies`}
-          />
-        </Button>
+        )
+      }
 
-        <Button variant="contained" onClick={handleClose}>
-          <FormattedMessage
-            id="requestPublishDialog.cancel"
-            defaultMessage={`Cancel`}
-          />
-        </Button>
-        <Button variant="contained" autoFocus onClick={handleSubmit} color="primary" disabled={submitDisabled}>
-          <FormattedMessage
-            id="requestPublishDialog.submit"
-            defaultMessage={`Submit`}
-          />
-        </Button>
-      </DialogActions>
     </Dialog>
   )
 });

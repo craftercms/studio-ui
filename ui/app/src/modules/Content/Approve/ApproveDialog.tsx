@@ -82,6 +82,11 @@ function ApproveDialog(props: ApproveDialogProps) {
   const [deps, setDeps] = useState<DependenciesResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [apiState, setApiState] = useState({
+    error: false,
+    global: false,
+    errorResponse: null
+  });
 
   const { formatMessage } = useIntl();
 
@@ -138,11 +143,18 @@ function ApproveDialog(props: ApproveDialogProps) {
 
     goLive(siteId, user, data).subscribe(
       ({ response }) => {
-        setOpen(false);
-        onClose(response);
+        // Need to handle error from here due to api response
+        if ( response.status === 200 ) {
+          setOpen(false);
+          onClose(response);
+        } else {
+          setApiState({ ...apiState, error: true, errorResponse: response });
+        }
       },
       ({ response }) => {
-
+        if (response) {
+          setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
+        }
       }
     );
 
@@ -202,6 +214,10 @@ function ApproveDialog(props: ApproveDialogProps) {
   }
   ///////////////////////
 
+  function handleErrorBack() {
+    setApiState({ ...apiState, error: false, global: false });
+  }
+
   return (
     <PublishDialogUI
       items={items}
@@ -226,6 +242,8 @@ function ApproveDialog(props: ApproveDialogProps) {
       selectAllDeps={selectAllDeps}
       selectAllSoft={selectAllSoft}
       onClickShowAllDeps={showAllDependencies}
+      apiState={apiState}
+      handleErrorBack={handleErrorBack}
     />
   );
 }
