@@ -15,10 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import React, { useEffect, useState } from 'react';
 import { defineMessages } from 'react-intl';
 import ToolPanel from './ToolPanel';
+import { useActiveSiteId } from "../../../utils/hooks";
+import { SearchItem } from "../../../models/Search";
+import { search } from "../../../services/search";
+import { setRequestForgeryToken } from "../../../utils/auth";
+import { Card, createStyles } from "@material-ui/core";
+import CardHeader from "@material-ui/core/CardHeader";
+import IconButton from "@material-ui/core/IconButton";
+import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import cardTitleStyles from "../../../styles/card";
+import { palette } from "../../../styles/theme";
+import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
+import SearchBar from '../../../components/SearchBar';
+import CardMedia from "@material-ui/core/CardMedia";
+import clsx from "clsx";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import { useSelector } from "react-redux";
+import GlobalState from "../../../models/GlobalState";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -27,12 +44,104 @@ const translations = defineMessages({
   }
 });
 
+const initialSearchParameters = {
+  filters: {
+    'mime-type': ['image/png', 'image/jpeg']
+  }
+};
+
+const assetsPanelStyles = makeStyles(() => createStyles({
+  assetsPanelWrapper: {
+    padding: '15px'
+  },
+  search: {
+    marginBottom: '20px'
+  }
+}));
+
 export default function AssetsPanel() {
+  const classes = assetsPanelStyles({});
+  const activeSite = useActiveSiteId();
+  const [assets, setAssets] = useState(null);
+
+  setRequestForgeryToken();
+
+  useEffect(() => {
+    search(activeSite, initialSearchParameters).subscribe(({ items }) => {
+      setAssets(items);
+    })
+  }, [activeSite]);
+
   return (
     <ToolPanel title={translations.assetsPanel}>
-      <Typography component="h2" variant="subtitle1" style={{ padding: '10px' }}>
-        Assets Panel
-      </Typography>
+      <div className={classes.assetsPanelWrapper}>
+        <SearchBar onChange={() => {
+        }} keyword={''} classes={{ root: classes.search }}/>
+        {
+          assets?.map((item: SearchItem) =>
+            <AssetComponent name={item.name} key={item.path} path={item.path}/>
+          )
+        }
+      </div>
     </ToolPanel>
   );
+}
+
+const assetComponentStyles = makeStyles(() => createStyles({
+  card: {
+    cursor: 'move',
+    marginBottom: '10px',
+    '& .cardTitle': {
+      ...cardTitleStyles
+    },
+    '&:hover': {
+      backgroundColor: palette.gray.light1
+    },
+  },
+  avatar: {
+    color: palette.black
+  },
+  media: {
+    height: 0,
+    paddingTop: '56.25%'
+  },
+  action: {
+    marginTop: 0,
+    alignSelf: 'inherit'
+  },
+  root: {
+    padding: '0 16px',
+    height: '70px'
+  }
+}));
+
+function AssetComponent(props: any) {
+  const classes = assetComponentStyles({});
+  const { name, path } = props;
+  const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
+  return (
+    <Card className={classes.card}>
+      <CardMedia
+        className={classes.media}
+        image={`${GUEST_BASE}${path}`}
+        title={name}
+      />
+      <CardHeader
+        classes={{ root: classes.root, avatar: classes.avatar, action: classes.action }}
+        avatar={<DragIndicatorRounded/>}
+        action={
+          <IconButton aria-label="settings" onClick={() => {
+          }}>
+            <MoreVertRounded/>
+          </IconButton>
+        }
+        title={name}
+        titleTypographyProps={{
+          variant: "subtitle2",
+          component: "h2",
+          className: 'cardTitle'
+        }}
+      />
+    </Card>
+  )
 }

@@ -229,8 +229,8 @@ function Search(props: SearchProps) {
 
   useEffect(() => {
     search(siteId, searchParameters).subscribe(
-      ({response}) => {
-        setSearchResults(response.result);
+      (result) => {
+        setSearchResults(result);
       },
       ({response}) => {
         if (response) {
@@ -395,8 +395,8 @@ function Search(props: SearchProps) {
 
   function refreshSearch() {
     search(siteId, searchParameters).subscribe(
-      ({response}) => {
-        setSearchResults(response.result);
+      (result) => {
+        setSearchResults(result);
       },
       ({response}) => {
         if (response) {

@@ -59,3 +59,22 @@ export interface Facet {
     [key: string]: any;
   }
 }
+
+export interface SearchItem {
+  path: string;
+  name: string;
+  type: string;
+  mimeType: string;
+  previewUrl: string;
+  lastModifier: string;
+  lastModified: string;
+  size: number;
+  snippets: any;
+}
+export interface SearchFacet {
+  name: string;
+  range: boolean;
+  date: boolean;
+  multiple: boolean;
+  values: any;
+}

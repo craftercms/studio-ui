@@ -16,11 +16,20 @@
  */
 
 import { post } from "../utils/ajax";
+import { SearchItem, SearchFacet } from "../models/Search";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
-export function search(siteId: string, parameters: any = {}) {
+interface Result {
+  total: number;
+  items: Array<SearchItem>;
+  facets: Array<SearchFacet>;
+}
+
+export function search(siteId: string, parameters: any = {}): Observable<Result> {
   return post(`/studio/api/2/search/search.json?siteId=${siteId}`, parameters , {
     'Content-Type': 'application/json'
-  })
+  }).pipe(map(({ response }) => response.result))
 }
 
 export default {
