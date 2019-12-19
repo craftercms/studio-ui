@@ -33,7 +33,6 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from "../utils/timezones";
 
-// TODO: this component will be moved to another folder
 interface DateTimePickerProps {
   onChange?: Function;
   onChangeDate?: Function;

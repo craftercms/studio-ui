@@ -61,13 +61,20 @@ interface ApproveDialogProps {
   items: Item[];
   siteId: string;
   user: string;
+  scheduling?: string;
 }
 
 function ApproveDialog(props: ApproveDialogProps) {
-  const { items, siteId, user, onClose } = props;
+  const {
+    items,
+    siteId,
+    user,
+    scheduling = 'now',
+    onClose
+  } = props;
 
   const [open, setOpen] = React.useState(true);
-  const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
+  const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), { ...dialogInitialState, "scheduling": scheduling });
   const [publishingChannels, setPublishingChannels] = useState(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
   const [checkedItems, setCheckedItems] = useState<any>(checkState(items));   // selected deps
