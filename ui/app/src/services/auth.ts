@@ -16,35 +16,18 @@
  */
 
 import { get, post } from "../utils/ajax";
-import { CreateSiteMeta } from "../models/Site";
 
-export function fetchBlueprints() {
-  return get('/studio/api/2/sites/available_blueprints');
+export function getLogoutInfoURL() {
+  return get('/studio/api/2/users/me/logout/sso/url');
 }
 
-export function fetchSites() {
-  return get('/studio/api/2/users/me/sites');
-}
-
-export function createSite(site: CreateSiteMeta) {
-  return post('/studio/api/1/services/api/1/site/create.json', site, {
+export function logout() {
+  return post('/studio/api/1/services/api/1/security/logout.json', {}, {
     'Content-Type': 'application/json'
   })
-}
-
-export function deleteSite(id: string) {
-  return post('/studio/api/1/services/api/1/site/delete-site.json', {siteId: id}, {
-    'Content-Type': 'application/json'
-  })
-}
-
-export function checkHandleAvailability(name: string) {
-  return get(`/studio/api/1/services/api/1/site/exists.json?site=${name}`)
 }
 
 export default {
-  fetchBlueprints,
-  fetchSites,
-  createSite,
-  checkHandleAvailability
+  getLogoutInfoURL,
+  logout
 }

@@ -47,33 +47,9 @@
                 <ul class="nav navbar-nav" id="activeContentActions"></ul>
 
                 <div class="navbar-right-wrapper navbar-right">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a id="sitesRightNav" class="nav-link" href="/studio/#/globalMenu">
-                                <span class="nav-icon fa fa-bars" data-title="mainMenu" ></span>
-                            </a>
-                        </li>
-                        <li class="dropdown" dropdown>
-                            <a id="help-dropdown" class="nav-link dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">
-                                <span class="nav-icon fa fa-life-ring" data-title="help"></span>
-                            </a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="https://docs.craftercms.org/en/3.1/index.html" target="_blank" data-translation="documentation">Documentation</a></li>
-                                <li><a href="/studio/#/about-us" data-translation="about">About</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown" dropdown="">
-                            <a id="account-dropdown" class="dropdown-toggle ng-binding pointer" dropdown-toggle="" aria-haspopup="true" aria-expanded="true">&nbsp; <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li class="user-display" style="padding: 0 20px 5px; margin-bottom: 5px; border-bottom: 1px solid #f2f2f2;">
-                                    <div id="nav-user-name"></div>
-                                    <div id="nav-user-email"></div>
-                                </li>
-                                <li><a href="/studio/#/settings" data-translation="settings">Settings</a></li>
-                                <li><a id="acn-logout-link" class="hide" data-translation="signOut">Sign out</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <div id="toolbarGlobalNav">
+
+                    </div>
 
                     <div id="acn-separator" class="navbar-right">
                         <p class="ellipsis-icon">&#124;</p>
@@ -99,7 +75,7 @@
     </nav>
 </div>
 
-<div id="acn-wrapper" style="display: non e !important;">
+<div id="acn-wrapper" style="display: none !important;">
     <div id="curtain" class="curtain-style"></div>
     <div id="authoringContextNavHeader">
         <div id="acn-bar">
@@ -113,7 +89,7 @@
                 </div>
                 <div id="_acn-dropdown-wrapper" class="acn-dropdown-wrapper"></div>
 
-                
+
                 <div id="acn-active-content"></div>
                 <div id="acn-admin-console" style="float: left"></div>
                 <div id="contextual_nav_menu_items"></div>

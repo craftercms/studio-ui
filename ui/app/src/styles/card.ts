@@ -15,6 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-* {
-  box-sizing: border-box;
-}
+const cardTitleStyles = {
+  fontWeight: '600',
+  lineHeight: '1.5rem',
+  overflow: 'hidden',
+  display: '-webkit-box',
+  '-webkit-line-clamp': 1,
+  '-webkit-box-orient': 'vertical',
+  marginBottom: 0,
+};
+
+
+export default cardTitleStyles;

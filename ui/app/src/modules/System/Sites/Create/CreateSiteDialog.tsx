@@ -296,8 +296,10 @@ const DialogTitle = withStyles(dialogTitleStyles)((props: any) => {
       <div className={classes.title}>
         <Typography variant="h6">{title}</Typography>
         {onClose ? (
-          <IconButton aria-label="close" className={classes.closeButton}
-                      onClick={(event) => onClose(event, 'closeButton')}>
+          <IconButton
+            aria-label="close"
+            onClick={(event) => onClose(event, 'closeButton')}
+          >
             <CloseIcon/>
           </IconButton>
         ) : null}

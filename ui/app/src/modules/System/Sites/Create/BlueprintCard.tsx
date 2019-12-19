@@ -33,6 +33,7 @@ import { backgroundColor } from "../../../../styles/theme";
 import Button from "@material-ui/core/Button";
 import { Theme, Tooltip } from "@material-ui/core";
 import clsx from "clsx";
+import cardTitleStyles from "../../../../styles/card";
 
 
 interface BlueprintCardProps {
@@ -53,13 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxWidth: '100%',
     minHeight: '339px',
     '& .cardTitle': {
-      fontWeight: '600',
-      lineHeight: '1.5rem',
-      overflow: 'hidden',
-      display: '-webkit-box',
-      '-webkit-line-clamp': 1,
-      '-webkit-box-orient': 'vertical',
-      marginBottom: 0
+      ...cardTitleStyles
     },
     '& .cardContent': {
       height: '13.26em',

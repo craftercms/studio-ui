@@ -109,7 +109,8 @@ export function createCodebaseBridge() {
       Search: lazy(() => import('../pages/Search')),
       Preview: lazy(() => import('../pages/Preview')),
       RequestPublishDialog: lazy(() => import('../modules/Content/Submit/RequestPublishDialog')),
-      ApproveDialog: lazy(() => import('../modules/Content/Approve/ApproveDialog'))
+      ApproveDialog: lazy(() => import('../modules/Content/Approve/ApproveDialog')),
+      ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav'))
     },
 
     assets: {
