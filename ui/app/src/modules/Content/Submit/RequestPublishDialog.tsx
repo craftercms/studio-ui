@@ -25,7 +25,7 @@ import { Item } from '../../../models/Item';
 import PublishDialogUI from "./PublishDialogUI";
 import { fetchPublishingChannels } from "../../../services/content";
 import { submitToGoLive } from '../../../services/publishing';
-import {get} from "../../../utils/ajax";
+import {fetchDependencies} from "../../../services/dependencies";
 
 const messages = defineMessages({
   title: {
@@ -217,7 +217,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
 
   function showAllDependencies() {
     setShowDepsButton(false);
-    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths(checkedItems)}`)
+    fetchDependencies(siteId, paths(checkedItems))
       .subscribe(
         (response: any) => {
           setDeps({

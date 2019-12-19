@@ -915,14 +915,13 @@ var nodeOpen = false,
                   var dependenciesObj = JSON.parse(response.responseText).entities,
                     dependencies = [];
 
+                  // add dependencies and their own dependencies
                   $.each(dependenciesObj, function(){
+                    dependencies.push(this.item);
                     $.each(this.dependencies, function(){
                       dependencies.push(this.item);
                     });
                   });
-
-                  var allDeps = dependencies.concat(args.deps ? args.deps : []);
-                  dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) === pos});
 
                   eventNS.dependencies = dependencies;
                   document.dispatchEvent(eventNS);

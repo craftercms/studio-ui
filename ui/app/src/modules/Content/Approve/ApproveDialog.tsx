@@ -21,7 +21,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import {defineMessages, useIntl} from "react-intl";
 import {fetchPublishingChannels} from "../../../services/content";
 import {goLive} from "../../../services/publishing";
-import {get} from "../../../utils/ajax";
+import {fetchDependencies} from "../../../services/dependencies";
 import {
   checkState,
   onClickSetChecked,
@@ -196,7 +196,7 @@ function ApproveDialog(props: ApproveDialogProps) {
 
   function showAllDependencies() {
     setShowDepsButton(false);
-    get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${paths(checkedItems)}`)
+    fetchDependencies(siteId, paths(checkedItems))
       .subscribe(
         (response: any) => {
           setDeps({
