@@ -24,7 +24,6 @@ import Grid from "@material-ui/core/Grid";
 import DependencySelection from "../Dependencies/DependencySelection";
 import PublishForm from "./PublishForm";
 import Button from "@material-ui/core/Button";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import {FormattedMessage} from "react-intl";
 import React from "react";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -203,7 +202,6 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
           color="primary"
           onClick={ onClickShowAllDeps }
           className={ classes.leftAlignedAction }
-          startIcon={<InfoOutlinedIcon />}
         >
           <FormattedMessage
             id="publishDialog.showAllDependencies"

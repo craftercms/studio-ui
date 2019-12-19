@@ -830,6 +830,7 @@ var nodeOpen = false,
           },
 
             approveCommon: function (site, items, approveType) {
+              const _self = this;
               const container = ($('<div class="approve-dialog-container"/>').appendTo('body'))[0];
               const user = CStudioAuthoringContext.user;
               const scheduling = approveType ? 'custom': 'now';
@@ -841,36 +842,7 @@ var nodeOpen = false,
                 {
                   onClose: (response) => {
                     if(response) {
-                      var entities = { 'entities': [] };
-
-                      if (typeof items === 'string' || items instanceof String) {
-                        entities.entities.push({ 'item': items });
-                      } else {
-                        $.each(items, function () {
-                          entities.entities.push({ 'item': this.uri });
-                        });
-                      }
-
-                      CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
-                        success: function(response) {
-                          var dependenciesObj = JSON.parse(response.responseText).entities,
-                            dependencies = [];
-
-                          $.each(dependenciesObj, function(){
-                            $.each(this.dependencies, function(){
-                              dependencies.push(this.item);
-                            });
-                          });
-
-                          // TODO: CHECK THIS - from response
-                          // var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
-                          // dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos});
-
-                          eventNS.dependencies = dependencies;
-                          document.dispatchEvent(eventNS);
-                          eventNS.dependencies = null;
-                        }
-                      });
+                      _self.reloadItems(items, response);
                     }
 
                     unmount();
@@ -902,31 +874,20 @@ var nodeOpen = false,
             },
 
             submitContent: function(site, items) {
-                // CSA.Operations._showDialogueView({
-                //     fn: CSA.Service.getRequestPublishView,
-                //     controller: 'viewcontroller-requestpublish',
-                //     callback: function(dialogue) {
-                //         CSA.Operations.translateContent(formsLangBundle, ".cstudio-dialogue");
-                //         this.loadItems(items, dialogue);
-                //     }
-                // }, true, '800px');
-              // var container = ($('<div class="request-publish-container"></div>').appendTo('body'))[0];
-              // CrafterCMSNext.render(container, 'RequestPublishDialog',
-              //   {
-              //     items: items,
-              //     siteId: site
-              //   }
-              // );
-
+              const _self = this;
               const container = ($('<div class="request-publish-container"/>').appendTo('body'))[0];
               const user = CStudioAuthoringContext.user;
 
               let unmount;
               CrafterCMSNext.render(
                 container,
-                'ApproveDialog',
+                'RequestPublishDialog',
                 {
-                  onClose: () => {
+                  onClose: (response) => {
+                    if(response) {
+                      _self.reloadItems(items, response);
+                    }
+
                     unmount();
                   },
                   items: items,
@@ -934,6 +895,40 @@ var nodeOpen = false,
                   user: user
                 }
               ).then(done => unmount = done.unmount);
+            },
+
+            reloadItems: function(items, args) {
+              var entities = { 'entities': [] };
+
+              if (typeof items === 'string' || items instanceof String) {
+                entities.entities.push({ 'item': items });
+              } else {
+                $.each(items, function () {
+                  entities.entities.push({ 'item': this.uri });
+                });
+              }
+
+              eventNS.data = items;
+              eventNS.typeAction = "publish";
+              CStudioAuthoring.Service.calculateDependencies(JSON.stringify(entities), {
+                success: function(response) {
+                  var dependenciesObj = JSON.parse(response.responseText).entities,
+                    dependencies = [];
+
+                  $.each(dependenciesObj, function(){
+                    $.each(this.dependencies, function(){
+                      dependencies.push(this.item);
+                    });
+                  });
+
+                  var allDeps = dependencies.concat(args.deps ? args.deps : []);
+                  dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) === pos});
+
+                  eventNS.dependencies = dependencies;
+                  document.dispatchEvent(eventNS);
+                  eventNS.dependencies = null;
+                }
+              });
             },
 
             /**

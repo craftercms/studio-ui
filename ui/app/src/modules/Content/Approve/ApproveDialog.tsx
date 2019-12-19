@@ -146,7 +146,7 @@ function ApproveDialog(props: ApproveDialogProps) {
       }
     );
 
-  }
+  };
 
   // dependency selection internal
   const setChecked = (uri: string[], isChecked: boolean) => {

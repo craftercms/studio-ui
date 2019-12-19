@@ -31,7 +31,7 @@ import {
 /* eslint-disable no-use-before-define */
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getTimezones } from "../utils/timezones";
+import { getTimezones } from "../utils/datetime";
 
 interface DateTimePickerProps {
   onChange?: Function;
