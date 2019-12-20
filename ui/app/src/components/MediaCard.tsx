@@ -52,6 +52,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   cardHeaderRoot: {
     padding: '9px 0'
   },
+  avatar: {
+    color: palette.black,
+    margin: '0 10px'
+  },
   cardHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -112,9 +116,13 @@ interface MediaCardProps {
   hasCheckbox?: boolean;
   hasSubheader?: boolean;
   currentView?: string;
-  selected: Array<string>;
+  selected?: Array<string>;
   previewAppBaseUri: string;
   headerButtonIcon?: React.ElementType<any>;
+  avatar?: React.ElementType<any>;
+  classes?: {
+    root?: any;
+  };
 
   handleHeaderButtonClick?(...props: any): any;
 
@@ -143,7 +151,8 @@ function MediaCard(props: MediaCardProps) {
     hasCheckbox = true,
     hasSubheader = true,
     headerButtonIcon: HeaderButtonIcon = MoreVertRounded,
-    handleHeaderButtonClick
+    handleHeaderButtonClick,
+    avatar: Avatar
   } = props;
   const { name, path, type } = item;
   const isList = currentView === 'list';
@@ -194,7 +203,7 @@ function MediaCard(props: MediaCardProps) {
   };
 
   return (
-    <Card className={clsx(classes.card, isList && 'list')}>
+    <Card className={clsx(classes.card, isList && 'list', props.classes?.root)}>
       {
         (isList && hasCheckbox) &&
         <FormGroup className={clsx(classes.checkbox, 'list')}>
@@ -217,12 +226,13 @@ function MediaCard(props: MediaCardProps) {
         <CardHeader
           title={name}
           subheader={hasSubheader ? type : null}
-          classes={{ root: classes.cardHeaderRoot }}
+          avatar={Avatar ? <Avatar/> : null}
+          classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
           onClick={(type === 'Image' || type === 'Video' || type === 'Page') && handlePreview ? () => handlePreview(path) : null}
           titleTypographyProps={{
             variant: "subtitle2",
             component: "h2",
-            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && 'clickable')
+            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && handlePreview && 'clickable')
           }}
           subheaderTypographyProps={{
             variant: "subtitle2",
@@ -244,16 +254,24 @@ function MediaCard(props: MediaCardProps) {
       </header>
       {
         (type === 'Image') ? (
-          <CardActionArea
-            onClick={() => handlePreviewAsset(path, type, name)}
-            className={clsx(isList && classes.listActionArea)}
-          >
+          handlePreviewAsset ? (
+            <CardActionArea
+              onClick={() => handlePreviewAsset(path, type, name)}
+              className={clsx(isList && classes.listActionArea)}
+            >
+              <CardMedia
+                className={clsx(classes.media, isList && 'list')}
+                image={`${previewAppBaseUri}${path}`}
+                title={name}
+              />
+            </CardActionArea>
+          ) : (
             <CardMedia
               className={clsx(classes.media, isList && 'list')}
               image={`${previewAppBaseUri}${path}`}
               title={name}
             />
-          </CardActionArea>
+          )
         ) : (
           renderIcon(type, path, name)
         )
