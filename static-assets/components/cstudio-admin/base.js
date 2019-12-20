@@ -209,12 +209,6 @@ CStudioAdminConsole.Toolbar.prototype = {
     YAHOO.util.Event.on(toolContainerEl, 'click', onRenderWorkAreaFn, {tool: tool, toolbar: this});
 
     this.tools[this.tools.length] = tool;
-
-    // TODO: To be removed once development is over
-    if (tool.config.name === 'admin-configurations') {
-      setTimeout(() => $(toolContainerEl).click(), 100)
-    }
-
   }
 };
 
