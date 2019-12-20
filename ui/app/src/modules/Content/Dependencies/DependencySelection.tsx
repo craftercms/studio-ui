@@ -29,7 +29,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
 //imports for DependencySelectionDelete
-import { checkState, updateCheckedList, selectAllDeps, paths } from "../Submit/RequestPublishDialog";
+import { checkState, updateCheckedList, selectAllDeps, paths, onClickSetChecked } from "../Submit/RequestPublishDialog";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {Theme} from "@material-ui/core/styles/createMuiTheme";
 import Button from '@material-ui/core/Button';
@@ -244,7 +244,7 @@ export function DependencySelection(props: DependencySelectionProps) {
 
 export function DependencySelectionDelete(props: DependencySelectionProps) {
   const [resultItems, setResultItems] = useState<ResultObject>();
-  const { items, siteId, onClickSetChecked } = props;
+  const { items, siteId } = props;
   const [checked, _setChecked] = useState<any>(
     checkState(items)
   );
