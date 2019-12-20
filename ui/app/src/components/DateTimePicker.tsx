@@ -38,7 +38,8 @@ interface DateTimePickerProps {
   onChangeDate?: Function;
   onChangeTime?: Function;
   onChangeTimezone?: Function;
-  format?: string;
+  dateFormat?: string;
+  timeFormat?: string;
   initialDate?: string | moment.Moment | Number;
   timezone?: string;
   classes?: any;
@@ -108,6 +109,8 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     onChangeTimezone,
     initialDate = moment(),
     timezone = moment.tz.guess(),
+    dateFormat = 'YYYY-MM-DD',
+    timeFormat = 'HH:MM:ss',
     controls = ['date', 'time', 'timezone']
   } = props;
 
@@ -146,10 +149,10 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     }
 
     setSelectedDateTime(updatedDateTime);
-    onChange && onChange(updatedDateTime);
+    onChange?.(updatedDateTime);
 
-    onChangeDate && onChangeDate(updatedDateTime.format('YYYY-MM-DD'));
-    onChangeTime && onChangeTime(updatedDateTime.format('HH:MM:ss'));
+    onChangeDate?.(updatedDateTime.format(dateFormat));
+    onChangeTime?.(updatedDateTime.format(timeFormat));
   };
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {

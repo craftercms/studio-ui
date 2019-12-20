@@ -16,6 +16,8 @@
  */
 
 import { get, post } from "../utils/ajax";
+import { Observable } from "rxjs";
+import { map } from 'rxjs/operators';
 
 export function fetchPackages(siteId: string, filters: any) {
   let queryS = new URLSearchParams(filters).toString();
@@ -40,23 +42,39 @@ export function fetchEnvironments(siteId: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site_id=${siteId}`)
 }
 
-export function submitToGoLive(siteId: string, user:string, data) {
+export function submitToGoLive(siteId: string, user:string, data): Observable<any> {
   return post(
     `/studio/api/1/services/api/1/workflow/submit-to-go-live.json?site=${siteId}&user=${user}`,
     data,
     {
       'Content-Type': 'application/json'
     }
+  ).pipe(
+    map((response: any) => {
+      if(response.response.success) {
+        return response.response;
+      } else {
+        throw response;
+      }
+    })
   );
 }
 
-export function goLive(siteId: string, user:string, data) {
+export function goLive(siteId: string, user:string, data): Observable<any> {
   return post(
     `/studio/api/1/services/api/1/workflow/go-live.json?site=${siteId}&user=${user}`,
     data,
     {
       'Content-Type': 'application/json'
     }
+  ).pipe(
+    map((response: any) => {
+      if(response.response.success) {
+        return response.response;
+      } else {
+        throw response;
+      }
+    })
   );
 }
 

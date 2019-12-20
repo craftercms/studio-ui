@@ -33,6 +33,8 @@ import {
 import PublishDialogUI from "../Submit/PublishDialogUI";
 import {Item} from "../../../models/Item";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import GlobalState from "../../../models/GlobalState";
 
 const messages = defineMessages({
   title: {
@@ -57,20 +59,16 @@ const dialogInitialState: any = {
 };
 
 interface ApproveDialogProps {
-  onClose(response?: any): any;
+  onclose(response?: any): any;
   items: Item[];
-  siteId: string;
-  user: string;
   scheduling?: string;
 }
 
 function ApproveDialog(props: ApproveDialogProps) {
   const {
     items,
-    siteId,
-    user,
     scheduling = 'now',
-    onClose
+    onclose
   } = props;
 
   const [open, setOpen] = React.useState(true);
@@ -87,6 +85,9 @@ function ApproveDialog(props: ApproveDialogProps) {
     global: false,
     errorResponse: null
   });
+
+  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
+  const siteId = useSelector<GlobalState, GlobalState['sites']>(state => state.sites).active;
 
   const { formatMessage } = useIntl();
 
@@ -124,7 +125,7 @@ function ApproveDialog(props: ApproveDialogProps) {
     setOpen(false);
 
     //call externalClose fn
-    onClose();
+    onclose();
   };
 
   const handleSubmit = () => {
@@ -141,17 +142,12 @@ function ApproveDialog(props: ApproveDialogProps) {
       )
     };
 
-    goLive(siteId, user, data).subscribe(
-      ({ response }) => {
-        // Need to handle error from here due to api response
-        if ( response.status === 200 ) {
-          setOpen(false);
-          onClose(response);
-        } else {
-          setApiState({ ...apiState, error: true, errorResponse: response });
-        }
+    goLive(siteId, user.username, data).subscribe(
+      ( response ) => {
+        setOpen(false);
+        onclose(response);
       },
-      ({ response }) => {
+      ( response ) => {
         if (response) {
           setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
         }

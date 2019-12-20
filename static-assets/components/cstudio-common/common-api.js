@@ -840,15 +840,13 @@ var nodeOpen = false,
                 container,
                 'ApproveDialog',
                 {
-                  onClose: (response) => {
+                  onclose: (response) => {
                     if(response) {
                       _self.reloadItems(items, response);
                     }
 
                     unmount();
                   },
-                  siteId: site,
-                  user,
                   items,
                   scheduling
                 }
@@ -883,7 +881,7 @@ var nodeOpen = false,
                 container,
                 'RequestPublishDialog',
                 {
-                  onClose: (response) => {
+                  onclose: (response) => {
                     if(response) {
                       _self.reloadItems(items, response);
                     }
@@ -891,8 +889,6 @@ var nodeOpen = false,
                     unmount();
                   },
                   items: items,
-                  siteId: site,
-                  user: user
                 }
               ).then(done => unmount = done.unmount);
             },

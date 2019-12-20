@@ -26,6 +26,8 @@ import PublishDialogUI from "./PublishDialogUI";
 import { fetchPublishingChannels } from "../../../services/content";
 import { submitToGoLive } from '../../../services/publishing';
 import {fetchDependencies} from "../../../services/dependencies";
+import { useSelector } from "react-redux";
+import GlobalState from "../../../models/GlobalState";
 
 const messages = defineMessages({
   title: {
@@ -86,14 +88,12 @@ export const paths = (checked: any) => (
 // end of dependency selection common methods
 
 interface RequestPublishDialogProps {
-  onClose(response?: any): any;
+  onclose(response?: any): any;
   items: Item[];
-  siteId: string;
-  user: string;
 }
 
 function RequestPublishDialog(props: RequestPublishDialogProps) {
-  const { items, siteId, user, onClose } = props;
+  const { items, onclose } = props;
 
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
@@ -112,6 +112,9 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
   });
 
   const { formatMessage } = useIntl();
+
+  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
+  const siteId = useSelector<GlobalState, GlobalState['sites']>(state => state.sites).active;
 
   useEffect(getPublishingChannels, []);
   useEffect(setRef, [checkedItems, checkedSoftDep]);
@@ -147,7 +150,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
     setOpen(false);
 
     //call externalClose fn
-    onClose();
+    onclose();
   };
 
   const handleSubmit = () => {
@@ -164,18 +167,15 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
       )
     };
 
-    submitToGoLive(siteId, user, data).subscribe(
-      ({ response }) => {
-        // Need to handle error from here due to api response
-        if ( response.status === 200 ) {
-          setOpen(false);
-          onClose(response);
-        } else {
-          setApiState({ ...apiState, error: true, errorResponse: response });
-        }
+    submitToGoLive(siteId, user.username, data).subscribe(
+      ( response ) => {
+        setOpen(false);
+        onclose(response);
       },
-      ({ response }) => {
-        setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
+      ( response ) => {
+        if (response) {
+          setApiState({ ...apiState, error: true, errorResponse: (response.response) ? response.response : response });
+        }
       }
     );
 
