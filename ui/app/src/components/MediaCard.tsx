@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -22,18 +22,12 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import IconButton from '@material-ui/core/IconButton';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme } from "@material-ui/core";
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
 import FormGroup from "@material-ui/core/FormGroup";
 import Checkbox from "@material-ui/core/Checkbox";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { defineMessages, useIntl } from "react-intl";
+import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import { palette } from "../styles/theme";
-import { isEditableAsset } from "../utils/content";
 import cardTitleStyles from "../styles/card";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -103,10 +97,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       order: -1
     }
   },
-  optionIcon: {
-    color: palette.gray.medium3,
-    marginRight: '5px'
-  },
   checkbox: {
     '&.list': {
       justifyContent: 'center',
@@ -119,68 +109,44 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface MediaCardProps {
   item: MediaItem;
-  currentView: string;
+  hasCheckbox?: boolean;
+  hasSubheader?: boolean;
+  currentView?: string;
   selected: Array<string>;
-  mode: string;
   previewAppBaseUri: string;
+  headerButtonIcon?: React.ElementType<any>;
 
-  handleEdit(path: string, readonly?: boolean): any;
+  handleHeaderButtonClick?(...props: any): any;
 
-  handleDelete(path: string): any;
+  handleEdit?(path: string, readonly?: boolean): any;
 
-  handlePreview(url: string): any;
+  handlePreview?(url: string): any;
 
-  handlePreviewAsset(url: string, type: string, name: string): any;
+  handlePreviewAsset?(url: string, type: string, name: string): any;
 
-  handleSelect(path: string, selected: boolean): any;
+  handleSelect?(path: string, selected: boolean): any;
 
-  onGetUserPermissions(path: string): any;
+
 }
-
-const messages = defineMessages({
-  noPermissions: {
-    id: 'mediaCard.noPermissions',
-    defaultMessage: 'No permissions available.'
-  },
-  loadingPermissions: {
-    id: 'mediaCard.loadingPermissions',
-    defaultMessage: 'Loading...'
-  },
-});
 
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
-  const [permissions, setPermissions] = useState({
-    edit: null,
-    delete: null,
-  });
-  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, handleSelect, onGetUserPermissions, selected, item, mode, previewAppBaseUri} = props;
-  const {name, path, type} = item;
-  const isList = props.currentView === 'list';
-  const {formatMessage} = useIntl();
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, path: string) => {
-    setAnchorEl(event.currentTarget);
-    if(permissions.edit === null && permissions.delete === null) {
-      onGetUserPermissions(path).then(
-        ({permissions}) => {
-          let editable = isEditableAsset(path);
-          let isWriteAllowed = permissions.includes('write') || false;
-          let isDeleteAllowed = permissions.includes('delete') || false;
-          setPermissions({edit: editable && isWriteAllowed, delete: isDeleteAllowed && mode === 'default'});
-        },
-        (response: string) => {
-          console.log(response)
-        },
-      )
-    }
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const {
+    handleEdit,
+    handlePreview,
+    handlePreviewAsset,
+    handleSelect,
+    selected,
+    item,
+    previewAppBaseUri,
+    currentView = 'grid',
+    hasCheckbox = true,
+    hasSubheader = true,
+    headerButtonIcon: HeaderButtonIcon = MoreVertRounded,
+    handleHeaderButtonClick
+  } = props;
+  const { name, path, type } = item;
+  const isList = currentView === 'list';
 
   const renderIcon = (type: string, path: string, name: string) => {
     let iconClass = 'fa media-icon';
@@ -230,7 +196,7 @@ function MediaCard(props: MediaCardProps) {
   return (
     <Card className={clsx(classes.card, isList && 'list')}>
       {
-        isList &&
+        (isList && hasCheckbox) &&
         <FormGroup className={clsx(classes.checkbox, 'list')}>
           <Checkbox
             checked={selected.includes(path)}
@@ -240,7 +206,7 @@ function MediaCard(props: MediaCardProps) {
       }
       <header className={clsx(classes.cardHeader, isList && 'list')}>
         {
-          !isList &&
+          (!isList && hasCheckbox) &&
           <FormGroup className={classes.checkbox}>
             <Checkbox
               checked={selected.includes(path)}
@@ -250,9 +216,9 @@ function MediaCard(props: MediaCardProps) {
         }
         <CardHeader
           title={name}
-          subheader={type}
-          classes={{root: classes.cardHeaderRoot}}
-          onClick={(type === 'Image' || type === 'Video' || type === 'Page') ? () => handlePreview(path) : null}
+          subheader={hasSubheader ? type : null}
+          classes={{ root: classes.cardHeaderRoot }}
+          onClick={(type === 'Image' || type === 'Video' || type === 'Page') && handlePreview ? () => handlePreview(path) : null}
           titleTypographyProps={{
             variant: "subtitle2",
             component: "h2",
@@ -265,37 +231,16 @@ function MediaCard(props: MediaCardProps) {
             color: "textSecondary"
           }}
         />
-        <IconButton aria-label="options" className={classes.cardOptions} onClick={(e) => handleClick(e, path)}>
-          <MoreVertIcon/>
-        </IconButton>
-        <Menu
-          id="options-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          {
-            permissions.edit === true &&
-            <MenuItem onClick={() => {handleClose(); handleEdit(path)}}>
-              <EditIcon className={classes.optionIcon}/>Edit
-            </MenuItem>
-          }
-          {
-            permissions.delete === true &&
-            <MenuItem onClick={() => { handleClose(); handleDelete(path)}}>
-              <DeleteIcon className={classes.optionIcon}/>Delete
-            </MenuItem>
-          }
-          {
-            (permissions.edit === false && permissions.delete === false) &&
-            <MenuItem>{formatMessage(messages.noPermissions)}</MenuItem>
-          }
-          {
-            permissions.edit === null &&
-            <MenuItem>{formatMessage(messages.loadingPermissions)}</MenuItem>
-          }
-        </Menu>
+        {
+          handleHeaderButtonClick &&
+          <IconButton
+            aria-label="options"
+            className={classes.cardOptions}
+            onClick={(e) => handleHeaderButtonClick(e, item)}
+          >
+            <HeaderButtonIcon/>
+          </IconButton>
+        }
       </header>
       {
         (type === 'Image') ? (
