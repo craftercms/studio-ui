@@ -22,18 +22,10 @@ import { useActiveSiteId } from "../../../utils/hooks";
 import { SearchItem } from "../../../models/Search";
 import { search } from "../../../services/search";
 import { setRequestForgeryToken } from "../../../utils/auth";
-import { Card, createStyles } from "@material-ui/core";
-import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
-import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import { createStyles } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import cardTitleStyles from "../../../styles/card";
-import { palette } from "../../../styles/theme";
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import SearchBar from '../../../components/SearchBar';
-import CardMedia from "@material-ui/core/CardMedia";
-import clsx from "clsx";
-import CardActionArea from "@material-ui/core/CardActionArea";
 import { useSelector } from "react-redux";
 import GlobalState from "../../../models/GlobalState";
 import MediaCard from "../../../components/MediaCard";
@@ -46,8 +38,9 @@ const translations = defineMessages({
 });
 
 const initialSearchParameters = {
+  limit: 100,
   filters: {
-    'mime-type': ['image/png', 'image/jpeg']
+    'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4']
   }
 };
 
@@ -60,7 +53,7 @@ const assetsPanelStyles = makeStyles(() => createStyles({
   },
   card: {
     cursor: 'move',
-    marginBottom: '10px',
+    marginBottom: '16px',
   }
 }));
 
