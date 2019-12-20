@@ -667,6 +667,29 @@ const globalMenuMessages = defineMessages({
   }
 });
 
+const adminConfigurationMessages = defineMessages({
+  encryptMarked: {
+    id: 'adminConfigurations.encryptMarked',
+    defaultMessage: 'Encrypt Marked'
+  },
+  encryptError: {
+    id: 'adminConfigurations.encryptError',
+    defaultMessage: 'An error has occurred attempting to encrypt items.'
+  },
+  noEncryptItems: {
+    id: 'adminConfigurations.noEncryptItems',
+    defaultMessage: 'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
+  },
+  allEncrypted: {
+    id: 'adminConfigurations.allEncrypted',
+    defaultMessage: 'All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=""`)'
+  },
+  xmlContainsErrors: {
+    id: 'adminConfigurations.xmlContainsErrors',
+    defaultMessage: 'The XML document contains errors: {errors}'
+  }
+});
+
 export default {
   approveDialogMessages,
   deleteDialogMessages,
@@ -691,5 +714,6 @@ export default {
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,
-  globalMenuMessages
+  globalMenuMessages,
+  adminConfigurationMessages
 };

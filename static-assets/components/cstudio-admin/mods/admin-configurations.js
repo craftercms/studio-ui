@@ -19,7 +19,8 @@
 
 const
   i18n = CrafterCMSNext.i18n,
-  formatMessage = i18n.intl.formatMessage;
+  formatMessage = i18n.intl.formatMessage,
+  adminConfigurationMessages = i18n.messages.adminConfigurationMessages;
 
 const XML_HEADER = `<?xml version="1.0" encoding="UTF-8"?>
 <!--
@@ -205,10 +206,6 @@ function moduleLoaded() {
       this.configInfo.itemSelectEl.onchange = function () {
         self.loadSelectedConfig();
       }; // end of change
-
-      // TODO: To be removed once development is over
-      setTimeout(() => $(itemSelectEl).val(itemSelectEl.options[2].value).trigger('change'), 100);
-
     },
 
     loadSelectedConfig: function () {
@@ -351,8 +348,7 @@ function moduleLoaded() {
     addButtons: function (containerEl, itemSelectEl, editor) {
 
       containerEl.innerHTML =
-        // TODO: Apply translation 👇🏻
-        '<button id="encryptButton" class="btn btn-default">Encrypt Marked</button> ' +
+        '<button id="encryptButton" class="btn btn-default">' + formatMessage(adminConfigurationMessages.encryptMarked) + '</button> ' +
         `<button type="submit" id="view-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'viewSample')}</button>` +
         `<button type="submit" id="hide-sample-button" class="btn btn-primary">${CMgs.format(formsLangBundle, 'hideSample')}</button>`;
 
@@ -391,36 +387,44 @@ function moduleLoaded() {
 
           var url = "/api/2/configuration/write_configuration";
 
-          var reqObj = {
-            siteId: CStudioAuthoringContext.site, module: itemSelectEl[selectedIndex].getAttribute("module"),
-            path: defPath, environment: environment, content: xml
-          };
+          try {
+            parseValidateDocument(xml);
+            const reqObj = {
+              siteId: CStudioAuthoringContext.site,
+              module: itemSelectEl[selectedIndex].getAttribute("module"),
+              path: defPath,
+              environment: environment,
+              content: xml
+            };
 
-          var requestAsString = JSON.stringify(reqObj);
-          YAHOO.util.Connect.setDefaultPostHeader(false);
-          YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-          YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
-          YAHOO.util.Connect.asyncRequest(
-            'POST',
-            CStudioAuthoring.Service.createServiceUri(url),
-            {
-              success: function () {
-                CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
-                me.clearCache();
+            var requestAsString = JSON.stringify(reqObj);
+            YAHOO.util.Connect.setDefaultPostHeader(false);
+            YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+            YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
+            YAHOO.util.Connect.asyncRequest(
+              'POST',
+              CStudioAuthoring.Service.createServiceUri(url),
+              {
+                success: function () {
+                  CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
+                  me.clearCache();
+                },
+                failure: function () {
+                  CStudioAuthoring.Operations.showSimpleDialog(
+                    "errorDialog-dialog",
+                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                    CMgs.format(langBundle, "notification"),
+                    CMgs.format(langBundle, "saveFailed"),
+                    null, // use default button
+                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                    "studioDialog"
+                  );
+                }
               },
-              failure: function () {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  "errorDialog-dialog",
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(langBundle, "notification"),
-                  CMgs.format(langBundle, "saveFailed"),
-                  null, // use default button
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  "studioDialog"
-                );
-              }
-            },
-            requestAsString);
+              requestAsString);
+          } catch (e) {
+            showErrorDialog(e);
+          }
         } else {
           CStudioAuthoring.Operations.showSimpleDialog(
             "errorDialog-dialog",
@@ -484,28 +488,28 @@ function moduleLoaded() {
                 editor.container.style.opacity = 1;
               },
               (ajaxError) => {
+                editor.setOption('readOnly', false);
+                editor.container.style.opacity = 1;
                 if (ajaxError.response) {
                   const apiResponse = ajaxError.response.response;
-                  alert(
-                    `Error: ${apiResponse.code}\n` +
+                  showErrorDialog(`Error: ${apiResponse.code}\n` +
                     `${apiResponse.message}. ${apiResponse.remedialAction}.\n` +
-                    `${apiResponse.documentationUrl || ''}`
-                  )
+                    `${apiResponse.documentationUrl || ''}`);
                 } else {
-                  alert('An error has occurred attempting to encrypt items.');
+                  showErrorDialog(formatMessage(adminConfigurationMessages.encryptError));
                 }
               }
             );
           } else {
-            alert(
-              tags.length === 0
-                ? 'No items to encrypt were found in XML markup. Add attribute `encrypted=""` to mark for encryption.'
-                : 'All marked items are already encrypted. The `encrypted` attribute should have a blank value to be marked for encryption (e.g. `encrypted=""`)'
-            );
+            const errMessage = tags.length === 0
+              ? formatMessage(adminConfigurationMessages.noEncryptItems)
+              : formatMessage(adminConfigurationMessages.allEncrypted);
+
+            showErrorDialog(errMessage);
           }
 
         } catch(e) {
-          alert(e.message);
+          showErrorDialog(e.message);
         }
 
       });
@@ -580,13 +584,11 @@ function parseValidateDocument(editorText) {
   const xml = new DOMParser().parseFromString(editorText, 'application/xml');
   const parseError = xml.querySelector('parsererror');
 
-  // TODO: We should validate this ALWAYS before saving.
   if (parseError) {
     throw new Error(
-      'The XML document contains errors: ' +
-      // 👇🏻 Do not attempt to translate the error message below.
-      // Provide this error to the message formatter as a format argument to be included within the translation.
-      parseError.querySelector('div').innerText
+      formatMessage(adminConfigurationMessages.xmlContainsErrors, {
+        errors: parseError.querySelector('div').innerText
+      })
     );
 
   }
@@ -602,5 +604,17 @@ function findPendingEncryption(tags) {
   });
   return items;
 }
+
+function showErrorDialog(message){
+  CStudioAuthoring.Operations.showSimpleDialog(
+    "cacheError-dialog",
+    CStudioAuthoring.Operations.simpleDialogTypeINFO,
+    CMgs.format(langBundle, "notification"),
+    message,
+    null, // use default button
+    YAHOO.widget.SimpleDialog.ICON_BLOCK,
+    "studioDialog"
+  );
+};
 
 }) ();
