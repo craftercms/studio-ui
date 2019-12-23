@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
     InputLabel: {
       position: 'relative'
     },
-    PannelMargin: {
+    PanelMargin: {
       margin: '0 15px',
     },
     textField: {
@@ -86,17 +86,20 @@ const translations = defineMessages({
 
 interface AudiencesPanelUIProps {
   properties: any;
+  profile: any;
 }
 
 interface AudiencesFormProps {
   properties: AudiencesPanelDescriptor;
+  profile: string;
 }
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   const classes = useStyles({});
   const {
-    properties
+    properties,
+    profile
   } = props;
 
   return (
@@ -104,12 +107,13 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
       {
         properties ? (
           <>
-            <Grid className={classes.PannelMargin}>
+            <Grid className={classes.PanelMargin}>
               {
                 properties.map((property: any) => (
                   <>
                     <GetCodeDependingType
                       properties={property}
+                      profile={profile[property.name] ? profile[property.name]: null}
                     />
                     <Divider className={classes.divider} />
                   </>
@@ -118,10 +122,16 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             </Grid>
             <Grid className={classes.actionBTN} >
               <Button variant="contained">
-                Defaults
+                <FormattedMessage
+                  id="audiencesPanel.Defaults"
+                  defaultMessage={'Defaults'}
+                />
             </Button>
               <Button variant="contained" color="primary" >
-                Apply
+                <FormattedMessage
+                  id="audiencesPanel.Apply"
+                  defaultMessage={'Apply'}
+                />
             </Button>
             </Grid>
           </>
@@ -133,7 +143,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
 export default function AudiencesPanel() {
 
-  const [items, setItems] = useState();
+  const [configItems, setConfigItems] = useState();
   const [currentItems, setCurrentItems] = useState();
   const site = 'editorial';
 
@@ -145,7 +155,7 @@ export default function AudiencesPanel() {
     ).subscribe(
         // Here code that needs both files
         ([config, profile]) => {
-          setItems(
+          setConfigItems(
             config.properties
           );
           setCurrentItems(
@@ -153,7 +163,7 @@ export default function AudiencesPanel() {
           );
         },
         () => {
-          setItems(
+          setConfigItems(
             []
           );
           setCurrentItems(
@@ -166,9 +176,10 @@ export default function AudiencesPanel() {
   return (
     <div>
       {
-        items &&
+        setConfigItems && currentItems &&
         <AudiencesPanelUI
-          properties={items}
+          properties={setConfigItems}
+          profile={setCurrentItems}
         />
       }
     </div>
@@ -180,7 +191,8 @@ function GetCodeDependingType(props: AudiencesFormProps) {
 
   const classes = useStyles({});
   const {
-    properties
+    properties,
+    profile
   } = props;
 
   switch (properties.type) {
@@ -188,7 +200,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel 
+            <InputLabel
               className={classes.InputLabel}
               focused={true}
               htmlFor={properties.name}
@@ -203,7 +215,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
             <Select
               labelId={properties.name}
               id={properties.name}
-              defaultValue={properties.default_value}
+              defaultValue={profile ? profile : properties.default_value}
             >
               {
                 properties.possible_values ? (
@@ -221,7 +233,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel 
+            <InputLabel
               className={classes.InputLabel}
               focused={true}
               htmlFor={properties.name}
@@ -255,8 +267,8 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel 
-              className={classes.InputLabel} 
+            <InputLabel
+              className={classes.InputLabel}
               focused={true}
               htmlFor={properties.name}
             >
@@ -282,7 +294,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
-            <InputLabel 
+            <InputLabel
               className={classes.InputLabel}
               focused={true}
               htmlFor={properties.name}
