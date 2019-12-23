@@ -65,15 +65,24 @@ const initialSearchParameters = {
 
 const assetsPanelStyles = makeStyles(() => createStyles({
   assetsPanelWrapper: {
-    padding: '15px'
+    padding: '15px 15px 55px 15px'
   },
-  search: {},
+  search: {
+    marginBottom: '16px',
+  },
   card: {
     cursor: 'move',
     marginBottom: '16px',
   },
   pagination: {
     marginLeft: 'auto',
+    position: 'fixed',
+    bottom: 0,
+    background: 'white',
+    color: 'black',
+    width: '239px',
+    right: 0,
+    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
     '& p': {
       padding: 0
     },
@@ -81,6 +90,18 @@ const assetsPanelStyles = makeStyles(() => createStyles({
       top: 'inherit'
     },
     '& .hidden': {
+      display: 'none'
+    }
+  },
+  toolbar: {
+    padding: 0,
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingLeft: '20px',
+    '& .MuiTablePagination-spacer': {
+      display: 'none'
+    },
+    '& .MuiTablePagination-spacer + p': {
       display: 'none'
     }
   },
@@ -124,7 +145,6 @@ export default function AssetsPanel() {
     onSearch$.next(keyword);
   }
 
-
   return (
     <ToolPanel title={translations.assetsPanel}>
       <div className={classes.assetsPanelWrapper}>
@@ -140,7 +160,7 @@ export default function AssetsPanel() {
                   <>
                     <TablePagination
                       className={classes.pagination}
-                      classes={{ root: classes.pagination, selectRoot: 'hidden' }}
+                      classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
                       component="div"
                       labelRowsPerPage=""
                       count={assets.total}
