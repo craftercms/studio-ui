@@ -71,10 +71,17 @@ export interface SearchItem {
   size: number;
   snippets: any;
 }
+
 export interface SearchFacet {
   name: string;
   range: boolean;
   date: boolean;
   multiple: boolean;
   values: any;
+}
+
+export interface SearchResult {
+  total: number;
+  items: Array<SearchItem>;
+  facets: Array<SearchFacet>;
 }
