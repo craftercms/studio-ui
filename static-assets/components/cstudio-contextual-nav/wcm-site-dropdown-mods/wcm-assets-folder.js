@@ -230,9 +230,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawTree(items, tree, path, instance);
 
-        //add hover effect to nodes
-        CStudioAuthoring.ContextualNav.WcmAssetsFolder.nodeHoverEffects(this);
-
         YDom.removeClass(label, "loading");
       },
       failure: function() {
@@ -367,6 +364,10 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       }
     );
 
+    CStudioAuthoring.ContextualNav.WcmRootFolder.manualContextMenu(tree, function(tree, target) {
+      CStudioAuthoring.ContextualNav.WcmAssetsFolder.onTriggerContextMenu(tree, tree.oContextMenu, tree.oContextMenu.id, target);
+    });
+
     if(instance.IsContentMenuCreated == false){
       instance.IsContentMenuCreated = true;
       contextMenu.subscribe('beforeShow', function() {
@@ -413,6 +414,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
       RootFolder().myTree = RootFolder().myTreePages[idTree];
     }, tree, false);
 
+    tree.oContextMenu = contextMenu;
     tree.draw();
 
     if (Object.prototype.toString.call(instance.path) === '[object Array]') {
@@ -645,9 +647,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
         CStudioAuthoring.ContextualNav.WcmAssetsFolder.drawSubtree(treeData.item.children, node, args.pathToOpenTo, args.instance);
 
         args.fnLoadComplete();
-
-        //add hove effect to nodes
-        CStudioAuthoring.ContextualNav.WcmAssetsFolder.nodeHoverEffects(this);
       },
 
       failure: function(err, args) {
@@ -843,8 +842,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
             } else {
               YDom.removeClass(label, "loading");
               YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
-              // Add hover effect to nodes
-              RootFolder().nodeHoverEffects(this);
               RootFolder().firePathLoaded(instance);
             }
           } else {
@@ -882,8 +879,6 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
             YDom.removeClass(label, "loading");
             YDom.removeClass(YSelector(".ygtvloading", treeEl), "ygtvloading");
-            // Add hover effect to nodes
-            RootFolder().nodeHoverEffects(this);
             RootFolder().firePathLoaded(instance);
           }
         });
@@ -1172,9 +1167,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
     return toolTip;
   },
 
-  onTriggerContextMenu: function(tree, p_aArgs, contextMenuId)	{
+  onTriggerContextMenu: function(tree, p_aArgs, contextMenuId, target)	{
+     var isManualTrigger = target ? true : false,
+         target = target ? target : p_aArgs.contextEventTarget;
 
-    target = p_aArgs.contextEventTarget;
+    p_aArgs.manualTrigger = isManualTrigger;
+
     var aMenuItems;
     var menuWidth = "80px";
     var menuItems = {
@@ -1229,7 +1227,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
 
     var targetNode = tree.getNodeByElement(target);
 
-    if ( targetNode != null && YDom.isAncestor(tree.id, p_aArgs.contextEventTarget) ) {
+    if ( targetNode != null && YDom.isAncestor(tree.id, target) ) {
       // Get the TextNode instance that that triggered the display of the ContextMenu instance.
       oCurrentTextNode = targetNode;
 
@@ -1438,8 +1436,12 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
                 this.menuEl.style.display = "block";
                 this.menuEl.style.minWidth = this.menuWidth;
                 this.args.render();
-                this.args.show();
 
+                if (this.args.manualTrigger) {
+                  $(this.args.element).trigger('contextmenu-rendered'); // event for manual context menu trigger
+                }
+
+                this.args.show();
 
               },
 
@@ -1763,80 +1765,7 @@ CStudioAuthoring.ContextualNav.WcmAssetsFolder = CStudioAuthoring.ContextualNav.
    */
   deleteContainer: function(p_sType, p_aArgs, tree) {
     CStudioAuthoring.ContextualNav.WcmAssetsFolder.deleteContent(p_sType, p_aArgs, tree);
-  },
-
-  nodeHoverEffects: function(e) {
-    var YDom = YAHOO.util.Dom,
-      highlightWrpClass = "highlight-wrapper",
-      highlightColor = "#e2e2e2",
-      overSetClass = "over-effect-set",
-      spanNodes = YAHOO.util.Selector.query("span.yui-resize-label:not(." + overSetClass + ")", "acn-dropdown-menu-wrapper"),
-      moverFn = function(evt) {
-
-        var el = this,
-          wrapEl = function(table) {
-            var wrp = document.createElement('div');
-            wrp.setAttribute('style', 'background-color:' + highlightColor);
-            wrp.setAttribute('class', highlightWrpClass);
-            YDom.insertBefore(wrp, table);
-            wrp.appendChild(table);
-            return wrp;
-          };
-        if (YDom.hasClass(el, highlightWrpClass)) {
-          YDom.setStyle(el, 'background-color', highlightColor)
-        } else if (YDom.hasClass(el, 'ygtvitem')) {
-          var firstChild = YDom.getFirstChild(el);
-          YDom.hasClass(firstChild, highlightWrpClass)
-            ? YDom.setStyle(firstChild, 'background-color', highlightColor)
-            : wrapEl(firstChild)
-        } else {
-          var parent = el.parentNode;
-          YDom.hasClass(parent, highlightWrpClass)
-            ? YDom.setStyle(parent, 'background-color', highlightColor)
-            : wrapEl(el);
-        }
-        if(RootFolder().lastSelectedTextNode != null) {
-          var currentlySelectedTextNode = el
-          if(currentlySelectedTextNode == RootFolder().lastSelectedTextNode) return;
-          (YDom.hasClass(RootFolder().lastSelectedTextNode, highlightWrpClass)
-            ? RootFolder().lastSelectedTextNode
-            : (YDom.hasClass(RootFolder().lastSelectedTextNode, 'ygtvitem')
-              ? YDom.getFirstChild(RootFolder().lastSelectedTextNode)
-              : RootFolder().lastSelectedTextNode.parentNode))
-            .style.backgroundColor = "";
-
-          RootFolder().lastSelectedTextNode = null;
-        }
-
-        var nodeId = (""+el.id).replace("table","label");
-        var node = RootFolder().treeNodes[nodeId];
-      },
-      moutFn = function(evt) {
-        if(RootFolder().lastSelectedTextNode != null) return;
-        var el = this;
-        (YDom.hasClass(el, highlightWrpClass)
-          ? el
-          : (YDom.hasClass(el, 'ygtvitem')
-            ? YDom.getFirstChild(el)
-            : el.parentNode))
-          .style.backgroundColor = "";
-      };
-    for (var i = 0,
-           l = spanNodes.length,
-           span = spanNodes[0],
-           barItem;
-         i < l;
-         i++,span = spanNodes[i]
-    ) {
-      // span -> td -> tr -> tbody -> table
-      barItem = span.parentNode.parentNode.parentNode.parentNode;
-      if (barItem) {
-        YEvent.addListener(barItem, "mouseover", moverFn);
-        YEvent.addListener(barItem, "mouseout", moutFn);
-        YDom.addClass(span, overSetClass);
-      }
-    }
-  },
+  }
 };
 
 /**
