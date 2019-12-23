@@ -71,7 +71,7 @@ const messages = defineMessages({
 
 interface SearchBarProps {
   onChange(value: string): any;
-  keyword: string[] | string ;
+  keyword?: string[] | string ;
   closeIcon?: boolean;
   autofocus?: boolean;
   backgroundColor?: string;
@@ -95,7 +95,7 @@ export default function SearchBar(props: SearchBarProps) {
         onBlur={() => setFocus(false)}
         placeholder={placeholder || formatMessage(messages.placeholder)}
         autoFocus={autofocus}
-        value={keyword}
+        value={keyword !== 'undefined' && keyword}
         classes={{
           root: classes.inputRoot,
           input: classes.inputInput,

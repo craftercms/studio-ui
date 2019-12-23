@@ -33,6 +33,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import Typography from "@material-ui/core/Typography";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -54,6 +55,7 @@ const translations = defineMessages({
 });
 
 const initialSearchParameters = {
+  keywords: '',
   offset: 0,
   limit: 10,
   filters: {
@@ -104,9 +106,24 @@ export default function AssetsPanel() {
     })
   }, [activeSite, searchParameters]);
 
+  useEffect(() => {
+    const subscription = onSearch$.pipe(
+      debounceTime(400),
+      distinctUntilChanged()
+    ).subscribe((keywords: string) => {
+      setSearchParameters({ ...searchParameters, keywords})
+    });
+    return () => subscription.unsubscribe();
+  }, [onSearch$]);
+
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     setSearchParameters({ ...searchParameters, offset: newPage * searchParameters.limit })
   }
+
+  function handleSearchKeyword(keyword: string) {
+    onSearch$.next(keyword);
+  }
+
 
   return (
     <ToolPanel title={translations.assetsPanel}>
@@ -115,9 +132,7 @@ export default function AssetsPanel() {
           assets ? (
             <>
               <SearchBar
-                onChange={() => {
-                }}
-                keyword={''}
+                onChange={handleSearchKeyword}
                 classes={{ root: classes.search }}
               />
               {
