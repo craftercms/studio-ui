@@ -59,7 +59,7 @@ const dialogInitialState: any = {
 };
 
 interface ApproveDialogProps {
-  onclose(response?: any): any;
+  onClose?(response?: any): any;
   items: Item[];
   scheduling?: string;
 }
@@ -68,7 +68,7 @@ function ApproveDialog(props: ApproveDialogProps) {
   const {
     items,
     scheduling = 'now',
-    onclose
+    onClose
   } = props;
 
   const [open, setOpen] = React.useState(true);
@@ -125,7 +125,7 @@ function ApproveDialog(props: ApproveDialogProps) {
     setOpen(false);
 
     //call externalClose fn
-    onclose();
+    onClose();
   };
 
   const handleSubmit = () => {
@@ -145,7 +145,7 @@ function ApproveDialog(props: ApproveDialogProps) {
     goLive(siteId, user.username, data).subscribe(
       ( response ) => {
         setOpen(false);
-        onclose(response);
+        onClose(response);
       },
       ( response ) => {
         if (response) {

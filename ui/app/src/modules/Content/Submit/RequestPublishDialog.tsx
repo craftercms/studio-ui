@@ -88,12 +88,12 @@ export const paths = (checked: any) => (
 // end of dependency selection common methods
 
 interface RequestPublishDialogProps {
-  onclose(response?: any): any;
+  onClose?(response?: any): any;
   items: Item[];
 }
 
 function RequestPublishDialog(props: RequestPublishDialogProps) {
-  const { items, onclose } = props;
+  const { items, onClose } = props;
 
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), dialogInitialState);
@@ -150,7 +150,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
     setOpen(false);
 
     //call externalClose fn
-    onclose();
+    onClose();
   };
 
   const handleSubmit = () => {
@@ -170,7 +170,7 @@ function RequestPublishDialog(props: RequestPublishDialogProps) {
     submitToGoLive(siteId, user.username, data).subscribe(
       ( response ) => {
         setOpen(false);
-        onclose(response);
+        onClose(response);
       },
       ( response ) => {
         if (response) {

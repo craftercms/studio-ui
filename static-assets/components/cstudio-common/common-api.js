@@ -840,7 +840,7 @@ var nodeOpen = false,
                 container,
                 'ApproveDialog',
                 {
-                  onclose: (response) => {
+                  onClose: (response) => {
                     if(response) {
                       _self.reloadItems(items, response);
                     }
@@ -881,7 +881,7 @@ var nodeOpen = false,
                 container,
                 'RequestPublishDialog',
                 {
-                  onclose: (response) => {
+                  onClose: (response) => {
                     if(response) {
                       _self.reloadItems(items, response);
                     }
