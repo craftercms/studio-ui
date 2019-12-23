@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-* {
-  box-sizing: border-box;
-}
+import { createReducer } from '@reduxjs/toolkit';
+import { GlobalState } from '../../models/GlobalState';
+
+const reducer = createReducer<GlobalState['env']>(null, {
+
+});
+
+export default reducer;

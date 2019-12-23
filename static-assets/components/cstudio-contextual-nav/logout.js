@@ -28,6 +28,33 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = CStudioAuthoring.ContextualNav.Wcm
 	initialize: function(config) {
 		var CMgs = CStudioAuthoring.Messages;
 
+    var onClickFunction = function(el, url){
+      el.onclick = function () {
+        var serviceUri = CStudioAuthoring.Service.logoutUrl;
+
+        var serviceCallback = {
+          success: function () {
+            CStudioAuthoring.Storage.eliminate("userSession");
+            if(url){
+              window.location.href = url;
+            }else{
+              window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
+            }
+          },
+
+          failure: function () {
+            window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
+          }
+        };
+
+        YConnect.setDefaultPostHeader(false);
+        YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
+        YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
+        YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
+
+      };
+    }
+
 		var el = YDom.get("acn-logout-link");
         var showLogoutLink = false;
         var url = null;
@@ -67,33 +94,6 @@ CStudioAuthoring.ContextualNav.WcmLogoutMod = CStudioAuthoring.ContextualNav.Wcm
         CStudioAuthoring.Service.getUserInfo(getUserInfoCallback);
 
         CStudioAuthoring.Operations.createNavBarDropDown("account");
-
-        var onClickFunction = function(el, url){
-            el.onclick = function () {
-                var serviceUri = CStudioAuthoring.Service.logoutUrl;
-
-                var serviceCallback = {
-                    success: function () {
-                        CStudioAuthoring.Storage.eliminate("userSession");
-                        if(url){
-                            window.location.href = url;
-                        }else{
-                            window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
-                        }
-                    },
-
-                    failure: function () {
-                        window.location.href = CStudioAuthoringContext.authoringAppBaseUri;
-                    }
-                };
-
-                YConnect.setDefaultPostHeader(false);
-                YConnect.initHeader("Content-Type", "application/json; charset=utf-8");
-                YConnect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
-                YConnect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(serviceUri), serviceCallback);
-
-            };
-        }
 
 	}
 };

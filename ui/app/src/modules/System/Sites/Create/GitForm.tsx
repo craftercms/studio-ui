@@ -16,20 +16,20 @@
  */
 
 import React, { useState } from 'react';
-import Grid from "@material-ui/core/Grid";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
-import Collapse from "@material-ui/core/Collapse";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import TextField from "@material-ui/core/TextField";
-import clsx from "clsx";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import IconButton from "@material-ui/core/IconButton";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import Grid from '@material-ui/core/Grid';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
+import Collapse from '@material-ui/core/Collapse';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import TextField from '@material-ui/core/TextField';
+import clsx from 'clsx';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { SiteState } from '../../../../models/Site';
-import { defineMessages, useIntl } from "react-intl";
+import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
@@ -46,10 +46,10 @@ const useStyles = makeStyles(theme => ({
     }
   },
   margin: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1)
   },
   textField: {
-    width: '100%',
+    width: '100%'
   },
   authBox: {
     padding: '10px',
@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
     marginLeft: '30px',
     display: 'flex',
     justifyContent: 'center'
-  },
+  }
 }));
 
 interface Expanded {
@@ -91,7 +91,7 @@ const pushMessages = defineMessages({
   push_remoteName_label: {
     id: 'createSiteDialog.push_remoteName_label',
     defaultMessage: 'Name the remote that will refer to the source repo to push. Typically named “upstream” or “origin”.'
-  },
+  }
 });
 
 const cloneMessages = defineMessages({
@@ -106,7 +106,7 @@ const cloneMessages = defineMessages({
   clone_remoteName_label: {
     id: 'createSiteDialog.clone_remoteName_label',
     defaultMessage: 'Name the remote that will refer to the source repo to pull from. Typically named “upstream” or “origin”.'
-  },
+  }
 });
 
 const messages = defineMessages({
@@ -153,24 +153,24 @@ const messages = defineMessages({
   required: {
     id: 'createSiteDialog.required',
     defaultMessage: '{name} is required.'
-  },
+  }
 });
 
 function GitForm(props: GitFormProps) {
   const classes = useStyles({});
-  const {inputs, setInputs, handleInputChange, type, onKeyPress} = props;
+  const { inputs, setInputs, handleInputChange, type, onKeyPress } = props;
   const [showPassword, setShowPassword] = useState(false);
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
 
   const viewAuth = (type: string) => {
-    const _expanded: any = {...inputs.expanded};
+    const _expanded: any = { ...inputs.expanded };
     Object.keys(inputs.expanded).map((key: string) => {
       if (key === type) {
         return _expanded[key] = !_expanded[key];
       }
       return _expanded[key] = false;
     });
-    setInputs({...inputs, expanded: _expanded});
+    setInputs({ ...inputs, expanded: _expanded });
   };
 
   const handleClickShowPassword = () => {
@@ -179,7 +179,7 @@ function GitForm(props: GitFormProps) {
 
   function renderHelperText(name: string, value: string = '', helperText: string, required: boolean, submitted: boolean, pushSite: boolean) {
     if (required && !value && submitted && pushSite) {
-      return formatMessage(messages.required, {name: name})
+      return formatMessage(messages.required, { name: name })
     } else {
       return helperText;
     }
@@ -200,7 +200,7 @@ function GitForm(props: GitFormProps) {
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
             error={(inputs.submitted && !inputs.repoUsername && (gitType === 'clone' || inputs.pushSite))}
-            helperText={renderHelperText(formatMessage(messages.userName), inputs.repoUsername, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.userName), inputs.repoUsername, '', true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
           />
         }
         {
@@ -216,7 +216,7 @@ function GitForm(props: GitFormProps) {
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
             error={(inputs.submitted && !inputs.repoPassword && (gitType === 'clone' || inputs.pushSite))}
-            helperText={renderHelperText(formatMessage(messages.password), inputs.repoPassword, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.password), inputs.repoPassword, '', true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -228,7 +228,7 @@ function GitForm(props: GitFormProps) {
                     {showPassword ? <VisibilityOff/> : <Visibility/>}
                   </IconButton>
                 </InputAdornment>
-              ),
+              )
             }}
           />
         }
@@ -243,7 +243,7 @@ function GitForm(props: GitFormProps) {
             required
             value={inputs.repoToken}
             error={(inputs.submitted && !inputs.repoToken && (gitType === 'clone' || inputs.pushSite))}
-            helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.token), inputs.repoToken, '', true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
             InputProps={{
@@ -257,7 +257,7 @@ function GitForm(props: GitFormProps) {
                     {showPassword ? <VisibilityOff/> : <Visibility/>}
                   </IconButton>
                 </InputAdornment>
-              ),
+              )
             }}
           />
         }
@@ -272,7 +272,7 @@ function GitForm(props: GitFormProps) {
             multiline
             className={classes.margin}
             error={(inputs.submitted && !inputs.repoKey && inputs.pushSite)}
-            helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, "", true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
+            helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, '', true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
             value={inputs.repoKey}
@@ -289,11 +289,11 @@ function GitForm(props: GitFormProps) {
           id="repoUrl"
           name="repoUrl"
           label={formatMessage(messages.repoUrl)}
-          InputLabelProps={{shrink: true}}
+          InputLabelProps={{ shrink: true }}
           autoFocus={type === 'push'}
           required
           fullWidth
-          placeholder={"e.g. https://github.com/craftercms/craftercms-react-blueprint.git"}
+          placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
           onKeyPress={onKeyPress}
           onChange={handleInputChange}
           value={inputs.repoUrl}
@@ -310,22 +310,43 @@ function GitForm(props: GitFormProps) {
           {formatMessage(messages.authentication)}
         </Typography>
         <div className={classes.formControl}>
-          <RadioGroup aria-label="repoAuthentication" name="repoAuthentication"
-                      value={inputs.repoAuthentication} onChange={handleInputChange} onKeyPress={onKeyPress}>
-            <FormControlLabel value="none" control={<Radio color="primary" onChange={() => viewAuth('none')}/>}
-                              label={formatMessage(messages.authenticationNoRequired)}/>
-            <FormControlLabel value="basic" control={<Radio color="primary" onChange={() => viewAuth('basic')}/>}
-                              label={formatMessage(messages.usernameAndPassword)}/>
+          <RadioGroup
+            aria-label="repoAuthentication"
+            name="repoAuthentication"
+            value={inputs.repoAuthentication}
+            onChange={handleInputChange}
+            onKeyPress={onKeyPress}
+          >
+            <FormControlLabel
+              value="none"
+              control={
+                <Radio color="primary" onChange={() => viewAuth('none')}/>
+              }
+              label={formatMessage(messages.authenticationNoRequired)}
+            />
+            <FormControlLabel
+              value="basic"
+              control={
+                <Radio color="primary" onChange={() => viewAuth('basic')}/>
+              }
+              label={formatMessage(messages.usernameAndPassword)}
+            />
             <Collapse in={inputs.expanded.basic} timeout={300}>
               {inputs.expanded.basic && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
-            <FormControlLabel value="token" control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
-                              label={formatMessage(messages.token)}/>
+            <FormControlLabel
+              value="token"
+              control={<Radio color="primary" onChange={() => viewAuth('token')}/>}
+              label={formatMessage(messages.token)}
+            />
             <Collapse in={inputs.expanded.token} timeout={300} unmountOnExit>
               {inputs.expanded.token && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
-            <FormControlLabel value="key" control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
-                              label={formatMessage(messages.privateKey)}/>
+            <FormControlLabel
+              value="key"
+              control={<Radio color="primary" onChange={() => viewAuth('key')}/>}
+              label={formatMessage(messages.privateKey)}
+            />
             <Collapse in={inputs.expanded.key} timeout={300} unmountOnExit>
               {inputs.expanded.key && renderAuth(inputs.repoAuthentication, type)}
             </Collapse>
@@ -337,7 +358,7 @@ function GitForm(props: GitFormProps) {
           id="repoRemoteBranch"
           name="repoRemoteBranch"
           label={formatMessage(messages.branch)}
-          InputLabelProps={{shrink: true}}
+          InputLabelProps={{ shrink: true }}
           placeholder="master"
           fullWidth
           onKeyPress={onKeyPress}
@@ -351,7 +372,7 @@ function GitForm(props: GitFormProps) {
           id="repoRemoteName"
           name="repoRemoteName"
           label={formatMessage(messages.remoteName)}
-          InputLabelProps={{shrink: true}}
+          InputLabelProps={{ shrink: true }}
           placeholder="origin"
           fullWidth
           onKeyPress={onKeyPress}

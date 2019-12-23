@@ -32,6 +32,9 @@ import { Subject, fromEvent } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
+import { nou } from './object';
+import ErrorState from '../components/SystemStatus/ErrorState';
+import babel from '../utils/babelHelpers-legacy';
 
 /**
  *
@@ -102,7 +105,10 @@ export function createCodebaseBridge() {
           }))
       )),
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue'))
+      PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
+      Search: lazy(() => import('../pages/Search')),
+      Preview: lazy(() => import('../pages/Preview')),
+      ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav'))
     },
 
     assets: {
@@ -114,6 +120,7 @@ export function createCodebaseBridge() {
       path,
       string,
       auth,
+      babel
     },
 
     i18n: {
@@ -140,18 +147,33 @@ export function createCodebaseBridge() {
         typeof component !== 'string' &&
         !Object.values(Bridge.components).includes(component)
       ) {
-        throw new Error('The supplied module is not a know component of CrafterCMSNext.');
+        console.warn('The supplied module is not a know component of CrafterCMSNext.');
       } else if (!(component in Bridge.components)) {
-        throw new Error(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
+        console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
       if (typeof container === 'string') {
         container = document.querySelector(container);
       }
 
-      const Component: JSXElementConstructor<any> = (typeof component === 'string')
+      let Component: JSXElementConstructor<any> = (typeof component === 'string')
         ? Bridge.components[component]
         : component;
+
+      if (nou(Component)) {
+        Component = function () {
+          return (
+            <ErrorState
+              graphicUrl="/studio/static-assets/images/warning_state.svg"
+              error={{
+                code: '',
+                message: `The supplied component name ('${component}') is not a know component of CrafterCMSNext`,
+                remedialAction: `Please re-check supplied name ('${component}'), make sure you've build the app and created the component.`
+              }}
+            />
+          );
+        };
+      }
 
       return (
         new Promise((resolve, reject) => {
@@ -164,7 +186,13 @@ export function createCodebaseBridge() {
                   <Component {...props} />
                 </CrafterCMSNextBridge>,
                 container,
-                () => resolve()
+                () => resolve({
+                  unmount: () => ReactDOM.unmountComponentAtNode(
+                    typeof container === 'string'
+                      ? document.querySelector(container)
+                      : container
+                  )
+                })
               );
           } catch (e) {
             reject(e);

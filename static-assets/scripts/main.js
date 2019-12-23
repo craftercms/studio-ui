@@ -613,14 +613,9 @@
       }
 
       this.editSite = function (site) {
-        me.setCookie('crafterSite',site.siteId);
+        me.setCookie('crafterSite', site.siteId);
         $timeout(function () {
-
-          // For future in-app iframe
-          // $state.go('preview', { site: site.siteId, url: site.cstudioURL });
-
-          $window.location.href = '/studio/preview/#/?page=/&site=' + site.siteId;
-
+          $window.location.href = '/studio/preview';
         }, 0, false);
       };
 
@@ -967,6 +962,15 @@
       if($location.$$search.iframe){
         $rootScope.isFooter = false;
       }
+
+      const container = document.querySelector('#toolbarGlobalNav');
+      CrafterCMSNext
+        .render(
+          container,
+          'ToolbarGlobalNav', {
+            authHeaders: Constants.AUTH_HEADERS
+          }
+        );
 
       if(authService.getUser()){
         authService.getCurrentUserData('me').then(

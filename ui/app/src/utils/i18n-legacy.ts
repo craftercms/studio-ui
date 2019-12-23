@@ -200,33 +200,6 @@ const numericInputControlMessages = defineMessages({
   }
 });
 
-const checkboxGroupControlMessages = defineMessages({
-  datasource: {
-    id: 'checkboxGroupControl.datasource',
-    defaultMessage: 'Data Source'
-  },
-  showSelectAll: {
-    id: 'checkboxGroupControl.showSelectAll',
-    defaultMessage: 'Show "Select All"'
-  },
-  listDirection: {
-    id: 'checkboxGroupControl.listDirection',
-    defaultMessage: 'List Direction'
-  },
-  horizontal: {
-    id: 'checkboxGroupControl.horizontal',
-    defaultMessage: 'Horizonal'
-  },
-  vertical: {
-    id: 'checkboxGroupControl.vertical',
-    defaultMessage: 'Vertical'
-  },
-  readonly: {
-    id: 'checkboxGroupControl.readonly',
-    defaultMessage: 'Read Only'
-  }
-});
-
 const reposAdminMessages = defineMessages({
   pendingCommit: {
     id: 'reposAdmin.pendingCommit',
@@ -559,6 +532,17 @@ const browseCMISMessages = defineMessages({
   }
 });
 
+const browseSearchMessages = defineMessages({
+  lookUpParentError: {
+    id: 'browseSearchMessages.lookUpChildError',
+    defaultMessage: 'Unable to lookup child form callback for search: {searchId}'
+  },
+  lookUpChildError: {
+    id: 'browseSearchMessages.lookUpParentError',
+    defaultMessage: 'Unable to lookup parent context for search: {searchId}'
+  }
+});
+
 const formEngineMessages = defineMessages({
   saveDraftCompleted: {
     id: 'formEngine.saveDraftCompleted',
@@ -703,7 +687,6 @@ export default {
   groupsAdminMessages,
   profileSettingsMessages,
   numericInputControlMessages,
-  checkboxGroupControlMessages,
   sharedContentDSMessages,
   embeddedContentDSMessages,
   childContentDSMessages,
@@ -716,6 +699,7 @@ export default {
   siteComponentDSMessages,
   formEngineMessages,
   browseCMISMessages,
+  browseSearchMessages,
   dragAndDropMessages,
   internalNameControlMessages,
   checkboxGroupControlMessages,

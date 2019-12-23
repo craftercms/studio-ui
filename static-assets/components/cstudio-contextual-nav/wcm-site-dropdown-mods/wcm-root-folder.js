@@ -989,7 +989,7 @@
 
         $treeParent.on('mouseenter', '.ygtvcell', function() {
           const target = $(this).find('.treenode-label')[0], // it's always one item (label)
-            top =  $(this).closest('.ygtvitem').offset().top - 48;
+                top = $(this).closest('.ygtvitem')[0].getBoundingClientRect().top - 48;
 
           $contextMenuEllipsis.show();
           $contextMenuEllipsis.attr('data-tree', tree.id);
@@ -1013,6 +1013,11 @@
 
         $dropdownMenu.on('mouseleave', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {
           $sidebarHighlight.hide();
+        });
+
+        $('#acn-dropdown-menu').on('scroll', function(){
+          $sidebarHighlight.hide();
+          $contextMenuEllipsis.hide();
         });
 
         $dropdownMenu.on('click', '.context-menu--ellipsis[data-tree="' + tree.id + '"]', function(e) {

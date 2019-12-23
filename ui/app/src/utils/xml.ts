@@ -16,7 +16,8 @@
  */
 
 // @ts-ignore
-import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
+// import prettierXmlPlugin from '@prettier/plugin-xml/src/plugin';
+import prettierXmlPlugin from './prettierPluginXml';
 import prettier from 'prettier/standalone';
 
 export function fromString(xml: string) {
@@ -40,7 +41,7 @@ export function beautify(xml: string) {
 }
 
 export function getInnerHtml(element: Element, options = { trim: true }) {
-  let content = element ? element.innerHTML : null;
+  let content = element?.innerHTML;
   if (content) {
     // @ts-ignore downlevelIteration
     const matches = [...content.matchAll(/<!\[CDATA\[([\s\S\n]*?)\]\]>/g)];
@@ -84,3 +85,48 @@ export function extractLocalizedElements(nodes: Array<Element> | NodeListOf<Elem
 export function commentless(xml: string) {
   return xml.replace(/<!--[\s\S\n]*?-->/g, '');
 }
+
+export function findDocumentElement(element: Element) {
+  do {
+    if (element instanceof XMLDocument) {
+      return element;
+    }
+    element = element?.parentNode as Element;
+  } while (element);
+  return null;
+}
+
+export function createElements(doc: XMLDocument, element: Element, data: object): void {
+  Object.entries(data).forEach(([tag, content]) => {
+    if (tag === '@attributes') {
+      Object.entries(content).forEach(([attr, value]) => {
+        element.setAttribute(attr, `${value}`);
+      });
+    } else {
+      const elem = doc.createElement(tag);
+      if (typeof content === 'string' || typeof content === 'number' || typeof content === 'boolean') {
+        elem.innerHTML = `${content}`;
+      } else if (Array.isArray(content)) {
+        console.error('[createElements] Path not implemented.');
+      } else if (content instanceof Element) {
+        elem.appendChild(content);
+      } else {
+        createElements(doc, elem, content);
+      }
+      element.appendChild(elem);
+    }
+  });
+}
+
+export default {
+  fromString,
+  deserialize,
+  minify,
+  beautify,
+  getInnerHtml,
+  getInnerHtmlNumber,
+  extractLocalizedElements,
+  commentless,
+  findDocumentElement,
+  createElements
+};

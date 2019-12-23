@@ -20,10 +20,7 @@ var YEvent = YAHOO.util.Event;
 
 CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 
-/**
- * Submit to go live
- */
-CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.DialogSelectContentType || {
+CStudioAuthoring.Dialogs.DialogSelectContentType = {
 
   /**
    * initialize module
@@ -37,6 +34,9 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = CStudioAuthoring.Dialogs.Dial
    * show dialog
    */
   showDialog(contentTypes, path, asPopup, onSaveCallback, isChangeTemplate, targetElement) {
+
+    // Caching this here to avoid re-fetching on contentTypes selector.
+    CStudioAuthoring.Dialogs.DialogSelectContentType.contentTypes = contentTypes;
 
     /**
      * indicating, from where showDialog is called (new/change template).

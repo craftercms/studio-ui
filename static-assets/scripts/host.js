@@ -36,7 +36,8 @@
     try {
       // For ICE tools panel syncing.
       window.initRegCookie();
-    } catch(e) {}
+    } catch (e) {
+    }
   });
 
   communicator.subscribe(Topics.SET_SESSION_STORAGE_ITEM, function (message) {
@@ -66,10 +67,6 @@
     amplify.publish(cstopic('GUEST_CHECKIN'), params);
   });
 
-  communicator.subscribe(Topics.GUEST_CHECKOUT, function () {
-    // console.log('Guest checked out');
-  });
-
   // Opens studio form on pencil click
   communicator.subscribe(Topics.ICE_ZONE_ON, function (message, scope) {
     var subscribeCallback = function (_message) {
@@ -79,15 +76,15 @@
           CStudioAuthoring.InContextEdit.messageDialogs({
             type: 'OPEN_CHILD_COMPONENT',
             key: message.embeddedItemId,
-            iceId: message.iceId? message.iceId: null,
+            iceId: message.iceId ? message.iceId : null,
             edit: true
           });
           break;
         }
       }
-    }
+    };
 
-    if(message.embeddedItemId) {
+    if (message.embeddedItemId) {
       amplify.subscribe('FORM_ENGINE_MESSAGE_POSTED', subscribeCallback);
     }
     var isWrite = false;
@@ -103,7 +100,7 @@
         isWrite = false;
         par.push({ name: 'readonly' });
       }
-    }
+    };
     var editCb = {
       success: function (contentTO, editorId, name, value, draft) {
         if (CStudioAuthoringContext.isPreview) {
@@ -152,12 +149,12 @@
               isLockOwner(contentTO.item.lockOwner);
               CStudioAuthoring.Operations.performSimpleIceEdit(
                 contentTO.item,
-                message.embeddedItemId? null : this.iceId, //field
+                message.embeddedItemId ? null : this.iceId, //field
                 isWrite,
                 this.editCb,
                 par,
                 null,
-                message.embeddedItemId? true: false);
+                message.embeddedItemId ? true : false);
             },
             failure: function () {
               callback.failure();
@@ -181,7 +178,7 @@
         }
       }, failure: function () {
       }
-    }
+    };
 
     if (isPermissionCached) {
       var response = {};
@@ -203,8 +200,8 @@
 
     if (message.url) {
       var params = {
-            page: message.url,
-            site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
+        page: message.url,
+        site: CStudioAuthoring.Utils.Cookies.readCookie('crafterSite')
       };
 
       var studioPath = CrafterCMSNext.util.path.getPathFromPreviewURL(message.url);
@@ -224,10 +221,11 @@
 
   });
 
-  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function(message, scope){
+  communicator.subscribe(Topics.GUEST_SITE_URL_CHANGE, function (message, scope) {
     if (message.url) {
-      var site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
-          studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
+      var
+        site = CStudioAuthoring.Utils.Cookies.readCookie('crafterSite'),
+        studioPath = CStudioAuthoring.ComponentsPanel.getPreviewPagePath(message.url);
       selectStudioContent(site, studioPath);
     }
   });
@@ -470,11 +468,11 @@
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_OFF, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png')
+    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit_off.png');
   });
 
   communicator.subscribe(Topics.ICE_CHANGE_PENCIL_ON, function (message) {
-    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png')
+    $('#acn-ice-tools-container img').attr('src', CStudioAuthoringContext.authoringAppBaseUri + '/static-assets/themes/cstudioTheme/images/edit.png');
   });
 
   amplify.subscribe(cstopic('ICE_TOOLS_ON'), function () {
@@ -496,7 +494,7 @@
             componentsOn: sessionStorage.getItem('components-on')
           });
       }
-    }
+    };
 
     CStudioAuthoring.Utils.isReviewer(callback);
   });
@@ -551,7 +549,7 @@
     if (path && path.indexOf('.') != -1) {
       if (path.indexOf('.html') != -1 || path.indexOf('.xml') != -1) {
         path = ('/site/website/' + hashPage).replace('//', '/');
-        path = path.replace('.html', '.xml')
+        path = path.replace('.html', '.xml');
       }
     } else {
       if (hash.page && hash.page.indexOf('?') != -1) {
@@ -622,10 +620,10 @@
     return retVal;
   }
 
-  function selectStudioContent(site, url){
+  function selectStudioContent(site, url) {
     CStudioAuthoring.Service.lookupContentItem(site, url, {
       success: function (content) {
-        if(content.item.isPage) {
+        if (content.item.isPage) {
           CStudioAuthoring.SelectedContent.setContent(content.item);
           selectContentSet(content.item, true);
         }
@@ -637,7 +635,7 @@
   // item: selected item
   // reloadTree: if needed, allows tree to be reloaded. For assets it will be false since reload is not needed.
   function selectContentSet(item, reloadTree) {
-    window.setTimeout(function() {
+    window.setTimeout(function () {
       amplify.publish('SELECTED_CONTENT_SET', {
         contentTO: item,
         reload: reloadTree

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 //@ts-ignore
 import GraphiQL from 'graphiql';
 //@ts-ignore
@@ -47,25 +47,14 @@ function getStorage(storageKey: string) {
   return storages[storageKey];
 }
 
-function Graphi(props: GraphiQLProps) {
-  const [query, setQuery] = useState(window.localStorage.getItem(`${props.storageKey}graphiql:query`));
-  const [schema, setSchema] = useState<GraphQLSchema>(null);
-  const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
-  const graphiql: GraphiQL = useRef();
+function getGraphQLFetcher(url: string, method = 'post') {
+  return (graphQLParams: object) => {
+    url = url ?? (window.location.origin + '/api/1/site/graphql');
+    method = method.toLowerCase();
 
-  // Updates localStorage and query variable used by graphiQL and graphiQL explorer
-  function onEditQuery(newQuery: string) {
-    setQuery(newQuery);
-    window.localStorage.setItem(`${props.storageKey}graphiql:query`, newQuery);
-  }
-
-  function graphQLFetcher(graphQLParams: any) {
-    var url: string = props.url ? props.url : (window.location.origin + '/api/1/site/graphql'),
-        method: string = (props.method || 'post').toLowerCase();
-
-    if('get' === method){
-      if (typeof graphQLParams['variables'] === 'undefined'){
-        graphQLParams['variables'] = "{}";
+    if ('get' === method) {
+      if (typeof graphQLParams['variables'] === 'undefined') {
+        graphQLParams['variables'] = '{}';
       }
 
       const query = encodeURIComponent(graphQLParams['query']);
@@ -85,23 +74,35 @@ function Graphi(props: GraphiQLProps) {
         return responseBody;
       }
     });
+
+  };
+}
+
+function Graphi(props: GraphiQLProps) {
+  const [query, setQuery] = useState(window.localStorage.getItem(`${props.storageKey}graphiql:query`));
+  const [schema, setSchema] = useState<GraphQLSchema>(null);
+  const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
+  const graphiql: GraphiQL = useRef();
+
+  // Updates localStorage and query variable used by graphiQL and graphiQL explorer
+  function onEditQuery(newQuery: string) {
+    setQuery(newQuery);
+    window.localStorage.setItem(`${props.storageKey}graphiql:query`, newQuery);
   }
+
+  const graphQLFetcher = useMemo(() => getGraphQLFetcher(props.url, props.method), [props.url, props.method]);
 
   function handleToggleExplorer() {
     setExplorerIsOpen(!explorerIsOpen);
-  };
+  }
 
-  useEffect(
-    () => {
-      graphQLFetcher({
-        query: getIntrospectionQuery()
-      }).then(result => {
-        setSchema(buildClientSchema(result.data));
-      });
-    },
-    // eslint-disable-next-line
-    []
-  );
+  useEffect(() => {
+    graphQLFetcher({
+      query: getIntrospectionQuery()
+    }).then(result => {
+      setSchema(buildClientSchema(result.data));
+    });
+  }, [graphQLFetcher]);
 
   return (
     <div className="graphiql-container">
@@ -116,12 +117,14 @@ function Graphi(props: GraphiQLProps) {
         explorerIsOpen={explorerIsOpen}
         onToggleExplorer={handleToggleExplorer}
       />
-      <GraphiQL ref={graphiql}
-                fetcher={graphQLFetcher}
-                schema={schema}
-                query={query}
-                storage={getStorage(`${props.storageKey}`)}
-                onEditQuery={onEditQuery}>
+      <GraphiQL
+        ref={graphiql}
+        fetcher={graphQLFetcher}
+        schema={schema}
+        query={query}
+        storage={getStorage(`${props.storageKey}`)}
+        onEditQuery={onEditQuery}
+      >
         <GraphiQL.Toolbar>
           <GraphiQL.Button
             onClick={() => graphiql.current.handlePrettifyQuery()}

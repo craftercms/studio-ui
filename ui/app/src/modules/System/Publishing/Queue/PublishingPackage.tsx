@@ -31,7 +31,7 @@ import ListItem from '@material-ui/core/ListItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import "../../../../styles/animations.scss";
 import clsx from "clsx";
-import { CurrentFilters, READY_FOR_LIVE } from "../../../../models/publishing";
+import { CurrentFilters, READY_FOR_LIVE } from "../../../../models/Publishing";
 
 const useStyles = makeStyles((theme: Theme) => ({
   package: {

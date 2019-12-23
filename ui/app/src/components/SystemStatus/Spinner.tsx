@@ -27,14 +27,18 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    background: '#fff',
+    background: (props: any) => props.background,
     transform: 'translate(-50%, -50%)',
   }
 }));
 
-export default function Spinner() {
+interface SpinnerProps {
+  background?: string,
+}
+
+export default function Spinner(props: SpinnerProps) {
+  const classes = useStyles({ background: props.background || '#fff' });
   // @ts-ignore
-  const classes = useStyles();
   return (
     <div className={classes.center}>
       <CircularProgress className={classes.progress} />

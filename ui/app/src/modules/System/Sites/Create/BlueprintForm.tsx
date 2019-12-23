@@ -109,20 +109,15 @@ function BlueprintForm(props: BlueprintFormProps) {
   const { formatMessage } = useIntl();
   const maxLength = 4000;
 
-  useEffect(
-    () => {
-      if (sites === null) {
-        fetchSites()
-          .subscribe(
-            ({ response }) => {
-              setSites(response.sites);
-            }
-          );
-      }
-    },
-    // eslint-disable-next-line
-    []
-  );
+  useEffect(() => {
+    if (sites === null) {
+      fetchSites().subscribe(
+        ({ response }) => {
+          setSites(response.sites);
+        }
+      );
+    }
+  }, [sites]);
 
   const handleInputChange = (e: any, type?: string) => {
     e.persist();
@@ -238,7 +233,11 @@ function BlueprintForm(props: BlueprintFormProps) {
               }
               label={formatMessage(messages.createAsOrphan)}
             />
-            <Typography variant="subtitle2" component="small" className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}>
+            <Typography
+              variant="subtitle2"
+              component="small"
+              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
+            >
               {formatMessage(messages.createAsOrphanHelpText)}
             </Typography>
           </Grid>
