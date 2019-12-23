@@ -694,12 +694,8 @@ const adminConfigurationMessages = defineMessages({
   },
   pendingEncryptions: {
     id: 'adminConfigurations.pendingEncryptions',
-    defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t been encrypted, please trigger encryption or remove the tag flagging.}' +
-                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t been encrypted, please trigger encryption or remove the tag flagging.}}'
-  },
-  testIntl: {
-    id: 'adminConfigurations.testIntl',
-    defaultMessage: '{itemCount, plural, one {Item} other {Items}}',
+    defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t}' +
+                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t}} been encrypted, please trigger encryption or remove the tag flagging.'
   }
 });
 
