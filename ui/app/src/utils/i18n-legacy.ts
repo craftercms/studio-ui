@@ -687,6 +687,19 @@ const adminConfigurationMessages = defineMessages({
   xmlContainsErrors: {
     id: 'adminConfigurations.xmlContainsErrors',
     defaultMessage: 'The XML document contains errors: {errors}'
+  },
+  encryptionDetail: {
+    id: 'adminConfigurations.encryptionDetail',
+    defaultMessage: '"{name}" with value "{value}"'
+  },
+  pendingEncryptions: {
+    id: 'adminConfigurations.pendingEncryptions',
+    defaultMessage: '{itemCount, plural, one {Tag Name {tags} is marked for encryption but hasn\'t been encrypted, please trigger encryption or remove the tag flagging.}' +
+                    'other {Tag names: \n {tags}\nare marked for encryption but haven\'t been encrypted, please trigger encryption or remove the tag flagging.}}'
+  },
+  testIntl: {
+    id: 'adminConfigurations.testIntl',
+    defaultMessage: '{itemCount, plural, one {Item} other {Items}}',
   }
 });
 

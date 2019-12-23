@@ -388,40 +388,65 @@ function moduleLoaded() {
           var url = "/api/2/configuration/write_configuration";
 
           try {
-            parseValidateDocument(xml);
-            const reqObj = {
-              siteId: CStudioAuthoringContext.site,
-              module: itemSelectEl[selectedIndex].getAttribute("module"),
-              path: defPath,
-              environment: environment,
-              content: xml
-            };
+            const doc = parseValidateDocument(xml).documentElement;
+            const tags = doc.querySelectorAll('[encrypted]');
+            const unencryptedItems = findPendingEncryption(tags);
 
-            var requestAsString = JSON.stringify(reqObj);
-            YAHOO.util.Connect.setDefaultPostHeader(false);
-            YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
-            YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
-            YAHOO.util.Connect.asyncRequest(
-              'POST',
-              CStudioAuthoring.Service.createServiceUri(url),
-              {
-                success: function () {
-                  CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
-                  me.clearCache();
+            if (unencryptedItems.length === 0) {
+              const reqObj = {
+                siteId: CStudioAuthoringContext.site,
+                module: itemSelectEl[selectedIndex].getAttribute("module"),
+                path: defPath,
+                environment: environment,
+                content: xml
+              };
+
+              var requestAsString = JSON.stringify(reqObj);
+              YAHOO.util.Connect.setDefaultPostHeader(false);
+              YAHOO.util.Connect.initHeader("Content-Type", "application/json; charset=utf-8");
+              YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
+              YAHOO.util.Connect.asyncRequest(
+                'POST',
+                CStudioAuthoring.Service.createServiceUri(url),
+                {
+                  success: function () {
+                    CStudioAuthoring.Utils.showNotification(CMgs.format(langBundle, "saved"), "top", "left", "success", 48, 197, "saveConf");
+                    me.clearCache();
+                  },
+                  failure: function () {
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                      "errorDialog-dialog",
+                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                      CMgs.format(langBundle, "notification"),
+                      CMgs.format(langBundle, "saveFailed"),
+                      null, // use default button
+                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                      "studioDialog"
+                    );
+                  }
                 },
-                failure: function () {
-                  CStudioAuthoring.Operations.showSimpleDialog(
-                    "errorDialog-dialog",
-                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                    CMgs.format(langBundle, "notification"),
-                    CMgs.format(langBundle, "saveFailed"),
-                    null, // use default button
-                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    "studioDialog"
-                  );
-                }
-              },
-              requestAsString);
+                requestAsString);
+            } else {
+              let tags;
+              if ( unencryptedItems.length > 1 ){
+                tags = unencryptedItems.map(( item ) => {
+                  return `</br>&emsp;• ${formatMessage(adminConfigurationMessages.encryptionDetail, {
+                    name: item.tag.tagName,
+                    value: item.text
+                  })}`
+                }).join('') + '</br>';
+              } else {
+                tags = formatMessage(adminConfigurationMessages.encryptionDetail, {
+                  name: unencryptedItems[0].tag.tagName,
+                  value: unencryptedItems[0].text
+                });
+              }
+
+              showErrorDialog(formatMessage(adminConfigurationMessages.pendingEncryptions, {
+                itemCount: unencryptedItems.length,
+                tags
+              }));
+            }
           } catch (e) {
             showErrorDialog(e);
           }
@@ -475,7 +500,7 @@ function moduleLoaded() {
             ).subscribe(
               (encrypted) => {
                 encrypted.forEach(({ text, tag }) => {
-                  tag.innerHTML = text;
+                  tag.innerHTML = `\${enc:${text}}`;
                   tag.setAttribute('encrypted', 'true');
                 });
                 editor.setValue(
