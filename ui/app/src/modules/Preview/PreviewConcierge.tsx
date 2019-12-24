@@ -249,64 +249,6 @@ function beginGuestDetection(setSnack): Subscription {
   });
 }
 
-// useEffect(() => {
-//
-//   let nextSite;
-//   const qsChanged = (qs.site !== priorState.current.qs.site);
-//   const siteChanged = (site !== priorState.current.site);
-//
-//   priorState.current.qs.site = qs.site;
-//   priorState.current.site = site;
-//
-//   let cookie = Cookies.get('crafterSite');
-//
-//   if (qs.site === site && site === cookie) {
-//     console.log('QS site, site and cookie all the same');
-//     return;
-//   }
-//
-//   if (qsChanged) {
-//     nextSite = qs.site;
-//   } else if (siteChanged) {
-//     nextSite = site;
-//     onUrlChange?.({ page: '/', site });
-//   }
-//
-//   if (qsChanged || siteChanged) {
-//     const hostToGuest$ = getHostToGuestBus();
-//     nextSite && setSiteCookie(nextSite);
-//     beginGuestDetection(setSnack);
-//     if (guest) {
-//       hostToGuest$.next({ type: NAVIGATION_REQUEST, payload: { url: GUEST_BASE } });
-//     }
-//     // TODO: handle qs changes...
-//     // qsChanged && setTimeout(() => {
-//     //   dispatch(changeSite(qs.site));
-//     // });
-//   }
-//
-// }, [site, qs.site, currentUrl, guest, GUEST_BASE, dispatch, onUrlChange]);
-
-// useEffect(() => {
-//
-//   const qsChanged = (qs.page !== priorState.current.qs.page);
-//   const urlChanged = (currentUrl !== priorState.current.currentUrl);
-//   // const guestUrlChanged = (guest?.url !== priorState.current.guestUrl);
-//
-//   priorState.current.qs.page = qs.page;
-//   priorState.current.currentUrl = currentUrl;
-//
-//   if (qsChanged) {
-//
-//   }
-//   if (urlChanged) {
-//     // const hostToGuest$ = getHostToGuestBus();
-//     // hostToGuest$.next({ type: NAVIGATION_REQUEST, payload: { url: `${GUEST_BASE}${currentUrl}` } });
-//     onUrlChange?.({ page: currentUrl, site });
-//   }
-//
-// }, [currentUrl, site, qs.page, dispatch, onUrlChange]);
-
 try {
   // TODO: Temp. To be removed.
   document.domain = 'authoring.sample.com';
