@@ -77,7 +77,7 @@ export const themeOptions: ThemeOptions = {
     text: {
       secondary: palette.gray.medium3
     },
-    type: 'dark'
+    // type: 'dark'
   },
   zIndex: {
     mobileStepper: 770,
