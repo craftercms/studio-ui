@@ -140,7 +140,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
         </div>
         <MenuItem
           component={Link}
-          href={`${AUTHORING_BASE}/studio/#/settings`}
+          href={`${AUTHORING_BASE}/#/settings`}
           color="textPrimary"
           className={classes.anchor}
         >
