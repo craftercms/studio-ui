@@ -4098,27 +4098,25 @@ var nodeOpen = false,
              *  If edit equals true, tries to lock the content
              */
             getContent: function(path, edit, callback, encoding){
-                var serviceUrl = CStudioAuthoring.Service.getContentUri
-                    + "?site=" + CStudioAuthoringContext.site
-                    + "&path=" + encodeURI(path) +
-                    "&edit=" + edit +
-                    "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
-                    "&nocache=" + new Date();
-                if (encoding != null) {
-                    serviceUrl = serviceUrl + "&encoding=" + encoding;
+              var serviceUrl = (
+                CStudioAuthoring.Service.getContentUri +
+                `?site=${CStudioAuthoringContext.site}` +
+                `&path=${encodeURI(path)}` +
+                `&edit=${edit}` +
+                `&ticket=${CStudioAuthoring.Utils.Cookies.readCookie("ccticket")}` +
+                `${(encoding != null) ? `&encoding=${encoding}` : ''}` +
+                `&nocache=${Date.now()}`
+              );
+
+              YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), {
+                success: function (content) {
+                  var contentData = YAHOO.lang.JSON.parse(content.responseText)
+                  callback.success(contentData.content);
+                },
+                failure: function (err) {
+                  callback.failure(err);
                 }
-
-                var serviceCallback = {
-                    success: function(content) {
-                        var contentData = YAHOO.lang.JSON.parse(content.responseText)
-                        callback.success(contentData.content);
-                    },
-                    failure: function(err) {
-                        callback.failure(err);
-                    }
-                };
-
-                YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
+              });
             },
             /**
              * determine if content exists

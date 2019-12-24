@@ -582,7 +582,7 @@ CStudioAuthoring.Module.requireModule(
 												method: 'POST',
 												credentials: 'same-origin',
 												headers: {
-													'Content-Type': 'text/plain; charset=${encoding}',
+													'Content-Type': `text/plain; charset=${encoding}`,
 													[CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken(),
 												},
 												body: value
