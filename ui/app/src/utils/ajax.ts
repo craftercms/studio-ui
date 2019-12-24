@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ajax } from 'rxjs/ajax';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
+import { map } from 'rxjs/operators';
 
 const HEADERS = {};
 export const OMIT_GLOBAL_HEADERS = {};
@@ -57,6 +58,8 @@ export function del(url: string, headers: object = {}) {
   return ajax.delete(url, mergeHeaders(headers));
 }
 
+export const getResponse = map(({ response }: AjaxResponse) => response);
+
 export default {
   OMIT_GLOBAL_HEADERS,
   getGlobalHeaders,
@@ -65,5 +68,6 @@ export default {
   post,
   patch,
   put,
-  del
+  del,
+  ajax
 }

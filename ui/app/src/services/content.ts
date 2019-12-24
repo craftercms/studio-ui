@@ -18,7 +18,7 @@
 import { get, post } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { createElements, fromString, getInnerHtml } from '../utils/xml';
+import { createElements, fromString, getInnerHtml, serialize } from '../utils/xml';
 import {
   ContentType,
   ContentTypeField,
@@ -34,6 +34,7 @@ import $ from 'jquery/dist/jquery.slim';
 import { camelize } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
+import { PaginationOptions } from '../models/Search';
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -218,7 +219,7 @@ function url(type, document) {
 }
 
 function asArray<T = any>(object: Array<T> | T): Array<T> {
-  return Array.isArray(object) ? object : [object];
+  return nou(object) ? [] : Array.isArray(object) ? object : [object];
 }
 
 // TODO: Temporarily disabled data sources until needed and read properly (images, and others?)
@@ -314,6 +315,19 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
             defaultValue: '',
             required: false
           };
+          if (field.fields[_fieldId].type === 'node-selector') {
+
+            const map = asArray<LegacyFormDefinitionProperty>(_legacyField.properties.property)
+              .reduce<LookupTable<LegacyFormDefinitionProperty>>((table, prop) => {
+                table[prop.name] = prop;
+                return table;
+              }, {});
+
+            field.fields[_fieldId].validations = {
+              // tags: (map.tags?.value || '').split(','),
+              contentTypes: (map.contentTypes?.value || '').split(',')
+            };
+          }
         });
       } else if (legacyField.type === 'node-selector') {
 
@@ -401,7 +415,7 @@ export function insertComponent(
 
       const id = instance.craftercms.id;
       // TODO: Hardcoded value. Retrieve properly.
-      const pathBase = shared ? '/site/components/features/'.replace(/\/{1,}$/m, '') : null;
+      const pathBase = shared ? `/site/components/${contentType.id.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '') : null;
       const path = `${pathBase}/${id}.xml`;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
@@ -426,9 +440,9 @@ export function insertComponent(
       // Add the child elements into the `item` node
       createElements(doc, newItem, {
         '@attributes': {
-          // TODO: Hardcoded value. Retrieve properly.
+          // TODO: Hardcoded value. Fix.
           datasource: shared ? 'sharedFeatures' : 'features',
-          ...(shared ? { inline: true } : {})
+          ...(shared ? {} : { inline: true })
         },
         key: shared ? path : id,
         value: instance.craftercms.label,
@@ -440,7 +454,15 @@ export function insertComponent(
         })
       });
 
-      const fieldNode = doc.querySelector(`${fieldId}`);
+      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+
+      // Fields not initialized will not be present in the document
+      // and we'd rather need to create it.
+      if (nou(fieldNode)) {
+        fieldNode = doc.createElement(fieldId);
+        fieldNode.setAttribute('item-list', 'true');
+        doc.documentElement.appendChild(fieldNode);
+      }
 
       // Since this operation only deals with components (i.e. no repeat groups)
       // using `item` as a selector instead of a generic `> *` selection.
@@ -452,14 +474,9 @@ export function insertComponent(
         $(newItem).insertBefore(itemList[targetIndex]);
       }
 
-      let content = (
-        `<?xml version='1.0' encoding='UTF-8' ?>` +
-        doc.documentElement.outerHTML
-      );
-
       return post(
         writeContentUrl(qs),
-        content
+        serialize(doc)
       );
 
     })
@@ -480,15 +497,6 @@ export function sortItem(
   return getDOM(site, modelId).pipe(
     switchMap((doc) => {
 
-      // /studio/api/1/services/api/1/content/write-content.json?
-      // site=editorial&
-      // phase=onSave&
-      // path=/site/website/index.xml&
-      // fileName=index.xml&
-      // user=admin&
-      // contentType=/page/home&
-      // unlock=true
-
       const qs = {
         site,
         path: modelId,
@@ -496,7 +504,9 @@ export function sortItem(
         fileName: getInnerHtml(doc.querySelector('file-name'))
       };
 
-      const items = doc.querySelectorAll(`${fieldId} > *`);
+      // It's important to add the `:scope >` in to the selector since
+      // there may be nested fields with the same field ID.
+      const items = doc.querySelectorAll(`:scope > ${fieldId} > *`);
       const $el = $(items).eq(currentIndex);
       const $targetSibling = $(items).eq(targetIndex);
 
@@ -506,19 +516,9 @@ export function sortItem(
         $el.insertBefore($targetSibling);
       }
 
-      // Rendering breaks if the document is formatted.
-      // const content = beautify((
-      //   `<?xml version='1.0' encoding='UTF-8' ?>` +
-      //   doc.documentElement.outerHTML
-      // ));
-      const content = (
-        `<?xml version='1.0' encoding='UTF-8' ?>` +
-        doc.documentElement.outerHTML
-      );
-
       return post(
         writeContentUrl(qs),
-        content
+        serialize(doc)
       );
 
     })
@@ -549,23 +549,13 @@ export function deleteItem(
 
       $(fieldNode).children().eq(targetIndex).remove();
 
-      const content = (
-        `<?xml version='1.0' encoding='UTF-8' ?>` +
-        doc.documentElement.outerHTML
-      );
-
       return post(
         writeContentUrl(qs),
-        content
+        serialize(doc)
       );
 
     })
   );
-}
-
-interface PaginationOptions {
-  limit: number;
-  offset: number;
 }
 
 export function getContentByContentType(site: string, contentType: string, options?: PaginationOptions): Observable<ContentInstance>;
@@ -594,6 +584,24 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
     })))
   );
 }
+
+export function reformatDocument(site: string, id: string) {
+  return getDOM(site, id).pipe(
+    switchMap((doc) => post(
+      writeContentUrl({
+        site,
+        path: id,
+        unlock: 'true',
+        fileName: getInnerHtml(doc.querySelector('file-name'))
+      }),
+      serialize(doc)
+    ))
+  );
+}
+
+// @ts-ignore
+window.reformatDocument = reformatDocument;
+// TODO: Remove 👆🏻
 
 interface LegacyContentDocumentProps {
   'content-type': string;

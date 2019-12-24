@@ -104,7 +104,6 @@ export default function SiteCard(props: TitleCardProps) {
         }}
       />
       <Menu
-        id="options-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}

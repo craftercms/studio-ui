@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { fromEvent, NEVER, Observable } from 'rxjs';
 import clsx from 'clsx';
@@ -23,9 +23,7 @@ import { DRAWER_WIDTH, getGuestToHostBus, getHostToGuestBus } from './previewCon
 import { filter, map, pluck } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
-import { useSelector } from 'react-redux';
-import GlobalState from '../../models/GlobalState';
-import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 
@@ -66,7 +64,8 @@ const useStyles = makeStyles((theme) => createStyles({
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     }),
-    width: `calc(100% - ${DRAWER_WIDTH}px)`
+    width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    marginLeft: DRAWER_WIDTH
   }
 }));
 
@@ -77,13 +76,12 @@ const translations = defineMessages({
   }
 });
 
-interface HostProps {
+interface HostPropsUI {
   url: string;
   site: string;
-  forceReloadKey: string;
   onLocationChange: () => void,
   className?: string;
-  guestOrigin?: string;
+  origin: string;
   onMessage?: (value: StandardAction) => void;
   postMessage$?: Observable<StandardAction>;
   width?: string | number;
@@ -91,21 +89,21 @@ interface HostProps {
   border?: 'portrait' | 'landscape';
 }
 
-export function HostUI(props: HostProps) {
+export function HostUI(props: HostPropsUI) {
 
   const classes = useStyles({});
   const { formatMessage } = useIntl();
 
   const {
     url,
+    site,
     width,
+    origin,
     height,
     border,
     className,
     onMessage,
-    postMessage$ = NEVER,
-    // TODO: Hardcoded value
-    guestOrigin = 'http://authoring.sample.com:8080'
+    postMessage$ = NEVER
   } = props;
   const iframeRef = useRef(null);
   const cls = clsx(classes.iframe, {
@@ -115,23 +113,7 @@ export function HostUI(props: HostProps) {
     [classes.iframeWithBorderLandscape]: border === 'portrait'
   });
 
-  useEffect(setUpGuestCommunications, [onMessage]);
-
-  return (
-    <>
-      <iframe
-        key={props.forceReloadKey}
-        style={{ width, height }}
-        id="crafterCMSPreviewIframe"
-        title={formatMessage(translations.iframeTitle)}
-        ref={iframeRef}
-        src={url || 'about:blank'}
-        className={cls}
-      />
-    </>
-  );
-
-  function setUpGuestCommunications() {
+  useEffect(() => {
 
     const broadcastChannel = (window.BroadcastChannel !== undefined)
       ? new BroadcastChannel('org.craftercms.accommodationChannel')
@@ -153,7 +135,7 @@ export function HostUI(props: HostProps) {
 
     const hostToGuestSubscription = postMessage$.subscribe((action) => {
       const contentWindow = iframeRef.current.contentWindow;
-      contentWindow.postMessage(action, guestOrigin);
+      contentWindow.postMessage(action, origin);
       broadcastChannel && broadcastChannel.postMessage(action);
     });
 
@@ -163,7 +145,21 @@ export function HostUI(props: HostProps) {
       broadcastChannel && broadcastChannel.close();
     };
 
-  }
+  }, [origin, onMessage, postMessage$]);
+
+  return (
+    <>
+      <iframe
+        key={site}
+        style={{ width, height }}
+        id="crafterCMSPreviewIframe"
+        title={formatMessage(translations.iframeTitle)}
+        ref={iframeRef}
+        src={url || 'about:blank'}
+        className={cls}
+      />
+    </>
+  );
 
 }
 
@@ -171,9 +167,8 @@ export default function Host() {
 
   const classes = useStyles({});
   const site = useActiveSiteId();
-  const GUEST_BASE = useSelector<GlobalState, string>(state => state.env.GUEST_BASE);
+  const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
   const {
-    guest,
     hostSize,
     currentUrl,
     showToolsPanel
@@ -184,21 +179,15 @@ export default function Host() {
     const guestToHost$ = getGuestToHostBus();
     return (action: StandardAction) => guestToHost$.next(action);
   }, []);
-  const [key, setKey] = useState<string>(site);
-
-  useEffect(() => {
-    if ((key !== site) && (!guest)) {
-      setKey(site);
-    }
-  }, [site, guest, key]);
 
   return (
     <div className={clsx(classes.hostContainer, { [classes.shift]: showToolsPanel })}>
       <HostUI
-        forceReloadKey={key}
-        site={site}
-        {...hostSize}
         url={`${GUEST_BASE}${currentUrl}`}
+        site={site}
+        width={hostSize.width}
+        origin={GUEST_BASE}
+        height={hostSize.height}
         onMessage={onMessage}
         postMessage$={postMessage$}
         onLocationChange={() => null}

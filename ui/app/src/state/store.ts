@@ -10,13 +10,13 @@ import epic from './epics/root';
 const epicMiddleware = createEpicMiddleware();
 const middleware = getDefaultMiddleware({ thunk: false }).concat(epicMiddleware);
 
-epicMiddleware.run(epic);
-
 const store = configureStore<GlobalState, StandardAction>({
   reducer,
   middleware,
   preloadedState: createInitialState()
 });
+
+epicMiddleware.run(epic);
 
 function createInitialState(): GlobalState {
   let state = {} as GlobalState;

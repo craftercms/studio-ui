@@ -17,10 +17,17 @@
 
 import { useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
-import { shallowEqual } from 'react-redux'
+import { shallowEqual } from 'react-redux';
 
-export function useShallowEqualSelector(selector) {
-  return useSelector(selector, shallowEqual)
+export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
+  return useSelector<GlobalState, T>(selector, shallowEqual);
+}
+
+export function useSelection<T = any>(
+  selector: (state: GlobalState) => T,
+  equalityFn?: (left: T, right: T) => boolean
+): T {
+  return useSelector<GlobalState, T>(selector, equalityFn);
 }
 
 export function useActiveSiteId(): string {
@@ -29,4 +36,8 @@ export function useActiveSiteId(): string {
 
 export function usePreviewState(): GlobalState['preview'] {
   return useSelector<GlobalState, GlobalState['preview']>(state => state.preview);
+}
+
+export function useEnv(): GlobalState['env'] {
+  return useSelector<GlobalState, GlobalState['env']>(state => state.env);
 }

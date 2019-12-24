@@ -40,6 +40,14 @@ export class ContentTypeHelper {
     return fieldId.includes('.');
   }
 
+  static isComponentHolder(contentType, fieldId) {
+    return ContentTypeHelper.getField(contentType, fieldId).type === 'node-selector';
+  }
+
+  static isGroup(contentType, fieldId) {
+    return ContentTypeHelper.getField(contentType, fieldId).type === 'repeat';
+  }
+
   static doesFieldAccept(contentType, fieldId) {
     const field = ContentTypeHelper.getField(contentType, fieldId);
   }
@@ -56,12 +64,11 @@ export class ContentTypeHelper {
   }
 
   static getFields(type, ...ids) {
-    return ids.map((id) => ContentTypeHelper.getField(id));
+    return ids.map((id) => ContentTypeHelper.getField(type, id));
   }
 
   static getFieldsByType(contentType, fieldType) {
-    return Object.values(contentType.fields)
-      .filter((field) => field.type === fieldType);
+    return Object.values(contentType.fields).filter((field) => field.type === fieldType);
   }
 
   descriptor = null;

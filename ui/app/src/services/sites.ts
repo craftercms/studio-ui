@@ -17,13 +17,18 @@
 
 import { get, post } from "../utils/ajax";
 import { CreateSiteMeta } from "../models/Site";
+import { PaginationOptions } from '../models/Search';
 
 export function fetchBlueprints() {
   return get('/studio/api/2/sites/available_blueprints');
 }
 
-export function fetchSites() {
-  return get('/studio/api/2/users/me/sites');
+export function fetchSites(paginationOptions?: PaginationOptions) {
+  const options: PaginationOptions = Object.assign({
+    limit: 100,
+    offset: 0
+  }, paginationOptions || {});
+  return get(`/studio/api/2/users/me/sites?limit=${options.limit}&offset=${options.offset}`);
 }
 
 export function createSite(site: CreateSiteMeta) {

@@ -182,7 +182,14 @@ export class ContentController {
 
     const models = this.getCachedModels();
     const model = models[modelId];
-    const collection = ModelHelper.value(model, fieldId);
+    // A model with a field that hasn't been initialized with
+    // content may not have that field at all
+    let collection = ModelHelper.value(model, fieldId);
+    if (!collection) {
+      collection = [];
+    } else if (!Array.isArray(collection)) {
+      // e.g. A repeat group
+    }
     const result = collection.slice(0);
 
     // Create Item
@@ -220,7 +227,7 @@ export class ContentController {
     processFields(instance, contentType.fields);
 
     // Insert in desired position
-    result.splice(targetIndex, 0, instance);
+    result.splice(targetIndex, 0, instance.craftercms.id);
 
     ContentController.models$.next({
       ...models,
@@ -231,13 +238,12 @@ export class ContentController {
       }
     });
 
+    post(INSERT_COMPONENT_OPERATION, { modelId, fieldId, targetIndex, contentType, shared, instance });
+
     ContentController.operations$.next({
       type: INSERT_COMPONENT_OPERATION,
       args: { modelId, fieldId, targetIndex, contentType, shared, instance }
     });
-
-    post(INSERT_COMPONENT_OPERATION, { modelId, fieldId, targetIndex, contentType, shared, instance });
-
 
   }
 
@@ -538,98 +544,133 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
             }
           }
         }` : `
-        query Page {
-          contentItems {
-            total
-            items {
-              id: objectId
-              path: localId
-              contentType: content__type
-              dateCreated: createdDate_dt
-              dateModified: lastModifiedDate_dt
-              label: internal__name
-              ...on component_articles__widget {
-                title_t
-                max_articles_i
-
-              }
-              ...on component_contact__widget {
-                title_t
-                text_html
-                email_s
-                phone_s
-                address_html
-              }
-              ...on component_feature {
-                icon_s
-                title_t
-                body_html
-              }
-              ...on component_header {
-                logo_s
-                logo_text_t
-                business_name_s
-                social_media_links_o {
-                  item {
-                    social_media_s
-                    url_s
-                  }
+          query Page {
+            contentItems {
+              total
+              items {
+                id: objectId
+                path: localId
+                contentType: content__type
+                dateCreated: createdDate_dt
+                dateModified: lastModifiedDate_dt
+                label: internal__name
+                ... on component_articles__widget {
+                  title_t
+                  max_articles_i
                 }
-              }
-              ...on component_left__rail {
-                widgets_o {
-                  item {
-                    key
-                    component {
-                      id: objectId
+                ... on component_contact__widget {
+                  title_t
+                  text_html
+                  email_s
+                  phone_s
+                  address_html
+                }
+                ... on component_feature {
+                  icon_s
+                  title_t
+                  body_html
+                }
+                ... on component_header {
+                  logo_s
+                  logo_text_t
+                  business_name_s
+                  social_media_links_o {
+                    item {
+                      social_media_s
+                      url_s
                     }
                   }
                 }
-              }
-              ...on page_home {
-                title_t
-                header_o {
-                  ...ContentIncludeWrapperFragment
+                ... on component_left__rail {
+                  widgets_o {
+                    item {
+                      key
+                      component {
+                        id: objectId
+                      }
+                    }
+                  }
                 }
-                left__rail_o {
-                  ...ContentIncludeWrapperFragment
+                ... on page_home {
+                  title_t
+                  header_o {
+                    ...ContentIncludeWrapperFragment
+                  }
+                  left__rail_o {
+                    ...ContentIncludeWrapperFragment
+                  }
+                  hero_title_html
+                  hero_text_html
+                  hero_image_s
+                  features_title_t
+                  features_o {
+                    ...ContentIncludeWrapperFragment
+                  }
+                  content_o {
+                    ...ContentIncludeWrapperFragment
+                  }
                 }
-                hero_title_html
-                hero_text_html
-                hero_image_s
-                features_title_t
-                features_o {
-                  ...ContentIncludeWrapperFragment
-                }
-              }
-              ...on taxonomy {
-                items {
-                  item {
-                    key
-                    value
+                ... on taxonomy {
+                  items {
+                    item {
+                      key
+                      value
+                    }
                   }
                 }
               }
             }
           }
-        }
       `) + (`
         fragment ContentIncludeWrapperFragment on ContentIncludeWrapper {
           item {
             key
             component {
               id: objectId
-              ...on component_feature {
+              path: localId
+              contentType: content__type
+              dateCreated: createdDate_dt
+              dateModified: lastModifiedDate_dt
+              label: internal__name
+              ... on component_feature {
                 icon_s
                 title_t
                 body_html
                 contentType: content__type
                 dateCreated: createdDate_dt
                 dateModified: lastModifiedDate_dt
-                label: internal__name
+              }
+              ... on component_layout {
+                numberOfColumns_s
+                items_o {
+                  item {
+                    content_o {
+                      item {
+                        key
+                        component {
+                          ...CrafterCMSProps
+                          ... on component_feature {
+                            icon_s
+                            title_t
+                            body_html
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }
+        }
+
+        fragment CrafterCMSProps on component_feature {
+          id: objectId
+          path: localId
+          contentType: content__type
+          dateCreated: createdDate_dt
+          dateModified: lastModifiedDate_dt
+          label: internal__name
         }
       `)
     },

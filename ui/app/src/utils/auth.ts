@@ -27,6 +27,13 @@ export function setRequestForgeryToken() {
   setGlobalHeaders({ 'X-XSRF-TOKEN': token });
 }
 
+export function setSiteCookie(name: string, value: string) {
+  Cookies.set(name, value, {
+    domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+    path: '/'
+  });
+}
+
 export default {
   getRequestForgeryToken,
   setRequestForgeryToken

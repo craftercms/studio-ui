@@ -60,6 +60,11 @@ export interface Facet {
   }
 }
 
+export interface PaginationOptions {
+  limit: number;
+  offset: number;
+}
+
 export interface SearchItem {
   path: string;
   name: string;
