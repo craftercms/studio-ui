@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useState, useEffect, useRef } from 'react';
-import Typography from '@material-ui/core/Typography';
+import React, { useState, useEffect, useReducer } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
-import { createStyles, makeStyles, withStyles, Theme } from '@material-ui/core/styles';
-import { getAudiencesPanelConfig, AudiencesPanelDescriptor, AudiencesPanelConfig } from '../../../services/configuration';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { getAudiencesPanelConfig, AudiencesPanelDescriptor } from '../../../services/configuration';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -85,54 +84,58 @@ const translations = defineMessages({
 });
 
 interface AudiencesPanelUIProps {
-  properties: any;
+  config: any;
   profile: any;
+  onFormChange: Function;
 }
 
 interface AudiencesFormProps {
-  properties: AudiencesPanelDescriptor;
-  profile: string;
+  property: AudiencesPanelDescriptor;
+  value: string;
+  onFormChange: Function;
 }
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   const classes = useStyles({});
   const {
-    properties,
-    profile
+    config,
+    profile,
+    onFormChange
   } = props;
 
   return (
     <ToolPanel title={translations.audiencesPanel}>
       {
-        properties ? (
+        config ? (
           <>
             <Grid className={classes.PanelMargin}>
               {
-                properties.map((property: any) => (
-                  <>
+                config.map((property: any, index: number) => (
+                  <div key={index}>
                     <GetCodeDependingType
-                      properties={property}
-                      profile={profile[property.name] ? profile[property.name]: null}
+                      property={property}
+                      value={profile[property.name]}
+                      onFormChange={onFormChange}
                     />
                     <Divider className={classes.divider} />
-                  </>
+                  </div>
                 ))
               }
             </Grid>
             <Grid className={classes.actionBTN} >
               <Button variant="contained">
                 <FormattedMessage
-                  id="audiencesPanel.Defaults"
-                  defaultMessage={'Defaults'}
+                  id="audiencesPanel.defaults"
+                  defaultMessage={`Defaults`}
                 />
-            </Button>
+              </Button>
               <Button variant="contained" color="primary" >
                 <FormattedMessage
-                  id="audiencesPanel.Apply"
-                  defaultMessage={'Apply'}
+                  id="audiencesPanel.apply"
+                  defaultMessage={`Apply`}
                 />
-            </Button>
+              </Button>
             </Grid>
           </>
         ) : (null)
@@ -143,43 +146,52 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
 export default function AudiencesPanel() {
 
-  const [configItems, setConfigItems] = useState();
-  const [currentItems, setCurrentItems] = useState();
-  const site = 'editorial';
+  const [config, setConfig] = useState();
+  const [profile, setProfile] = useState();
+  const site = 'editorial';   // TODO: get from state
 
   useEffect(() => {
 
-    forkJoin(
+    forkJoin([
       getAudiencesPanelConfig(site),
       get(`/api/1/profile/get`).pipe(map(response => response.response))
-    ).subscribe(
-        // Here code that needs both files
-        ([config, profile]) => {
-          setConfigItems(
-            config.properties
-          );
-          setCurrentItems(
-            profile.response
-          );
-        },
-        () => {
-          setConfigItems(
-            []
-          );
-          setCurrentItems(
-            []
-          );
-        }
-      );
+    ]).subscribe(
+      // Here code that needs both files
+      ([config, profile]) => {
+        setConfig(
+          config.properties
+        );
+        setProfile(
+          profile
+        );
+      },
+      () => {
+        setConfig(
+          []
+        );
+        setProfile(
+          {}
+        );
+      }
+    );
   }, []);
+
+  useEffect(() => {
+    console.log("PROFILE", profile);
+  }, [profile]);
+
+  const onFormChange = (name: string, value: string) => {
+    setProfile({ ...profile, [name]: value });
+  };
 
   return (
     <div>
       {
-        setConfigItems && currentItems &&
+        config && profile &&
         <AudiencesPanelUI
-          properties={setConfigItems}
-          profile={setCurrentItems}
+          config={config}
+          profile={profile}
+          onFormChange={onFormChange}
         />
       }
     </div>
@@ -191,11 +203,33 @@ function GetCodeDependingType(props: AudiencesFormProps) {
 
   const classes = useStyles({});
   const {
-    properties,
-    profile
+    property,
+    value,
+    onFormChange
   } = props;
 
-  switch (properties.type) {
+  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
+    onFormChange(name, event.target.value);
+  };
+
+  const handleInputChange = (name: string, label?: string, values?: string[]) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.persist();
+
+    if(e.target.type === 'text') {
+      onFormChange(name, e.target.value);
+    } else if (e.target.type === 'checkbox') {
+      if (e.target.checked) {
+        if (!(label in values)) {
+          values.push(label);
+        }
+      } else {
+        values.splice( values.indexOf(label), 1);
+      }
+      onFormChange(name, values.join(','));
+    }
+  };
+
+  switch (property.type) {
     case "dropdown":
       return (
         <Grid item xs={12}>
@@ -203,63 +237,70 @@ function GetCodeDependingType(props: AudiencesFormProps) {
             <InputLabel
               className={classes.InputLabel}
               focused={true}
-              htmlFor={properties.name}
+              htmlFor={property.name}
             >
-              {properties.label}
-              <Tooltip title={properties.hint} placement="top" >
-                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+              {property.label}
+              <Tooltip title={property.hint} placement="top" >
+                <IconButton aria-label={property.hint} className={classes.IconButton}>
                   <InfoIcon />
                 </IconButton>
               </Tooltip>
             </InputLabel>
             <Select
-              labelId={properties.name}
-              id={properties.name}
-              defaultValue={profile ? profile : properties.default_value}
+              labelId={property.name}
+              id={property.name}
+              defaultValue={value ? value : property.default_value}
+              onChange={handleSelectChange(property.name)}
             >
               {
-                properties.possible_values ? (
-                  properties.possible_values.map((possible_value: any) => (
-                    <MenuItem value={possible_value.value}>{possible_value.value}</MenuItem>
+                property.possible_values ? (
+                  property.possible_values.map((possible_value: any, index: number) => (
+                    <MenuItem value={possible_value.value} key={index}>{possible_value.value}</MenuItem>
                   ))
                 ) : (null)
               }
             </Select>
-            <FormHelperText>{properties.description}</FormHelperText>
+            <FormHelperText>{property.description}</FormHelperText>
           </FormControl>
         </Grid>
       )
     case "checkboxes":
+      const values = value ?? property.default_value,
+            valuesArray = values.split(',');
+
       return (
         <Grid item xs={12}>
           <FormControl className={classes.formControl} >
             <InputLabel
               className={classes.InputLabel}
               focused={true}
-              htmlFor={properties.name}
+              htmlFor={property.name}
             >
-              {properties.label}
-              <Tooltip title={properties.hint} placement="top" >
-                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+              {property.label}
+              <Tooltip title={property.hint} placement="top" >
+                <IconButton aria-label={property.hint} className={classes.IconButton}>
                   <InfoIcon />
                 </IconButton>
               </Tooltip>
             </InputLabel>
             {
-              properties.possible_values ? (
-                properties.possible_values.map((possible_value: any) => (
+              property.possible_values ? (
+                property.possible_values.map((possible_value: any, index: number) => (
                   <FormControlLabel
-                    htmlFor={properties.name}
+                    key={index}
+                    htmlFor={property.name}
                     control={
                       <Checkbox
                         color="primary"
+                        checked={valuesArray.includes(possible_value.value)}
+                        onChange={handleInputChange(property.name, possible_value.value, valuesArray)}
                       />
                     }
                     label={possible_value.value} />
                 ))
               ) : (null)
             }
-            <FormHelperText>{properties.description}</FormHelperText>
+            <FormHelperText>{property.description}</FormHelperText>
           </FormControl>
         </Grid>
       )
@@ -270,22 +311,22 @@ function GetCodeDependingType(props: AudiencesFormProps) {
             <InputLabel
               className={classes.InputLabel}
               focused={true}
-              htmlFor={properties.name}
+              htmlFor={property.name}
             >
-              {properties.label}
-              <Tooltip title={properties.hint} placement="top" >
-                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+              {property.label}
+              <Tooltip title={property.hint} placement="top" >
+                <IconButton aria-label={property.hint} className={classes.IconButton}>
                   <InfoIcon />
                 </IconButton>
               </Tooltip>
             </InputLabel>
             <TextField
-              id={properties.name}
+              id={property.name}
               type="text"
               name="input"
               placeholder="auto"
               fullWidth
-              helperText={properties.description}
+              helperText={property.description}
             />
           </FormControl>
         </Grid>
@@ -297,22 +338,24 @@ function GetCodeDependingType(props: AudiencesFormProps) {
             <InputLabel
               className={classes.InputLabel}
               focused={true}
-              htmlFor={properties.name}
+              htmlFor={property.name}
             >
-              {properties.label}
-              <Tooltip title={properties.hint} placement="top" >
-                <IconButton aria-label={properties.hint} className={classes.IconButton}>
+              {property.label}
+              <Tooltip title={property.hint} placement="top" >
+                <IconButton aria-label={property.hint} className={classes.IconButton}>
                   <InfoIcon />
                 </IconButton>
               </Tooltip>
             </InputLabel>
             <TextField
-              id={properties.name}
+              id={property.name}
               type="text"
               name="input"
               placeholder="auto"
               fullWidth
-              helperText={properties.description}
+              defaultValue={ value ? value : property.default_value }
+              helperText={property.description}
+              onChange={handleInputChange(property.name)}
             />
           </FormControl>
         </Grid>
