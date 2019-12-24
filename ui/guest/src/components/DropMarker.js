@@ -23,7 +23,7 @@ import {
   HORIZONTAL,
   notNullOrUndefined,
   VERTICAL,
-  forEach
+  forEach, splitRect, X_AXIS, Y_AXIS
 } from '../util';
 
 export function DropMarker(props) {
@@ -97,6 +97,26 @@ export function DropMarker(props) {
 
       } else {
         // Drop zone is empty
+        // onDropPosition({ targetIndex: 0 });
+
+        const virtualRects = splitRect(
+          dropZone.rect,
+          // Using the larger space to display the drop marker makes it more visible
+          (dropZone.rect.width > dropZone.rect.height)
+            ? X_AXIS
+            : Y_AXIS
+        );
+
+        nextStyle = getDropMarkerPosition({
+          arrangement: dropZone.arrangement,
+          insertPosition: 'after',
+          refElement: dropZone.element,
+          refElementRect: virtualRects[0],
+          nextOrPrevRect: virtualRects[1]
+        });
+
+        targetIndex = 0;
+
       }
 
     } else {

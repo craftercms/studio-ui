@@ -32,8 +32,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import TextField from '@material-ui/core/TextField';
 import ToolPanel from './ToolPanel';
 import { setHostSize } from '../../../state/actions/preview';
-import { useDispatch, useSelector } from 'react-redux';
-import GlobalState from '../../../models/GlobalState';
+import { useDispatch } from 'react-redux';
+import { useSelection } from '../../../utils/hooks';
+import { WidthAndHeight } from '../../../models/WidthAndHeight';
 
 const SIMULATOR_PANEL_RESPONSIVE_MODE = 'craftercms.ice.simulator.previewWindowSize';
 const SIMULATOR_PANEL_CUSTOM_MODE = 'craftercms.ice.simulator.custom';
@@ -134,7 +135,7 @@ export default function SimulatorPanel(props: any) {
   };
 
   const dispatch = useDispatch();
-  const hostSize = useSelector<GlobalState, any>(state => state.preview.hostSize);
+  const hostSize = useSelection<WidthAndHeight>(state => state.preview.hostSize);
   const onDimensionKeyUp = (e: any) => {
     if (e.key === 'Enter') {
 

@@ -25,7 +25,8 @@ import { StandardAction } from '../../models/StandardAction';
 export const DRAWER_WIDTH = 240;
 
 let hostToGuest$: Subject<StandardAction>;
-let GuestToHost$: Subject<StandardAction>;
+let guestToHost$: Subject<StandardAction>;
+let hostToHost$: Subject<StandardAction>;
 
 // endregion
 
@@ -57,9 +58,15 @@ export function getHostToGuestBus() {
 }
 
 export function getGuestToHostBus() {
-  if (!GuestToHost$) {
-    GuestToHost$ = new Subject<StandardAction>();
+  if (!guestToHost$) {
+    guestToHost$ = new Subject<StandardAction>();
   }
-  return GuestToHost$;
+  return guestToHost$;
 }
 
+export function getHostToHostBus() {
+  if (!hostToHost$) {
+    hostToHost$ = new Subject<StandardAction>();
+  }
+  return hostToHost$;
+}

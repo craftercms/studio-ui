@@ -36,7 +36,7 @@ import {
   not,
   isNullOrUndefined,
   notNullOrUndefined,
-  pluckProps
+  pluckProps, GUEST_MODELS_RECEIVED
 } from '../util';
 import { zip, Subject } from 'rxjs';
 import { debounceTime, delay, filter, map, take, tap, throttleTime } from 'rxjs/operators';
@@ -908,37 +908,27 @@ export function Guest(props) {
       sub.unsubscribe();
     };
 
-  }, []);
+  }, [documentDomain, styles]);
 
   // Registers zones
   useEffect(() => {
 
     const iceId = iceRegistry.register({ modelId });
+    const location = window.location.href;
+    const origin = window.location.origin;
+    const url = location.replace(origin, '');
+    const site = Cookies.get('crafterSite');
 
-    contentController
-      .models$(modelId)
-      .pipe(take(1))
-      .subscribe((models) => {
+    post(GUEST_CHECK_IN, { url, location, origin, modelId, path, site });
 
-        const location = window.location.href;
-        const origin = window.location.origin;
-        const url = location.replace(origin, '');
-        const site = Cookies.get('crafterSite');
+    let timeout = setTimeout(() => {
+      hostDetectionSubscription.unsubscribe();
+      console.log('No Host was detected. In-Context Editing is off.');
+    }, 700);
 
-        let timeout;
-
-        const hostDetectionSubscription = fromTopic(HOST_CHECK_IN).pipe(take(1)).subscribe(() => {
-          clearTimeout(timeout);
-        });
-
-        post(GUEST_CHECK_IN, { url, location, origin, models, modelId, path, site });
-
-        timeout = setTimeout(() => {
-          hostDetectionSubscription.unsubscribe();
-          console.log('No Host was detected. In-Context Editing is off.');
-        }, 700);
-
-      });
+    const hostDetectionSubscription = fromTopic(HOST_CHECK_IN).pipe(take(1)).subscribe(() => {
+      clearTimeout(timeout);
+    });
 
     zip(
       contentController.models$(modelId),
@@ -953,7 +943,7 @@ export function Guest(props) {
       iceRegistry.deregister(iceId);
     };
 
-  }, [modelId]);
+  }, [modelId, path]);
 
   return (
     <GuestContext.Provider value={stateRef.current.common}>
@@ -988,3 +978,9 @@ export function Guest(props) {
   );
 
 }
+
+// Notice this is not executed when the iFrame url is changed abruptly.
+// This only triggers when navigation occurs from within the guest page.
+window.addEventListener('beforeunload', () => {
+  post({ type: GUEST_CHECK_OUT });
+}, false);

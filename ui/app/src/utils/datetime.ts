@@ -13,20 +13,26 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
  */
-import React from 'react';
-import { HashRouter, Route } from 'react-router-dom';
-import PreviewUrlController from '../modules/Preview/PreviewUrlController';
 
-export default function (topProps: any) {
-  return (
-    <HashRouter>
-      <Route
-        path="/"
-        render={(routeProps: any) =>
-          <PreviewUrlController {...topProps} {...routeProps} />
-        }
-      />
-    </HashRouter>
-  )
+import moment from 'moment-timezone';
+
+export function getTimezones(){
+  const timeZones = moment.tz.names();
+  let offsetTmz=[];
+
+  timeZones.forEach((timeZoneLabel: string, index: any) => {
+    offsetTmz.push({
+      timezoneName: timeZoneLabel,
+      timezoneOffset: `${moment.tz(timeZones[index]).format('Z')}`
+    });
+  });
+
+  return offsetTmz.sort((a, b) => (parseInt(a.timezoneOffset) > parseInt(b.timezoneOffset)) ? 1 : -1);
 }
+
+export default {
+  getTimezones
+};

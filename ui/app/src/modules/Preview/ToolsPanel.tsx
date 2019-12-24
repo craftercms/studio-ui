@@ -42,11 +42,10 @@ import ICEPanel from './Tools/ICEPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
 import { selectTool, toolsLoaded } from '../../state/actions/preview';
-import { useDispatch, useSelector } from 'react-redux';
-import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
+import { useDispatch } from 'react-redux';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
-import GlobalState from '../../models/GlobalState';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -215,7 +214,7 @@ export default function ToolsPanel() {
     selectedTool,
     showToolsPanel
   } = usePreviewState();
-  const AUTHORING_BASE = useSelector<GlobalState, string>(state => state.env.AUTHORING_BASE);
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
 
   let Tool = guest?.selected ? EditFormPanel : (selectedTool ? (componentMap[selectedTool] || UnknownPanel) : ToolSelector);
   let toolMeta = tools?.find((desc) => desc.id === selectedTool);
@@ -239,7 +238,7 @@ export default function ToolsPanel() {
   return (
     <Drawer
       open={showToolsPanel}
-      anchor="right"
+      anchor="left"
       variant="persistent"
       className={classes.drawer}
       classes={{ paper: classes.drawerPaper }}

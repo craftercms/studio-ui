@@ -13,20 +13,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
  */
-import React from 'react';
-import { HashRouter, Route } from 'react-router-dom';
-import PreviewUrlController from '../modules/Preview/PreviewUrlController';
 
-export default function (topProps: any) {
-  return (
-    <HashRouter>
-      <Route
-        path="/"
-        render={(routeProps: any) =>
-          <PreviewUrlController {...topProps} {...routeProps} />
-        }
-      />
-    </HashRouter>
-  )
+import { get, post } from "../utils/ajax";
+
+export function fetchDependencies(siteId: string, items: any) {
+  return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`)
+}
+
+export default {
+  fetchDependencies
 }

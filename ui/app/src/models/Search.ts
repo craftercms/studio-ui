@@ -59,3 +59,8 @@ export interface Facet {
     [key: string]: any;
   }
 }
+
+export interface PaginationOptions {
+  limit: number;
+  offset: number;
+}

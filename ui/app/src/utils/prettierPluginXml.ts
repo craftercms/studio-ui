@@ -258,15 +258,16 @@ const plugin: Plugin = {
       print: genericPrint
     }
   },
-  options: [
-    {
+  options: {
+    // @ts-ignore
+    xmlSelfClosingTags: {
       since: '1.19.1',
       category: 'XML',
       type: 'boolean',
       default: true,
       description: 'Whether or not to allow self closing XML tags.'
     }
-  ],
+  },
   defaultOptions: {
     printWidth: 80,
     tabWidth: 2

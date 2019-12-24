@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import createMuiTheme, { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 import { darken, fade } from '@material-ui/core/styles';
 
 export const palette = {
@@ -61,7 +61,7 @@ export const RedColor = palette.red.main;
 
 const defaultTheme = createMuiTheme();
 
-export const theme = createMuiTheme({
+export const themeOptions: ThemeOptions = {
   typography: {
     button: {
       textTransform: 'none'
@@ -76,7 +76,8 @@ export const theme = createMuiTheme({
     },
     text: {
       secondary: palette.gray.medium3
-    }
+    },
+    // type: 'dark'
   },
   zIndex: {
     mobileStepper: 770,
@@ -156,4 +157,6 @@ export const theme = createMuiTheme({
       }
     }
   }
-});
+};
+
+export const theme = createMuiTheme(themeOptions);

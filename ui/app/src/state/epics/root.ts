@@ -16,7 +16,10 @@
  */
 
 import { combineEpics } from 'redux-observable';
+import sites from './sites';
 
-const epic = combineEpics();
+const epic: any[] = combineEpics.apply(this, [
+  ...sites
+]);
 
-export default epic;
+export default epic as any;
