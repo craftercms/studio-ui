@@ -134,7 +134,9 @@ interface MediaCardProps {
 
   handleSelect?(path: string, selected: boolean): any;
 
+  onDragStart?(...args: any): any;
 
+  onDragEnd?(...args: any): any;
 }
 
 function MediaCard(props: MediaCardProps) {
@@ -152,7 +154,9 @@ function MediaCard(props: MediaCardProps) {
     hasSubheader = true,
     headerButtonIcon: HeaderButtonIcon = MoreVertRounded,
     handleHeaderButtonClick,
-    avatar: Avatar
+    avatar: Avatar,
+    onDragStart,
+    onDragEnd
   } = props;
   const { name, path, type } = item;
   const isList = currentView === 'list';
@@ -203,7 +207,12 @@ function MediaCard(props: MediaCardProps) {
   };
 
   return (
-    <Card className={clsx(classes.card, isList && 'list', props.classes?.root)}>
+    <Card
+      className={clsx(classes.card, isList && 'list', props.classes?.root)}
+      draggable={!!onDragStart || !!onDragEnd}
+      onDragStart={() => onDragStart(item)}
+      onDragEnd={() => onDragEnd(item)}
+    >
       {
         (isList && hasCheckbox) &&
         <FormGroup className={clsx(classes.checkbox, 'list')}>

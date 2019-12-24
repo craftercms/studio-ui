@@ -19,7 +19,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import { useActiveSiteId } from "../../../utils/hooks";
-import { SearchItem, SearchResult } from "../../../models/Search";
+import { MediaItem, SearchItem, SearchResult } from "../../../models/Search";
 import { search } from "../../../services/search";
 import { setRequestForgeryToken } from "../../../utils/auth";
 import { createStyles } from "@material-ui/core";
@@ -34,6 +34,9 @@ import { Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import Typography from "@material-ui/core/Typography";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { getHostToGuestBus } from "../previewContext";
+import { COMPONENT_DRAG_ENDED, COMPONENT_DRAG_STARTED } from "../../../state/actions/preview";
+import ListItem from "@material-ui/core/ListItem";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -118,6 +121,16 @@ export default function AssetsPanel() {
   const [searchParameters, setSearchParameters] = useState(initialSearchParameters);
   const { formatMessage } = useIntl();
   const onSearch$ = useMemo(() => new Subject<string>(), []);
+  const hostToGuest$ = getHostToGuestBus();
+
+  const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
+    type: COMPONENT_DRAG_STARTED,
+    payload: mediaItem
+  });
+
+  const onDragEnd = () => hostToGuest$.next({
+    type: COMPONENT_DRAG_ENDED
+  });
 
   setRequestForgeryToken();
 
@@ -184,6 +197,8 @@ export default function AssetsPanel() {
                           hasSubheader={false}
                           avatar={DragIndicatorRounded}
                           classes={{ root: classes.card }}
+                          onDragStart={onDragStart}
+                          onDragEnd={ onDragEnd}
                         />
                       )
                     }
