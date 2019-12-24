@@ -586,9 +586,7 @@ CStudioAuthoring.Module.requireModule(
 													[CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken(),
 												},
 												body: value
-											})
-											.then(res => res.json())
-											.then((data) => {
+											}).then(res => res.json()).then((data) => {
 												if (data && data.result && data.result.success) {
 													modalEl.parentNode.removeChild(modalEl);
 													onSaveCb.success();
