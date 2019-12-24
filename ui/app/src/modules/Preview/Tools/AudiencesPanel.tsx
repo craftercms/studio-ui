@@ -36,6 +36,7 @@ import Button from '@material-ui/core/Button';
 import { get } from '../../../utils/ajax';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
+import DateTimePicker from "../../../components/DateTimePicker";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,11 +88,13 @@ interface AudiencesPanelUIProps {
   config: any;
   profile: any;
   onFormChange: Function;
+  saveProfile: Function;
 }
 
 interface AudiencesFormProps {
   property: AudiencesPanelDescriptor;
   value: string;
+  timezone?: string;
   onFormChange: Function;
 }
 
@@ -101,7 +104,8 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   const {
     config,
     profile,
-    onFormChange
+    onFormChange,
+    saveProfile
   } = props;
 
   return (
@@ -116,6 +120,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                     <GetCodeDependingType
                       property={property}
                       value={profile[property.name]}
+                      timezone={ profile[`${property.name}_tz`] ?? null }
                       onFormChange={onFormChange}
                     />
                     <Divider className={classes.divider} />
@@ -130,7 +135,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                   defaultMessage={`Defaults`}
                 />
               </Button>
-              <Button variant="contained" color="primary" >
+              <Button variant="contained" color="primary" onClick={ () => saveProfile() }>
                 <FormattedMessage
                   id="audiencesPanel.apply"
                   defaultMessage={`Apply`}
@@ -176,12 +181,12 @@ export default function AudiencesPanel() {
     );
   }, []);
 
-  useEffect(() => {
-    console.log("PROFILE", profile);
-  }, [profile]);
-
   const onFormChange = (name: string, value: string) => {
     setProfile({ ...profile, [name]: value });
+  };
+
+  const saveProfile = () => {
+    // TODO: API call
   };
 
   return (
@@ -192,6 +197,7 @@ export default function AudiencesPanel() {
           config={config}
           profile={profile}
           onFormChange={onFormChange}
+          saveProfile={saveProfile}
         />
       }
     </div>
@@ -205,6 +211,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
   const {
     property,
     value,
+    timezone,
     onFormChange
   } = props;
 
@@ -227,6 +234,16 @@ function GetCodeDependingType(props: AudiencesFormProps) {
       }
       onFormChange(name, values.join(','));
     }
+  };
+
+  const dateTimePickerChange = (name: string) => (scheduledDateTime: any) => {
+    const datetime = scheduledDateTime.toISOString();
+    const timezone = scheduledDateTime.tz();
+
+    console.log(datetime);
+
+    onFormChange(name, datetime);
+    onFormChange(`${name}_tz`, timezone);
   };
 
   switch (property.type) {
@@ -320,14 +337,12 @@ function GetCodeDependingType(props: AudiencesFormProps) {
                 </IconButton>
               </Tooltip>
             </InputLabel>
-            <TextField
-              id={property.name}
-              type="text"
-              name="input"
-              placeholder="auto"
-              fullWidth
-              helperText={property.description}
-            />
+            <DateTimePicker
+              initialDate={value ? value : property.default_value}
+              timezone={timezone}
+              onChange={dateTimePickerChange(property.name)}/>
+            <FormHelperText>{property.description}</FormHelperText>
+
           </FormControl>
         </Grid>
       )
