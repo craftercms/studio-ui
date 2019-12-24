@@ -4097,13 +4097,16 @@ var nodeOpen = false,
              *  Returns the item content
              *  If edit equals true, tries to lock the content
              */
-            getContent: function(path, edit, callback){
+            getContent: function(path, edit, callback, encoding){
                 var serviceUrl = CStudioAuthoring.Service.getContentUri
                     + "?site=" + CStudioAuthoringContext.site
                     + "&path=" + encodeURI(path) +
                     "&edit=" + edit +
                     "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
                     "&nocache=" + new Date();
+                if (encoding != null) {
+                    serviceUrl = serviceUrl + "&encoding=" + encoding;
+                }
 
                 var serviceCallback = {
                     success: function(content) {
