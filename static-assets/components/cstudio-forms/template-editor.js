@@ -104,7 +104,7 @@ CStudioAuthoring.Module.requireModule(
                   'studio'
                 ).toPromise(),
                 new Promise((resolve, reject) => {
-                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, encoding, false);
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, encoding);
                 })
               ]).then(([xmlDoc, content]) => {
                 CStudioForms.TemplateEditor.config = xmlDoc;
@@ -578,20 +578,22 @@ CStudioAuthoring.Module.requireModule(
 												"&user=" + CStudioAuthoringContext.user +
 												"&unlock=true";
 
-                      fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: {
-                          'Content-Type': `text/plain; charset=${encoding}`,
-                          [CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken(),
-                        },
-                        body: value
-                      }).then(res => res.json()).then((data) => {
-                        if (data && data.result && data.result.success) {
-                          modalEl.parentNode.removeChild(modalEl);
-                          onSaveCb.success();
-                        }
-                      });
+											fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
+												method: 'POST',
+												credentials: 'same-origin',
+												headers: {
+													'Content-Type': 'text/plain; charset=${encoding}',
+													[CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken(),
+												},
+												body: value
+											})
+											.then(res => res.json())
+											.then((data) => {
+												if (data && data.result && data.result.success) {
+													modalEl.parentNode.removeChild(modalEl);
+													onSaveCb.success();
+												}
+											});
 										};
 									}
 
