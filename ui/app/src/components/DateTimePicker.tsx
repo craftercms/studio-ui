@@ -115,11 +115,12 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   } = props;
 
   let initialDateMoment;
+  const timezoneObj = timezones.find( tz => (tz.timezoneName === unescape(timezone)) );
 
   switch(typeof initialDate) {
     case 'string':
     case 'number':
-      initialDateMoment = moment(initialDate);
+      initialDateMoment = moment.tz(initialDate, timezoneObj.timezoneName);
       break;
     case 'object':
       // moment object, stays the same
@@ -129,7 +130,6 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
       initialDateMoment = moment();
   }
 
-  const timezoneObj = timezones.find( tz => (tz.timezoneName === timezone) );
   const [ selectedDateTime, setSelectedDateTime ] = useState(initialDateMoment);
   const [ selectedTimezone, setSelectedTimezone ] = useState(timezoneObj);
 
@@ -149,10 +149,10 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     }
 
     setSelectedDateTime(updatedDateTime);
-    onChange?.(updatedDateTime);
+    onChange && onChange(updatedDateTime);
 
-    onChangeDate?.(updatedDateTime.format(dateFormat));
-    onChangeTime?.(updatedDateTime.format(timeFormat));
+    onChangeDate && onChangeDate(updatedDateTime.format(dateFormat));
+    onChangeTime && onChangeTime(updatedDateTime.format(timeFormat));
   };
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
