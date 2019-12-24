@@ -269,7 +269,6 @@ function MediaCard(props: MediaCardProps) {
           <MoreVertIcon/>
         </IconButton>
         <Menu
-          id="options-menu"
           anchorEl={anchorEl}
           keepMounted
           open={Boolean(anchorEl)}

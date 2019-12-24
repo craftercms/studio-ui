@@ -22,6 +22,8 @@ import { switchMap, take, takeUntil, filter } from 'rxjs/operators';
 
 export const foo = () => void null;
 export const
+  X_AXIS = 'X',
+  Y_AXIS = 'Y',
   HORIZONTAL = 'horizontal',
   VERTICAL = 'vertical',
   TOLERANCE_PERCENTS = { x: 5, y: 5 },
@@ -204,6 +206,62 @@ export function getDropMarkerPosition(args) {
 
 }
 
+// noinspection DuplicatedCode
+export function splitRect(rect, axis = X_AXIS) {
+  // x, y, width, height, top, right, bottom, left
+  let rect1 = {}, rect2 = {};
+
+  // noinspection DuplicatedCode
+  if (axis === X_AXIS) {
+
+    const half = rect.height / 2;
+
+    rect1.x = rect.x;
+    rect1.y = rect.y;
+    rect1.width = rect.width;
+    rect1.height = half;
+    rect1.top = rect.top;
+    rect1.right = rect.right;
+    rect1.bottom = rect.top + half;
+    rect1.left = rect.left;
+
+    rect2.x = rect.x;
+    rect2.y = rect.y + half;
+    rect2.width = rect.width;
+    rect2.height = half;
+    rect2.top = rect2.y;
+    rect2.right = rect.right;
+    rect2.bottom = rect.bottom;
+    rect2.left = rect.left;
+
+  } else if (axis === Y_AXIS) {
+
+    const half = rect.width / 2;
+
+    rect1.x = rect.x;
+    rect1.y = rect.y;
+    rect1.width = half;
+    rect1.height = rect.height;
+    rect1.top = rect.top;
+    rect1.right = rect.left + half;
+    rect1.bottom = rect.bottom;
+    rect1.left = rect.left;
+
+    rect2.x = rect.x + half;
+    rect2.y = rect.y;
+    rect2.width = half;
+    rect2.height = rect.height;
+    rect2.top = rect.top;
+    rect2.right = rect.right;
+    rect2.bottom = rect.bottom;
+    rect2.left = rect.left + half;
+
+  } else {
+    throw new Error(`Invalid axis suplied. Valid values are "${X_AXIS}" or "${Y_AXIS}".`);
+  }
+  return [rect1, rect2];
+}
+
 export function insertDropMarker({ $dropMarker, insertPosition, refElement }) {
   if (insertPosition === 'after') {
     $dropMarker.insertAfter(refElement);
@@ -253,7 +311,19 @@ export function findClosestRect(parentRect, subRects, coordinates) {
   return index;
 }
 
-export function getChildArrangement(children, childrenRects) {
+export function getChildArrangement(children, childrenRects, selfRect) {
+  if (children.length === 0) {
+    // If width is big enough, we may assume it may potentially have multiple
+    // columns and HORIZONTAL arrangement may be better guess; however,
+    // using the larger space to display the drop marker makes it more visible.
+    // Vertical arrangement (stacked), will cause the drop marker to be across
+    // the X axis, so logic is sort of flipped in the sense that it's said to be
+    // vertical so that drop marker displays horizontally
+    return (selfRect.width > selfRect.height)
+      ? VERTICAL
+      : HORIZONTAL;
+  }
+
   let //
     topValues = [],
     alignedTop = false;
@@ -363,7 +433,25 @@ export function capitalize(str) {
 }
 
 export function retrieveProperty(object, prop) {
-  return (object == null) ? null : prop.split('.').reduce((value, prop) => value[prop], object);
+  return (object == null)
+    ? null
+    : (!prop)
+      ? object
+      : prop.split('.').reduce((value, prop) => value[prop], object);
+}
+
+export function setProperty(object, prop, value) {
+  if (object) {
+    const props = prop.split('.');
+    const propToSet = props.pop();
+    const target = retrieveProperty(object, props.join('.'));
+    if (!target) {
+      setProperty(object, props.join('.'), {});
+    }
+    target[propToSet] = value;
+    return true;
+  }
+  return false;
 }
 
 export function createLookupTable(list, idProp = 'id') {

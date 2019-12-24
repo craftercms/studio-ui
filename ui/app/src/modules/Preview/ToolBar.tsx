@@ -31,13 +31,20 @@ import RefreshRounded from '@material-ui/icons/RefreshRounded';
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import ToolbarGlobalNav from '../../components/Navigation/ToolbarGlobalNav';
 import CustomMenu from '../../components/Icons/CustomMenu';
-import { changeCurrentUrl, closeTools, openTools } from '../../state/actions/preview';
-import { useDispatch, useSelector } from 'react-redux';
-import GlobalState from '../../models/GlobalState';
+import {
+  changeCurrentUrl,
+  closeTools,
+  openTools,
+  RELOAD_REQUEST
+} from '../../state/actions/preview';
+import { useDispatch } from 'react-redux';
 import { changeSite } from '../../state/actions/sites';
 import { Site } from '../../models/Site';
 import { LookupTable } from '../../models/LookupTable';
-import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
+import { useActiveSiteId, useEnv, usePreviewState, useSelection } from '../../utils/hooks';
+import { getHostToGuestBus } from './previewContext';
+import { isBlank } from '../../utils/string';
+import { FormattedMessage } from 'react-intl';
 
 const foo = () => void 0;
 
@@ -101,6 +108,7 @@ interface AddressBarProps {
   url: string;
   onSiteChange: (siteId: string) => any;
   onUrlChange: (value: string) => any;
+  onRefresh: (e) => any;
   sites: { id: string; name: string; } [];
 }
 
@@ -111,12 +119,16 @@ export function AddressBar(props: AddressBarProps) {
     url = '',
     sites = [],
     onSiteChange = foo,
-    onUrlChange = foo
+    onUrlChange = foo,
+    onRefresh = foo
   } = props;
+  const noSiteSet = isBlank(site);
   const [internalUrl, setInternalUrl] = useState(url);
+
   useEffect(() => {
     (url) && setInternalUrl(url);
   }, [url]);
+
   return (
     <>
       <IconButton className={classes.iconButton} aria-label="search">
@@ -125,11 +137,25 @@ export function AddressBar(props: AddressBarProps) {
       <IconButton className={classes.iconButton} aria-label="search">
         <KeyboardArrowRightRounded/>
       </IconButton>
-      <IconButton className={classes.iconButton} aria-label="search">
+      <IconButton className={classes.iconButton} aria-label="search" onClick={onRefresh}>
         <RefreshRounded/>
       </IconButton>
       <Paper className={classes.addressBarInput}>
-        <Select value={site} classes={{ select: classes.input }} onChange={(e: any) => onSiteChange(e.target.value)}>
+        <Select
+          value={site}
+          classes={{ select: classes.input }}
+          onChange={(e: any) => !isBlank(e.target.value) && onSiteChange(e.target.value)}
+          displayEmpty
+        >
+          {
+            noSiteSet &&
+            <MenuItem value="">
+              <FormattedMessage
+                id="previewToolBar.siteSelectorNoSiteSelected"
+                defaultMessage="Choose site"
+              />
+            </MenuItem>
+          }
           {
             sites.map(({ id, name }) =>
               <MenuItem key={id} value={id}>{name}</MenuItem>
@@ -140,12 +166,13 @@ export function AddressBar(props: AddressBarProps) {
           value={internalUrl}
           onChange={(e) => setInternalUrl(e.target.value)}
           onKeyDown={createOnEnter((value) => onUrlChange(value), 'value')}
-          placeholder="/"
+          placeholder={noSiteSet ? '' : '/'}
+          disabled={noSiteSet}
           className={classes.inputContainer}
           classes={{ input: classes.input }}
           inputProps={{ 'aria-label': '' }}
         />
-        <IconButton aria-label="search">
+        <IconButton aria-label="search" disabled={noSiteSet}>
           <KeyboardArrowDownRounded/>
         </IconButton>
       </Paper>
@@ -159,9 +186,9 @@ export function AddressBar(props: AddressBarProps) {
 export default function ToolBar() {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const sitesTable = useSelector<GlobalState, LookupTable<Site>>(state => state.sites.byId);
+  const sitesTable = useSelection<LookupTable<Site>>(state => state.sites.byId);
   const sites = useMemo(() => Object.values(sitesTable), [sitesTable]);
-  const PREVIEW_LANDING_BASE = useSelector<GlobalState, string>(state => state.env.PREVIEW_LANDING_BASE);
+  const { PREVIEW_LANDING_BASE } = useEnv();
   const {
     guest,
     currentUrl,
@@ -188,6 +215,7 @@ export default function ToolBar() {
             url={addressBarUrl}
             onSiteChange={(site) => dispatch(changeSite(site))}
             onUrlChange={(url) => dispatch(changeCurrentUrl(url))}
+            onRefresh={() => getHostToGuestBus().next({ type: RELOAD_REQUEST })}
           />
         </section>
         <div className={classes.globalNavSection}>

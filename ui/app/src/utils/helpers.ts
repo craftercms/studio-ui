@@ -29,15 +29,25 @@ export class ContentTypeHelper {
           (field.validations != null) &&
           ('validations' in field) &&
           ('contentTypes' in field.validations)
-        ) field.validations.contentTypes.forEach((ctid) =>
-          !accumulator.includes(ctid) && accumulator.push(ctid)
-        );
+        ) {
+          field.validations.contentTypes.forEach((ctid) =>
+            !accumulator.includes(ctid) && accumulator.push(ctid)
+          );
+        }
         return accumulator;
       }, []);
   }
 
   static isGroupItem(contentType: ContentType, fieldId: string): boolean {
     return fieldId.includes('.');
+  }
+
+  static isComponentHolder(contentType, fieldId) {
+    return ContentTypeHelper.getField(contentType, fieldId).type === 'node-selector';
+  }
+
+  static isGroup(contentType, fieldId) {
+    return ContentTypeHelper.getField(contentType, fieldId).type === 'repeat';
   }
 
   static doesFieldAccept(contentType: ContentType, fieldId: string) {
