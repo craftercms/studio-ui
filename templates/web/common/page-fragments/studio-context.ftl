@@ -44,7 +44,8 @@
     graphQLBaseURI: "${envConfig.graphqlServerUrl}/api/1/site/graphql",
 		xsrfHeaderName: "${_csrf.headerName}",
 		xsrfParameterName: "${_csrf.parameterName}",
-		passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
+		passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}",
+		defaultEncoding: "${envConfig.defaultEncoding?js_string}"
 	};
 
    	if(CStudioAuthoringContext.role === "") {
