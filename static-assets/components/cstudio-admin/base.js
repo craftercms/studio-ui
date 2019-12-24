@@ -116,14 +116,14 @@ CStudioAdminConsole = {
     entitlementValidatorP.innerHTML = entitlementValidator;
     document.getElementById('categories-panel').appendChild(entitlementValidatorP);
   }
-}
+};
 
 CStudioAdminConsole.Toolbar = function(containerEl) {
   this.containerEl = containerEl;
   this.tools = [];
   this.toolContainerEls = [];
   return this;
-}
+};
 
 CStudioAdminConsole.Toolbar.prototype = {
   addToolbarItem: function(tool, toolContainerEl) {
@@ -210,11 +210,11 @@ CStudioAdminConsole.Toolbar.prototype = {
 
     this.tools[this.tools.length] = tool;
   }
-}
+};
 
 CStudioAdminConsole.Tool = function() {
 
-}
+};
 
 CStudioAdminConsole.Tool.prototype = {
   initialize: function(config) {
@@ -223,8 +223,7 @@ CStudioAdminConsole.Tool.prototype = {
 
   renderWorkarea: function() {
   }
-}
-
+};
 
 CStudioAdminConsole.CommandBar =  {
 
@@ -275,7 +274,7 @@ CStudioAdminConsole.CommandBar =  {
     this.commandBarEl.appendChild(buttonEl);
     buttonEl.onclick = action.fn;
   }
-}
+};
 
 YAHOO.util.Event.onAvailable('admin-console', function() {
   CStudioAdminConsole.render(document.getElementById('admin-console'));
