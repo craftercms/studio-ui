@@ -36,10 +36,13 @@ import {
   SET_ITEM_BEING_DRAGGED,
   TOOLS_LOADED
 } from '../actions/preview';
-import { nou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
 
+// TODO: Notes on currentUrl, computedUrl and guest.url...
+
 const reducer = createReducer<GlobalState['preview']>({
+  computedUrl: null,
   currentUrl: '/studio/preview-landing',
   hostSize: { width: null, height: null },
   showToolsPanel: true,
@@ -61,13 +64,13 @@ const reducer = createReducer<GlobalState['preview']>({
       selectedTool: payload
     };
   },
-  [OPEN_TOOLS]: (state, { payload }) => {
+  [OPEN_TOOLS]: (state) => {
     return {
       ...state,
       showToolsPanel: true
     }
   },
-  [CLOSE_TOOLS]: (state, { payload }) => {
+  [CLOSE_TOOLS]: (state) => {
     return {
       ...state,
       showToolsPanel: false
@@ -136,22 +139,32 @@ const reducer = createReducer<GlobalState['preview']>({
       ...state,
       // Setting URL causes dual reload when guest navigation occurs
       // currentUrl: (payload.url && payload.origin ? payload.url.replace(payload.origin, '') : null) ?? state.currentUrl,
-      guest: { ...(state.guest ? state.guest : {}), ...payload, itemBeingDragged: false, selected: null }
+      guest: {
+        selected: null,
+        itemBeingDragged: false,
+        ...payload
+      },
+      computedUrl: payload.__CRAFTERCMS_GUEST_LANDING__ ? '' : payload.url
     }
   },
-  [GUEST_CHECK_OUT]: (state, { payload }) => {
+  [GUEST_CHECK_OUT]: (state) => {
     let nextState = state;
     if (state.guest) {
-      nextState = { ...nextState, guest: null };
+      nextState = {
+        ...nextState,
+        guest: null,
+        computedUrl: state.guest.url
+      };
     }
-    if (state.contentTypes) {
-      nextState = { ...nextState, contentTypes: null };
-    }
+    // If guest checks out, doesn't mean site is changing necessarily
+    // hence content types haven't changed
+    // if (state.contentTypes) {
+    //   nextState = { ...nextState, contentTypes: null };
+    // }
     return nextState;
   },
   [GUEST_MODELS_RECEIVED]: (state, { payload }) => {
-    // If guest hasn't checked in, these models will come later when it does check in.
-    if (state.guest != null) {
+    if (nnou(state.guest)) {
       return {
         ...state,
         guest: {
@@ -164,15 +177,8 @@ const reducer = createReducer<GlobalState['preview']>({
       };
     } else {
       // TODO: Currently getting models before check in some cases when coming from a different site.
-      return {
-        ...state,
-        guest: {
-          ...state.guest,
-          models: {
-            ...payload
-          }
-        }
-      };
+      console.error('[reducer/preview] Guest models received before guest check in.');
+      return state;
     }
   },
   [SELECT_FOR_EDIT]: (state, { payload }) => {

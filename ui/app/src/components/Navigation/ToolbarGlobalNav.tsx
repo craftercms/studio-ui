@@ -30,8 +30,8 @@ import Link from "@material-ui/core/Link";
 import { useOnMount } from "../../utils/helpers";
 import { getLogoutInfoURL, logout } from "../../services/auth";
 import Cookies from "js-cookie";
-import { useSelector } from "react-redux";
 import GlobalState from "../../models/GlobalState";
+import { useEnv, useSelection } from '../../utils/hooks';
 
 const useStyles = makeStyles(() => ({
   avatarClickable: {
@@ -71,6 +71,11 @@ interface ToolBarGlobalNavProps {
 }
 
 export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
+  const user = useSelection<GlobalState['user']>(state => state.user);
+  if (!user) {
+    window.location.reload();
+  }
+
   const [anchor, setAnchor] = useState<Element>();
   const [anchorAvatar, setAnchorAvatar] = useState<Element>();
   const onMenuClick = (e) => setAnchor(e.target);
@@ -84,11 +89,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const { authHeaders = "AUTH_HEADERS" } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
-
-  const user = useSelector<GlobalState, GlobalState['user']>(state => state.user);
-  if (!user) {
-    window.location.reload();
-  }
+  const { AUTHORING_BASE } = useEnv();
 
   useOnMount(() => {
     if (user.authType === authHeaders) {
@@ -120,11 +121,11 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
       >
         <AppsRounded/>
       </IconButton>
-      <Avatar onClick={onAvatarClick} className={classes.avatarClickable}>{user.firstName[0]}{user.lastName[0]}</Avatar>
+      <Avatar onClick={onAvatarClick} className={classes.avatarClickable}>
+        {user.firstName[0]}{user.lastName[0]}
+      </Avatar>
       <Menu
-        id="options-menu"
         anchorEl={anchorAvatar}
-        keepMounted
         open={!!anchorAvatar}
         onClose={() => onAvatarClose()}
         disableEnforceFocus={true}
@@ -137,12 +138,13 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
             {user.email}
           </Typography>
         </div>
-        <MenuItem>
-          <Link
-            href="/studio/#/settings"
-            color="textPrimary"
-            className={classes.anchor}>{formatMessage(messages.settings)}
-          </Link>
+        <MenuItem
+          component={Link}
+          href={`${AUTHORING_BASE}/studio/#/settings`}
+          color="textPrimary"
+          className={classes.anchor}
+        >
+          {formatMessage(messages.settings)}
         </MenuItem>
         {
           logoutInfo.show &&

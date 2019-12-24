@@ -24,13 +24,10 @@ import Popover from "@material-ui/core/Popover";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import SiteCard from "./SiteCard";
-import HomeIcon from '@material-ui/icons/Home';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { getDOM, getGlobalMenuItems } from '../../services/configuration';
-import Cookies from "js-cookie";
 import ErrorState from "../SystemStatus/ErrorState";
-import { useOnMount } from '../../utils/helpers';
 import Preview from '../Icons/Preview';
 import About from '../Icons/About';
 import Docs from '../Icons/Docs';
@@ -41,12 +38,12 @@ import LoadingState from "../SystemStatus/LoadingState";
 import Hidden from '@material-ui/core/Hidden';
 import { Observable, forkJoin } from "rxjs";
 import { LookupTable } from "../../models/LookupTable";
-import { useSelector } from "react-redux";
-import GlobalState from "../../models/GlobalState";
-import { useActiveSiteId } from "../../utils/hooks";
+import { useActiveSiteId, useEnv } from '../../utils/hooks';
 import { forEach } from '../../utils/array';
 import { getInnerHtml } from '../../utils/xml';
 import { createStyles } from "@material-ui/core";
+import { useDispatch } from 'react-redux';
+import { changeSite } from '../../state/actions/sites';
 
 const tileStyles = makeStyles(() => createStyles({
   tile: {
@@ -56,7 +53,6 @@ const tileStyles = makeStyles(() => createStyles({
     alignItems: 'center',
     flexDirection: 'column',
     justifyContent: 'center',
-    color: palette.gray.medium5,
     cursor: 'pointer',
     textAlign: 'center',
     '&:hover': {
@@ -75,7 +71,7 @@ const tileStyles = makeStyles(() => createStyles({
     color: palette.gray.medium5
   },
   tileTitle: {
-    color: palette.gray.medium5
+
   }
 }));
 
@@ -224,28 +220,32 @@ const siteMenuKeys = {
   siteConfig: 'site-config'
 };
 
-const globalNavStyles = makeStyles(() => createStyles({
+const maxHeight = '550px';
+
+const globalNavStyles = makeStyles((theme) => createStyles({
   popover: {
     maxWidth: '820px',
     width: 'calc(100% - 32px)',
-    maxHeight: '550px',
-    backgroundColor: palette.white,
+    maxHeight,
     borderRadius: '20px',
-    boxShadow: '0px 3px 5px rgba(0, 0, 0, 0.25), 0px 0px 4px rgba(0, 0, 0, 0.25)'
   },
   sitesPanel: {
-    backgroundColor: palette.gray.light1,
+    ...(
+      theme.palette.type === 'dark'
+        ? { backgroundColor: palette.gray.dark1 }
+        : { backgroundColor: palette.gray.light1 }
+    ),
     padding: '30px 24px 30px 30px',
-    height: '550px',
-    overflow: 'auto',
+    maxHeight,
+    overflow: 'auto'
   },
   sitesContent: {
-    backgroundColor: palette.white,
     padding: '30px 24px 30px 30px',
+    maxHeight,
+    overflow: 'auto'
   },
   title: {
     textTransform: 'uppercase',
-    color: palette.gray.dark1,
     fontWeight: 600,
   },
   titleCard: {
@@ -281,6 +281,7 @@ interface GlobalNavProps {
 }
 
 export default function GlobalNav(props: GlobalNavProps) {
+
   const { anchor, onMenuClose, rolesBySite } = props;
   const classes = globalNavStyles({});
   const [sites, setSites] = useState(null);
@@ -291,8 +292,9 @@ export default function GlobalNav(props: GlobalNavProps) {
     errorResponse: null
   });
   const { formatMessage } = useIntl();
-  const { SITE_COOKIE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
+  const { AUTHORING_BASE } = useEnv();
   const crafterSite = useActiveSiteId();
+  const dispatch = useDispatch();
 
   const cardActions = [
     {
@@ -310,29 +312,20 @@ export default function GlobalNav(props: GlobalNavProps) {
   }
 
   function onPreviewClick(id: string = crafterSite) {
-    if (!id) {
-      id = sites[0].siteId;
-    }
-    Cookies.set(SITE_COOKIE, id, {
-      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-      path: '/'
-    });
-    const url = '/studio/preview/';
-    const base = window.location.host.replace('3000', '8080');
-    window.location.href = `//${base}${url}`;
+    onLinkClick('/preview', id);
   }
 
   function onDashboardClick(id: string = crafterSite) {
-    if (!id) {
-      id = sites[0].siteId;
-    }
-    Cookies.set(SITE_COOKIE, id, {
-      domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-      path: '/'
-    });
-    const url = '/studio/site-dashboard';
-    const base = window.location.host.replace('3000', '8080');
-    window.location.href = `//${base}${url}`;
+    onLinkClick('/site-dashboard', id);
+  }
+
+  function onLinkClick(url: string, id: string) {
+    window.location.href = `${AUTHORING_BASE}${url}`;
+  }
+
+  function onSiteCardClick(id: string) {
+    dispatch(changeSite(id));
+    onPreviewClick(id);
   }
 
   useEffect(() => {
@@ -380,9 +373,9 @@ export default function GlobalNav(props: GlobalNavProps) {
           const _response = { ...error.response, code: '', documentationUrl: '', remedialAction: '' };
           setApiState({ error: true, errorResponse: _response });
         }
-      },
+      }
     )
-  }, [crafterSite]);
+  }, [crafterSite, rolesBySite]);
 
   return (
     <Popover
@@ -433,7 +426,7 @@ export default function GlobalNav(props: GlobalNavProps) {
                       value={site.siteId}
                       options={true}
                       classes={{ root: classes.titleCard }}
-                      onCardClick={onPreviewClick}
+                      onCardClick={() => onSiteCardClick(site.siteId)}
                       cardActions={cardActions}
                     />
                   )
@@ -465,18 +458,24 @@ export default function GlobalNav(props: GlobalNavProps) {
                   title={formatMessage(messages.about)}
                   icon={About}
                   link={getLink('about')}
-                  target="_blank"
                 />
               </nav>
               <Typography
                 variant="subtitle1"
                 component="h2"
                 className={classes.title}
-                style={{ margin: '34px 0 10px 0' }}
               >
                 {formatMessage(messages.site)}
               </Typography>
               <nav className={classes.sitesApps}>
+                {
+                  siteMenu?.[siteMenuKeys.dashboard] &&
+                  <Tile
+                    title={formatMessage(messages.dashboard)}
+                    icon='fa-tasks'
+                    onClick={onDashboardClick}
+                  />
+                }
                 <Tile
                   title={formatMessage(messages.preview)}
                   icon={Preview}
@@ -488,14 +487,6 @@ export default function GlobalNav(props: GlobalNavProps) {
                   link={getLink('legacy.preview')}
                   disabled={!crafterSite}
                 />
-                {
-                  siteMenu?.[siteMenuKeys.dashboard] &&
-                  <Tile
-                    title={formatMessage(messages.dashboard)}
-                    icon='fa-tasks'
-                    onClick={onDashboardClick}
-                  />
-                }
                 {
                   siteMenu?.[siteMenuKeys.siteConfig] &&
                   <Tile

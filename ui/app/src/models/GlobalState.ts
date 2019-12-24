@@ -42,6 +42,7 @@ export interface GlobalState {
   };
   preview: {
     currentUrl: string;
+    computedUrl: string;
     showToolsPanel: boolean;
     selectedTool: Tools;
     previousTool: Tools;

@@ -15,22 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { retrieveProperty, setProperty } from '../util';
+
 export class ModelHelper {
   static prop(model, propName) {
     if (model == null) {
       return null;
     } else if (propName === 'id') {
-      return model.craftercms.id;
+      propName = 'craftercms.id';
     }
-    return model[propName];
+    return retrieveProperty(model, propName);
   }
 
   static value(model, fieldId, newValue) {
-    if (newValue != null) {
-      model[fieldId] = newValue;
-    }
     // TODO: GraphQL transforms names as left-rail_o to left__rail_o.
-    return model[fieldId] || model[fieldId.replace(/-/g, '__')];
+    // This transform is potentially unreliable. We should discuss approach.
+    const cleanFieldId = fieldId.replace(/-/g, '__');
+    if (cleanFieldId !== fieldId && retrieveProperty(model, cleanFieldId)) {
+      fieldId = cleanFieldId;
+    }
+    if (newValue != null) {
+      setProperty(model, fieldId, newValue);
+    }
+    return retrieveProperty(model, fieldId);
   }
 
   static getContentTypeId(model) {

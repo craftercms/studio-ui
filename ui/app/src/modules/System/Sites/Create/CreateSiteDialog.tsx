@@ -45,7 +45,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import PluginDetailsView from '../../Publishing/Queue/PluginDetailsView';
 import EmptyState from '../../../../components/SystemStatus/EmptyState';
 import { underscore } from '../../../../utils/string';
-import { setRequestForgeryToken } from '../../../../utils/auth';
+import { setRequestForgeryToken, setSiteCookie } from '../../../../utils/auth';
 import {
   checkHandleAvailability,
   createSite,
@@ -56,12 +56,12 @@ import {
   fetchBlueprints as fetchMarketplaceBlueprints
 } from '../../../../services/marketplace';
 import gitLogo from '../../../../assets/git-logo.svg';
-import Cookies from 'js-cookie';
 import { backgroundColor } from '../../../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import { Subscription } from 'rxjs';
 import SearchBar from "../../../../components/SearchBar";
+import { useEnv } from '../../../../utils/hooks';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -338,6 +338,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const { current: refts } = useRef<any>({});
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
+  const { SITE_COOKIE, AUTHORING_BASE } = useEnv();
 
   const views: Views = {
     0: {
@@ -657,47 +658,35 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     }
   }
 
-  function createNewSite(site: CreateSiteMeta) {
-    createSite(site)
-      .subscribe(
-        () => {
-          setApiState({ ...apiState, creatingSite: false });
-          handleClose();
-          //TODO# Change to site.siteId when create site is on API2
-          Cookies.set('crafterSite', site.site_id, {
-            domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-            path: '/'
-          });
-          window.location.href = '/studio/preview/#/?page=/&site=' + site.site_id;
-        },
-        ({ response }) => {
-          if (response) {
-            //TODO# I'm wrapping the API response as a API2 response, change it when create site is on API2
+  function createNewSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
+    (
+      fromMarketplace
+        ? createSiteFromMarketplace(site as MarketplaceSite)
+        : createSite(site as CreateSiteMeta)
+    ).subscribe(
+      () => {
+        setApiState({ ...apiState, creatingSite: false });
+        handleClose();
+        // TODO: API2 change point
+        setSiteCookie(SITE_COOKIE, site.site_id);
+        window.location.href = `${AUTHORING_BASE}/preview`;
+      },
+      ({ response }) => {
+        if (response) {
+          if (fromMarketplace) {
+            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response, global: true });
+          } else {
+            //TODO: I'm wrapping the API response as a API2 response, change it when create site is on API2
             const _response = { ...response, code: '', documentationUrl: '', remedialAction: '' };
             setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: _response, global: true });
           }
         }
-      )
+      }
+    )
   }
 
   function createNewSiteFromMarketplace(site: MarketplaceSite) {
-    createSiteFromMarketplace(site)
-      .subscribe(
-        () => {
-          setApiState({ ...apiState, creatingSite: false });
-          handleClose();
-          Cookies.set('crafterSite', site.siteId, {
-            domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-            path: '/'
-          });
-          window.location.href = '/studio/preview/#/?page=/&site=' + site.siteId;
-        },
-        ({ response }) => {
-          if (response) {
-            setApiState({ ...apiState, creatingSite: false, error: true, errorResponse: response, global: true });
-          }
-        }
-      )
+    createNewSite(site, true);
   }
 
   function checkNameExist(siteId: string) {

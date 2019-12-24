@@ -42,7 +42,7 @@ const location = window.location.href;
 const origin = window.location.origin;
 const url = location.replace(origin, '');
 
-post(GUEST_CHECK_IN, { url, location, origin, site: null });
+post(GUEST_CHECK_IN, { url, location, origin, site: null, __CRAFTERCMS_GUEST_LANDING__: true });
 
 setTimeout(() => {
   $('img').fadeIn();

@@ -30,50 +30,48 @@ import {
   MOVE_ITEM_OPERATION,
   INSERT_ITEM_OPERATION,
   INSTANCE_DRAG_BEGUN,
-  INSTANCE_DRAG_ENDED,
-  NAVIGATION_REQUEST
+  INSTANCE_DRAG_ENDED
 } from '../../state/actions/preview';
 import { deleteItem, fetchContentTypes, insertComponent, sortItem } from '../../services/content';
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
-import { of, ReplaySubject } from 'rxjs';
+import { of, ReplaySubject, Subscription } from 'rxjs';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
-import Cookies from 'js-cookie';
 import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
   fetchContentTypesComplete,
-  guestModelsReceived, selectForEdit, setItemBeingDragged
+  guestModelsReceived,
+  selectForEdit,
+  setItemBeingDragged
 } from '../../state/actions/preview';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
-import { useDispatch, useSelector } from 'react-redux';
-import { useActiveSiteId, usePreviewState } from '../../utils/hooks';
+import { useDispatch } from 'react-redux';
+import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou } from '../../utils/object';
-import GlobalState from '../../models/GlobalState';
+import { useOnMount } from '../../utils/helpers';
 
 export function PreviewConcierge(props: any) {
 
   const [snack, setSnack] = useState<any>(null);
-  const { queryString: qs, onUrlChange } = props;
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const {
-    guest,
-    currentUrl,
-    contentTypes
-  } = usePreviewState();
-  const GUEST_BASE = useSelector<GlobalState, string>(state => state.env.GUEST_BASE);
-
-  const previousSite = useRef(site);
-  const previousQS = useRef(qs);
+  const { guest, contentTypes } = usePreviewState();
+  const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
+  const priorState = useRef({ site });
 
   // This subject helps keep the async nature of content type fetching and guest
   // check in events. The idea is that it keeps things in sync despite the timing of
   // content types getting fetch and guest checking in.
   const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
+
+  useOnMount(() => {
+    const sub = beginGuestDetection(setSnack);
+    return () => sub.unsubscribe();
+  });
 
   useEffect(() => {
 
@@ -89,11 +87,9 @@ export function PreviewConcierge(props: any) {
 
           dispatch(checkInGuest(payload));
 
-          if (payload.url === '/studio/preview-landing') {
+          if (payload.__CRAFTERCMS_GUEST_LANDING__) {
             nnou(site) && dispatch(changeCurrentUrl('/'));
           } else {
-
-            onUrlChange?.({ page: payload.url, site });
 
             // If the content types have already been loaded, contentTypes$ subject
             // will emit immediately. If not, it will emit when the content type fetch
@@ -193,54 +189,20 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, dispatch, contentTypes, contentTypes$, guest, onUrlChange]);
+  }, [site, dispatch, contentTypes, contentTypes$, guest]);
 
   useEffect(() => {
-
-    let nextSite;
-    const qsChanged = (qs.site !== previousQS.current.site);
-    const siteChanged = (site !== previousSite.current);
-
-    qsChanged && console.log(`qsChanged from ${previousQS.current.site} to ${qs.site}`);
-    siteChanged && console.log(`Site changed from ${previousSite.current} to ${site}`);
-    previousQS.current.site = qs.site;
-    previousSite.current = site;
-
-    let cookie = Cookies.get('crafterSite');
-
-    if (qs.site === site && site === cookie) {
-      console.log('QS site, site and cookie all the same');
-      return;
-    }
-
-    if (qsChanged) {
-      nextSite = qs.site;
-    } else if (siteChanged) {
-      nextSite = site;
-      onUrlChange?.({ page: '/', site });
-    }
-
-    if (qsChanged || siteChanged) {
-      const hostToGuest$ = getHostToGuestBus();
-      nextSite && setSiteCookie(nextSite);
+    if (priorState.current.site !== site) {
+      priorState.current.site = site;
       beginGuestDetection(setSnack);
       if (guest) {
-        hostToGuest$.next({ type: NAVIGATION_REQUEST, payload: { url: GUEST_BASE } });
+        // Changing the site will force-reload the iFrame and 'beforeunload'
+        // event won't trigger withing; guest won't be submitting it's own checkout
+        // in such cases.
+        dispatch(checkOutGuest());
       }
-      // TODO: handle qs changes...
-      // qsChanged && setTimeout(() => {
-      //   dispatch(changeSite(qs.site));
-      // });
     }
-
-  }, [site, qs.site, currentUrl, guest, GUEST_BASE, dispatch, onUrlChange]);
-
-  // TODO: Handle URL change (from address bar)
-  // useEffect(() => {
-  //   if ((qs.url) && (qs.url !== currentUrl)) {
-  //     dispatch(changeCurrentUrl(qs.url));
-  //   }
-  // }, [currentUrl, qs.url, dispatch]);
+  }, [site, guest, GUEST_BASE, dispatch]);
 
   return (
     <>
@@ -260,7 +222,7 @@ export function PreviewConcierge(props: any) {
 
 }
 
-function beginGuestDetection(setSnack) {
+function beginGuestDetection(setSnack): Subscription {
   const guestToHost$ = getGuestToHostBus();
   return of('').pipe(
     delay(1500),
@@ -282,17 +244,68 @@ function beginGuestDetection(setSnack) {
           Learn More
         </Button>
       ],
-      position: { vertical: 'top', horizontal: 'center' }
+      position: { vertical: 'top', horizontal: 'right' }
     })
   });
 }
 
-function setSiteCookie(site) {
-  Cookies.set('crafterSite', site, {
-    domain: window.location.hostname.includes('.') ? window.location.hostname : '',
-    path: '/'
-  });
-}
+// useEffect(() => {
+//
+//   let nextSite;
+//   const qsChanged = (qs.site !== priorState.current.qs.site);
+//   const siteChanged = (site !== priorState.current.site);
+//
+//   priorState.current.qs.site = qs.site;
+//   priorState.current.site = site;
+//
+//   let cookie = Cookies.get('crafterSite');
+//
+//   if (qs.site === site && site === cookie) {
+//     console.log('QS site, site and cookie all the same');
+//     return;
+//   }
+//
+//   if (qsChanged) {
+//     nextSite = qs.site;
+//   } else if (siteChanged) {
+//     nextSite = site;
+//     onUrlChange?.({ page: '/', site });
+//   }
+//
+//   if (qsChanged || siteChanged) {
+//     const hostToGuest$ = getHostToGuestBus();
+//     nextSite && setSiteCookie(nextSite);
+//     beginGuestDetection(setSnack);
+//     if (guest) {
+//       hostToGuest$.next({ type: NAVIGATION_REQUEST, payload: { url: GUEST_BASE } });
+//     }
+//     // TODO: handle qs changes...
+//     // qsChanged && setTimeout(() => {
+//     //   dispatch(changeSite(qs.site));
+//     // });
+//   }
+//
+// }, [site, qs.site, currentUrl, guest, GUEST_BASE, dispatch, onUrlChange]);
+
+// useEffect(() => {
+//
+//   const qsChanged = (qs.page !== priorState.current.qs.page);
+//   const urlChanged = (currentUrl !== priorState.current.currentUrl);
+//   // const guestUrlChanged = (guest?.url !== priorState.current.guestUrl);
+//
+//   priorState.current.qs.page = qs.page;
+//   priorState.current.currentUrl = currentUrl;
+//
+//   if (qsChanged) {
+//
+//   }
+//   if (urlChanged) {
+//     // const hostToGuest$ = getHostToGuestBus();
+//     // hostToGuest$.next({ type: NAVIGATION_REQUEST, payload: { url: `${GUEST_BASE}${currentUrl}` } });
+//     onUrlChange?.({ page: currentUrl, site });
+//   }
+//
+// }, [currentUrl, site, qs.page, dispatch, onUrlChange]);
 
 try {
   // TODO: Temp. To be removed.

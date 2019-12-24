@@ -161,15 +161,15 @@ export class ElementRegistry {
     const element = physicalRecord.element;
     const children = Array.from(element.children);
     const childrenRects = children.map((child) => child.getBoundingClientRect());
+    const rect = element.getBoundingClientRect();
 
     return {
       element,
       children,
-
       iceId,
       physicalRecordId,
-      rect: element.getBoundingClientRect(),
-      arrangement: getChildArrangement(children, childrenRects),
+      rect,
+      arrangement: getChildArrangement(children, childrenRects, rect),
       childrenRects
     };
 

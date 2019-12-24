@@ -203,9 +203,30 @@ export class ICERegistry {
     const contentTypeId = contentType.id;
     return Object.values(this.registry).filter((record) => {
       const { fieldId, index } = record;
-      if (notNullOrUndefined(fieldId) && isNullOrUndefined(index)) {
-        const { field } = this.getReferentialEntries(record);
-        return field?.validations?.contentTypes?.includes(contentTypeId);
+      if (notNullOrUndefined(fieldId)) {
+        const { field, contentType: _contentType } = this.getReferentialEntries(record);
+        const contentTypes = field?.validations?.contentTypes;
+        const accepts = contentTypes && (
+          contentTypes.includes(contentTypeId) ||
+          contentTypes.includes('*')
+        );
+        if (!accepts) {
+          return false;
+        } else if (isNullOrUndefined(index)) {
+          return true;
+        } else {
+          // TODO: Need to check this logic.
+          // console.log(
+          //   fieldId,
+          //   field.type,
+          //   ContentTypeHelper.isGroupItem(_contentType, fieldId),
+          //   ContentTypeHelper.isComponentHolder(_contentType, fieldId)
+          // );
+          return (
+            ContentTypeHelper.isGroupItem(_contentType, fieldId) &&
+            ContentTypeHelper.isComponentHolder(_contentType, fieldId)
+          );
+        }
       } else {
         return false;
       }
@@ -401,7 +422,7 @@ export class ICERegistry {
           entries.contentType.name.toLowerCase().includes('component')
             ? '\''
             : 'Component\' '
-          }`
+        }`
       );
       console.warn(
         `Per definition the ${componentName} is sortable but a drop zone for it was not found. ` +
