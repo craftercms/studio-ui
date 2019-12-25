@@ -28,7 +28,7 @@ import sites from '../services/sites';
 import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
-import { Subject, fromEvent } from 'rxjs';
+import { Subject, fromEvent, forkJoin } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
@@ -90,6 +90,7 @@ export function createCodebaseBridge() {
     rxjs: {
       Subject,
       fromEvent,
+      forkJoin,
       operators: { filter, map, take }
     },
 
