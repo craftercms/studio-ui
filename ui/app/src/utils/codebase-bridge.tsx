@@ -28,7 +28,7 @@ import sites from '../services/sites';
 import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
-import { Subject, fromEvent, forkJoin } from 'rxjs';
+import { forkJoin, fromEvent, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
@@ -155,9 +155,7 @@ export function createCodebaseBridge() {
         console.warn(`The supplied component name ('${component}') is not a know component of CrafterCMSNext.`);
       }
 
-      if (typeof container === 'string') {
-        container = document.querySelector(container);
-      }
+      const element = (typeof container === 'string') ? document.querySelector(container) : container;
 
       let Component: JSXElementConstructor<any> = (typeof component === 'string')
         ? Bridge.components[component]
@@ -181,6 +179,10 @@ export function createCodebaseBridge() {
       return (
         new Promise((resolve, reject) => {
           try {
+            const unmount = (options) => {
+              ReactDOM.unmountComponentAtNode(element);
+              options.removeContainer && element.parentNode.removeChild(element);
+            };
             // @ts-ignore
             ReactDOM
               .render(
@@ -188,13 +190,19 @@ export function createCodebaseBridge() {
                 <CrafterCMSNextBridge>
                   <Component {...props} />
                 </CrafterCMSNextBridge>,
-                container,
+                element,
                 () => resolve({
-                  unmount: () => ReactDOM.unmountComponentAtNode(
-                    typeof container === 'string'
-                      ? document.querySelector(container)
-                      : container
-                  )
+                  unmount: (options) => {
+                    options = Object.assign({
+                      delay: false,
+                      removeContainer: false
+                    }, options || {});
+                    if (options.delay) {
+                      setTimeout(() => unmount(options), options.delay);
+                    } else {
+                      unmount(options);
+                    }
+                  }
                 })
               );
           } catch (e) {

@@ -15,6 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { createAction } from '@reduxjs/toolkit';
+
+export const SESSION_TIMEOUT = 'SESSION_TIMEOUT';
+
 export function fetchActiveUser() {
 
 }
+
+export const sessionTimeout = createAction(SESSION_TIMEOUT);

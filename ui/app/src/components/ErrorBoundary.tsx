@@ -15,13 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics } from 'redux-observable';
-import sites from './sites';
-import contentTypes from './contentTypes';
+import React from 'react';
+import ErrorState from './SystemStatus/ErrorState';
 
-const epic: any[] = combineEpics.apply(this, [
-  ...sites,
-  ...contentTypes
-]);
+export class ErrorBoundary extends React.Component {
 
-export default epic as any;
+  state = { error: null };
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // TODO: Log to an error reporting service
+  }
+
+  render() {
+    return (
+      (this.state.error) ? (
+        <ErrorState
+          error={{
+            message: this.state.error.message || this.state.error
+          }}
+        />
+      ) : this.props.children
+    );
+  }
+}

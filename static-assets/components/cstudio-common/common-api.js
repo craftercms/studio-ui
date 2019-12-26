@@ -844,8 +844,7 @@ var nodeOpen = false,
                     if(response) {
                       _self.reloadItems(items, response);
                     }
-
-                    unmount();
+                    unmount({ delay: 300, removeContainer: true });
                   },
                   items,
                   scheduling
@@ -885,8 +884,7 @@ var nodeOpen = false,
                     if(response) {
                       _self.reloadItems(items, response);
                     }
-
-                    unmount();
+                    unmount({ delay: 300, removeContainer: true });
                   },
                   items: items,
                 }
