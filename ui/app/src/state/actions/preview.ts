@@ -21,6 +21,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { GuestData } from '../../modules/Preview/previewContext';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
+import { createAction } from '@reduxjs/toolkit';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -64,7 +65,9 @@ export const TOOLS_LOADED = 'TOOLS_LOADED';
 export const SET_HOST_SIZE = 'SET_HOST_SIZE';
 export const SET_HOST_WIDTH = 'SET_HOST_WIDTH';
 export const SET_HOST_HEIGHT = 'SET_HOST_HEIGHT';
+export const FETCH_CONTENT_TYPES = 'FETCH_CONTENT_TYPES';
 export const FETCH_CONTENT_TYPES_COMPLETE = 'FETCH_CONTENT_TYPES_COMPLETE';
+export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
@@ -80,11 +83,7 @@ export function selectTool(tool: Tools = null): StandardAction {
   };
 }
 
-export function selectPreviousTool(): StandardAction {
-  return {
-    type: SELECT_TOOL
-  };
-}
+export const selectPreviousTool = createAction(SELECT_TOOL);
 
 export function selectForEdit(data: { modelId: string; fields: string[] }): StandardAction {
   return {
@@ -119,11 +118,20 @@ export function setHostSize(dimensions: WidthAndHeight): StandardAction {
   };
 }
 
+export const fetchContentTypes = createAction(FETCH_CONTENT_TYPES);
+
 export function fetchContentTypesComplete(contentTypes: ContentType[]): StandardAction {
   return {
     type: FETCH_CONTENT_TYPES_COMPLETE,
     payload: contentTypes
   }
+}
+
+export function fetchContentTypesFailed(error): StandardAction {
+  return {
+    type: FETCH_CONTENT_TYPES_FAILED,
+    payload: error
+  };
 }
 
 export function fetchContentModelComplete(contentModels: ContentInstance[]): StandardAction {

@@ -1325,7 +1325,7 @@
           });
         }else{
           if($scope.entities.length > 0) {
-            $state.go(data.menuItems[0].id.replace("globalMenu.", ""));
+            $state.go((data[0] || data.menuItems[0]).id.replace("globalMenu.", ""));
           }
         }
       }
@@ -2075,32 +2075,32 @@
       function login() {
 
         authService.login(credentials)
-          .then(function success(data) {
-            if (data.type === 'failure') {
-              $scope.error = data;
-            }  else if (data.error) {
-              $scope.error = data.error;
-            } else {
-              hideModalForm();
-              // set selected language in localStorage
-              let userCookie = data.username + '_crafterStudioLanguage';
-              localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
-              localStorage.setItem('userName', data.username);
-              localStorage.setItem(userCookie, $scope.langSelected);
-              let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
-              document.dispatchEvent(loginSuccess);
-              $state.go('home.globalMenu');
+          .then(
+            function success(data) {
+              if (data.type === 'failure') {
+                $scope.error = data;
+              } else if (data.error) {
+                $scope.error = data.error;
+              } else {
+                // set selected language in localStorage
+                let userCookie = data.username + '_crafterStudioLanguage';
+                localStorage.setItem('crafterStudioLanguage', $scope.langSelected);
+                localStorage.setItem('userName', data.username);
+                localStorage.setItem(userCookie, $scope.langSelected);
+                let loginSuccess = new CustomEvent('setlocale', { 'detail': $scope.langSelected });
+                document.dispatchEvent(loginSuccess);
+                window.location.href = window.location.href.replace('#/login', '');
+              }
+            },
+            function error(response) {
+              $scope.error = {};
+              if (response.status == 401) {
+                $scope.error.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
+              } else {
+                $scope.error.message = $translate.instant('dashboard.login.LOGIN_ERROR');
+              }
             }
-          }, function error(response){
-            $scope.error = {};
-
-            if(response.status == 401){
-              $scope.error.message = $translate.instant('dashboard.login.USER_PASSWORD_INVALID');
-            }else{
-              $scope.error.message = $translate.instant('dashboard.login.LOGIN_ERROR');
-            }
-
-          });
+          );
 
       }
 

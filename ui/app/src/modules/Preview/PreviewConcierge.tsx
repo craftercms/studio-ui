@@ -17,37 +17,35 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  changeCurrentUrl,
+  checkInGuest,
+  checkOutGuest,
   CONTENT_TYPES_RESPONSE,
+  DELETE_ITEM_OPERATION,
+  fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
-  HOST_CHECK_IN,
-  SORT_ITEM_OPERATION,
-  ICE_ZONE_SELECTED,
   GUEST_MODELS_RECEIVED,
+  guestModelsReceived,
+  HOST_CHECK_IN,
+  ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
-  UPDATE_FIELD_VALUE_OPERATION,
-  DELETE_ITEM_OPERATION,
-  MOVE_ITEM_OPERATION,
   INSERT_ITEM_OPERATION,
   INSTANCE_DRAG_BEGUN,
-  INSTANCE_DRAG_ENDED
+  INSTANCE_DRAG_ENDED,
+  MOVE_ITEM_OPERATION,
+  selectForEdit,
+  setItemBeingDragged,
+  SORT_ITEM_OPERATION,
+  UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, fetchContentTypes, insertComponent, sortItem } from '../../services/content';
-import { delay, filter, map, take, takeUntil } from 'rxjs/operators';
+import { deleteItem, insertComponent, sortItem } from '../../services/content';
+import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
-import {
-  changeCurrentUrl,
-  checkInGuest,
-  checkOutGuest,
-  fetchContentTypesComplete,
-  guestModelsReceived,
-  selectForEdit,
-  setItemBeingDragged
-} from '../../state/actions/preview';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
@@ -59,9 +57,11 @@ export function PreviewConcierge(props: any) {
   const [snack, setSnack] = useState<any>(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
-  const { guest, contentTypes } = usePreviewState();
+  const { guest, selectedTool } = usePreviewState();
+  const contentTypesBranch = useSelection(state => state.contentTypes);
   const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
   const priorState = useRef({ site });
+  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
 
   // This subject helps keep the async nature of content type fetching and guest
   // check in events. The idea is that it keeps things in sync despite the timing of
@@ -175,21 +175,24 @@ export function PreviewConcierge(props: any) {
       }
     });
 
-    // Retrieve all content types in the system
-    const fetchSubscription = (!contentTypes && site) && fetchContentTypes(site).pipe(
-      // Remove the "Component - " prefix that is so common...
-      map(types => types.map((type) => ({ ...type, name: type.name.replace('Component - ', '') })))
-    ).subscribe((contentTypes) => {
-      dispatch(fetchContentTypesComplete(contentTypes));
-      contentTypes$.next(contentTypes);
-    });
+    let fetchSubscription;
+    switch (selectedTool) {
+      case 'craftercms.ice.assets':
+        // TODO: aaron to fetch assets here...
+        break;
+      case 'craftercms.ice.components':
+        // Retrieve all content types in the system
+        (!contentTypes && site) && dispatch(fetchContentTypes());
+        contentTypes && contentTypes$.next(contentTypes);
+        break;
+    }
 
     return () => {
       fetchSubscription && fetchSubscription.unsubscribe();
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, dispatch, contentTypes, contentTypes$, guest]);
+  }, [site, selectedTool, dispatch, contentTypes, contentTypes$, guest]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {
@@ -251,7 +254,7 @@ function beginGuestDetection(setSnack): Subscription {
 
 try {
   // TODO: Temp. To be removed.
-  document.domain = 'authoring.sample.com';
+  document.domain = 'sample.com';
 } catch (e) {
   console.log(e);
 }

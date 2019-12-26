@@ -40,12 +40,9 @@ import Paper from '@material-ui/core/Paper';
 import { palette } from '../../../styles/theme';
 import { Typography } from '@material-ui/core';
 import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
-import {
-  TRASHED,
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
-} from '../../../state/actions/preview';
-import { usePreviewState } from '../../../utils/hooks';
+import { COMPONENT_DRAG_ENDED, COMPONENT_DRAG_STARTED, TRASHED } from '../../../state/actions/preview';
+import { useEntitySelectionResource, usePreviewState } from '../../../utils/hooks';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -99,45 +96,70 @@ const useStyles = makeStyles((theme) => createStyles({
 export default function ComponentsPanel() {
 
   const classes = useStyles({});
-  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
-  const { contentTypes, guest } = usePreviewState();
-  const hostToGuest$ = getHostToGuestBus();
-  const componentTypes = useMemo(
-    () => contentTypes?.filter((contentType) => contentType.type === 'component'),
-    [contentTypes]
-  );
-
-  const onDragStart = (contentType) => hostToGuest$.next({
-    type: COMPONENT_DRAG_STARTED,
-    payload: contentType
-  });
-
-  const onDragEnd = () => hostToGuest$.next({
-    type: COMPONENT_DRAG_ENDED
-  });
-
-  const onTrash = () => hostToGuest$.next({ type: TRASHED });
+  const { guest } = usePreviewState();
+  const resource = useEntitySelectionResource(state => state.contentTypes);
 
   return (
     <ToolPanel title={translations.componentsPanel}>
-
-      {componentTypes ? (
-        <List className={classes.root}>
-          {
-            componentTypes.map((contentType) =>
-              <Component
-                key={contentType.id}
-                contentType={contentType}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-                onMenu={(anchor, contentType) => setMenuContext({ anchor, contentType })}
-              />
-            )
+      <ErrorBoundary>
+        <React.Suspense
+          fallback={
+            <LoadingState
+              title="Retrieving Page Model"
+              graphicProps={{ width: 150 }}
+            />
           }
-        </List>
-      ) : (
-        <LoadingState title="Retrieving Page Model" graphicProps={{ width: 150 }}/>
-      )}
+        >
+          <ComponentsPanelUI
+            classes={classes}
+            componentTypesResource={resource}
+            itemBeingDragged={guest?.itemBeingDragged}
+          />
+        </React.Suspense>
+      </ErrorBoundary>
+    </ToolPanel>
+  );
+
+}
+
+export function ComponentsPanelUI(props) {
+
+  const { itemBeingDragged, classes, componentTypesResource } = props;
+
+  const contentTypes = componentTypesResource.read();
+
+  const hostToGuest$ = getHostToGuestBus();
+  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
+  const componentTypes = useMemo(
+    () => contentTypes.filter((contentType) => contentType.type === 'component'),
+    [contentTypes]
+  );
+
+  const onDragStart = (contentType) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: contentType });
+
+  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
+
+  const onTrash = () => hostToGuest$.next({ type: TRASHED });
+
+  const onMenuClose = () => setMenuContext(null);
+
+  const onMenuOptionClicked = () => setMenuContext(null);
+
+  return (
+    <>
+      <List className={classes.root}>
+        {
+          componentTypes.map((contentType) =>
+            <Component
+              key={contentType.id}
+              contentType={contentType}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              onMenu={(anchor, contentType) => setMenuContext({ anchor, contentType })}
+            />
+          )
+        }
+      </List>
 
       <Menu
         open={!!menuContext}
@@ -150,20 +172,12 @@ export default function ComponentsPanel() {
       </Menu>
 
       <RubbishBin
-        in={guest?.itemBeingDragged}
+        in={itemBeingDragged}
         onTrash={onTrash}
       />
 
-    </ToolPanel>
+    </>
   );
-
-  function onMenuClose() {
-    setMenuContext(null);
-  }
-
-  function onMenuOptionClicked() {
-    setMenuContext(null);
-  }
 
 }
 

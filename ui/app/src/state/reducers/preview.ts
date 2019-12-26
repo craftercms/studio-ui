@@ -22,7 +22,6 @@ import {
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
   FETCH_CONTENT_MODEL_COMPLETE,
-  FETCH_CONTENT_TYPES_COMPLETE,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -49,7 +48,6 @@ const reducer = createReducer<GlobalState['preview']>({
   previousTool: null,
   selectedTool: 'craftercms.ice.components',
   tools: null,
-  contentTypes: null,
   guest: null
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
@@ -120,12 +118,6 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.hostSize,
         height: minFrameSize(payload)
       }
-    }
-  },
-  [FETCH_CONTENT_TYPES_COMPLETE]: (state, { payload }) => {
-    return {
-      ...state,
-      contentTypes: payload
     }
   },
   [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {
@@ -231,9 +223,6 @@ const reducer = createReducer<GlobalState['preview']>({
     // if (state.guest) {
     //   nextState = { ...nextState, guest: null };
     // }
-    if (state.contentTypes) {
-      nextState = { ...nextState, contentTypes: null };
-    }
     if (payload.nextUrl !== nextState.currentUrl) {
       nextState = { ...nextState, currentUrl: payload.nextUrl };
     }

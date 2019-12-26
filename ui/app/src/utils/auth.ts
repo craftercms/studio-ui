@@ -28,8 +28,14 @@ export function setRequestForgeryToken() {
 }
 
 export function setSiteCookie(name: string, value: string) {
+  let hostname = window.location.hostname;
+  let domain = '';
+  if (hostname.includes('.')) {
+    domain = hostname.replace(/^(.*?)\./, '');
+    domain = `.${domain.includes('.') ? domain : hostname}`
+  }
   Cookies.set(name, value, {
-    domain: window.location.hostname.includes('.') ? window.location.hostname : '',
+    domain,
     path: '/'
   });
 }
