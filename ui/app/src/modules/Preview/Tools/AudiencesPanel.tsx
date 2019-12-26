@@ -37,8 +37,7 @@ import { get } from '../../../utils/ajax';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import DateTimePicker from "../../../components/DateTimePicker";
-import GlobalState from "../../../models/GlobalState";
-import { useSelector } from "react-redux";
+import { useActiveSiteId } from "../../../utils/hooks";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
         marginTop: '12px !important',
       }
     },
-    IconButton: {
+    ActionButton: {
       padding: '6px',
       marginLeft: '5px'
     },
@@ -149,7 +148,7 @@ export default function AudiencesPanel() {
 
   const [config, setConfig] = useState();
   const [profile, setProfile] = useState();
-  const site = useSelector<GlobalState, GlobalState['sites']>(state => state.sites).active;
+  const site = useActiveSiteId();
 
   useEffect(() => {
 
@@ -174,12 +173,7 @@ export default function AudiencesPanel() {
         );
       },
       () => {
-        setConfig(
-          []
-        );
-        setProfile(
-          {}
-        );
+        // TODO: handle error (will use PreviewConcierge)
       }
     );
   }, []);
@@ -228,7 +222,6 @@ export default function AudiencesPanel() {
 
 }
 
-
 interface AudiencesFormProps {
   property: AudiencesPanelDescriptor;
   profile: any;
@@ -276,57 +269,31 @@ function GetCodeDependingType(props: AudiencesFormProps) {
   switch (property.type) {
     case "dropdown":
       return (
-        <Grid item xs={12}>
-          <FormControl className={classes.formControl} >
-            <InputLabel
-              className={classes.InputLabel}
-              focused={true}
-              htmlFor={property.name}
-            >
-              {property.label}
-              <Tooltip title={property.hint} placement="top" >
-                <IconButton aria-label={property.hint} className={classes.IconButton}>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
-            </InputLabel>
-            <Select
-              labelId={property.name}
-              id={property.name}
-              value={profile[property.name] ?? property.default_value}
-              onChange={handleSelectChange(property.name)}
-            >
-              {
-                property.possible_values ? (
-                  property.possible_values.map((possible_value: any, index: number) => (
-                    <MenuItem value={possible_value.value} key={index}>{possible_value.value}</MenuItem>
-                  ))
-                ) : (null)
-              }
-            </Select>
-            <FormHelperText>{property.description}</FormHelperText>
-          </FormControl>
-        </Grid>
-      )
+        <AudiencesControl property={property}>
+          <Select
+            labelId={property.name}
+            id={property.name}
+            value={profile[property.name] ?? property.default_value}
+            onChange={handleSelectChange(property.name)}
+          >
+            {
+              property.possible_values ? (
+                property.possible_values.map((possible_value: any, index: number) => (
+                  <MenuItem value={possible_value.value} key={index}>{possible_value.value}</MenuItem>
+                ))
+              ) : (null)
+            }
+          </Select>
+          <FormHelperText>{property.description}</FormHelperText>
+        </AudiencesControl>
+      );
     case "checkboxes":
       const values = profile[property.name] ?? property.default_value,
         valuesArray = values.split(',');
 
       return (
-        <Grid item xs={12}>
-          <FormControl className={classes.formControl} >
-            <InputLabel
-              className={classes.InputLabel}
-              focused={true}
-              htmlFor={property.name}
-            >
-              {property.label}
-              <Tooltip title={property.hint} placement="top" >
-                <IconButton aria-label={property.hint} className={classes.IconButton}>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
-            </InputLabel>
+        <AudiencesControl property={property}>
+          <>
             {
               property.possible_values ? (
                 property.possible_values.map((possible_value: any, index: number) => (
@@ -340,67 +307,71 @@ function GetCodeDependingType(props: AudiencesFormProps) {
                         onChange={handleInputChange(property.name, possible_value.value, valuesArray)}
                       />
                     }
-                    label={possible_value.value} />
+                    label={possible_value.value}/>
                 ))
               ) : (null)
             }
             <FormHelperText>{property.description}</FormHelperText>
-          </FormControl>
-        </Grid>
+          </>
+        </AudiencesControl>
       )
     case "datetime":
       return (
-        <Grid item xs={12}>
-          <FormControl className={classes.formControl} >
-            <InputLabel
-              className={classes.InputLabel}
-              focused={true}
-              htmlFor={property.name}
-            >
-              {property.label}
-              <Tooltip title={property.hint} placement="top">
-                <IconButton aria-label={property.hint} className={classes.IconButton}>
-                  <InfoIcon/>
-                </IconButton>
-              </Tooltip>
-            </InputLabel>
+        <AudiencesControl property={property}>
+          <>
             <DateTimePicker
               initialDate={profile[property.name] ?? property.default_value}
               timezone={profile[`${property.name}_tz`] ?? undefined}
               onChange={dateTimePickerChange(property.name)}/>
             <FormHelperText>{property.description}</FormHelperText>
-
-          </FormControl>
-        </Grid>
+          </>
+        </AudiencesControl>
       )
     default:
       return (
-        <Grid item xs={12}>
-          <FormControl className={classes.formControl} >
-            <InputLabel
-              className={classes.InputLabel}
-              focused={true}
-              htmlFor={property.name}
-            >
-              {property.label}
-              <Tooltip title={property.hint} placement="top" >
-                <IconButton aria-label={property.hint} className={classes.IconButton}>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
-            </InputLabel>
-            <TextField
-              id={property.name}
-              type="text"
-              name="input"
-              placeholder="auto"
-              fullWidth
-              value={profile[property.name] ?? property.default_value}
-              helperText={property.description}
-              onChange={handleInputChange(property.name)}
-            />
-          </FormControl>
-        </Grid>
+        <AudiencesControl property={property}>
+          <TextField
+            id={property.name}
+            type="text"
+            name="input"
+            placeholder="auto"
+            fullWidth
+            value={profile[property.name] ?? property.default_value}
+            helperText={property.description}
+            onChange={handleInputChange(property.name)}
+          />
+        </AudiencesControl>
       )
   }
+}
+
+interface AudiencesControlProps {
+  property: AudiencesPanelDescriptor;
+  children: any;
+}
+
+function AudiencesControl(props: AudiencesControlProps) {
+  const classes = useStyles({});
+
+  const { property, children } = props;
+
+  return (
+    <Grid item xs={12}>
+      <FormControl className={classes.formControl}>
+        <InputLabel
+          className={classes.InputLabel}
+          focused={true}
+          htmlFor={property.name}
+        >
+          {property.label}
+          <Tooltip title={property.hint} placement="top">
+            <IconButton aria-label={property.hint} className={classes.ActionButton}>
+              <InfoIcon/>
+            </IconButton>
+          </Tooltip>
+        </InputLabel>
+        {children}
+      </FormControl>
+    </Grid>
+  )
 }
