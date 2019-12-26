@@ -17,6 +17,7 @@
 
 import { camelize } from './string';
 import { LookupTable } from '../models/LookupTable';
+import { EntityState } from '../models/GlobalState';
 
 export function pluckProps(source, ...props): object {
   const object = {};
@@ -71,4 +72,19 @@ export function nnou(object: any): boolean {
 // Null Or Undefined (nou)
 export function nou(object: any): boolean {
   return object == null;
+}
+
+export function createEntityState(merge = {}): EntityState {
+  return {
+    byId: null,
+    error: null,
+    isFetching: null,
+    ...merge
+  };
+}
+
+export function resolveEntityCollectionFetch<T = any>(collection: Array<T>): EntityState<T> {
+  return createEntityState({
+    byId: createLookupTable<T>(collection)
+  });
 }

@@ -63,6 +63,10 @@ const messages = defineMessages({
   signOut: {
     id: 'toolbarGlobalNav.signOut',
     defaultMessage: 'Sign Out'
+  },
+  openDrawer: {
+    id: 'toolbarGlobalNav.openMenuButtonText',
+    defaultMessage: 'Open Menu'
   }
 });
 
@@ -72,10 +76,6 @@ interface ToolBarGlobalNavProps {
 
 export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const user = useSelection<GlobalState['user']>(state => state.user);
-  if (!user) {
-    window.location.reload();
-  }
-
   const [anchor, setAnchor] = useState<Element>();
   const [anchorAvatar, setAnchorAvatar] = useState<Element>();
   const onMenuClick = (e) => setAnchor(e.target);
@@ -116,7 +116,7 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   return (
     <>
       <IconButton
-        aria-label="Open drawer"
+        aria-label={formatMessage(messages.openDrawer)}
         onClick={onMenuClick}
       >
         <AppsRounded/>

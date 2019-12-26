@@ -17,7 +17,7 @@
  *
  */
 
-import { get, post } from "../utils/ajax";
+import { get } from '../utils/ajax';
 
 export function fetchDependencies(siteId: string, items: any) {
   return get(`/studio/api/2/dependency/dependencies?siteId=${siteId}&paths=${items}`)

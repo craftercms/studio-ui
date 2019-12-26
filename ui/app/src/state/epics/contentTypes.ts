@@ -15,13 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics } from 'redux-observable';
-import sites from './sites';
-import contentTypes from './contentTypes';
+import { Epic, ofType } from 'redux-observable';
+import {
+  FETCH_CONTENT_TYPES,
+  fetchContentTypesComplete,
+  fetchContentTypesFailed
+} from '../actions/preview';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { fetchContentTypes } from '../../services/content';
+import { catchAjaxError } from '../../utils/ajax';
 
-const epic: any[] = combineEpics.apply(this, [
-  ...sites,
-  ...contentTypes
-]);
+const fetch: Epic = (action$, state$) => action$.pipe(
+  ofType(FETCH_CONTENT_TYPES),
+  withLatestFrom(state$),
+  switchMap(([, { sites: { active: site } }]) => fetchContentTypes(site)),
+  map(fetchContentTypesComplete),
+  catchAjaxError(fetchContentTypesFailed)
+);
 
-export default epic as any;
+export default [
+  fetch
+] as Epic[];

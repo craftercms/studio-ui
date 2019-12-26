@@ -23,13 +23,15 @@ import user from './user';
 import sites from './sites';
 import env from './env';
 import preview from './preview';
+import contentTypes from './contentTypes';
 
 const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   auth,
   user,
   sites,
   env,
-  preview
+  preview,
+  contentTypes
 };
 
 export default reducer;

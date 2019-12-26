@@ -50,13 +50,18 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
   return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`).pipe(
     map<AjaxResponse, ContentType[]>(({ response }) => (
         (query?.type)
-          ? response.filter((contentType) => contentType.type === query.type && contentType.name !== '/component/level-descriptor')
-          : response.filter((contentType) => contentType.name !== '/component/level-descriptor')
+          ? response.filter((contentType) => (
+            (contentType.type === query.type) &&
+            (contentType.name !== '/component/level-descriptor')
+          ))
+          : response.filter((contentType) => (
+            contentType.name !== '/component/level-descriptor'
+          ))
       ).map((data) => {
         const legacy = camelizeProps(data) as LegacyContentTypeDescriptorCamelized;
         return {
           id: legacy.form,
-          name: legacy.label,
+          name: legacy.label.replace('Component - ', ''),
           quickCreate: legacy.quickCreate,
           quickCreatePath: legacy.quickCreatePath,
           type: legacy.type,
@@ -598,10 +603,6 @@ export function reformatDocument(site: string, id: string) {
     ))
   );
 }
-
-// @ts-ignore
-window.reformatDocument = reformatDocument;
-// TODO: Remove 👆🏻
 
 interface LegacyContentDocumentProps {
   'content-type': string;
