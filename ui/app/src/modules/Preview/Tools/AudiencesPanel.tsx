@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useEffect, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { getAudiencesPanelConfig, AudiencesPanelDescriptor } from '../../../services/configuration';
+import { AudiencesPanelDescriptor, getAudiencesPanelConfig } from '../../../services/configuration';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -37,6 +37,8 @@ import { get } from '../../../utils/ajax';
 import { forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import DateTimePicker from "../../../components/DateTimePicker";
+import GlobalState from "../../../models/GlobalState";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -89,13 +91,7 @@ interface AudiencesPanelUIProps {
   profile: any;
   onFormChange: Function;
   saveProfile: Function;
-}
-
-interface AudiencesFormProps {
-  property: AudiencesPanelDescriptor;
-  value: string;
-  timezone?: string;
-  onFormChange: Function;
+  setDefaults: Function;
 }
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
@@ -105,7 +101,8 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     config,
     profile,
     onFormChange,
-    saveProfile
+    saveProfile,
+    setDefaults
   } = props;
 
   return (
@@ -119,8 +116,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                   <div key={index}>
                     <GetCodeDependingType
                       property={property}
-                      value={profile[property.name]}
-                      timezone={ profile[`${property.name}_tz`] ?? null }
+                      profile={profile}
                       onFormChange={onFormChange}
                     />
                     <Divider className={classes.divider} />
@@ -129,13 +125,13 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
               }
             </Grid>
             <Grid className={classes.actionBTN} >
-              <Button variant="contained">
+              <Button variant="contained" onClick={() => setDefaults()}>
                 <FormattedMessage
                   id="audiencesPanel.defaults"
                   defaultMessage={`Defaults`}
                 />
               </Button>
-              <Button variant="contained" color="primary" onClick={ () => saveProfile() }>
+              <Button variant="contained" color="primary" onClick={() => saveProfile()}>
                 <FormattedMessage
                   id="audiencesPanel.apply"
                   defaultMessage={`Apply`}
@@ -153,7 +149,7 @@ export default function AudiencesPanel() {
 
   const [config, setConfig] = useState();
   const [profile, setProfile] = useState();
-  const site = 'editorial';   // TODO: get from state
+  const site = useSelector<GlobalState, GlobalState['sites']>(state => state.sites).active;
 
   useEffect(() => {
 
@@ -166,8 +162,15 @@ export default function AudiencesPanel() {
         setConfig(
           config.properties
         );
+
+        let mergedProfile = {};
+
+        config.properties.forEach((property) => {
+          mergedProfile[property.name] = profile[property.name] ?? property.default_value;
+        });
+
         setProfile(
-          profile
+          mergedProfile
         );
       },
       () => {
@@ -186,7 +189,26 @@ export default function AudiencesPanel() {
   };
 
   const saveProfile = () => {
-    // TODO: API call
+    let params = encodeURI(Object.entries(profile).map(([key, val]) => `${key}=${val}`).join('&'));
+
+    get(`/api/1/profile/set?${params}`).subscribe(
+      ({ response }) => {
+        // TODO: handle success
+      },
+      () => {
+        // TODO: handle error
+      }
+    );
+  };
+
+  const setDefaults = () => {
+    let defaultProfile = {};
+
+    config.forEach((property) => {
+      defaultProfile[property.name] = property.default_value;
+    });
+
+    setProfile(defaultProfile);
   };
 
   return (
@@ -198,6 +220,7 @@ export default function AudiencesPanel() {
           profile={profile}
           onFormChange={onFormChange}
           saveProfile={saveProfile}
+          setDefaults={setDefaults}
         />
       }
     </div>
@@ -205,13 +228,19 @@ export default function AudiencesPanel() {
 
 }
 
+
+interface AudiencesFormProps {
+  property: AudiencesPanelDescriptor;
+  profile: any;
+  onFormChange: Function;
+}
+
 function GetCodeDependingType(props: AudiencesFormProps) {
 
   const classes = useStyles({});
   const {
     property,
-    value,
-    timezone,
+    profile,
     onFormChange
   } = props;
 
@@ -240,10 +269,8 @@ function GetCodeDependingType(props: AudiencesFormProps) {
     const datetime = scheduledDateTime.toISOString();
     const timezone = scheduledDateTime.tz();
 
-    console.log(datetime);
-
     onFormChange(name, datetime);
-    onFormChange(`${name}_tz`, timezone);
+    onFormChange(`${name}_tz`, encodeURIComponent(timezone));
   };
 
   switch (property.type) {
@@ -266,7 +293,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
             <Select
               labelId={property.name}
               id={property.name}
-              defaultValue={value ? value : property.default_value}
+              value={profile[property.name] ?? property.default_value}
               onChange={handleSelectChange(property.name)}
             >
               {
@@ -282,8 +309,8 @@ function GetCodeDependingType(props: AudiencesFormProps) {
         </Grid>
       )
     case "checkboxes":
-      const values = value ?? property.default_value,
-            valuesArray = values.split(',');
+      const values = profile[property.name] ?? property.default_value,
+        valuesArray = values.split(',');
 
       return (
         <Grid item xs={12}>
@@ -331,15 +358,15 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               htmlFor={property.name}
             >
               {property.label}
-              <Tooltip title={property.hint} placement="top" >
+              <Tooltip title={property.hint} placement="top">
                 <IconButton aria-label={property.hint} className={classes.IconButton}>
-                  <InfoIcon />
+                  <InfoIcon/>
                 </IconButton>
               </Tooltip>
             </InputLabel>
             <DateTimePicker
-              initialDate={value ? value : property.default_value}
-              timezone={timezone}
+              initialDate={profile[property.name] ?? property.default_value}
+              timezone={profile[`${property.name}_tz`] ?? undefined}
               onChange={dateTimePickerChange(property.name)}/>
             <FormHelperText>{property.description}</FormHelperText>
 
@@ -368,7 +395,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
               name="input"
               placeholder="auto"
               fullWidth
-              defaultValue={ value ? value : property.default_value }
+              value={profile[property.name] ?? property.default_value}
               helperText={property.description}
               onChange={handleInputChange(property.name)}
             />
