@@ -35,8 +35,7 @@ import LoadingState from "../../../components/SystemStatus/LoadingState";
 import Typography from "@material-ui/core/Typography";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { getHostToGuestBus } from "../previewContext";
-import { COMPONENT_DRAG_ENDED, COMPONENT_DRAG_STARTED } from "../../../state/actions/preview";
-import ListItem from "@material-ui/core/ListItem";
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED } from "../../../state/actions/preview";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -62,7 +61,7 @@ const initialSearchParameters = {
   offset: 0,
   limit: 10,
   filters: {
-    'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4']
+    'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
   }
 };
 
@@ -84,7 +83,7 @@ const assetsPanelStyles = makeStyles(() => createStyles({
     background: 'white',
     color: 'black',
     width: '239px',
-    right: 0,
+    left: 0,
     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
     '& p': {
       padding: 0
@@ -124,12 +123,12 @@ export default function AssetsPanel() {
   const hostToGuest$ = getHostToGuestBus();
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
-    type: COMPONENT_DRAG_STARTED,
+    type: ASSET_DRAG_STARTED,
     payload: mediaItem
   });
 
   const onDragEnd = () => hostToGuest$.next({
-    type: COMPONENT_DRAG_ENDED
+    type: ASSET_DRAG_ENDED
   });
 
   setRequestForgeryToken();

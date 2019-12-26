@@ -32,7 +32,7 @@ import {
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED
 } from '../../state/actions/preview';
-import { deleteItem, fetchContentTypes, insertComponent, sortItem } from '../../services/content';
+import { deleteItem, fetchContentTypes, insertComponent, sortItem, updateField } from '../../services/content';
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -157,6 +157,12 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
+          const { modelId, fieldId, value } = payload;
+          updateField(site, guest.models[modelId].craftercms.path, fieldId, value).subscribe(() => {
+            console.log('Finished');
+          }, (e) => {
+            console.log(e);
+          });
           break;
         }
         case ICE_ZONE_SELECTED: {

@@ -163,7 +163,7 @@ export class ICERegistry {
       Object.values(this.registry),
       (record) => {
         const entries = this.getReferentialEntries(record);
-        if (entries.field && entries.field.type === 'asset') {
+        if (entries.field && entries.field.type === 'image') {
           receptacles.push(record.id);
         }
       }

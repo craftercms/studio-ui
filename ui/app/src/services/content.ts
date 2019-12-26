@@ -390,8 +390,26 @@ function writeContentUrl(qs: object) {
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
 
-export function updateField(modelId: string, fieldId: string, value: any): Observable<any> {
-  throw new Error('Not implemented.');
+export function updateField(site: string, modelId: string, fieldId: string, value: any): Observable<any> {
+  return getDOM(site, modelId).pipe(
+    switchMap((doc) => {
+      const qs = {
+        site,
+        path: modelId,
+        unlock: 'true',
+        fileName: getInnerHtml(doc.querySelector('file-name'))
+      };
+
+      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+      fieldNode.innerHTML = value;
+
+      return post(
+        writeContentUrl(qs),
+        serialize(doc)
+      );
+
+    })
+  )
 }
 
 export function insertComponent(
@@ -405,7 +423,7 @@ export function insertComponent(
 ): Observable<any> {
   return getDOM(site, modelId).pipe(
     switchMap((doc) => {
-
+      debugger;
       const qs = {
         site,
         path: modelId,

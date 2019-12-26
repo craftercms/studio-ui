@@ -139,7 +139,7 @@ export class ContentController {
       args: arguments
     });
 
-    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId });
+    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId, value });
 
   }
 
