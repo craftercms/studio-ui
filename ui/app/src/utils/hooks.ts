@@ -17,7 +17,7 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState, { EntityState } from '../models/GlobalState';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { nnou } from './object';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
@@ -89,13 +89,16 @@ function createResourceMemo() {
 
 export function useResource(source) {
 
-  const [resource, resolve, reject] = useMemo(createResourceMemo, []);
+  const [bundle, setBundle] = useState(createResourceMemo);
+  const [resource, resolve, reject] = bundle;
 
   useEffect(() => {
-    if (nnou(source)) {
+    if (resource.complete) {
+      setBundle(createResourceMemo);
+    } else if (nnou(source)) {
       resolve(source);
     }
-  }, [source, resolve, reject]);
+  }, [source, resource, resolve, reject]);
 
   return resource;
 
@@ -108,13 +111,12 @@ export function useEntitySelectionResource<T = any>(selector: (state: GlobalStat
 
 export function useEntityStateResource<T = any>(state: EntityState<T>) {
 
-  const [resourceBundle, setResource] = useState(createResourceMemo);
-  const [resource, resolve, reject] = resourceBundle;
+  const [bundle, setBundle] = useState(createResourceMemo);
+  const [resource, resolve, reject] = bundle;
 
   useEffect(() => {
     if (resource.complete) {
-      // Renew the resource as things fetch is occurring.
-      setResource(createResourceMemo);
+      setBundle(createResourceMemo);
     } else if (nnou(state.error)) {
       reject(state.error);
     } else if ((!state.isFetching) && nnou(state.byId)) {
