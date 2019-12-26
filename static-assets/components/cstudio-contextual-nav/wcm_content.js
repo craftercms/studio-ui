@@ -923,7 +923,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod = CStudioAuthoring.Contextual
                                 var items = CStudioAuthoring.SelectedContent.getSelectedContent();
 
                                 option.onclick = function() {
-                                    CStudioAuthoring.Utils.createLoadingIcon();
                                     CStudioAuthoring.Operations.approveCommon(
                                         CStudioAuthoringContext.site,
                                         CStudioAuthoring.SelectedContent.getSelectedContent(),
