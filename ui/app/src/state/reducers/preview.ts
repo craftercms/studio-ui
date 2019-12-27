@@ -247,17 +247,23 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     assets: { ...state.assets, isFetching: true, query: query }
   }),
-  [FETCH_PANEL_ASSETS_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => ({
-    ...state,
-    assets: {
-      ...state.assets,
-      byId: createLookupTable<MediaItem>(searchResult.items, 'path'),
-      page: null,
-      count: searchResult.total,
-      isFetching: false,
-      error: null
+  [FETCH_PANEL_ASSETS_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
+    let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
+    let pageNumber = state.assets.query.offset / state.assets.query.limit;
+    let page = [...state.assets.page];
+    page[pageNumber] = Object.keys(itemsLookupTable);
+    return {
+      ...state,
+      assets: {
+        ...state.assets,
+        byId: { ...state.assets.byId, ...itemsLookupTable },
+        page,
+        count: searchResult.total,
+        isFetching: false,
+        error: null
+      }
     }
-  }),
+  },
   [FETCH_PANEL_ASSETS_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: true }

@@ -104,26 +104,22 @@ export function useResource(source) {
 
 }
 
-export function useEntitySelectionResource<T = any>(selector: (state: GlobalState) => EntityState) {
+export function useEntitySelectionResource<T = any>(selector: (state: GlobalState) => EntityState<T>, selectorFn = (state) => Object.values(state.byId)) {
   const state = useSelection<EntityState<T>>(selector);
-  return useEntityStateResource(state);
+  return useEntityStateResource(state, selectorFn);
 }
 
-export function useEntityStateResource<T = any>(state: EntityState<T>) {
-
+export function useEntityStateResource<T = any>(state: EntityState<T>, selectorFn = (state) => Object.values(state.byId)) {
   const [bundle, setBundle] = useState(createResourceMemo);
   const [resource, resolve, reject] = bundle;
-
   useEffect(() => {
     if (resource.complete) {
       setBundle(createResourceMemo);
     } else if (nnou(state.error)) {
       reject(state.error);
     } else if ((!state.isFetching) && nnou(state.byId)) {
-      resolve(Object.values(state.byId));
+      resolve(selectorFn(state));
     }
   }, [state, resource, resolve, reject]);
-
   return resource;
-
 }
