@@ -401,8 +401,7 @@ export function updateField(site: string, modelId: string, fieldId: string, valu
       };
 
       let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
-      fieldNode.innerHTML = value;
-
+      fieldNode.innerHTML = `<![CDATA[${value}]]>`;
       return post(
         writeContentUrl(qs),
         serialize(doc)

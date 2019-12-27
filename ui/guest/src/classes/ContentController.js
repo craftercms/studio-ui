@@ -17,15 +17,20 @@
 
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { filter, share, map } from 'rxjs/operators';
+import { filter, map, share } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
   CONTENT_TYPES_RESPONSE,
-  createLookupTable, DELETE_ITEM_OPERATION,
-  GUEST_MODELS_RECEIVED, INSERT_COMPONENT_OPERATION, INSERT_ITEM_OPERATION, MOVE_ITEM_OPERATION,
+  createLookupTable,
+  DELETE_ITEM_OPERATION,
+  GUEST_MODELS_RECEIVED,
+  INSERT_COMPONENT_OPERATION,
+  INSERT_ITEM_OPERATION,
+  MOVE_ITEM_OPERATION,
   pluckProps,
   reversePluckProps,
-  SORT_ITEM_OPERATION, UPDATE_FIELD_VALUE_OPERATION
+  SORT_ITEM_OPERATION,
+  UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
@@ -135,8 +140,8 @@ export class ContentController {
     });
 
     ContentController.operations$.next({
-      type: 'update-field',
-      args: arguments
+      type: UPDATE_FIELD_VALUE_OPERATION,
+      args: { modelId, fieldId, value }
     });
 
     post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId, value });

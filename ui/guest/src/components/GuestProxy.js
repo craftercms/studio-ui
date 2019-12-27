@@ -15,9 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
 import { useEffect, useRef } from 'react';
-import { notNullOrUndefined, forEach, INSERT_COMPONENT_OPERATION, DELETE_ITEM_OPERATION } from '../util';
+import {
+  DELETE_ITEM_OPERATION,
+  forEach,
+  INSERT_COMPONENT_OPERATION,
+  notNullOrUndefined,
+  UPDATE_FIELD_VALUE_OPERATION
+} from '../util';
 import { useGuestContext } from './GuestContext';
 import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
@@ -283,6 +288,21 @@ export function GuestProxy(props) {
 
           break;
         }
+        case UPDATE_FIELD_VALUE_OPERATION:
+          debugger;
+          const { modelId, fieldId, value } = op.args;
+          const updatedField = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
+          const model = contentController.getCachedModel(modelId);
+          const contentType = contentController.getCachedContentType(model.craftercms.contentType);
+          const assetType = contentType.fields[fieldId];
+
+          const tagName = updatedField.prop("tagName");
+          if (tagName === "IMG") {
+            updatedField.attr('src', value);
+          } else {
+            updatedField.css('background-image', `url(${value})`);
+          }
+          break;
       }
     });
 

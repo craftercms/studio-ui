@@ -15,30 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   CLEAR_SELECTED_ZONES,
+  COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   EDIT_MODE_CHANGED,
   EditingStatus,
   GUEST_CHECK_IN,
+  GUEST_CHECK_OUT,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
-  TRASHED,
-  COMPONENT_DRAG_ENDED,
   INSTANCE_DRAG_ENDED,
-  RELOAD_REQUEST,
-  NAVIGATION_REQUEST,
-  GUEST_CHECK_OUT,
-  not,
   isNullOrUndefined,
+  NAVIGATION_REQUEST,
+  not,
   notNullOrUndefined,
-  pluckProps, GUEST_MODELS_RECEIVED
+  pluckProps,
+  RELOAD_REQUEST,
+  TRASHED
 } from '../util';
-import { zip, Subject } from 'rxjs';
+import { Subject, zip } from 'rxjs';
 import { debounceTime, delay, filter, map, take, tap, throttleTime } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
@@ -475,7 +475,6 @@ export function Guest(props) {
       // Asset replacement
       switch (status) {
         case EditingStatus.PLACING_DETACHED_ASSET: {
-
           const { dropZone } = dragContext;
           if (!dropZone || !dragContext.inZone) {
             return;
@@ -486,7 +485,7 @@ export function Guest(props) {
           contentController.updateField(
             record.modelId,
             record.fieldId,
-            dragContext.dragged.url
+            dragContext.dragged.path
           );
 
           break;
@@ -697,35 +696,19 @@ export function Guest(props) {
     },
 
     onAssetDragStarted(asset) {
-
       let
         players = [],
         siblings = [],
         containers = [],
-        dropZones = [];
+        dropZones = [],
+        type;
 
-      const receptacles = iceRegistry.getMediaReceptacles();
-      const validReceptacles = receptacles.filter((id) => {
-
-        const
-          record = iceRegistry.getReferentialEntries(id),
-          validations = record.field.validations;
-
-        if (isNullOrUndefined(validations)) {
-          return false;
-        } else if (notNullOrUndefined(validations.mimeTypes)) {
-          const values = validations.mimeTypes.value;
-          return (
-            (
-              values.includes('image/*') &&
-              asset.type.includes('image/')
-            ) || (
-              values.includes(asset.type)
-            )
-          );
-        }
-
-      });
+      if (asset.mimeType.includes('image/')) {
+        type = 'image';
+      } else if (asset.mimeType.includes('video/')) {
+        type = 'video';
+      }
+      const validReceptacles = iceRegistry.getMediaReceptacles(type);
 
       validReceptacles
         .forEach((id) => {

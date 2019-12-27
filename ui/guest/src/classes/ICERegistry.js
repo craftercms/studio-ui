@@ -21,10 +21,10 @@ import { take } from 'rxjs/operators';
 import {
   DEFAULT_RECORD_DATA,
   findComponentContainerFields,
+  forEach,
   isNullOrUndefined,
   notNullOrUndefined,
-  pluckProps,
-  forEach
+  pluckProps
 } from '../util';
 import { ContentTypeHelper } from './ContentTypeHelper';
 import { ModelHelper } from './ModelHelper';
@@ -157,13 +157,13 @@ export class ICERegistry {
     return notNullOrUndefined(record.fieldId);
   }
 
-  getMediaReceptacles() {
+  getMediaReceptacles(type) {
     const receptacles = [];
     forEach(
       Object.values(this.registry),
       (record) => {
         const entries = this.getReferentialEntries(record);
-        if (entries.field && entries.field.type === 'image') {
+        if (entries.field && entries.field.type === type) {
           receptacles.push(record.id);
         }
       }
