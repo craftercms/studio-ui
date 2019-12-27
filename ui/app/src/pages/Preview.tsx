@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import PreviewUrlController from '../modules/Preview/PreviewUrlController';
+import Preview from '../modules/Preview/Preview';
 
 export default function (topProps: any) {
   return (
@@ -24,7 +24,7 @@ export default function (topProps: any) {
       <Route
         path="/"
         render={(routeProps: any) =>
-          <PreviewUrlController {...topProps} {...routeProps} />
+          <Preview {...topProps} {...routeProps} />
         }
       />
     </HashRouter>
