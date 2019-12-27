@@ -16,12 +16,12 @@
  */
 
 export interface ElasticParams {
-  query: string;
+  query?: string;
   keywords: string;
   offset: number;
   limit: number;
-  sortBy: string;
-  sortOrder: string;
+  sortBy?: string;
+  sortOrder?: string;
   filters:  any;
 }
 

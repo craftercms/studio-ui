@@ -16,15 +16,15 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import GlobalState from '../../models/GlobalState';
+import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
-  FETCH_ASSETS,
-  FETCH_ASSETS_COMPLETE,
-  FETCH_ASSETS_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
+  FETCH_PANEL_ASSETS_ITEMS,
+  FETCH_PANEL_ASSETS_ITEMS_COMPLETE,
+  FETCH_PANEL_ASSETS_ITEMS_FAILED,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -38,9 +38,9 @@ import {
   SET_ITEM_BEING_DRAGGED,
   TOOLS_LOADED
 } from '../actions/preview';
-import { createLookupTable, nnou, nou } from '../../utils/object';
+import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
-import { MediaItem } from '../../models/Search';
+import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -53,7 +53,17 @@ const reducer = createReducer<GlobalState['preview']>({
   selectedTool: 'craftercms.ice.assets',
   tools: null,
   guest: null,
-  assets: null
+  assets: createEntityState({
+    page: [],
+    query: {
+      keywords: '',
+      offset: 0,
+      limit: 10,
+      filters: {
+        'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
+      }
+    }
+  }) as PagedEntityState<MediaItem>
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -233,19 +243,22 @@ const reducer = createReducer<GlobalState['preview']>({
     }
     return nextState;
   },
-  [FETCH_ASSETS]: (state) => ({
+  [FETCH_PANEL_ASSETS_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => ({
     ...state,
-    assets: { ...state.assets, isFetching: true }
+    assets: { ...state.assets, isFetching: true, query: query }
   }),
-  [FETCH_ASSETS_COMPLETE]: (state, { payload: searchResult }) => ({
+  [FETCH_PANEL_ASSETS_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => ({
     ...state,
     assets: {
+      ...state.assets,
       byId: createLookupTable<MediaItem>(searchResult.items, 'path'),
+      page: null,
+      count: searchResult.total,
       isFetching: false,
       error: null
     }
   }),
-  [FETCH_ASSETS_FAILED]: (state, { payload }) => ({
+  [FETCH_PANEL_ASSETS_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: true }
   })

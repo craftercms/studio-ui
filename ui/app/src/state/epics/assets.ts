@@ -16,26 +16,21 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { FETCH_ASSETS, fetchAssetsComplete, fetchAssetsFailed } from '../actions/preview';
+import {
+  FETCH_PANEL_ASSETS_ITEMS,
+  fetchPanelAssetsItemsComplete,
+  fetchPanelAssetsItemsFailed
+} from '../actions/preview';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { search } from "../../services/search";
 
-const initialSearchParameters = {
-  keywords: '',
-  offset: 0,
-  limit: 10,
-  filters: {
-    'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
-  }
-};
-
 const fetchAssets: Epic = (action$, state$) => action$.pipe(
-  ofType(FETCH_ASSETS),
+  ofType(FETCH_PANEL_ASSETS_ITEMS),
   withLatestFrom(state$),
-  switchMap(([, { sites: { active: site } }]) => search(site, initialSearchParameters)),
-  map(fetchAssetsComplete),
-  catchAjaxError(fetchAssetsFailed)
+  switchMap(([{ payload }, { sites: { active: site } }]) => search(site, payload)),
+  map(fetchPanelAssetsItemsComplete),
+  catchAjaxError(fetchPanelAssetsItemsFailed)
 );
 
 export default [

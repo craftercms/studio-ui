@@ -22,7 +22,7 @@ import { GuestData } from '../../modules/Preview/previewContext';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
-import { SearchResult } from "../../models/Search";
+import { ElasticParams, SearchResult } from "../../models/Search";
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -72,9 +72,9 @@ export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
-export const FETCH_ASSETS = 'FETCH_ASSETS';
-export const FETCH_ASSETS_COMPLETE = 'FETCH_ASSETS_COMPLETE';
-export const FETCH_ASSETS_FAILED = 'FETCH_ASSETS_FAILED';
+export const FETCH_PANEL_ASSETS_ITEMS = 'FETCH_PANEL_ASSETS_ITEMS';
+export const FETCH_PANEL_ASSETS_ITEMS_COMPLETE = 'FETCH_PANEL_ASSETS_ITEMS_COMPLETE';
+export const FETCH_PANEL_ASSETS_ITEMS_FAILED = 'FETCH_PANEL_ASSETS_ITEMS_FAILED';
 
 // endregion
 
@@ -179,18 +179,18 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   };
 }
 
-export const fetchAssets = createAction(FETCH_ASSETS);
+export const fetchPanelAssetsItems = createAction<ElasticParams>(FETCH_PANEL_ASSETS_ITEMS);
 
-export function fetchAssetsComplete(searchResult: SearchResult): StandardAction {
+export function fetchPanelAssetsItemsComplete(searchResult: SearchResult): StandardAction {
   return {
-    type: FETCH_ASSETS_COMPLETE,
+    type: FETCH_PANEL_ASSETS_ITEMS_COMPLETE,
     payload: searchResult
   }
 }
 
-export function fetchAssetsFailed(error): StandardAction {
+export function fetchPanelAssetsItemsFailed(error): StandardAction {
   return {
-    type: FETCH_ASSETS_FAILED,
+    type: FETCH_PANEL_ASSETS_ITEMS_FAILED,
     payload: error
   };
 }

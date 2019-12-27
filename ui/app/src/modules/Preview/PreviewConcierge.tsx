@@ -22,8 +22,8 @@ import {
   checkOutGuest,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
-  fetchAssets,
   fetchContentTypes,
+  fetchPanelAssetsItems,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -52,6 +52,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou } from '../../utils/object';
 import { useOnMount } from '../../utils/helpers';
+import { ElasticParams } from '../../models/Search';
 
 export function PreviewConcierge(props: any) {
 
@@ -183,16 +184,19 @@ export function PreviewConcierge(props: any) {
       }
     });
 
+    // Retrieve all content types in the system
+    (!contentTypes && site) && dispatch(fetchContentTypes());
+    contentTypes && contentTypes$.next(contentTypes);
+
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        // TODO: aaron to fetch assets here...
-        (!assets && site) && dispatch(fetchAssets());
+        (assets.isFetching === null && site) && dispatch(fetchPanelAssetsItems(initialSearchParameters));
         break;
       case 'craftercms.ice.components':
         // Retrieve all content types in the system
-        (!contentTypes && site) && dispatch(fetchContentTypes());
-        contentTypes && contentTypes$.next(contentTypes);
+        // (!contentTypes && site) && dispatch(fetchContentTypes());
+        // contentTypes && contentTypes$.next(contentTypes);
         break;
     }
 
@@ -233,6 +237,15 @@ export function PreviewConcierge(props: any) {
   );
 
 }
+
+const initialSearchParameters: ElasticParams = {
+  keywords: '',
+  offset: 0,
+  limit: 10,
+  filters: {
+    'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
+  }
+};
 
 function beginGuestDetection(setSnack): Subscription {
   const guestToHost$ = getGuestToHostBus();

@@ -18,24 +18,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useActiveSiteId } from "../../../utils/hooks";
-import { MediaItem, SearchItem, SearchResult } from "../../../models/Search";
-import { search } from "../../../services/search";
+import { useActiveSiteId, useEntitySelectionResource } from "../../../utils/hooks";
+import { MediaItem, SearchResult } from "../../../models/Search";
 import { setRequestForgeryToken } from "../../../utils/auth";
 import { createStyles } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import SearchBar from '../../../components/SearchBar';
 import { useSelector } from "react-redux";
 import GlobalState from "../../../models/GlobalState";
-import MediaCard from "../../../components/MediaCard";
 import TablePagination from "@material-ui/core/TablePagination";
 import { Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
-import Typography from "@material-ui/core/Typography";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { getHostToGuestBus } from "../previewContext";
 import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED } from "../../../state/actions/preview";
+import { ErrorBoundary } from "../../../components/ErrorBoundary";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -122,6 +119,10 @@ export default function AssetsPanel() {
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const hostToGuest$ = getHostToGuestBus();
 
+  const resource = useEntitySelectionResource(state => state.preview.assets);
+
+  //resource.read();
+
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
     type: ASSET_DRAG_STARTED,
     payload: mediaItem
@@ -133,18 +134,18 @@ export default function AssetsPanel() {
 
   setRequestForgeryToken();
 
-  useEffect(() => {
-    search(activeSite, searchParameters).subscribe((response) => {
-      setAssets(response);
-    })
-  }, [activeSite, searchParameters]);
+  // useEffect(() => {
+  //   search(activeSite, searchParameters).subscribe((response) => {
+  //     setAssets(response);
+  //   })
+  // }, [activeSite, searchParameters]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
-      setSearchParameters({ ...searchParameters, keywords})
+      setSearchParameters({ ...searchParameters, keywords })
     });
     return () => subscription.unsubscribe();
   }, [onSearch$]);
@@ -159,63 +160,126 @@ export default function AssetsPanel() {
 
   return (
     <ToolPanel title={translations.assetsPanel}>
-      <div className={classes.assetsPanelWrapper}>
-        {
-          assets ? (
-            <>
-              <SearchBar
-                onChange={handleSearchKeyword}
-                classes={{ root: classes.search }}
-              />
-              {
-                assets.total ? (
-                  <>
-                    <TablePagination
-                      className={classes.pagination}
-                      classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-                      component="div"
-                      labelRowsPerPage=""
-                      count={assets.total}
-                      rowsPerPage={searchParameters.limit}
-                      page={searchParameters.offset / searchParameters.limit}
-                      backIconButtonProps={{
-                        'aria-label': 'previous page',
-                      }}
-                      nextIconButtonProps={{
-                        'aria-label': 'next page',
-                      }}
-                      onChangePage={handleChangePage}
-                    />
-                    {
-                      assets.items.map((item: SearchItem) =>
-                        <MediaCard
-                          key={item.path}
-                          item={item}
-                          previewAppBaseUri={GUEST_BASE}
-                          hasCheckbox={false}
-                          hasSubheader={false}
-                          avatar={DragIndicatorRounded}
-                          classes={{ root: classes.card }}
-                          onDragStart={onDragStart}
-                          onDragEnd={ onDragEnd}
-                        />
-                      )
-                    }
-                  </>
-                ) : (
-                  <Typography variant="body2" color="textSecondary" className={classes.noResults}>
-                    {
-                      formatMessage(translations.noResults)
-                    }
-                  </Typography>
-                )
-              }
-            </>
-          ) : (
-            <LoadingState title={formatMessage(translations.retrieveAssets)} graphicProps={{ width: 150 }}/>
-          )
-        }
-      </div>
+      <ErrorBoundary>
+        <React.Suspense
+          fallback={
+            <LoadingState
+              title="Retrieving Page Model"
+              graphicProps={{ width: 150 }}
+            />
+          }
+        >
+          <AssetsPanelUI
+            classes={classes}
+            assetsResource={resource}
+            handleChangePage={handleChangePage}
+            handleSearchKeyword={handleSearchKeyword}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+          />
+        </React.Suspense>
+      </ErrorBoundary>
     </ToolPanel>
   );
 }
+
+
+export function AssetsPanelUI(props) {
+  const {
+    classes,
+    assetsResource,
+    handleChangePage,
+    handleSearchKeyword,
+    onDragStart,
+    onDragEnd
+  } = props;
+  const assets = assetsResource.read();
+  console.log(assets);
+  const [searchParameters, setSearchParameters] = useState(initialSearchParameters);
+  return (
+    <div className={classes.assetsPanelWrapper}>
+      <SearchBar
+        onChange={handleSearchKeyword}
+        classes={{ root: classes.search }}
+      />
+      <TablePagination
+        className={classes.pagination}
+        classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+        component="div"
+        labelRowsPerPage=""
+        count={assets.total}
+        rowsPerPage={searchParameters.limit}
+        page={searchParameters.offset / searchParameters.limit}
+        backIconButtonProps={{
+          'aria-label': 'previous page',
+        }}
+        nextIconButtonProps={{
+          'aria-label': 'next page',
+        }}
+        onChangePage={handleChangePage}
+      />
+    </div>
+  )
+}
+
+// return (
+//   <ToolPanel title={translations.assetsPanel}>
+//     <div className={classes.assetsPanelWrapper}>
+//       {
+//         assets ? (
+//           <>
+//             <SearchBar
+//               onChange={handleSearchKeyword}
+//               classes={{ root: classes.search }}
+//             />
+//             {
+//               assets.total ? (
+//                 <>
+//                   <TablePagination
+//                     className={classes.pagination}
+//                     classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+//                     component="div"
+//                     labelRowsPerPage=""
+//                     count={assets.total}
+//                     rowsPerPage={searchParameters.limit}
+//                     page={searchParameters.offset / searchParameters.limit}
+//                     backIconButtonProps={{
+//                       'aria-label': 'previous page',
+//                     }}
+//                     nextIconButtonProps={{
+//                       'aria-label': 'next page',
+//                     }}
+//                     onChangePage={handleChangePage}
+//                   />
+//                   {
+//                     assets.items.map((item: SearchItem) =>
+//                       <MediaCard
+//                         key={item.path}
+//                         item={item}
+//                         previewAppBaseUri={GUEST_BASE}
+//                         hasCheckbox={false}
+//                         hasSubheader={false}
+//                         avatar={DragIndicatorRounded}
+//                         classes={{ root: classes.card }}
+//                         onDragStart={onDragStart}
+//                         onDragEnd={ onDragEnd}
+//                       />
+//                     )
+//                   }
+//                 </>
+//               ) : (
+//                 <Typography variant="body2" color="textSecondary" className={classes.noResults}>
+//                   {
+//                     formatMessage(translations.noResults)
+//                   }
+//                 </Typography>
+//               )
+//             }
+//           </>
+//         ) : (
+//           <LoadingState title={formatMessage(translations.retrieveAssets)} graphicProps={{ width: 150 }}/>
+//         )
+//       }
+//     </div>
+//   </ToolPanel>
+// );

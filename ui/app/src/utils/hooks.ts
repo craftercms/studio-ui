@@ -104,7 +104,7 @@ export function useResource(source) {
 
 }
 
-export function useEntitySelectionResource<T = any>(selector: (state: GlobalState) => EntityState<T>) {
+export function useEntitySelectionResource<T = any>(selector: (state: GlobalState) => EntityState) {
   const state = useSelection<EntityState<T>>(selector);
   return useEntityStateResource(state);
 }

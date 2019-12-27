@@ -22,7 +22,7 @@ import ContentType from './ContentType';
 import { GuestData } from '../modules/Preview/previewContext';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
-import { MediaItem } from "./Search";
+import { ElasticParams, MediaItem } from "./Search";
 
 interface APIError {
   code: string;
@@ -35,6 +35,14 @@ export interface EntityState<T = any> {
   error: APIError;
   byId: LookupTable<T>;
   isFetching: boolean;
+
+  [key: string]: any;
+}
+
+export interface PagedEntityState<T = any> extends EntityState<T> {
+  page: Array<Array<string>>;
+  count: number;
+  query: ElasticParams;
 }
 
 export interface GlobalState {
@@ -64,7 +72,7 @@ export interface GlobalState {
     tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;
-    assets: EntityState<MediaItem>;
+    assets: PagedEntityState<MediaItem>;
   }
 }
 
