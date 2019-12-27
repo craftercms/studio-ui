@@ -23,16 +23,15 @@ import Typography from '@material-ui/core/Typography';
 import { ContentTypeHelper } from '../../../utils/helpers';
 import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import { usePreviewState } from '../../../utils/hooks';
+import { usePreviewState, useSelection } from '../../../utils/hooks';
 
 export default function EditFormPanel() {
 
   const dispatch = useDispatch();
-  const {
-    contentTypes,
-    guest: { selected, models }
-  } = usePreviewState();
+  const { guest: { selected, models } } = usePreviewState();
   const hostToGuest$ = getHostToGuestBus();
+  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
 
   const onBack = () => {
     dispatch(clearSelectForEdit());
@@ -89,9 +88,9 @@ export default function EditFormPanel() {
         BackIcon={CloseRounded}
       >
         <Typography variant="body1" component="ul">
-        {
-          fields.map((field) => <li key={field.id}>{field.name}</li>)
-        }
+          {
+            fields.map((field) => <li key={field.id}>{field.name}</li>)
+          }
         </Typography>
       </ToolPanel>
     </>

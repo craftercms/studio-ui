@@ -23,6 +23,19 @@ import { GuestData } from '../modules/Preview/previewContext';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
 
+interface APIError {
+  code: string;
+  message: string;
+  remedialAction: string;
+  documentationUrl: string;
+}
+
+export interface EntityState<T = any> {
+  error: APIError;
+  byId: LookupTable<T>;
+  isFetching: boolean;
+}
+
 export interface GlobalState {
   auth: {
     active: boolean;
@@ -32,6 +45,7 @@ export interface GlobalState {
     active: string;
     byId: LookupTable<Site>;
   };
+  contentTypes: EntityState<ContentType>;
   env: {
     AUTHORING_BASE: string;
     GUEST_BASE: string;
@@ -48,7 +62,6 @@ export interface GlobalState {
     previousTool: Tools;
     tools: Array<any>;
     hostSize: WidthAndHeight;
-    contentTypes: Array<ContentType>;
     guest: GuestData;
   }
 }

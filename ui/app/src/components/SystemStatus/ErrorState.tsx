@@ -26,6 +26,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { createStyles } from '@material-ui/core';
 import clsx from 'clsx';
+import { nnou } from '../../utils/object';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   errorView: {
@@ -35,16 +36,15 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     justifyContent: 'center',
     padding: '40px'
   },
-  gearContainer: {
-    flexGrow: 1,
-    display: 'flex',
-    justifyContent: 'center'
+  graphic: {
+    maxWidth: '100%'
   },
   title: {
     marginTop: '20px',
     marginBottom: '10px'
   },
   paragraph: {
+    textAlign: 'center',
     marginTop: '10px'
   },
   link: {
@@ -74,6 +74,7 @@ interface ErrorStateProps {
     graphic?: string;
   };
   error: {
+    title?: string;
     code?: string;
     documentationUrl?: string;
     message: string;
@@ -85,6 +86,10 @@ const messages = defineMessages({
   moreInfo: {
     id: 'common.moreInfo',
     defaultMessage: 'More info'
+  },
+  error: {
+    id: 'common.error',
+    defaultMessage: 'Error'
   }
 });
 
@@ -96,18 +101,26 @@ export default function ErrorState(props: ErrorStateProps) {
   }, props.classes || {});
   const { error, onBack, graphicUrl = crack } = props;
   const { formatMessage } = useIntl();
-  const { code, documentationUrl, message, remedialAction } = error;
+  const { title, code, documentationUrl, message, remedialAction } = error;
+
   return (
     <div className={clsx(classes.errorView, propClasses.root)}>
-      <img className={propClasses.graphic} src={graphicUrl} alt=""/>
+      <img className={clsx(classes.graphic, propClasses?.graphic)} src={graphicUrl} alt=""/>
       {
-        code &&
-        <Typography variant="h5" component="h1" className={classes.title} color={'textSecondary'}>
-          Error {code}
+        (nnou(code) || nnou(title)) &&
+        <Typography variant="h5" component="h2" className={classes.title} color={'textSecondary'}>
+          {nnou(code) ? `${formatMessage(messages.error)}${code ? ' code' : ''}` : ''}
+          {nnou(code) && nnou(title) && ': '}
+          {title}
         </Typography>
       }
-      <Typography variant="subtitle1" component="p" color={'textSecondary'}>
-        {message}. {remedialAction}
+      <Typography variant="subtitle1" component="p" color="textSecondary" className={classes.paragraph}>
+        {
+          (message) +
+          (message.endsWith('.') ? '' : '.') +
+          (remedialAction ? ` ${remedialAction}` : '') +
+          (remedialAction ? (remedialAction.endsWith('.') ? '' : '.') : '')
+        }
       </Typography>
       {
         documentationUrl &&
@@ -115,7 +128,9 @@ export default function ErrorState(props: ErrorStateProps) {
           <a
             className={classes.link}
             href={documentationUrl}
-            target={'blank'}>{formatMessage(messages.moreInfo)}<OpenInNewIcon/>
+            target={'blank'}>
+            {formatMessage(messages.moreInfo)}
+            <OpenInNewIcon/>
           </a>
         </Typography>
       }

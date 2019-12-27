@@ -844,8 +844,7 @@ var nodeOpen = false,
                     if(response) {
                       _self.reloadItems(items, response);
                     }
-
-                    unmount();
+                    unmount({ delay: 300, removeContainer: true });
                   },
                   items,
                   scheduling
@@ -885,8 +884,7 @@ var nodeOpen = false,
                     if(response) {
                       _self.reloadItems(items, response);
                     }
-
-                    unmount();
+                    unmount({ delay: 300, removeContainer: true });
                   },
                   items: items,
                 }
@@ -4154,25 +4152,26 @@ var nodeOpen = false,
              *  Returns the item content
              *  If edit equals true, tries to lock the content
              */
-            getContent: function(path, edit, callback){
-                var serviceUrl = CStudioAuthoring.Service.getContentUri
-                    + "?site=" + CStudioAuthoringContext.site
-                    + "&path=" + encodeURI(path) +
-                    "&edit=" + edit +
-                    "&ticket=" + CStudioAuthoring.Utils.Cookies.readCookie("ccticket") +
-                    "&nocache=" + new Date();
+            getContent: function(path, edit, callback, encoding){
+              var serviceUrl = (
+                CStudioAuthoring.Service.getContentUri +
+                `?site=${CStudioAuthoringContext.site}` +
+                `&path=${encodeURI(path)}` +
+                `&edit=${edit}` +
+                `&ticket=${CStudioAuthoring.Utils.Cookies.readCookie("ccticket")}` +
+                `${(encoding != null) ? `&encoding=${encoding}` : ''}` +
+                `&nocache=${Date.now()}`
+              );
 
-                var serviceCallback = {
-                    success: function(content) {
-                        var contentData = YAHOO.lang.JSON.parse(content.responseText)
-                        callback.success(contentData.content);
-                    },
-                    failure: function(err) {
-                        callback.failure(err);
-                    }
-                };
-
-                YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), serviceCallback);
+              YConnect.asyncRequest('GET', CStudioAuthoring.Service.createServiceUri(serviceUrl), {
+                success: function (content) {
+                  var contentData = YAHOO.lang.JSON.parse(content.responseText)
+                  callback.success(contentData.content);
+                },
+                failure: function (err) {
+                  callback.failure(err);
+                }
+              });
             },
             /**
              * determine if content exists

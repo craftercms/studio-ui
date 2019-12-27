@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ajax, AjaxResponse } from 'rxjs/ajax';
-import { map } from 'rxjs/operators';
+import { ajax, AjaxError } from 'rxjs/ajax';
+import { catchError } from 'rxjs/operators';
+import { reversePluckProps } from './object';
+import { of } from 'rxjs';
+import { sessionTimeout } from '../state/actions/user';
 
 const HEADERS = {};
 export const OMIT_GLOBAL_HEADERS = {};
@@ -58,7 +61,21 @@ export function del(url: string, headers: object = {}) {
   return ajax.delete(url, mergeHeaders(headers));
 }
 
-export const getResponse = map(({ response }: AjaxResponse) => response);
+export const catchAjaxError = (fetchFailedCreator) => catchError((error: any) => {
+  if (error.name === 'AjaxError') {
+    const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
+    ajaxError.response = {
+      message: ajaxError.response?.message ?? 'An unknown error has occurred.'
+    };
+    if (ajaxError.status === 401) {
+      return of(fetchFailedCreator(ajaxError), sessionTimeout());
+    } else {
+      return of(fetchFailedCreator(ajaxError));
+    }
+  } else {
+    throw error;
+  }
+});
 
 export default {
   OMIT_GLOBAL_HEADERS,

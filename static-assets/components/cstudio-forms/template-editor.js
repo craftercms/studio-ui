@@ -95,6 +95,7 @@ CStudioAuthoring.Module.requireModule(
 					CStudioForms.TemplateEditor.prototype = {
 						render: function(templatePath, channel, onSaveCb, contentType, mode) {
               var me = this;
+              var encoding = CStudioAuthoringContext.defaultEncoding;
 
               Promise.all([
                 CrafterCMSNext.services.configuration.getDOM(
@@ -103,7 +104,7 @@ CStudioAuthoring.Module.requireModule(
                   'studio'
                 ).toPromise(),
                 new Promise((resolve, reject) => {
-                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, false);
+                  CStudioAuthoring.Service.getContent(templatePath, true, { success: resolve, failure: reject }, encoding);
                 })
               ]).then(([xmlDoc, content]) => {
                 CStudioForms.TemplateEditor.config = xmlDoc;
@@ -561,21 +562,13 @@ CStudioAuthoring.Module.requireModule(
                     cancelEdit();
                   });
 
-									var saveSvcCb = {
-										success: function() {
-											modalEl.parentNode.removeChild(modalEl);
-											onSaveCb.success();
-										},
-										failure: function() {
-										}
-									};
-
 									if(isWrite == true) {
 										var saveEl = document.getElementById('template-editor-update-button');
 										saveEl.onclick = function() {
 											var value = aceEditor.getValue();
 											var path = templatePath.substring(0, templatePath.lastIndexOf("/"));
 											var filename = templatePath.substring(templatePath.lastIndexOf("/")+1);
+											var encoding = CStudioAuthoringContext.defaultEncoding;
 
 											var writeServiceUrl = "/api/1/services/api/1/content/write-content.json" +
 												"?site=" + CStudioAuthoringContext.site +
@@ -585,10 +578,20 @@ CStudioAuthoring.Module.requireModule(
 												"&user=" + CStudioAuthoringContext.user +
 												"&unlock=true";
 
-											YAHOO.util.Connect.setDefaultPostHeader(false);
-											YAHOO.util.Connect.initHeader("Content-Type", "text/pain; charset=utf-8");
-											YAHOO.util.Connect.initHeader(CStudioAuthoringContext.xsrfHeaderName, CrafterCMSNext.util.auth.getRequestForgeryToken());
-											YAHOO.util.Connect.asyncRequest('POST', CStudioAuthoring.Service.createServiceUri(writeServiceUrl), saveSvcCb, value);
+											fetch(CStudioAuthoring.Service.createServiceUri(writeServiceUrl), {
+												method: 'POST',
+												credentials: 'same-origin',
+												headers: {
+													'Content-Type': `text/plain; charset=${encoding}`,
+													[CStudioAuthoringContext.xsrfHeaderName]: CrafterCMSNext.util.auth.getRequestForgeryToken(),
+												},
+												body: value
+											}).then(res => res.json()).then((data) => {
+												if (data && data.result && data.result.success) {
+													modalEl.parentNode.removeChild(modalEl);
+													onSaveCb.success();
+												}
+											});
 										};
 									}
 
