@@ -157,6 +157,12 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
+          const { modelId, fieldId, value } = payload;
+          updateField(site, guest.models[modelId].craftercms.path, fieldId, value).subscribe(() => {
+            console.log('Finished');
+          }, (e) => {
+            console.log(e);
+          });
           break;
         }
         case ICE_ZONE_SELECTED: {
