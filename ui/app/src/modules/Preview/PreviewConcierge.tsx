@@ -22,6 +22,7 @@ import {
   checkOutGuest,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
+  fetchAssets,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -62,6 +63,7 @@ export function PreviewConcierge(props: any) {
   const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
   const priorState = useRef({ site });
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
+  const assets = useSelection(state => state.preview.assets);
 
   // This subject helps keep the async nature of content type fetching and guest
   // check in events. The idea is that it keeps things in sync despite the timing of
@@ -185,6 +187,7 @@ export function PreviewConcierge(props: any) {
     switch (selectedTool) {
       case 'craftercms.ice.assets':
         // TODO: aaron to fetch assets here...
+        (!assets && site) && dispatch(fetchAssets());
         break;
       case 'craftercms.ice.components':
         // Retrieve all content types in the system

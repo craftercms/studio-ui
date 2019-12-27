@@ -21,6 +21,9 @@ import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
+  FETCH_ASSETS,
+  FETCH_ASSETS_COMPLETE,
+  FETCH_ASSETS_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -35,8 +38,9 @@ import {
   SET_ITEM_BEING_DRAGGED,
   TOOLS_LOADED
 } from '../actions/preview';
-import { nnou, nou } from '../../utils/object';
+import { createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
+import { MediaItem } from '../../models/Search';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -48,7 +52,8 @@ const reducer = createReducer<GlobalState['preview']>({
   previousTool: null,
   selectedTool: 'craftercms.ice.assets',
   tools: null,
-  guest: null
+  guest: null,
+  assets: null
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -227,7 +232,23 @@ const reducer = createReducer<GlobalState['preview']>({
       nextState = { ...nextState, currentUrl: payload.nextUrl };
     }
     return nextState;
-  }
+  },
+  [FETCH_ASSETS]: (state) => ({
+    ...state,
+    assets: { ...state.assets, isFetching: true }
+  }),
+  [FETCH_ASSETS_COMPLETE]: (state, { payload: searchResult }) => ({
+    ...state,
+    assets: {
+      byId: createLookupTable<MediaItem>(searchResult.items, 'path'),
+      isFetching: false,
+      error: null
+    }
+  }),
+  [FETCH_ASSETS_FAILED]: (state, { payload }) => ({
+    ...state,
+    assets: { ...state.assets, error: payload.response, isFetching: true }
+  })
 });
 
 function minFrameSize(suggestedSize: number): number {

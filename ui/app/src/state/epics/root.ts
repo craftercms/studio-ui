@@ -18,10 +18,12 @@
 import { combineEpics } from 'redux-observable';
 import sites from './sites';
 import contentTypes from './contentTypes';
+import assets from './assets';
 
 const epic: any[] = combineEpics.apply(this, [
   ...sites,
-  ...contentTypes
+  ...contentTypes,
+  ...assets
 ]);
 
 export default epic as any;

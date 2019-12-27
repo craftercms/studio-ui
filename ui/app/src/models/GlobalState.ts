@@ -22,6 +22,7 @@ import ContentType from './ContentType';
 import { GuestData } from '../modules/Preview/previewContext';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
+import { MediaItem } from "./Search";
 
 interface APIError {
   code: string;
@@ -63,6 +64,7 @@ export interface GlobalState {
     tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;
+    assets: EntityState<MediaItem>;
   }
 }
 
