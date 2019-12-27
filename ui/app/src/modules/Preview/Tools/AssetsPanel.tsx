@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import { useEntitySelectionResource } from "../../../utils/hooks";
@@ -70,7 +70,7 @@ const assetsPanelStyles = makeStyles(() => createStyles({
     padding: '15px 15px 55px 15px'
   },
   search: {
-    marginBottom: '16px',
+    padding: '15px 15px 0px 15px',
   },
   card: {
     cursor: 'move',
@@ -118,9 +118,9 @@ const assetsPanelStyles = makeStyles(() => createStyles({
 
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
-  const [searchParameters, setSearchParameters] = useState(initialSearchParameters);
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const hostToGuest$ = getHostToGuestBus();
+  const dispatch = useDispatch();
 
   setRequestForgeryToken();
 
@@ -140,13 +140,13 @@ export default function AssetsPanel() {
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
-      setSearchParameters({ ...searchParameters, keywords })
+      dispatch(fetchPanelAssetsItems({ keywords }));
     });
     return () => subscription.unsubscribe();
-  }, [onSearch$]);
+  }, [dispatch, onSearch$]);
 
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
-    setSearchParameters({ ...searchParameters, offset: newPage * searchParameters.limit })
+    dispatch(fetchPanelAssetsItems({ offset: newPage }));
   }
 
   function handleSearchKeyword(keyword: string) {
@@ -156,10 +156,15 @@ export default function AssetsPanel() {
   return (
     <ToolPanel title={translations.assetsPanel}>
       <ErrorBoundary>
+        <div className={classes.search}>
+          <SearchBar
+            onChange={handleSearchKeyword}
+          />
+        </div>
         <React.Suspense
           fallback={
             <LoadingState
-              title="Retrieving Page Model"
+              title="Loading"
               graphicProps={{ width: 150 }}
             />
           }
@@ -168,10 +173,8 @@ export default function AssetsPanel() {
             classes={classes}
             assetsResource={resource}
             handleChangePage={handleChangePage}
-            handleSearchKeyword={handleSearchKeyword}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
-            searchParameters={searchParameters}
           />
         </React.Suspense>
       </ErrorBoundary>
@@ -185,29 +188,18 @@ export function AssetsPanelUI(props) {
     classes,
     assetsResource,
     handleChangePage,
-    handleSearchKeyword,
     onDragStart,
-    onDragEnd,
-    searchParameters,
+    onDragEnd
   } = props;
-  const assets: PagedEntityState<MediaItem> = assetsResource.read();
   const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
+  const assets: PagedEntityState<MediaItem> = assetsResource.read();
   const { byId, count: total, query, page } = assets;
   const pageNumber = query.offset / query.limit;
   const items = page[pageNumber];
   const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchPanelAssetsItems(searchParameters));
-  }, [searchParameters]);
 
   return (
     <div className={classes.assetsPanelWrapper}>
-      <SearchBar
-        onChange={handleSearchKeyword}
-        classes={{ root: classes.search }}
-      />
       <TablePagination
         className={classes.pagination}
         classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
@@ -222,7 +214,7 @@ export function AssetsPanelUI(props) {
         nextIconButtonProps={{
           'aria-label': 'next page',
         }}
-        onChangePage={handleChangePage}
+        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => handleChangePage(e, page * query.limit)}
       />
       {
         items.map((id: string) => {

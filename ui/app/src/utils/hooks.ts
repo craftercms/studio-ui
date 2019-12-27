@@ -74,7 +74,7 @@ export function createResource<T = any>(factoryFn: () => Promise<T>) {
   return resource;
 }
 
-function createResourceMemo() {
+export function createResourceBundle() {
   let resolve, reject;
   let promise = new Promise((resolvePromise, rejectPromise) => {
     resolve = resolvePromise;
@@ -89,12 +89,12 @@ function createResourceMemo() {
 
 export function useResource(source) {
 
-  const [bundle, setBundle] = useState(createResourceMemo);
+  const [bundle, setBundle] = useState(createResourceBundle);
   const [resource, resolve, reject] = bundle;
 
   useEffect(() => {
     if (resource.complete) {
-      setBundle(createResourceMemo);
+      setBundle(createResourceBundle);
     } else if (nnou(source)) {
       resolve(source);
     }
@@ -110,11 +110,11 @@ export function useEntitySelectionResource<T = any>(selector: (state: GlobalStat
 }
 
 export function useEntityStateResource<T = any>(state: EntityState<T>, selectorFn = (state) => Object.values(state.byId)) {
-  const [bundle, setBundle] = useState(createResourceMemo);
+  const [bundle, setBundle] = useState(createResourceBundle);
   const [resource, resolve, reject] = bundle;
   useEffect(() => {
     if (resource.complete) {
-      setBundle(createResourceMemo);
+      setBundle(createResourceBundle);
     } else if (nnou(state.error)) {
       reject(state.error);
     } else if ((!state.isFetching) && nnou(state.byId)) {

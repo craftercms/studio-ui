@@ -289,7 +289,6 @@ export function GuestProxy(props) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION:
-          debugger;
           const { modelId, fieldId, value } = op.args;
           const updatedField = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
           const model = contentController.getCachedModel(modelId);

@@ -24,11 +24,13 @@ import {
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import { search } from "../../services/search";
+import { Observable } from "rxjs";
+import GlobalState from '../../models/GlobalState';
 
-const fetchAssets: Epic = (action$, state$) => action$.pipe(
+const fetchAssets: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_PANEL_ASSETS_ITEMS),
   withLatestFrom(state$),
-  switchMap(([{ payload }, { sites: { active: site } }]) => search(site, payload)),
+  switchMap(([, state]) => search(state.sites.active, state.preview.assets.query)),
   map(fetchPanelAssetsItemsComplete),
   catchAjaxError(fetchPanelAssetsItemsFailed)
 );

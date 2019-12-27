@@ -179,7 +179,7 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   };
 }
 
-export const fetchPanelAssetsItems = createAction<ElasticParams>(FETCH_PANEL_ASSETS_ITEMS);
+export const fetchPanelAssetsItems = createAction<Partial<ElasticParams>>(FETCH_PANEL_ASSETS_ITEMS);
 
 export function fetchPanelAssetsItemsComplete(searchResult: SearchResult): StandardAction {
   return {

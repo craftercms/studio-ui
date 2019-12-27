@@ -245,7 +245,7 @@ const reducer = createReducer<GlobalState['preview']>({
   },
   [FETCH_PANEL_ASSETS_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => ({
     ...state,
-    assets: { ...state.assets, isFetching: true, query: query }
+    assets: { ...state.assets, isFetching: true, query: { ...state.assets.query, ...query } }
   }),
   [FETCH_PANEL_ASSETS_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
     let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
