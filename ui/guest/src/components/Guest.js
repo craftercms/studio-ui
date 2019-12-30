@@ -706,7 +706,7 @@ export function Guest(props) {
       if (asset.mimeType.includes('image/')) {
         type = 'image';
       } else if (asset.mimeType.includes('video/')) {
-        type = 'video';
+        type = 'video-picker';
       }
       const validReceptacles = iceRegistry.getMediaReceptacles(type);
 

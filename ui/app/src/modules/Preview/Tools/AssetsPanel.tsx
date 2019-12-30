@@ -79,6 +79,7 @@ const assetsPanelStyles = makeStyles(() => createStyles({
   pagination: {
     marginLeft: 'auto',
     position: 'fixed',
+    zIndex: 1,
     bottom: 0,
     background: 'white',
     color: 'black',
