@@ -56,8 +56,8 @@ export interface AudiencesPanelDescriptor {
   label: string;
   description: string;
   type: string;
-  possible_values: any[];
-  default_value: string;
+  possibleValues: any[];
+  defaultValue: string;
   hint: string;
 }
 
@@ -118,42 +118,43 @@ export function getAudiencesPanelConfig(site: string): Observable<AudiencesPanel
       try {
         return JSON.parse(content);
       } catch (e) {
+        console.log(content);
         // Not JSON, assuming XML
         let audiencesPanelConfig: AudiencesPanelConfig = { properties: null };
         const xml = fromString(content);
         audiencesPanelConfig.properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
 
           const name = getInnerHtml(elem.querySelector('name')),
-          label = getInnerHtml(elem.querySelector('label')),
-          description = getInnerHtml(elem.querySelector('description')),
-          type = getInnerHtml(elem.querySelector('type')),
-          default_value = getInnerHtml(elem.querySelector('default_value')),
-          hint = getInnerHtml(elem.querySelector('hint'));
-          let possible_values: any[] | { value: string; }[];
+            label = getInnerHtml(elem.querySelector('label')),
+            description = getInnerHtml(elem.querySelector('description')),
+            type = getInnerHtml(elem.querySelector('type')),
+            defaultValue = getInnerHtml(elem.querySelector('default_value')),
+            hint = getInnerHtml(elem.querySelector('hint'));
+          let possibleValues: any[] | { value: string; }[];
 
           if(elem.querySelectorAll('value').length > 0){
-            possible_values = Array.from(elem.querySelectorAll('value')).map((element) => {
+            possibleValues = Array.from(elem.querySelectorAll('value')).map((element) => {
               const value = getInnerHtml(element);
               return {
                 value: value
               }
-          });
+            });
           }else{
-            possible_values = [];
+            possibleValues = [];
           }
 
           return {
-            name : name,
-            label : label,
-            description : description,
-            type : type,
-            possible_values: possible_values,
-            default_value : default_value,
-            hint : hint
+            name: name,
+            label: label,
+            description: description,
+            type: type,
+            possibleValues: possibleValues,
+            defaultValue: defaultValue,
+            hint: hint
           };
 
         });
-        
+
         return audiencesPanelConfig;
       }
     })

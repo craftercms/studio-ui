@@ -165,7 +165,7 @@ export default function AudiencesPanel() {
         let mergedProfile = {};
 
         config.properties.forEach((property) => {
-          mergedProfile[property.name] = profile[property.name] ?? property.default_value;
+          mergedProfile[property.name] = profile[property.name] ?? property.defaultValue;
         });
 
         setProfile(
@@ -199,7 +199,7 @@ export default function AudiencesPanel() {
     let defaultProfile = {};
 
     config.forEach((property) => {
-      defaultProfile[property.name] = property.default_value;
+      defaultProfile[property.name] = property.defaultValue;
     });
 
     setProfile(defaultProfile);
@@ -273,13 +273,13 @@ function GetCodeDependingType(props: AudiencesFormProps) {
           <Select
             labelId={property.name}
             id={property.name}
-            value={profile[property.name] ?? property.default_value}
+            value={profile[property.name] ?? property.defaultValue}
             onChange={handleSelectChange(property.name)}
           >
             {
-              property.possible_values ? (
-                property.possible_values.map((possible_value: any, index: number) => (
-                  <MenuItem value={possible_value.value} key={index}>{possible_value.value}</MenuItem>
+              property.possibleValues ? (
+                property.possibleValues.map((possibleValue: any, index: number) => (
+                  <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
                 ))
               ) : (null)
             }
@@ -288,26 +288,26 @@ function GetCodeDependingType(props: AudiencesFormProps) {
         </AudiencesControl>
       );
     case "checkboxes":
-      const values = profile[property.name] ?? property.default_value,
+      const values = profile[property.name] ?? property.defaultValue,
         valuesArray = values.split(',');
 
       return (
         <AudiencesControl property={property}>
           <>
             {
-              property.possible_values ? (
-                property.possible_values.map((possible_value: any, index: number) => (
+              property.possibleValues ? (
+                property.possibleValues.map((possibleValue: any, index: number) => (
                   <FormControlLabel
                     key={index}
                     htmlFor={property.name}
                     control={
                       <Checkbox
                         color="primary"
-                        checked={valuesArray.includes(possible_value.value)}
-                        onChange={handleInputChange(property.name, possible_value.value, valuesArray)}
+                        checked={valuesArray.includes(possibleValue.value)}
+                        onChange={handleInputChange(property.name, possibleValue.value, valuesArray)}
                       />
                     }
-                    label={possible_value.value}/>
+                    label={possibleValue.value}/>
                 ))
               ) : (null)
             }
@@ -320,7 +320,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
         <AudiencesControl property={property}>
           <>
             <DateTimePicker
-              initialDate={profile[property.name] ?? property.default_value}
+              initialDate={profile[property.name] ?? property.defaultValue}
               timezone={profile[`${property.name}_tz`] ?? undefined}
               onChange={dateTimePickerChange(property.name)}/>
             <FormHelperText>{property.description}</FormHelperText>
@@ -336,7 +336,7 @@ function GetCodeDependingType(props: AudiencesFormProps) {
             name="input"
             placeholder="auto"
             fullWidth
-            value={profile[property.name] ?? property.default_value}
+            value={profile[property.name] ?? property.defaultValue}
             helperText={property.description}
             onChange={handleInputChange(property.name)}
           />
