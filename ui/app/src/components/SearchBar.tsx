@@ -95,7 +95,7 @@ export default function SearchBar(props: SearchBarProps) {
         onBlur={() => setFocus(false)}
         placeholder={placeholder || formatMessage(messages.placeholder)}
         autoFocus={autofocus}
-        value={keyword !== 'undefined' && keyword}
+        value={typeof keyword !== 'undefined' ? keyword : undefined}
         classes={{
           root: classes.inputRoot,
           input: classes.inputInput,

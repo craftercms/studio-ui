@@ -30,7 +30,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { getHostToGuestBus } from "../previewContext";
+import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
 import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchPanelAssetsItems } from "../../../state/actions/preview";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import MediaCard from '../../../components/MediaCard';
@@ -82,7 +82,7 @@ const assetsPanelStyles = makeStyles(() => createStyles({
     bottom: 0,
     background: 'white',
     color: 'black',
-    width: '239px',
+    width: `calc(${DRAWER_WIDTH}px - 1px)`,
     left: 0,
     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
     '& p': {
