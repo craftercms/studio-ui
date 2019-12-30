@@ -344,12 +344,7 @@ export function Guest(props) {
         return;
       }
 
-      const firstReceptaclePhyRecord = ElementRegistry.fromICEId(receptacles[0].id);
-      // Scroll the doc to the closest drop zone
-      // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-      $(scrollElement).animate({
-        scrollTop: $(firstReceptaclePhyRecord.element).offset().top - 100
-      }, 300);
+      scrollToElement(ElementRegistry.fromICEId(receptacles[0].id).element);
 
       const validatedReceptacles = receptacles.filter((id) => {
         // TODO: min/max count validations
@@ -710,6 +705,8 @@ export function Guest(props) {
       }
       const validReceptacles = iceRegistry.getMediaReceptacles(type);
 
+      scrollToElement(ElementRegistry.fromICEId(validReceptacles[0]).element);
+
       validReceptacles
         .forEach((id) => {
 
@@ -829,6 +826,14 @@ export function Guest(props) {
     } else {
       return true;
     }
+  }
+
+  function scrollToElement(element) {
+    // Scroll the doc to the closest drop zone
+    // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
+    $(scrollElement).animate({
+      scrollTop: $(element).offset().top - 100
+    }, 300);
   }
 
   // 1. Subscribes to accommodation messages and routes them.
