@@ -21,6 +21,9 @@ import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
+  FETCH_AUDIENCES_PANEL_CONFIG,
+  FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE,
+  FETCH_AUDIENCES_PANEL_CONFIG_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -48,7 +51,8 @@ const reducer = createReducer<GlobalState['preview']>({
   previousTool: null,
   selectedTool: 'craftercms.ice.components',
   tools: null,
-  guest: null
+  guest: null,
+  audiencesPanel: null
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -227,7 +231,23 @@ const reducer = createReducer<GlobalState['preview']>({
       nextState = { ...nextState, currentUrl: payload.nextUrl };
     }
     return nextState;
-  }
+  },
+  [FETCH_AUDIENCES_PANEL_CONFIG]: (state) => ({
+    ...state,
+    audiencesPanel: { ...state.audiencesPanel, isFetching: true }
+  }),
+  [FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      properties: payload.properties,
+      isFetching: false,
+      error: null
+    }
+  }),
+  [FETCH_AUDIENCES_PANEL_CONFIG_FAILED]: (state, { payload }) => ({
+    ...state,
+    assets: { ...state.audiencesPanel, error: payload.response, isFetching: true }
+  })
 });
 
 function minFrameSize(suggestedSize: number): number {

@@ -22,6 +22,7 @@ import { GuestData } from '../../modules/Preview/previewContext';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
+import { AudiencesPanelConfig } from "../../services/configuration";
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -71,6 +72,9 @@ export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
+export const FETCH_AUDIENCES_PANEL_CONFIG = 'FETCH_AUDIENCES_PANEL_CONFIG';
+export const FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE = 'FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_CONFIG_FAILED = 'FETCH_AUDIENCES_PANEL_CONFIG_FAILED';
 
 // endregion
 
@@ -173,6 +177,22 @@ export function setItemBeingDragged(active: boolean): StandardAction {
     type: SET_ITEM_BEING_DRAGGED,
     payload: active
   };
+}
+
+export const fetchAudiencesPanelConfig = createAction(FETCH_AUDIENCES_PANEL_CONFIG);
+
+export function fetchAudiencesPanelConfigComplete(config: AudiencesPanelConfig): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE,
+    payload: config
+  }
+}
+
+export function fetchAudiencesPanelConfigFailed(error): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_CONFIG_FAILED,
+    payload: error
+  }
 }
 
 // endregion
