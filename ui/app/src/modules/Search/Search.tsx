@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { ElementType, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Avatar, Theme } from "@material-ui/core";
@@ -54,7 +54,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { isEditableAsset } from "../../utils/content";
 import Menu from "@material-ui/core/Menu";
-import { CardMenuOption } from "../../models/Card";
 import MenuItem from "@material-ui/core/MenuItem";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -221,6 +220,13 @@ const messages = defineMessages({
     defaultMessage: 'Loading...'
   },
 });
+
+interface CardMenuOption {
+  name: string;
+  icon?: ElementType<any>;
+
+  onClick(...params: any): any;
+}
 
 interface SearchProps {
   history: History;
