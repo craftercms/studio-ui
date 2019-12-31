@@ -31,7 +31,7 @@ import { Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
-import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchPanelAssetsItems } from "../../../state/actions/preview";
+import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from "../../../state/actions/preview";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
@@ -141,13 +141,13 @@ export default function AssetsPanel() {
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
-      dispatch(fetchPanelAssetsItems({ keywords }));
+      dispatch(fetchAssetsPanelItems({ keywords }));
     });
     return () => subscription.unsubscribe();
   }, [dispatch, onSearch$]);
 
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
-    dispatch(fetchPanelAssetsItems({ offset: newPage }));
+    dispatch(fetchAssetsPanelItems({ offset: newPage }));
   }
 
   function handleSearchKeyword(keyword: string) {

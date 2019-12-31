@@ -22,8 +22,8 @@ import {
   checkOutGuest,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
+  fetchAssetsPanelItems,
   fetchContentTypes,
-  fetchPanelAssetsItems,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -191,7 +191,7 @@ export function PreviewConcierge(props: any) {
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        (assets.isFetching === null && site) && dispatch(fetchPanelAssetsItems(initialSearchParameters));
+        (assets.isFetching === null && site) && dispatch(fetchAssetsPanelItems(initialSearchParameters));
         break;
       case 'craftercms.ice.components':
         // Retrieve all content types in the system

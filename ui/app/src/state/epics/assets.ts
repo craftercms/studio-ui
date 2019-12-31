@@ -17,9 +17,9 @@
 
 import { Epic, ofType } from 'redux-observable';
 import {
-  FETCH_PANEL_ASSETS_ITEMS,
-  fetchPanelAssetsItemsComplete,
-  fetchPanelAssetsItemsFailed
+  FETCH_ASSETS_PANEL_ITEMS,
+  fetchAssetsPanelItemsComplete,
+  fetchAssetsPanelItemsFailed
 } from '../actions/preview';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
@@ -28,11 +28,11 @@ import { Observable } from "rxjs";
 import GlobalState from '../../models/GlobalState';
 
 const fetchAssets: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_PANEL_ASSETS_ITEMS),
+  ofType(FETCH_ASSETS_PANEL_ITEMS),
   withLatestFrom(state$),
   switchMap(([, state]) => search(state.sites.active, state.preview.assets.query)),
-  map(fetchPanelAssetsItemsComplete),
-  catchAjaxError(fetchPanelAssetsItemsFailed)
+  map(fetchAssetsPanelItemsComplete),
+  catchAjaxError(fetchAssetsPanelItemsFailed)
 );
 
 export default [

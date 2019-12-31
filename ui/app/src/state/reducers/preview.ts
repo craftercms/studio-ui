@@ -21,10 +21,10 @@ import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
+  FETCH_ASSETS_PANEL_ITEMS,
+  FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
+  FETCH_ASSETS_PANEL_ITEMS_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
-  FETCH_PANEL_ASSETS_ITEMS,
-  FETCH_PANEL_ASSETS_ITEMS_COMPLETE,
-  FETCH_PANEL_ASSETS_ITEMS_FAILED,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -243,11 +243,11 @@ const reducer = createReducer<GlobalState['preview']>({
     }
     return nextState;
   },
-  [FETCH_PANEL_ASSETS_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => ({
+  [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => ({
     ...state,
     assets: { ...state.assets, isFetching: true, query: { ...state.assets.query, ...query } }
   }),
-  [FETCH_PANEL_ASSETS_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
+  [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
     let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
     let pageNumber = state.assets.query.offset / state.assets.query.limit;
     let page = [...state.assets.page];
@@ -264,7 +264,7 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   },
-  [FETCH_PANEL_ASSETS_ITEMS_FAILED]: (state, { payload }) => ({
+  [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: true }
   })

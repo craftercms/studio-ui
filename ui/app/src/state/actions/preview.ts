@@ -72,9 +72,9 @@ export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
-export const FETCH_PANEL_ASSETS_ITEMS = 'FETCH_PANEL_ASSETS_ITEMS';
-export const FETCH_PANEL_ASSETS_ITEMS_COMPLETE = 'FETCH_PANEL_ASSETS_ITEMS_COMPLETE';
-export const FETCH_PANEL_ASSETS_ITEMS_FAILED = 'FETCH_PANEL_ASSETS_ITEMS_FAILED';
+export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
+export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
+export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
 
 // endregion
 
@@ -179,20 +179,11 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   };
 }
 
-export const fetchPanelAssetsItems = createAction<Partial<ElasticParams>>(FETCH_PANEL_ASSETS_ITEMS);
+export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
 
-export function fetchPanelAssetsItemsComplete(searchResult: SearchResult): StandardAction {
-  return {
-    type: FETCH_PANEL_ASSETS_ITEMS_COMPLETE,
-    payload: searchResult
-  }
-}
+export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_ASSETS_PANEL_ITEMS_COMPLETE);
 
-export function fetchPanelAssetsItemsFailed(error): StandardAction {
-  return {
-    type: FETCH_PANEL_ASSETS_ITEMS_FAILED,
-    payload: error
-  };
-}
+export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
 // endregion
+
