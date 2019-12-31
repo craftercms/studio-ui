@@ -21,9 +21,9 @@ import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
-  FETCH_AUDIENCES_PANEL_CONFIG,
-  FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE,
-  FETCH_AUDIENCES_PANEL_CONFIG_FAILED,
+  FETCH_AUDIENCES_PANEL,
+  FETCH_AUDIENCES_PANEL_COMPLETE,
+  FETCH_AUDIENCES_PANEL_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -32,13 +32,14 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
+  SET_AUDIENCES_PANEL_PROFILE,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   TOOLS_LOADED
 } from '../actions/preview';
-import { nnou, nou } from '../../utils/object';
+import { createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
@@ -52,7 +53,7 @@ const reducer = createReducer<GlobalState['preview']>({
   selectedTool: 'craftercms.ice.components',
   tools: null,
   guest: null,
-  audiencesPanel: null
+  audiencesPanel: {}    // TODO: should this be an entityState (if so, how to deal with multiple props config/profile)
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -232,21 +233,52 @@ const reducer = createReducer<GlobalState['preview']>({
     }
     return nextState;
   },
-  [FETCH_AUDIENCES_PANEL_CONFIG]: (state) => ({
+  [FETCH_AUDIENCES_PANEL]: (state) => ({
     ...state,
     audiencesPanel: { ...state.audiencesPanel, isFetching: true }
   }),
-  [FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE]: (state, { payload }) => ({
+  [FETCH_AUDIENCES_PANEL_COMPLETE]: (state, { payload }) => {
+    const data = {
+      site: payload[0].site,
+      data: {
+        config: payload[0].properties,
+        profile: payload[1]
+      }
+    };
+    let dataLookupTable = createLookupTable<any>([data], 'site');
+
+    return {
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        byId: {
+          ...state.audiencesPanel.byId,
+          ...dataLookupTable
+        },
+        isFetching: false,
+        error: null
+      }
+    }
+  },
+  [FETCH_AUDIENCES_PANEL_FAILED]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: true }
+  }),
+  [SET_AUDIENCES_PANEL_PROFILE]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
-      properties: payload.properties,
-      isFetching: false,
-      error: null
+      ...state.audiencesPanel,
+      byId: {
+        ...state.audiencesPanel.byId,
+        [payload.site]: {
+          ...state.audiencesPanel.byId[payload.site],
+          data: {
+            ...state.audiencesPanel.byId[payload.site].data,
+            profile: payload.profile
+          }
+        }
+      }
     }
-  }),
-  [FETCH_AUDIENCES_PANEL_CONFIG_FAILED]: (state, { payload }) => ({
-    ...state,
-    assets: { ...state.audiencesPanel, error: payload.response, isFetching: true }
   })
 });
 

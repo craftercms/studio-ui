@@ -22,7 +22,6 @@ import ContentType from './ContentType';
 import { GuestData } from '../modules/Preview/previewContext';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
-import { AudiencesPanelConfig } from "../services/configuration";
 
 interface APIError {
   code: string;
@@ -64,7 +63,7 @@ export interface GlobalState {
     tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;
-    audiencesPanel: AudiencesPanelConfig;
+    audiencesPanel: any;
   }
 }
 

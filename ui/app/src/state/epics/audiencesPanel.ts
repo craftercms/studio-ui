@@ -18,25 +18,21 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import {
-  FETCH_AUDIENCES_PANEL_CONFIG,
-  fetchAudiencesPanelConfigComplete,
-  fetchAudiencesPanelConfigFailed
-} from "../actions/preview";
+import { FETCH_AUDIENCES_PANEL, fetchAudiencesPanelComplete, fetchAudiencesPanelFailed } from "../actions/preview";
 import { map, switchMap, withLatestFrom } from "rxjs/operators";
 import { catchAjaxError } from "../../utils/ajax";
-import { getAudiencesPanelConfig } from "../../services/configuration";
-import { Observable } from "rxjs";
+import { getAudiencesPanelConfig, getAudiencesPanelProfile } from "../../services/configuration";
+import { forkJoin, Observable } from "rxjs";
 import GlobalState from "../../models/GlobalState";
 
-const fetchAudiencesPanelConfig: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_AUDIENCES_PANEL_CONFIG),
+const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
+  ofType(FETCH_AUDIENCES_PANEL),
   withLatestFrom(state$),
-  switchMap(([, state]) => getAudiencesPanelConfig(state.sites.active)),
-  map(fetchAudiencesPanelConfigComplete),
-  catchAjaxError(fetchAudiencesPanelConfigFailed)
+  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), getAudiencesPanelProfile()])),
+  map(fetchAudiencesPanelComplete),
+  catchAjaxError(fetchAudiencesPanelFailed)
 );
 
 export default [
-  fetchAudiencesPanelConfig
+  fetchAudiencesPanel
 ] as Epic[];

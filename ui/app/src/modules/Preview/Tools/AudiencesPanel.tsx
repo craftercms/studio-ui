@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { AudiencesPanelDescriptor, getAudiencesPanelConfig } from '../../../services/configuration';
+import { AudiencesPanelDescriptor } from '../../../services/configuration';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -34,10 +34,12 @@ import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import Button from '@material-ui/core/Button';
 import { get } from '../../../utils/ajax';
-import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
 import DateTimePicker from "../../../components/DateTimePicker";
-import { useActiveSiteId } from "../../../utils/hooks";
+import { useActiveSiteId, useEntitySelectionResource } from "../../../utils/hooks";
+import { ErrorBoundary } from "../../../components/ErrorBoundary";
+import LoadingState from "../../../components/SystemStatus/LoadingState";
+import { useDispatch } from "react-redux";
+import { setAudiencesPanelProfile } from "../../../state/actions/preview";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -86,8 +88,9 @@ const translations = defineMessages({
 });
 
 interface AudiencesPanelUIProps {
-  config: any;
-  profile: any;
+  audiencesResource: any;
+  currentProfile: any;
+  setCurrentProfile: Function;
   onFormChange: Function;
   saveProfile: Function;
   setDefaults: Function;
@@ -97,34 +100,51 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   const classes = useStyles({});
   const {
-    config,
-    profile,
+    audiencesResource,
+    currentProfile,
+    setCurrentProfile,
     onFormChange,
     saveProfile,
     setDefaults
   } = props;
+  const site = useActiveSiteId();
+  const audiencesData = audiencesResource.read();
+  const audiencesSiteData = audiencesData.find(data => data.site === site).data;
+  const { config, profile } = audiencesSiteData;
+
+  useEffect(() => {
+    let mergedProfile = {};
+
+    config.forEach((property) => {
+      mergedProfile[property.name] = profile[property.name] ?? property.defaultValue;
+    });
+
+    setCurrentProfile(
+      mergedProfile
+    );
+  }, [config, profile]);
 
   return (
     <ToolPanel title={translations.audiencesPanel}>
       {
-        config ? (
+        currentProfile ? (
           <>
             <Grid className={classes.PanelMargin}>
               {
                 config.map((property: any, index: number) => (
                   <div key={index}>
-                    <GetCodeDependingType
+                    <AudiencesFormSection
                       property={property}
-                      profile={profile}
+                      profile={currentProfile}
                       onFormChange={onFormChange}
                     />
-                    <Divider className={classes.divider} />
+                    <Divider className={classes.divider}/>
                   </div>
                 ))
               }
             </Grid>
             <Grid className={classes.actionBTN} >
-              <Button variant="contained" onClick={() => setDefaults()}>
+              <Button variant="contained" onClick={() => setDefaults(config)}>
                 <FormattedMessage
                   id="audiencesPanel.defaults"
                   defaultMessage={`Defaults`}
@@ -145,78 +165,57 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 }
 
 export default function AudiencesPanel() {
-
-  const [config, setConfig] = useState();
-  const [profile, setProfile] = useState();
+  const [currentProfile, setCurrentProfile] = useState();
+  const resource = useEntitySelectionResource(state => state.preview.audiencesPanel);
   const site = useActiveSiteId();
-
-  useEffect(() => {
-
-    forkJoin([
-      getAudiencesPanelConfig(site),
-      get(`/api/1/profile/get`).pipe(map(response => response.response))
-    ]).subscribe(
-      // Here code that needs both files
-      ([config, profile]) => {
-        setConfig(
-          config.properties
-        );
-
-        let mergedProfile = {};
-
-        config.properties.forEach((property) => {
-          mergedProfile[property.name] = profile[property.name] ?? property.defaultValue;
-        });
-
-        setProfile(
-          mergedProfile
-        );
-      },
-      () => {
-        // TODO: handle error (will use PreviewConcierge)
-      }
-    );
-  }, []);
+  const dispatch = useDispatch();
 
   const onFormChange = (name: string, value: string) => {
-    setProfile({ ...profile, [name]: value });
+    setCurrentProfile({ ...currentProfile, [name]: value });
   };
 
   const saveProfile = () => {
-    let params = encodeURI(Object.entries(profile).map(([key, val]) => `${key}=${val}`).join('&'));
+    let params = encodeURI(Object.entries(currentProfile).map(([key, val]) => `${key}=${val}`).join('&'));
 
     get(`/api/1/profile/set?${params}`).subscribe(
       ({ response }) => {
-        // TODO: handle success
-      },
-      () => {
-        // TODO: handle error
+        dispatch(setAudiencesPanelProfile(site, currentProfile));
+        // TODO: display success message
       }
     );
   };
 
-  const setDefaults = () => {
+  const setDefaults = (config) => {
     let defaultProfile = {};
 
     config.forEach((property) => {
       defaultProfile[property.name] = property.defaultValue;
     });
 
-    setProfile(defaultProfile);
+    setCurrentProfile(defaultProfile);
   };
 
   return (
     <div>
-      {
-        config && profile &&
-        <AudiencesPanelUI
-          config={config}
-          profile={profile}
-          onFormChange={onFormChange}
-          saveProfile={saveProfile}
-          setDefaults={setDefaults}
-        />
-      }
+      <ErrorBoundary>
+        <React.Suspense
+          fallback={
+            <LoadingState
+              title="Loading"
+              graphicProps={{ width: 150 }}
+            />
+          }
+        >
+          <AudiencesPanelUI
+            audiencesResource={resource}
+            currentProfile={currentProfile}
+            setCurrentProfile={setCurrentProfile}
+            onFormChange={onFormChange}
+            saveProfile={saveProfile}
+            setDefaults={setDefaults}
+          />
+        </React.Suspense>
+      </ErrorBoundary>
     </div>
   );
 
@@ -228,7 +227,7 @@ interface AudiencesFormProps {
   onFormChange: Function;
 }
 
-function GetCodeDependingType(props: AudiencesFormProps) {
+function AudiencesFormSection(props: AudiencesFormProps) {
 
   const classes = useStyles({});
   const {

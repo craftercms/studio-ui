@@ -62,13 +62,15 @@ export interface AudiencesPanelDescriptor {
 }
 
 export interface AudiencesPanelConfig {
+  site: string;
   properties: Array<AudiencesPanelDescriptor>;
 }
 
 const LegacyPanelIdMap: any = {
   'ice-tools-panel': 'craftercms.ice.ice',
   'component-panel': 'craftercms.ice.components',
-  'medium-panel': 'craftercms.ice.simulator'
+  'medium-panel': 'craftercms.ice.simulator',
+  'targeting': 'craftercms.ice.audiences'
 };
 
 export function getPreviewToolsConfig(site: string): Observable<PreviewToolsConfig> {
@@ -118,9 +120,8 @@ export function getAudiencesPanelConfig(site: string): Observable<AudiencesPanel
       try {
         return JSON.parse(content);
       } catch (e) {
-        console.log(content);
         // Not JSON, assuming XML
-        let audiencesPanelConfig: AudiencesPanelConfig = { properties: null };
+        let audiencesPanelConfig: AudiencesPanelConfig = { properties: null, site };
         const xml = fromString(content);
         audiencesPanelConfig.properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
 
@@ -159,6 +160,10 @@ export function getAudiencesPanelConfig(site: string): Observable<AudiencesPanel
       }
     })
   );
+}
+
+export function getAudiencesPanelProfile() {
+  return get(`/api/1/profile/get`).pipe(map(response => response.response));
 }
 
 function parseSimulatorPanelConfig(element: Element) {

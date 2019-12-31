@@ -22,7 +22,6 @@ import { GuestData } from '../../modules/Preview/previewContext';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
-import { AudiencesPanelConfig } from "../../services/configuration";
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -72,9 +71,10 @@ export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
-export const FETCH_AUDIENCES_PANEL_CONFIG = 'FETCH_AUDIENCES_PANEL_CONFIG';
-export const FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE = 'FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE';
-export const FETCH_AUDIENCES_PANEL_CONFIG_FAILED = 'FETCH_AUDIENCES_PANEL_CONFIG_FAILED';
+export const FETCH_AUDIENCES_PANEL = 'FETCH_AUDIENCES_PANEL';
+export const FETCH_AUDIENCES_PANEL_COMPLETE = 'FETCH_AUDIENCES_PANEL_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_FAILED = 'FETCH_AUDIENCES_PANEL_FAILED';
+export const SET_AUDIENCES_PANEL_PROFILE = 'SET_AUDIENCES_PANEL_PROFILE';
 
 // endregion
 
@@ -179,20 +179,31 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelConfig = createAction(FETCH_AUDIENCES_PANEL_CONFIG);
+export const fetchAudiencesPanel = createAction(FETCH_AUDIENCES_PANEL);
 
-export function fetchAudiencesPanelConfigComplete(config: AudiencesPanelConfig): StandardAction {
+export function fetchAudiencesPanelComplete(data): StandardAction {
   return {
-    type: FETCH_AUDIENCES_PANEL_CONFIG_COMPLETE,
-    payload: config
+    type: FETCH_AUDIENCES_PANEL_COMPLETE,
+    payload: data
   }
 }
 
-export function fetchAudiencesPanelConfigFailed(error): StandardAction {
+export function setAudiencesPanelProfile(site, profile): StandardAction {
   return {
-    type: FETCH_AUDIENCES_PANEL_CONFIG_FAILED,
+    type: SET_AUDIENCES_PANEL_PROFILE,
+    payload: {
+      site,
+      profile
+    }
+  }
+}
+
+export function fetchAudiencesPanelFailed(error): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FAILED,
     payload: error
   }
 }
+
 
 // endregion

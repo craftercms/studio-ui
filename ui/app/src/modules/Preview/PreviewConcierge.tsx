@@ -22,7 +22,7 @@ import {
   checkOutGuest,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
-  fetchAudiencesPanelConfig,
+  fetchAudiencesPanel,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -183,7 +183,10 @@ export function PreviewConcierge(props: any) {
         // TODO: aaron to fetch assets here...
         break;
       case 'craftercms.ice.audiences':
-        (audiencesPanel === null && site) && dispatch(fetchAudiencesPanelConfig());
+        // TODO: CHANGE VALIDATION
+        if (Object.entries(audiencesPanel).length === 0 && audiencesPanel.constructor === Object) {
+          dispatch(fetchAudiencesPanel());
+        }
         break;
       case 'craftercms.ice.components':
         // Retrieve all content types in the system
