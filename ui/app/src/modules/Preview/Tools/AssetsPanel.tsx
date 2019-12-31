@@ -195,7 +195,7 @@ export function AssetsPanelUI(props) {
   const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
   const assets: PagedEntityState<MediaItem> = assetsResource.read();
   const { byId, count: total, query, page } = assets;
-  const pageNumber = query.offset / query.limit;
+  const pageNumber = Math.ceil(query.offset / query.limit);
   const items = page[pageNumber];
   const { formatMessage } = useIntl();
 

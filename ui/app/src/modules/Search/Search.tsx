@@ -648,7 +648,7 @@ function Search(props: SearchProps) {
             labelRowsPerPage={formatMessage(messages.itemsPerPage)}
             count={searchResults.total}
             rowsPerPage={searchParameters.limit}
-            page={searchParameters.offset / searchParameters.limit}
+            page={Math.ceil(searchParameters.offset / searchParameters.limit)}
             backIconButtonProps={{
               'aria-label': 'previous page',
             }}

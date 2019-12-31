@@ -249,7 +249,7 @@ const reducer = createReducer<GlobalState['preview']>({
   }),
   [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
     let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
-    let pageNumber = state.assets.query.offset / state.assets.query.limit;
+    let pageNumber = Math.ceil(state.assets.query.offset / state.assets.query.limit);
     let page = [...state.assets.page];
     page[pageNumber] = Object.keys(itemsLookupTable);
     return {
@@ -266,7 +266,7 @@ const reducer = createReducer<GlobalState['preview']>({
   },
   [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
-    assets: { ...state.assets, error: payload.response, isFetching: true }
+    assets: { ...state.assets, error: payload.response, isFetching: false }
   })
 });
 
