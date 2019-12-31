@@ -44,9 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: '-webkit-box',
       '-webkit-line-clamp': 1,
       '-webkit-box-orient': 'vertical',
-    },
-    '&.list': {
-      display: 'flex',
     }
   },
   cardHeaderRoot: {
@@ -60,9 +57,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     width: '100%',
-    '&.list': {
-      marginLeft: '15px'
-    }
   },
   cardOptions: {
     marginLeft: 'auto'
@@ -70,12 +64,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
-    '&.list': {
-      paddingTop: 0,
-      height: '80px',
-      width: '80px',
-      order: -1
-    }
   },
   listActionArea: {
     paddingTop: 0,
@@ -101,38 +89,34 @@ const useStyles = makeStyles((theme: Theme) => ({
       order: -1
     }
   },
-  checkbox: {
-    '&.list': {
-      justifyContent: 'center',
-      order: -2,
-      marginRight: '5px',
-      marginLeft: '16px'
-    }
-  },
+  checkbox: {}
 }));
 
 interface MediaCardProps {
   item: MediaItem;
-  hasCheckbox?: boolean;
   hasSubheader?: boolean;
-  currentView?: string;
+  isList?: boolean;
   selected?: Array<string>;
   previewAppBaseUri: string;
   headerButtonIcon?: React.ElementType<any>;
   avatar?: React.ElementType<any>;
   classes?: {
     root?: any;
+    checkbox?: any;
+    header?: any;
+    media?: any;
+    mediaIcon?: any;
   };
 
-  handleHeaderButtonClick?(...props: any): any;
+  onHeaderButtonClick?(...props: any): any;
 
-  handleEdit?(path: string, readonly?: boolean): any;
+  onEdit?(path: string, readonly?: boolean): any;
 
-  handlePreview?(url: string): any;
+  onPreview?(url: string): any;
 
-  handlePreviewAsset?(url: string, type: string, name: string): any;
+  onPreviewAsset?(url: string, type: string, name: string): any;
 
-  handleSelect?(path: string, selected: boolean): any;
+  onSelect?(path: string, selected: boolean): any;
 
   onDragStart?(...args: any): any;
 
@@ -142,24 +126,22 @@ interface MediaCardProps {
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
   const {
-    handleEdit,
-    handlePreview,
-    handlePreviewAsset,
-    handleSelect,
+    onEdit,
+    onPreview,
+    onPreviewAsset,
+    onSelect,
     selected,
     item,
     previewAppBaseUri,
-    currentView = 'grid',
-    hasCheckbox = true,
     hasSubheader = true,
+    isList = false,
     headerButtonIcon: HeaderButtonIcon = MoreVertRounded,
-    handleHeaderButtonClick,
+    onHeaderButtonClick,
     avatar: Avatar,
     onDragStart,
     onDragEnd
   } = props;
   const { name, path, type } = item;
-  const isList = currentView === 'list';
 
   const renderIcon = (type: string, path: string, name: string) => {
     let iconClass = 'fa media-icon';
@@ -195,11 +177,11 @@ function MediaCard(props: MediaCardProps) {
       <CardActionArea
         onClick={
           previewArea
-            ? () => handlePreviewAsset(path, type, name)
-            : () => handleEdit(path, true)
+            ? () => onPreviewAsset(path, type, name)
+            : () => onEdit(path, true)
         }
         className={clsx(isList && classes.listActionArea)}>
-        <div className={clsx(classes.mediaIcon, isList && 'list')}>
+        <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
           <i className={iconName}></i>
         </div>
       </CardActionArea>
@@ -208,27 +190,27 @@ function MediaCard(props: MediaCardProps) {
 
   return (
     <Card
-      className={clsx(classes.card, isList && 'list', props.classes?.root)}
+      className={clsx(classes.card, props.classes?.root)}
       draggable={!!onDragStart || !!onDragEnd}
       onDragStart={() => onDragStart(item)}
       onDragEnd={() => onDragEnd(item)}
     >
       {
-        (isList && hasCheckbox) &&
-        <FormGroup className={clsx(classes.checkbox, 'list')}>
+        (isList && onSelect) &&
+        <FormGroup className={clsx(classes.checkbox, props.classes?.checkbox)}>
           <Checkbox
             checked={selected.includes(path)}
-            onClick={(e: any) => handleSelect(path, e.target.checked)}
+            onClick={(e: any) => onSelect(path, e.target.checked)}
             color="primary"/>
         </FormGroup>
       }
-      <header className={clsx(classes.cardHeader, isList && 'list')}>
+      <header className={clsx(classes.cardHeader, props.classes?.header)}>
         {
-          (!isList && hasCheckbox) &&
-          <FormGroup className={classes.checkbox}>
+          (!isList && onSelect) &&
+          <FormGroup>
             <Checkbox
               checked={selected.includes(path)}
-              onClick={(e: any) => handleSelect(path, e.target.checked)}
+              onClick={(e: any) => onSelect(path, e.target.checked)}
               color="primary"/>
           </FormGroup>
         }
@@ -237,11 +219,11 @@ function MediaCard(props: MediaCardProps) {
           subheader={hasSubheader ? type : null}
           avatar={Avatar ? <Avatar/> : null}
           classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
-          onClick={(type === 'Image' || type === 'Video' || type === 'Page') && handlePreview ? () => handlePreview(path) : null}
+          onClick={(type === 'Image' || type === 'Video' || type === 'Page') && onPreview ? () => onPreview(path) : null}
           titleTypographyProps={{
             variant: "subtitle2",
             component: "h2",
-            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && handlePreview && 'clickable')
+            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && onPreview && 'clickable')
           }}
           subheaderTypographyProps={{
             variant: "subtitle2",
@@ -251,11 +233,11 @@ function MediaCard(props: MediaCardProps) {
           }}
         />
         {
-          handleHeaderButtonClick &&
+          onHeaderButtonClick &&
           <IconButton
             aria-label="options"
             className={classes.cardOptions}
-            onClick={(e) => handleHeaderButtonClick(e, item)}
+            onClick={(e) => onHeaderButtonClick(e, item)}
           >
             <HeaderButtonIcon/>
           </IconButton>
@@ -263,20 +245,20 @@ function MediaCard(props: MediaCardProps) {
       </header>
       {
         (type === 'Image') ? (
-          handlePreviewAsset ? (
+          onPreviewAsset ? (
             <CardActionArea
-              onClick={() => handlePreviewAsset(path, type, name)}
+              onClick={() => onPreviewAsset(path, type, name)}
               className={clsx(isList && classes.listActionArea)}
             >
               <CardMedia
-                className={clsx(classes.media, isList && 'list')}
+                className={clsx(classes.media, props.classes?.media)}
                 image={`${previewAppBaseUri}${path}`}
                 title={name}
               />
             </CardActionArea>
           ) : (
             <CardMedia
-              className={clsx(classes.media, isList && 'list')}
+              className={clsx(classes.media, props.classes?.media)}
               image={`${previewAppBaseUri}${path}`}
               title={name}
             />

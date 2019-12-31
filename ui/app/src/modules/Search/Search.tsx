@@ -151,6 +151,30 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: palette.gray.medium3,
     marginRight: '5px'
   },
+  mediaCardListRoot: {
+    display: 'flex'
+  },
+  mediaCardListCheckbox: {
+    justifyContent: 'center',
+    order: -2,
+    marginRight: '5px',
+    marginLeft: '16px'
+  },
+  mediaCardListHeader: {
+    marginLeft: '15px'
+  },
+  mediaCardListMedia: {
+    paddingTop: 0,
+    height: '80px',
+    width: '80px',
+    order: -1
+  },
+  mediaCardListMediaIcon: {
+    height: '80px',
+    width: '80px',
+    paddingTop: '0',
+    order: -1
+  }
 }));
 
 const initialSearchParameters: ElasticParams = {
@@ -284,28 +308,34 @@ function Search(props: SearchProps) {
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
               <MediaCard
                 item={item}
-                currentView={currentView}
-                handleEdit={handleEdit}
-                handlePreview={handlePreview}
-                handlePreviewAsset={handlePreviewAsset}
-                handleSelect={handleSelect}
+                onEdit={handleEdit}
+                onPreview={handlePreview}
+                onPreviewAsset={handlePreviewAsset}
+                onSelect={handleSelect}
                 selected={selected}
                 previewAppBaseUri={previewAppBaseUri}
-                handleHeaderButtonClick={handleHeaderButtonClick}
+                onHeaderButtonClick={handleHeaderButtonClick}
               />
             </Grid>
           ) : (
             <Grid key={i} item xs={12}>
               <MediaCard
                 item={item}
-                currentView={currentView}
-                handleEdit={handleEdit}
-                handlePreview={handlePreview}
-                handlePreviewAsset={handlePreviewAsset}
-                handleSelect={handleSelect}
+                isList={true}
+                onEdit={handleEdit}
+                onPreview={handlePreview}
+                onPreviewAsset={handlePreviewAsset}
+                onSelect={handleSelect}
+                classes={{
+                  root: classes.mediaCardListRoot,
+                  checkbox: classes.mediaCardListCheckbox,
+                  header: classes.mediaCardListHeader,
+                  media: classes.mediaCardListMedia,
+                  mediaIcon: classes.mediaCardListMediaIcon
+                }}
                 selected={selected}
                 previewAppBaseUri={previewAppBaseUri}
-                handleHeaderButtonClick={handleHeaderButtonClick}
+                onHeaderButtonClick={handleHeaderButtonClick}
               />
             </Grid>
           )

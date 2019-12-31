@@ -225,7 +225,6 @@ export function AssetsPanelUI(props) {
                 key={item.path}
                 item={item}
                 previewAppBaseUri={GUEST_BASE}
-                hasCheckbox={false}
                 hasSubheader={false}
                 avatar={DragIndicatorRounded}
                 classes={{ root: classes.card }}
