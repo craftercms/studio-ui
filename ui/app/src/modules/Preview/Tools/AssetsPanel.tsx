@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useEntitySelectionResource } from "../../../utils/hooks";
-import { ElasticParams, MediaItem } from "../../../models/Search";
+import { useEntitySelectionResource, useSelection } from "../../../utils/hooks";
+import { MediaItem } from "../../../models/Search";
 import { setRequestForgeryToken } from "../../../utils/auth";
 import { createStyles } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -43,27 +43,26 @@ const translations = defineMessages({
     defaultMessage: 'Assets'
   },
   itemsPerPage: {
-    id: 'search.itemsPerPage',
+    id: 'craftercms.ice.assets.itemsPerPage',
     defaultMessage: 'Items per page:'
   },
   noResults: {
-    id: 'search.noResults',
+    id: 'craftercms.ice.assets.noResults',
     defaultMessage: ' No results found.'
   },
   retrieveAssets: {
-    id: 'search.retrieveAssets',
+    id: 'craftercms.ice.assets.retrieveAssets',
     defaultMessage: 'Retrieving Site Assets'
+  },
+  previousPage: {
+    id: 'craftercms.ice.assets.previousPage',
+    defaultMessage: 'previous page'
+  },
+  nextPage: {
+    id: 'craftercms.ice.assets.nextPage',
+    defaultMessage: 'next page'
   }
 });
-
-const initialSearchParameters: ElasticParams = {
-  keywords: '',
-  offset: 0,
-  limit: 10,
-  filters: {
-    'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
-  }
-};
 
 const assetsPanelStyles = makeStyles(() => createStyles({
   assetsPanelWrapper: {
@@ -120,6 +119,8 @@ const assetsPanelStyles = makeStyles(() => createStyles({
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
   const onSearch$ = useMemo(() => new Subject<string>(), []);
+  const initialKeyword = useSelection(state => state.preview.assets.query.keywords);
+  const [keyword, setKeyword] = useState(initialKeyword);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
 
@@ -146,11 +147,12 @@ export default function AssetsPanel() {
     return () => subscription.unsubscribe();
   }, [dispatch, onSearch$]);
 
-  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
+  function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     dispatch(fetchAssetsPanelItems({ offset: newPage }));
   }
 
   function handleSearchKeyword(keyword: string) {
+    setKeyword(keyword);
     onSearch$.next(keyword);
   }
 
@@ -160,6 +162,7 @@ export default function AssetsPanel() {
         <div className={classes.search}>
           <SearchBar
             onChange={handleSearchKeyword}
+            keyword={keyword}
           />
         </div>
         <React.Suspense
@@ -173,7 +176,7 @@ export default function AssetsPanel() {
           <AssetsPanelUI
             classes={classes}
             assetsResource={resource}
-            handleChangePage={handleChangePage}
+            onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
           />
@@ -188,7 +191,7 @@ export function AssetsPanelUI(props) {
   const {
     classes,
     assetsResource,
-    handleChangePage,
+    onPageChanged,
     onDragStart,
     onDragEnd
   } = props;
@@ -210,12 +213,12 @@ export function AssetsPanelUI(props) {
         rowsPerPage={query.limit}
         page={pageNumber}
         backIconButtonProps={{
-          'aria-label': 'previous page',
+          'aria-label': formatMessage(translations.previousPage),
         }}
         nextIconButtonProps={{
-          'aria-label': 'next page',
+          'aria-label': formatMessage(translations.nextPage),
         }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => handleChangePage(e, page * query.limit)}
+        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * query.limit)}
       />
       {
         items.map((id: string) => {
@@ -237,8 +240,10 @@ export function AssetsPanelUI(props) {
       }
       {
         total === 0 &&
-        <EmptyState title={formatMessage(translations.noResults)}
-                    classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}/>
+        <EmptyState
+          title={formatMessage(translations.noResults)}
+          classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+        />
       }
     </div>
   )

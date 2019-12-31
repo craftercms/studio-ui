@@ -406,7 +406,12 @@ export function updateField(site: string, modelId: string, fieldId: string, valu
       };
 
       let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+      if (!fieldNode) {
+        fieldNode = document.createElement(fieldId);
+        doc.append(fieldNode);
+      }
       fieldNode.innerHTML = `<![CDATA[${value}]]>`;
+
       return post(
         writeContentUrl(qs),
         serialize(doc)
@@ -427,7 +432,6 @@ export function insertComponent(
 ): Observable<any> {
   return getDOM(site, modelId).pipe(
     switchMap((doc) => {
-      debugger;
       const qs = {
         site,
         path: modelId,

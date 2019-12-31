@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface ElasticParams {
+export interface ElasticParams extends PaginationOptions {
   query?: string;
   keywords: string;
-  offset: number;
-  limit: number;
   sortBy?: string;
   sortOrder?: string;
   filters:  any;

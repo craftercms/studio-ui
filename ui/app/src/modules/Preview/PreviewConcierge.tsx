@@ -52,7 +52,6 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou } from '../../utils/object';
 import { useOnMount } from '../../utils/helpers';
-import { ElasticParams } from '../../models/Search';
 
 export function PreviewConcierge(props: any) {
 
@@ -191,12 +190,9 @@ export function PreviewConcierge(props: any) {
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        (assets.isFetching === null && site) && dispatch(fetchAssetsPanelItems(initialSearchParameters));
+        (assets.isFetching === null && site) && dispatch(fetchAssetsPanelItems(assets.query));
         break;
       case 'craftercms.ice.components':
-        // Retrieve all content types in the system
-        // (!contentTypes && site) && dispatch(fetchContentTypes());
-        // contentTypes && contentTypes$.next(contentTypes);
         break;
     }
 
@@ -237,15 +233,6 @@ export function PreviewConcierge(props: any) {
   );
 
 }
-
-const initialSearchParameters: ElasticParams = {
-  keywords: '',
-  offset: 0,
-  limit: 10,
-  filters: {
-    'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
-  }
-};
 
 function beginGuestDetection(setSnack): Subscription {
   const guestToHost$ = getGuestToHostBus();

@@ -694,7 +694,6 @@ function Search(props: SearchProps) {
         </div>
       </Dialog>
       <Menu
-        id="options-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
