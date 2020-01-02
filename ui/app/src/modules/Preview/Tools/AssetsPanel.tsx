@@ -60,6 +60,10 @@ const translations = defineMessages({
   nextPage: {
     id: 'craftercms.ice.assets.nextPage',
     defaultMessage: 'next page'
+  },
+  loading: {
+    id: 'craftercms.ice.assets.loading',
+    defaultMessage: 'Loading'
   }
 });
 
@@ -123,6 +127,7 @@ export default function AssetsPanel() {
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
   const resource = useEntitySelectionResource(state => state.preview.assets, state => state);
+  const { formatMessage } = useIntl();
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
     type: ASSET_DRAG_STARTED,
@@ -164,7 +169,7 @@ export default function AssetsPanel() {
         <React.Suspense
           fallback={
             <LoadingState
-              title="Loading"
+              title={formatMessage(translations.loading)}
               graphicProps={{ width: 150 }}
             />
           }

@@ -29,6 +29,14 @@ import Checkbox from "@material-ui/core/Checkbox";
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import { palette } from "../styles/theme";
 import cardTitleStyles from "../styles/card";
+import { defineMessages, useIntl } from 'react-intl';
+
+const translations = defineMessages({
+  options: {
+    id: 'media.card.title',
+    defaultMessage: 'options'
+  }
+});
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -142,6 +150,7 @@ function MediaCard(props: MediaCardProps) {
     onDragEnd
   } = props;
   const { name, path, type } = item;
+  const { formatMessage } = useIntl();
 
   const renderIcon = (type: string, path: string, name: string) => {
     let iconClass = 'fa media-icon';
@@ -235,7 +244,7 @@ function MediaCard(props: MediaCardProps) {
         {
           onHeaderButtonClick &&
           <IconButton
-            aria-label="options"
+            aria-label={formatMessage(translations.options)}
             className={classes.cardOptions}
             onClick={(e) => onHeaderButtonClick(e, item)}
           >
