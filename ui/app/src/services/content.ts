@@ -413,15 +413,15 @@ export function updateField(site: string, modelId: string, fieldId: string, valu
           let parentNode = document.createElement(repeatFieldId[0]);
           let itemNode = document.createElement('item');
           fieldNode = document.createElement(repeatFieldId[1]);
-          itemNode.append(fieldNode);
-          parentNode.append(itemNode);
-          doc.documentElement.append(parentNode);
+          itemNode.appendChild(fieldNode);
+          parentNode.appendChild(itemNode);
+          doc.documentElement.appendChild(parentNode);
         }
       } else {
         fieldNode = doc.querySelector(`:scope > ${fieldId}`);
         if (!fieldNode) {
           fieldNode = document.createElement(fieldId);
-          doc.documentElement.append(fieldNode);
+          doc.documentElement.appendChild(fieldNode);
         }
       }
       fieldNode.innerHTML = `<![CDATA[${value}]]>`;
