@@ -16,11 +16,7 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import {
-  FETCH_CONTENT_TYPES,
-  fetchContentTypesComplete,
-  fetchContentTypesFailed
-} from '../actions/preview';
+import { FETCH_CONTENT_TYPES, fetchContentTypesComplete, fetchContentTypesFailed } from '../actions/preview';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { fetchContentTypes } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
@@ -28,9 +24,10 @@ import { catchAjaxError } from '../../utils/ajax';
 const fetch: Epic = (action$, state$) => action$.pipe(
   ofType(FETCH_CONTENT_TYPES),
   withLatestFrom(state$),
-  switchMap(([, { sites: { active: site } }]) => fetchContentTypes(site)),
-  map(fetchContentTypesComplete),
-  catchAjaxError(fetchContentTypesFailed)
+  switchMap(([, { sites: { active: site } }]) => fetchContentTypes(site).pipe(
+    map(fetchContentTypesComplete),
+    catchAjaxError(fetchContentTypesFailed)
+  ))
 );
 
 export default [
