@@ -41,6 +41,7 @@ export interface EntityState<T = any> {
 
 export interface PagedEntityState<T = any> extends EntityState<T> {
   page: any;
+  pageNumber: number;
   count: number;
   query: ElasticParams;
 }

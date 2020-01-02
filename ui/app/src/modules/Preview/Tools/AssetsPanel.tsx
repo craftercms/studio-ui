@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useEntitySelectionResource, useSelection } from "../../../utils/hooks";
+import { useSelection, useStateResourceSelection } from "../../../utils/hooks";
 import { MediaItem } from "../../../models/Search";
 import { createStyles } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -35,6 +35,7 @@ import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from "../../../components/SystemStatus/EmptyState";
+import { nnou } from "../../../utils/object";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -119,6 +120,10 @@ const assetsPanelStyles = makeStyles(() => createStyles({
   }
 }));
 
+interface AssetResource {
+
+}
+
 export default function AssetsPanel() {
   const classes = assetsPanelStyles({});
   const onSearch$ = useMemo(() => new Subject<string>(), []);
@@ -126,7 +131,13 @@ export default function AssetsPanel() {
   const [keyword, setKeyword] = useState(initialKeyword);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-  const resource = useEntitySelectionResource(state => state.preview.assets, state => state);
+  const resource = useStateResourceSelection<PagedEntityState<MediaItem>, PagedEntityState<MediaItem>>(state => state.preview.assets, {
+    shouldRenew: (source, resource) => resource.complete,
+    shouldResolve: source => (!source.isFetching) && nnou(source.byId),
+    shouldReject: source => nnou(source.error),
+    errorSelector: source => source.error,
+    resultSelector: source => source
+  });
   const { formatMessage } = useIntl();
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
@@ -194,12 +205,11 @@ export function AssetsPanelUI(props) {
     assetsResource,
     onPageChanged,
     onDragStart,
-    onDragEnd
+    onDragEnd,
   } = props;
   const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
   const assets: PagedEntityState<MediaItem> = assetsResource.read();
-  const { byId, count: total, query, page } = assets;
-  const pageNumber = Math.ceil(query.offset / query.limit);
+  const { byId, count: total, query, page, pageNumber } = assets;
   const items = page[pageNumber];
   const { formatMessage } = useIntl();
 
