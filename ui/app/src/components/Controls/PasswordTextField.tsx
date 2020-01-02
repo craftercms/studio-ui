@@ -24,8 +24,8 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { defineMessages, useIntl } from 'react-intl';
 
 type PasswordTextFieldProps = TextFieldProps & {
-  visibilitySwitch?: boolean,
-  initialVisible?: boolean
+  visibilitySwitch?: boolean;
+  initialVisible?: boolean;
 };
 
 const translations = defineMessages({

@@ -23,7 +23,7 @@ import GlobalState from '../../models/GlobalState';
 import auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
 
-const login: Epic<StandardAction, StandardAction, GlobalState> = (action$, state$) => action$.pipe(
+const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) => action$.pipe(
   ofType(LOG_IN),
   switchMap((action) => auth.login(action.payload).pipe(
     map(loginComplete),
@@ -31,9 +31,9 @@ const login: Epic<StandardAction, StandardAction, GlobalState> = (action$, state
   ))
 );
 
-const logout: Epic = (action$, state$) => action$.pipe(
+const logout: Epic = (action$) => action$.pipe(
   ofType(LOG_OUT),
-  switchMap((action) => auth.logout().pipe(
+  switchMap(() => auth.logout().pipe(
     // @ts-ignore
     map(logoutComplete),
     catchAjaxError(logoutFailed)
