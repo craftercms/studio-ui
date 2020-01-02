@@ -127,8 +127,7 @@ export class ContentController {
     return ContentController.contentTypes$.value;
   }
 
-  updateField(modelId, fieldId, value) {
-
+  updateField(modelId, fieldId, value, index) {
     const models = this.getCachedModels();
     const model = { ...models[modelId] };
 
@@ -141,10 +140,10 @@ export class ContentController {
 
     ContentController.operations$.next({
       type: UPDATE_FIELD_VALUE_OPERATION,
-      args: { modelId, fieldId, value }
+      args: { modelId, fieldId, value, index }
     });
 
-    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId, value });
+    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId, value, index });
 
   }
 

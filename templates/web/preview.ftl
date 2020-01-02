@@ -33,6 +33,10 @@
       padding: 0;
       height: 100%;
     }
+
+    * {
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>

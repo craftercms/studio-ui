@@ -17,8 +17,8 @@
 
 import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
-import { interval, fromEvent } from 'rxjs';
-import { switchMap, take, takeUntil, filter } from 'rxjs/operators';
+import { fromEvent, interval } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 
 export const foo = () => void null;
 export const
@@ -444,9 +444,10 @@ export function setProperty(object, prop, value) {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();
-    const target = retrieveProperty(object, props.join('.'));
+    let target = retrieveProperty(object, props.join('.'));
     if (!target) {
       setProperty(object, props.join('.'), {});
+      target = retrieveProperty(object, props.join('.'));
     }
     target[propToSet] = value;
     return true;

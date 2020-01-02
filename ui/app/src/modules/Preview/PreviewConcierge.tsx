@@ -159,8 +159,8 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          const { modelId, fieldId, value } = payload;
-          updateField(site, guest.models[modelId].craftercms.path, fieldId, value).subscribe(() => {
+          const { modelId, fieldId, value, index } = payload;
+          updateField(site, guest.models[modelId].craftercms.path, fieldId, value, index).subscribe(() => {
             console.log('Finished');
           }, (e) => {
             console.log(e);

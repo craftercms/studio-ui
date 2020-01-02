@@ -480,7 +480,8 @@ export function Guest(props) {
           contentController.updateField(
             record.modelId,
             record.fieldId,
-            dragContext.dragged.path
+            dragContext.dragged.path,
+            record.index
           );
 
           break;
@@ -831,9 +832,9 @@ export function Guest(props) {
   function scrollToElement(element) {
     // Scroll the doc to the closest drop zone
     // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-    $(scrollElement).animate({
-      scrollTop: $(element).offset().top - 100
-    }, 300);
+    // $(scrollElement).animate({
+    //   scrollTop: $(element).offset().top - 100
+    // }, 300);
   }
 
   // 1. Subscribes to accommodation messages and routes them.

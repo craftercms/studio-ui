@@ -395,7 +395,7 @@ function writeContentUrl(qs: object) {
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
 
-export function updateField(site: string, modelId: string, fieldId: string, value: any): Observable<any> {
+export function updateField(site: string, modelId: string, fieldId: string, value: any, index: number = null): Observable<any> {
   return getDOM(site, modelId).pipe(
     switchMap((doc) => {
       const qs = {
@@ -404,14 +404,27 @@ export function updateField(site: string, modelId: string, fieldId: string, valu
         unlock: 'true',
         fileName: getInnerHtml(doc.querySelector('file-name'))
       };
-
-      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
-      if (!fieldNode) {
-        fieldNode = document.createElement(fieldId);
-        doc.append(fieldNode);
+      let fieldNode;
+      if (index !== null) {
+        //the field is a repeat item
+        let repeatFieldId = fieldId.split('.');
+        fieldNode = doc.querySelector(`:scope > ${repeatFieldId[0]} > item > ${repeatFieldId[1]}`);
+        if (!fieldNode) {
+          let parentNode = document.createElement(repeatFieldId[0]);
+          let itemNode = document.createElement('item');
+          fieldNode = document.createElement(repeatFieldId[1]);
+          itemNode.append(fieldNode);
+          parentNode.append(itemNode);
+          doc.documentElement.append(parentNode);
+        }
+      } else {
+        fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+        if (!fieldNode) {
+          fieldNode = document.createElement(fieldId);
+          doc.documentElement.append(fieldNode);
+        }
       }
       fieldNode.innerHTML = `<![CDATA[${value}]]>`;
-
       return post(
         writeContentUrl(qs),
         serialize(doc)
