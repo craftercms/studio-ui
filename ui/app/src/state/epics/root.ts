@@ -16,10 +16,12 @@
  */
 
 import { combineEpics } from 'redux-observable';
+import auth from './auth';
 import sites from './sites';
 import contentTypes from './contentTypes';
 
 const epic: any[] = combineEpics.apply(this, [
+  ...auth,
   ...sites,
   ...contentTypes
 ]);

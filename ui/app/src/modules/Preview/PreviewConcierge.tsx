@@ -175,15 +175,17 @@ export function PreviewConcierge(props: any) {
       }
     });
 
+    // Retrieve all content types in the system
+    (!contentTypes && site) && dispatch(fetchContentTypes());
+    contentTypes && contentTypes$.next(contentTypes);
+
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
         // TODO: aaron to fetch assets here...
         break;
       case 'craftercms.ice.components':
-        // Retrieve all content types in the system
-        (!contentTypes && site) && dispatch(fetchContentTypes());
-        contentTypes && contentTypes$.next(contentTypes);
+
         break;
     }
 

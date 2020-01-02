@@ -17,17 +17,16 @@
 
 import { useActiveSiteId, useEnv, usePreviewState } from '../../utils/hooks';
 import { useDispatch } from 'react-redux';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { parse, stringify } from 'query-string';
 import { LookupTable } from '../../models/LookupTable';
 import { changeSite } from '../../state/actions/sites';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { nou } from '../../utils/object';
-import Preview from './Preview';
 
-export default function PreviewUrlController(props) {
+export default function usePreviewUrlControl(history) {
 
-  const { location: { search }, push } = props.history;
+  const { location: { search }, push } = history;
 
   const { guest, currentUrl } = usePreviewState();
   const { PREVIEW_LANDING_BASE } = useEnv();
@@ -57,11 +56,13 @@ export default function PreviewUrlController(props) {
     if (!prev.mounted) {
 
       if (qs.site || qs.page) {
-        if ((qs.site && qs.site !== site) && qs.page) {
-          dispatch(changeSite(qs.site, qs.page));
-        } else if (qs.site && qs.site !== site) {
-          dispatch(changeSite(qs.site, '/'));
-        } else if (qs.page) {
+        if (qs.site && qs.site !== site) {
+          if (qs.page) {
+            dispatch(changeSite(qs.site, qs.page));
+          } else {
+            dispatch(changeSite(qs.site, '/'));
+          }
+        } else if (qs.page && qs.page !== currentUrl) {
           dispatch(changeCurrentUrl(qs.page));
         }
       }
@@ -85,7 +86,10 @@ export default function PreviewUrlController(props) {
 
       if (somethingDidChanged) {
 
-        if (siteChanged || urlChanged || guestUrlChanged) {
+        if (
+          (siteChanged || urlChanged || guestUrlChanged) &&
+          (currentUrl !== qs.page || site !== qs.site)
+        ) {
 
           // When navigation occurs within guest, it will check out. For a brief moment whilst the new page
           // checks in, the guest.url will be undefined. The intention of this validation is to hold on to the prior
@@ -93,9 +97,7 @@ export default function PreviewUrlController(props) {
           // new guest URL.
           const page = (guestUrlChanged && nou(guest)) ? prev.currentGuestUrl : (guest?.url ?? currentUrl);
           if (page !== PREVIEW_LANDING_BASE) {
-            push({
-              search: stringify({ site, page }, { encode: false })
-            });
+            push({ search: stringify({ site, page }, { encode: false }) });
           }
 
         } else if (qsSiteChanged && qsUrlChanged) {
@@ -120,7 +122,5 @@ export default function PreviewUrlController(props) {
     }
 
   }, [search, site, currentUrl, guest, dispatch, PREVIEW_LANDING_BASE, push]);
-
-  return <Preview/>;
 
 }

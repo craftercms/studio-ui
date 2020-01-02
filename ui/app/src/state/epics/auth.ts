@@ -16,26 +16,31 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { CHANGE_SITE } from '../actions/sites';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
-import { setSiteCookie } from '../../utils/auth';
+import { LOG_IN, LOG_OUT, loginComplete, loginFailed, logoutComplete, logoutFailed } from '../actions/auth';
+import { map, switchMap } from 'rxjs/operators';
+import { StandardAction } from '../../models/StandardAction';
+import GlobalState from '../../models/GlobalState';
+import auth from '../../services/auth';
+import { catchAjaxError } from '../../utils/ajax';
 
-const changeSite: Epic = (action$, state$) => action$.pipe(
-  ofType(CHANGE_SITE),
-  withLatestFrom(state$),
-  tap(
-    (
-      [
-        { payload: { nextSite } },
-        { env: { SITE_COOKIE } }
-      ]
-    ) => (
-      setSiteCookie(SITE_COOKIE, nextSite)
-    )
-  ),
-  ignoreElements()
+const login: Epic<StandardAction, StandardAction, GlobalState> = (action$) => action$.pipe(
+  ofType(LOG_IN),
+  switchMap((action) => auth.login(action.payload).pipe(
+    map(loginComplete),
+    catchAjaxError(loginFailed)
+  ))
+);
+
+const logout: Epic = (action$) => action$.pipe(
+  ofType(LOG_OUT),
+  switchMap(() => auth.logout().pipe(
+    // @ts-ignore
+    map(logoutComplete),
+    catchAjaxError(logoutFailed)
+  ))
 );
 
 export default [
-  changeSite
+  login,
+  logout
 ] as Epic[];

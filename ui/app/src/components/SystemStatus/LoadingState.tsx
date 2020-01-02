@@ -88,7 +88,7 @@ export default function LoadingState(props: LoadingStateProps) {
         </Typography>
       }
       <div className={clsx(classes.gearContainer, { [propClasses.graphicRoot]: !!propClasses.graphicRoot })}>
-        <Graphic {...props.graphicProps}/>
+        <Graphic className={propClasses.graphic} {...props.graphicProps}/>
       </div>
     </div>
   );

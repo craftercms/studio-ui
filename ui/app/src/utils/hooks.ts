@@ -16,9 +16,10 @@
  */
 
 import { shallowEqual, useSelector } from 'react-redux';
-import GlobalState, { EntityState } from '../models/GlobalState';
+import GlobalState from '../models/GlobalState';
 import { useEffect, useState } from 'react';
 import { nnou } from './object';
+import { Resource } from '../models/Resource';
 
 export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) => T): T {
   return useSelector<GlobalState, T>(selector, shallowEqual);
@@ -60,12 +61,10 @@ export function createResource<T = any>(factoryFn: () => Promise<T>) {
     read() {
       if (status === 'pending') {
         throw promise;
-      }
-      if (status === 'error') {
+      } else if (status === 'error') {
         resource.complete = true;
         throw result;
-      }
-      if (status === 'success') {
+      } else if (status === 'success') {
         resource.complete = true;
         return result;
       }
@@ -74,7 +73,7 @@ export function createResource<T = any>(factoryFn: () => Promise<T>) {
   return resource;
 }
 
-function createResourceMemo() {
+export function createResourceBundle() {
   let resolve, reject;
   let promise = new Promise((resolvePromise, rejectPromise) => {
     resolve = resolvePromise;
@@ -87,42 +86,67 @@ function createResourceMemo() {
   ];
 }
 
-export function useResource(source) {
+export function useResolveWhenNotNullResource(source) {
 
-  const [bundle, setBundle] = useState(createResourceMemo);
-  const [resource, resolve, reject] = bundle;
-
-  useEffect(() => {
+  const [bundle, setBundle] = useState(createResourceBundle);
+  const [resource, resolve] = bundle;
+  const effect = () => {
     if (resource.complete) {
-      setBundle(createResourceMemo);
+      setBundle(createResourceBundle);
     } else if (nnou(source)) {
       resolve(source);
     }
-  }, [source, resource, resolve, reject]);
+  };
+
+  useEffect(effect, [source, bundle]);
 
   return resource;
 
 }
 
-export function useEntitySelectionResource<T = any>(selector: (state: GlobalState) => EntityState<T>) {
-  const state = useSelection<EntityState<T>>(selector);
-  return useEntityStateResource(state);
+export function useStateResourceSelection<ReturnType = any, SourceType = GlobalState>(
+  sourceSelector: (state: GlobalState) => SourceType,
+  checkers: {
+    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean,
+    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean,
+    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean,
+    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType,
+    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => any
+  }
+): Resource<ReturnType> {
+  const state = useSelection<SourceType>(sourceSelector);
+  return useStateResource(state, checkers);
 }
 
-export function useEntityStateResource<T = any>(state: EntityState<T>) {
+export function useStateResource<ReturnType = any, SourceType = GlobalState>(
+  source: SourceType,
+  checkers: {
+    shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean,
+    shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean,
+    shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean,
+    resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType,
+    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => any
+  }
+): Resource<ReturnType> {
 
-  const [bundle, setBundle] = useState(createResourceMemo);
+  const [bundle, setBundle] = useState(createResourceBundle);
   const [resource, resolve, reject] = bundle;
-
-  useEffect(() => {
-    if (resource.complete) {
-      setBundle(createResourceMemo);
-    } else if (nnou(state.error)) {
-      reject(state.error);
-    } else if ((!state.isFetching) && nnou(state.byId)) {
-      resolve(Object.values(state.byId));
+  const effectFn = () => {
+    const { shouldRenew, shouldReject, shouldResolve, errorSelector, resultSelector } = checkers;
+    if (shouldRenew(source, resource)) {
+      setBundle(createResourceBundle);
+    } else if (shouldReject(source, resource)) {
+      reject(errorSelector(source, resource));
+    } else if (shouldResolve(source, resource)) {
+      resolve(resultSelector(source, resource));
     }
-  }, [state, resource, resolve, reject]);
+  };
+
+  // Purposely not adding checkers on to the effect dependencies to avoid
+  // consumer re-renders to trigger the effect. `checkers` should be taken
+  // as a "initialValue" sort of param. The functions should not mutate
+  // throughout the component lifecycle.
+  useEffect(effectFn, [source, bundle]);
 
   return resource;
 

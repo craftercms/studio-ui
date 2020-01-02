@@ -27,3 +27,8 @@ export interface User {
   sites: string[];
   preferences: LookupTable;
 }
+
+export interface Credentials {
+  username: string;
+  password: string;
+}
