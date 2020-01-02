@@ -20,25 +20,25 @@ import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   CLEAR_SELECTED_ZONES,
+  COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   EDIT_MODE_CHANGED,
   EditingStatus,
   GUEST_CHECK_IN,
+  GUEST_CHECK_OUT,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
-  TRASHED,
-  COMPONENT_DRAG_ENDED,
   INSTANCE_DRAG_ENDED,
-  RELOAD_REQUEST,
-  NAVIGATION_REQUEST,
-  GUEST_CHECK_OUT,
-  not,
   isNullOrUndefined,
+  NAVIGATION_REQUEST,
+  not,
   notNullOrUndefined,
-  pluckProps, GUEST_MODELS_RECEIVED
+  pluckProps,
+  RELOAD_REQUEST,
+  TRASHED
 } from '../util';
-import { zip, Subject } from 'rxjs';
+import { Subject, zip } from 'rxjs';
 import { debounceTime, delay, filter, map, take, tap, throttleTime } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';

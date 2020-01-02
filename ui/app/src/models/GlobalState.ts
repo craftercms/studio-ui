@@ -23,11 +23,12 @@ import { GuestData } from '../modules/Preview/previewContext';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
 
-interface APIError {
-  code: string;
-  message: string;
-  remedialAction: string;
-  documentationUrl: string;
+export interface APIError {
+  code?: number | string;
+  title?: string;
+  message?: string;
+  remedialAction?: string;
+  documentationUrl?: string;
 }
 
 export interface EntityState<T = any> {
@@ -38,6 +39,8 @@ export interface EntityState<T = any> {
 
 export interface GlobalState {
   auth: {
+    error: APIError;
+    isFetching: boolean;
     active: boolean;
   };
   user: User;

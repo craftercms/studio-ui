@@ -173,7 +173,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             name="siteId"
             label={formatMessage(messages.siteId)}
             required
-            autoFocus={true}
+            autoFocus
             fullWidth
             onBlur={() => onCheckNameExist(inputs.siteId)}
             onKeyPress={onKeyPress}

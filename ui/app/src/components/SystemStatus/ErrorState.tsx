@@ -27,6 +27,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { createStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { nnou } from '../../utils/object';
+import { APIError } from '../../models/GlobalState';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   errorView: {
@@ -68,18 +69,14 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 interface ErrorStateProps {
   graphicUrl?: string;
+
   onBack?(event: any): any;
+
   classes?: {
     root?: string;
     graphic?: string;
   };
-  error: {
-    title?: string;
-    code?: string;
-    documentationUrl?: string;
-    message: string;
-    remedialAction?: string;
-  };
+  error: APIError;
 }
 
 const messages = defineMessages({
@@ -109,7 +106,7 @@ export default function ErrorState(props: ErrorStateProps) {
       {
         (nnou(code) || nnou(title)) &&
         <Typography variant="h5" component="h2" className={classes.title} color={'textSecondary'}>
-          {nnou(code) ? `${formatMessage(messages.error)}${code ? ' code' : ''}` : ''}
+          {nnou(code) ? `${formatMessage(messages.error)}${code ? ` ${code}` : ''}` : ''}
           {nnou(code) && nnou(title) && ': '}
           {title}
         </Typography>
