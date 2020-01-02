@@ -121,7 +121,10 @@ const assetsPanelStyles = makeStyles(() => createStyles({
 }));
 
 interface AssetResource {
-
+  total: number;
+  limit: number;
+  pageNumber: number;
+  items: Array<MediaItem>;
 }
 
 export default function AssetsPanel() {
@@ -131,13 +134,22 @@ export default function AssetsPanel() {
   const [keyword, setKeyword] = useState(initialKeyword);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-  const resource = useStateResourceSelection<PagedEntityState<MediaItem>, PagedEntityState<MediaItem>>(state => state.preview.assets, {
+  const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(state => state.preview.assets, {
     shouldRenew: (source, resource) => resource.complete,
     shouldResolve: source => (!source.isFetching) && nnou(source.byId),
     shouldReject: source => nnou(source.error),
     errorSelector: source => source.error,
-    resultSelector: source => source
+    resultSelector: source => {
+      const items = source.page[source.pageNumber].map((id) => source.byId[id]);
+      return {
+        total: source.count,
+        limit: source.query.limit,
+        pageNumber: source.pageNumber,
+        items
+      }
+    }
   });
+  const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
   const { formatMessage } = useIntl();
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
@@ -191,6 +203,7 @@ export default function AssetsPanel() {
             onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
+            GUEST_BASE={GUEST_BASE}
           />
         </React.Suspense>
       </ErrorBoundary>
@@ -206,11 +219,11 @@ export function AssetsPanelUI(props) {
     onPageChanged,
     onDragStart,
     onDragEnd,
+    GUEST_BASE
   } = props;
-  const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
-  const assets: PagedEntityState<MediaItem> = assetsResource.read();
-  const { byId, count: total, query, page, pageNumber } = assets;
-  const items = page[pageNumber];
+  const assets: AssetResource = assetsResource.read();
+  const { total, pageNumber, items, limit } = assets;
+  //const items = page[pageNumber];
   const { formatMessage } = useIntl();
 
   return (
@@ -221,7 +234,7 @@ export function AssetsPanelUI(props) {
         component="div"
         labelRowsPerPage=""
         count={total}
-        rowsPerPage={query.limit}
+        rowsPerPage={limit}
         page={pageNumber}
         backIconButtonProps={{
           'aria-label': formatMessage(translations.previousPage),
@@ -229,11 +242,10 @@ export function AssetsPanelUI(props) {
         nextIconButtonProps={{
           'aria-label': formatMessage(translations.nextPage),
         }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * query.limit)}
+        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
       />
       {
-        items.map((id: string) => {
-            let item = byId[id];
+        items.map((item: MediaItem) => {
             return (
               <MediaCard
                 key={item.path}
