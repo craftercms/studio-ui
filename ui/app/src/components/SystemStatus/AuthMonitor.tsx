@@ -115,7 +115,13 @@ export default function AuthMonitor() {
                     <FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password"/>
                   }
                 />
-                <Button type="submit" onClick={onSubmit} disabled={isFetching} style={{ display: 'none' }}/>
+                {/* This button is just to have the form submit when pressing enter. */}
+                <Button
+                  type="submit"
+                  onClick={onSubmit}
+                  disabled={isFetching}
+                  style={{ display: 'none' }}
+                />
               </form>
             </>
           )
