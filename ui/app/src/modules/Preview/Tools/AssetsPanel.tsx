@@ -20,7 +20,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import { useEntitySelectionResource, useSelection } from "../../../utils/hooks";
 import { MediaItem } from "../../../models/Search";
-import { setRequestForgeryToken } from "../../../utils/auth";
 import { createStyles } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import SearchBar from '../../../components/SearchBar';
@@ -123,9 +122,6 @@ export default function AssetsPanel() {
   const [keyword, setKeyword] = useState(initialKeyword);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
-
-  setRequestForgeryToken();
-
   const resource = useEntitySelectionResource(state => state.preview.assets, state => state);
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({

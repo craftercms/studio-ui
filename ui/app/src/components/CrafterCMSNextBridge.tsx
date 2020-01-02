@@ -17,7 +17,7 @@
 
 import '../styles/index.scss';
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl';
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
 import { theme } from '../styles/theme';
@@ -66,7 +66,7 @@ function CrafterCMSNextBridge(props: any) {
 
   const [, update] = useState();
 
-  useEffect(setRequestForgeryToken, []);
+  useLayoutEffect(setRequestForgeryToken, []);
   useEffect(() => setUpLocaleChangeListener(update), [update]);
 
   return (
