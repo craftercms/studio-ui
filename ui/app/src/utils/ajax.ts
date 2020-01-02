@@ -22,6 +22,7 @@ import { of } from 'rxjs';
 import { sessionTimeout } from '../state/actions/user';
 
 const HEADERS = {};
+export const CONTENT_TYPE_JSON = { 'Content-Type': 'application/json' };
 export const OMIT_GLOBAL_HEADERS = {};
 
 export function setGlobalHeaders(props: object) {
@@ -32,7 +33,8 @@ export function getGlobalHeaders() {
   return { ...HEADERS };
 }
 
-/* private */ function mergeHeaders(headers: object = {}) {
+/* private */
+function mergeHeaders(headers: object = {}) {
   if (headers === OMIT_GLOBAL_HEADERS) {
     return null;
   } else if (Object.values(headers).includes(OMIT_GLOBAL_HEADERS)) {
@@ -73,6 +75,7 @@ export const catchAjaxError = (fetchFailedCreator) => catchError((error: any) =>
       return of(fetchFailedCreator(ajaxError));
     }
   } else {
+    console.error('[ajax/catchAjaxError] An epic threw and hence it will be disabled. Check logic.', error);
     throw error;
   }
 });

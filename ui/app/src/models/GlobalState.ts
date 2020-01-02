@@ -24,11 +24,12 @@ import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
 import { ElasticParams, MediaItem } from "./Search";
 
-interface APIError {
-  code: string;
-  message: string;
-  remedialAction: string;
-  documentationUrl: string;
+export interface APIError {
+  code?: number | string;
+  title?: string;
+  message?: string;
+  remedialAction?: string;
+  documentationUrl?: string;
 }
 
 export interface EntityState<T = any> {
@@ -48,6 +49,8 @@ export interface PagedEntityState<T = any> extends EntityState<T> {
 
 export interface GlobalState {
   auth: {
+    error: APIError;
+    isFetching: boolean;
     active: boolean;
   };
   user: User;

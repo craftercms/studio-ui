@@ -21,6 +21,7 @@ import ToolsPanel from './ToolsPanel';
 import Host from './Host';
 import ToolBar from './ToolBar';
 import { PreviewConcierge } from './PreviewConcierge';
+import usePreviewUrlControl from './usePreviewUrlControl';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -30,8 +31,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export default function Preview() {
+export default function Preview(props) {
   const classes = useStyles({});
+  usePreviewUrlControl(props.history);
   return (
     <>
       <PreviewConcierge>

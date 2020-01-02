@@ -20,17 +20,17 @@ import IconButton from '@material-ui/core/IconButton';
 import AppsRounded from '@material-ui/icons/AppsRounded';
 import Avatar from '@material-ui/core/Avatar';
 import GlobalNav from './GlobalNav';
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { palette } from "../../styles/theme";
-import { useIntl, defineMessages } from "react-intl";
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { palette } from '../../styles/theme';
+import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
-import Link from "@material-ui/core/Link";
-import { useOnMount } from "../../utils/helpers";
-import { getLogoutInfoURL, logout } from "../../services/auth";
-import Cookies from "js-cookie";
-import GlobalState from "../../models/GlobalState";
+import Link from '@material-ui/core/Link';
+import { useOnMount } from '../../utils/helpers';
+import { getLogoutInfoURL, logout } from '../../services/auth';
+import Cookies from 'js-cookie';
+import GlobalState from '../../models/GlobalState';
 import { useEnv, useSelection } from '../../utils/hooks';
 
 const useStyles = makeStyles(() => ({
@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
     cursor: 'pointer',
     textTransform: 'uppercase',
     '&:hover': {
-      backgroundColor: palette.gray.medium3,
+      backgroundColor: palette.gray.medium3
     }
   },
   bold: {
@@ -82,22 +82,22 @@ export default function ToolbarGlobalNav(props: ToolBarGlobalNavProps) {
   const onAvatarClick = (e) => setAnchorAvatar(e.target);
   const onAvatarClose = () => setAnchorAvatar(null);
   const onMenuClose = () => setAnchor(null);
-  const [logoutInfo, setLogoutInfo] = useState({
-    url: null,
-    show: false
-  });
-  const { authHeaders = "AUTH_HEADERS" } = props;
+  const [logoutInfo, setLogoutInfo] = useState({ url: null, show: false });
+  const { authHeaders = 'AUTH_HEADERS' } = props;
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { AUTHORING_BASE } = useEnv();
 
   useOnMount(() => {
     if (user.authType === authHeaders) {
-      getLogoutInfoURL().subscribe(({ response }) => {
-        setLogoutInfo({ ...logout, url: response.logoutUrl ? response.logoutUrl : false, show: !!response.logoutUrl });
+      getLogoutInfoURL().subscribe((response) => {
+        setLogoutInfo({
+          url: response.logoutUrl ?? false,
+          show: !!response.logoutUrl
+        });
       })
     } else {
-      setLogoutInfo({ ...logout, url: false, show: true });
+      setLogoutInfo({ url: false, show: true });
     }
   });
 

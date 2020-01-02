@@ -41,8 +41,10 @@ import { palette } from '../../../styles/theme';
 import { Typography } from '@material-ui/core';
 import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
 import { COMPONENT_DRAG_ENDED, COMPONENT_DRAG_STARTED, TRASHED } from '../../../state/actions/preview';
-import { useEntitySelectionResource, usePreviewState } from '../../../utils/hooks';
+import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { EntityState } from '../../../models/GlobalState';
+import { nnou } from '../../../utils/object';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -97,7 +99,16 @@ export default function ComponentsPanel() {
 
   const classes = useStyles({});
   const { guest } = usePreviewState();
-  const resource = useEntitySelectionResource(state => state.contentTypes);
+  const resource = useStateResourceSelection<ContentType[], EntityState<ContentType>>(
+    state => state.contentTypes,
+    {
+      shouldRenew: (source, resource) => resource.complete,
+      shouldResolve: source => (!source.isFetching) && nnou(source.byId),
+      shouldReject: source => nnou(source.error),
+      errorSelector: source => source.error,
+      resultSelector: source => Object.values(source.byId)
+    }
+  );
 
   return (
     <ToolPanel title={translations.componentsPanel}>
@@ -105,7 +116,13 @@ export default function ComponentsPanel() {
         <React.Suspense
           fallback={
             <LoadingState
-              title="Retrieving Page Model"
+              // @ts-ignore
+              title={
+                <FormattedMessage
+                  id="componentsPanel.suspenseStateMessage"
+                  defaultMessage="Retrieving Page Model"
+                />
+              }
               graphicProps={{ width: 150 }}
             />
           }
