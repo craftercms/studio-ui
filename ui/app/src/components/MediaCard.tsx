@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   mediaIcon: {
     paddingTop: '56.25%',
     position: 'relative',
+    overflow: 'hidden',
     '& .media-icon': {
       position: 'absolute',
       top: '50%',
@@ -96,6 +97,13 @@ const useStyles = makeStyles((theme: Theme) => ({
       paddingTop: '0',
       order: -1
     }
+  },
+  videoThumbnail: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    maxWidth: '209px',
   },
   checkbox: {}
 }));
@@ -151,6 +159,7 @@ function MediaCard(props: MediaCardProps) {
   } = props;
   const { name, path, type } = item;
   const { formatMessage } = useIntl();
+  const hasOnAssetClick = (onPreviewAsset || onEdit) ? true : false;
 
   const renderIcon = (type: string, path: string, name: string) => {
     let iconClass = 'fa media-icon';
@@ -183,17 +192,41 @@ function MediaCard(props: MediaCardProps) {
         break;
     }
     return (
-      <CardActionArea
-        onClick={
-          previewArea
-            ? () => onPreviewAsset(path, type, name)
-            : () => onEdit(path, true)
-        }
-        className={clsx(isList && classes.listActionArea)}>
+      hasOnAssetClick ? (
+        <CardActionArea
+          onClick={
+            previewArea
+              ? () => onPreviewAsset(path, type, name)
+              : () => onEdit(path, true)
+          }
+          className={clsx(isList && classes.listActionArea)}>
+          <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
+            {
+              (type === 'Video') ? (
+                <video className={classes.videoThumbnail}>
+                  <source src={path} type="video/mp4"/>
+                  <i className={iconName}></i>
+                </video>
+              ) : (
+                <i className={iconName}></i>
+              )
+            }
+          </div>
+        </CardActionArea>
+      ) : (
         <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
-          <i className={iconName}></i>
+          {
+            (type === 'Video') ? (
+              <video className={classes.videoThumbnail}>
+                <source src={path} type="video/mp4"/>
+                <i className={iconName}></i>
+              </video>
+            ) : (
+              <i className={iconName}></i>
+            )
+          }
         </div>
-      </CardActionArea>
+      )
     )
   };
 
