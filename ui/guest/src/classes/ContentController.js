@@ -127,7 +127,7 @@ export class ContentController {
     return ContentController.contentTypes$.value;
   }
 
-  updateField(modelId, fieldId, value, index) {
+  updateField(modelId, fieldId, index, value) {
     const models = this.getCachedModels();
     const model = { ...models[modelId] };
 

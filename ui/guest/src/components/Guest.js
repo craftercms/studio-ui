@@ -24,12 +24,14 @@ import {
   COMPONENT_DRAG_STARTED,
   EDIT_MODE_CHANGED,
   EditingStatus,
+  forEach,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
+  isElementInView,
   isNullOrUndefined,
   NAVIGATION_REQUEST,
   not,
@@ -443,12 +445,12 @@ export function Guest(props) {
         return;
       }
 
-      scrollToElement(ElementRegistry.fromICEId(receptacles[0].id).element);
-
       const validatedReceptacles = receptacles.filter((id) => {
         // TODO: min/max count validations
         return true;
       });
+
+      scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
@@ -579,8 +581,8 @@ export function Guest(props) {
           contentController.updateField(
             record.modelId,
             record.fieldId,
-            dragContext.dragged.path,
-            record.index
+            record.index,
+            dragContext.dragged.path
           );
 
           break;
@@ -805,7 +807,7 @@ export function Guest(props) {
       }
       const validReceptacles = iceRegistry.getMediaReceptacles(type);
 
-      scrollToElement(ElementRegistry.fromICEId(validReceptacles[0]).element);
+      scrollToReceptacle(validReceptacles);
 
       validReceptacles
         .forEach((id) => {
@@ -928,12 +930,25 @@ export function Guest(props) {
     }
   }
 
-  function scrollToElement(element) {
-    // Scroll the doc to the closest drop zone
-    // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-    $(scrollElement).animate({
-      scrollTop: $(element).offset().top - 100
-    }, 300);
+  function scrollToReceptacle(receptacles) {
+    let elementInView;
+    let element;
+    elementInView = forEach(receptacles, (id) => {
+      let elem = ElementRegistry.fromICEId(id).element;
+      if (isElementInView(elem)) {
+        elementInView = true;
+        element = elem;
+        return 'break';
+      }
+    }, false);
+
+    if (!elementInView) {
+      // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
+      let element = ElementRegistry.fromICEId(receptacles[0]).element;
+      $(scrollElement).animate({
+        scrollTop: $(element).offset().top - 100
+      }, 300);
+    }
   }
 
   // 1. Subscribes to accommodation messages and routes them.
