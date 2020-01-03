@@ -51,6 +51,9 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
+// TinyMCE makes the build quite large. Temporarily, importing this externally via
+// the site's ftl. Need to evaluate whether to include the core as part of guest build or not
+// import tinymce from 'tinymce';
 
 // TODO:
 // - add "modePreview" and bypass all
@@ -193,19 +196,115 @@ export function Guest(props) {
     click(e, record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
-        const highlight = ElementRegistry.getHoverData(record.id);
+        const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+        const type = field.type;
 
-        post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
+        switch (type) {
+          case 'html':
+          case 'text': {
 
-        setState({
-          ...stateRef.current,
-          common: {
-            ...stateRef.current.common,
-            status: EditingStatus.EDITING_COMPONENT,
-            draggable: {},
-            highlighted: { [record.id]: highlight }
+            // eslint-disable-next-line no-undef
+            if (!tinymce) {
+              return alert('Looks like tinymce is not added on the page. Please add tinymce on to the page to enable editing.');
+            }
+
+            // eslint-disable-next-line no-undef
+            tinymce.init({
+              mode: 'none',
+              target: record.element,
+              plugins: type === 'html' ? ['quickbars'] : [],
+              toolbar: false,
+              menubar: false,
+              inline: true,
+              base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
+              suffix: '.min',
+              setup(editor) {
+
+                let changed = false;
+
+                editor.on('init', function () {
+
+                  editor.focus();
+                  editor.selection.select(editor.getBody(), true);
+                  editor.selection.collapse(false);
+
+                  editor.on('blur', function (e) {
+                    e.stopImmediatePropagation();
+
+                    setState({
+                      ...stateRef.current,
+                      common: {
+                        ...stateRef.current.common,
+                        status: EditingStatus.LISTENING,
+                        highlighted: {}
+                      }
+                    });
+
+                    const content = (type === 'html')
+                      ? editor.getContent()
+                      : editor.getContent({ format: 'text' });
+
+                    if (changed) {
+
+                      // contentController.updateField(
+                      //   record.modelId,
+                      //   record.fieldId,
+                      //   record.index,
+                      //   content
+                      // );
+
+                    }
+
+                    editor.destroy(false);
+
+                    // In case the user did some text bolding or other formatting which won't
+                    // be honoured on plain text, revert the content to the edited plain text
+                    // version of the input.
+                    (changed) && (type === 'text') && $(record.element).html(content);
+
+                  });
+
+                });
+
+                editor.once('change', () => {
+                  changed = true;
+                  console.log('Changed!');
+                });
+
+              }
+            });
+
+            setState({
+              ...stateRef.current,
+              common: {
+                ...stateRef.current.common,
+                status: EditingStatus.EDITING_COMPONENT_INLINE,
+                draggable: {},
+                highlighted: {}
+              }
+            });
+
+            break;
           }
-        });
+          default: {
+
+            const highlight = ElementRegistry.getHoverData(record.id);
+
+            post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
+
+            setState({
+              ...stateRef.current,
+              common: {
+                ...stateRef.current.common,
+                status: EditingStatus.EDITING_COMPONENT,
+                draggable: {},
+                highlighted: { [record.id]: highlight }
+              }
+            });
+
+            break;
+          }
+        }
 
       }
     },
