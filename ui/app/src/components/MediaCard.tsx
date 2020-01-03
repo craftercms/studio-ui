@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    maxWidth: '209px',
+    width: '100%',
   },
   checkbox: {}
 }));
