@@ -41,3 +41,15 @@ export const logoutComplete = createAction(LOG_OUT_COMPLETE);
 export const logoutFailed = createAction(LOG_OUT_FAILED);
 
 // endregion
+
+// region Validate Session
+
+export const VALIDATE_SESSION = 'VALIDATE_SESSION';
+export const VALIDATE_SESSION_COMPLETE = 'VALIDATE_SESSION_COMPLETE';
+export const VALIDATE_SESSION_FAILED = 'VALIDATE_SESSION_FAILED';
+
+export const validateSession = createAction(VALIDATE_SESSION);
+export const validateSessionComplete = createAction(VALIDATE_SESSION_COMPLETE);
+export const validateSessionFailed = createAction(VALIDATE_SESSION_FAILED);
+
+// endregion

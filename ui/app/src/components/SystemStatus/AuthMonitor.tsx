@@ -24,13 +24,14 @@ import TextField from '@material-ui/core/TextField';
 import PasswordTextField from '../Controls/PasswordTextField';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { login, logout } from '../../state/actions/auth';
+import { login, logout, validateSession } from '../../state/actions/auth';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
+import { interval } from 'rxjs';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -69,6 +70,13 @@ export default function AuthMonitor() {
 
   const onSubmit = () => dispatch(login({ username, password }));
   const onClose = () => dispatch(logout());
+
+  useEffect(() => {
+    if (active) {
+      const sub = interval(300000).subscribe(() => dispatch(validateSession()));
+      return () => sub.unsubscribe();
+    }
+  }, [active, dispatch]);
 
   return (
     <Dialog open={!active} onClose={onClose} aria-labelledby="craftecmsReLoginDialog">
