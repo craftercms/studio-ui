@@ -164,7 +164,7 @@ export class ICERegistry {
       (record) => {
         const entries = this.getReferentialEntries(record);
         if (entries.field && entries.field.type === type) {
-          receptacles.push(record.id);
+          receptacles.push(record);
         }
       }
     );

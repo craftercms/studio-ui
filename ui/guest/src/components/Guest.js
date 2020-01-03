@@ -247,14 +247,12 @@ export function Guest(props) {
                       : editor.getContent({ format: 'text' });
 
                     if (changed) {
-
-                      // contentController.updateField(
-                      //   record.modelId,
-                      //   record.fieldId,
-                      //   record.index,
-                      //   content
-                      // );
-
+                      contentController.updateField(
+                        record.modelId,
+                        record.fieldId,
+                        record.index,
+                        content
+                      );
                     }
 
                     editor.destroy(false);
@@ -805,12 +803,12 @@ export function Guest(props) {
       } else if (asset.mimeType.includes('video/')) {
         type = 'video-picker';
       }
-      const validReceptacles = iceRegistry.getMediaReceptacles(type);
+      const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
 
-      scrollToReceptacle(validReceptacles);
+      scrollToReceptacle(validatedReceptacles);
 
-      validReceptacles
-        .forEach((id) => {
+      validatedReceptacles
+        .forEach(({ id }) => {
 
           const dropZone = ElementRegistry.compileDropZone(id);
           dropZone.origin = false;
@@ -933,7 +931,7 @@ export function Guest(props) {
   function scrollToReceptacle(receptacles) {
     let elementInView;
     let element;
-    elementInView = forEach(receptacles, (id) => {
+    elementInView = forEach(receptacles, ({ id }) => {
       let elem = ElementRegistry.fromICEId(id).element;
       if (isElementInView(elem)) {
         elementInView = true;
@@ -944,7 +942,7 @@ export function Guest(props) {
 
     if (!elementInView) {
       // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-      let element = ElementRegistry.fromICEId(receptacles[0]).element;
+      let element = ElementRegistry.fromICEId(receptacles[0].id).element;
       $(scrollElement).animate({
         scrollTop: $(element).offset().top - 100
       }, 300);
