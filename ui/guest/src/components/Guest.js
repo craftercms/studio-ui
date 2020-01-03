@@ -249,7 +249,7 @@ export function Guest(props) {
                     if (changed) {
                       contentController.updateField(
                         record.modelId,
-                        record.fieldId,
+                        field.id,
                         record.index,
                         content
                       );

@@ -40,7 +40,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, sortItem } from '../../services/content';
+import { deleteItem, insertComponent, sortItem, updateField } from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -159,12 +159,12 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          const { modelId, fieldId, value, index } = payload;
-          // updateField(site, guest.models[modelId].craftercms.path, fieldId, value, index).subscribe(() => {
-          //   console.log('Finished');
-          // }, (e) => {
-          //   console.log(e);
-          // });
+          const { modelId, fieldId, index, value } = payload;
+          updateField(site, guest.models[modelId].craftercms.path, fieldId, value, index).subscribe(() => {
+            console.log('Finished');
+          }, (e) => {
+            console.log(e);
+          });
           break;
         }
         case ICE_ZONE_SELECTED: {

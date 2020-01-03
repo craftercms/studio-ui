@@ -140,10 +140,10 @@ export class ContentController {
 
     ContentController.operations$.next({
       type: UPDATE_FIELD_VALUE_OPERATION,
-      args: { modelId, fieldId, value, index }
+      args: { modelId, fieldId, index, value }
     });
 
-    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId, value, index });
+    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId, index, value });
 
   }
 

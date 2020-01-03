@@ -30,6 +30,7 @@ import $ from 'jquery/dist/jquery.slim';
 import contentController, { ContentController } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ContentTypeHelper } from "../classes/ContentTypeHelper";
 
 export function GuestProxy(props) {
 
@@ -289,8 +290,11 @@ export function GuestProxy(props) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION:
-          const { modelId, fieldId, index = 0, value, fieldType } = op.args;
+          const { modelId, fieldId, index = 0, value } = op.args;
           const updatedField = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
+          const model = contentController.getCachedModel(modelId);
+          const contentType = contentController.getCachedContentType(model.craftercms.contentType);
+          const fieldType = ContentTypeHelper.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
             const tagName = updatedField.eq(index).prop('tagName');
