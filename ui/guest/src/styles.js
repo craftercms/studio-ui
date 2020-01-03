@@ -66,6 +66,13 @@ export function appendStyleSheet() {
 
   const stylesheet = jss.createStyleSheet({
     '@global': {
+      '[data-craftercms-model-id][contentEditable="true"]': {
+        outlineOffset: 5,
+        outline: `2px solid ${colors.indigoTint}`,
+        '&:focus': {
+          outline: `5px solid ${colors.indigo}`
+        },
+      },
       '[draggable="true"]': {
         'cursor': 'move !important'
       },
@@ -73,7 +80,7 @@ export function appendStyleSheet() {
         boxSizing: 'border-box'
       },
       'craftercms-zone-marker': {
-        outline: `${colors.green} solid 2px`,
+        outline: `2px solid ${colors.green}`,
         outlineOffset: '-2px',
         textAlign: 'center',
         position: 'absolute',

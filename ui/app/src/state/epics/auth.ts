@@ -16,7 +16,17 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { LOG_IN, LOG_OUT, loginComplete, loginFailed, logoutComplete, logoutFailed } from '../actions/auth';
+import {
+  LOG_IN,
+  LOG_OUT,
+  loginComplete,
+  loginFailed,
+  logoutComplete,
+  logoutFailed,
+  VALIDATE_SESSION,
+  validateSessionComplete,
+  validateSessionFailed
+} from '../actions/auth';
 import { map, switchMap } from 'rxjs/operators';
 import { StandardAction } from '../../models/StandardAction';
 import GlobalState from '../../models/GlobalState';
@@ -40,7 +50,17 @@ const logout: Epic = (action$) => action$.pipe(
   ))
 );
 
+const validateSession: Epic = (action$) => action$.pipe(
+  ofType(VALIDATE_SESSION),
+  switchMap(() => auth.validateSession().pipe(
+    // @ts-ignore
+    map(validateSessionComplete),
+    catchAjaxError(validateSessionFailed)
+  ))
+);
+
 export default [
   login,
-  logout
+  logout,
+  validateSession
 ] as Epic[];
