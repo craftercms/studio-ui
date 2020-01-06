@@ -512,6 +512,8 @@ export function sortItem(
         fileName: getInnerHtml(doc.querySelector('file-name'))
       };
 
+      doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
+
       // It's important to add the `:scope >` in to the selector since
       // there may be nested fields with the same field ID.
       const items = doc.querySelectorAll(`:scope > ${fieldId} > *`);
@@ -552,6 +554,8 @@ export function deleteItem(
         unlock: 'true',
         fileName: getInnerHtml(doc.querySelector('file-name'))
       };
+
+      doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
 
       const fieldNode = doc.querySelector(`${fieldId}`);
 
@@ -635,7 +639,7 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
 // Dasherized props...
 // content-type, display-template, no-template-required, internal-name, file-name
 // merge-strategy, folder-name, parent-descriptor
-  const now = (data.lastModifiedDate_dt && data.createdDate_dt) ? null : new Date().toISOString();
+  const now = (data.lastModifiedDate_dt && data.createdDate_dt) ? null : createModifiedDate();
   const dateCreated = data.createdDate_dt ? data.createdDate_dt : now;
   const dateModified = data.lastModifiedDate_dt ? data.lastModifiedDate_dt : now;
   return Object.assign({
@@ -651,6 +655,10 @@ function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContent
   }, (type === 'page' ? {
     'placeInNav': 'false'
   } : {}), (data || {}));
+}
+
+function createModifiedDate() {
+  return new Date().toISOString();
 }
 
 // function createContentDocument(type: string, data: object): XMLDocument {
