@@ -243,17 +243,18 @@ const reducer = createReducer<GlobalState['preview']>({
     }
     return nextState;
   },
-  [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => ({
-    ...state,
-    assets: {
-      ...state.assets,
-      isFetching: true,
-      query: {
-        ...state.assets.query, ...query
-      },
-      pageNumber: Math.ceil(query.offset / state.assets.query.limit),
+  [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
+    let new_query = { ...state.assets.query, ...query };
+    return {
+      ...state,
+      assets: {
+        ...state.assets,
+        isFetching: true,
+        query: new_query,
+        pageNumber: Math.ceil(new_query.offset / new_query.limit),
+      }
     }
-  }),
+  },
   [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
     let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
     let page = [...state.assets.page];
