@@ -20,6 +20,7 @@ import iceRegistry from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
 import { ContentTypeHelper } from './ContentTypeHelper';
+import { ModelHelper } from './ModelHelper';
 
 let seq = 0;
 
@@ -63,14 +64,18 @@ export class ElementRegistry {
               component = models[aux];
             } else {
               // Ok for mono-level node selectors
-              const id = model[field.id][index];
+              const id = ModelHelper.value(model, field.id)[index];
               component = models[id];
             }
 
-            labels.push(`${field.name}: ${component.craftercms.label}`);
+            if (component) {
+              labels.push(`${field.name}: ${component.craftercms.label}`);
+            } else {
+              labels.push(`${field.name}`);
+            }
 
           } else {
-            labels.push(model.craftercms.label);
+            labels.push(`${field.name}`);
           }
         } else {
           labels.push(field.name);
