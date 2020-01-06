@@ -201,7 +201,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, selectedTool, dispatch, contentTypes, contentTypes$, guest]);
+  }, [site, selectedTool, dispatch, contentTypes, contentTypes$, guest, assets]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {
