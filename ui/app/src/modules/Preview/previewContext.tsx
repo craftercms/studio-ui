@@ -16,8 +16,6 @@
  */
 
 import { Subject } from 'rxjs';
-import ContentInstance from '../../models/ContentInstance';
-import { LookupTable } from '../../models/LookupTable';
 import { StandardAction } from '../../models/StandardAction';
 
 // region Declarations
@@ -31,22 +29,6 @@ let hostToHost$: Subject<StandardAction>;
 // endregion
 
 // region Types
-
-export interface EditSelection {
-  modelId: string;
-  fieldId: string[];
-  index: number;
-}
-
-export interface GuestData {
-  url: string;
-  origin: string;
-  location: string;
-  models: LookupTable<ContentInstance>;
-  modelId: string;
-  selected: EditSelection[];
-  itemBeingDragged: boolean;
-}
 
 // endregion
 

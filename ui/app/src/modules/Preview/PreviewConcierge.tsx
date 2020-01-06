@@ -20,6 +20,8 @@ import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
+  CLEAR_SELECTED_ZONES,
+  clearSelectForEdit,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   fetchContentTypes,
@@ -161,6 +163,10 @@ export function PreviewConcierge(props: any) {
         }
         case ICE_ZONE_SELECTED: {
           dispatch(selectForEdit(payload));
+          break;
+        }
+        case CLEAR_SELECTED_ZONES: {
+          dispatch(clearSelectForEdit());
           break;
         }
         case GUEST_MODELS_RECEIVED: {

@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { useEffect, useRef } from 'react';
-import { notNullOrUndefined, forEach, INSERT_COMPONENT_OPERATION, DELETE_ITEM_OPERATION } from '../util';
+import React, { useEffect, useRef } from 'react';
+import { DELETE_ITEM_OPERATION, forEach, INSERT_COMPONENT_OPERATION, notNullOrUndefined } from '../util';
 import { useGuestContext } from './GuestContext';
 import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
@@ -45,7 +44,10 @@ export function GuestProxy(props) {
         label = element.getAttribute('data-craftercms-label');
 
       if (notNullOrUndefined(index)) {
-        index = parseInt(index, 10);
+        // TODO: Disabled to test nested collection index format (dot notation)
+        // Need to assess the change for stability. Unsure if somewhere, the system
+        // relies on the index being an integer/number.
+        // index = parseInt(index, 10);
       }
 
       context.register({ element, modelId, fieldId, index, label });

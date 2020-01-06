@@ -68,9 +68,9 @@ export function appendStyleSheet() {
     '@global': {
       '[data-craftercms-model-id][contentEditable="true"]': {
         outlineOffset: 5,
-        outline: `2px solid ${colors.indigoTint}`,
+        outline: `2px solid ${colors.blueTint}`,
         '&:focus': {
-          outline: `5px solid ${colors.indigo}`
+          outline: `5px solid ${colors.blue}`
         },
       },
       '[draggable="true"]': {

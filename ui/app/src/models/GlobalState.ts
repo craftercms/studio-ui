@@ -19,9 +19,9 @@ import { LookupTable } from './LookupTable';
 import { User } from './User';
 import { Site } from './Site';
 import ContentType from './ContentType';
-import { GuestData } from '../modules/Preview/previewContext';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
+import ContentInstance from './ContentInstance';
 
 export interface APIError {
   code?: number | string;
@@ -35,6 +35,22 @@ export interface EntityState<T = any> {
   error: APIError;
   byId: LookupTable<T>;
   isFetching: boolean;
+}
+
+export interface EditSelection {
+  modelId: string;
+  fieldId: string[];
+  index: number;
+}
+
+export interface GuestData {
+  url: string;
+  origin: string;
+  location: string;
+  models: LookupTable<ContentInstance>;
+  modelId: string;
+  selected: EditSelection[];
+  itemBeingDragged: boolean;
 }
 
 export interface GlobalState {
