@@ -395,7 +395,7 @@ function writeContentUrl(qs: object) {
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
 
-export function updateField(site: string, modelId: string, fieldId: string, value: any, index: number = null): Observable<any> {
+export function updateField(site: string, modelId: string, fieldId: string, index: number, value: any): Observable<any> {
   return getDOM(site, modelId).pipe(
     switchMap((doc) => {
       const qs = {
