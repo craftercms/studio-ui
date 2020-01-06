@@ -20,12 +20,12 @@ import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVertRounded';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import cardTitleStyles from "../../styles/card";
-import { palette } from "../../styles/theme";
-import clsx from "clsx";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import cardTitleStyles from '../../styles/card';
+import { palette } from '../../styles/theme';
+import clsx from 'clsx';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -60,13 +60,15 @@ interface TitleCardProps {
   icon?: ElementType<any>;
   options?: boolean;
   classes?: any;
+
   onCardClick(id: string): any;
+
   cardActions?: any;
   disabled?: boolean;
 }
 
 export default function SiteCard(props: TitleCardProps) {
-  const {title, value, options, icon: Icon, onCardClick, cardActions = [], disabled = false} = props;
+  const { title, value, options, icon: Icon, onCardClick, cardActions = [], disabled = false } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const classes = useStyles({});
 
@@ -86,9 +88,12 @@ export default function SiteCard(props: TitleCardProps) {
   };
 
   return (
-    <Card className={clsx(classes.card, props.classes?.root && props.classes.root, disabled && 'disabled')} onClick={() => !disabled? onCardClick(value): null}>
+    <Card
+      className={clsx(classes.card, props.classes?.root && props.classes.root, disabled && 'disabled')}
+      onClick={() => !disabled ? onCardClick(value) : null}
+    >
       <CardHeader
-        classes={{root: classes.root, avatar: classes.avatar, action: classes.action}}
+        classes={{ root: classes.root, avatar: classes.avatar, action: classes.action }}
         avatar={Icon && <Icon/>}
         action={
           options &&
@@ -98,20 +103,24 @@ export default function SiteCard(props: TitleCardProps) {
         }
         title={title}
         titleTypographyProps={{
-          variant: "subtitle2",
-          component: "h2",
+          variant: 'subtitle2',
+          component: 'h2',
           className: 'cardTitle'
         }}
       />
       <Menu
         anchorEl={anchorEl}
-        keepMounted
         open={Boolean(anchorEl)}
         onClose={(e) => handleClose(e)}
       >
         {
           cardActions.map((action, i) =>
-            <MenuItem key={i} onClick={(e) => handleOptionClick(e, action, value)}>{action.name}</MenuItem>
+            <MenuItem
+              key={i}
+              onClick={(e) => handleOptionClick(e, action, value)}
+            >
+              {action.name}
+            </MenuItem>
           )
         }
       </Menu>

@@ -18,10 +18,10 @@
 import { StandardAction } from '../../models/StandardAction';
 import ContentType from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
-import { GuestData } from '../../modules/Preview/previewContext';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
+import { GuestData } from '../../models/GlobalState';
 import { ElasticParams, SearchResult } from "../../models/Search";
 
 // region Accommodation Actions
@@ -186,4 +186,3 @@ export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_AS
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
 // endregion
-

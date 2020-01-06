@@ -51,7 +51,10 @@ export function GuestProxy(props) {
         label = element.getAttribute('data-craftercms-label');
 
       if (notNullOrUndefined(index)) {
-        index = parseInt(index, 10);
+        // TODO: Disabled to test nested collection index format (dot notation)
+        // Need to assess the change for stability. Unsure if somewhere, the system
+        // relies on the index being an integer/number.
+        // index = parseInt(index, 10);
       }
 
       context.register({ element, modelId, fieldId, index, label });

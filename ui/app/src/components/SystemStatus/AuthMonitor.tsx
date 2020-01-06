@@ -125,6 +125,7 @@ export default function AuthMonitor() {
                 />
                 {/* This button is just to have the form submit when pressing enter. */}
                 <Button
+                  children=""
                   type="submit"
                   onClick={onSubmit}
                   disabled={isFetching}

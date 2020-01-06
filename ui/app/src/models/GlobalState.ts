@@ -19,10 +19,10 @@ import { LookupTable } from './LookupTable';
 import { User } from './User';
 import { Site } from './Site';
 import ContentType from './ContentType';
-import { GuestData } from '../modules/Preview/previewContext';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
 import { ElasticParams, MediaItem } from "./Search";
+import ContentInstance from './ContentInstance';
 
 export interface APIError {
   code?: number | string;
@@ -45,6 +45,22 @@ export interface PagedEntityState<T = any> extends EntityState<T> {
   pageNumber: number;
   count: number;
   query: ElasticParams;
+}
+
+export interface EditSelection {
+  modelId: string;
+  fieldId: string[];
+  index: number;
+}
+
+export interface GuestData {
+  url: string;
+  origin: string;
+  location: string;
+  models: LookupTable<ContentInstance>;
+  modelId: string;
+  selected: EditSelection[];
+  itemBeingDragged: boolean;
 }
 
 export interface GlobalState {
