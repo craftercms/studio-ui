@@ -19,6 +19,7 @@ import { forEach, getChildArrangement, isNullOrUndefined, notNullOrUndefined, si
 import iceRegistry from './ICERegistry';
 import contentController from './ContentController';
 import { take } from 'rxjs/operators';
+import { ContentTypeHelper } from './ContentTypeHelper';
 
 let seq = 0;
 
@@ -26,10 +27,6 @@ export class ElementRegistry {
 
   static db = {};
   static registry = {};
-
-  constructor() {
-
-  }
 
   static get(id) {
     const record = this.db[id];
@@ -41,15 +38,46 @@ export class ElementRegistry {
   // developers about field names that aren't found in the content type
   static setLabel(record) {
     const labels = [];
+    const models = contentController.getCachedModels();
     record.iceIds.forEach((iceId) => {
 
       const iceRecord = iceRegistry.recordOf(iceId);
-      const entities = iceRegistry.getReferentialEntries(iceRecord);
-      labels.push(
-        notNullOrUndefined(entities.field)
-          ? entities.field.name
-          : entities.contentType.name
-      );
+      const { model, field, fieldId, index, contentType } = iceRegistry.getReferentialEntries(iceRecord);
+
+      if (notNullOrUndefined(field)) {
+        if (field.type === 'node-selector') {
+          if (notNullOrUndefined(index)) {
+
+            let component;
+            if (notNullOrUndefined(fieldId) && ContentTypeHelper.isGroupItem(contentType, fieldId)) {
+              // Repeat groups with possibly nested node-selector/repeat
+              const indexPath = `${index}`.split('.').map(i => parseInt(i, 10));
+              const pieces = fieldId.split('.');
+              let aux = model;
+              indexPath.forEach((index, i) => {
+                aux = aux[pieces[i]][index];
+              });
+              // TODO: Only works for nested node-selector...
+              // A nested repeat group would not be a component and `aux` would rather be
+              // an object to read the last piece of the `fieldId`
+              component = models[aux];
+            } else {
+              // Ok for mono-level node selectors
+              const id = model[field.id][index];
+              component = models[id];
+            }
+
+            labels.push(`${field.name}: ${component.craftercms.label}`);
+
+          } else {
+            labels.push(model.craftercms.label);
+          }
+        } else {
+          labels.push(field.name);
+        }
+      } else {
+        labels.push(`${contentType.name}: ${model.craftercms.label}`);
+      }
 
     });
     record.label = labels.join(', ');

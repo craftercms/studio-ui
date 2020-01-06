@@ -17,15 +17,20 @@
 
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { filter, share, map } from 'rxjs/operators';
+import { filter, map, share } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
   CONTENT_TYPES_RESPONSE,
-  createLookupTable, DELETE_ITEM_OPERATION,
-  GUEST_MODELS_RECEIVED, INSERT_COMPONENT_OPERATION, INSERT_ITEM_OPERATION, MOVE_ITEM_OPERATION,
+  createLookupTable,
+  DELETE_ITEM_OPERATION,
+  GUEST_MODELS_RECEIVED,
+  INSERT_COMPONENT_OPERATION,
+  INSERT_ITEM_OPERATION,
+  MOVE_ITEM_OPERATION,
   pluckProps,
   reversePluckProps,
-  SORT_ITEM_OPERATION, UPDATE_FIELD_VALUE_OPERATION
+  SORT_ITEM_OPERATION,
+  UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from '../communicator';
@@ -544,83 +549,116 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
             }
           }
         }` : `
-          query Page {
-            contentItems {
-              total
-              items {
-                id: objectId
-                path: localId
-                contentType: content__type
-                dateCreated: createdDate_dt
-                dateModified: lastModifiedDate_dt
-                label: internal__name
-                ... on component_articles__widget {
-                  title_t
-                  max_articles_i
+        query Page {
+          contentItems(limit: 1000) {
+            total
+            items {
+              id: objectId
+              path: localId
+              contentType: content__type
+              dateCreated: createdDate_dt
+              dateModified: lastModifiedDate_dt
+              label: internal__name
+              ... on page_article {
+                ...CrafterCMSProps
+                title_t
+                author_s
+                categories_o {
+                  item {
+                    key
+                    value_smv
+                  }
                 }
-                ... on component_contact__widget {
-                  title_t
-                  text_html
-                  email_s
-                  phone_s
-                  address_html
+                featured_b
+                summary_t
+                subject_t
+                segments_o {
+                  item {
+                    key
+                    value_smv
+                  }
                 }
-                ... on component_feature {
-                  icon_s
-                  title_t
-                  body_html
+                sections_o {
+                  item {
+                    section_html
+                  }
                 }
-                ... on component_header {
-                  logo_s
-                  logo_text_t
-                  business_name_s
-                  social_media_links_o {
-                    item {
-                      social_media_s
-                      url_s
+                orderDefault_f
+                left__rail_o {
+                  ...ContentIncludeWrapperFragment
+                }
+                header_o {
+                  ...ContentIncludeWrapperFragment
+                }
+                image_s
+              }
+              ... on component_articles__widget {
+                title_t
+                max_articles_i
+              }
+              ... on component_contact__widget {
+                title_t
+                text_html
+                email_s
+                phone_s
+                address_html
+              }
+              ... on component_feature {
+                icon_s
+                title_t
+                body_html
+              }
+              ... on component_header {
+                logo_s
+                logo_text_t
+                business_name_s
+                social_media_links_o {
+                  item {
+                    social_media_s
+                    url_s
+                  }
+                }
+              }
+              ... on component_left__rail {
+                widgets_o {
+                  item {
+                    key
+                    component {
+                      id: objectId
                     }
                   }
                 }
-                ... on component_left__rail {
-                  widgets_o {
-                    item {
-                      key
-                      component {
-                        id: objectId
-                      }
-                    }
-                  }
+              }
+              ... on page_home {
+                title_t
+                header_o {
+                  ...ContentIncludeWrapperFragment
                 }
-                ... on page_home {
-                  title_t
-                  header_o {
-                    ...ContentIncludeWrapperFragment
-                  }
-                  left__rail_o {
-                    ...ContentIncludeWrapperFragment
-                  }
-                  hero_title_html
-                  hero_text_html
-                  hero_image_s
-                  features_title_t
-                  features_o {
-                    ...ContentIncludeWrapperFragment
-                  }
-                  content_o {
-                    ...ContentIncludeWrapperFragment
-                  }
+                left__rail_o {
+                  ...ContentIncludeWrapperFragment
                 }
-                ... on taxonomy {
-                  items {
-                    item {
-                      key
-                      value
-                    }
+                hero_title_html
+                hero_text_html
+                hero_image_s
+                features_title_t
+                features_o {
+                  ...ContentIncludeWrapperFragment
+                }
+                content_o {
+                  ...ContentIncludeWrapperFragment
+                }
+              }
+              ... on taxonomy {
+                items {
+                  item {
+                    key
+                    value
                   }
                 }
               }
             }
           }
+        }
       `) + (`
         fragment ContentIncludeWrapperFragment on ContentIncludeWrapper {
           item {
@@ -663,69 +701,80 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
             }
           }
         }
-
-        fragment CrafterCMSProps on component_feature {
+        fragment CrafterCMSProps on ContentItem {
           id: objectId
           path: localId
           contentType: content__type
           dateCreated: createdDate_dt
           dateModified: lastModifiedDate_dt
           label: internal__name
-        }
-      `)
+        }`
+      )
     },
     { 'Content-Type': 'application/json' }
   ).pipe(
     map(({ response }) => response.data.contentItems.items.reduce(
-      (lookupTable, model) => {
-
-        const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
-
-        if ([
-          '/page/search-results',
-          '/component/level-descriptor'
-        ].includes(model.contentType)) {
-          return lookupTable;
-        }
-
-        const system = pluckProps(model, ...systemPropList);
-        const data = reversePluckProps(model, ...systemPropList);
-
-        Object.entries(data).forEach(([key, value]) => {
-          if (key.endsWith('_o')) {
-            data[key] = [];
-            value.item.forEach((item) => {
-              data[key].push(
-                // 1. Components
-                item.component?.id ||
-                // 2. Repeat Groups
-                item
-              );
-              if (item.component?.id && item.component.id === item.key) {
-                // Embedded component found.
-                lookupTable[item.component.id] = {
-                  craftercms: pluckProps(item.component, ...systemPropList),
-                  ...reversePluckProps(item.component, ...systemPropList)
-                };
-              }
-            });
-            data[key] = value.item.map((item) => item.component?.id || item);
-          } else if (model.contentType === '/taxonomy' && key === 'items') {
-            data[key] = value.item;
-          }
-        });
-
-        lookupTable[model.id] = {
-          craftercms: system,
-          ...data
-        };
-
-        return lookupTable;
-
-      },
+      reducer,
       {}
     ))
   );
+}
+
+
+function reducer(lookupTable, model) {
+
+  const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
+
+  if ([
+    '/page/search-results',
+    '/component/level-descriptor'
+  ].includes(model.contentType)) {
+    return lookupTable;
+  }
+
+  const system = pluckProps(model, ...systemPropList);
+  const rawData = reversePluckProps(model, ...systemPropList);
+  const data = {};
+
+  const processEntry = ([key, value], data) => {
+    if (key.endsWith('_o')) {
+      data[key] = [];
+      value.item.forEach((item) => {
+        // Components & repeat groups
+        if (item.component?.id) {
+          // 1. Components
+          data[key].push(item.component.id);
+          if (item.component.id === item.key) {
+            // Embedded component found.
+            reducer(lookupTable, item.component);
+          }
+        } else {
+          // 2. Repeat Groups
+          const repeatGroupItem = {};
+          data[key].push(repeatGroupItem);
+          Object.entries(item).forEach((entry) =>
+            processEntry(entry, repeatGroupItem)
+          );
+        }
+      });
+    } else if (model.contentType === '/taxonomy' && key === 'items') {
+      data[key] = value.item;
+    } else {
+      data[key] = value;
+    }
+  };
+
+  Object.entries(rawData).forEach((entry, index) =>
+    processEntry(entry, data)
+  );
+
+  lookupTable[model.id] = {
+    craftercms: system,
+    ...data
+  };
+
+  return lookupTable;
+
 }
 
 export const contentController = new ContentController();

@@ -275,7 +275,10 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
     legacySection.fields?.field && asArray<LegacyFormDefinitionField>(legacySection.fields.field).forEach((legacyField) => {
 
-      const fieldId = camelize(legacyField.id);
+      const fieldId = [
+        'file-name',
+        'internal-name'
+      ].includes(legacyField.id) ? camelize(legacyField.id) : legacyField.id;
 
       fieldIds.push(fieldId);
 
