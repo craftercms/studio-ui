@@ -22,6 +22,7 @@ import {
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
+  dataURItoBlob,
   EDIT_MODE_CHANGED,
   EditingStatus,
   forEach,
@@ -53,6 +54,9 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
+//import { XHRUpload, Core } from 'uppy';
+import Core from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -602,18 +606,18 @@ export function Guest(props) {
 
     },
 
-    drop(e) {
+    drop(e, record) {
       if (fn.dragOk()) {
 
         e.preventDefault();
         e.stopPropagation();
 
-        fn.onDrop();
+        fn.onDrop(e, record);
 
       }
     },
 
-    onDrop(e) {
+    onDrop(e, record) {
 
       const state = stateRef.current;
       const status = state.common.status;
@@ -652,6 +656,43 @@ export function Guest(props) {
         }
         case EditingStatus.PLACING_DETACHED_COMPONENT: {
           // TODO: Insert detached component
+          break;
+        }
+        case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
+          const file = e.originalEvent.dataTransfer.files[0];
+          const reader = new FileReader();
+          reader.onload = (function (aImg) {
+            const uppy = Core({
+              autoProceed: true
+            });
+            const uploadAssetUrl = '/studio/asset-upload?_csrf=eb7a355e-a76a-4778-bb29-cdca01aa454d';
+
+            uppy.use(XHRUpload, { endpoint: uploadAssetUrl, site: 'editorial', path: '/static-assets/images' });
+
+            uppy.on('complete', (result) => {
+              console.log('upload complete');
+              let draggedPath = '/static-assets/images/' + file.name;
+              contentController.updateField(
+                record.modelId,
+                record.fieldId[0],//check this
+                record.index,
+                draggedPath
+              );
+            });
+
+            //upload
+            return function (event) {
+              var blob = dataURItoBlob(event.target.result);
+              uppy.setMeta({ site: 'editorial', path: '/static-assets/images' });
+              uppy.addFile({
+                name: file.name, // file name
+                type: file.type, // file type
+                data: blob, // file blob
+              });
+              aImg.src = event.target.result;
+            };
+          })(record.element);
+          reader.readAsDataURL(file);
           break;
         }
       }
@@ -857,7 +898,6 @@ export function Guest(props) {
         type = 'video-picker';
       }
       const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
-
       scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles
@@ -945,7 +985,8 @@ export function Guest(props) {
         EditingStatus.SORTING_COMPONENT,
         EditingStatus.PLACING_NEW_COMPONENT,
         EditingStatus.PLACING_DETACHED_ASSET,
-        EditingStatus.PLACING_DETACHED_COMPONENT
+        EditingStatus.PLACING_DETACHED_COMPONENT,
+        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
       ].includes(stateRef.current.common.status);
     },
 
@@ -959,8 +1000,74 @@ export function Guest(props) {
           highlighted: {}
         }
       });
-    }
+    },
 
+    dragenter(e, record) {
+      e.preventDefault();
+      e.stopPropagation();
+      fn.onDesktopAssetStarted(e.originalEvent.dataTransfer.items[0], record);
+    },
+
+    onDesktopAssetStarted(asset) {
+      let
+        players = [],
+        siblings = [],
+        containers = [],
+        dropZones = [],
+        type;
+
+      if (asset.type.includes('image/')) {
+        type = 'image';
+      } else if (asset.type.includes('video/')) {
+        type = 'video-picker';
+      }
+      const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
+      scrollToReceptacle(validatedReceptacles);
+
+      validatedReceptacles
+        .forEach(({ id }) => {
+
+          const dropZone = ElementRegistry.compileDropZone(id);
+          dropZone.origin = false;
+          dropZones.push(dropZone);
+
+          siblings = [...siblings, ...dropZone.children];
+          players = [...players, ...dropZone.children, dropZone.element];
+          containers.push(dropZone.element);
+
+        });
+
+      const highlighted = dropZones
+        .reduce(
+          (object, { physicalRecordId: id }) => {
+            object[id] = ElementRegistry.getHoverData(id);
+            return object;
+          },
+          {}
+        );
+
+      fn.initializeSubjects();
+
+      setState({
+        dragContext: {
+          players,
+          siblings,
+          dropZones,
+          containers,
+          inZone: false,
+          targetIndex: null,
+          dragged: asset
+        },
+        common: {
+          ...stateRef.current.common,
+          status: EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
+          highlighted,
+          register,
+          deregister,
+          onEvent
+        }
+      });
+    }
   };
 
   function register(payload) {
@@ -1120,6 +1227,7 @@ export function Guest(props) {
           }
           {
             [
+              EditingStatus.SORTING_COMPONENT,
               EditingStatus.SORTING_COMPONENT,
               EditingStatus.PLACING_NEW_COMPONENT,
               EditingStatus.PLACING_DETACHED_COMPONENT

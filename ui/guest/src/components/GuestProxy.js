@@ -85,6 +85,7 @@ export function GuestProxy(props) {
       .on('mouseover', '[data-craftercms-model-id]', handler)
       .on('mouseout', '[data-craftercms-model-id]', handler)
       .on('dragstart', '[data-craftercms-model-id]', handler)
+      .on('dragenter', '[data-craftercms-model-id]', handler)
       .on('dragover', '[data-craftercms-model-id]', handler)
       .on('dragleave', '[data-craftercms-model-id]', handler)
       .on('drop', '[data-craftercms-model-id]', handler)
