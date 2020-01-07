@@ -419,7 +419,6 @@ export function Guest(props) {
 
     /*onDragStart*/
     dragstart(e, physicalRecord) {
-
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
 
@@ -665,31 +664,37 @@ export function Guest(props) {
             const uppy = Core({
               autoProceed: true
             });
-            const uploadAssetUrl = '/studio/asset-upload?_csrf=eb7a355e-a76a-4778-bb29-cdca01aa454d';
 
-            uppy.use(XHRUpload, { endpoint: uploadAssetUrl, site: 'editorial', path: '/static-assets/images' });
+            const uploadAssetUrl = `/studio/asset-upload?${persistence.config.XSRF_TOKEN_HEADER_NAME}=${persistence.config.XSRF_TOKEN}`;
+
+            uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
 
             uppy.on('complete', (result) => {
-              console.log('upload complete');
-              let draggedPath = '/static-assets/images/' + file.name;
-              contentController.updateField(
-                record.modelId,
-                record.fieldId[0],//check this
-                record.index,
-                draggedPath
-              );
+              if (result.successful.length) {
+                let draggedPath = result.successful[0].meta.path + "/" + result.successful[0].meta.name;
+                contentController.updateField(
+                  record.modelId,
+                  record.fieldId[0],
+                  record.index,
+                  draggedPath
+                );
+              } else {
+                //TODO revert change
+                console.log('Failed');
+              }
             });
 
             //upload
             return function (event) {
               var blob = dataURItoBlob(event.target.result);
-              uppy.setMeta({ site: 'editorial', path: '/static-assets/images' });
+              uppy.setMeta({ site: Cookies.get('crafterSite'), path: `/static-assets/images/${record.modelId}` });
               uppy.addFile({
-                name: file.name, // file name
-                type: file.type, // file type
-                data: blob, // file blob
+                name: file.name,
+                type: file.type,
+                data: blob,
               });
               aImg.src = event.target.result;
+              fn.onDragEnd();
             };
           })(record.element);
           reader.readAsDataURL(file);
@@ -1003,12 +1008,14 @@ export function Guest(props) {
     },
 
     dragenter(e, record) {
-      e.preventDefault();
-      e.stopPropagation();
-      fn.onDesktopAssetStarted(e.originalEvent.dataTransfer.items[0], record);
+      if (stateRef.current.common.status === EditingStatus.LISTENING && e.originalEvent.dataTransfer.types.includes('Files')) {
+        e.preventDefault();
+        e.stopPropagation();
+        fn.onDesktopAssetDragStarted(e.originalEvent.dataTransfer.items[0], record);
+      }
     },
 
-    onDesktopAssetStarted(asset) {
+    onDesktopAssetDragStarted(asset) {
       let
         players = [],
         siblings = [],
@@ -1095,7 +1102,6 @@ export function Guest(props) {
       if (isNullOrUndefined(record)) {
         throw new Error('No record found for dispatcher element');
       }
-
       handler(event, record);
 
     } else {
@@ -1195,8 +1201,9 @@ export function Guest(props) {
       console.log('No Host was detected. In-Context Editing is off.');
     }, 700);
 
-    const hostDetectionSubscription = fromTopic(HOST_CHECK_IN).pipe(take(1)).subscribe(() => {
+    const hostDetectionSubscription = fromTopic(HOST_CHECK_IN).pipe(take(1)).subscribe((payload) => {
       clearTimeout(timeout);
+      persistence.config = payload.payload;
     });
 
     zip(

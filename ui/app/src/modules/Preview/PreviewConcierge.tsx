@@ -54,6 +54,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou } from '../../utils/object';
 import { useOnMount } from '../../utils/helpers';
+import { getRequestForgeryToken } from "../../utils/auth";
 
 export function PreviewConcierge(props: any) {
 
@@ -87,7 +88,14 @@ export function PreviewConcierge(props: any) {
       switch (type) {
         case GUEST_CHECK_IN: {
 
-          hostToGuest$.next({ type: HOST_CHECK_IN, payload });
+          hostToGuest$.next({
+            type: HOST_CHECK_IN,
+            payload: {
+              XSRF_TOKEN_HEADER_NAME: '_csrf',
+              // TODO: Verify security implications
+              XSRF_TOKEN: getRequestForgeryToken()
+            }
+          });
 
           dispatch(checkInGuest(payload));
 
