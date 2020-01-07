@@ -20,6 +20,8 @@ import {
   changeCurrentUrl,
   checkInGuest,
   checkOutGuest,
+  CLEAR_SELECTED_ZONES,
+  clearSelectForEdit,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
   fetchAudiencesPanel,
@@ -165,6 +167,10 @@ export function PreviewConcierge(props: any) {
           dispatch(selectForEdit(payload));
           break;
         }
+        case CLEAR_SELECTED_ZONES: {
+          dispatch(clearSelectForEdit());
+          break;
+        }
         case GUEST_MODELS_RECEIVED: {
           dispatch(guestModelsReceived(payload));
           break;
@@ -176,6 +182,10 @@ export function PreviewConcierge(props: any) {
         }
       }
     });
+
+    // Retrieve all content types in the system
+    (!contentTypes && site) && dispatch(fetchContentTypes());
+    contentTypes && contentTypes$.next(contentTypes);
 
     let fetchSubscription;
     switch (selectedTool) {
@@ -189,9 +199,7 @@ export function PreviewConcierge(props: any) {
         }
         break;
       case 'craftercms.ice.components':
-        // Retrieve all content types in the system
-        (!contentTypes && site) && dispatch(fetchContentTypes());
-        contentTypes && contentTypes$.next(contentTypes);
+
         break;
     }
 

@@ -15,19 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, post } from "../utils/ajax";
+import { CONTENT_TYPE_JSON, get, post } from '../utils/ajax';
+import { catchError, map, pluck } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { Credentials, User } from '../models/User';
+import { AjaxError } from 'rxjs/ajax';
 
-export function getLogoutInfoURL() {
-  return get('/studio/api/2/users/me/logout/sso/url');
+export function getLogoutInfoURL(): Observable<{ logoutUrl: string }> {
+  return get('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
 }
 
 export function logout() {
-  return post('/studio/api/1/services/api/1/security/logout.json', {}, {
-    'Content-Type': 'application/json'
-  })
+  return post('/studio/api/1/services/api/1/security/logout.json', {}, CONTENT_TYPE_JSON);
+}
+
+export function login(credentials: Credentials): Observable<User> {
+  return post(
+    '/studio/api/1/services/api/1/security/login.json',
+    credentials,
+    CONTENT_TYPE_JSON
+  ).pipe(pluck('response'));
+}
+
+export function validateSession(): Observable<boolean> {
+  return get('/studio/api/1/services/api/1/security/validate-session.json').pipe(
+    map(({ response }) => response.message === 'OK'),
+    catchError((error: AjaxError) => {
+      if (error.status === 401) {
+        return of(false);
+      } else {
+        throw error;
+      }
+    })
+  );
 }
 
 export default {
   getLogoutInfoURL,
-  logout
+  logout,
+  login,
+  validateSession
 }

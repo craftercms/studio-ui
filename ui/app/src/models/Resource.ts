@@ -15,17 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineEpics } from 'redux-observable';
-import auth from './auth';
-import sites from './sites';
-import contentTypes from './contentTypes';
-import audiencesPanel from "./audiencesPanel";
+export interface Resource<T> {
+  readonly complete: boolean;
 
-const epic: any[] = combineEpics.apply(this, [
-  ...auth,
-  ...sites,
-  ...contentTypes,
-  ...audiencesPanel
-]);
-
-export default epic as any;
+  read(): T;
+}

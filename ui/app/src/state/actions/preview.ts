@@ -18,10 +18,10 @@
 import { StandardAction } from '../../models/StandardAction';
 import ContentType from '../../models/ContentType';
 import ContentInstance from '../../models/ContentInstance';
-import { GuestData } from '../../modules/Preview/previewContext';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
+import { GuestData } from '../../models/GlobalState';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps

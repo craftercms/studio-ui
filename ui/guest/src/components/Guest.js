@@ -20,26 +20,26 @@ import {
   ASSET_DRAG_ENDED,
   ASSET_DRAG_STARTED,
   CLEAR_SELECTED_ZONES,
+  COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
   EDIT_MODE_CHANGED,
   EditingStatus,
   GUEST_CHECK_IN,
+  GUEST_CHECK_OUT,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
-  TRASHED,
-  COMPONENT_DRAG_ENDED,
   INSTANCE_DRAG_ENDED,
-  RELOAD_REQUEST,
-  NAVIGATION_REQUEST,
-  GUEST_CHECK_OUT,
-  not,
   isNullOrUndefined,
+  NAVIGATION_REQUEST,
+  not,
   notNullOrUndefined,
-  pluckProps, GUEST_MODELS_RECEIVED
+  pluckProps,
+  RELOAD_REQUEST,
+  TRASHED
 } from '../util';
-import { zip, Subject } from 'rxjs';
-import { debounceTime, delay, filter, map, take, tap, throttleTime } from 'rxjs/operators';
+import { fromEvent, Subject, zip } from 'rxjs';
+import { debounceTime, delay, filter, map, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
 import { ElementRegistry } from '../classes/ElementRegistry';
@@ -51,6 +51,14 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
+// TinyMCE makes the build quite large. Temporarily, importing this externally via
+// the site's ftl. Need to evaluate whether to include the core as part of guest build or not
+// import tinymce from 'tinymce';
+
+const clearAndListen$ = new Subject();
+const escape$ = fromEvent(document, 'keydown').pipe(
+  filter(e => e.keyCode === 27)
+);
 
 // TODO:
 // - add "modePreview" and bypass all
@@ -193,19 +201,163 @@ export function Guest(props) {
     click(e, record) {
       if (stateRef.current.common.status === EditingStatus.LISTENING) {
 
-        const highlight = ElementRegistry.getHoverData(record.id);
+        const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+        const type = field?.type;
 
-        post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
+        switch (type) {
+          case 'html':
+          case 'text':
+          case 'textarea': {
 
-        setState({
-          ...stateRef.current,
-          common: {
-            ...stateRef.current.common,
-            status: EditingStatus.EDITING_COMPONENT,
-            draggable: {},
-            highlighted: { [record.id]: highlight }
+            const plugins = ['paste'];
+
+            (type === 'html') && plugins.push('quickbars');
+
+            // eslint-disable-next-line no-undef
+            if (!tinymce) {
+              return alert('Looks like tinymce is not added on the page. Please add tinymce on to the page to enable editing.');
+            }
+
+            const elementDisplay = $(record.element).css('display');
+            if (elementDisplay === 'inline') {
+              $(record.element).css('display', 'inline-block');
+            }
+
+            // eslint-disable-next-line no-undef
+            tinymce.init({
+              mode: 'none',
+              target: record.element,
+              plugins,
+              paste_as_text: true,
+              toolbar: false,
+              menubar: false,
+              inline: true,
+              base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
+              suffix: '.min',
+              setup(editor) {
+
+                editor.on('init', function () {
+
+                  let changed = false;
+                  let originalContent = getContent();
+
+                  editor.focus();
+                  editor.selection.select(editor.getBody(), true);
+                  editor.selection.collapse(false);
+
+                  // In some cases the 'blur' event is getting caught somewhere along
+                  // the way. Focusout seems to be more reliable.
+                  editor.on('focusout', (e) => {
+                    e.stopImmediatePropagation();
+                    save();
+                    cancel();
+                  });
+
+                  editor.once('change', () => {
+                    changed = true;
+                  });
+
+                  editor.on('keydown', (e) => {
+                    if (e.keyCode === 27) {
+                      e.stopImmediatePropagation();
+                      editor.setContent(originalContent);
+                      cancel();
+                    }
+                  });
+
+                  function save() {
+
+                    const content = getContent();
+
+                    if (changed) {
+
+                      // contentController.updateField(
+                      //   record.modelId,
+                      //   record.fieldId,
+                      //   record.index,
+                      //   content
+                      // );
+
+                    }
+
+                  }
+
+                  function getContent() {
+                    return (type === 'html')
+                      ? editor.getContent()
+                      : editor.getContent({ format: 'text' });
+                  }
+
+                  function destroyEditor() {
+                    editor.destroy(false);
+                  }
+
+                  function cancel() {
+
+                    setState({
+                      ...stateRef.current,
+                      common: {
+                        ...stateRef.current.common,
+                        status: EditingStatus.LISTENING,
+                        highlighted: {}
+                      }
+                    });
+
+                    const content = getContent();
+                    destroyEditor();
+
+                    // In case the user did some text bolding or other formatting which won't
+                    // be honoured on plain text, revert the content to the edited plain text
+                    // version of the input.
+                    (changed) && (type === 'text') && $(record.element).html(content);
+
+                    if (elementDisplay === 'inline') {
+                      $(record.element).css('display', '');
+                    }
+
+                  }
+
+                });
+
+              }
+            });
+
+            setState({
+              ...stateRef.current,
+              common: {
+                ...stateRef.current.common,
+                status: EditingStatus.EDITING_COMPONENT_INLINE,
+                draggable: {},
+                highlighted: {}
+              }
+            });
+
+            break;
           }
-        });
+          default: {
+
+            const highlight = ElementRegistry.getHoverData(record.id);
+
+            post(ICE_ZONE_SELECTED, pluckProps(record, 'modelId', 'index', 'fieldId'));
+
+            setState({
+              ...stateRef.current,
+              common: {
+                ...stateRef.current.common,
+                status: EditingStatus.EDITING_COMPONENT,
+                draggable: {},
+                highlighted: { [record.id]: highlight }
+              }
+            });
+
+            escape$.pipe(takeUntil(clearAndListen$)).subscribe(() => {
+              post(CLEAR_SELECTED_ZONES);
+              fn.clearAndListen();
+            });
+
+            break;
+          }
+        }
 
       }
     },
@@ -814,6 +966,18 @@ export function Guest(props) {
         EditingStatus.PLACING_DETACHED_ASSET,
         EditingStatus.PLACING_DETACHED_COMPONENT
       ].includes(stateRef.current.common.status);
+    },
+
+    clearAndListen() {
+      clearAndListen$.next();
+      setState({
+        ...stateRef.current,
+        common: {
+          ...stateRef.current.common,
+          status: EditingStatus.LISTENING,
+          highlighted: {}
+        }
+      });
     }
 
   };
@@ -827,7 +991,10 @@ export function Guest(props) {
   }
 
   function onEvent(event, dispatcher) {
-    if (persistence.contentReady && stateRef.current.common.inEditMode) {
+    if (
+      persistence.contentReady &&
+      stateRef.current.common.inEditMode
+    ) {
 
       const { type } = event;
 
@@ -879,14 +1046,7 @@ export function Guest(props) {
         case TRASHED:
           return fn.onTrashDrop(payload);
         case CLEAR_SELECTED_ZONES:
-          setState({
-            ...stateRef.current,
-            common: {
-              ...stateRef.current.common,
-              status: EditingStatus.LISTENING,
-              highlighted: {}
-            }
-          });
+          fn.clearAndListen();
           break;
         case RELOAD_REQUEST: {
           post({ type: GUEST_CHECK_OUT });

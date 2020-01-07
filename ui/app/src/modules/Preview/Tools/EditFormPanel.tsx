@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { getHostToGuestBus } from '../previewContext';
 import ToolPanel from './ToolPanel';
 import CloseRounded from '@material-ui/icons/CloseRounded';
@@ -25,18 +25,32 @@ import { CLEAR_SELECTED_ZONES, clearSelectForEdit } from '../../../state/actions
 import { useDispatch } from 'react-redux';
 import { usePreviewState, useSelection } from '../../../utils/hooks';
 
+function createBackHandler(dispatch) {
+  const hostToGuest$ = getHostToGuestBus();
+  return () => {
+    dispatch(clearSelectForEdit());
+    hostToGuest$.next({ type: CLEAR_SELECTED_ZONES })
+  };
+}
+
 export default function EditFormPanel() {
 
   const dispatch = useDispatch();
   const { guest: { selected, models } } = usePreviewState();
-  const hostToGuest$ = getHostToGuestBus();
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
 
-  const onBack = () => {
-    dispatch(clearSelectForEdit());
-    hostToGuest$.next({ type: CLEAR_SELECTED_ZONES })
-  };
+  const onBack = createBackHandler(dispatch);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.keyCode === 27) {
+        createBackHandler(dispatch)();
+      }
+    };
+    document.addEventListener('keydown', handler, false);
+    return () => document.removeEventListener('keydown', handler, false);
+  }, [dispatch]);
 
   if (selected.length > 1) {
     // TODO: Implement Multi-mode...
