@@ -21,7 +21,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
-import { GuestData } from '../../models/GlobalState';
+import GuestData from '../../models/GlobalState';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -74,7 +74,7 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_AUDIENCES_PANEL = 'FETCH_AUDIENCES_PANEL';
 export const FETCH_AUDIENCES_PANEL_COMPLETE = 'FETCH_AUDIENCES_PANEL_COMPLETE';
 export const FETCH_AUDIENCES_PANEL_FAILED = 'FETCH_AUDIENCES_PANEL_FAILED';
-export const SET_AUDIENCES_PANEL_PROFILE = 'SET_AUDIENCES_PANEL_PROFILE';
+export const UPDATE_AUDIENCES_PANEL_PROFILE = 'UPDATE_AUDIENCES_PANEL_PROFILE';
 
 // endregion
 
@@ -188,12 +188,12 @@ export function fetchAudiencesPanelComplete(data): StandardAction {
   }
 }
 
-export function setAudiencesPanelProfile(site, profile): StandardAction {
+export function updateAudiencesPanelProfile(name, value): StandardAction {
   return {
-    type: SET_AUDIENCES_PANEL_PROFILE,
+    type: UPDATE_AUDIENCES_PANEL_PROFILE,
     payload: {
-      site,
-      profile
+      name,
+      value
     }
   }
 }

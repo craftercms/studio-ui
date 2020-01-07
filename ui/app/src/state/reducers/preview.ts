@@ -32,14 +32,14 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
-  SET_AUDIENCES_PANEL_PROFILE,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
-  TOOLS_LOADED
+  TOOLS_LOADED,
+  UPDATE_AUDIENCES_PANEL_PROFILE
 } from '../actions/preview';
-import { createLookupTable, nnou, nou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
@@ -235,28 +235,20 @@ const reducer = createReducer<GlobalState['preview']>({
   },
   [FETCH_AUDIENCES_PANEL]: (state) => ({
     ...state,
-    audiencesPanel: { ...state.audiencesPanel, isFetching: true }
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isFetching: true
+    }
   }),
   [FETCH_AUDIENCES_PANEL_COMPLETE]: (state, { payload }) => {
-    const data = {
-      site: payload[0].site,
-      data: {
-        config: payload[0].properties,
-        profile: payload[1]
-      }
-    };
-    let dataLookupTable = createLookupTable<any>([data], 'site');
-
     return {
       ...state,
       audiencesPanel: {
         ...state.audiencesPanel,
-        byId: {
-          ...state.audiencesPanel.byId,
-          ...dataLookupTable
-        },
         isFetching: false,
-        error: null
+        error: null,
+        contentType: payload[0],
+        model: payload[1]
       }
     }
   },
@@ -264,18 +256,15 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: true }
   }),
-  [SET_AUDIENCES_PANEL_PROFILE]: (state, { payload }) => ({
+  [UPDATE_AUDIENCES_PANEL_PROFILE]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
-      byId: {
-        ...state.audiencesPanel.byId,
-        [payload.site]: {
-          ...state.audiencesPanel.byId[payload.site],
-          data: {
-            ...state.audiencesPanel.byId[payload.site].data,
-            profile: payload.profile
-          }
+      model: {
+        ...state.audiencesPanel.model,
+        [payload.name]: {
+          key: payload.value,
+          label: payload.value
         }
       }
     }

@@ -21,14 +21,14 @@ import { Epic, ofType } from 'redux-observable';
 import { FETCH_AUDIENCES_PANEL, fetchAudiencesPanelComplete, fetchAudiencesPanelFailed } from "../actions/preview";
 import { map, switchMap, withLatestFrom } from "rxjs/operators";
 import { catchAjaxError } from "../../utils/ajax";
-import { getAudiencesPanelConfig, getAudiencesPanelProfile } from "../../services/configuration";
+import { getAudiencesPanelConfig, getAudiencesPanelModel } from "../../services/configuration";
 import { forkJoin, Observable } from "rxjs";
 import GlobalState from "../../models/GlobalState";
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_AUDIENCES_PANEL),
   withLatestFrom(state$),
-  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), getAudiencesPanelProfile()])),
+  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), getAudiencesPanelModel()])),
   map(fetchAudiencesPanelComplete),
   catchAjaxError(fetchAudiencesPanelFailed)
 );
