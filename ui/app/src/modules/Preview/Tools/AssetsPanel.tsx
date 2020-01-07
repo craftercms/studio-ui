@@ -18,9 +18,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
-import { useSelection, useStateResourceSelection } from "../../../utils/hooks";
+import { useActiveSiteId, useSelection, useStateResourceSelection } from "../../../utils/hooks";
 import { MediaItem } from "../../../models/Search";
-import { createStyles } from "@material-ui/core";
+import { createStyles, fade } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import SearchBar from '../../../components/SearchBar';
 import { useDispatch, useSelector } from "react-redux";
@@ -35,7 +35,13 @@ import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from "../../../components/SystemStatus/EmptyState";
+import UploadIcon from '@material-ui/icons/Publish';
 import { nnou } from "../../../utils/object";
+import Core from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
+import { palette } from "../../../styles/theme";
+import { getRequestForgeryToken } from "../../../utils/auth";
+import { dataURItoBlob } from '../../../utils/path';
 
 const translations = defineMessages({
   assetsPanel: {
@@ -70,7 +76,10 @@ const translations = defineMessages({
 
 const assetsPanelStyles = makeStyles(() => createStyles({
   assetsPanelWrapper: {
-    padding: '15px 15px 55px 15px'
+    padding: '15px 15px 55px 15px',
+    '&.dragInProgress': {
+      background: 'red'
+    }
   },
   search: {
     padding: '15px 15px 0px 15px',
@@ -117,6 +126,23 @@ const assetsPanelStyles = makeStyles(() => createStyles({
   noResultsTitle: {
     fontSize: 'inherit',
     marginTop: '10px'
+  },
+  uploadOverlay: {
+    position: 'absolute',
+    background: fade(palette.black, 0.9),
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    zIndex: 2
+  },
+  uploadIcon: {
+    fontSize: '8em',
+    color: palette.gray.light5,
+    margin: 'auto',
   }
 }));
 
@@ -132,6 +158,7 @@ export default function AssetsPanel() {
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const initialKeyword = useSelection(state => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
+  const [dragInProgress, setDragInProgress] = useState(false);
   const hostToGuest$ = getHostToGuestBus();
   const dispatch = useDispatch();
   const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(state => state.preview.assets, {
@@ -151,6 +178,7 @@ export default function AssetsPanel() {
   });
   const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
   const { formatMessage } = useIntl();
+  const site = useActiveSiteId();
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
     type: ASSET_DRAG_STARTED,
@@ -160,6 +188,58 @@ export default function AssetsPanel() {
   const onDragEnd = () => hostToGuest$.next({
     type: ASSET_DRAG_ENDED
   });
+
+  const onDragDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    const uppy = Core({ autoProceed: true });
+    const uploadAssetUrl = `/studio/asset-upload?_csrf=${getRequestForgeryToken()}`;
+    uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
+
+    uppy.on('complete', (result) => {
+      if (result.successful.length) {
+        console.log('Upload Success');
+      } else {
+        console.log('Failed');
+      }
+    });
+
+    reader.onloadend = function () {
+      const blob = dataURItoBlob(reader.result);
+      uppy.setMeta({ site, path: `/static-assets/images/` });
+      uppy.addFile({
+        name: file.name,
+        type: file.type,
+        data: blob,
+      });
+    };
+    reader.readAsDataURL(file);
+    setDragInProgress(false);
+  };
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  //listener for dragenter
+  document.addEventListener("dragenter", function (event) {
+    //it is a file from desktop??
+    if (event.dataTransfer.types.includes('Files')) {
+      setDragInProgress(true);
+    }
+  }, false);
+
+  document.addEventListener("dragleave", function (event) {
+    //needs to know if it left the page
+    //setDragInProgress(false);
+  }, false);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
@@ -197,6 +277,12 @@ export default function AssetsPanel() {
             />
           }
         >
+          {
+            dragInProgress &&
+            <div className={classes.uploadOverlay} onDrop={onDragDrop} onDragOver={onDragOver}>
+              <UploadIcon className={classes.uploadIcon}/>
+            </div>
+          }
           <AssetsPanelUI
             classes={classes}
             assetsResource={resource}
@@ -204,6 +290,8 @@ export default function AssetsPanel() {
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             GUEST_BASE={GUEST_BASE}
+            onDragDrop={onDragDrop}
+            dragInProgress={dragInProgress}
           />
         </React.Suspense>
       </ErrorBoundary>
@@ -223,7 +311,6 @@ export function AssetsPanelUI(props) {
   } = props;
   const assets: AssetResource = assetsResource.read();
   const { total, pageNumber, items, limit } = assets;
-  //const items = page[pageNumber];
   const { formatMessage } = useIntl();
 
   return (

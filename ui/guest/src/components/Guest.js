@@ -684,9 +684,8 @@ export function Guest(props) {
               }
             });
 
-            //upload
             return function (event) {
-              var blob = dataURItoBlob(event.target.result);
+              const blob = dataURItoBlob(event.target.result);
               uppy.setMeta({ site: Cookies.get('crafterSite'), path: `/static-assets/images/${record.modelId}` });
               uppy.addFile({
                 name: file.name,
@@ -694,9 +693,9 @@ export function Guest(props) {
                 data: blob,
               });
               aImg.src = event.target.result;
-              fn.onDragEnd();
             };
           })(record.element);
+          fn.onDragEnd();
           reader.readAsDataURL(file);
           break;
         }
