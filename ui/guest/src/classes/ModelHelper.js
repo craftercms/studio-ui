@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { retrieveProperty, setProperty } from '../util';
+import { isNullOrUndefined, retrieveProperty, setProperty } from '../util';
+
+const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
 export class ModelHelper {
   static prop(model, propName) {
     if (model == null) {
       return null;
-    } else if (propName === 'id') {
-      propName = 'craftercms.id';
+    } else if (systemPropList.includes(propName)) {
+      propName = `craftercms.${propName}`;
     }
     return retrieveProperty(model, propName);
   }
@@ -40,7 +42,43 @@ export class ModelHelper {
     return retrieveProperty(model, fieldId);
   }
 
+  static extractCollectionItem(model, fieldId, index) {
+    const indexPath = `${index}`.split('.').map(i => parseInt(i, 10));
+    const pieces = fieldId.split('.');
+    let aux = model;
+    if (indexPath.length > pieces.length) {
+      throw new Error(
+        '[ModelHelper.extractCollectionItem] The number of indexes surpasses the number ' +
+        `of nested properties on model id "${ModelHelper.prop(model, 'id')}", field id "${fieldId}". ` +
+        `Supplied index path was ${index}. `
+      );
+    }
+    if (Math.abs(indexPath.length - pieces.length) > 1) {
+      throw new Error(
+        '[ModelHelper.extractCollectionItem] The number of indexes and number of nested props mismatch ' +
+        `by more than 1 on "${ModelHelper.prop(model, 'id')}", field id "${fieldId}". ` +
+        `Supplied index path was ${index}. Number of nested props may be greater by no more than one ` +
+        'than the number of nested indexes.'
+      );
+    }
+    indexPath.forEach((index, i) => {
+      const field = pieces[i];
+      aux = aux[field][index];
+    });
+    if (indexPath.length !== pieces.length) {
+      // TODO: For nested repeat groups, aux would be a object.
+      // Could possibly extract last piece and read it from the indexPath readout
+      // Only a 1 point length difference mismatch should be allowed?
+      return aux[pieces[pieces.length - 1]];
+    }
+    return aux;
+  }
+
   static getContentTypeId(model) {
     return model?.craftercms?.contentType;
+  }
+
+  static isEmbedded(model) {
+    return isNullOrUndefined(ModelHelper.prop(model, 'path'));
   }
 }
