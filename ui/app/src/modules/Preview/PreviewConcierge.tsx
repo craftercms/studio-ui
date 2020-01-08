@@ -42,7 +42,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, sortItem, updateField } from '../../services/content';
+import { deleteItem, insertComponent, moveItem, sortItem, updateField } from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -120,12 +120,11 @@ export function PreviewConcierge(props: any) {
         case SORT_ITEM_OPERATION: {
           const { modelId, fieldId, currentIndex, targetIndex } = payload;
           sortItem(site, guest.models[modelId].craftercms.path, fieldId, currentIndex, targetIndex).subscribe(
-            (response) => {
-              console.log('Operation completed.', response);
-              setSnack({ message: 'Operation completed.' });
+            () => {
+              setSnack({ message: 'Sort operation completed.' });
             },
             (error) => {
-              console.log('Operation failed.', error);
+              console.error(`${type} failed`, error);
               setSnack({ message: error.message });
             }
           );
@@ -141,17 +140,47 @@ export function PreviewConcierge(props: any) {
             contentTypes.find((o) => o.id === instance.craftercms.contentType),
             instance,
             shared
-          ).subscribe(() => {
-            console.log('Finished');
-          }, (e) => {
-            console.log(e);
-          });
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Insert component operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Sort operation failed.' });
+            }
+          );
           break;
         }
         case INSERT_ITEM_OPERATION: {
+          setSnack({ message: 'Insert item operation not implemented.' });
           break;
         }
         case MOVE_ITEM_OPERATION: {
+          const {
+            originalModelId,
+            originalFieldId,
+            originalIndex,
+            targetModelId,
+            targetFieldId,
+            targetIndex
+          } = payload;
+          moveItem(
+            site,
+            originalModelId,
+            originalFieldId,
+            originalIndex,
+            targetModelId,
+            targetFieldId,
+            targetIndex
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Move operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Move operation failed.' });
+            }
+          );
           break;
         }
         case DELETE_ITEM_OPERATION: {
@@ -161,14 +190,19 @@ export function PreviewConcierge(props: any) {
             guest.models[modelId].craftercms.path,
             fieldId,
             index
-          ).subscribe(() => {
-            console.log('Finished');
-          }, (e) => {
-            console.log(e);
-          });
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Delete operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Delete operation failed.' });
+            }
+          );
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
+          setSnack({ message: 'Updated operation not implemented.' });
           const { modelId, fieldId, index, value } = payload;
           updateField(site, guest.models[modelId].craftercms.path, fieldId, index, value).subscribe(() => {
             console.log('Finished');
@@ -235,7 +269,7 @@ export function PreviewConcierge(props: any) {
       {props.children}
       {
         (snack) && <Snackbar
-          anchorOrigin={snack.position ?? { vertical: 'bottom', horizontal: 'left' }}
+          anchorOrigin={snack.position ?? { vertical: 'top', horizontal: 'right' }}
           open={true}
           autoHideDuration={snack.duration ?? 5000}
           onClose={() => setSnack(null)}

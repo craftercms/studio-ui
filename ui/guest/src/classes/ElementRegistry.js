@@ -52,13 +52,8 @@ export class ElementRegistry {
             let component;
             if (notNullOrUndefined(fieldId) && ContentTypeHelper.isGroupItem(contentType, fieldId)) {
               // Repeat groups with possibly nested node-selector/repeat
-              const indexPath = `${index}`.split('.').map(i => parseInt(i, 10));
-              const pieces = fieldId.split('.');
-              let aux = model;
-              indexPath.forEach((index, i) => {
-                aux = aux[pieces[i]][index];
-              });
-              // TODO: Only works for nested node-selector...
+              let aux = ModelHelper.extractCollectionItem(model, fieldId, index);
+              // TODO: Only works for nested node-selector (?)...
               // A nested repeat group would not be a component and `aux` would rather be
               // an object to read the last piece of the `fieldId`
               component = models[aux];

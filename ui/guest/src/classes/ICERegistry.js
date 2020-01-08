@@ -16,8 +16,6 @@
  */
 
 import contentController from './ContentController';
-import { zip } from 'rxjs';
-import { take } from 'rxjs/operators';
 import {
   DEFAULT_RECORD_DATA,
   findComponentContainerFields,
@@ -36,27 +34,6 @@ export class ICERegistry {
 
   /* private */
   registry = { /* [id]: { modelId, fieldId, index } */ };
-  /* private */
-  children = {
-    $CHILDREN_REGISTRY_PENDING$: null
-    /* [id]: [id, id, id] */
-  };
-
-  constructor() {
-
-    zip(
-      contentController.models$(),
-      contentController.contentTypes$()
-    ).pipe(take(1)).subscribe(() => {
-      ICERegistry.contentReady = true;
-      if (notNullOrUndefined(this.children.$CHILDREN_REGISTRY_PENDING$)) {
-        this.children.$CHILDREN_REGISTRY_PENDING$.forEach((record) => {
-          this.computeChildren(record);
-        });
-      }
-    });
-
-  }
 
   register(data) {
 
@@ -103,8 +80,19 @@ export class ICERegistry {
     } else {
 
       const record = { ...data, id: ICERegistry.rid++ };
+      const entities = this.getReferentialEntries(record);
 
-      this.computeChildren(record);
+      // Record coherence validation
+      if (
+        notNullOrUndefined(entities.fieldId) &&
+        isNullOrUndefined(entities.field)
+      ) {
+        console.error(
+          `[ICERegistry] Field "${entities.fieldId}" was not found on the "${entities.contentType.name}" content type. ` +
+          `Please check the field name matches one of the content type field names ` +
+          `(${Object.keys(entities.contentType.fields).join(', ')})`
+        );
+      }
 
       this.registry[record.id] = record;
 
@@ -153,8 +141,30 @@ export class ICERegistry {
   }
 
   isRepeatGroup(id) {
-    const record = this.recordOf(id);
-    return notNullOrUndefined(record.fieldId);
+    const { field, index } = this.getReferentialEntries(id);
+    return (
+      notNullOrUndefined(field) &&
+      isNullOrUndefined(index) &&
+      field.type === 'repeat'
+    );
+  }
+
+  isRepeatGroupItem(id) {
+    const { field, index } = this.getReferentialEntries(id);
+    return (
+      // If there's no field, it's a root item (component, page)
+      notNullOrUndefined(field) &&
+      // The field must be of type repeat
+      field.type === 'repeat' &&
+      // Collection items - i.e. repeat groups & node-selectors - must specify their
+      // index withing their collection. The absence of an index would mean the tested
+      // record refers to the group itself instead of an item of a group
+      notNullOrUndefined(index) // &&
+      // TODO: Determine nested items
+      // If the index contains dot notation, the record is for a nested
+      // collection. This logic is currently not handled.
+      // `${index}`.includes('.')
+    );
   }
 
   getMediaReceptacles(type) {
@@ -173,11 +183,25 @@ export class ICERegistry {
 
   getRecordReceptacles(id) {
     const record = this.recordOf(id);
-    return (
-      (this.isRepeatGroup(record.id))
-        ? this.getRepeatGroupItemReceptacles(record)
-        : this.getComponentItemReceptacles(record)
-    );
+    const { index, field, fieldId, model } = this.getReferentialEntries(record);
+    if (isNullOrUndefined(index)) {
+      // Can't move something that's not part of a collection.
+      // Collection items will always have an index.
+      return [];
+    } else if (field.type === 'node-selector') {
+      // Get content type of item
+      const models = contentController.getCachedModels();
+      const id = ModelHelper.extractCollectionItem(model, fieldId, index);
+      const nestedModel = models[id];
+      const contentType = ModelHelper.getContentTypeId(nestedModel);
+      return this.getContentTypeReceptacles(contentType).map((rec) => rec.id);
+    } else if (field.type === 'repeat') {
+      // const item = ModelHelper.extractCollectionItem(model, fieldId, index);
+      return this.getRepeatGroupItemReceptacles(record);
+    } else {
+      console.error('[ICERegistry/getRecordReceptacles] Unhandled path');
+      return [];
+    }
   }
 
   getRepeatGroupItemReceptacles(record) {
@@ -200,31 +224,33 @@ export class ICERegistry {
   }
 
   getContentTypeReceptacles(contentType) {
-    const contentTypeId = contentType.id;
+    const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
     return Object.values(this.registry).filter((record) => {
       const { fieldId, index } = record;
       if (notNullOrUndefined(fieldId)) {
-        const { field, contentType: _contentType } = this.getReferentialEntries(record);
-        const contentTypes = field?.validations?.contentTypes;
-        const accepts = contentTypes && (
-          contentTypes.includes(contentTypeId) ||
-          contentTypes.includes('*')
+        const { field, contentType: _contentType, model } = this.getReferentialEntries(record);
+        const acceptedTypes = field?.validations?.contentTypes;
+        const accepts = acceptedTypes && (
+          acceptedTypes.includes(contentTypeId) ||
+          acceptedTypes.includes('*')
         );
         if (!accepts) {
           return false;
         } else if (isNullOrUndefined(index)) {
           return true;
         } else {
-          // TODO: Need to check this logic.
-          // console.log(
-          //   fieldId,
-          //   field.type,
-          //   ContentTypeHelper.isGroupItem(_contentType, fieldId),
-          //   ContentTypeHelper.isComponentHolder(_contentType, fieldId)
-          // );
+          // At this point, this field has been identified as accepting the content type
+          // but the record has an index. If it has an index, it may still be a nested component
+          // holder (node-selector).
           return (
-            ContentTypeHelper.isGroupItem(_contentType, fieldId) &&
-            ContentTypeHelper.isComponentHolder(_contentType, fieldId)
+            // Check that the field in question is a node-selector
+            ContentTypeHelper.isComponentHolder(_contentType, fieldId) &&
+            // If it is an array, it is a receptacle, otherwise it's an item:
+            // If it is a node selector, it may be an item of the node selector or a node
+            // selector itself. Node selectors themselves will be arrays. If it's a value of the
+            // node selector it would be a string representing an id of a model held by the node
+            // selector.
+            Array.isArray(ModelHelper.extractCollectionItem(model, fieldId, index))
           );
         }
       } else {
@@ -295,46 +321,6 @@ export class ICERegistry {
 
   }
 
-  /*private*/
-  computeChildren(record) {
-
-    const
-      children = this.children,
-      childrenPreComputed = notNullOrUndefined(children[record.modelId]);
-
-    if (childrenPreComputed) {
-      return;
-    }
-
-    if (!ICERegistry.contentReady) {
-      if (isNullOrUndefined(children.$CHILDREN_REGISTRY_PENDING$)) {
-        children.$CHILDREN_REGISTRY_PENDING$ = [];
-      }
-      children.$CHILDREN_REGISTRY_PENDING$.push(record);
-    } else {
-
-      let childIds = [];
-      const entities = this.getReferentialEntries(record);
-
-      (entities?.contentType?.fields) && findComponentContainerFields(entities.contentType.fields)
-        .forEach((field) => {
-          const value = ModelHelper.value(entities.model, field.id);
-          if (value != null) {
-            if (field.type === 'node-selector') {
-              childIds = childIds.concat(value);
-            } else if (field.type === 'repeat') {
-              // TODO ...
-              throw new Error('Path not implemented.');
-            }
-          }
-        });
-
-      children[record.modelId] = (childIds.length) ? childIds : null;
-
-    }
-
-  }
-
   /* private */
   checkComponentMovability(entries) {
     // Can't move if
@@ -365,12 +351,12 @@ export class ICERegistry {
       if (isNullOrUndefined(record.field)) {
         if (notNullOrUndefined(records.index)) {
           // Collection item record. Cannot be the container.
-          continue;
+
         } else {
           // Is a component...
           // - get model fields
           // - check if one of the fields has this value
-          const children = this.children[record.modelId];
+          const children = contentController.children[record.modelId];
           if (children && children.includes(entries.modelId)) {
             parentModelId = record.modelId;
             const

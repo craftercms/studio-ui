@@ -17,12 +17,13 @@
 
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { filter, map, share } from 'rxjs/operators';
+import { filter, map, share, take } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
   CONTENT_TYPES_RESPONSE,
   createLookupTable,
   DELETE_ITEM_OPERATION,
+  findComponentContainerFields,
   GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
   INSERT_ITEM_OPERATION,
@@ -59,12 +60,40 @@ export class ContentController {
     share()
   );
 
+  children = {
+    /* [id]: [id, id, id] */
+  };
+
   modelRequestsInFlight = {};
 
   constructor() {
     fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => {
       this.contentTypesResponseReceived(data.payload);
     });
+  }
+
+  computeChildren(model) {
+
+    let childIds = [];
+    const modelId = ModelHelper.prop(model, 'id');
+    const children = this.children;
+    const contentTypeId = ModelHelper.getContentTypeId(model);
+    const contentType = this.getCachedContentType(contentTypeId);
+
+    findComponentContainerFields(contentType.fields).forEach((field) => {
+      const value = ModelHelper.value(model, field.id);
+      if (value != null) {
+        if (field.type === 'node-selector') {
+          childIds = childIds.concat(value);
+        } else if (field.type === 'repeat') {
+          // TODO ...
+          throw new Error('Path not implemented.');
+        }
+      }
+    });
+
+    children[modelId] = (childIds.length) ? childIds : null;
+
   }
 
   getModel(modelId)/*: Promise<Model> */ {
@@ -415,6 +444,15 @@ export class ContentController {
 
     post(GUEST_MODELS_RECEIVED, responseModels);
 
+    ContentController.contentTypes$.pipe(
+      filter(hash => Object.values(hash).length !== 0),
+      take(1)
+    ).subscribe(() => {
+      Object.values(responseModels).forEach((model) =>
+        this.computeChildren(model)
+      );
+    });
+
     ContentController.models$.next(
       Object.assign(
         {},
@@ -718,7 +756,6 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
     ))
   );
 }
-
 
 function reducer(lookupTable, model) {
 

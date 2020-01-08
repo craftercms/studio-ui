@@ -699,6 +699,8 @@ export function Guest(props) {
           reader.readAsDataURL(file);
           break;
         }
+        default:
+          break;
       }
 
     },
@@ -1233,7 +1235,6 @@ export function Guest(props) {
           }
           {
             [
-              EditingStatus.SORTING_COMPONENT,
               EditingStatus.SORTING_COMPONENT,
               EditingStatus.PLACING_NEW_COMPONENT,
               EditingStatus.PLACING_DETACHED_COMPONENT

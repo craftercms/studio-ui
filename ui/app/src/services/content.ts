@@ -333,7 +333,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
             field.fields[_fieldId].validations = {
               // tags: (map.tags?.value || '').split(','),
-              contentTypes: (map.contentTypes?.value || '').split(',')
+              contentTypes: nou(map.contentTypes) ? [] : map.contentTypes.value.split(',')
             };
           }
         });
@@ -347,7 +347,7 @@ function parseLegacyFormDef(definition: LegacyFormDefinition): Partial<ContentTy
 
         field.validations = {
           // tags: (map.tags?.value || '').split(','),
-          contentTypes: (map.contentTypes?.value || '').split(',')
+          contentTypes: nou(map.contentTypes) ? [] : map.contentTypes.value.split(',')
         };
 
         // Different data sources come as CSV
@@ -546,7 +546,7 @@ export function sortItem(
         fileName: getInnerHtml(doc.querySelector('file-name'))
       };
 
-      doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
+      updateModifiedDateElement(doc);
 
       // It's important to add the `:scope >` in to the selector since
       // there may be nested fields with the same field ID.
@@ -569,8 +569,18 @@ export function sortItem(
   );
 }
 
-export function moveItem(): Observable<any> {
-  throw new Error('Not implemented.');
+export function moveItem(
+  site: string,
+  originalModelId: string,
+  originalFieldId: string,
+  originalIndex: number,
+  targetModelId: string,
+  targetFieldId: string,
+  targetIndex: number
+): Observable<any> {
+  return new Observable(() => {
+    throw new Error('Not implemented');
+  });
 }
 
 export function deleteItem(
@@ -589,9 +599,9 @@ export function deleteItem(
         fileName: getInnerHtml(doc.querySelector('file-name'))
       };
 
-      doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
+      updateModifiedDateElement(doc);
 
-      const fieldNode = doc.querySelector(`${fieldId}`);
+      const fieldNode = doc.querySelector(`:scope > ${fieldId}`);
 
       $(fieldNode).children().eq(targetIndex).remove();
 
@@ -695,20 +705,9 @@ function createModifiedDate() {
   return new Date().toISOString();
 }
 
-// function createContentDocument(type: string, data: object): XMLDocument {
-//
-//   const tags = mergeContentDocumentProps(type, data);
-//
-//   const doc = fromString(
-//     `<?xml version='1.0' encoding='UTF-8' ?>` +
-//     `<${type} version="1.1"/>`
-//   );
-//
-//   createElements(doc, doc.documentElement, tags);
-//
-//   return doc;
-//
-// }
+function updateModifiedDateElement(doc: XMLDocument) {
+  doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
+}
 
 export function fetchPublishingChannels(site: string) {
   return get(`/studio/api/1/services/api/1/deployment/get-available-publishing-channels.json?site=${site}`)
