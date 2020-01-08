@@ -171,7 +171,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
             type: audienceTypesMap[type],
             sortable: null,
             validations: null,
-            defaultValue: defaultValue,
+            defaultValue,
             required: null,
             fields: null,
             values: possibleValues,
