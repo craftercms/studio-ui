@@ -184,11 +184,6 @@ export class ICERegistry {
   getRecordReceptacles(id) {
     const record = this.recordOf(id);
     const { index, field, fieldId, model } = this.getReferentialEntries(record);
-    // Extract nested item
-    // Example 1:
-    // - index = 0.0, fieldId = items_o.content_o, contentType = /component/layout
-    // Example 2:
-    // - index = 1, fieldId = features_o, contentType = /page/home
     if (isNullOrUndefined(index)) {
       // Can't move something that's not part of a collection.
       // Collection items will always have an index.
