@@ -52,7 +52,7 @@ import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import { useOnMount } from '../../utils/helpers';
 
 export function PreviewConcierge(props: any) {
@@ -193,8 +193,11 @@ export function PreviewConcierge(props: any) {
         // TODO: aaron to fetch assets here...
         break;
       case 'craftercms.ice.audiences':
-        // TODO: CHANGE VALIDATION
-        if (Object.entries(audiencesPanel).length === 0 && audiencesPanel.constructor === Object) {
+        if (
+          !audiencesPanel.isFetching &&
+          nou(audiencesPanel.contentType) &&
+          nou(audiencesPanel.model)
+        ) {
           dispatch(fetchAudiencesPanel());
         }
         break;

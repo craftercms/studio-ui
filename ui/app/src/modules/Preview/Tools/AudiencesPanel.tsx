@@ -30,13 +30,15 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import DateTimePicker from "../../../components/DateTimePicker";
-import { useStateResourceSelection } from "../../../utils/hooks";
+import { useSelection, useStateResource } from "../../../utils/hooks";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { useDispatch } from "react-redux";
 import { updateAudiencesPanelProfile } from "../../../state/actions/preview";
 import { ContentTypeField } from "../../../models/ContentType";
-import { nnou } from "../../../utils/object";
+import { nnou, nou } from "../../../utils/object";
+import GlobalState from "../../../models/GlobalState";
+import ContentInstance from "../../../models/ContentInstance";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -86,6 +88,9 @@ const translations = defineMessages({
 
 interface AudiencesPanelUIProps {
   audiencesResource: any;
+  profile: ContentInstance;
+  profileApplying: boolean;
+  profileApplied: boolean;
   onFormChange: Function;
   saveProfile: Function;
   setDefaults: Function;
@@ -96,12 +101,14 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   const classes = useStyles({});
   const {
     audiencesResource,
+    profile,
+    profileApplying,
+    profileApplied,
     onFormChange,
     saveProfile,
     setDefaults
   } = props;
-  const audiencesData = audiencesResource.read();
-  const { config, profile } = audiencesData;
+  const config = audiencesResource.read();
 
   return (
     <ToolPanel title={translations.audiencesPanel}>
@@ -109,12 +116,12 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
         <>
           <Grid className={classes.PanelMargin}>
             {
-              Object.keys(config.fields).map((property: any, index: number) => (
-                <div key={index}>
+              Object.keys(config.fields).map((field: any) => (
+                <div key={field}>
                   <AudiencesFormSection
-                    property={config.fields[property]}
-                    profileValue={profile[property] ? profile[property].key : undefined}
-                    profileTimezone={profile[`${property}_tz`] ? profile[`${property}_tz`].key : undefined}
+                    property={config.fields[field]}
+                    profileValue={profile[field] ? profile[field].key : undefined}
+                    profileTimezone={profile[`${field}_tz`] ? profile[`${field}_tz`].key : undefined}
                     onFormChange={onFormChange}
                   />
                   <Divider className={classes.divider}/>
@@ -143,19 +150,15 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 }
 
 export default function AudiencesPanel() {
-  const resource = useStateResourceSelection(
-    state => state.preview.audiencesPanel,
+  const state = useSelection<GlobalState['preview']['audiencesPanel']>(state => state.preview.audiencesPanel);
+  const resource = useStateResource(
+    state,
     {
-      shouldRenew: (source, resource) => resource.complete,
+      shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
       shouldResolve: source => (!source.isFetching) && nnou(source.contentType) && nnou(source.model),
       shouldReject: source => nnou(source.error),
       errorSelector: source => source.error,
-      resultSelector: source => {
-        return {
-          config: source.contentType,
-          profile: source.model
-        }
-      }
+      resultSelector: source => source.contentType
     }
   );
 
@@ -197,6 +200,9 @@ export default function AudiencesPanel() {
         >
           <AudiencesPanelUI
             audiencesResource={resource}
+            profile={state.model}
+            profileApplying={state.isApplying}
+            profileApplied={state.applied}
             onFormChange={onFormChange}
             saveProfile={saveProfile}
             setDefaults={setDefaults}

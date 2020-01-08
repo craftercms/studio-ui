@@ -44,6 +44,15 @@ import { CHANGE_SITE } from '../actions/sites';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
+const audiencesPanelInitialState = {
+  isFetching: false,
+  isApplying: false,
+  error: null,
+  contentType: null,
+  model: null,
+  applied: false
+};
+
 const reducer = createReducer<GlobalState['preview']>({
   computedUrl: null,
   currentUrl: '/studio/preview-landing',
@@ -53,7 +62,7 @@ const reducer = createReducer<GlobalState['preview']>({
   selectedTool: 'craftercms.ice.components',
   tools: null,
   guest: null,
-  audiencesPanel: {}    // TODO: should this be an entityState (if so, how to deal with multiple props config/profile)
+  audiencesPanel: audiencesPanelInitialState
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -228,8 +237,13 @@ const reducer = createReducer<GlobalState['preview']>({
     // if (state.guest) {
     //   nextState = { ...nextState, guest: null };
     // }
+
     if (payload.nextUrl !== nextState.currentUrl) {
-      nextState = { ...nextState, currentUrl: payload.nextUrl };
+      nextState = {
+        ...nextState,
+        currentUrl: payload.nextUrl,
+        audiencesPanel: audiencesPanelInitialState
+      };
     }
     return nextState;
   },

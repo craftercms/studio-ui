@@ -82,7 +82,14 @@ export interface GlobalState {
     tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;
-    audiencesPanel: any;
+    audiencesPanel: {
+      isFetching: boolean,
+      isApplying: boolean,
+      error: APIError,
+      contentType: ContentType,
+      model: ContentInstance,
+      applied: boolean
+    };
   }
 }
 
