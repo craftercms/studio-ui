@@ -257,7 +257,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
     const timezone = scheduledDateTime.tz();
 
     onFormChange(name, datetime);
-    onFormChange(`${name}_tz`, encodeURIComponent(timezone));
+    timezone && onFormChange(`${name}_tz`, encodeURIComponent(timezone));
   };
 
   switch (property.type) {
@@ -282,8 +282,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
         </AudiencesControl>
       );
     case "checkbox-group":
-      const selectedValues = profileValue ?? null,
-        valuesArray = selectedValues ? selectedValues.split(',') : [];
+      const valuesArray = nnou(profileValue) ? profileValue.split(',') : [];
 
       return (
         <AudiencesControl property={property}>
