@@ -23,11 +23,7 @@ import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import PublicIcon from '@material-ui/icons/Public';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider, } from '@material-ui/pickers';
 /* eslint-disable no-use-before-define */
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -149,20 +145,20 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     }
 
     setSelectedDateTime(updatedDateTime);
-    onChange && onChange(updatedDateTime);
+    onChange?.(updatedDateTime);
 
-    onChangeDate && onChangeDate(updatedDateTime.format(dateFormat));
-    onChangeTime && onChangeTime(updatedDateTime.format(timeFormat));
+    onChangeDate?.(updatedDateTime.format(dateFormat));
+    onChangeTime?.(updatedDateTime.format(timeFormat));
   };
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
-          updatedDateTime = moment.tz(selectedDateTime.format(), 'YYYY-MM-DD HH:mm A', timezone);
+      updatedDateTime = moment.tz(selectedDateTime.format(), 'YYYY-MM-DD HH:mm A', timezone);
     setSelectedDateTime(updatedDateTime);
     setSelectedTimezone(timezoneObj);
 
-    onChange && onChange(updatedDateTime);
-    onChangeTimezone && onChangeTimezone(timezoneObj);
+    onChange?.(updatedDateTime);
+    onChangeTimezone?.(timezoneObj);
   };
 
   return (
