@@ -19,15 +19,14 @@ import { camelize } from './string';
 import { LookupTable } from '../models/LookupTable';
 import { EntityState } from '../models/GlobalState';
 
-export function pluckProps(source, ...props): object {
+export function pluckProps(source, ...props: string[]): object {
   const object = {};
   if (!source) {
     return object;
   }
   props.forEach((prop) => {
-    if (source[prop] != null) {
-      object[prop] = source[prop];
-    }
+    const propName = prop.includes('.') ? prop.substr(prop.lastIndexOf('.') + 1) : prop;
+    object[propName] = retrieveProperty(source, prop);
   });
   return object;
 }
