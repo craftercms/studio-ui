@@ -36,9 +36,10 @@ import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { useDispatch } from "react-redux";
 import { updateAudiencesPanelProfile } from "../../../state/actions/preview";
 import { ContentTypeField } from "../../../models/ContentType";
-import { nnou, nou } from "../../../utils/object";
+import { nnou, nou, reversePluckProps } from "../../../utils/object";
 import GlobalState from "../../../models/GlobalState";
 import ContentInstance from "../../../models/ContentInstance";
+import { get } from "../../../utils/ajax";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -171,19 +172,19 @@ export default function AudiencesPanel() {
 
   // TODO: Update to new state structure
   const saveProfile = () => {
-    // let params = encodeURI(Object.entries(currentProfile).map(([key, val]) => `${key}=${val}`).join('&'));
-    //
-    // get(`/api/1/profile/set?${params}`).subscribe(
-    //   ({ response }) => {
-    //     dispatch(setAudiencesPanelProfile(site, currentProfile));
-    //     // TODO: display success message
-    //   }
-    // );
+    const model = reversePluckProps(state.model, 'craftercms');
+    const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val.key}`).join('&'));
+
+    get(`/api/1/profile/set?${params}`).subscribe(
+      ({ response }) => {
+        // TODO: display success message
+      }
+    );
   };
 
   const setDefaults = (config) => {
     Object.keys(config.fields).forEach((property: any) => {
-      updateAudiencesPanelProfile(property, config.fields[property].defaultValue);
+      dispatch(updateAudiencesPanelProfile(property, config.fields[property].defaultValue));
     });
   };
 
