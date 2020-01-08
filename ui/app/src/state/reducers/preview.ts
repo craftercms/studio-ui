@@ -268,7 +268,7 @@ const reducer = createReducer<GlobalState['preview']>({
   },
   [FETCH_AUDIENCES_PANEL_FAILED]: (state, { payload }) => ({
     ...state,
-    audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: true }
+    audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
   }),
   [UPDATE_AUDIENCES_PANEL_PROFILE]: (state, { payload }) => ({
     ...state,
