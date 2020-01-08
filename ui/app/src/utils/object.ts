@@ -25,11 +25,14 @@ export function pluckProps(source, ...props: string[]): object {
     return object;
   }
   props.forEach((prop) => {
-    const propName = prop.includes('.') ? prop.substr(prop.lastIndexOf('.') + 1) : prop;
+    const propName = prop.substr(prop.lastIndexOf('.') + 1);
     object[propName] = retrieveProperty(source, prop);
   });
   return object;
 }
+
+// @ts-ignore
+window.pluckProps = pluckProps;
 
 export function reversePluckProps(source: object, ...props: string[]): object {
   const object = {};
