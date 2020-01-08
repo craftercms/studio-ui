@@ -29,7 +29,10 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
   ofType(FETCH_AUDIENCES_PANEL),
   withLatestFrom(state$),
   switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), getAudiencesPanelModel()])),
-  map(fetchAudiencesPanelComplete),
+  map(response => fetchAudiencesPanelComplete({
+    contentType: response[0],
+    model: response[1]
+  })),
   catchAjaxError(fetchAudiencesPanelFailed)
 );
 

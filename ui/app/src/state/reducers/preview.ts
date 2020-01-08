@@ -261,8 +261,8 @@ const reducer = createReducer<GlobalState['preview']>({
         ...state.audiencesPanel,
         isFetching: false,
         error: null,
-        contentType: payload[0],
-        model: payload[1]
+        contentType: payload.contentType,
+        model: payload.model
       }
     }
   },
