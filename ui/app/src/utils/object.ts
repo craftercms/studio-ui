@@ -19,7 +19,7 @@ import { camelize } from './string';
 import { LookupTable } from '../models/LookupTable';
 import { EntityState } from '../models/GlobalState';
 
-export function pluckProps(source, ...props: string[]): object {
+export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
   if (!source) {
     return object;
@@ -30,9 +30,6 @@ export function pluckProps(source, ...props: string[]): object {
   });
   return object;
 }
-
-// @ts-ignore
-window.pluckProps = pluckProps;
 
 export function reversePluckProps(source: object, ...props: string[]): object {
   const object = {};
