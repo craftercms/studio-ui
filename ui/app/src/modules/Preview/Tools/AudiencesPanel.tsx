@@ -196,28 +196,26 @@ export default function AudiencesPanel() {
   };
 
   return (
-    <div>
-      <ErrorBoundary>
-        <React.Suspense
-          fallback={
-            <LoadingState
-              title="Loading"
-              graphicProps={{ width: 150 }}
-            />
-          }
-        >
-          <AudiencesPanelUI
-            audiencesResource={resource}
-            model={state.model}
-            modelApplying={state.isApplying}
-            modelApplied={state.applied}
-            onFormChange={onFormChange}
-            saveModel={saveModel}
-            setDefaults={setDefaults}
+    <ErrorBoundary>
+      <React.Suspense
+        fallback={
+          <LoadingState
+            title="Loading"
+            graphicProps={{ width: 150 }}
           />
-        </React.Suspense>
-      </ErrorBoundary>
-    </div>
+        }
+      >
+        <AudiencesPanelUI
+          audiencesResource={resource}
+          model={state.model}
+          modelApplying={state.isApplying}
+          modelApplied={state.applied}
+          onFormChange={onFormChange}
+          saveModel={saveModel}
+          setDefaults={setDefaults}
+        />
+      </React.Suspense>
+    </ErrorBoundary>
   );
 
 }
