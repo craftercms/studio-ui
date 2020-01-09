@@ -329,7 +329,8 @@ function AudiencesFormSection(props: AudiencesFormProps) {
             <DateTimePicker
               initialDate={profileValue}
               timezone={profileTimezone}
-              onChange={dateTimePickerChange(property.id)}/>
+              onChange={dateTimePickerChange(property.id)}
+              disabled={profileApplying}/>
             <FormHelperText>{property.helpText}</FormHelperText>
           </>
         </AudiencesControl>

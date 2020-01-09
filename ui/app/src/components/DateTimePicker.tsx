@@ -38,6 +38,8 @@ interface DateTimePickerProps {
   timeFormat?: string;
   initialDate?: string | moment.Moment | Number;
   timezone?: string;
+  disablePast?: boolean;
+  disabled?: boolean;
   classes?: any;
   controls?: string[];    // options: ['date', 'time', 'timezone'], ['date', 'time'], ['date']
 }
@@ -107,6 +109,8 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     timezone = moment.tz.guess(),
     dateFormat = 'YYYY-MM-DD',
     timeFormat = 'HH:MM:ss',
+    disablePast = true,
+    disabled = false,
     controls = ['date', 'time', 'timezone']
   } = props;
 
@@ -179,6 +183,8 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
               className: classes.pickerInput
             }}
             placeholder="Date"
+            disabled={disabled}
+            disablePast={disablePast}
           />
         }
 
@@ -197,6 +203,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
               className: classes.pickerInput
             }}
             placeholder="Time"
+            disabled={disabled}
           />
         }
       </MuiPickersUtilsProvider>
@@ -218,8 +225,9 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           popupIcon={ <PublicIcon/> }
           disableClearable={true}
           renderInput={params => (
-            <TextField {...params} variant="outlined" fullWidth />
+            <TextField {...params} variant="outlined" fullWidth/>
           )}
+          disabled={disabled}
         />
       }
     </>
