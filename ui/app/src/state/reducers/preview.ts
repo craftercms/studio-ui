@@ -21,8 +21,8 @@ import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
-  FETCH_AUDIENCES_PANEL,
   FETCH_AUDIENCES_PANEL_COMPLETE,
+  FETCH_AUDIENCES_PANEL_CONTENT,
   FETCH_AUDIENCES_PANEL_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   GUEST_CHECK_IN,
@@ -254,7 +254,7 @@ const reducer = createReducer<GlobalState['preview']>({
     }
     return nextState;
   },
-  [FETCH_AUDIENCES_PANEL]: (state) => ({
+  [FETCH_AUDIENCES_PANEL_CONTENT]: (state) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,

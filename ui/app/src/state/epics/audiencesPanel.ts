@@ -21,7 +21,7 @@ import { Epic, ofType } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from "rxjs/operators";
 import { catchAjaxError } from "../../utils/ajax";
 import {
-  FETCH_AUDIENCES_PANEL,
+  FETCH_AUDIENCES_PANEL_CONTENT,
   fetchAudiencesPanelComplete,
   fetchAudiencesPanelFailed,
   RELOAD_REQUEST,
@@ -39,7 +39,7 @@ import GlobalState from "../../models/GlobalState";
 import { getHostToGuestBus } from "../../modules/Preview/previewContext";
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_AUDIENCES_PANEL),
+  ofType(FETCH_AUDIENCES_PANEL_CONTENT),
   withLatestFrom(state$),
   switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), getAudiencesPanelModel()])),
   map(response => fetchAudiencesPanelComplete({

@@ -71,7 +71,7 @@ export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
-export const FETCH_AUDIENCES_PANEL = 'FETCH_AUDIENCES_PANEL';
+export const FETCH_AUDIENCES_PANEL_CONTENT = 'FETCH_AUDIENCES_PANEL_CONTENT';
 export const FETCH_AUDIENCES_PANEL_COMPLETE = 'FETCH_AUDIENCES_PANEL_COMPLETE';
 export const FETCH_AUDIENCES_PANEL_FAILED = 'FETCH_AUDIENCES_PANEL_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
@@ -182,7 +182,7 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   };
 }
 
-export const fetchAudiencesPanel = createAction(FETCH_AUDIENCES_PANEL);
+export const fetchAudiencesPanel = createAction(FETCH_AUDIENCES_PANEL_CONTENT);
 
 export function fetchAudiencesPanelComplete(data): StandardAction {
   return {
