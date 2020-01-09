@@ -76,7 +76,7 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
     classes
   } = props;
   return (
-    <div className={classes}>
+    <div className={classes? classes: ''}>
       <PanelHeader
         title={typeof title === 'object' ? formatMessage(title) : title}
         BackIcon={BackIcon}
