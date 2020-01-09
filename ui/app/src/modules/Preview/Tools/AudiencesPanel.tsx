@@ -174,8 +174,6 @@ export default function AudiencesPanel() {
     }));
   };
 
-
-  // TODO: Update to new state structure
   const saveModel = () => {
     const model = reversePluckProps(state.model, 'craftercms');
     const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val.key}`).join('&'));

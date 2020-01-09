@@ -17,7 +17,7 @@
  *
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
@@ -98,6 +98,25 @@ interface timezoneType {
 
 const timezones = getTimezones();
 
+const getDateMoment = (date, timezoneObj) => {
+  let dateMoment;
+
+  switch (typeof date) {
+    case 'string':
+    case 'number':
+      dateMoment = moment.tz(date, timezoneObj.timezoneName);
+      break;
+    case 'object':
+      // moment object, stays the same
+      dateMoment = date;
+      break;
+    default:
+      dateMoment = moment();
+  }
+
+  return dateMoment;
+}
+
 const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerProps) => {
   const {
     classes,
@@ -115,23 +134,20 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   } = props;
 
   let initialDateMoment;
-  const timezoneObj = timezones.find( tz => (tz.timezoneName === unescape(timezone)) );
+  let timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timezone)));
 
-  switch(typeof initialDate) {
-    case 'string':
-    case 'number':
-      initialDateMoment = moment.tz(initialDate, timezoneObj.timezoneName);
-      break;
-    case 'object':
-      // moment object, stays the same
-      initialDateMoment = initialDate;
-      break;
-    default:
-      initialDateMoment = moment();
-  }
+  initialDateMoment = getDateMoment(initialDate, timezoneObj);
 
-  const [ selectedDateTime, setSelectedDateTime ] = useState(initialDateMoment);
-  const [ selectedTimezone, setSelectedTimezone ] = useState(timezoneObj);
+  const [selectedDateTime, setSelectedDateTime] = useState(initialDateMoment);
+  const [selectedTimezone, setSelectedTimezone] = useState(timezoneObj);
+
+  useEffect(() => {
+    timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timezone)));
+    initialDateMoment = getDateMoment(initialDate, timezoneObj);
+
+    setSelectedDateTime(initialDateMoment);
+    setSelectedTimezone(timezoneObj);
+  }, [initialDate, timezone]);
 
   const handleDateChange = (name: string) => (date: Date | null) => {
     let updatedDateTime = selectedDateTime;

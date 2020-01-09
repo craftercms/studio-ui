@@ -281,6 +281,7 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
+      applied: false,
       model: {
         ...state.audiencesPanel.model,
         ...payload

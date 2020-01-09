@@ -24,6 +24,7 @@ import {
   FETCH_AUDIENCES_PANEL,
   fetchAudiencesPanelComplete,
   fetchAudiencesPanelFailed,
+  RELOAD_REQUEST,
   SET_AUDIENCES_PANEL_MODEL,
   setAudiencesPanelModelComplete,
   setAudiencesPanelModelFailed
@@ -35,6 +36,7 @@ import {
 } from "../../services/configuration";
 import { forkJoin, Observable } from "rxjs";
 import GlobalState from "../../models/GlobalState";
+import { getHostToGuestBus } from "../../modules/Preview/previewContext";
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_AUDIENCES_PANEL),
@@ -50,7 +52,10 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
 const setAudiencesPanelModel: Epic = (action$) => action$.pipe(
   ofType(SET_AUDIENCES_PANEL_MODEL),
   switchMap((action) => setAudiencesPanelModelService(action.payload).pipe(
-    map(setAudiencesPanelModelComplete),
+    map(response => {
+      getHostToGuestBus().next({ type: RELOAD_REQUEST })
+      return setAudiencesPanelModelComplete(response);
+    }),
     catchAjaxError(setAudiencesPanelModelFailed)
   ))
 );
