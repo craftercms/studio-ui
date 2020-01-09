@@ -241,11 +241,15 @@ const reducer = createReducer<GlobalState['preview']>({
     //   nextState = { ...nextState, guest: null };
     // }
 
+    nextState = {
+      ...nextState,
+      audiencesPanel: audiencesPanelInitialState
+    }
+
     if (payload.nextUrl !== nextState.currentUrl) {
       nextState = {
         ...nextState,
-        currentUrl: payload.nextUrl,
-        audiencesPanel: audiencesPanelInitialState
+        currentUrl: payload.nextUrl
       };
     }
     return nextState;
