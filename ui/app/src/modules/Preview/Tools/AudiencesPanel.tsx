@@ -118,7 +118,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
           <Grid className={classes.PanelMargin}>
             {
               Object.keys(config.fields).map((field: any) => (
-                <div key={field}>
+                <React.Fragment key={field}>
                   <AudiencesFormSection
                     property={config.fields[field]}
                     profileValue={profile[field] ? profile[field].key : undefined}
@@ -126,7 +126,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                     onFormChange={onFormChange}
                   />
                   <Divider className={classes.divider}/>
-                </div>
+                </React.Fragment>
               ))
             }
           </Grid>
