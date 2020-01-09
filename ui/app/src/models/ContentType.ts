@@ -35,7 +35,7 @@ export interface ContentTypeField {
   defaultValue: string
   required: boolean;
   fields?: LookupTable<ContentTypeField>;
-  values?: LookupTable<string>[];
+  values?: { label: string, value: string }[];
   helpText?: string;
   // localized: boolean;
   // disabled: boolean;
