@@ -37,11 +37,8 @@ import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from "../../../components/SystemStatus/EmptyState";
 import UploadIcon from '@material-ui/icons/Publish';
 import { nnou, pluckProps } from "../../../utils/object";
-import Core from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
 import { palette } from "../../../styles/theme";
-import { getRequestForgeryToken } from "../../../utils/auth";
-import { dataUriToBlob } from "../../../utils/string";
+import { uploadDataUrl } from "../../../services/content";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -198,27 +195,25 @@ export default function AssetsPanel() {
     }
 
     const reader = new FileReader();
-    const uppy = Core({ autoProceed: true });
-    const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
-    uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
-    uppy.setMeta({ site, path: `/static-assets/images/` });
-
-    uppy.on('complete', (result) => {
-      if (result.successful.length) {
-        console.log('Upload Success');
-        dispatch(fetchAssetsPanelItems());
-      } else {
-        console.log('Failed');
-      }
-    });
-
     reader.onloadend = function () {
-      const blob = dataUriToBlob(reader.result);
-      uppy.addFile({
-        name: file.name,
-        type: file.type,
-        data: blob,
-      });
+      uploadDataUrl(
+        site,
+        {
+          name: file.name,
+          type: file.type,
+          dataUrl: reader.result,
+        },
+        '/static-assets/images/',
+        XSRF_CONFIG_ARGUMENT
+      ).subscribe(
+        () => {
+        },
+        () => {
+        },
+        () => {
+          dispatch(fetchAssetsPanelItems());
+        },
+      );
     };
     reader.readAsDataURL(file);
     setDragInProgress(false);

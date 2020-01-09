@@ -35,9 +35,9 @@ import { camelize, dataUriToBlob } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { PaginationOptions } from '../models/Search';
-import Core from "@uppy/core";
+import Core from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from "../utils/auth";
-import XHRUpload from "@uppy/xhr-upload";
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -728,15 +728,28 @@ export function uploadDataUrl(
   path: string,
   XSRF_CONFIG_ARGUMENT: string
 ): Observable<any> {
-  return new Observable(() => {
+  return new Observable((subscriber) => {
     const uppy = Core({ autoProceed: true });
     const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
     uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
     uppy.setMeta({ site, path });
 
-    //dataURItoBlob(file.dataUrl);
     const blob = dataUriToBlob(file.dataUrl);
-    //subscriber.complete();
-    throw new Error('Not implemented');
+
+    uppy.on('complete', (result) => {
+      if (result.successful.length) {
+        console.log('Upload Success.');
+        subscriber.complete();
+      } else {
+        console.log('Upload Failed.');
+        subscriber.error();
+      }
+    });
+
+    uppy.addFile({
+      name: file.name,
+      type: file.type,
+      data: blob,
+    });
   });
 }

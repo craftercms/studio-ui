@@ -44,7 +44,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, moveItem, sortItem, updateField } from '../../services/content';
+import { deleteItem, insertComponent, moveItem, sortItem, updateField, uploadDataUrl } from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -56,11 +56,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou } from '../../utils/object';
 import { useOnMount } from '../../utils/helpers';
-import { getRequestForgeryToken } from "../../utils/auth";
-import Core from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
 import GlobalState from "../../models/GlobalState";
-import { dataUriToBlob } from "../../utils/string";
 
 export function PreviewConcierge(props: any) {
 
@@ -227,39 +223,30 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DESKTOP_ASSET_DROP:
-          const uppy = Core({ autoProceed: true });
-          const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
-          uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
-          uppy.setMeta({ site, path: `/static-assets/images/${payload.modelId}` });
-
-          //uploadDataUrl().suscribe(
-          // ()=>{}, progress
-          // ()=>{}, error
-          // ()=>{} complete
-          // )
-
-          uppy.on('complete', (result: Core.UploadResult<any, any>) => {
-            if (result.successful.length) {
-              console.log('Upload Success');
+          uploadDataUrl(
+            site,
+            {
+              name: payload.name,
+              type: payload.type,
+              dataUrl: payload.dataUrl,
+            },
+            `/static-assets/images/${payload.modelId}`,
+            XSRF_CONFIG_ARGUMENT
+          ).subscribe(
+            () => {
+            },
+            () => {
+            },
+            () => {
               hostToGuest$.next({
                 type: DESKTOP_ASSET_UPLOAD_COMPLETE,
                 payload: {
                   id: payload.name,
-                  path: result.successful[0].meta.path + "/" + result.successful[0].meta.name
+                  path: `/static-assets/images/${payload.modelId}/${payload.name}`
                 }
               });
-            } else {
-              console.log('Failed');
-            }
-          });
-
-          const blob = dataUriToBlob(payload.dataUrl);
-          uppy.addFile({
-            name: payload.name,
-            type: payload.type,
-            data: blob,
-          });
-
+            },
+          );
           break;
       }
     });
