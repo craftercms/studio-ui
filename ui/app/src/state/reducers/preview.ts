@@ -32,6 +32,9 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
+  SET_AUDIENCES_PANEL_MODEL,
+  SET_AUDIENCES_PANEL_MODEL_COMPLETE,
+  SET_AUDIENCES_PANEL_MODEL_FAILED,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
@@ -276,11 +279,31 @@ const reducer = createReducer<GlobalState['preview']>({
       ...state.audiencesPanel,
       model: {
         ...state.audiencesPanel.model,
-        [payload.name]: {
-          key: payload.value,
-          label: payload.value
-        }
+        ...payload
       }
+    }
+  }),
+  [SET_AUDIENCES_PANEL_MODEL]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isApplying: true,
+    }
+  }),
+  [SET_AUDIENCES_PANEL_MODEL_COMPLETE]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isApplying: false,
+      applied: true
+    }
+  }),
+  [SET_AUDIENCES_PANEL_MODEL_FAILED]: (state, { payload }) => ({
+    ...state,
+    audiencesPanel: {
+      ...state.audiencesPanel,
+      isApplying: false,
+      applied: false
     }
   })
 });

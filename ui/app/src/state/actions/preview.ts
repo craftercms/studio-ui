@@ -75,6 +75,9 @@ export const FETCH_AUDIENCES_PANEL = 'FETCH_AUDIENCES_PANEL';
 export const FETCH_AUDIENCES_PANEL_COMPLETE = 'FETCH_AUDIENCES_PANEL_COMPLETE';
 export const FETCH_AUDIENCES_PANEL_FAILED = 'FETCH_AUDIENCES_PANEL_FAILED';
 export const UPDATE_AUDIENCES_PANEL_PROFILE = 'UPDATE_AUDIENCES_PANEL_PROFILE';
+export const SET_AUDIENCES_PANEL_MODEL = 'SET_AUDIENCES_PANEL_MODEL';
+export const SET_AUDIENCES_PANEL_MODEL_COMPLETE = 'SET_AUDIENCES_PANEL_MODEL_COMPLETE';
+export const SET_AUDIENCES_PANEL_MODEL_FAILED = 'SET_AUDIENCES_PANEL_MODEL_FAILED';
 
 // endregion
 
@@ -188,13 +191,10 @@ export function fetchAudiencesPanelComplete(data): StandardAction {
   }
 }
 
-export function updateAudiencesPanelProfile(name, value): StandardAction {
+export function updateAudiencesPanelProfile(data): StandardAction {
   return {
     type: UPDATE_AUDIENCES_PANEL_PROFILE,
-    payload: {
-      name,
-      value
-    }
+    payload: data
   }
 }
 
@@ -205,5 +205,25 @@ export function fetchAudiencesPanelFailed(error): StandardAction {
   }
 }
 
+export function setAudiencesPanelModel(data): StandardAction {
+  return {
+    type: SET_AUDIENCES_PANEL_MODEL,
+    payload: data
+  }
+}
+
+export function setAudiencesPanelModelComplete(data): StandardAction {
+  return {
+    type: SET_AUDIENCES_PANEL_MODEL_COMPLETE,
+    payload: data
+  }
+}
+
+export function setAudiencesPanelModelFailed(error): StandardAction {
+  return {
+    type: SET_AUDIENCES_PANEL_MODEL_FAILED,
+    payload: error
+  }
+}
 
 // endregion

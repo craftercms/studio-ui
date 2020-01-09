@@ -34,12 +34,11 @@ import { useSelection, useStateResource } from "../../../utils/hooks";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { useDispatch } from "react-redux";
-import { updateAudiencesPanelProfile } from "../../../state/actions/preview";
+import { setAudiencesPanelModel, updateAudiencesPanelProfile } from "../../../state/actions/preview";
 import { ContentTypeField } from "../../../models/ContentType";
 import { nnou, nou, reversePluckProps } from "../../../utils/object";
 import GlobalState from "../../../models/GlobalState";
 import ContentInstance from "../../../models/ContentInstance";
-import { get } from "../../../utils/ajax";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -121,6 +120,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 <React.Fragment key={field}>
                   <AudiencesFormSection
                     property={config.fields[field]}
+                    profileApplying={profileApplying}
                     profileValue={profile[field] ? profile[field].key : undefined}
                     profileTimezone={profile[`${field}_tz`] ? profile[`${field}_tz`].key : undefined}
                     onFormChange={onFormChange}
@@ -166,7 +166,12 @@ export default function AudiencesPanel() {
   const dispatch = useDispatch();
 
   const onFormChange = (name: string, value: string) => {
-    dispatch(updateAudiencesPanelProfile(name, value));
+    dispatch(updateAudiencesPanelProfile({
+      [name]: {
+        key: value,
+        label: value
+      }
+    }));
   };
 
 
@@ -175,17 +180,21 @@ export default function AudiencesPanel() {
     const model = reversePluckProps(state.model, 'craftercms');
     const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val.key}`).join('&'));
 
-    get(`/api/1/profile/set?${params}`).subscribe(
-      ({ response }) => {
-        // TODO: display success message
-      }
-    );
+    dispatch(setAudiencesPanelModel(params));
   };
 
   const setDefaults = (config) => {
+    const props = {};
+
     Object.keys(config.fields).forEach((property: any) => {
-      dispatch(updateAudiencesPanelProfile(property, config.fields[property].defaultValue));
+      const propValue = config.fields[property].defaultValue;
+      props[property] = {
+        key: propValue,
+        label: propValue
+      };
     });
+
+    dispatch(updateAudiencesPanelProfile(props));
   };
 
   return (
@@ -218,6 +227,7 @@ export default function AudiencesPanel() {
 interface AudiencesFormProps {
   property: any;
   profileValue: any;
+  profileApplying: boolean;
   profileTimezone?: string;
   onFormChange: Function;
 }
@@ -228,6 +238,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
   const {
     property,
     profileValue,
+    profileApplying,
     profileTimezone,
     onFormChange
   } = props;
@@ -270,6 +281,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
             id={property.id}
             value={profileValue}
             onChange={handleSelectChange(property.id)}
+            disabled={profileApplying}
           >
             {
               property.values ? (
@@ -299,6 +311,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
                         color="primary"
                         checked={valuesArray.includes(possibleValue.value)}
                         onChange={handleInputChange(property.id, possibleValue.value, valuesArray)}
+                        disabled={profileApplying}
                       />
                     }
                     label={possibleValue.value}/>
@@ -333,6 +346,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
             value={profileValue}
             helperText={property.helpText}
             onChange={handleInputChange(property.id)}
+            disabled={profileApplying}
           />
         </AudiencesControl>
       );

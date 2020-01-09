@@ -211,6 +211,10 @@ export function getAudiencesPanelModel(): Observable<ContentInstance> {
   }));
 }
 
+export function setAudiencesPanelModel(params): Observable<any> {
+  return get(`/api/1/profile/set?${params}`);
+}
+
 function parseSimulatorPanelConfig(element: Element) {
   let config = parsePreviewToolsPanelConfig(element);
   if (config === null) {
