@@ -73,6 +73,7 @@ export default function AuthMonitor() {
 
   useEffect(() => {
     if (active) {
+      setPassword('');
       const sub = interval(300000).subscribe(() => dispatch(validateSession()));
       return () => sub.unsubscribe();
     }
