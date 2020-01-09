@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import ToolPanel from './ToolPanel';
 import { useActiveSiteId, useSelection, useStateResourceSelection } from "../../../utils/hooks";
@@ -26,9 +26,9 @@ import SearchBar from '../../../components/SearchBar';
 import { useDispatch, useSelector } from "react-redux";
 import GlobalState, { PagedEntityState } from "../../../models/GlobalState";
 import TablePagination from "@material-ui/core/TablePagination";
-import { Subject } from "rxjs";
+import { fromEvent, Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
-import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from "rxjs/operators";
 import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
 import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from "../../../state/actions/preview";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
@@ -36,12 +36,12 @@ import MediaCard from '../../../components/MediaCard';
 import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
 import EmptyState from "../../../components/SystemStatus/EmptyState";
 import UploadIcon from '@material-ui/icons/Publish';
-import { nnou } from "../../../utils/object";
+import { nnou, pluckProps } from "../../../utils/object";
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { palette } from "../../../styles/theme";
 import { getRequestForgeryToken } from "../../../utils/auth";
-import { dataURItoBlob } from '../../../utils/path';
+import { dataUriToBlob } from "../../../utils/string";
 
 const translations = defineMessages({
   assetsPanel: {
@@ -147,7 +147,7 @@ const assetsPanelStyles = makeStyles(() => createStyles({
 }));
 
 interface AssetResource {
-  total: number;
+  count: number;
   limit: number;
   pageNumber: number;
   items: Array<MediaItem>;
@@ -169,16 +169,16 @@ export default function AssetsPanel() {
     resultSelector: source => {
       const items = source.page[source.pageNumber].map((id) => source.byId[id]);
       return {
-        total: source.count,
-        limit: source.query.limit,
-        pageNumber: source.pageNumber,
+        ...pluckProps(source, 'count', 'query.limit', 'pageNumber'),
         items
-      }
+      } as AssetResource
     }
   });
-  const { GUEST_BASE } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
+  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
+  const elementRef = useRef();
+  const timeoutRef = useRef<any>();
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
     type: ASSET_DRAG_STARTED,
@@ -199,20 +199,21 @@ export default function AssetsPanel() {
 
     const reader = new FileReader();
     const uppy = Core({ autoProceed: true });
-    const uploadAssetUrl = `/studio/asset-upload?_csrf=${getRequestForgeryToken()}`;
+    const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
     uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
+    uppy.setMeta({ site, path: `/static-assets/images/` });
 
     uppy.on('complete', (result) => {
       if (result.successful.length) {
         console.log('Upload Success');
+        dispatch(fetchAssetsPanelItems());
       } else {
         console.log('Failed');
       }
     });
 
     reader.onloadend = function () {
-      const blob = dataURItoBlob(reader.result);
-      uppy.setMeta({ site, path: `/static-assets/images/` });
+      const blob = dataUriToBlob(reader.result);
       uppy.addFile({
         name: file.name,
         type: file.type,
@@ -223,23 +224,41 @@ export default function AssetsPanel() {
     setDragInProgress(false);
   };
 
-  const onDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  //listener for dragenter
-  document.addEventListener("dragenter", function (event) {
-    //it is a file from desktop??
-    if (event.dataTransfer.types.includes('Files')) {
+  useEffect(() => {
+    const subscription = fromEvent(elementRef.current, 'dragenter').pipe(
+      filter((e: any) => e.dataTransfer?.types.includes('Files'))
+    ).subscribe((e: any) => {
+      clearTimeout(timeoutRef.current);
       setDragInProgress(true);
-    }
-  }, false);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
-  document.addEventListener("dragleave", function (event) {
-    //needs to know if it left the page
-    //setDragInProgress(false);
-  }, false);
+  useEffect(() => {
+    if (dragInProgress) {
+      const unmount$ = new Subject();
+      fromEvent(elementRef.current, 'dragleave').pipe(
+        takeUntil(unmount$)
+      ).subscribe((e: any) => {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+          clearTimeout(timeoutRef.current);
+          setDragInProgress(false);
+        }, 100);
+      });
+      fromEvent(elementRef.current, 'dragover').pipe(
+        takeUntil(unmount$)
+      ).subscribe((e: any) => {
+        e.preventDefault();
+        e.stopPropagation();
+        clearTimeout(timeoutRef.current);
+      });
+      return () => {
+        unmount$.next();
+        unmount$.complete();
+      };
+    }
+  }, [dragInProgress]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
@@ -263,37 +282,38 @@ export default function AssetsPanel() {
   return (
     <ToolPanel title={translations.assetsPanel}>
       <ErrorBoundary>
-        <div className={classes.search}>
-          <SearchBar
-            onChange={handleSearchKeyword}
-            keyword={keyword}
-          />
-        </div>
-        <React.Suspense
-          fallback={
-            <LoadingState
-              title={formatMessage(translations.loading)}
-              graphicProps={{ width: 150 }}
+        <div ref={elementRef}>
+          <div className={classes.search}>
+            <SearchBar
+              onChange={handleSearchKeyword}
+              keyword={keyword}
             />
-          }
-        >
-          {
-            dragInProgress &&
-            <div className={classes.uploadOverlay} onDrop={onDragDrop} onDragOver={onDragOver}>
-              <UploadIcon className={classes.uploadIcon}/>
-            </div>
-          }
-          <AssetsPanelUI
-            classes={classes}
-            assetsResource={resource}
-            onPageChanged={onPageChanged}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            GUEST_BASE={GUEST_BASE}
-            onDragDrop={onDragDrop}
-            dragInProgress={dragInProgress}
-          />
-        </React.Suspense>
+          </div>
+          <React.Suspense
+            fallback={
+              <LoadingState
+                title={formatMessage(translations.loading)}
+                graphicProps={{ width: 150 }}
+              />
+            }
+          >
+            {
+              dragInProgress &&
+              <div className={classes.uploadOverlay} onDrop={onDragDrop}>
+                <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon}/>
+              </div>
+            }
+            <AssetsPanelUI
+              classes={classes}
+              assetsResource={resource}
+              onPageChanged={onPageChanged}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              GUEST_BASE={GUEST_BASE}
+              onDragDrop={onDragDrop}
+            />
+          </React.Suspense>
+        </div>
       </ErrorBoundary>
     </ToolPanel>
   );
@@ -307,10 +327,10 @@ export function AssetsPanelUI(props) {
     onPageChanged,
     onDragStart,
     onDragEnd,
-    GUEST_BASE
+    GUEST_BASE,
   } = props;
   const assets: AssetResource = assetsResource.read();
-  const { total, pageNumber, items, limit } = assets;
+  const { count, pageNumber, items, limit } = assets;
   const { formatMessage } = useIntl();
 
   return (
@@ -320,7 +340,7 @@ export function AssetsPanelUI(props) {
         classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
         component="div"
         labelRowsPerPage=""
-        count={total}
+        count={count}
         rowsPerPage={limit}
         page={pageNumber}
         backIconButtonProps={{
@@ -349,7 +369,7 @@ export function AssetsPanelUI(props) {
         )
       }
       {
-        total === 0 &&
+        count === 0 &&
         <EmptyState
           title={formatMessage(translations.noResults)}
           classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
