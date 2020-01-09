@@ -16,7 +16,7 @@
  */
 import React from 'react';
 import ToolPanel from './ToolPanel';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
@@ -83,6 +83,10 @@ const translations = defineMessages({
   audiencesPanel: {
     id: 'craftercms.ice.audiences.title',
     defaultMessage: 'Audience Targeting'
+  },
+  audiencesPanelLoading: {
+    id: 'craftercms.ice.audiences.loading',
+    defaultMessage: 'Retrieving targeting options'
   }
 });
 
@@ -163,6 +167,7 @@ export default function AudiencesPanel() {
     }
   );
 
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
   const onFormChange = (name: string, value: string) => {
@@ -200,7 +205,7 @@ export default function AudiencesPanel() {
       <React.Suspense
         fallback={
           <LoadingState
-            title="Loading"
+            title={formatMessage(translations.audiencesPanelLoading)}
             graphicProps={{ width: 150 }}
           />
         }
