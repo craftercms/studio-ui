@@ -40,7 +40,7 @@ import {
   SET_HOST_WIDTH,
   SET_ITEM_BEING_DRAGGED,
   TOOLS_LOADED,
-  UPDATE_AUDIENCES_PANEL_PROFILE
+  UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
 import { nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
@@ -277,7 +277,7 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
   }),
-  [UPDATE_AUDIENCES_PANEL_PROFILE]: (state, { payload }) => ({
+  [UPDATE_AUDIENCES_PANEL_MODEL]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,

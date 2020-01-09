@@ -74,7 +74,7 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_AUDIENCES_PANEL = 'FETCH_AUDIENCES_PANEL';
 export const FETCH_AUDIENCES_PANEL_COMPLETE = 'FETCH_AUDIENCES_PANEL_COMPLETE';
 export const FETCH_AUDIENCES_PANEL_FAILED = 'FETCH_AUDIENCES_PANEL_FAILED';
-export const UPDATE_AUDIENCES_PANEL_PROFILE = 'UPDATE_AUDIENCES_PANEL_PROFILE';
+export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
 export const SET_AUDIENCES_PANEL_MODEL = 'SET_AUDIENCES_PANEL_MODEL';
 export const SET_AUDIENCES_PANEL_MODEL_COMPLETE = 'SET_AUDIENCES_PANEL_MODEL_COMPLETE';
 export const SET_AUDIENCES_PANEL_MODEL_FAILED = 'SET_AUDIENCES_PANEL_MODEL_FAILED';
@@ -191,9 +191,9 @@ export function fetchAudiencesPanelComplete(data): StandardAction {
   }
 }
 
-export function updateAudiencesPanelProfile(data): StandardAction {
+export function updateAudiencesPanelModel(data): StandardAction {
   return {
-    type: UPDATE_AUDIENCES_PANEL_PROFILE,
+    type: UPDATE_AUDIENCES_PANEL_MODEL,
     payload: data
   }
 }

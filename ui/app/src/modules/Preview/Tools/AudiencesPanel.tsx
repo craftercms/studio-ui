@@ -34,7 +34,7 @@ import { useSelection, useStateResource } from "../../../utils/hooks";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { useDispatch } from "react-redux";
-import { setAudiencesPanelModel, updateAudiencesPanelProfile } from "../../../state/actions/preview";
+import { setAudiencesPanelModel, updateAudiencesPanelModel } from "../../../state/actions/preview";
 import { ContentTypeField } from "../../../models/ContentType";
 import { nnou, nou, reversePluckProps } from "../../../utils/object";
 import GlobalState from "../../../models/GlobalState";
@@ -88,11 +88,11 @@ const translations = defineMessages({
 
 interface AudiencesPanelUIProps {
   audiencesResource: any;
-  profile: ContentInstance;
-  profileApplying: boolean;
-  profileApplied: boolean;
+  model: ContentInstance;
+  modelApplying: boolean;
+  modelApplied: boolean;
   onFormChange: Function;
-  saveProfile: Function;
+  saveModel: Function;
   setDefaults: Function;
 }
 
@@ -101,11 +101,11 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   const classes = useStyles({});
   const {
     audiencesResource,
-    profile,
-    profileApplying,
-    profileApplied,
+    model,
+    modelApplying,
+    modelApplied,
     onFormChange,
-    saveProfile,
+    saveModel,
     setDefaults
   } = props;
   const config = audiencesResource.read();
@@ -120,9 +120,9 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 <React.Fragment key={field}>
                   <AudiencesFormSection
                     property={config.fields[field]}
-                    profileApplying={profileApplying}
-                    profileValue={profile[field] ? profile[field].key : undefined}
-                    profileTimezone={profile[`${field}_tz`] ? profile[`${field}_tz`].key : undefined}
+                    modelApplying={modelApplying}
+                    modelValue={model[field] ? model[field].key : undefined}
+                    modelTimezone={model[`${field}_tz`] ? model[`${field}_tz`].key : undefined}
                     onFormChange={onFormChange}
                   />
                   <Divider className={classes.divider}/>
@@ -137,7 +137,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 defaultMessage={`Defaults`}
               />
             </Button>
-            <Button variant="contained" color="primary" onClick={() => saveProfile()}>
+            <Button variant="contained" color="primary" onClick={() => saveModel()}>
               <FormattedMessage
                 id="audiencesPanel.apply"
                 defaultMessage={`Apply`}
@@ -166,7 +166,7 @@ export default function AudiencesPanel() {
   const dispatch = useDispatch();
 
   const onFormChange = (name: string, value: string) => {
-    dispatch(updateAudiencesPanelProfile({
+    dispatch(updateAudiencesPanelModel({
       [name]: {
         key: value,
         label: value
@@ -176,7 +176,7 @@ export default function AudiencesPanel() {
 
 
   // TODO: Update to new state structure
-  const saveProfile = () => {
+  const saveModel = () => {
     const model = reversePluckProps(state.model, 'craftercms');
     const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val.key}`).join('&'));
 
@@ -194,7 +194,7 @@ export default function AudiencesPanel() {
       };
     });
 
-    dispatch(updateAudiencesPanelProfile(props));
+    dispatch(updateAudiencesPanelModel(props));
   };
 
   return (
@@ -210,11 +210,11 @@ export default function AudiencesPanel() {
         >
           <AudiencesPanelUI
             audiencesResource={resource}
-            profile={state.model}
-            profileApplying={state.isApplying}
-            profileApplied={state.applied}
+            model={state.model}
+            modelApplying={state.isApplying}
+            modelApplied={state.applied}
             onFormChange={onFormChange}
-            saveProfile={saveProfile}
+            saveModel={saveModel}
             setDefaults={setDefaults}
           />
         </React.Suspense>
@@ -226,9 +226,9 @@ export default function AudiencesPanel() {
 
 interface AudiencesFormProps {
   property: any;
-  profileValue: any;
-  profileApplying: boolean;
-  profileTimezone?: string;
+  modelValue: any;
+  modelApplying: boolean;
+  modelTimezone?: string;
   onFormChange: Function;
 }
 
@@ -237,9 +237,9 @@ function AudiencesFormSection(props: AudiencesFormProps) {
   const classes = useStyles({});
   const {
     property,
-    profileValue,
-    profileApplying,
-    profileTimezone,
+    modelValue,
+    modelApplying,
+    modelTimezone,
     onFormChange
   } = props;
 
@@ -279,9 +279,9 @@ function AudiencesFormSection(props: AudiencesFormProps) {
           <Select
             labelId={property.id}
             id={property.id}
-            value={profileValue}
+            value={modelValue}
             onChange={handleSelectChange(property.id)}
-            disabled={profileApplying}
+            disabled={modelApplying}
           >
             {
               property.values ? (
@@ -295,7 +295,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
         </AudiencesControl>
       );
     case "checkbox-group":
-      const valuesArray = nnou(profileValue) ? profileValue.split(',') : [];
+      const valuesArray = nnou(modelValue) ? modelValue.split(',') : [];
 
       return (
         <AudiencesControl property={property}>
@@ -311,7 +311,7 @@ function AudiencesFormSection(props: AudiencesFormProps) {
                         color="primary"
                         checked={valuesArray.includes(possibleValue.value)}
                         onChange={handleInputChange(property.id, possibleValue.value, valuesArray)}
-                        disabled={profileApplying}
+                        disabled={modelApplying}
                       />
                     }
                     label={possibleValue.value}/>
@@ -327,10 +327,10 @@ function AudiencesFormSection(props: AudiencesFormProps) {
         <AudiencesControl property={property}>
           <>
             <DateTimePicker
-              initialDate={profileValue}
-              timezone={profileTimezone}
+              initialDate={modelValue}
+              timezone={modelTimezone}
               onChange={dateTimePickerChange(property.id)}
-              disabled={profileApplying}/>
+              disabled={modelApplying}/>
             <FormHelperText>{property.helpText}</FormHelperText>
           </>
         </AudiencesControl>
@@ -344,10 +344,10 @@ function AudiencesFormSection(props: AudiencesFormProps) {
             name="input"
             placeholder="auto"
             fullWidth
-            value={profileValue}
+            value={modelValue}
             helperText={property.helpText}
             onChange={handleInputChange(property.id)}
-            disabled={profileApplying}
+            disabled={modelApplying}
           />
         </AudiencesControl>
       );
