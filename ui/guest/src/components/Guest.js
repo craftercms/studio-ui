@@ -999,7 +999,12 @@ export function Guest(props) {
     },
 
     dragenter(e, record) {
-      if (stateRef.current.common.status === EditingStatus.LISTENING && e.originalEvent.dataTransfer.types.includes('Files')) {
+      if (
+        stateRef.current.common.status === EditingStatus.LISTENING &&
+        e.originalEvent.dataTransfer &&
+        e.originalEvent.dataTransfer.types &&
+        e.originalEvent.dataTransfer.types.includes('Files')
+      ) {
         e.preventDefault();
         e.stopPropagation();
         fn.onDesktopAssetDragStarted(e.originalEvent.dataTransfer.items[0], record);
