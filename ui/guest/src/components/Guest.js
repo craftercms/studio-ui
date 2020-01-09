@@ -659,6 +659,8 @@ export function Guest(props) {
           // TODO: Insert detached component
           break;
         }
+        default:
+          break;
       }
 
     },

@@ -1325,7 +1325,7 @@
           });
         }else{
           if($scope.entities.length > 0) {
-            $state.go((data[0] || data.menuItems[0]).id.replace("globalMenu.", ""));
+            $state.go((data[0] || data.menuItems[0]).id.replace('globalMenu.', ''));
           }
         }
       }
