@@ -112,7 +112,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     onSaveModel,
     onSetDefaults
   } = props;
-  const config = audiencesResource.read();
+  const contentType = audiencesResource.read();
 
   return (
     <ToolPanel title={translations.audiencesPanel}>
@@ -120,10 +120,10 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
         <>
           <Grid className={classes.PanelMargin}>
             {
-              Object.keys(config.fields).map((field: any) => (
+              Object.keys(contentType.fields).map((field: any) => (
                 <React.Fragment key={field}>
                   <AudiencesFormSection
-                    property={config.fields[field]}
+                    property={contentType.fields[field]}
                     modelApplying={modelApplying}
                     modelValue={model[field] ? model[field].key : undefined}
                     modelTimezone={model[`${field}_tz`] ? model[`${field}_tz`].key : undefined}
@@ -135,7 +135,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             }
           </Grid>
           <Grid className={classes.actionBTN}>
-            <Button variant="contained" onClick={() => onSetDefaults(config)}>
+            <Button variant="contained" onClick={() => onSetDefaults(contentType)}>
               <FormattedMessage
                 id="audiencesPanel.defaults"
                 defaultMessage={`Defaults`}
@@ -186,11 +186,11 @@ export default function AudiencesPanel() {
     dispatch(setAudiencesPanelModel(params));
   };
 
-  const setDefaults = (config) => {
+  const setDefaults = (contentType) => {
     const props = {};
 
-    Object.keys(config.fields).forEach((property: any) => {
-      const propValue = config.fields[property].defaultValue;
+    Object.keys(contentType.fields).forEach((property: any) => {
+      const propValue = contentType.fields[property].defaultValue;
       props[property] = {
         key: propValue,
         label: propValue
