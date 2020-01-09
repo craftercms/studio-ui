@@ -54,20 +54,6 @@ interface PreviewToolsConfig {
 
 // region AudiencesPanelConfig
 
-export interface AudiencesPanelDescriptor {
-  name: string;
-  label: string;
-  description: string;
-  type: string;
-  possibleValues: any[];
-  defaultValue: string;
-  hint: string;
-}
-
-export interface AudiencesPanelConfig {
-  properties: Array<AudiencesPanelDescriptor>;
-}
-
 const LegacyPanelIdMap: any = {
   'ice-tools-panel': 'craftercms.ice.ice',
   'component-panel': 'craftercms.ice.components',
