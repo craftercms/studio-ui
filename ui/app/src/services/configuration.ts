@@ -138,12 +138,13 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
             type = getInnerHtml(elem.querySelector('type')),
             defaultValue = getInnerHtml(elem.querySelector('default_value')),
             hint = getInnerHtml(elem.querySelector('hint'));
-          let possibleValues: any[] | { value: string; }[];
+          let possibleValues: { label: string, value: string }[];
 
           if (elem.querySelectorAll('value').length > 0) {
             possibleValues = Array.from(elem.querySelectorAll('value')).map((element) => {
               const value = getInnerHtml(element);
               return {
+                label: value,
                 value: value
               }
             });
