@@ -96,8 +96,8 @@ interface AudiencesPanelUIProps {
   modelApplying: boolean;
   modelApplied: boolean;
   onFormChange: Function;
-  saveModel: Function;
-  setDefaults: Function;
+  onSaveModel: Function;
+  onSetDefaults: Function;
 }
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
@@ -109,8 +109,8 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     modelApplying,
     modelApplied,
     onFormChange,
-    saveModel,
-    setDefaults
+    onSaveModel,
+    onSetDefaults
   } = props;
   const config = audiencesResource.read();
 
@@ -135,13 +135,13 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             }
           </Grid>
           <Grid className={classes.actionBTN}>
-            <Button variant="contained" onClick={() => setDefaults(config)}>
+            <Button variant="contained" onClick={() => onSetDefaults(config)}>
               <FormattedMessage
                 id="audiencesPanel.defaults"
                 defaultMessage={`Defaults`}
               />
             </Button>
-            <Button variant="contained" color="primary" onClick={() => saveModel()}>
+            <Button variant="contained" color="primary" onClick={() => onSaveModel()}>
               <FormattedMessage
                 id="audiencesPanel.apply"
                 defaultMessage={`Apply`}
@@ -216,8 +216,8 @@ export default function AudiencesPanel() {
           modelApplying={state.isApplying}
           modelApplied={state.applied}
           onFormChange={onFormChange}
-          saveModel={saveModel}
-          setDefaults={setDefaults}
+          onSaveModel={saveModel}
+          onSetDefaults={setDefaults}
         />
       </React.Suspense>
     </ErrorBoundary>
