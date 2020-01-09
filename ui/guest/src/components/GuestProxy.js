@@ -300,8 +300,8 @@ export function GuestProxy(props) {
           const fieldType = ContentTypeHelper.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
-            const tagName = updatedField.eq(index).prop('tagName');
-            if (tagName === 'IMG') {
+            const tagName = updatedField.eq(index).prop('tagName').toLowerCase();
+            if (tagName === 'img') {
               updatedField.eq(index).attr('src', value);
             } else {
               updatedField.eq(index).css('background-image', `url(${value})`);

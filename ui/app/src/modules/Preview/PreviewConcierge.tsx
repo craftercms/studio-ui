@@ -24,6 +24,8 @@ import {
   clearSelectForEdit,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
+  DESKTOP_ASSET_DROP,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
   fetchAssetsPanelItems,
   fetchContentTypes,
   GUEST_CHECK_IN,
@@ -50,11 +52,15 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou } from '../../utils/object';
 import { useOnMount } from '../../utils/helpers';
 import { getRequestForgeryToken } from "../../utils/auth";
+import Core from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
+import GlobalState from "../../models/GlobalState";
+import { dataUriToBlob } from "../../utils/string";
 
 export function PreviewConcierge(props: any) {
 
@@ -63,7 +69,7 @@ export function PreviewConcierge(props: any) {
   const site = useActiveSiteId();
   const { guest, selectedTool } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
+  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelector<GlobalState, GlobalState['env']>(state => state.env);
   const priorState = useRef({ site });
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const assets = useSelection(state => state.preview.assets);
@@ -88,14 +94,7 @@ export function PreviewConcierge(props: any) {
       switch (type) {
         case GUEST_CHECK_IN: {
 
-          hostToGuest$.next({
-            type: HOST_CHECK_IN,
-            payload: {
-              XSRF_TOKEN_HEADER_NAME: '_csrf',
-              // TODO: Verify security implications
-              XSRF_TOKEN: getRequestForgeryToken()
-            }
-          });
+          hostToGuest$.next({ type: HOST_CHECK_IN });
 
           dispatch(checkInGuest(payload));
 
@@ -202,12 +201,11 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          setSnack({ message: 'Updated operation not implemented.' });
           const { modelId, fieldId, index, value } = payload;
           updateField(site, guest.models[modelId].craftercms.path, fieldId, index, value).subscribe(() => {
             console.log('Finished');
           }, (e) => {
-            console.log(e);
+            setSnack({ message: 'Updated operation failed.' });
           });
           break;
         }
@@ -228,6 +226,41 @@ export function PreviewConcierge(props: any) {
           dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN));
           break;
         }
+        case DESKTOP_ASSET_DROP:
+          const uppy = Core({ autoProceed: true });
+          const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
+          uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
+          uppy.setMeta({ site, path: `/static-assets/images/${payload.modelId}` });
+
+          //uploadDataUrl().suscribe(
+          // ()=>{}, progress
+          // ()=>{}, error
+          // ()=>{} complete
+          // )
+
+          uppy.on('complete', (result: Core.UploadResult<any, any>) => {
+            if (result.successful.length) {
+              console.log('Upload Success');
+              hostToGuest$.next({
+                type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                payload: {
+                  id: payload.name,
+                  path: result.successful[0].meta.path + "/" + result.successful[0].meta.name
+                }
+              });
+            } else {
+              console.log('Failed');
+            }
+          });
+
+          const blob = dataUriToBlob(payload.dataUrl);
+          uppy.addFile({
+            name: payload.name,
+            type: payload.type,
+            data: blob,
+          });
+
+          break;
       }
     });
 

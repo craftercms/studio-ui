@@ -22,7 +22,8 @@ import {
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
-  dataURItoBlob,
+  DESKTOP_ASSET_DROP,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
   EditingStatus,
   forEach,
@@ -54,9 +55,6 @@ import { DropMarker } from './DropMarker';
 import { appendStyleSheet } from '../styles';
 import { fromTopic, message$, post } from '../communicator';
 import Cookies from 'js-cookie';
-//import { XHRUpload, Core } from 'uppy';
-import Core from '@uppy/core';
-import XHRUpload from '@uppy/xhr-upload';
 // TinyMCE makes the build quite large. Temporarily, importing this externally via
 // the site's ftl. Need to evaluate whether to include the core as part of guest build or not
 // import tinymce from 'tinymce';
@@ -661,36 +659,27 @@ export function Guest(props) {
           const file = e.originalEvent.dataTransfer.files[0];
           const reader = new FileReader();
           reader.onload = (function (aImg) {
-            const uppy = Core({
-              autoProceed: true
-            });
-
-            const uploadAssetUrl = `/studio/asset-upload?${persistence.config.XSRF_TOKEN_HEADER_NAME}=${persistence.config.XSRF_TOKEN}`;
-
-            uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
-
-            uppy.on('complete', (result) => {
-              if (result.successful.length) {
-                let draggedPath = result.successful[0].meta.path + "/" + result.successful[0].meta.name;
+            message$.pipe(
+              filter((e) => (e.data?.type) === DESKTOP_ASSET_UPLOAD_COMPLETE),
+              map(e => e.data),
+              take(1)
+            ).subscribe(function ({ payload }) {
+              if (payload.id === file.name) {
                 contentController.updateField(
                   record.modelId,
                   record.fieldId[0],
                   record.index,
-                  draggedPath
-                );
-              } else {
-                //TODO revert change
-                console.log('Failed');
+                  payload.path
+                )
               }
             });
 
             return function (event) {
-              const blob = dataURItoBlob(event.target.result);
-              uppy.setMeta({ site: Cookies.get('crafterSite'), path: `/static-assets/images/${record.modelId}` });
-              uppy.addFile({
+              post(DESKTOP_ASSET_DROP, {
+                dataUrl: event.target.result,
                 name: file.name,
                 type: file.type,
-                data: blob,
+                modelId: record.modelId
               });
               aImg.src = event.target.result;
             };
@@ -811,7 +800,8 @@ export function Guest(props) {
 
     },
 
-    dragleave() {
+    dragleave(e) {
+      console.log('dragleave');
       if (fn.dragOk()) {
         clearTimeout(persistence.dragLeaveTimeout);
         persistence.dragLeaveTimeout = setTimeout(() => {
@@ -1103,6 +1093,7 @@ export function Guest(props) {
       if (isNullOrUndefined(record)) {
         throw new Error('No record found for dispatcher element');
       }
+
       handler(event, record);
 
     } else {
@@ -1202,9 +1193,8 @@ export function Guest(props) {
       console.log('No Host was detected. In-Context Editing is off.');
     }, 700);
 
-    const hostDetectionSubscription = fromTopic(HOST_CHECK_IN).pipe(take(1)).subscribe((payload) => {
+    const hostDetectionSubscription = fromTopic(HOST_CHECK_IN).pipe(take(1)).subscribe(() => {
       clearTimeout(timeout);
-      persistence.config = payload.payload;
     });
 
     zip(

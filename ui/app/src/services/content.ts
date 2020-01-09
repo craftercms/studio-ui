@@ -31,10 +31,13 @@ import {
 import { camelizeProps, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { camelize } from '../utils/string';
+import { camelize, dataUriToBlob } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { PaginationOptions } from '../models/Search';
+import Core from "@uppy/core";
+import { getRequestForgeryToken } from "../utils/auth";
+import XHRUpload from "@uppy/xhr-upload";
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -717,4 +720,23 @@ export default {
   getContent,
   getDOM,
   fetchPublishingChannels
+}
+
+export function uploadDataUrl(
+  site: string,
+  file: any,
+  path: string,
+  XSRF_CONFIG_ARGUMENT: string
+): Observable<any> {
+  return new Observable(() => {
+    const uppy = Core({ autoProceed: true });
+    const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
+    uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
+    uppy.setMeta({ site, path });
+
+    //dataURItoBlob(file.dataUrl);
+    const blob = dataUriToBlob(file.dataUrl);
+    //subscriber.complete();
+    throw new Error('Not implemented');
+  });
 }
