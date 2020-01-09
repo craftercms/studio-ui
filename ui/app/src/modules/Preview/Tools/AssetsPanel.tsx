@@ -125,8 +125,9 @@ const assetsPanelStyles = makeStyles(() => createStyles({
     marginTop: '10px'
   },
   uploadOverlay: {
-    position: 'absolute',
+    position: 'fixed',
     background: fade(palette.black, 0.9),
+    width: `calc(${DRAWER_WIDTH}px - 1px)`,
     top: 0,
     bottom: 0,
     left: 0,
@@ -140,6 +141,9 @@ const assetsPanelStyles = makeStyles(() => createStyles({
     fontSize: '8em',
     color: palette.gray.light5,
     margin: 'auto',
+  },
+  noScroll: {
+    overflow: 'hidden'
   }
 }));
 
@@ -222,7 +226,7 @@ export default function AssetsPanel() {
   useEffect(() => {
     const subscription = fromEvent(elementRef.current, 'dragenter').pipe(
       filter((e: any) => e.dataTransfer?.types.includes('Files'))
-    ).subscribe((e: any) => {
+    ).subscribe(() => {
       clearTimeout(timeoutRef.current);
       setDragInProgress(true);
     });
@@ -234,7 +238,7 @@ export default function AssetsPanel() {
       const unmount$ = new Subject();
       fromEvent(elementRef.current, 'dragleave').pipe(
         takeUntil(unmount$)
-      ).subscribe((e: any) => {
+      ).subscribe(() => {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
           clearTimeout(timeoutRef.current);
@@ -275,7 +279,7 @@ export default function AssetsPanel() {
   }
 
   return (
-    <ToolPanel title={translations.assetsPanel}>
+    <ToolPanel title={translations.assetsPanel} classes={dragInProgress && classes.noScroll}>
       <ErrorBoundary>
         <div ref={elementRef}>
           <div className={classes.search}>

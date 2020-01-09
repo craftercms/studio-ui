@@ -570,7 +570,6 @@ export function Guest(props) {
 
       let element = physicalRecord.element;
       if (dragContext.players.includes(element)) {
-        clearTimeout(persistence.dragLeaveTimeout);
 
         let
           { next, prev } =
@@ -800,13 +799,9 @@ export function Guest(props) {
 
     },
 
-    dragleave(e) {
-      console.log('dragleave');
+    dragleave() {
       if (fn.dragOk()) {
-        clearTimeout(persistence.dragLeaveTimeout);
-        persistence.dragLeaveTimeout = setTimeout(() => {
-          fn.onDragLeave();
-        }, 100);
+        fn.onDragLeave();
       }
     },
 
@@ -996,14 +991,6 @@ export function Guest(props) {
           highlighted: {}
         }
       });
-    },
-
-    dragenter(e, record) {
-      if (stateRef.current.common.status === EditingStatus.LISTENING && e.originalEvent.dataTransfer.types.includes('Files')) {
-        e.preventDefault();
-        e.stopPropagation();
-        fn.onDesktopAssetDragStarted(e.originalEvent.dataTransfer.items[0], record);
-      }
     },
 
     onDesktopAssetDragStarted(asset) {
@@ -1211,6 +1198,27 @@ export function Guest(props) {
     };
 
   }, [modelId, path]);
+
+  useEffect(() => {
+    $(document).on('dragenter', function (e) {
+      if (stateRef.current.common.status === EditingStatus.LISTENING && e.originalEvent.dataTransfer.types.includes('Files')) {
+        e.preventDefault();
+        e.stopPropagation();
+        fn.onDesktopAssetDragStarted(e.originalEvent.dataTransfer.items[0]);
+      }
+      clearTimeout(persistence.dragLeaveTimeout);
+    });
+    $(document).on('dragover', function () {
+      clearTimeout(persistence.dragLeaveTimeout);
+    });
+    $(document).on('dragleave', function () {
+      clearTimeout(persistence.dragLeaveTimeout);
+      persistence.dragLeaveTimeout = setTimeout(() => {
+        clearTimeout(persistence.dragLeaveTimeout);
+        fn.onDragEnd();
+      }, 100);
+    });
+  }, []);
 
   return (
     <GuestContext.Provider value={stateRef.current.common}>
