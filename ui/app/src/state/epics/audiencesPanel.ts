@@ -29,11 +29,7 @@ import {
   setAudiencesPanelModelComplete,
   setAudiencesPanelModelFailed
 } from "../actions/preview";
-import {
-  getAudiencesPanelConfig,
-  getAudiencesPanelModel,
-  setAudiencesPanelModel as setAudiencesPanelModelService
-} from "../../services/configuration";
+import { fetchActiveProfile, getAudiencesPanelConfig, setActiveProfile } from "../../services/configuration";
 import { forkJoin, Observable } from "rxjs";
 import GlobalState from "../../models/GlobalState";
 import { getHostToGuestBus } from "../../modules/Preview/previewContext";
@@ -41,7 +37,7 @@ import { getHostToGuestBus } from "../../modules/Preview/previewContext";
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_AUDIENCES_PANEL_CONTENT),
   withLatestFrom(state$),
-  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), getAudiencesPanelModel()])),
+  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), fetchActiveProfile()])),
   map(response => fetchAudiencesPanelComplete({
     contentType: response[0],
     model: response[1]
@@ -51,7 +47,7 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
 
 const setAudiencesPanelModel: Epic = (action$) => action$.pipe(
   ofType(SET_AUDIENCES_PANEL_MODEL),
-  switchMap((action) => setAudiencesPanelModelService(action.payload).pipe(
+  switchMap((action) => setActiveProfile(action.payload).pipe(
     map(response => {
       getHostToGuestBus().next({ type: RELOAD_REQUEST })
       return setAudiencesPanelModelComplete(response);

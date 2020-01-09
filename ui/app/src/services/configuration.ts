@@ -175,7 +175,8 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
   );
 }
 
-export function getAudiencesPanelModel(): Observable<ContentInstance> {
+// TODO: asses the location of profile methods.
+export function fetchActiveProfile(): Observable<ContentInstance> {
   let audiencesPanelModel: ContentInstance;
   return get(`/api/1/profile/get`).pipe(map(response => {
     const propsKeys = reversePluckProps(response.response, 'id');
@@ -198,7 +199,7 @@ export function getAudiencesPanelModel(): Observable<ContentInstance> {
   }));
 }
 
-export function setAudiencesPanelModel(params): Observable<any> {
+export function setActiveProfile(params): Observable<any> {
   return get(`/api/1/profile/set?${params}`);
 }
 
