@@ -189,9 +189,9 @@ export default function AudiencesPanel() {
   const setDefaults = (contentType) => {
     const props = {};
 
-    Object.keys(contentType.fields).forEach((property: any) => {
-      const propValue = contentType.fields[property].defaultValue;
-      props[property] = {
+    Object.keys(contentType.fields).forEach((fieldId: string) => {
+      const propValue = contentType.fields[fieldId].defaultValue;
+      props[fieldId] = {
         key: propValue,
         label: propValue
       };
