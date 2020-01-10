@@ -38,13 +38,14 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 type ToolPanelProps = PropsWithChildren<{
   title: string | MessageDescriptor;
   BackIcon?: ElementType,
-  onBack?: () => void
+  onBack?: () => void,
+  classes?: any
 }>;
 
 interface PanelHeaderProps {
   title: string;
   BackIcon?: ElementType,
-  onBack: () => void
+  onBack: () => void,
 }
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
@@ -71,10 +72,11 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const {
     title,
     BackIcon,
-    onBack = () => dispatch(selectTool())
+    onBack = () => dispatch(selectTool()),
+    classes
   } = props;
   return (
-    <>
+    <div className={classes? classes: ''}>
       <PanelHeader
         title={typeof title === 'object' ? formatMessage(title) : title}
         BackIcon={BackIcon}
@@ -83,7 +85,7 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
       <section>
         {props.children}
       </section>
-    </>
+    </div>
   );
 }
 
