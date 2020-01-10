@@ -27,7 +27,7 @@ import Button from '@material-ui/core/Button';
 import React, { useEffect, useState } from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { login, logout, validateSession } from '../../state/actions/auth';
+import { login, validateSession } from '../../state/actions/auth';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import loginGraphicUrl from '../../assets/authenticate.svg';
@@ -65,21 +65,28 @@ export default function AuthMonitor() {
   const { formatMessage } = useIntl();
 
   const username = useSelection<string>(state => state.user.username);
+  const authoringUrl = useSelection<string>(state => state.env.AUTHORING_BASE);
   const { active, error, isFetching } = useSelection(state => state.auth);
   const [password, setPassword] = useState<string>('');
 
   const onSubmit = () => dispatch(login({ username, password }));
-  const onClose = () => dispatch(logout());
+  const onClose = (e) => {
+    window.location.href = authoringUrl;
+  };
 
   useEffect(() => {
     if (active) {
+      setPassword('');
       const sub = interval(300000).subscribe(() => dispatch(validateSession()));
       return () => sub.unsubscribe();
     }
   }, [active, dispatch]);
 
   return (
-    <Dialog open={!active} onClose={onClose} aria-labelledby="craftecmsReLoginDialog">
+    <Dialog
+      open={!active}
+      aria-labelledby="craftecmsReLoginDialog"
+    >
       <DialogTitle id="craftecmsReLoginDialog" className={classes.title}>
         <FormattedMessage
           id="authMonitor.dialogTitleText"
