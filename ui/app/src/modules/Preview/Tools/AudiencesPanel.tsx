@@ -14,31 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import DateTimePicker from "../../../components/DateTimePicker";
-import { useSelection, useStateResource } from "../../../utils/hooks";
-import { ErrorBoundary } from "../../../components/ErrorBoundary";
-import LoadingState from "../../../components/SystemStatus/LoadingState";
-import { useDispatch } from "react-redux";
-import { setActiveProfile, updateAudiencesPanelModel } from "../../../state/actions/preview";
-import { ContentTypeField } from "../../../models/ContentType";
-import { nnou, nou, reversePluckProps } from "../../../utils/object";
-import GlobalState from "../../../models/GlobalState";
-import ContentInstance from "../../../models/ContentInstance";
+import { useSelection, useStateResource } from '../../../utils/hooks';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import LoadingState from '../../../components/SystemStatus/LoadingState';
+import { useDispatch } from 'react-redux';
+import { setActiveProfile, updateAudiencesPanelModel } from '../../../state/actions/preview';
+import { ContentTypeField } from '../../../models/ContentType';
+import { nnou, nou, reversePluckProps } from '../../../utils/object';
+import GlobalState from '../../../models/GlobalState';
+import ContentInstance from '../../../models/ContentInstance';
+import Input from './AudiencesPanelControls/Input';
+import Dropdown from './AudiencesPanelControls/Dropdown';
+import CheckboxGroup from './AudiencesPanelControls/CheckboxGroup';
+import DateTime from './AudiencesPanelControls/DateTime';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,6 +89,13 @@ const translations = defineMessages({
   }
 });
 
+const controlsMap = {
+  'dropdown': Dropdown,
+  'checkbox-group': CheckboxGroup,
+  'date-time': DateTime,
+  'input': Input
+};
+
 interface AudiencesPanelUIProps {
   audiencesResource: any;
   model: ContentInstance;
@@ -107,7 +113,6 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     audiencesResource,
     model,
     modelApplying,
-    modelApplied,
     onFormChange,
     onSaveModel,
     onSetDefaults
@@ -120,18 +125,28 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
         <>
           <Grid className={classes.PanelMargin}>
             {
-              Object.keys(contentType.fields).map((field: any) => (
-                <React.Fragment key={field}>
-                  <AudiencesFormSection
-                    property={contentType.fields[field]}
-                    modelApplying={modelApplying}
-                    modelValue={model[field] ? model[field].key : undefined}
-                    modelTimezone={model[`${field}_tz`] ? model[`${field}_tz`].key : undefined}
-                    onFormChange={onFormChange}
-                  />
-                  <Divider className={classes.divider}/>
-                </React.Fragment>
-              ))
+              Object.keys(contentType.fields).map((field: any) => {
+                const type = contentType.fields[field].type;
+                const Control = controlsMap[type];
+
+                if (model[`${field}_tz`]) {
+                  contentType.fields[field].timezone = model[`${field}_tz`];
+                }
+
+                return (
+                  <React.Fragment key={field}>
+                    <AudiencesFormSection field={contentType.fields[field]}>
+                      <Control
+                        field={contentType.fields[field]}
+                        value={model[field] ? model[field].key : undefined}
+                        onChange={onFormChange}
+                        disabled={modelApplying}
+                      />
+                    </AudiencesFormSection>
+                    <Divider className={classes.divider}/>
+                  </React.Fragment>
+                )
+              })
             }
           </Grid>
           <Grid className={classes.actionBTN}>
@@ -225,145 +240,15 @@ export default function AudiencesPanel() {
 
 }
 
-interface AudiencesFormProps {
-  property: any;
-  modelValue: any;
-  modelApplying: boolean;
-  modelTimezone?: string;
-  onFormChange: Function;
-}
-
-function AudiencesFormSection(props: AudiencesFormProps) {
-
-  const classes = useStyles({});
-  const {
-    property,
-    modelValue,
-    modelApplying,
-    modelTimezone,
-    onFormChange
-  } = props;
-
-  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
-    onFormChange(name, event.target.value);
-  };
-
-  const handleInputChange = (name: string, label?: string, values?: string[]) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.persist();
-
-    if(e.target.type === 'text') {
-      onFormChange(name, e.target.value);
-    } else if (e.target.type === 'checkbox') {
-      if (e.target.checked) {
-        if (!(label in values)) {
-          values.push(label);
-        }
-      } else {
-        values.splice( values.indexOf(label), 1);
-      }
-      onFormChange(name, values.join(','));
-    }
-  };
-
-  const dateTimePickerChange = (name: string) => (scheduledDateTime: any) => {
-    const datetime = scheduledDateTime.toISOString();
-    const timezone = scheduledDateTime.tz();
-
-    onFormChange(name, datetime);
-    timezone && onFormChange(`${name}_tz`, encodeURIComponent(timezone));
-  };
-
-  switch (property.type) {
-    case "dropdown":
-      return (
-        <AudiencesControl property={property}>
-          <Select
-            labelId={property.id}
-            id={property.id}
-            value={modelValue}
-            onChange={handleSelectChange(property.id)}
-            disabled={modelApplying}
-          >
-            {
-              property.values ? (
-                property.values.map((possibleValue: any, index: number) => (
-                  <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
-                ))
-              ) : (null)
-            }
-          </Select>
-          <FormHelperText>{property.helpText}</FormHelperText>
-        </AudiencesControl>
-      );
-    case "checkbox-group":
-      const valuesArray = nnou(modelValue) ? modelValue.split(',') : [];
-
-      return (
-        <AudiencesControl property={property}>
-          <>
-            {
-              property.values ? (
-                property.values.map((possibleValue: any, index: number) => (
-                  <FormControlLabel
-                    key={index}
-                    htmlFor={property.id}
-                    control={
-                      <Checkbox
-                        color="primary"
-                        checked={valuesArray.includes(possibleValue.value)}
-                        onChange={handleInputChange(property.id, possibleValue.value, valuesArray)}
-                        disabled={modelApplying}
-                      />
-                    }
-                    label={possibleValue.value}/>
-                ))
-              ) : (null)
-            }
-            <FormHelperText>{property.helpText}</FormHelperText>
-          </>
-        </AudiencesControl>
-      );
-    case "date-time":
-      return (
-        <AudiencesControl property={property}>
-          <>
-            <DateTimePicker
-              initialDate={modelValue}
-              timezone={modelTimezone}
-              onChange={dateTimePickerChange(property.id)}
-              disabled={modelApplying}/>
-            <FormHelperText>{property.helpText}</FormHelperText>
-          </>
-        </AudiencesControl>
-      );
-    default:
-      return (
-        <AudiencesControl property={property}>
-          <TextField
-            id={property.id}
-            type="text"
-            name="input"
-            placeholder="auto"
-            fullWidth
-            value={modelValue}
-            helperText={property.helpText}
-            onChange={handleInputChange(property.id)}
-            disabled={modelApplying}
-          />
-        </AudiencesControl>
-      );
-  }
-}
-
-interface AudiencesControlProps {
-  property: ContentTypeField;
+interface AudiencesFormSectionProps {
+  field: ContentTypeField;
   children: any;
 }
 
-function AudiencesControl(props: AudiencesControlProps) {
+function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const classes = useStyles({});
 
-  const { property, children } = props;
+  const { field, children } = props;
 
   return (
     <Grid item xs={12}>
@@ -371,12 +256,13 @@ function AudiencesControl(props: AudiencesControlProps) {
         <InputLabel
           className={classes.InputLabel}
           focused={true}
-          htmlFor={property.id}
+          htmlFor={field.id}
         >
-          {property.name}
+          {field.name}
         </InputLabel>
         {children}
       </FormControl>
+      <FormHelperText>{field.helpText}</FormHelperText>
     </Grid>
   )
 }
