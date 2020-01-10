@@ -71,13 +71,13 @@ export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
-export const FETCH_AUDIENCES_PANEL_CONTENT = 'FETCH_AUDIENCES_PANEL_CONTENT';
-export const FETCH_AUDIENCES_PANEL_COMPLETE = 'FETCH_AUDIENCES_PANEL_COMPLETE';
-export const FETCH_AUDIENCES_PANEL_FAILED = 'FETCH_AUDIENCES_PANEL_FAILED';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
+export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
-export const SET_AUDIENCES_PANEL_MODEL = 'SET_AUDIENCES_PANEL_MODEL';
-export const SET_AUDIENCES_PANEL_MODEL_COMPLETE = 'SET_AUDIENCES_PANEL_MODEL_COMPLETE';
-export const SET_AUDIENCES_PANEL_MODEL_FAILED = 'SET_AUDIENCES_PANEL_MODEL_FAILED';
+export const SET_ACTIVE_PROFILE = 'SET_ACTIVE_PROFILE';
+export const SET_ACTIVE_PROFILE_COMPLETE = 'SET_ACTIVE_PROFILE_COMPLETE';
+export const SET_ACTIVE_PROFILE_FAILED = 'SET_ACTIVE_PROFILE_FAILED';
 
 // endregion
 
@@ -182,12 +182,19 @@ export function setItemBeingDragged(active: boolean): StandardAction {
   };
 }
 
-export const fetchAudiencesPanel = createAction(FETCH_AUDIENCES_PANEL_CONTENT);
+export const fetchAudiencesPanelFormDefinition = createAction(FETCH_AUDIENCES_PANEL_FORM_DEFINITION);
 
-export function fetchAudiencesPanelComplete(data): StandardAction {
+export function fetchAudiencesPanelFormDefinitionComplete(data): StandardAction {
   return {
-    type: FETCH_AUDIENCES_PANEL_COMPLETE,
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
     payload: data
+  }
+}
+
+export function fetchAudiencesPanelFormDefinitionFailed(error): StandardAction {
+  return {
+    type: FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
+    payload: error
   }
 }
 
@@ -198,30 +205,23 @@ export function updateAudiencesPanelModel(data): StandardAction {
   }
 }
 
-export function fetchAudiencesPanelFailed(error): StandardAction {
+export function setActiveProfile(data): StandardAction {
   return {
-    type: FETCH_AUDIENCES_PANEL_FAILED,
-    payload: error
-  }
-}
-
-export function setAudiencesPanelModel(data): StandardAction {
-  return {
-    type: SET_AUDIENCES_PANEL_MODEL,
+    type: SET_ACTIVE_PROFILE,
     payload: data
   }
 }
 
-export function setAudiencesPanelModelComplete(data): StandardAction {
+export function setActiveProfileComplete(data): StandardAction {
   return {
-    type: SET_AUDIENCES_PANEL_MODEL_COMPLETE,
+    type: SET_ACTIVE_PROFILE_COMPLETE,
     payload: data
   }
 }
 
-export function setAudiencesPanelModelFailed(error): StandardAction {
+export function setActiveProfileFailed(error): StandardAction {
   return {
-    type: SET_AUDIENCES_PANEL_MODEL_FAILED,
+    type: SET_ACTIVE_PROFILE_FAILED,
     payload: error
   }
 }

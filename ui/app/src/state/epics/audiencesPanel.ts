@@ -21,38 +21,42 @@ import { Epic, ofType } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from "rxjs/operators";
 import { catchAjaxError } from "../../utils/ajax";
 import {
-  FETCH_AUDIENCES_PANEL_CONTENT,
-  fetchAudiencesPanelComplete,
-  fetchAudiencesPanelFailed,
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
+  fetchAudiencesPanelFormDefinitionComplete,
+  fetchAudiencesPanelFormDefinitionFailed,
   RELOAD_REQUEST,
-  SET_AUDIENCES_PANEL_MODEL,
-  setAudiencesPanelModelComplete,
-  setAudiencesPanelModelFailed
+  SET_ACTIVE_PROFILE,
+  setActiveProfileComplete,
+  setActiveProfileFailed
 } from "../actions/preview";
-import { fetchActiveProfile, getAudiencesPanelConfig, setActiveProfile } from "../../services/configuration";
+import {
+  fetchActiveProfile,
+  getAudiencesPanelConfig,
+  setActiveProfile as setActiveProfileService
+} from "../../services/configuration";
 import { forkJoin, Observable } from "rxjs";
 import GlobalState from "../../models/GlobalState";
 import { getHostToGuestBus } from "../../modules/Preview/previewContext";
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_AUDIENCES_PANEL_CONTENT),
+  ofType(FETCH_AUDIENCES_PANEL_FORM_DEFINITION),
   withLatestFrom(state$),
   switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), fetchActiveProfile()])),
-  map(response => fetchAudiencesPanelComplete({
+  map(response => fetchAudiencesPanelFormDefinitionComplete({
     contentType: response[0],
     model: response[1]
   })),
-  catchAjaxError(fetchAudiencesPanelFailed)
+  catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
 );
 
 const setAudiencesPanelModel: Epic = (action$) => action$.pipe(
-  ofType(SET_AUDIENCES_PANEL_MODEL),
-  switchMap((action) => setActiveProfile(action.payload).pipe(
+  ofType(SET_ACTIVE_PROFILE),
+  switchMap((action) => setActiveProfileService(action.payload).pipe(
     map(response => {
       getHostToGuestBus().next({ type: RELOAD_REQUEST })
-      return setAudiencesPanelModelComplete(response);
+      return setActiveProfileComplete(response);
     }),
-    catchAjaxError(setAudiencesPanelModelFailed)
+    catchAjaxError(setActiveProfileFailed)
   ))
 );
 

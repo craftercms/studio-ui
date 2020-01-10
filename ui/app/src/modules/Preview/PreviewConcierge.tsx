@@ -24,7 +24,7 @@ import {
   clearSelectForEdit,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
-  fetchAudiencesPanel,
+  fetchAudiencesPanelFormDefinition,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -198,7 +198,7 @@ export function PreviewConcierge(props: any) {
           nou(audiencesPanel.contentType) &&
           nou(audiencesPanel.model)
         ) {
-          dispatch(fetchAudiencesPanel());
+          dispatch(fetchAudiencesPanelFormDefinition());
         }
         break;
       case 'craftercms.ice.components':

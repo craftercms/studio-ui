@@ -21,9 +21,9 @@ import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
-  FETCH_AUDIENCES_PANEL_COMPLETE,
-  FETCH_AUDIENCES_PANEL_CONTENT,
-  FETCH_AUDIENCES_PANEL_FAILED,
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
+  FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -32,9 +32,9 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
-  SET_AUDIENCES_PANEL_MODEL,
-  SET_AUDIENCES_PANEL_MODEL_COMPLETE,
-  SET_AUDIENCES_PANEL_MODEL_FAILED,
+  SET_ACTIVE_PROFILE,
+  SET_ACTIVE_PROFILE_COMPLETE,
+  SET_ACTIVE_PROFILE_FAILED,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
@@ -254,14 +254,14 @@ const reducer = createReducer<GlobalState['preview']>({
     }
     return nextState;
   },
-  [FETCH_AUDIENCES_PANEL_CONTENT]: (state) => ({
+  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION]: (state) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
       isFetching: true
     }
   }),
-  [FETCH_AUDIENCES_PANEL_COMPLETE]: (state, { payload }) => {
+  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE]: (state, { payload }) => {
     return {
       ...state,
       audiencesPanel: {
@@ -273,7 +273,7 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   },
-  [FETCH_AUDIENCES_PANEL_FAILED]: (state, { payload }) => ({
+  [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED]: (state, { payload }) => ({
     ...state,
     audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
   }),
@@ -288,14 +288,14 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   }),
-  [SET_AUDIENCES_PANEL_MODEL]: (state, { payload }) => ({
+  [SET_ACTIVE_PROFILE]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
       isApplying: true,
     }
   }),
-  [SET_AUDIENCES_PANEL_MODEL_COMPLETE]: (state, { payload }) => ({
+  [SET_ACTIVE_PROFILE_COMPLETE]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
@@ -303,7 +303,7 @@ const reducer = createReducer<GlobalState['preview']>({
       applied: true
     }
   }),
-  [SET_AUDIENCES_PANEL_MODEL_FAILED]: (state, { payload }) => ({
+  [SET_ACTIVE_PROFILE_FAILED]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
