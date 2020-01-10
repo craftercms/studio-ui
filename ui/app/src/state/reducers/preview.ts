@@ -32,9 +32,9 @@ import {
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
-  SET_ACTIVE_PROFILE,
-  SET_ACTIVE_PROFILE_COMPLETE,
-  SET_ACTIVE_PROFILE_FAILED,
+  SET_ACTIVE_MODEL,
+  SET_ACTIVE_MODEL_COMPLETE,
+  SET_ACTIVE_MODEL_FAILED,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
@@ -288,14 +288,14 @@ const reducer = createReducer<GlobalState['preview']>({
       }
     }
   }),
-  [SET_ACTIVE_PROFILE]: (state, { payload }) => ({
+  [SET_ACTIVE_MODEL]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
       isApplying: true,
     }
   }),
-  [SET_ACTIVE_PROFILE_COMPLETE]: (state, { payload }) => ({
+  [SET_ACTIVE_MODEL_COMPLETE]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
@@ -303,7 +303,7 @@ const reducer = createReducer<GlobalState['preview']>({
       applied: true
     }
   }),
-  [SET_ACTIVE_PROFILE_FAILED]: (state, { payload }) => ({
+  [SET_ACTIVE_MODEL_FAILED]: (state, { payload }) => ({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,

@@ -29,7 +29,7 @@ import { useSelection, useStateResource } from '../../../utils/hooks';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { useDispatch } from 'react-redux';
-import { setActiveProfile, updateAudiencesPanelModel } from '../../../state/actions/preview';
+import { setActiveModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
 import { ContentTypeField } from '../../../models/ContentType';
 import { nnou, nou, reversePluckProps } from '../../../utils/object';
 import GlobalState from '../../../models/GlobalState';
@@ -198,7 +198,7 @@ export default function AudiencesPanel() {
     const model = reversePluckProps(state.model, 'craftercms');
     const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val.key}`).join('&'));
 
-    dispatch(setActiveProfile(params));
+    dispatch(setActiveModel(params));
   };
 
   const setDefaults = (contentType) => {

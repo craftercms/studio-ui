@@ -25,9 +25,9 @@ import {
   fetchAudiencesPanelFormDefinitionComplete,
   fetchAudiencesPanelFormDefinitionFailed,
   RELOAD_REQUEST,
-  SET_ACTIVE_PROFILE,
-  setActiveProfileComplete,
-  setActiveProfileFailed
+  SET_ACTIVE_MODEL,
+  setActiveModelComplete,
+  setActiveModelFailed
 } from "../actions/preview";
 import {
   fetchActiveProfile,
@@ -50,13 +50,13 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
 );
 
 const setAudiencesPanelModel: Epic = (action$) => action$.pipe(
-  ofType(SET_ACTIVE_PROFILE),
+  ofType(SET_ACTIVE_MODEL),
   switchMap((action) => setActiveProfileService(action.payload).pipe(
     map(response => {
       getHostToGuestBus().next({ type: RELOAD_REQUEST })
-      return setActiveProfileComplete(response);
+      return setActiveModelComplete(response);
     }),
-    catchAjaxError(setActiveProfileFailed)
+    catchAjaxError(setActiveModelFailed)
   ))
 );
 

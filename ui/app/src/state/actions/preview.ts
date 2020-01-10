@@ -75,9 +75,9 @@ export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION = 'FETCH_AUDIENCES_PANEL_FORM
 export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE';
 export const FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED = 'FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED';
 export const UPDATE_AUDIENCES_PANEL_MODEL = 'UPDATE_AUDIENCES_PANEL_MODEL';
-export const SET_ACTIVE_PROFILE = 'SET_ACTIVE_PROFILE';
-export const SET_ACTIVE_PROFILE_COMPLETE = 'SET_ACTIVE_PROFILE_COMPLETE';
-export const SET_ACTIVE_PROFILE_FAILED = 'SET_ACTIVE_PROFILE_FAILED';
+export const SET_ACTIVE_MODEL = 'SET_ACTIVE_MODEL';
+export const SET_ACTIVE_MODEL_COMPLETE = 'SET_ACTIVE_MODEL_COMPLETE';
+export const SET_ACTIVE_MODEL_FAILED = 'SET_ACTIVE_MODEL_FAILED';
 
 // endregion
 
@@ -205,23 +205,23 @@ export function updateAudiencesPanelModel(data): StandardAction {
   }
 }
 
-export function setActiveProfile(data): StandardAction {
+export function setActiveModel(data): StandardAction {
   return {
-    type: SET_ACTIVE_PROFILE,
+    type: SET_ACTIVE_MODEL,
     payload: data
   }
 }
 
-export function setActiveProfileComplete(data): StandardAction {
+export function setActiveModelComplete(data): StandardAction {
   return {
-    type: SET_ACTIVE_PROFILE_COMPLETE,
+    type: SET_ACTIVE_MODEL_COMPLETE,
     payload: data
   }
 }
 
-export function setActiveProfileFailed(error): StandardAction {
+export function setActiveModelFailed(error): StandardAction {
   return {
-    type: SET_ACTIVE_PROFILE_FAILED,
+    type: SET_ACTIVE_MODEL_FAILED,
     payload: error
   }
 }
