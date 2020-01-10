@@ -149,7 +149,7 @@ const initialSearchParameters: ElasticParams = {
   offset: 0,
   limit: 21,
   sortBy: '_score',
-  sortOrder: 'asc',
+  sortOrder: 'desc',
   filters: {}
 };
 
@@ -344,7 +344,14 @@ function Search(props: SearchProps) {
       if (queryParams.filters === '{}') {
         queryParams.filters = undefined;
       }
-      newFilters = {...queryParams, [filter.name]: filter.value};
+      // queryParams['sortBy'] === undefined: this means the current filter is the default === _score
+      if (filter.name === 'sortBy' && (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined) && filter.value !== '_score') {
+        newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'asc' };
+      } else if (filter.name === 'sortBy' && queryParams['sortBy'] !== '_score' && filter.value === '_score') {
+        newFilters = { ...queryParams, [filter.name]: filter.value, sortOrder: 'desc' };
+      } else {
+        newFilters = { ...queryParams, [filter.name]: filter.value };
+      }
     }
     return queryString.stringify(newFilters);
   }
