@@ -26,9 +26,9 @@ import SearchBar from '../../../components/SearchBar';
 import { useDispatch, useSelector } from "react-redux";
 import GlobalState, { PagedEntityState } from "../../../models/GlobalState";
 import TablePagination from "@material-ui/core/TablePagination";
-import { fromEvent, Subject } from "rxjs";
+import { fromEvent, interval, Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
-import { debounceTime, distinctUntilChanged, filter, takeUntil } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, filter, mapTo, switchMap, takeUntil, tap } from "rxjs/operators";
 import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
 import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from "../../../state/actions/preview";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
@@ -235,26 +235,18 @@ export default function AssetsPanel() {
 
   useEffect(() => {
     if (dragInProgress) {
-      const unmount$ = new Subject();
-      fromEvent(elementRef.current, 'dragleave').pipe(
-        takeUntil(unmount$)
-      ).subscribe(() => {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => {
-          clearTimeout(timeoutRef.current);
-          setDragInProgress(false);
-        }, 100);
-      });
-      fromEvent(elementRef.current, 'dragover').pipe(
-        takeUntil(unmount$)
-      ).subscribe((e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-        clearTimeout(timeoutRef.current);
-      });
+      const dragover$ = fromEvent(elementRef.current, 'dragover').pipe(
+        tap((e: any) => {
+          e.preventDefault();
+          e.stopPropagation();
+        })
+      );
+      const subscription = fromEvent(elementRef.current, 'dragleave').pipe(
+        switchMap(() => interval(100).pipe(takeUntil(dragover$))),
+        mapTo(false)
+      ).subscribe(setDragInProgress);
       return () => {
-        unmount$.next();
-        unmount$.complete();
+        subscription.unsubscribe();
       };
     }
   }, [dragInProgress]);
@@ -279,7 +271,7 @@ export default function AssetsPanel() {
   }
 
   return (
-    <ToolPanel title={translations.assetsPanel} classes={dragInProgress && classes.noScroll}>
+    <ToolPanel title={translations.assetsPanel} classes={dragInProgress ? { body: classes.noScroll } : null}>
       <ErrorBoundary>
         <div ref={elementRef}>
           <div className={classes.search}>

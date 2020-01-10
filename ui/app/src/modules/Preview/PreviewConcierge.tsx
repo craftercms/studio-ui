@@ -269,7 +269,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, selectedTool, dispatch, contentTypes, contentTypes$, guest, assets]);
+  }, [site, selectedTool, dispatch, contentTypes, contentTypes$, guest, assets, XSRF_CONFIG_ARGUMENT]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {

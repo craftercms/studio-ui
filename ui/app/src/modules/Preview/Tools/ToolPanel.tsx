@@ -16,7 +16,7 @@
  */
 
 import { MessageDescriptor, useIntl } from 'react-intl';
-import React, { FunctionComponent, PropsWithChildren, ElementType, ReactElement } from 'react';
+import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
@@ -76,16 +76,16 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
     classes
   } = props;
   return (
-    <div className={classes? classes: ''}>
+    <>
       <PanelHeader
         title={typeof title === 'object' ? formatMessage(title) : title}
         BackIcon={BackIcon}
         onBack={onBack}
       />
-      <section>
+      <section className={classes?.body}>
         {props.children}
       </section>
-    </div>
+    </>
   );
 }
 
