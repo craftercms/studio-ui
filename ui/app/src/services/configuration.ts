@@ -19,7 +19,7 @@ import { get } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { extractLocalizedElements, fromString, getInnerHtml, getInnerHtmlNumber } from '../utils/xml';
-import ContentType from "../models/ContentType";
+import ContentType, { ContentTypeField } from "../models/ContentType";
 import { createLookupTable, reversePluckProps } from "../utils/object";
 import ContentInstance from "../models/ContentInstance";
 
@@ -142,7 +142,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
             type = getInnerHtml(elem.querySelector('type')),
             defaultValue = getInnerHtml(elem.querySelector('default_value')),
             hint = getInnerHtml(elem.querySelector('hint'));
-          let possibleValues: { label: string, value: string }[];
+          let possibleValues: ContentTypeField['values'];
 
           if (elem.querySelectorAll('value').length > 0) {
             possibleValues = Array.from(elem.querySelectorAll('value')).map((element) => {
