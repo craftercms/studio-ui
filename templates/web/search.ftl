@@ -119,8 +119,6 @@
                                         </h4>
                                         <li class="filter-item">
                                           <select class="sort-dropdown search-dropdown" name="sortOrder">
-                                            <option value="asc" data-trans="asc">Asc</option>
-                                            <option value="desc" data-trans="desc">Desc</option>
                                           </select>
                                         </li>
                                     </div>

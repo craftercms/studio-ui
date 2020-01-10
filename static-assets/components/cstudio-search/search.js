@@ -208,7 +208,12 @@
                 from = $(this).attr('from');
                 to = $(this).attr('to');
             }else{
-                filterValue = $(this).val()
+                filterValue = $(this).val();
+                if(filterValue === '_score') {
+                  $('.filter-item .sort-dropdown[name="sortBy"]').val('desc');
+                } else if(CStudioSearch.searchContext[filterName] === '_score'){
+                  $('.filter-item .sort-dropdown[name="sortBy"]').val('asc');
+                }
             }
 
             if(isAdditional){
@@ -356,7 +361,9 @@
         var view = CStudioAuthoring.Utils.getQueryVariable(queryString, "view");
         var mode = CStudioAuthoring.Utils.getQueryVariable(queryString, "mode");
         var query = CStudioAuthoring.Utils.getQueryVariable(queryString, "query");
-
+        if(sortBy === '_score') {
+          searchContext.sortOrder = 'desc'
+        }
         searchContext.keywords = (keywords) ? keywords : searchContext.keywords;
         searchContext.searchId = (searchId) ? searchId : null;
         searchContext.currentPage = (page) ? page : searchContext.currentPage;
@@ -563,11 +570,6 @@
         // Update searchInput value from searchContext
         $('#searchInput').val(searchContext.keywords);
 
-        // sortOrder
-        var sortOrderValue = searchContext.sortOrder;
-        $('#' + sortOrderValue).prop("checked", true);
-        $('select[name="sortOrder"]').val(sortOrderValue);
-
         // sortBy
         var sortByValue = searchContext.sortBy,
             $sortByDropdown = $('.filter-item .sort-dropdown[name="sortBy"]'),
@@ -587,6 +589,21 @@
 
         CStudioSearch.addSeeMore($sortFilters, 'sortBy');
         $('.filter-item .sort-dropdown[name="sortBy"]').val(sortByValue);
+
+      // sortOrder
+        var $sortOrderDropdown = $('select[name="sortOrder"]');
+        $sortOrderDropdown.empty();
+        if(sortByValue === '_score'){
+          $sortOrderDropdown.append(`<option value="desc">${CMgs.format(langBundle, 'moreRelevance')}</option>`);
+          $sortOrderDropdown.append(`<option value="asc">${CMgs.format(langBundle, 'lessRelevance')}</option>`);
+        }else {
+          $sortOrderDropdown.append(`<option value="asc">${CMgs.format(langBundle, 'asc')}</option>`);
+          $sortOrderDropdown.append(`<option value="desc">${CMgs.format(langBundle, 'desc')}</option>`);
+        }
+
+      var sortOrderValue = searchContext.sortOrder;
+      $('#' + sortOrderValue).prop("checked", true);
+      $('select[name="sortOrder"]').val(sortOrderValue);
 
         // add filters
         $.each(searchContext.facets, function(index, facet){

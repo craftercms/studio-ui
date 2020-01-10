@@ -562,6 +562,8 @@ CStudioAuthoring.Messages.registerBundle("search", "de", {
     relevance: "Relevanz",
     asc: "Aufsteigend",
     desc: "Absteigend",
+    moreRelevance: "Wichtigste zuerst",
+    lessRelevance: "Weniger relevant zuerst",
     sortOrder: "Sortierreihenfolge",
     sortBy: "Sortiere nach",
     name: "Name",
