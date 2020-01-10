@@ -46,6 +46,8 @@ export function GuestProxy(props) {
       if (notNullOrUndefined(index) && !index.includes('.')) {
         // TODO: Need to assess the impact of index being a string with dot notation
         // Unsure if somewhere, the system relies on the index being an integer/number.
+        // Affected inventory:
+        // - Guest.moveComponent() - string type handled
         index = parseInt(index, 10);
       }
 
