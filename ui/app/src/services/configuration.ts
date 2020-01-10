@@ -180,7 +180,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 }
 
 // TODO: asses the location of profile methods.
-export function fetchActiveProfile(): Observable<ContentInstance> {
+export function fetchActiveModel(): Observable<ContentInstance> {
   let audiencesPanelModel: ContentInstance;
   return get(`/api/1/profile/get`).pipe(map(response => {
     const propsKeys = reversePluckProps(response.response, 'id');
@@ -203,7 +203,7 @@ export function fetchActiveProfile(): Observable<ContentInstance> {
   }));
 }
 
-export function setActiveProfile(params: string): Observable<craftercmsModel> {
+export function setActiveModel(params: string): Observable<craftercmsModel> {
   return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
 

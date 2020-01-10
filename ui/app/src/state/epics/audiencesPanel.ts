@@ -18,7 +18,7 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { map, switchMap, withLatestFrom } from "rxjs/operators";
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { catchAjaxError } from "../../utils/ajax";
 import {
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
@@ -26,13 +26,14 @@ import {
   fetchAudiencesPanelFormDefinitionFailed,
   RELOAD_REQUEST,
   SET_ACTIVE_MODEL,
-  setActiveModelComplete,
+  SET_ACTIVE_MODEL_COMPLETE,
+  setActiveModelComplete as setActiveModelCompleteAction,
   setActiveModelFailed
 } from "../actions/preview";
 import {
-  fetchActiveProfile,
+  fetchActiveModel,
   getAudiencesPanelConfig,
-  setActiveProfile as setActiveProfileService
+  setActiveModel as setActiveModelService
 } from "../../services/configuration";
 import { forkJoin, Observable } from "rxjs";
 import GlobalState from "../../models/GlobalState";
@@ -41,7 +42,7 @@ import { getHostToGuestBus } from "../../modules/Preview/previewContext";
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_AUDIENCES_PANEL_FORM_DEFINITION),
   withLatestFrom(state$),
-  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), fetchActiveProfile()])),
+  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), fetchActiveModel()])),
   map(response => fetchAudiencesPanelFormDefinitionComplete({
     contentType: response[0],
     model: response[1]
@@ -49,18 +50,24 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
   catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
 );
 
-const setAudiencesPanelModel: Epic = (action$) => action$.pipe(
+const setActiveModel: Epic = (action$) => action$.pipe(
   ofType(SET_ACTIVE_MODEL),
-  switchMap((action) => setActiveProfileService(action.payload).pipe(
-    map(response => {
-      getHostToGuestBus().next({ type: RELOAD_REQUEST })
-      return setActiveModelComplete(response);
-    }),
+  switchMap((action) => setActiveModelService(action.payload).pipe(
+    map(response => setActiveModelCompleteAction(response)),
     catchAjaxError(setActiveModelFailed)
   ))
 );
 
+const setActiveModelComplete: Epic = (action$) => action$.pipe(
+  ofType(SET_ACTIVE_MODEL_COMPLETE),
+  tap(
+    () => getHostToGuestBus().next({ type: RELOAD_REQUEST })
+  ),
+  ignoreElements()
+);
+
 export default [
   fetchAudiencesPanel,
-  setAudiencesPanelModel
+  setActiveModel,
+  setActiveModelComplete
 ] as Epic[];
