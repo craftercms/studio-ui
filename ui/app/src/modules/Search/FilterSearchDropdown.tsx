@@ -548,6 +548,7 @@ function SortOrder(props: SortOrderProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { queryParams, handleFilterChange } = props;
+  // queryParams['sortBy'] === undefined: this means the current filter is the default === _score
   const isRelevance = (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined);
   let options = [
     {
