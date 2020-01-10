@@ -203,9 +203,8 @@ export default function AssetsPanel() {
       uploadDataUrl(
         site,
         {
-          name: file.name,
-          type: file.type,
-          dataUrl: reader.result,
+          ...pluckProps(file, 'name', 'type'),
+          dataUrl: reader.result
         },
         '/static-assets/images/',
         XSRF_CONFIG_ARGUMENT

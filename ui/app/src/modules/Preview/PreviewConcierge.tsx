@@ -54,7 +54,7 @@ import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
-import { nnou } from '../../utils/object';
+import { nnou, pluckProps } from '../../utils/object';
 import { useOnMount } from '../../utils/helpers';
 import GlobalState from "../../models/GlobalState";
 
@@ -225,11 +225,7 @@ export function PreviewConcierge(props: any) {
         case DESKTOP_ASSET_DROP:
           uploadDataUrl(
             site,
-            {
-              name: payload.name,
-              type: payload.type,
-              dataUrl: payload.dataUrl,
-            },
+            pluckProps(payload, 'name', 'type', 'dataUrl'),
             `/static-assets/images/${payload.modelId}`,
             XSRF_CONFIG_ARGUMENT
           ).subscribe(

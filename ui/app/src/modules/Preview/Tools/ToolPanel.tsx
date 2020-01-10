@@ -39,13 +39,15 @@ type ToolPanelProps = PropsWithChildren<{
   title: string | MessageDescriptor;
   BackIcon?: ElementType,
   onBack?: () => void,
-  classes?: any
+  classes?: {
+    body: any;
+  }
 }>;
 
 interface PanelHeaderProps {
   title: string;
   BackIcon?: ElementType,
-  onBack: () => void,
+  onBack: () => void
 }
 
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
