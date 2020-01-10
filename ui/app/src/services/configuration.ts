@@ -16,7 +16,7 @@
  */
 
 import { get } from '../utils/ajax';
-import { map } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { extractLocalizedElements, fromString, getInnerHtml, getInnerHtmlNumber } from '../utils/xml';
 import ContentType from "../models/ContentType";
@@ -51,6 +51,11 @@ interface PreviewToolsConfig {
   modules: Array<PreviewToolsModuleDescriptor>;
 }
 
+interface craftercmsModel {
+  id: string;
+
+  [prop: string]: string;
+}
 
 // region AudiencesPanelConfig
 
@@ -134,7 +139,6 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 
           const name = getInnerHtml(elem.querySelector('name')),
             label = getInnerHtml(elem.querySelector('label')),
-            description = getInnerHtml(elem.querySelector('description')),
             type = getInnerHtml(elem.querySelector('type')),
             defaultValue = getInnerHtml(elem.querySelector('default_value')),
             hint = getInnerHtml(elem.querySelector('hint'));
@@ -199,8 +203,8 @@ export function fetchActiveProfile(): Observable<ContentInstance> {
   }));
 }
 
-export function setActiveProfile(params): Observable<any> {
-  return get(`/api/1/profile/set?${params}`);
+export function setActiveProfile(params: string): Observable<craftercmsModel> {
+  return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
 
 function parseSimulatorPanelConfig(element: Element) {
