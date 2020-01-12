@@ -947,13 +947,8 @@ export function Guest(props) {
     // Consider behaviour when running Host Guest-side
     onTrashDrop() {
       const { dragContext } = stateRef.current;
-      const { dropZones } = dragContext;
       const { id } = dragContext.dragged;
-      let { modelId, fieldId, index } = iceRegistry.recordOf(
-        iceRegistry.isRepeatGroup(id)
-          ? id
-          : dropZones.find(d => d.origin).iceId
-      );
+      let { modelId, fieldId, index } = iceRegistry.recordOf(id);
       contentController.deleteItem(modelId, fieldId, index);
     },
 
