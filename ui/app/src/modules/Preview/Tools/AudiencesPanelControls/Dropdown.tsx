@@ -43,11 +43,9 @@ export default function Dropdown(props: Control) {
       disabled={disabled}
     >
       {
-        field.values ? (
-          field.values.map((possibleValue: any, index: number) => (
-            <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
-          ))
-        ) : (null)
+        field.values?.map((possibleValue: any, index: number) => (
+          <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
+        ))
       }
     </Select>
   )
