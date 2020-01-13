@@ -1388,7 +1388,7 @@
             CStudioAdminConsole.ignorePostfixFields = config['form-engine'] && config['form-engine']['ignore-postfix-fields'] ? config['form-engine']['ignore-postfix-fields'].field : [];
           }
         });
-    };
+    }
 
     /**
      * drag and drop controls
@@ -1762,6 +1762,7 @@
         }
       },
 
+
       renderPostfixesVariable: (type) => {
 
         let controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
@@ -1777,7 +1778,14 @@
             /****/'<th>' + renderPostfixes[i] + '</th>' +
             /****/'<td>' + postfixDescription + '</td>' +
             /****/'<td>' +
-            /******/'<button onclick="CStudioAdminConsole.cleanPostfix("' + identifier + '", "' + type + '"); CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="' + renderPostfixes[i] + '" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">' +
+            /******/'<button ' +
+            /********/'onclick="CStudioAdminConsole.cleanPostfix(\'' + identifier + '\', \'' + type + '\'); CStudioAdminConsole.helpInsert(this, \'' + identifier + '\')" ' +
+            /********/'data-insert="' + renderPostfixes[i] + '" ' +
+            /********/'class="btn btn-default quick-create-help__insert-btn" ' +
+            /********/'type="button" ' +
+            /********/'aria-label="Insert Expression" ' +
+            /********/'title="Insert Expression"' +
+            /******/'>' +
             /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>' +
             /******/'</button>' +
             /****/'</td>' +
@@ -1796,7 +1804,7 @@
           /****/'<th>{objectId}</th>',
           /****/'<td>' + CMgs.format(langBundle, 'objectIdPattern') + '</td>',
           /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{objectId}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \'' + identifier + '\')" data-insert="{objectId}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
           /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
           /******/'</button>',
           /****/'</td>',
@@ -1805,7 +1813,7 @@
           /****/'<th>{year}</th>',
           /****/'<td>' + CMgs.format(langBundle, 'yearPattern') + '</td>',
           /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{year}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \'' + identifier + '\')" data-insert="{year}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
           /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
           /******/'</button>',
           /****/'</td>',
@@ -1814,7 +1822,7 @@
           /****/'<th>{month}</th>',
           /****/'<td>' + CMgs.format(langBundle, 'monthPattern') + '</td>',
           /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{month}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \'' + identifier + '\')" data-insert="{month}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
           /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
           /******/'</button>',
           /****/'</td>',
@@ -1823,7 +1831,7 @@
           /****/'<th>{yyyy}</th>',
           /****/'<td>' + CMgs.format(langBundle, 'yyyyPattern') + '</td>',
           /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{yyyy}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \'' + identifier + '\')" data-insert="{yyyy}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
           /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
           /******/'</button>',
           /****/'</td>',
@@ -1832,7 +1840,7 @@
           /****/'<th>{mm}</th>',
           /****/'<td>' + CMgs.format(langBundle, 'mmPattern') + '</td>',
           /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{mm}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \'' + identifier + '\')" data-insert="{mm}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
           /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
           /******/'</button>',
           /****/'</td>',
@@ -1841,7 +1849,7 @@
           /****/'<th>{dd}</th>',
           /****/'<td>' + CMgs.format(langBundle, 'ddPattern') + '</td>',
           /****/'<td>',
-          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, "' + identifier + '")" data-insert="{dd}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
+          /******/'<button onclick="CStudioAdminConsole.helpInsert(this, \'' + identifier + '\')" data-insert="{dd}/" class="btn btn-default quick-create-help__insert-btn" type="button" aria-label="Insert Expression" title="Insert Expression">',
           /********/'<i class="fa fa-plus-circle" aria-hidden="true"></i>',
           /******/'</button>',
           /****/'</td>',
