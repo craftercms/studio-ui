@@ -48,8 +48,7 @@ export default function CheckboxGroup(props: Control) {
   return (
     <>
       {
-        field.values ? (
-          field.values.map((possibleValue: any, index: number) => (
+        field.values?.map((possibleValue: any, index: number) => (
             <FormControlLabel
               key={index}
               htmlFor={field.id}
@@ -62,8 +61,8 @@ export default function CheckboxGroup(props: Control) {
                 />
               }
               label={possibleValue.value}/>
-          ))
-        ) : (null)
+          )
+        )
       }
     </>
   )
