@@ -801,21 +801,28 @@ export function uploadDataUrl(
 
     const blob = dataUriToBlob(file.dataUrl);
 
-    uppy.on('complete', (result) => {
-      if (result.successful.length) {
-        console.log('Upload Success.');
-        subscriber.complete();
-      } else {
-        console.log('Upload Failed.');
-        subscriber.error();
-      }
+    uppy.on('upload-success', () => {
+      console.info('Upload Success.');
+      subscriber.complete();
     });
 
-    //add in progress
-    //subscriber.next({
-    // type: 'complete', 'progress', 'error'
-    // payload: result//progress/error
-    // });
+    uppy.on('upload-progress', (file, progress) => {
+      let type = 'progress';
+      if (progress.bytesUploaded === progress.bytesTotal) {
+        type = 'complete'
+      }
+      subscriber.next({
+        type,
+        payload: {
+          file,
+          progress
+        }
+      });
+    });
+
+    uppy.on('upload-error', (file, error) => {
+      subscriber.error(error);
+    });
 
     uppy.addFile({
       name: file.name,
