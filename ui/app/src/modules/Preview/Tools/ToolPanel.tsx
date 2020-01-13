@@ -40,7 +40,7 @@ type ToolPanelProps = PropsWithChildren<{
   BackIcon?: ElementType,
   onBack?: () => void,
   classes?: {
-    body: any;
+    body?: any;
   }
 }>;
 
