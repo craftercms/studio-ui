@@ -19,34 +19,29 @@
 
 import React from "react";
 import DateTimePicker from "../../../../components/DateTimePicker";
-
-interface Control {
-  field: any;
-  value: string;
-  onChange: Function;
-  disabled: boolean;
-}
+import { Control } from '../AudiencesPanel';
 
 export default function DateTime(props: Control) {
   const {
     field,
     value,
+    timezone,
     onChange,
     disabled
   } = props;
 
   const dateTimePickerChange = (name: string) => (scheduledDateTime: any) => {
     const datetime = scheduledDateTime.toISOString();
-    const timezone = scheduledDateTime.tz();
+    const tz = scheduledDateTime.tz();
 
     onChange(name, datetime);
-    timezone && onChange(`${name}_tz`, encodeURIComponent(timezone));
+    tz && onChange(`${name}_tz`, encodeURIComponent(tz));
   };
 
   return (
     <DateTimePicker
       initialDate={value}
-      timezone={field.timezone}
+      timezone={timezone}
       onChange={dateTimePickerChange(field.id)}
       disabled={disabled}/>
   )

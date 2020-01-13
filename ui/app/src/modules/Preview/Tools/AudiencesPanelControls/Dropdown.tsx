@@ -20,13 +20,7 @@
 import React from "react";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-
-interface Control {
-  field: any;
-  value: string;
-  onChange: Function;
-  disabled: boolean;
-}
+import { Control } from '../AudiencesPanel';
 
 export default function Dropdown(props: Control) {
   const {

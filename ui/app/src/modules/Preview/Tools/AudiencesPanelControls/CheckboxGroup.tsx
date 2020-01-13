@@ -20,13 +20,7 @@
 import React from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-
-interface Control {
-  field: any;
-  value: string;
-  onChange: Function;
-  disabled: boolean;
-}
+import { Control } from '../AudiencesPanel';
 
 export default function CheckboxGroup(props: Control) {
   const {

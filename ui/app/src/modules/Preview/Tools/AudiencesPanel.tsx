@@ -96,6 +96,14 @@ const controlsMap = {
   'input': Input
 };
 
+export interface Control {
+  field: any;
+  value: string;
+  timezone?: string;
+  onChange: Function;
+  disabled: boolean;
+}
+
 interface AudiencesPanelUIProps {
   audiencesResource: any;
   model: ContentInstance;
@@ -129,22 +137,24 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 const type = contentType.fields[field].type;
                 const Control = controlsMap[type];
 
+                const controlProps = {
+                  field: contentType.fields[field],
+                  value: model[field] ? model[field].key : undefined,
+                  onChange: onFormChange,
+                  disabled: modelApplying
+                };
+
                 if (model[`${field}_tz`]) {
-                  contentType.fields[field].timezone = model[`${field}_tz`];
+                  // contentType.fields[field].timezone = model[`${field}_tz`];
+                  controlProps['timezone'] = model[`${field}_tz`].key;
                 }
 
                 return (
-                  <React.Fragment key={field}>
-                    <AudiencesFormSection field={contentType.fields[field]}>
-                      <Control
-                        field={contentType.fields[field]}
-                        value={model[field] ? model[field].key : undefined}
-                        onChange={onFormChange}
-                        disabled={modelApplying}
-                      />
-                    </AudiencesFormSection>
-                    <Divider className={classes.divider}/>
-                  </React.Fragment>
+                  <AudiencesFormSection field={contentType.fields[field]} key={field} showDivider={true}>
+                    <Control
+                      {...controlProps}
+                    />
+                  </AudiencesFormSection>
                 )
               })
             }
@@ -242,6 +252,7 @@ export default function AudiencesPanel() {
 
 interface AudiencesFormSectionProps {
   field: ContentTypeField;
+  showDivider: boolean;
   children: any;
 }
 
@@ -251,18 +262,21 @@ function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const { field, children } = props;
 
   return (
-    <Grid item xs={12}>
-      <FormControl className={classes.formControl}>
-        <InputLabel
-          className={classes.InputLabel}
-          focused={true}
-          htmlFor={field.id}
-        >
-          {field.name}
-        </InputLabel>
-        {children}
-      </FormControl>
-      <FormHelperText>{field.helpText}</FormHelperText>
-    </Grid>
+    <>
+      <Grid item xs={12}>
+        <FormControl className={classes.formControl}>
+          <InputLabel
+            className={classes.InputLabel}
+            focused={true}
+            htmlFor={field.id}
+          >
+            {field.name}
+          </InputLabel>
+          {children}
+        </FormControl>
+        <FormHelperText>{field.helpText}</FormHelperText>
+      </Grid>
+      <Divider className={classes.divider}/>
+    </>
   )
 }

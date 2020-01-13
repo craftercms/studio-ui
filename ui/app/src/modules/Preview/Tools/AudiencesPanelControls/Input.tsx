@@ -19,13 +19,7 @@
 
 import TextField from "@material-ui/core/TextField";
 import React from "react";
-
-interface Control {
-  field: any;
-  value: string;
-  onChange: Function;
-  disabled: boolean;
-}
+import { Control } from '../AudiencesPanel';
 
 export default function Input(props: Control) {
   const {
