@@ -17,14 +17,13 @@
  *
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import PublicIcon from '@material-ui/icons/Public';
+import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
+import PublicRoundedIcon from '@material-ui/icons/PublicRounded';
 import DateFnsUtils from '@date-io/date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider, } from '@material-ui/pickers';
-/* eslint-disable no-use-before-define */
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from "../utils/datetime";
@@ -104,7 +103,7 @@ const getDateMoment = (date, timezoneObj) => {
   switch (typeof date) {
     case 'string':
     case 'number':
-      dateMoment = moment.tz(date, timezoneObj.timezoneName);
+      dateMoment = timezoneObj ? moment.tz(date, timezoneObj.timezoneName) : moment.tz(date);
       break;
     case 'object':
       // moment object, stays the same
@@ -135,22 +134,10 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
   let initialDateMoment;
   let timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timezone)));
-
   initialDateMoment = getDateMoment(initialDate, timezoneObj);
 
-  const [selectedDateTime, setSelectedDateTime] = useState(initialDateMoment);
-  const [selectedTimezone, setSelectedTimezone] = useState(timezoneObj);
-
-  useEffect(() => {
-    timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timezone)));
-    initialDateMoment = getDateMoment(initialDate, timezoneObj);
-
-    setSelectedDateTime(initialDateMoment);
-    setSelectedTimezone(timezoneObj);
-  }, [initialDate, timezone]);
-
   const handleDateChange = (name: string) => (date: Date | null) => {
-    let updatedDateTime = selectedDateTime;
+    let updatedDateTime = initialDateMoment;
 
     switch (name) {
       case 'scheduledDate':
@@ -164,7 +151,6 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         break;
     }
 
-    setSelectedDateTime(updatedDateTime);
     onChange?.(updatedDateTime);
 
     onChangeDate?.(updatedDateTime.format(dateFormat));
@@ -173,12 +159,10 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
-      updatedDateTime = moment.tz(selectedDateTime.format(), 'YYYY-MM-DD HH:mm A', timezone);
-    setSelectedDateTime(updatedDateTime);
-    setSelectedTimezone(timezoneObj);
+      updatedDateTime = moment.tz(initialDateMoment.format(), 'YYYY-MM-DD HH:mm A', timezone);
 
     onChange?.(updatedDateTime);
-    onChangeTimezone?.(timezoneObj);
+    onChangeTimezone?.(timezone);
   };
 
   return (
@@ -189,7 +173,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
             format="MM/dd/yyyy"
             margin="normal"
             id="date-picker"
-            value={selectedDateTime.format('YYYY-MM-DD HH:mm')}
+            value={initialDateMoment.format('YYYY-MM-DD HH:mm')}
             onChange={handleDateChange('scheduledDate')}
             className={classes.picker}
             InputAdornmentProps={{
@@ -208,7 +192,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           <KeyboardTimePicker
             margin="normal"
             id="time-picker"
-            value={selectedDateTime.format('YYYY-MM-DD HH:mm')}
+            value={initialDateMoment.format('YYYY-MM-DD HH:mm')}
             onChange={handleDateChange('scheduledTime')}
             keyboardIcon={<AccessTimeIcon />}
             className={classes.picker}
@@ -228,8 +212,8 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         controls.includes('timezone') &&
         <Autocomplete
           options={timezones}
-          getOptionLabel={(timezone: timezoneType) => ( `${timezone.timezoneName} (GMT${timezone.timezoneOffset})` )}
-          defaultValue={selectedTimezone}
+          getOptionLabel={(timezone: timezoneType) => (`${timezone.timezoneName} (GMT${timezone.timezoneOffset})`)}
+          defaultValue={timezoneObj}
           onChange={handleTimezoneChange()}
           size="small"
           classes={{
@@ -238,7 +222,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
             input: classes.autocompleteInput,
             endAdornment: classes.autocompleteEndAdornment
           }}
-          popupIcon={ <PublicIcon/> }
+          popupIcon={<PublicRoundedIcon/>}
           disableClearable={true}
           renderInput={params => (
             <TextField {...params} variant="outlined" fullWidth/>
