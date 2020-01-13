@@ -38,7 +38,6 @@ export default function Input(props: Control) {
     <TextField
       id={field.id}
       type="text"
-      name="input"
       placeholder="auto"
       fullWidth
       value={value}
