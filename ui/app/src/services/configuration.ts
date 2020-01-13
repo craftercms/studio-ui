@@ -150,7 +150,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
             possibleValues = Array.from(elem.querySelectorAll('value')).map((element) => {
               const value = getInnerHtml(element);
               return {
-                label: value,
+                label: element.getAttribute('label') ?? value,
                 value: value
               }
             });

@@ -20,11 +20,11 @@
 import React from "react";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
-import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
 import { FormattedMessage } from "react-intl";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Control } from "../../../models/FormsEngine";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -80,8 +80,8 @@ export default function Dropdown(props: Control) {
           />
         </MenuItem>
         {
-          field.values?.map((possibleValue: any, index: number) => (
-            <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
+          field.values?.map((possibleValue: any) => (
+            <MenuItem value={possibleValue.value} key={value}>{possibleValue.label}</MenuItem>
           ))
         }
       </Select>

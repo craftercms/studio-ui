@@ -19,10 +19,10 @@
 
 import React from "react";
 import DateTimePicker from "../../DateTimePicker";
-import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { DateTimeControl } from "../../../models/FormsEngine";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function DateTime(props: Control) {
+export default function DateTime(props: DateTimeControl) {
   const {
     field,
     value,

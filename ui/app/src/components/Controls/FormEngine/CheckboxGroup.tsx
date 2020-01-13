@@ -20,10 +20,10 @@
 import React from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { Control } from "../../../models/FormsEngine";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -88,7 +88,7 @@ export default function CheckboxGroup(props: Control) {
                   disabled={disabled}
                 />
               }
-              label={possibleValue.value}/>
+              label={possibleValue.label}/>
           )
         )
       }

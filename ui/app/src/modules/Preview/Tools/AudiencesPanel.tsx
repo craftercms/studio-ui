@@ -94,14 +94,6 @@ const controlsMap = {
   'input': Input
 };
 
-export interface Control {
-  field: ContentTypeField;
-  value: string;
-  timezone?: string;
-  onChange: Function;
-  disabled: boolean;
-}
-
 interface AudiencesPanelUIProps {
   audiencesResource: any;
   model: ContentInstance;
@@ -142,8 +134,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                   disabled: modelApplying
                 };
 
-                if (model[`${field}_tz`]) {
-                  // contentType.fields[field].timezone = model[`${field}_tz`];
+                if (controlProps.field === 'date-time' && model[`${field}_tz`]) {
                   controlProps['timezone'] = model[`${field}_tz`].key;
                 }
 
