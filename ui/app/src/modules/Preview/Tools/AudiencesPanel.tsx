@@ -97,7 +97,7 @@ const controlsMap = {
 };
 
 export interface Control {
-  field: any;
+  field: ContentTypeField;
   value: string;
   timezone?: string;
   onChange: Function;
