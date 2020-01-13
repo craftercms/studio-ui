@@ -17,8 +17,8 @@
 
 import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
-import { interval, fromEvent } from 'rxjs';
-import { switchMap, take, takeUntil, filter } from 'rxjs/operators';
+import { fromEvent, interval } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 
 export const foo = () => void null;
 export const
@@ -95,7 +95,7 @@ export function forEach(array, fn, emptyReturnValue) {
   for (let i = 0, l = array.length; i < l; i++) {
     const result = fn(array[i], i, array);
     if (result === 'continue') {
-      continue;
+
     } else if (result === 'break') {
       break;
     } else if (result !== undefined) {
@@ -497,4 +497,12 @@ export function addClickListener(element, type, handler) {
     ))
   ).subscribe(handler);
 
+}
+
+export function removeLastPiece(str, splitChar = '.') {
+  return str.substr(0, str.lastIndexOf(splitChar));
+}
+
+export function popPiece(str, splitChar = '.') {
+  return str.substr(str.lastIndexOf(splitChar) + 1);
 }

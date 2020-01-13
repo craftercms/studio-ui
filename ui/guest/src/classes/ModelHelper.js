@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isNullOrUndefined, retrieveProperty, setProperty } from '../util';
+import { isNullOrUndefined, removeLastPiece, retrieveProperty, setProperty } from '../util';
 
 const systemPropList = ['id', 'path', 'contentType', 'dateCreated', 'dateModified', 'label'];
 
@@ -42,10 +42,17 @@ export class ModelHelper {
     return retrieveProperty(model, fieldId);
   }
 
+  static extractCollection(model, fieldId, index) {
+    return extractCollectionPiece(
+      model,
+      fieldId,
+      removeLastPiece(index)
+    );
+  }
+
   static extractCollectionItem(model, fieldId, index) {
     const indexPath = `${index}`.split('.').map(i => parseInt(i, 10));
     const pieces = fieldId.split('.');
-    let aux = model;
     if (indexPath.length > pieces.length) {
       throw new Error(
         '[ModelHelper.extractCollectionItem] The number of indexes surpasses the number ' +
@@ -61,17 +68,7 @@ export class ModelHelper {
         'than the number of nested indexes.'
       );
     }
-    indexPath.forEach((index, i) => {
-      const field = pieces[i];
-      aux = aux[field][index];
-    });
-    if (indexPath.length !== pieces.length) {
-      // TODO: For nested repeat groups, aux would be a object.
-      // Could possibly extract last piece and read it from the indexPath readout
-      // Only a 1 point length difference mismatch should be allowed?
-      return aux[pieces[pieces.length - 1]];
-    }
-    return aux;
+    return extractCollectionPiece(model, fieldId, index);
   }
 
   static getContentTypeId(model) {
@@ -80,5 +77,31 @@ export class ModelHelper {
 
   static isEmbedded(model) {
     return isNullOrUndefined(ModelHelper.prop(model, 'path'));
+  }
+}
+
+function extractCollectionPiece(model, fieldId, index) {
+  const indexes = `${index}`.split('.').map(i => parseInt(i, 10));
+  const fields = fieldId.split('.');
+  let aux = model;
+  if (indexes.length > fields.length) {
+    // There's more indexes than fields
+    throw new Error(
+      '[content/extractNode] Path not handled: indexes.length > fields.length. Indexes ' +
+      `is ${indexes} and fields is ${fields}`
+    );
+  }
+  indexes.forEach((index, i) => {
+    const field = fields[i];
+    aux = aux[field][index];
+  });
+  if (indexes.length === fields.length) {
+    return aux;
+  } else if (indexes.length < fields.length) {
+    // There's one more field to use as there were less indexes
+    // than there were fields. For example: fieldId: `items_o.content_o`, index: 0
+    // At this point, aux would be `items_o[0]` and we need to extract `content_o`
+    const field = fields[fields.length - 1];
+    return aux[field];
   }
 }
