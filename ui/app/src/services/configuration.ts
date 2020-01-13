@@ -51,7 +51,7 @@ interface PreviewToolsConfig {
   modules: Array<PreviewToolsModuleDescriptor>;
 }
 
-interface craftercmsModel {
+interface ActiveTargetingModel {
   id: string;
 
   [prop: string]: string;
@@ -143,7 +143,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
             type = getInnerHtml(elem.querySelector('type')),
             defaultValue = getInnerHtml(elem.querySelector('default_value')),
             hint = getInnerHtml(elem.querySelector('hint'));
-          
+
           let possibleValues: ContentTypeField['values'];
 
           if (elem.querySelectorAll('value').length > 0) {
@@ -205,7 +205,7 @@ export function fetchActiveModel(): Observable<ContentInstance> {
   }));
 }
 
-export function setActiveModel(params: string): Observable<craftercmsModel> {
+export function setActiveModel(params: string): Observable<ActiveTargetingModel> {
   return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
 
