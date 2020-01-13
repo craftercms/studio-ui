@@ -179,7 +179,6 @@ export default function AssetsPanel() {
   const { formatMessage } = useIntl();
   const site = useActiveSiteId();
   const elementRef = useRef();
-  const timeoutRef = useRef<any>();
 
   const onDragStart = (mediaItem: MediaItem) => hostToGuest$.next({
     type: ASSET_DRAG_STARTED,
@@ -226,7 +225,6 @@ export default function AssetsPanel() {
     ).subscribe((e) => {
       e.preventDefault();
       e.stopPropagation();
-      clearTimeout(timeoutRef.current);
       setDragInProgress(true);
     });
     return () => subscription.unsubscribe();

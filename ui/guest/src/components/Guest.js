@@ -42,8 +42,8 @@ import {
   RELOAD_REQUEST,
   TRASHED
 } from '../util';
-import { fromEvent, Subject, zip } from 'rxjs';
-import { debounceTime, delay, filter, map, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { fromEvent, interval, Subject, zip } from 'rxjs';
+import { debounceTime, delay, filter, map, share, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
 import { ElementRegistry } from '../classes/ElementRegistry';
@@ -82,7 +82,6 @@ export function Guest(props) {
   } = props;
   const { current: persistence } = useRef({
     contentReady: false,
-    dragLeaveTimeout: null,
     mouseOverTimeout: null
   });
 
@@ -593,12 +592,9 @@ export function Guest(props) {
 
     drop(e, record) {
       if (fn.dragOk()) {
-
         e.preventDefault();
         e.stopPropagation();
-
         fn.onDrop(e, record);
-
       }
     },
 
@@ -644,36 +640,38 @@ export function Guest(props) {
           break;
         }
         case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
-          const file = e.originalEvent.dataTransfer.files[0];
-          const reader = new FileReader();
-          reader.onload = (function (aImg) {
-            message$.pipe(
-              filter((e) => (e.data?.type) === DESKTOP_ASSET_UPLOAD_COMPLETE),
-              map(e => e.data),
-              take(1)
-            ).subscribe(function ({ payload }) {
-              if (payload.id === file.name) {
-                contentController.updateField(
-                  record.modelId,
-                  record.fieldId[0],
-                  record.index,
-                  payload.path
-                )
-              }
-            });
-
-            return function (event) {
-              post(DESKTOP_ASSET_DROP, {
-                dataUrl: event.target.result,
-                name: file.name,
-                type: file.type,
-                modelId: record.modelId
+          if (stateRef.current.dragContext.inZone) {
+            const file = e.originalEvent.dataTransfer.files[0];
+            const reader = new FileReader();
+            reader.onload = (function (aImg) {
+              message$.pipe(
+                filter((e) => (e.data?.type) === DESKTOP_ASSET_UPLOAD_COMPLETE),
+                map(e => e.data),
+                take(1)
+              ).subscribe(function ({ payload }) {
+                if (payload.id === file.name) {
+                  contentController.updateField(
+                    record.modelId,
+                    record.fieldId[0],
+                    record.index,
+                    payload.path
+                  )
+                }
               });
-              aImg.src = event.target.result;
-            };
-          })(record.element);
-          fn.onDragEnd();
-          reader.readAsDataURL(file);
+
+              return function (event) {
+                post(DESKTOP_ASSET_DROP, {
+                  dataUrl: event.target.result,
+                  name: file.name,
+                  type: file.type,
+                  modelId: record.modelId
+                });
+                aImg.src = event.target.result;
+              };
+            })(record.element);
+            fn.onDragEnd();
+            reader.readAsDataURL(file);
+          }
           break;
         }
         default:
@@ -1193,25 +1191,41 @@ export function Guest(props) {
   }, [modelId, path]);
 
   useEffect(() => {
-    $(document).on('dragenter', function (e) {
-      if (stateRef.current.common.status === EditingStatus.LISTENING && e.originalEvent.dataTransfer.types.includes('Files')) {
+    const subscription = fromEvent(document, 'dragenter').pipe(
+      filter((e) => e.dataTransfer?.types.includes('Files'))
+    ).subscribe((e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fn.onDesktopAssetDragStarted(e.dataTransfer.items[0]);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === stateRef.current.common.status) {
+      const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
         e.preventDefault();
         e.stopPropagation();
-        fn.onDesktopAssetDragStarted(e.originalEvent.dataTransfer.items[0]);
-      }
-      clearTimeout(persistence.dragLeaveTimeout);
-    });
-    $(document).on('dragover', function () {
-      clearTimeout(persistence.dragLeaveTimeout);
-    });
-    $(document).on('dragleave', function () {
-      clearTimeout(persistence.dragLeaveTimeout);
-      persistence.dragLeaveTimeout = setTimeout(() => {
-        clearTimeout(persistence.dragLeaveTimeout);
-        fn.onDragEnd();
-      }, 100);
-    });
-  }, []);
+        fn.dragend(e);
+      });
+      const dragover$ = fromEvent(document, 'dragover').pipe(
+        tap((e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }),
+        share()
+      );
+      const dragoverSubscription = dragover$.subscribe();
+      const dragleaveSubscription = fromEvent(document, 'dragleave').pipe(
+        switchMap(() => interval(100).pipe(takeUntil(dragover$)))
+      ).subscribe(fn.onDragEnd);
+      return () => {
+        dragoverSubscription.unsubscribe();
+        dragleaveSubscription.unsubscribe();
+        dropSubscription.unsubscribe();
+      };
+    }
+  }, [stateRef.current.common.status]);
 
   return (
     isAuthoring ? (
