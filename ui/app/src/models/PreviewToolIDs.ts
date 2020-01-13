@@ -21,6 +21,7 @@ type Tools =
   'craftercms.ice.audiences' |
   'craftercms.ice.simulator' |
   'craftercms.ice.ice' |
-  'craftercms.ice.editForm';
+  'craftercms.ice.editForm' |
+  'craftercms.ice.browse';
 
 export default Tools;
