@@ -17,32 +17,32 @@
  *
  */
 
+import TextField from "@material-ui/core/TextField";
 import React from "react";
-import DateTimePicker from "../../../../components/DateTimePicker";
-import { Control } from '../AudiencesPanel';
+import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
 
-export default function DateTime(props: Control) {
+export default function Input(props: Control) {
   const {
     field,
     value,
-    timezone,
     onChange,
     disabled
   } = props;
 
-  const dateTimePickerChange = (name: string) => (scheduledDateTime: any) => {
-    const datetime = scheduledDateTime.toISOString();
-    const tz = scheduledDateTime.tz();
-
-    onChange(name, datetime);
-    tz && onChange(`${name}_tz`, encodeURIComponent(tz));
+  const handleInputChange = (name: string, label?: string, values?: string[]) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.persist();
+    onChange(name, e.target.value);
   };
 
   return (
-    <DateTimePicker
-      initialDate={value}
-      timezone={timezone}
-      onChange={dateTimePickerChange(field.id)}
-      disabled={disabled}/>
+    <TextField
+      id={field.id}
+      type="text"
+      placeholder="auto"
+      fullWidth
+      value={value}
+      onChange={handleInputChange(field.id)}
+      disabled={disabled}
+    />
   )
 }

@@ -34,10 +34,10 @@ import { ContentTypeField } from '../../../models/ContentType';
 import { nnou, nou, reversePluckProps } from '../../../utils/object';
 import GlobalState from '../../../models/GlobalState';
 import ContentInstance from '../../../models/ContentInstance';
-import Input from './AudiencesPanelControls/Input';
-import Dropdown from './AudiencesPanelControls/Dropdown';
-import CheckboxGroup from './AudiencesPanelControls/CheckboxGroup';
-import DateTime from './AudiencesPanelControls/DateTime';
+import Input from '../../../components/Controls/FormEngine/Input';
+import Dropdown from '../../../components/Controls/FormEngine/Dropdown';
+import CheckboxGroup from '../../../components/Controls/FormEngine/CheckboxGroup';
+import DateTime from '../../../components/Controls/FormEngine/DateTime';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

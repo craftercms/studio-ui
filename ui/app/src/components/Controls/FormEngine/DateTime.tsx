@@ -18,35 +18,31 @@
  */
 
 import React from "react";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import { Control } from '../AudiencesPanel';
+import DateTimePicker from "../../DateTimePicker";
+import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
 
-export default function Dropdown(props: Control) {
+export default function DateTime(props: Control) {
   const {
     field,
     value,
+    timezone,
     onChange,
     disabled
   } = props;
 
-  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(name, event.target.value);
+  const dateTimePickerChange = (name: string) => (scheduledDateTime: any) => {
+    const datetime = scheduledDateTime.toISOString();
+    const tz = scheduledDateTime.tz();
+
+    onChange(name, datetime);
+    tz && onChange(`${name}_tz`, encodeURIComponent(tz));
   };
 
   return (
-    <Select
-      labelId={field.id}
-      id={field.id}
-      value={value}
-      onChange={handleSelectChange(field.id)}
-      disabled={disabled}
-    >
-      {
-        field.values?.map((possibleValue: any, index: number) => (
-          <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
-        ))
-      }
-    </Select>
+    <DateTimePicker
+      initialDate={value}
+      timezone={timezone}
+      onChange={dateTimePickerChange(field.id)}
+      disabled={disabled}/>
   )
 }

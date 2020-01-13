@@ -20,7 +20,7 @@
 import React from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import { Control } from '../AudiencesPanel';
+import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
 
 export default function CheckboxGroup(props: Control) {
   const {
