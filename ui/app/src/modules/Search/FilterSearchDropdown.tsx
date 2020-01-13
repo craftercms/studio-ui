@@ -165,12 +165,12 @@ const messages: any = defineMessages({
     id: 'searchFilter.desc',
     defaultMessage: 'Descending'
   },
-  moreRelevance: {
-    id: 'searchFilter.moreRelevance',
+  moreRelevantFirst: {
+    id: 'searchFilter.moreRelevantFirst',
     defaultMessage: 'Most relevant first'
   },
-  lessRelevance: {
-    id: 'searchFilter.lessRelevance',
+  lessRelevantFirst: {
+    id: 'searchFilter.lessRelevantFirst',
     defaultMessage: 'Less relevant first'
   },
   apply: {
@@ -550,7 +550,16 @@ function SortOrder(props: SortOrderProps) {
   const { queryParams, handleFilterChange } = props;
   // queryParams['sortBy'] === undefined: this means the current filter is the default === _score
   const isRelevance = (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined);
-  let options = [
+  const options = isRelevance ? [
+    {
+      name: formatMessage(messages.moreRelevance),
+      value: 'desc'
+    },
+    {
+      name: formatMessage(messages.lessRelevance),
+      value: 'asc'
+    },
+  ] : [
     {
       name: formatMessage(messages.asc),
       value: 'asc'
@@ -560,12 +569,6 @@ function SortOrder(props: SortOrderProps) {
       value: 'desc'
     },
   ];
-  if (isRelevance) {
-    options[0].name = formatMessage(messages.moreRelevance);
-    options[0].value = 'desc';
-    options[1].name = formatMessage(messages.lessRelevance);
-    options[1].value = 'asc';
-  }
   return (
     <Select
       value={queryParams['sortOrder'] || 'desc'}
