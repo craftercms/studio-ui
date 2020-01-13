@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -250,11 +250,10 @@ export default function AudiencesPanel() {
 
 }
 
-interface AudiencesFormSectionProps {
+type AudiencesFormSectionProps = PropsWithChildren<{
   field: ContentTypeField;
   showDivider: boolean;
-  children: any;
-}
+}>
 
 function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const classes = useStyles({});
