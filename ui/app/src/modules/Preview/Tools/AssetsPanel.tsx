@@ -26,9 +26,9 @@ import SearchBar from '../../../components/SearchBar';
 import { useDispatch, useSelector } from "react-redux";
 import GlobalState, { PagedEntityState } from "../../../models/GlobalState";
 import TablePagination from "@material-ui/core/TablePagination";
-import { fromEvent, Subject } from "rxjs";
+import { fromEvent, interval, Subject } from "rxjs";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
-import { debounceTime, distinctUntilChanged, filter, takeUntil } from "rxjs/operators";
+import { debounceTime, distinctUntilChanged, filter, mapTo, share, switchMap, takeUntil, tap } from "rxjs/operators";
 import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
 import { ASSET_DRAG_ENDED, ASSET_DRAG_STARTED, fetchAssetsPanelItems } from "../../../state/actions/preview";
 import { ErrorBoundary } from "../../../components/ErrorBoundary";
@@ -191,8 +191,6 @@ export default function AssetsPanel() {
   });
 
   const onDragDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
     const file = e.dataTransfer.files[0];
     if (!file) {
       return;
@@ -225,56 +223,44 @@ export default function AssetsPanel() {
   useEffect(() => {
     const subscription = fromEvent(elementRef.current, 'dragenter').pipe(
       filter((e: any) => e.dataTransfer?.types.includes('Files'))
-    ).subscribe(() => {
+    ).subscribe((e) => {
+      e.preventDefault();
+      e.stopPropagation();
       clearTimeout(timeoutRef.current);
       setDragInProgress(true);
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [onDragDrop]);
+
 
   useEffect(() => {
     if (dragInProgress) {
-      const unmount$ = new Subject();
-      fromEvent(elementRef.current, 'dragleave').pipe(
-        takeUntil(unmount$)
-      ).subscribe(() => {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => {
-          clearTimeout(timeoutRef.current);
-          setDragInProgress(false);
-        }, 100);
-      });
-      fromEvent(elementRef.current, 'dragover').pipe(
-        takeUntil(unmount$)
-      ).subscribe((e: any) => {
+      const dragover$ = fromEvent(elementRef.current, 'dragover').pipe(
+        tap((e: any) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }),
+        share()
+      );
+      const dragoverSubscription = dragover$.subscribe();
+      const dragleaveSubscription = fromEvent(elementRef.current, 'dragleave').pipe(
+        switchMap(() => interval(100).pipe(takeUntil(dragover$))),
+        mapTo(false)
+      ).subscribe(setDragInProgress);
+      const dropSubscription = fromEvent(elementRef.current, 'drop').pipe(
+        filter((e: any) => e.dataTransfer?.types.includes('Files'))
+      ).subscribe((e) => {
         e.preventDefault();
         e.stopPropagation();
-        clearTimeout(timeoutRef.current);
+        onDragDrop(e);
       });
       return () => {
-        unmount$.next();
-        unmount$.complete();
+        dragoverSubscription.unsubscribe();
+        dragleaveSubscription.unsubscribe();
+        dropSubscription.unsubscribe();
       };
     }
   }, [dragInProgress]);
-
-  // useEffect(() => {
-  //   if (dragInProgress) {
-  //     const dragover$ = fromEvent(elementRef.current, 'dragover').pipe(
-  //       tap((e: any) => {
-  //         e.preventDefault();
-  //         e.stopPropagation();
-  //       })
-  //     );
-  //     const subscription = fromEvent(elementRef.current, 'dragleave').pipe(
-  //       switchMap(() => interval(100).pipe(takeUntil(dragover$))),
-  //       mapTo(false)
-  //     ).subscribe(setDragInProgress);
-  //     return () => {
-  //       subscription.unsubscribe();
-  //     };
-  //   }
-  // }, [dragInProgress]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
@@ -315,7 +301,7 @@ export default function AssetsPanel() {
           >
             {
               dragInProgress &&
-              <div className={classes.uploadOverlay} onDrop={onDragDrop}>
+              <div className={classes.uploadOverlay}>
                 <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon}/>
               </div>
             }
