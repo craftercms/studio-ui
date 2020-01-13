@@ -176,7 +176,15 @@ export class ContentController {
       args: { modelId, fieldId, index, value }
     });
 
-    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId, index, value });
+    post(UPDATE_FIELD_VALUE_OPERATION, {
+      modelId,
+      fieldId,
+      index,
+      value,
+      parentModelId: isNullOrUndefined(ModelHelper.prop(model, 'path'))
+        ? findParentModelId(modelId, this.children, models)
+        : null
+    });
 
   }
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -52,8 +52,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
-import GlobalState from "../../models/GlobalState";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou, nou, pluckProps } from '../../utils/object';
 
@@ -210,8 +209,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          const { modelId, fieldId, index, value } = payload;
-          updateField(site, guest.models[modelId].craftercms.path, fieldId, index, value).subscribe(() => {
+          const { modelId, fieldId, index, parentModelId, value } = payload;
+          updateField(site,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            fieldId,
+            index,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null,
+            value
+          ).subscribe(() => {
             console.log('Finished');
           }, (e) => {
             setSnack({ message: 'Updated operation failed.' });

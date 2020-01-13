@@ -401,24 +401,29 @@ function writeContentUrl(qs: object) {
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
 
-export function updateField(site: string, modelId: string, fieldId: string, index: number, value: any): Observable<any> {
-  return getDOM(site, modelId).pipe(
-    switchMap((doc) => {
-      const qs = {
-        site,
-        path: modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      };
+export function updateField(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  indexToUpdate: number,
+  parentModelId: string = null,
+  value: any
+): Observable<any> {
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
       let fieldNode;
-      if (index !== null) {
-        //the field is a repeat item
+      if (typeof indexToUpdate === 'string') {
+        fieldNode = extractNode(doc, fieldId, indexToUpdate);
         let repeatFieldId = fieldId.split('.');
-        fieldNode = doc.querySelector(`:scope > ${repeatFieldId[0]} > item > ${repeatFieldId[1]}`);
         if (!fieldNode) {
-          let parentNode = document.createElement(repeatFieldId[0]);
+          let childIndex = repeatFieldId.length;
+          let parentIndex = repeatFieldId.length - 1;
+          let parentNode = document.createElement(repeatFieldId[childIndex]);
           let itemNode = document.createElement('item');
-          fieldNode = document.createElement(repeatFieldId[1]);
+          fieldNode = document.createElement(repeatFieldId[parentIndex]);
           itemNode.appendChild(fieldNode);
           parentNode.appendChild(itemNode);
           doc.documentElement.appendChild(parentNode);
@@ -431,13 +436,8 @@ export function updateField(site: string, modelId: string, fieldId: string, inde
         }
       }
       fieldNode.innerHTML = `<![CDATA[${value}]]>`;
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
-
-    })
-  )
+    }
+  );
 }
 
 function performMutation(
@@ -810,6 +810,12 @@ export function uploadDataUrl(
         subscriber.error();
       }
     });
+
+    //add in progress
+    //subscriber.next({
+    // type: 'complete', 'progress', 'error'
+    // payload: result//progress/error
+    // });
 
     uppy.addFile({
       name: file.name,
