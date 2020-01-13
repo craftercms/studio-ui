@@ -1762,7 +1762,6 @@
         }
       },
 
-
       renderPostfixesVariable: (type) => {
 
         let controls = CStudioAdminConsole.Tool.ContentTypes.propertySheet.config.controls.control,
