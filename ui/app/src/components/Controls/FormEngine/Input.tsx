@@ -20,6 +20,26 @@
 import TextField from "@material-ui/core/TextField";
 import React from "react";
 import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    formControl: {
+      width: '100%',
+      '& .MuiFormGroup-root': {
+        marginLeft: '10px',
+      },
+      '& .MuiInputBase-root': {
+        marginTop: '12px !important',
+      }
+    },
+    InputLabel: {
+      position: 'relative'
+    }
+  }),
+);
 
 export default function Input(props: Control) {
   const {
@@ -28,6 +48,7 @@ export default function Input(props: Control) {
     onChange,
     disabled
   } = props;
+  const classes = useStyles({});
 
   const handleInputChange = (name: string, label?: string, values?: string[]) => (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
@@ -35,14 +56,23 @@ export default function Input(props: Control) {
   };
 
   return (
-    <TextField
-      id={field.id}
-      type="text"
-      placeholder="auto"
-      fullWidth
-      value={value}
-      onChange={handleInputChange(field.id)}
-      disabled={disabled}
-    />
+    <FormControl className={classes.formControl}>
+      <InputLabel
+        className={classes.InputLabel}
+        focused={true}
+        htmlFor={field.id}
+      >
+        {field.name}
+      </InputLabel>
+      <TextField
+        id={field.id}
+        type="text"
+        placeholder="auto"
+        fullWidth
+        value={value}
+        onChange={handleInputChange(field.id)}
+        disabled={disabled}
+      />
+    </FormControl>
   )
 }

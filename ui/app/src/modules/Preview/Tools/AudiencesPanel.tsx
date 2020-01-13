@@ -20,9 +20,7 @@ import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { useSelection, useStateResource } from '../../../utils/hooks';
@@ -258,24 +256,18 @@ type AudiencesFormSectionProps = PropsWithChildren<{
 function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const classes = useStyles({});
 
-  const { field, children } = props;
+  const { field, showDivider, children } = props;
 
   return (
     <>
       <Grid item xs={12}>
-        <FormControl className={classes.formControl}>
-          <InputLabel
-            className={classes.InputLabel}
-            focused={true}
-            htmlFor={field.id}
-          >
-            {field.name}
-          </InputLabel>
-          {children}
-        </FormControl>
+        {children}
         <FormHelperText>{field.helpText}</FormHelperText>
       </Grid>
-      <Divider className={classes.divider}/>
+      {
+        showDivider &&
+        <Divider className={classes.divider}/>
+      }
     </>
   )
 }

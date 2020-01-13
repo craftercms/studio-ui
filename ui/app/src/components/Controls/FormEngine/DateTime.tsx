@@ -20,6 +20,26 @@
 import React from "react";
 import DateTimePicker from "../../DateTimePicker";
 import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    formControl: {
+      width: '100%',
+      '& .MuiFormGroup-root': {
+        marginLeft: '10px',
+      },
+      '& .MuiInputBase-root': {
+        marginTop: '12px !important',
+      }
+    },
+    InputLabel: {
+      position: 'relative'
+    }
+  }),
+);
 
 export default function DateTime(props: Control) {
   const {
@@ -29,6 +49,7 @@ export default function DateTime(props: Control) {
     onChange,
     disabled
   } = props;
+  const classes = useStyles({});
 
   const dateTimePickerChange = (name: string) => (scheduledDateTime: any) => {
     const datetime = scheduledDateTime.toISOString();
@@ -39,10 +60,20 @@ export default function DateTime(props: Control) {
   };
 
   return (
-    <DateTimePicker
-      initialDate={value}
-      timezone={timezone}
-      onChange={dateTimePickerChange(field.id)}
-      disabled={disabled}/>
+    <FormControl className={classes.formControl}>
+      <InputLabel
+        className={classes.InputLabel}
+        focused={true}
+        htmlFor={field.id}
+      >
+        {field.name}
+      </InputLabel>
+      <DateTimePicker
+        initialDate={value}
+        timezone={timezone}
+        onChange={dateTimePickerChange(field.id)}
+        disabled={disabled}
+      />
+    </FormControl>
   )
 }

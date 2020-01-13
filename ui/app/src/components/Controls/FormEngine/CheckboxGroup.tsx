@@ -21,6 +21,26 @@ import React from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    formControl: {
+      width: '100%',
+      '& .MuiFormGroup-root': {
+        marginLeft: '10px',
+      },
+      '& .MuiInputBase-root': {
+        marginTop: '12px !important',
+      }
+    },
+    InputLabel: {
+      position: 'relative'
+    }
+  }),
+);
 
 export default function CheckboxGroup(props: Control) {
   const {
@@ -29,6 +49,7 @@ export default function CheckboxGroup(props: Control) {
     onChange,
     disabled
   } = props;
+  const classes = useStyles({});
 
   const valuesArray = value ? value.split(',') : [];
 
@@ -46,7 +67,14 @@ export default function CheckboxGroup(props: Control) {
   };
 
   return (
-    <>
+    <FormControl className={classes.formControl}>
+      <InputLabel
+        className={classes.InputLabel}
+        focused={true}
+        htmlFor={field.id}
+      >
+        {field.name}
+      </InputLabel>
       {
         field.values?.map((possibleValue: any, index: number) => (
             <FormControlLabel
@@ -64,6 +92,6 @@ export default function CheckboxGroup(props: Control) {
           )
         )
       }
-    </>
+    </FormControl>
   )
 }

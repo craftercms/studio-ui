@@ -22,6 +22,26 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { Control } from '../../../modules/Preview/Tools/AudiencesPanel';
 import { FormattedMessage } from "react-intl";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    formControl: {
+      width: '100%',
+      '& .MuiFormGroup-root': {
+        marginLeft: '10px',
+      },
+      '& .MuiInputBase-root': {
+        marginTop: '12px !important',
+      }
+    },
+    InputLabel: {
+      position: 'relative'
+    }
+  }),
+);
 
 export default function Dropdown(props: Control) {
   const {
@@ -30,31 +50,41 @@ export default function Dropdown(props: Control) {
     onChange,
     disabled
   } = props;
+  const classes = useStyles({});
 
   const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
     onChange(name, event.target.value);
   };
 
   return (
-    <Select
-      labelId={field.id}
-      id={field.id}
-      value={value}
-      onChange={handleSelectChange(field.id)}
-      disabled={disabled}
-      displayEmpty={true}
-    >
-      <MenuItem value="">
-        <FormattedMessage
-          id="audiencesPanelControl.optionSelectorNoOptionSelected"
-          defaultMessage="Select Option"
-        />
-      </MenuItem>
-      {
-        field.values?.map((possibleValue: any, index: number) => (
-          <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
-        ))
-      }
-    </Select>
+    <FormControl className={classes.formControl}>
+      <InputLabel
+        className={classes.InputLabel}
+        focused={true}
+        htmlFor={field.id}
+      >
+        {field.name}
+      </InputLabel>
+      <Select
+        labelId={field.id}
+        id={field.id}
+        value={value}
+        onChange={handleSelectChange(field.id)}
+        disabled={disabled}
+        displayEmpty={true}
+      >
+        <MenuItem value="">
+          <FormattedMessage
+            id="audiencesPanelControl.optionSelectorNoOptionSelected"
+            defaultMessage="Select Option"
+          />
+        </MenuItem>
+        {
+          field.values?.map((possibleValue: any, index: number) => (
+            <MenuItem value={possibleValue.value} key={index}>{possibleValue.value}</MenuItem>
+          ))
+        }
+      </Select>
+    </FormControl>
   )
 }
