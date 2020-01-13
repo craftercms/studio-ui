@@ -28,10 +28,10 @@ import {
   LegacyFormDefinitionProperty,
   LegacyFormDefinitionSection
 } from '../models/ContentType';
-import { camelizeProps, nou, pluckProps, reversePluckProps } from '../utils/object';
+import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { camelize, dataUriToBlob } from '../utils/string';
+import { camelize, dataUriToBlob, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { PaginationOptions } from '../models/Search';
@@ -440,6 +440,44 @@ export function updateField(site: string, modelId: string, fieldId: string, inde
   )
 }
 
+function performMutation(
+  site: string,
+  modelId: string,
+  parentModelId: string = null,
+  mutation: (doc: XMLDocument) => void
+): Observable<any> {
+  const isEmbeddedTarget = nnou(parentModelId);
+  return getDOM(site, isEmbeddedTarget ? parentModelId : modelId).pipe(
+    switchMap((doc) => {
+
+      const qs = {
+        site,
+        path: isEmbeddedTarget ? parentModelId : modelId,
+        unlock: 'true',
+        fileName: getInnerHtml(doc.querySelector('file-name'))
+      };
+
+      if (isEmbeddedTarget) {
+        const component = doc.querySelector(`[id="${modelId}"]`);
+        const auxiliaryDocument = fromString(`<?xml version="1.0" encoding="UTF-8"?>${component.outerHTML}`);
+        mutation(auxiliaryDocument);
+        updateModifiedDateElement(auxiliaryDocument);
+        component.replaceWith(auxiliaryDocument.documentElement);
+      } else {
+        mutation(doc);
+      }
+
+      updateModifiedDateElement(doc);
+
+      return post(
+        writeContentUrl(qs),
+        serialize(doc)
+      );
+
+    })
+  );
+}
+
 export function insertComponent(
   site: string,
   modelId: string,
@@ -451,6 +489,7 @@ export function insertComponent(
 ): Observable<any> {
   return getDOM(site, modelId).pipe(
     switchMap((doc) => {
+
       const qs = {
         site,
         path: modelId,
@@ -590,30 +629,30 @@ export function deleteItem(
   site: string,
   modelId: string,
   fieldId: string,
-  targetIndex: number
+  indexToDelete: number | string,
+  parentModelId: string = null
 ): Observable<any> {
-  return getDOM(site, modelId).pipe(
-    switchMap((doc) => {
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
 
-      const qs = {
-        site,
-        path: modelId,
-        unlock: 'true',
-        fileName: getInnerHtml(doc.querySelector('file-name'))
-      };
+      let index = indexToDelete;
+      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
 
-      updateModifiedDateElement(doc);
+      if (typeof indexToDelete === 'string') {
+        index = parseInt(popPiece(indexToDelete));
+        // A fieldId can be in the form of `a.b`, which translates to `a > item > b` on the XML.
+        // In terms of index, since all it should ever arrive here is collection items,
+        // this assumes the index path points to the item itself, not the collection.
+        // By calling removeLastPiece(indexToDelete), we should get the collection node here.
+        fieldNode = extractNode(doc, fieldId, removeLastPiece(`${indexToDelete}`));
+      }
 
-      const fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+      $(fieldNode).children().eq(index).remove();
 
-      $(fieldNode).children().eq(targetIndex).remove();
-
-      return post(
-        writeContentUrl(qs),
-        serialize(doc)
-      );
-
-    })
+    }
   );
 }
 
@@ -681,6 +720,32 @@ interface AnyObject {
 //   data.dateCreated;
 //   return null;
 // }
+
+function extractNode(doc, fieldId, index) {
+  const indexes = `${index}`.split('.').map(i => parseInt(i, 10));
+  const fields = fieldId.split('.');
+  let aux = doc.documentElement;
+  if (indexes.length > fields.length) {
+    // There's more indexes than fields
+    throw new Error(
+      '[content/extractNode] Path not handled: indexes.length > fields.length. Indexes ' +
+      `is ${indexes} and fields is ${fields}`
+    );
+  }
+  indexes.forEach((index, i) => {
+    const field = fields[i];
+    aux = aux.querySelectorAll(`:scope > ${field} > item`)[index];
+  });
+  if (indexes.length === fields.length) {
+    return aux;
+  } else if (indexes.length < fields.length) {
+    // There's one more field to use as there were less indexes
+    // than there were fields. For example: fieldId: `items_o.content_o`, index: 0
+    // At this point, aux would be `items_o[0]` and we need to extract `content_o`
+    const field = fields[fields.length - 1];
+    return aux.querySelector(`:scope > ${field}`);
+  }
+}
 
 function mergeContentDocumentProps(type: string, data: AnyObject): LegacyContentDocumentProps {
 // Dasherized props...

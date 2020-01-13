@@ -98,7 +98,7 @@ export function forEach(array, fn, emptyReturnValue) {
   for (let i = 0, l = array.length; i < l; i++) {
     const result = fn(array[i], i, array);
     if (result === 'continue') {
-      continue;
+
     } else if (result === 'break') {
       break;
     } else if (result !== undefined) {
@@ -514,4 +514,12 @@ export function isElementInView(element, fullyInView) {
   } else {
     return ((elementTop <= pageBottom) && (elementBottom >= pageTop));
   }
+}
+
+export function removeLastPiece(str, splitChar = '.') {
+  return str.substr(0, str.lastIndexOf(splitChar));
+}
+
+export function popPiece(str, splitChar = '.') {
+  return str.substr(str.lastIndexOf(splitChar) + 1);
 }

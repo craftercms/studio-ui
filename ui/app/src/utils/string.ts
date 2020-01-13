@@ -37,6 +37,14 @@ export function dasherize(str: string) {
   return str.replace(/_/g, '-');
 }
 
+export function removeLastPiece(str: string, splitChar = '.') {
+  return str.substr(0, str.lastIndexOf(splitChar))
+}
+
+export function popPiece(str: string, splitChar = '.') {
+  return str.substr(str.lastIndexOf(splitChar) + 1);
+}
+
 export function isJSON(str: string): boolean {
   throw new Error('[isJSON] Not implemented.');
 }

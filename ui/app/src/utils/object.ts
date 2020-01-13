@@ -18,6 +18,7 @@
 import { camelize } from './string';
 import { LookupTable } from '../models/LookupTable';
 import { EntityState } from '../models/GlobalState';
+import { MutableRefObject } from 'react';
 
 export function pluckProps(source: object, ...props: string[]): object {
   const object = {};
@@ -86,4 +87,8 @@ export function resolveEntityCollectionFetch<T = any>(collection: Array<T>): Ent
   return createEntityState({
     byId: createLookupTable<T>(collection)
   });
+}
+
+export function ref<T = any>(ref: MutableRefObject<T>): T {
+  return ref.current;
 }

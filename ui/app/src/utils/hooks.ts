@@ -17,7 +17,7 @@
 
 import { shallowEqual, useSelector } from 'react-redux';
 import GlobalState from '../models/GlobalState';
-import { useEffect, useState } from 'react';
+import { EffectCallback, useEffect, useState } from 'react';
 import { nnou } from './object';
 import { Resource } from '../models/Resource';
 
@@ -25,12 +25,12 @@ export function useShallowEqualSelector<T = any>(selector: (state: GlobalState) 
   return useSelector<GlobalState, T>(selector, shallowEqual);
 }
 
-export function useSelection<T = any>(
-  selector: (state: GlobalState) => T,
+export const useSelection: (<T = any>(
+  selectorFn: (state: GlobalState) => T,
   equalityFn?: (left: T, right: T) => boolean
-): T {
-  return useSelector<GlobalState, T>(selector, equalityFn);
-}
+) => T) = (process.env.NODE_ENV === 'production') ? useSelector : <T = any>(
+  selector, equalityFn
+) => useSelector<GlobalState, T>(selector, equalityFn);
 
 export function useActiveSiteId(): string {
   return useSelector<GlobalState, string>(state => state.sites.active);
@@ -104,14 +104,14 @@ export function useResolveWhenNotNullResource(source) {
 
 }
 
-export function useStateResourceSelection<ReturnType = any, SourceType = GlobalState>(
+export function useStateResourceSelection<ReturnType = any, SourceType = GlobalState, ErrorType = any>(
   sourceSelector: (state: GlobalState) => SourceType,
   checkers: {
     shouldResolve: (source: SourceType, resource: Resource<ReturnType>) => boolean,
     shouldReject: (source: SourceType, resource: Resource<ReturnType>) => boolean,
     shouldRenew: (source: SourceType, resource: Resource<ReturnType>) => boolean,
     resultSelector: (source: SourceType, resource: Resource<ReturnType>) => ReturnType,
-    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => any
+    errorSelector: (source: SourceType, resource: Resource<ReturnType>) => ErrorType
   }
 ): Resource<ReturnType> {
   const state = useSelection<SourceType>(sourceSelector);
@@ -150,4 +150,8 @@ export function useStateResource<ReturnType = any, SourceType = GlobalState>(
 
   return resource;
 
+}
+
+export function useOnMount(componentDidMount: EffectCallback) {
+  useEffect(componentDidMount, []);
 }

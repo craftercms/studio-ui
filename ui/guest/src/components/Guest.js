@@ -77,7 +77,8 @@ export function Guest(props) {
     children,
     documentDomain,
     isAuthoring = true,
-    scrollElement = 'html, body'
+    scrollElement = 'html, body',
+    editModeOnIndicatorClass = 'craftercms-ice-on'
   } = props;
   const { current: persistence } = useRef({
     contentReady: false,
@@ -85,7 +86,7 @@ export function Guest(props) {
     mouseOverTimeout: null
   });
 
-  const [, notify] = useState({});
+  const [, forceUpdate] = useState({});
   const stateRef = useRef({
     dragContext: null,
     common: {
@@ -113,37 +114,25 @@ export function Guest(props) {
 
   const setState = (nextState) => {
     stateRef.current = nextState;
-    notify({});
+    forceUpdate({});
   };
 
   const fn = {
 
     onEditModeChanged(inEditMode) {
 
-      const
-        status = inEditMode
-          ? EditingStatus.LISTENING
-          : EditingStatus.OFF;
+      const status = inEditMode ? EditingStatus.LISTENING : EditingStatus.OFF;
 
-      if (inEditMode) {
-        setState({
-          ...stateRef.current,
-          common: {
-            ...stateRef.current.common,
-            status,
-            inEditMode
-          }
-        });
-      } else {
-        setState({
-          ...stateRef.current,
-          common: {
-            ...stateRef.current.common,
-            status,
-            inEditMode
-          }
-        });
-      }
+      $('html')[inEditMode ? 'addClass' : 'removeClass'](editModeOnIndicatorClass);
+
+      setState({
+        ...stateRef.current,
+        common: {
+          ...stateRef.current.common,
+          status,
+          inEditMode
+        }
+      });
 
     },
 
@@ -707,22 +696,28 @@ export function Guest(props) {
         originDropZone = dropZones.find((dropZone) => dropZone.origin),
         currentDZ = dropZone.element;
 
-      // Move a component
+      if (typeof draggedElementIndex === 'string') {
+        // If the index is a string, it's a nested index with dot notation.
+        // At this point, we only care for the last index piece, which is
+        // the index of this item in the collection that's being manipulated.
+        draggedElementIndex = parseInt(draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1), 10);
+      }
 
       const containerRecord = iceRegistry.recordOf(originDropZone.iceId);
 
+      // Determine whether the component is to be sorted or moved.
       if (currentDZ === originDropZone.element) {
+        // Same drop zone: Sort identified
 
-        // If moving the item down the array of items, need
-        // to account all the - originally - subsequent items
-        // moving up.
+        // If moving the item down the array of items, need to account
+        // for all the originally subsequent items shifting up.
         if (draggedElementIndex < targetIndex) {
           // Hence the final target index in reality is
           // the drop marker's index minus 1
           --targetIndex;
         }
 
-        if (record.index !== targetIndex) {
+        if (draggedElementIndex !== targetIndex) {
           setTimeout(() => {
             contentController.sortItem(
               containerRecord.modelId,
@@ -734,6 +729,7 @@ export function Guest(props) {
         }
 
       } else {
+        // Different drop zone: Move identified
 
         const rec = iceRegistry.recordOf(dropZone.iceId);
 
@@ -961,13 +957,8 @@ export function Guest(props) {
     // Consider behaviour when running Host Guest-side
     onTrashDrop() {
       const { dragContext } = stateRef.current;
-      const { dropZones } = dragContext;
       const { id } = dragContext.dragged;
-      let { modelId, fieldId, index } = iceRegistry.recordOf(
-        iceRegistry.isRepeatGroup(id)
-          ? id
-          : dropZones.find(d => d.origin).iceId
-      );
+      let { modelId, fieldId, index } = iceRegistry.recordOf(id);
       contentController.deleteItem(modelId, fieldId, index);
     },
 
@@ -1193,6 +1184,8 @@ export function Guest(props) {
       persistence.contentReady = true;
     });
 
+    fn.onEditModeChanged(stateRef.current.common.inEditMode);
+
     return () => {
       iceRegistry.deregister(iceId);
     };
@@ -1221,35 +1214,37 @@ export function Guest(props) {
   }, []);
 
   return (
-    <GuestContext.Provider value={stateRef.current.common}>
-      {children}
-      {
-        (stateRef.current.common.status !== EditingStatus.OFF) &&
-        <CrafterCMSPortal>
-          {
-            Object.values(stateRef.current.common.highlighted).map((highlight) =>
-              <ZoneMarker key={highlight.id} {...highlight} />
-            )
-          }
-          {
-            [
-              EditingStatus.SORTING_COMPONENT,
-              EditingStatus.PLACING_NEW_COMPONENT,
-              EditingStatus.PLACING_DETACHED_COMPONENT
-            ].includes(stateRef.current.common.status) &&
-            stateRef.current.dragContext.inZone &&
-            <DropMarker
-              onDropPosition={fn.onSetDropPosition}
-              dropZone={stateRef.current.dragContext.dropZone}
-              over={stateRef.current.dragContext.over}
-              prev={stateRef.current.dragContext.prev}
-              next={stateRef.current.dragContext.next}
-              coordinates={stateRef.current.dragContext.coordinates}
-            />
-          }
-        </CrafterCMSPortal>
-      }
-    </GuestContext.Provider>
+    isAuthoring ? (
+      <GuestContext.Provider value={stateRef.current.common}>
+        {children}
+        {
+          (stateRef.current.common.status !== EditingStatus.OFF) &&
+          <CrafterCMSPortal>
+            {
+              Object.values(stateRef.current.common.highlighted).map((highlight) =>
+                <ZoneMarker key={highlight.id} {...highlight} />
+              )
+            }
+            {
+              [
+                EditingStatus.SORTING_COMPONENT,
+                EditingStatus.PLACING_NEW_COMPONENT,
+                EditingStatus.PLACING_DETACHED_COMPONENT
+              ].includes(stateRef.current.common.status) &&
+              stateRef.current.dragContext.inZone &&
+              <DropMarker
+                onDropPosition={fn.onSetDropPosition}
+                dropZone={stateRef.current.dragContext.dropZone}
+                over={stateRef.current.dragContext.over}
+                prev={stateRef.current.dragContext.prev}
+                next={stateRef.current.dragContext.next}
+                coordinates={stateRef.current.dragContext.coordinates}
+              />
+            }
+          </CrafterCMSPortal>
+        }
+      </GuestContext.Provider>
+    ) : children
   );
 
 }
