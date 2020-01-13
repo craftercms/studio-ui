@@ -206,8 +206,7 @@ export default function AssetsPanel() {
         '/static-assets/images/',
         XSRF_CONFIG_ARGUMENT
       ).subscribe(
-        (r) => {
-          console.log(r)
+        () => {
         },
         () => {
         },
