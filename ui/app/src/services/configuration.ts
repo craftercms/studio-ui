@@ -137,11 +137,13 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
         const xml = fromString(content);
         const properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
 
-          const name = getInnerHtml(elem.querySelector('name')),
+          const //
+            name = getInnerHtml(elem.querySelector('name')),
             label = getInnerHtml(elem.querySelector('label')),
             type = getInnerHtml(elem.querySelector('type')),
             defaultValue = getInnerHtml(elem.querySelector('default_value')),
             hint = getInnerHtml(elem.querySelector('hint'));
+          
           let possibleValues: ContentTypeField['values'];
 
           if (elem.querySelectorAll('value').length > 0) {
@@ -152,7 +154,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
                 value: value
               }
             });
-          }else{
+          } else {
             possibleValues = [];
           }
 
@@ -167,7 +169,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
             fields: null,
             values: possibleValues,
             helpText: hint
-          }
+          };
 
         });
 

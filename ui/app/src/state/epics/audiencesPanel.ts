@@ -60,9 +60,7 @@ const setActiveModel: Epic = (action$) => action$.pipe(
 
 const setActiveModelComplete: Epic = (action$) => action$.pipe(
   ofType(SET_ACTIVE_MODEL_COMPLETE),
-  tap(
-    () => getHostToGuestBus().next({ type: RELOAD_REQUEST })
-  ),
+  tap(() => getHostToGuestBus().next({ type: RELOAD_REQUEST })),
   ignoreElements()
 );
 
