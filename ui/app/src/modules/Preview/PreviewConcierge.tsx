@@ -249,7 +249,8 @@ export function PreviewConcierge(props: any) {
           ).subscribe(
             () => {
             },
-            () => {
+            (error) => {
+              setSnack({ message: error });
             },
             () => {
               hostToGuest$.next({
@@ -278,6 +279,7 @@ export function PreviewConcierge(props: any) {
     switch (selectedTool) {
       case 'craftercms.ice.assets':
         (assets.isFetching === null && site) && dispatch(fetchAssetsPanelItems(assets.query));
+        (assets.error !== null) && setSnack({ message: 'Fetch assets panel items failed.' });
         break;
       case 'craftercms.ice.components':
         break;
