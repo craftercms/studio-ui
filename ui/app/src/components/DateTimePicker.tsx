@@ -161,6 +161,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
       updatedDateTime = moment.tz(dateMoment.format(), 'YYYY-MM-DD HH:mm A', timezone);
 
     onTimezoneChange?.(timezone);
+    onDateChange?.(updatedDateTime.format(dateFormat));
     onChange?.(updatedDateTime);
   };
 
