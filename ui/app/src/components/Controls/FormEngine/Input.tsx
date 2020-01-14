@@ -59,7 +59,6 @@ export default function Input(props: Control) {
     <FormControl className={classes.formControl}>
       <InputLabel
         className={classes.InputLabel}
-        focused={true}
         htmlFor={field.id}
       >
         {field.name}

@@ -55,15 +55,17 @@ export default function DateTime(props: DateTimeControl) {
     const datetime = scheduledDateTime.toISOString();
     const tz = scheduledDateTime.tz();
 
-    onChange(name, datetime);
-    tz && onChange(`${name}_tz`, encodeURIComponent(tz));
+    onChange(name, datetime);   // TODO: object w/date-timezone
+    tz && onChange(`${name}_tz`, encodeURIComponent(tz));    // TODO: encode not in here
+
+    // TODO: on change directly to DateTimePicker, fields retrievals on audiencesPanel (kinda formsEngine)
+
   };
 
   return (
     <FormControl className={classes.formControl}>
       <InputLabel
         className={classes.InputLabel}
-        focused={true}
         htmlFor={field.id}
       >
         {field.name}

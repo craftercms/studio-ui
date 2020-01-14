@@ -60,7 +60,6 @@ export default function Dropdown(props: Control) {
     <FormControl className={classes.formControl}>
       <InputLabel
         className={classes.InputLabel}
-        focused={true}
         htmlFor={field.id}
       >
         {field.name}
@@ -71,7 +70,7 @@ export default function Dropdown(props: Control) {
         value={value}
         onChange={handleSelectChange(field.id)}
         disabled={disabled}
-        displayEmpty={true}
+        displayEmpty
       >
         <MenuItem value="">
           <FormattedMessage
