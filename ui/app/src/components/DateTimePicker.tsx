@@ -30,9 +30,9 @@ import { getTimezones } from '../utils/datetime';
 
 interface DateTimePickerProps {
   onChange?: Function;
-  onChangeDate?: Function;
-  onChangeTime?: Function;
-  onChangeTimezone?: Function;
+  onDateChange?: Function;
+  onTimeChange?: Function;
+  onTimezoneChange?: Function;
   dateFormat?: string;
   timeFormat?: string;
   date?: string | moment.Moment | Number;
@@ -120,9 +120,9 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   const {
     classes,
     onChange,
-    onChangeDate,
-    onChangeTime,
-    onChangeTimezone,
+    onDateChange,
+    onTimeChange,
+    onTimezoneChange,
     date = moment(),
     timezone = moment.tz.guess(),
     dateFormat = 'YYYY-MM-DD',
@@ -144,25 +144,24 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         updatedDateTime.date(newDate.getDate());
         updatedDateTime.month(newDate.getMonth());
         updatedDateTime.year(newDate.getFullYear());
+        onDateChange?.(updatedDateTime.format(dateFormat));
         break;
       case 'scheduledTime':
         updatedDateTime.hours(newDate.getHours());
         updatedDateTime.minutes(newDate.getMinutes());
+        onTimeChange?.(updatedDateTime.format(timeFormat));
         break;
     }
 
     onChange?.(updatedDateTime);
-
-    onChangeDate?.(updatedDateTime.format(dateFormat));
-    onChangeTime?.(updatedDateTime.format(timeFormat));
   };
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
       updatedDateTime = moment.tz(dateMoment.format(), 'YYYY-MM-DD HH:mm A', timezone);
 
+    onTimezoneChange?.(timezone);
     onChange?.(updatedDateTime);
-    onChangeTimezone?.(timezone);
   };
 
   return (
