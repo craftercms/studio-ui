@@ -17,12 +17,12 @@
  *
  */
 
-import React from "react";
-import DateTimePicker from "../../DateTimePicker";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import { DateTimeControl } from "../../../models/FormsEngine";
-import { useStyles } from "./Input";
+import React from 'react';
+import DateTimePicker from '../../DateTimePicker';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import { DateTimeControl } from '../../../models/FormsEngine';
+import { useStyles } from './Input';
 
 export default function DateTime(props: DateTimeControl) {
   const {
@@ -34,12 +34,12 @@ export default function DateTime(props: DateTimeControl) {
   } = props;
   const classes = useStyles({});
 
-  const dateTimePickerChange = (name: string) => (scheduledDateTime: any) => {
+  const dateTimePickerChange = (scheduledDateTime: any) => {
     const datetime = scheduledDateTime.toISOString();
     const tz = scheduledDateTime.tz();
 
-    onChange(name, datetime);   // TODO: object w/date-timezone
-    tz && onChange(`${name}_tz`, encodeURIComponent(tz));    // TODO: encode not in here
+    onChange(datetime);   // TODO: return scheduledDateTime so it can retrieve timezone too
+    // tz && onChange(`${name}_tz`, encodeURIComponent(tz));    // TODO: encode not in here
 
     // TODO: on change directly to DateTimePicker, fields retrievals on audiencesPanel (kinda formsEngine)
 
@@ -48,15 +48,15 @@ export default function DateTime(props: DateTimeControl) {
   return (
     <FormControl className={classes.formControl}>
       <InputLabel
-        className={classes.InputLabel}
+        className={classes.inputLabel}
         htmlFor={field.id}
       >
         {field.name}
       </InputLabel>
       <DateTimePicker
-        initialDate={value}
+        date={value}
         timezone={timezone}
-        onChange={dateTimePickerChange(field.id)}
+        onChange={dateTimePickerChange}
         disabled={disabled}
       />
     </FormControl>

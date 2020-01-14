@@ -29,7 +29,7 @@ import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { useDispatch } from 'react-redux';
 import { setActiveModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
 import { ContentTypeField } from '../../../models/ContentType';
-import { nnou, nou, reversePluckProps } from '../../../utils/object';
+import { nnou, nou } from '../../../utils/object';
 import GlobalState from '../../../models/GlobalState';
 import ContentInstance from '../../../models/ContentInstance';
 import Input from '../../../components/Controls/FormEngine/Input';
@@ -129,7 +129,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 const controlProps = {
                   field: contentType.fields[field],
                   value: model[field] ? model[field] : undefined,
-                  onChange: onFormChange,
+                  onChange: onFormChange(field),
                   disabled: modelApplying
                 };
 
@@ -183,9 +183,9 @@ export default function AudiencesPanel() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
-  const onFormChange = (name: string, value: string) => {
+  const onFormChange = (fieldName: string) => (value: string) => {
     dispatch(updateAudiencesPanelModel({
-      [name]: value
+      [fieldName]: value
     }));
   };
 

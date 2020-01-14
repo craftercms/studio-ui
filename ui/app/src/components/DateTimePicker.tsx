@@ -23,10 +23,10 @@ import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
 import PublicRoundedIcon from '@material-ui/icons/PublicRounded';
 import DateFnsUtils from '@date-io/date-fns';
-import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider, } from '@material-ui/pickers';
+import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getTimezones } from "../utils/datetime";
+import { getTimezones } from '../utils/datetime';
 
 interface DateTimePickerProps {
   onChange?: Function;
@@ -35,7 +35,7 @@ interface DateTimePickerProps {
   onChangeTimezone?: Function;
   dateFormat?: string;
   timeFormat?: string;
-  initialDate?: string | moment.Moment | Number;
+  date?: string | moment.Moment | Number;
   timezone?: string;
   disablePast?: boolean;
   disabled?: boolean;
@@ -97,24 +97,24 @@ interface timezoneType {
 
 const timezones = getTimezones();
 
-const getDateMoment = (date, timezoneObj) => {
+const getDateMoment = (dateString, timezoneObj) => {
   let dateMoment;
 
-  switch (typeof date) {
+  switch (typeof dateString) {
     case 'string':
     case 'number':
-      dateMoment = timezoneObj ? moment.tz(date, timezoneObj.timezoneName) : moment.tz(date);
+      dateMoment = timezoneObj ? moment.tz(dateString, timezoneObj.timezoneName) : moment.tz(dateString);
       break;
     case 'object':
       // moment object, stays the same
-      dateMoment = date;
+      dateMoment = dateString;
       break;
     default:
       dateMoment = moment();
   }
 
   return dateMoment;
-}
+};
 
 const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerProps) => {
   const {
@@ -123,7 +123,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     onChangeDate,
     onChangeTime,
     onChangeTimezone,
-    initialDate = moment(),
+    date = moment(),
     timezone = moment.tz.guess(),
     dateFormat = 'YYYY-MM-DD',
     timeFormat = 'HH:MM:ss',
@@ -132,22 +132,22 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     controls = ['date', 'time', 'timezone']
   } = props;
 
-  let initialDateMoment;
+  let dateMoment;
   let timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timezone)));
-  initialDateMoment = getDateMoment(initialDate, timezoneObj);
+  dateMoment = getDateMoment(date, timezoneObj);
 
-  const handleDateChange = (name: string) => (date: Date | null) => {
-    let updatedDateTime = initialDateMoment;
+  const handleDateChange = (name: string) => (newDate: Date | null) => {
+    let updatedDateTime = dateMoment;
 
     switch (name) {
       case 'scheduledDate':
-        updatedDateTime.date(date.getDate());
-        updatedDateTime.month(date.getMonth());
-        updatedDateTime.year(date.getFullYear());
+        updatedDateTime.date(newDate.getDate());
+        updatedDateTime.month(newDate.getMonth());
+        updatedDateTime.year(newDate.getFullYear());
         break;
       case 'scheduledTime':
-        updatedDateTime.hours(date.getHours());
-        updatedDateTime.minutes(date.getMinutes());
+        updatedDateTime.hours(newDate.getHours());
+        updatedDateTime.minutes(newDate.getMinutes());
         break;
     }
 
@@ -159,7 +159,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
-      updatedDateTime = moment.tz(initialDateMoment.format(), 'YYYY-MM-DD HH:mm A', timezone);
+      updatedDateTime = moment.tz(dateMoment.format(), 'YYYY-MM-DD HH:mm A', timezone);
 
     onChange?.(updatedDateTime);
     onChangeTimezone?.(timezone);
@@ -173,7 +173,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
             format="MM/dd/yyyy"
             margin="normal"
             id="date-picker"
-            value={initialDateMoment.format('YYYY-MM-DD HH:mm')}
+            value={dateMoment.format('YYYY-MM-DD HH:mm')}
             onChange={handleDateChange('scheduledDate')}
             className={classes.picker}
             InputAdornmentProps={{
@@ -192,7 +192,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           <KeyboardTimePicker
             margin="normal"
             id="time-picker"
-            value={initialDateMoment.format('YYYY-MM-DD HH:mm')}
+            value={dateMoment.format('YYYY-MM-DD HH:mm')}
             onChange={handleDateChange('scheduledTime')}
             keyboardIcon={<AccessTimeIcon />}
             className={classes.picker}

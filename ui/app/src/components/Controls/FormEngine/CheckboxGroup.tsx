@@ -17,13 +17,13 @@
  *
  */
 
-import React from "react";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import { Control } from "../../../models/FormsEngine";
-import { useStyles } from "./Input";
+import React from 'react';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import { Control } from '../../../models/FormsEngine';
+import { useStyles } from './Input';
 
 export default function CheckboxGroup(props: Control) {
   const {
@@ -36,43 +36,42 @@ export default function CheckboxGroup(props: Control) {
 
   const valuesArray = value ? value.split(',') : [];
 
-  const handleInputChange = (name: string, label?: string, values?: string[]) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (label?: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
 
     if (e.target.checked) {
-      if (!(label in values)) {
-        values.push(label);
+      if (!(label in valuesArray)) {
+        valuesArray.push(label);
       }
     } else {
-      values.splice(values.indexOf(label), 1);
+      valuesArray.splice(valuesArray.indexOf(label), 1);
     }
-    onChange(name, values.join(','));
+    onChange(valuesArray.join(','));
   };
 
   return (
     <FormControl className={classes.formControl}>
       <InputLabel
-        className={classes.InputLabel}
+        className={classes.inputLabel}
         htmlFor={field.id}
       >
         {field.name}
       </InputLabel>
       {
         field.values?.map((possibleValue: any, index: number) => (
-            <FormControlLabel
-              key={index}
-              htmlFor={field.id}
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={valuesArray.includes(possibleValue.value)}
-                  onChange={handleInputChange(field.id, possibleValue.value, valuesArray)}
-                  disabled={disabled}
-                />
-              }
-              label={possibleValue.label}/>
-          )
-        )
+          <FormControlLabel
+            key={index}
+            htmlFor={field.id}
+            control={
+              <Checkbox
+                color="primary"
+                checked={valuesArray.includes(possibleValue.value)}
+                onChange={handleInputChange(possibleValue.value)}
+                disabled={disabled}
+              />
+            }
+            label={possibleValue.label}/>
+        ))
       }
     </FormControl>
   )

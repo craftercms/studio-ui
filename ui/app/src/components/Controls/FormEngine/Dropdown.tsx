@@ -17,14 +17,14 @@
  *
  */
 
-import React from "react";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import { FormattedMessage } from "react-intl";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import { Control } from "../../../models/FormsEngine";
-import { useStyles } from "./Input";
+import React from 'react';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { FormattedMessage } from 'react-intl';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import { Control } from '../../../models/FormsEngine';
+import { useStyles } from './Input';
 
 export default function Dropdown(props: Control) {
   const {
@@ -35,23 +35,22 @@ export default function Dropdown(props: Control) {
   } = props;
   const classes = useStyles({});
 
-  const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
-    onChange(name, event.target.value);
+  const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    onChange(event.target.value);
   };
 
   return (
     <FormControl className={classes.formControl}>
       <InputLabel
-        className={classes.InputLabel}
+        className={classes.inputLabel}
         htmlFor={field.id}
       >
         {field.name}
       </InputLabel>
       <Select
         labelId={field.id}
-        id={field.id}
         value={value}
-        onChange={handleSelectChange(field.id)}
+        onChange={handleSelectChange}
         disabled={disabled}
         displayEmpty
       >
