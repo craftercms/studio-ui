@@ -552,11 +552,11 @@ function SortOrder(props: SortOrderProps) {
   const isRelevance = (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined);
   const options = isRelevance ? [
     {
-      name: formatMessage(messages.moreRelevance),
+      name: formatMessage(messages.moreRelevantFirst),
       value: 'desc'
     },
     {
-      name: formatMessage(messages.lessRelevance),
+      name: formatMessage(messages.lessRelevantFirst),
       value: 'asc'
     },
   ] : [
