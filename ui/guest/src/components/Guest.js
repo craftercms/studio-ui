@@ -892,8 +892,7 @@ export function Guest(props) {
           dropZone.origin = false;
           dropZones.push(dropZone);
 
-          siblings = [...siblings, ...dropZone.children];
-          players = [...players, ...dropZone.children, dropZone.element];
+          players = [...players, dropZone.element];
           containers.push(dropZone.element);
 
         });
