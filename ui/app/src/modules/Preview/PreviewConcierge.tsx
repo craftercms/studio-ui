@@ -278,8 +278,7 @@ export function PreviewConcierge(props: any) {
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        (assets.isFetching === null && site) && dispatch(fetchAssetsPanelItems(assets.query));
-        (assets.error !== null) && setSnack({ message: 'Fetch assets panel items failed.' });
+        (assets.isFetching === null && site && assets.error !== null) && dispatch(fetchAssetsPanelItems(assets.query));
         break;
       case 'craftercms.ice.components':
         break;
