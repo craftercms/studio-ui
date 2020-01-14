@@ -186,7 +186,7 @@ export function fetchActiveModel(): Observable<ContentInstance> {
   return get(`/api/1/profile/get`).pipe(
     map(response => {
       const data = reversePluckProps(response.response, 'id');
-      const id = response.response.id ? response.response.id : null;
+      const id = response.response.id ?? null;
 
       return {
         craftercms: {
