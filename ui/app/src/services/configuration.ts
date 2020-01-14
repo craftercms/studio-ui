@@ -189,7 +189,15 @@ export function fetchActiveModel(): Observable<ContentInstance> {
       const id = response.response.id ? response.response.id : null;
 
       return {
-        craftercms: id,
+        craftercms: {
+          id,
+          path: null,
+          label: null,
+          locale: null,
+          dateCreated: null,
+          dateModified: null,
+          contentType: null
+        },
         ...data
       };
     })
