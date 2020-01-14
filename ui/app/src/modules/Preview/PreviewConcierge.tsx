@@ -78,13 +78,7 @@ export function PreviewConcierge(props: any) {
   const contentTypesBranch = useSelection(state => state.contentTypes);
   const GUEST_BASE = useSelection(state => state.env.GUEST_BASE);
   const priorState = useRef({ site });
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
-
-  // This subject helps keep the async nature of content type fetching and guest
-  // check in events. The idea is that it keeps things in sync despite the timing of
-  // content types getting fetch and guest checking in.
-  const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
 
   useOnMount(() => {
     const sub = beginGuestDetection(setSnack);
