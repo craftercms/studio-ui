@@ -123,7 +123,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
         <>
           <Grid className={classes.PanelMargin}>
             {
-              Object.keys(contentType.fields).map((field: any) => {
+              Object.keys(contentType.fields).map((field: string) => {
                 const type = contentType.fields[field].type;
                 const Control = controlsMap[type];
 
