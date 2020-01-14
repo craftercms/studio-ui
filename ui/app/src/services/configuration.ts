@@ -183,26 +183,25 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 
 // TODO: asses the location of profile methods.
 export function fetchActiveModel(): Observable<ContentInstance> {
-  let audiencesPanelModel: ContentInstance;
-  return get(`/api/1/profile/get`).pipe(map(response => {
-    const propsKeys = reversePluckProps(response.response, 'id');
-    const props = {};
-    const id = response.response.id ? response.response.id : null;
+  return get(`/api/1/profile/get`).pipe(
+    map(response => {
+      const propsKeys = reversePluckProps(response.response, 'id');
+      const props = {};
+      const id = response.response.id ? response.response.id : null;
 
-    for (let [key, value] of Object.entries(propsKeys)) {
-      props[key] = {
-        key: value,
-        label: value
+      for (let [key, value] of Object.entries(propsKeys)) {
+        props[key] = {
+          key: value,
+          label: value
+        }
       }
-    }
 
-    audiencesPanelModel = {
-      craftercms: id,
-      ...props
-    };
-
-    return audiencesPanelModel;
-  }));
+      return {
+        craftercms: id,
+        ...props
+      };
+    })
+  );
 }
 
 export function setActiveModel(params: string): Observable<ActiveTargetingModel> {
