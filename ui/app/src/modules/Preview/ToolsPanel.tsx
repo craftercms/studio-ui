@@ -46,7 +46,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
 import LoadingState from '../../components/SystemStatus/LoadingState';
 import EmptyState from '../../components/SystemStatus/EmptyState';
-import BrowsePanel from './Tools/BrowsePanel';
+import BrowseComponentsPanel from './Tools/BrowseComponentsPanel';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawer: {
@@ -138,7 +138,7 @@ const translations = defineMessages({
     id: 'craftercms.ice.simulator.title',
     defaultMessage: 'Device Simulator'
   },
-  browsePanel: {
+  browseComponentsPanel: {
     id: 'craftercms.ice.browse.title',
     defaultMessage: 'Browse Components'
   },
@@ -206,7 +206,7 @@ const componentMap: any = {
   'craftercms.ice.simulator': SimulatorPanel,
   'craftercms.ice.ice': ICEPanel,
   'craftercms.ice.editForm': EditFormPanel,
-  'craftercms.ice.browse': BrowsePanel
+  'craftercms.ice.browse': BrowseComponentsPanel
 };
 
 export default function ToolsPanel() {

@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => createStyles({
 
 }));
 
-export default function BrowsePanel() {
+export default function BrowseComponentsPanel() {
 
   const classes = useStyles({});
   const { guest } = usePreviewState();
