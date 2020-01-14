@@ -723,7 +723,7 @@ function extractNode(doc, fieldId, index) {
   const indexes = `${index}`.split('.').map(i => parseInt(i, 10));
   const fields = fieldId.split('.');
   let aux = doc.documentElement;
-  if (index === null) {
+  if (nou(index)) {
     return aux.querySelector(`:scope > ${fieldId}`);
   }
   if (indexes.length > fields.length) {
