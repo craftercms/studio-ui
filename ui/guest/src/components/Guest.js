@@ -645,18 +645,19 @@ export function Guest(props) {
             const reader = new FileReader();
             reader.onload = (function (aImg) {
               message$.pipe(
-                filter((e) => (e.data?.type) === DESKTOP_ASSET_UPLOAD_COMPLETE),
+                filter((e) =>
+                  (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE) &&
+                  (e.data.id === file.name)
+                ),
                 map(e => e.data),
                 take(1)
               ).subscribe(function ({ payload }) {
-                if (payload.id === file.name) {
-                  contentController.updateField(
-                    record.modelId,
-                    record.fieldId[0],
-                    record.index,
-                    payload.path
-                  )
-                }
+                contentController.updateField(
+                  record.modelId,
+                  record.fieldId[0],
+                  record.index,
+                  payload.path
+                )
               });
 
               return function (event) {
