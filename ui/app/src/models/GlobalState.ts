@@ -93,6 +93,7 @@ export interface GlobalState {
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
+    components: PagedEntityState<ContentInstance>;
   }
 }
 

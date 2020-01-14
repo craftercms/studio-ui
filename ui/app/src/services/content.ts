@@ -34,7 +34,7 @@ import $ from 'jquery/dist/jquery.slim';
 import { camelize, dataUriToBlob, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
-import { PaginationOptions } from '../models/Search';
+import { ComponentsContentTypeParams } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from "../utils/auth";
@@ -651,16 +651,20 @@ export function deleteItem(
   );
 }
 
-export function getContentByContentType(site: string, contentType: string, options?: PaginationOptions): Observable<ContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[], options?: PaginationOptions): Observable<ContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[] | string, options?: PaginationOptions): Observable<ContentInstance> {
+export function getContentByContentType(site: string, contentType: string, options?: ComponentsContentTypeParams): Observable<ContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[], options?: ComponentsContentTypeParams): Observable<ContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[] | string, options?: ComponentsContentTypeParams): Observable<ContentInstance> {
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
   return post(
     `/studio/api/2/search/search.json?siteId=${site}`,
     {
+      ...options,
       filters: { 'content-type': contentTypes }
+    },
+    {
+      'Content-Type': 'application/json'
     }
   ).pipe(
     map<any, ContentInstance>(({ response: { result: { items } } }) => items.map((item) => ({
@@ -672,7 +676,8 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
         dateCreated: null,
         dateModified: item.lastModified,
         contentType: null
-      }
+      },
+      id: item.path
       // ...Search doesn't return all content props. Need to fetch separately 😞.
     })))
   );

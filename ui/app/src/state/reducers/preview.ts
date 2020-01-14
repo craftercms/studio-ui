@@ -25,6 +25,9 @@ import {
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
+  FETCH_CONTENT_TYPE_COMPONENTS,
+  FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE,
+  FETCH_CONTENT_TYPE_COMPONENTS_FAILED,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -40,7 +43,8 @@ import {
 } from '../actions/preview';
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
-import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
+import { ComponentsContentTypeParams, ElasticParams, MediaItem, SearchResult } from '../../models/Search';
+import ContentInstance from "../../models/ContentInstance";
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -63,7 +67,15 @@ const reducer = createReducer<GlobalState['preview']>({
         'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
       }
     }
-  }) as PagedEntityState<MediaItem>
+  }) as PagedEntityState<MediaItem>,
+  components: createEntityState({
+    page: [],
+    query: {
+      keywords: '',
+      offset: 0,
+      limit: 10,
+    }
+  }) as PagedEntityState<ContentInstance>
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -274,7 +286,40 @@ const reducer = createReducer<GlobalState['preview']>({
   [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: false }
-  })
+  }),
+  [FETCH_CONTENT_TYPE_COMPONENTS]: (state, { payload: { contentType, options } }: { payload: { contentType: string[] | string, options?: ComponentsContentTypeParams } }) => {
+    let new_query = { ...state.components.query, ...options };
+    return {
+      ...state,
+      components: {
+        ...state.components,
+        isFetching: true,
+        query: new_query,
+        pageNumber: Math.ceil(new_query.offset / new_query.limit),
+        contentType
+      }
+    }
+  },
+  [FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE]: (state, { payload }: { payload: any }) => {
+    let itemsLookupTable = createLookupTable<any>(payload);
+    let page = [...state.components.page];
+    page[state.components.pageNumber] = Object.keys(itemsLookupTable);
+    return {
+      ...state,
+      components: {
+        ...state.components,
+        byId: { ...state.components.byId, ...itemsLookupTable },
+        page,
+        // count: searchResult.total,
+        isFetching: false,
+        error: null
+      }
+    }
+  },
+  [FETCH_CONTENT_TYPE_COMPONENTS_FAILED]: (state, { payload }) => ({
+    ...state,
+    components: { ...state.components, error: payload.response, isFetching: false }
+  }),
 });
 
 function minFrameSize(suggestedSize: number): number {

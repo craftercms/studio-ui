@@ -88,3 +88,7 @@ export interface SearchResult {
   items: Array<SearchItem>;
   facets: Array<SearchFacet>;
 }
+
+export interface ComponentsContentTypeParams extends PaginationOptions {
+  keywords?: string;
+}

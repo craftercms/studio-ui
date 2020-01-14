@@ -22,7 +22,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
-import { ElasticParams, SearchResult } from "../../models/Search";
+import { ComponentsContentTypeParams, ElasticParams, SearchResult } from "../../models/Search";
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -190,8 +190,15 @@ export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_AS
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export const fetchContentTypeComponents = createAction(FETCH_CONTENT_TYPE_COMPONENTS);
-export const fetchContentTypeComponentsComplete = createAction(FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE);
+export function fetchContentTypeComponents(contentType: string, options?: ComponentsContentTypeParams): StandardAction {
+  return {
+    type: FETCH_CONTENT_TYPE_COMPONENTS,
+    payload: { contentType, options }
+  };
+}
+
+export const fetchContentTypeComponentsComplete = createAction<ContentInstance>(FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE);
+
 export const fetchContentTypeComponentsFailed = createAction(FETCH_CONTENT_TYPE_COMPONENTS_FAILED);
 
 // endregion

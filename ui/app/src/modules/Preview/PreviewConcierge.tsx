@@ -27,6 +27,7 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   fetchAssetsPanelItems,
+  fetchContentTypeComponents,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -81,6 +82,7 @@ export function PreviewConcierge(props: any) {
   const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelection(state => state.env);
   const priorState = useRef({ site });
   const assets = useSelection(state => state.preview.assets);
+  const contentTypeComponents = useSelection(state => state.preview.components);
 
   useOnMount(() => {
     const sub = beginGuestDetection(setSnack);
@@ -281,6 +283,10 @@ export function PreviewConcierge(props: any) {
         (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems(assets.query));
         break;
       case 'craftercms.ice.components':
+        break;
+      case 'craftercms.ice.browse':
+        (contentTypeComponents.isFetching === null && site && contentTypeComponents.error === null)
+        && dispatch(fetchContentTypeComponents('/component/feature', contentTypeComponents.query));
         break;
     }
 

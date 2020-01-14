@@ -16,10 +16,19 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { FETCH_CONTENT_TYPES, fetchContentTypesComplete, fetchContentTypesFailed } from '../actions/preview';
+import {
+  FETCH_CONTENT_TYPE_COMPONENTS,
+  FETCH_CONTENT_TYPES,
+  fetchContentTypeComponentsComplete,
+  fetchContentTypeComponentsFailed,
+  fetchContentTypesComplete,
+  fetchContentTypesFailed
+} from '../actions/preview';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { fetchContentTypes } from '../../services/content';
+import { fetchContentTypes, getContentByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
+import GlobalState from '../../models/GlobalState';
+import { Observable } from 'rxjs';
 
 const fetch: Epic = (action$, state$) => action$.pipe(
   ofType(FETCH_CONTENT_TYPES),
@@ -30,6 +39,16 @@ const fetch: Epic = (action$, state$) => action$.pipe(
   ))
 );
 
+const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
+  ofType(FETCH_CONTENT_TYPE_COMPONENTS),
+  withLatestFrom(state$),
+  switchMap(([action, state]) => getContentByContentType(state.sites.active, action.payload.contentType, action.payload.options).pipe(
+    map(fetchContentTypeComponentsComplete),
+    catchAjaxError(fetchContentTypeComponentsFailed)
+  ))
+);
+
 export default [
-  fetch
+  fetch,
+  fetchComponentsByContentType
 ] as Epic[];
