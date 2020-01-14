@@ -800,7 +800,6 @@ export function uploadDataUrl(
     const blob = dataUriToBlob(file.dataUrl);
 
     uppy.on('upload-success', () => {
-      console.info('Upload Success.');
       subscriber.complete();
     });
 
