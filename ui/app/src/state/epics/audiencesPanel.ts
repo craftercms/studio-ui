@@ -18,8 +18,8 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from "rxjs/operators";
-import { catchAjaxError } from "../../utils/ajax";
+import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchAjaxError } from '../../utils/ajax';
 import {
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
   fetchAudiencesPanelFormDefinitionComplete,
@@ -29,25 +29,26 @@ import {
   SET_ACTIVE_MODEL_COMPLETE,
   setActiveModelComplete as setActiveModelCompleteAction,
   setActiveModelFailed
-} from "../actions/preview";
+} from '../actions/preview';
 import {
-  fetchActiveModel,
+  fetchActiveTargetingModel,
   getAudiencesPanelConfig,
   setActiveModel as setActiveModelService
-} from "../../services/configuration";
-import { forkJoin, Observable } from "rxjs";
-import GlobalState from "../../models/GlobalState";
-import { getHostToGuestBus } from "../../modules/Preview/previewContext";
+} from '../../services/configuration';
+import { forkJoin, Observable } from 'rxjs';
+import GlobalState from '../../models/GlobalState';
+import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_AUDIENCES_PANEL_FORM_DEFINITION),
   withLatestFrom(state$),
-  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), fetchActiveModel()])),
+  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), fetchActiveTargetingModel()]).pipe(
+    catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
+  )),
   map(response => fetchAudiencesPanelFormDefinitionComplete({
     contentType: response[0],
     model: response[1]
-  })),
-  catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
+  }))
 );
 
 const setActiveModel: Epic = (action$) => action$.pipe(
