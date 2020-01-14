@@ -547,10 +547,6 @@ export class ContentController {
 
 }
 
-// parentModelId: isNullOrUndefined(ModelHelper.prop(model, 'path'))
-//   ? findParentModelId(modelId, this.children, models)
-//   : null
-
 function getParentModelId(modelId, model, models, children) {
   return isNullOrUndefined(ModelHelper.prop(model, 'path'))
     ? findParentModelId(modelId, children, models)
