@@ -181,7 +181,7 @@ export class ContentController {
       fieldId,
       index,
       value,
-      parentModelId: getParentModelId(modelId, model, models, this.children)
+      parentModelId: getParentModelId(modelId, models, this.children)
     });
 
   }
@@ -426,7 +426,7 @@ export class ContentController {
       modelId,
       fieldId,
       index,
-      parentModelId: getParentModelId(modelId, model, models, this.children)
+      parentModelId: getParentModelId(modelId, models, this.children)
     });
 
   }
@@ -547,8 +547,8 @@ export class ContentController {
 
 }
 
-function getParentModelId(modelId, model, models, children) {
-  return isNullOrUndefined(ModelHelper.prop(model, 'path'))
+function getParentModelId(modelId, models, children) {
+  return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
     ? findParentModelId(modelId, children, models)
     : null
 }
