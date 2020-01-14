@@ -182,7 +182,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 }
 
 // TODO: asses the location of profile methods.
-export function fetchActiveModel(): Observable<ContentInstance> {
+export function fetchActiveTargetingModel(): Observable<ContentInstance> {
   return get(`/api/1/profile/get`).pipe(
     map(response => {
       const data = reversePluckProps(response.response, 'id');
