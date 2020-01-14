@@ -190,10 +190,7 @@ export default function AudiencesPanel() {
   };
 
   const saveModel = () => {
-    const model = reversePluckProps(state.model, 'craftercms');
-    const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
-
-    dispatch(setActiveModel(params));
+    dispatch(setActiveModel(state.model));
   };
 
   const setDefaults = (contentType) => {

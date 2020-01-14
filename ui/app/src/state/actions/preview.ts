@@ -22,6 +22,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import GuestData from '../../models/GlobalState';
+import { reversePluckProps } from '../../utils/object';
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -206,10 +207,13 @@ export function updateAudiencesPanelModel(data): StandardAction {
 }
 
 export function setActiveModel(data): StandardAction {
+  const model = reversePluckProps(data, 'craftercms');
+  const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
+
   return {
     type: SET_ACTIVE_MODEL,
-    payload: data
-  }
+    payload: params
+  };
 }
 
 export function setActiveModelComplete(data): StandardAction {
