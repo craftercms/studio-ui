@@ -166,11 +166,11 @@ const messages: any = defineMessages({
     defaultMessage: 'Descending'
   },
   moreRelevantFirst: {
-    id: 'searchFilter.moreRelevantFirst',
+    id: 'searchFilter.byRelevanceDescMessage',
     defaultMessage: 'Most relevant first'
   },
   lessRelevantFirst: {
-    id: 'searchFilter.lessRelevantFirst',
+    id: 'searchFilter.byRelevanceAscMessage',
     defaultMessage: 'Less relevant first'
   },
   apply: {
