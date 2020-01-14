@@ -414,9 +414,8 @@ export function updateField(
     modelId,
     parentModelId,
     doc => {
-      let fieldNode;
+      let fieldNode = extractNode(doc, fieldId, indexToUpdate);
       if (typeof indexToUpdate === 'string') {
-        fieldNode = extractNode(doc, fieldId, indexToUpdate);
         let repeatFieldId = fieldId.split('.');
         if (!fieldNode) {
           let childIndex = repeatFieldId.length;
@@ -429,7 +428,6 @@ export function updateField(
           doc.documentElement.appendChild(parentNode);
         }
       } else {
-        fieldNode = doc.querySelector(`:scope > ${fieldId}`);
         if (!fieldNode) {
           fieldNode = document.createElement(fieldId);
           doc.documentElement.appendChild(fieldNode);
@@ -725,6 +723,9 @@ function extractNode(doc, fieldId, index) {
   const indexes = `${index}`.split('.').map(i => parseInt(i, 10));
   const fields = fieldId.split('.');
   let aux = doc.documentElement;
+  if (index === null) {
+    return aux.querySelector(`:scope > ${fieldId}`);
+  }
   if (indexes.length > fields.length) {
     // There's more indexes than fields
     throw new Error(
