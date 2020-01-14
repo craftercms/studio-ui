@@ -244,7 +244,7 @@ const reducer = createReducer<GlobalState['preview']>({
     nextState = {
       ...nextState,
       audiencesPanel: audiencesPanelInitialState
-    }
+    };
 
     if (payload.nextUrl !== nextState.currentUrl) {
       nextState = {
@@ -308,7 +308,8 @@ const reducer = createReducer<GlobalState['preview']>({
     audiencesPanel: {
       ...state.audiencesPanel,
       isApplying: false,
-      applied: false
+      applied: false,
+      error: payload.response
     }
   })
 });
