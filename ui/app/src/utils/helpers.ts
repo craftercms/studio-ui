@@ -17,7 +17,6 @@
 
 import { createLookupTable, retrieveProperty } from './object';
 import ContentType, { ContentTypeField } from '../models/ContentType';
-import { EffectCallback, useEffect } from 'react';
 
 export class ContentTypeHelper {
 
@@ -96,8 +95,4 @@ export class ContentTypeHelper {
     this.descriptor = descriptor;
   }
 
-}
-
-export function useOnMount(componentDidMount: EffectCallback) {
-  useEffect(componentDidMount, []);
 }

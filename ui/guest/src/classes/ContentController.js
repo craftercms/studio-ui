@@ -17,17 +17,22 @@
 
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { filter, map, share } from 'rxjs/operators';
+import { filter, map, share, take } from 'rxjs/operators';
 import { ModelHelper } from './ModelHelper';
 import {
   CONTENT_TYPES_RESPONSE,
   createLookupTable,
   DELETE_ITEM_OPERATION,
+  findComponentContainerFields,
+  forEach,
   GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
   INSERT_ITEM_OPERATION,
+  isNullOrUndefined,
   MOVE_ITEM_OPERATION,
+  notNullOrUndefined,
   pluckProps,
+  popPiece,
   reversePluckProps,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
@@ -59,12 +64,40 @@ export class ContentController {
     share()
   );
 
+  children = {
+    /* [id]: [id, id, id] */
+  };
+
   modelRequestsInFlight = {};
 
   constructor() {
     fromTopic(CONTENT_TYPES_RESPONSE).subscribe((data) => {
       this.contentTypesResponseReceived(data.payload);
     });
+  }
+
+  computeChildren(model) {
+
+    let childIds = [];
+    const modelId = ModelHelper.prop(model, 'id');
+    const children = this.children;
+    const contentTypeId = ModelHelper.getContentTypeId(model);
+    const contentType = this.getCachedContentType(contentTypeId);
+
+    findComponentContainerFields(contentType.fields).forEach((field) => {
+      const value = ModelHelper.value(model, field.id);
+      if (value != null) {
+        if (field.type === 'node-selector') {
+          childIds = childIds.concat(value);
+        } else if (field.type === 'repeat') {
+          // TODO ...
+          throw new Error('Path not implemented.');
+        }
+      }
+    });
+
+    children[modelId] = (childIds.length) ? childIds : null;
+
   }
 
   getModel(modelId)/*: Promise<Model> */ {
@@ -352,17 +385,23 @@ export class ContentController {
   }
 
   deleteItem(
-    modelId/*: string*/,
-    fieldId/*: string*/,
-    index/*: number*/,
+    modelId/*: string */,
+    fieldId/*: string */,
+    index/*: number | string */,
   ) {
+
+    const isStringIndex = typeof index === 'string';
+    const parsedIndex = parseInt(popPiece(`${index}`), 10);
 
     const models = this.getCachedModels();
     const model = models[modelId];
-    const collection = ModelHelper.value(model, fieldId);
+    const collection = isStringIndex
+      ? ModelHelper.extractCollection(model, fieldId, index)
+      : ModelHelper.value(model, fieldId);
+
     const result = collection
-      .slice(0, index)
-      .concat(collection.slice(index + 1));
+      .slice(0, parsedIndex)
+      .concat(collection.slice(parsedIndex + 1));
 
     ContentController.models$.next({
       ...models,
@@ -375,10 +414,17 @@ export class ContentController {
     ContentController.operations$.next({
       type: DELETE_ITEM_OPERATION,
       args: arguments,
-      state: { item: collection[index] }
+      state: { item: collection[parsedIndex] }
     });
 
-    post(DELETE_ITEM_OPERATION, { modelId, fieldId, index });
+    post(DELETE_ITEM_OPERATION, {
+      modelId,
+      fieldId,
+      index,
+      parentModelId: isNullOrUndefined(ModelHelper.prop(model, 'path'))
+        ? findParentModelId(modelId, this.children, models)
+        : null
+    });
 
   }
 
@@ -415,6 +461,15 @@ export class ContentController {
     const currentModels = ContentController.models$.value;
 
     post(GUEST_MODELS_RECEIVED, responseModels);
+
+    ContentController.contentTypes$.pipe(
+      filter(hash => Object.values(hash).length !== 0),
+      take(1)
+    ).subscribe(() => {
+      Object.values(responseModels).forEach((model) =>
+        this.computeChildren(model)
+      );
+    });
 
     ContentController.models$.next(
       Object.assign(
@@ -487,6 +542,30 @@ export class ContentController {
 
   }
 
+}
+
+function findParentModelId(modelId, childrenMap, models) {
+  const parentId = forEach(
+    Object.entries(childrenMap),
+    ([id, children]) => {
+      if (
+        notNullOrUndefined(children) &&
+        (id !== modelId) &&
+        children.includes(modelId)
+      ) {
+        return id;
+      }
+    },
+    null
+  );
+  return notNullOrUndefined(parentId)
+    // If it has a path, it is not embedded and hence the parent
+    // Otherwise, need to keep looking.
+    ? notNullOrUndefined(ModelHelper.prop(models[parentId], 'path'))
+      ? parentId
+      : findParentModelId(parentId, childrenMap, models)
+    // No parent found for this model
+    : null;
 }
 
 function fetchById(id, site = Cookies.get('crafterSite')) {
@@ -719,7 +798,6 @@ function fetchById(id, site = Cookies.get('crafterSite')) {
     ))
   );
 }
-
 
 function reducer(lookupTable, model) {
 

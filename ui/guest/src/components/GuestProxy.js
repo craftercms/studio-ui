@@ -43,11 +43,12 @@ export function GuestProxy(props) {
         index = element.getAttribute('data-craftercms-index'),
         label = element.getAttribute('data-craftercms-label');
 
-      if (notNullOrUndefined(index)) {
-        // TODO: Disabled to test nested collection index format (dot notation)
-        // Need to assess the change for stability. Unsure if somewhere, the system
-        // relies on the index being an integer/number.
-        // index = parseInt(index, 10);
+      if (notNullOrUndefined(index) && !index.includes('.')) {
+        // TODO: Need to assess the impact of index being a string with dot notation
+        // Unsure if somewhere, the system relies on the index being an integer/number.
+        // Affected inventory:
+        // - Guest.moveComponent() - string type handled
+        index = parseInt(index, 10);
       }
 
       context.register({ element, modelId, fieldId, index, label });

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -42,7 +42,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, sortItem } from '../../services/content';
+import { deleteItem, insertComponent, moveItem, sortItem } from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -51,9 +51,23 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
+import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
 import { nnou, nou } from '../../utils/object';
-import { useOnMount } from '../../utils/helpers';
+
+// WARNING: This assumes there will only ever be 1 PreviewConcierge. This wouldn't be viable
+// with multiple instances or multiple unrelated content type collections to hold per instance.
+// This subject helps keep the async nature of content type fetching and guest
+// check in events. The idea is that it keeps things in sync despite the timing of
+// content types getting fetch and guest checking in.
+const contentTypes$: {
+  (): ReplaySubject<ContentType[]>;
+  destroy(): void;
+} = (() => {
+  let instance: ReplaySubject<ContentType[]>;
+  const fn: any = () => instance ?? (instance = new ReplaySubject<ContentType[]>(1));
+  fn.destroy = () => (instance = null);
+  return fn;
+})();
 
 export function PreviewConcierge(props: any) {
 
@@ -62,7 +76,7 @@ export function PreviewConcierge(props: any) {
   const site = useActiveSiteId();
   const { guest, selectedTool } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
+  const GUEST_BASE = useSelection(state => state.env.GUEST_BASE);
   const priorState = useRef({ site });
   const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
@@ -74,7 +88,12 @@ export function PreviewConcierge(props: any) {
 
   useOnMount(() => {
     const sub = beginGuestDetection(setSnack);
-    return () => sub.unsubscribe();
+    return () => {
+      sub.unsubscribe();
+      contentTypes$().complete();
+      contentTypes$().unsubscribe();
+      contentTypes$.destroy();
+    }
   });
 
   useEffect(() => {
@@ -95,10 +114,9 @@ export function PreviewConcierge(props: any) {
             nnou(site) && dispatch(changeCurrentUrl('/'));
           } else {
 
-            // If the content types have already been loaded, contentTypes$ subject
-            // will emit immediately. If not, it will emit when the content type fetch
-            // payload does arrive.
-            contentTypes$.pipe(take(1)).subscribe((payload) => {
+            // If the content types have already been loaded, contentTypes$ subject will emit
+            // immediately. If not, it will emit when the content type fetch payload does arrive.
+            contentTypes$().pipe(take(1)).subscribe((payload) => {
               hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
             });
 
@@ -112,12 +130,11 @@ export function PreviewConcierge(props: any) {
         case SORT_ITEM_OPERATION: {
           const { modelId, fieldId, currentIndex, targetIndex } = payload;
           sortItem(site, guest.models[modelId].craftercms.path, fieldId, currentIndex, targetIndex).subscribe(
-            (response) => {
-              console.log('Operation completed.', response);
-              setSnack({ message: 'Operation completed.' });
+            () => {
+              setSnack({ message: 'Sort operation completed.' });
             },
             (error) => {
-              console.log('Operation failed.', error);
+              console.error(`${type} failed`, error);
               setSnack({ message: error.message });
             }
           );
@@ -133,34 +150,70 @@ export function PreviewConcierge(props: any) {
             contentTypes.find((o) => o.id === instance.craftercms.contentType),
             instance,
             shared
-          ).subscribe(() => {
-            console.log('Finished');
-          }, (e) => {
-            console.log(e);
-          });
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Insert component operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Sort operation failed.' });
+            }
+          );
           break;
         }
         case INSERT_ITEM_OPERATION: {
+          setSnack({ message: 'Insert item operation not implemented.' });
           break;
         }
         case MOVE_ITEM_OPERATION: {
+          const {
+            originalModelId,
+            originalFieldId,
+            originalIndex,
+            targetModelId,
+            targetFieldId,
+            targetIndex
+          } = payload;
+          moveItem(
+            site,
+            originalModelId,
+            originalFieldId,
+            originalIndex,
+            targetModelId,
+            targetFieldId,
+            targetIndex
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Move operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Move operation failed.' });
+            }
+          );
           break;
         }
         case DELETE_ITEM_OPERATION: {
-          const { modelId, fieldId, index } = payload;
+          const { modelId, fieldId, index, parentModelId } = payload;
           deleteItem(
             site,
-            guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
             fieldId,
-            index
-          ).subscribe(() => {
-            console.log('Finished');
-          }, (e) => {
-            console.log(e);
-          });
+            index,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Delete operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Delete operation failed.' });
+            }
+          );
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
+          setSnack({ message: 'Updated operation not implemented.' });
           break;
         }
         case ICE_ZONE_SELECTED: {
@@ -183,9 +236,14 @@ export function PreviewConcierge(props: any) {
       }
     });
 
+    const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
+
     // Retrieve all content types in the system
-    (!contentTypes && site) && dispatch(fetchContentTypes());
-    contentTypes && contentTypes$.next(contentTypes);
+    if (nnou(site) && nou(contentTypes) && !contentTypesBranch.isFetching && nou(contentTypesBranch.error)) {
+      dispatch(fetchContentTypes());
+    }
+
+    nnou(contentTypes) && contentTypes$().next(contentTypes);
 
     let fetchSubscription;
     switch (selectedTool) {
@@ -211,7 +269,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, selectedTool, dispatch, contentTypes, contentTypes$, guest]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {
@@ -231,7 +289,7 @@ export function PreviewConcierge(props: any) {
       {props.children}
       {
         (snack) && <Snackbar
-          anchorOrigin={snack.position ?? { vertical: 'bottom', horizontal: 'left' }}
+          anchorOrigin={snack.position ?? { vertical: 'top', horizontal: 'right' }}
           open={true}
           autoHideDuration={snack.duration ?? 5000}
           onClose={() => setSnack(null)}
