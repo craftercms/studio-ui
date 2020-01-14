@@ -139,7 +139,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 }
 
                 return (
-                  <AudiencesFormSection field={contentType.fields[field]} key={field} showDivider={true}>
+                  <AudiencesFormSection field={contentType.fields[field]} key={field} showDivider>
                     <Control
                       {...controlProps}
                     />
@@ -241,12 +241,11 @@ export default function AudiencesPanel() {
 
 type AudiencesFormSectionProps = PropsWithChildren<{
   field: ContentTypeField;
-  showDivider: boolean;
+  showDivider?: boolean;
 }>
 
 function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const classes = useStyles({});
-
   const { field, showDivider, children } = props;
 
   return (
