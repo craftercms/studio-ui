@@ -24,7 +24,7 @@ import FormControl from "@material-ui/core/FormControl";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { Control } from "../../../models/FormsEngine";
 
-const useStyles = makeStyles((theme: Theme) =>
+export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     formControl: {
       width: '100%',

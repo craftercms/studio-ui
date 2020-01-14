@@ -21,25 +21,8 @@ import React from "react";
 import DateTimePicker from "../../DateTimePicker";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import { DateTimeControl } from "../../../models/FormsEngine";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      width: '100%',
-      '& .MuiFormGroup-root': {
-        marginLeft: '10px',
-      },
-      '& .MuiInputBase-root': {
-        marginTop: '12px !important',
-      }
-    },
-    InputLabel: {
-      position: 'relative'
-    }
-  }),
-);
+import { useStyles } from "./Input";
 
 export default function DateTime(props: DateTimeControl) {
   const {
