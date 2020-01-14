@@ -328,6 +328,10 @@ const contentTypesMessages = defineMessages({
   siteConfigLandingMessage: {
     id: 'siteConfig.landingMessage',
     defaultMessage: 'Please choose a tool from the left.'
+  },
+  insertExpressionMessage: {
+    id: 'siteConfig.insertExpressionMessage',
+    defaultMessage: 'Insert Expression'
   }
 });
 
