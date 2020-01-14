@@ -414,26 +414,23 @@ export function updateField(
     modelId,
     parentModelId,
     doc => {
-      let fieldNode = extractNode(doc, fieldId, indexToUpdate);
-      if (typeof indexToUpdate === 'string') {
-        let repeatFieldId = fieldId.split('.');
-        if (!fieldNode) {
-          let childIndex = repeatFieldId.length;
-          let parentIndex = repeatFieldId.length - 1;
-          let parentNode = document.createElement(repeatFieldId[childIndex]);
-          let itemNode = document.createElement('item');
-          fieldNode = document.createElement(repeatFieldId[parentIndex]);
-          itemNode.appendChild(fieldNode);
-          parentNode.appendChild(itemNode);
-          doc.documentElement.appendChild(parentNode);
+      let node = extractNode(doc, removeLastPiece(fieldId) || fieldId, indexToUpdate);
+
+      if (fieldId.includes('.')) {
+        // node is <item/> inside collection
+        const fieldToUpdate = popPiece(fieldId);
+        let fieldNode = node.querySelector(`:scope > ${fieldToUpdate}`);
+        if (nou(fieldNode)) {
+          fieldNode = doc.createElement(fieldToUpdate);
+          node.appendChild(fieldNode);
         }
-      } else {
-        if (!fieldNode) {
-          fieldNode = document.createElement(fieldId);
-          doc.documentElement.appendChild(fieldNode);
-        }
+        node = fieldNode;
+      } else if (!node) {
+        // node is <fieldId/> inside the doc
+        node = doc.createElement(fieldId);
+        doc.documentElement.appendChild(node);
       }
-      fieldNode.innerHTML = `<![CDATA[${value}]]>`;
+      node.innerHTML = `<![CDATA[${value}]]>`;
     }
   );
 }
