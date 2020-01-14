@@ -19,9 +19,9 @@ import { get } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { extractLocalizedElements, fromString, getInnerHtml, getInnerHtmlNumber } from '../utils/xml';
-import ContentType, { ContentTypeField } from "../models/ContentType";
-import { createLookupTable, reversePluckProps } from "../utils/object";
-import ContentInstance from "../models/ContentInstance";
+import ContentType, { ContentTypeField } from '../models/ContentType';
+import { createLookupTable, reversePluckProps } from '../utils/object';
+import ContentInstance from '../models/ContentInstance';
 
 type CrafterCMSModules = 'studio' | 'engine';
 
@@ -185,20 +185,12 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 export function fetchActiveModel(): Observable<ContentInstance> {
   return get(`/api/1/profile/get`).pipe(
     map(response => {
-      const propsKeys = reversePluckProps(response.response, 'id');
-      const props = {};
+      const data = reversePluckProps(response.response, 'id');
       const id = response.response.id ? response.response.id : null;
-
-      for (let [key, value] of Object.entries(propsKeys)) {
-        props[key] = {
-          key: value,
-          label: value
-        }
-      }
 
       return {
         craftercms: id,
-        ...props
+        ...data
       };
     })
   );

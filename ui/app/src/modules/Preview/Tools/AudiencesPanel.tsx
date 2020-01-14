@@ -116,7 +116,6 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     onSetDefaults
   } = props;
   const contentType = audiencesResource.read();
-
   return (
     <ToolPanel title={translations.audiencesPanel}>
       {
@@ -129,13 +128,13 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
                 const controlProps = {
                   field: contentType.fields[field],
-                  value: model[field] ? model[field].key : undefined,
+                  value: model[field] ? model[field] : undefined,
                   onChange: onFormChange,
                   disabled: modelApplying
                 };
 
                 if (controlProps.field === 'date-time' && model[`${field}_tz`]) {
-                  controlProps['timezone'] = model[`${field}_tz`].key;
+                  controlProps['timezone'] = model[`${field}_tz`];
                 }
 
                 return (
@@ -186,16 +185,13 @@ export default function AudiencesPanel() {
 
   const onFormChange = (name: string, value: string) => {
     dispatch(updateAudiencesPanelModel({
-      [name]: {
-        key: value,
-        label: value
-      }
+      [name]: value
     }));
   };
 
   const saveModel = () => {
     const model = reversePluckProps(state.model, 'craftercms');
-    const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val.key}`).join('&'));
+    const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
 
     dispatch(setActiveModel(params));
   };
@@ -205,10 +201,7 @@ export default function AudiencesPanel() {
 
     Object.keys(contentType.fields).forEach((fieldId: string) => {
       const propValue = contentType.fields[fieldId].defaultValue;
-      props[fieldId] = {
-        key: propValue,
-        label: propValue
-      };
+      props[fieldId] = propValue;
     });
 
     dispatch(updateAudiencesPanelModel(props));
