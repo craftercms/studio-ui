@@ -248,7 +248,8 @@ export function PreviewConcierge(props: any) {
         if (
           !audiencesPanel.isFetching &&
           nou(audiencesPanel.contentType) &&
-          nou(audiencesPanel.model)
+          nou(audiencesPanel.model) &&
+          nou(audiencesPanel.error)
         ) {
           dispatch(fetchAudiencesPanelFormDefinition());
         }
