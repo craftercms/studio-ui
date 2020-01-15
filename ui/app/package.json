@@ -57,8 +57,9 @@
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.0",
-    "@babel/core": "^7.6.0",
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/runtime": "^7.8.3",
     "babel-plugin-react-intl": "5.1.11",
     "ncp": "^2.0.0",
     "node-sass": "^4.12.0",

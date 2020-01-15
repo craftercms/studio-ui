@@ -29,9 +29,10 @@ import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
 import { Subject, fromEvent, forkJoin } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { filter, map, take, catchError } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
+import babel from '../utils/babelHelpers-legacy';
 
 /**
  *
@@ -115,6 +116,7 @@ export function createCodebaseBridge() {
       path,
       string,
       auth,
+      babel
     },
 
     i18n: {
