@@ -52,7 +52,6 @@ export default function Dropdown(props: Control) {
         {field.name}
       </InputLabel>
       <Select
-        labelId={field.id}
         value={value}
         onChange={handleSelectChange}
         disabled={disabled}

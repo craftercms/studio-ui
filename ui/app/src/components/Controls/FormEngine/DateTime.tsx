@@ -38,17 +38,6 @@ export default function DateTime(props: DateTimeControl) {
   } = props;
   const classes = useStyles({});
 
-  const dateTimePickerChange = (scheduledDateTime: any) => {
-    const datetime = scheduledDateTime.toISOString();
-    const tz = scheduledDateTime.tz();
-
-    onChange(datetime);   // TODO: return scheduledDateTime so it can retrieve timezone too
-    // tz && onChange(`${name}_tz`, encodeURIComponent(tz));    // TODO: encode not in here
-
-    // TODO: on change directly to DateTimePicker, fields retrievals on audiencesPanel (kinda formsEngine)
-
-  };
-
   return (
     <FormControl className={classes.formControl}>
       <InputLabel
@@ -60,7 +49,7 @@ export default function DateTime(props: DateTimeControl) {
       <DateTimePicker
         date={value}
         timezone={timezone}
-        onChange={dateTimePickerChange}
+        onChange={onChange}
         disabled={disabled}
       />
     </FormControl>

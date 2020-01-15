@@ -30,25 +30,18 @@ import {
   setActiveModelComplete as setActiveModelCompleteAction,
   setActiveModelFailed
 } from '../actions/preview';
-import {
-  fetchActiveTargetingModel,
-  getAudiencesPanelConfig,
-  setActiveModel as setActiveModelService
-} from '../../services/configuration';
-import { forkJoin, Observable } from 'rxjs';
+import { getAudiencesPanelPayload, setActiveModel as setActiveModelService } from '../../services/configuration';
+import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../modules/Preview/previewContext';
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_AUDIENCES_PANEL_FORM_DEFINITION),
   withLatestFrom(state$),
-  switchMap(([, state]) => forkJoin([getAudiencesPanelConfig(state.sites.active), fetchActiveTargetingModel()]).pipe(
+  switchMap(([, state]) => getAudiencesPanelPayload(state.sites.active).pipe(
+    map(fetchAudiencesPanelFormDefinitionComplete),
     catchAjaxError(fetchAudiencesPanelFormDefinitionFailed)
-  )),
-  map(response => fetchAudiencesPanelFormDefinitionComplete({
-    contentType: response[0],
-    model: response[1]
-  }))
+  ))
 );
 
 const setActiveModel: Epic = (action$) => action$.pipe(

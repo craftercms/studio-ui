@@ -17,7 +17,7 @@
 
 import { get } from '../utils/ajax';
 import { map, pluck } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { extractLocalizedElements, fromString, getInnerHtml, getInnerHtmlNumber } from '../utils/xml';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import { createLookupTable, reversePluckProps } from '../utils/object';
@@ -137,12 +137,12 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
         const xml = fromString(content);
         const properties = Array.from(xml.querySelectorAll('property')).map((elem) => {
 
-          const //
+          const
             name = getInnerHtml(elem.querySelector('name')),
             label = getInnerHtml(elem.querySelector('label')),
             type = getInnerHtml(elem.querySelector('type')),
-            defaultValue = getInnerHtml(elem.querySelector('default_value')),
             hint = getInnerHtml(elem.querySelector('hint'));
+          let defaultValue: any = getInnerHtml(elem.querySelector('default_value'));
 
           let possibleValues: ContentTypeField['values'];
 
@@ -152,10 +152,14 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
               return {
                 label: element.getAttribute('label') ?? value,
                 value: value
-              }
+              };
             });
           } else {
             possibleValues = [];
+          }
+
+          if (type === 'checkboxes') {
+            defaultValue = defaultValue ? defaultValue.split(',') : [];
           }
 
           return {
@@ -182,7 +186,7 @@ export function getAudiencesPanelConfig(site: string): Observable<ContentType> {
 }
 
 // TODO: asses the location of profile methods.
-export function fetchActiveTargetingModel(): Observable<ContentInstance> {
+export function fetchActiveTargetingModel(site?: string): Observable<ContentInstance> {
   return get(`/api/1/profile/get`).pipe(
     map(response => {
       const data = reversePluckProps(response.response, 'id');
@@ -204,7 +208,55 @@ export function fetchActiveTargetingModel(): Observable<ContentInstance> {
   );
 }
 
-export function setActiveModel(params: string): Observable<ActiveTargetingModel> {
+export function getAudiencesPanelPayload(site: string): Observable<{ contentType: ContentType, model: ContentInstance }> {
+  return forkJoin({
+    data: fetchActiveTargetingModel(site),
+    contentType: getAudiencesPanelConfig(site)
+  }).pipe(
+    map(({ contentType, data }) => ({
+      contentType,
+      model: deserializeActiveTargetingModelData(data, contentType)
+    }))
+  );
+}
+
+function deserializeActiveTargetingModelData<T extends Object>(data: T, contentType: ContentType): ContentInstance {
+  const contentTypeFields = contentType.fields;
+
+  Object.keys(data).forEach((modelKey) => {
+    if (contentTypeFields[modelKey]) {
+      // if checkbox-group (Array)
+      if (contentTypeFields[modelKey].type === 'checkbox-group') {
+        data[modelKey] = data[modelKey] ? data[modelKey].split(',') : [];
+      }
+    }
+  });
+
+  return {
+    craftercms: {
+      id: '',
+      path: null,
+      label: null,
+      locale: null,
+      dateCreated: null,
+      dateModified: null,
+      contentType: null
+    },
+    ...data
+  };
+}
+
+export function setActiveModel(data): Observable<ActiveTargetingModel> {
+  const model = reversePluckProps(data, 'craftercms');
+
+  Object.keys(model).forEach(key => {
+    if (Array.isArray(model[key])) {
+      model[key] = model[key].join(',');
+    }
+  });
+
+  const params = encodeURI(Object.entries(model).map(([key, val]) => `${key}=${val}`).join('&'));
+
   return get(`/api/1/profile/set?${params}`).pipe(pluck('response'));
 }
 

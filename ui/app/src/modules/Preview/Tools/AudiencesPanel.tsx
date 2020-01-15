@@ -129,11 +129,11 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 const controlProps = {
                   field: contentType.fields[field],
                   value: model[field] ? model[field] : undefined,
-                  onChange: onFormChange(field),
+                  onChange: onFormChange(field, type),
                   disabled: modelApplying
                 };
 
-                if (controlProps.field === 'date-time' && model[`${field}_tz`]) {
+                if (controlProps.field.type === 'date-time' && model[`${field}_tz`]) {
                   controlProps['timezone'] = model[`${field}_tz`];
                 }
 
@@ -183,7 +183,16 @@ export default function AudiencesPanel() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
-  const onFormChange = (fieldName: string) => (value: string) => {
+  const onFormChange = (fieldName: string, type: string) => (value: any) => {
+    if (type === 'date-time') {
+      const timezone = value.tz();
+      value = value.toISOString();
+
+      dispatch(updateAudiencesPanelModel({
+        [`${fieldName}_tz`]: timezone
+      }));
+    }
+
     dispatch(updateAudiencesPanelModel({
       [fieldName]: value
     }));

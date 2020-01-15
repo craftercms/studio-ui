@@ -31,16 +31,14 @@ const useStyles = makeStyles(() => createStyles(controlBaseStyles));
 export default function CheckboxGroup(props: Control) {
   const {
     field,
-    value,
+    value = [],
     onChange,
     disabled
   } = props;
   const classes = useStyles({});
 
-  const valuesArray = value ? value.split(',') : [];
-
   const handleInputChange = (label?: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.persist();
+    const valuesArray = Object.assign([], value);
 
     if (e.target.checked) {
       if (!(label in valuesArray)) {
@@ -49,7 +47,8 @@ export default function CheckboxGroup(props: Control) {
     } else {
       valuesArray.splice(valuesArray.indexOf(label), 1);
     }
-    onChange(valuesArray.join(','));
+
+    onChange(valuesArray);
   };
 
   return (
@@ -68,7 +67,7 @@ export default function CheckboxGroup(props: Control) {
             control={
               <Checkbox
                 color="primary"
-                checked={valuesArray.includes(possibleValue.value)}
+                checked={value.includes(possibleValue.value)}
                 onChange={handleInputChange(possibleValue.value)}
                 disabled={disabled}
               />
