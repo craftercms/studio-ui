@@ -24,11 +24,15 @@ import {
   createLookupTable,
   DELETE_ITEM_OPERATION,
   findComponentContainerFields,
+  forEach,
   GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
   INSERT_ITEM_OPERATION,
+  isNullOrUndefined,
   MOVE_ITEM_OPERATION,
+  notNullOrUndefined,
   pluckProps,
+  popPiece,
   reversePluckProps,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
@@ -156,8 +160,7 @@ export class ContentController {
     return ContentController.contentTypes$.value;
   }
 
-  updateField(modelId, fieldId, value) {
-
+  updateField(modelId, fieldId, index, value) {
     const models = this.getCachedModels();
     const model = { ...models[modelId] };
 
@@ -169,11 +172,17 @@ export class ContentController {
     });
 
     ContentController.operations$.next({
-      type: 'update-field',
-      args: arguments
+      type: UPDATE_FIELD_VALUE_OPERATION,
+      args: { modelId, fieldId, index, value }
     });
 
-    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId });
+    post(UPDATE_FIELD_VALUE_OPERATION, {
+      modelId,
+      fieldId,
+      index,
+      value,
+      parentModelId: getParentModelId(modelId, models, this.children)
+    });
 
   }
 
@@ -381,17 +390,23 @@ export class ContentController {
   }
 
   deleteItem(
-    modelId/*: string*/,
-    fieldId/*: string*/,
-    index/*: number*/,
+    modelId/*: string */,
+    fieldId/*: string */,
+    index/*: number | string */,
   ) {
+
+    const isStringIndex = typeof index === 'string';
+    const parsedIndex = parseInt(popPiece(`${index}`), 10);
 
     const models = this.getCachedModels();
     const model = models[modelId];
-    const collection = ModelHelper.value(model, fieldId);
+    const collection = isStringIndex
+      ? ModelHelper.extractCollection(model, fieldId, index)
+      : ModelHelper.value(model, fieldId);
+
     const result = collection
-      .slice(0, index)
-      .concat(collection.slice(index + 1));
+      .slice(0, parsedIndex)
+      .concat(collection.slice(parsedIndex + 1));
 
     ContentController.models$.next({
       ...models,
@@ -404,10 +419,15 @@ export class ContentController {
     ContentController.operations$.next({
       type: DELETE_ITEM_OPERATION,
       args: arguments,
-      state: { item: collection[index] }
+      state: { item: collection[parsedIndex] }
     });
 
-    post(DELETE_ITEM_OPERATION, { modelId, fieldId, index });
+    post(DELETE_ITEM_OPERATION, {
+      modelId,
+      fieldId,
+      index,
+      parentModelId: getParentModelId(modelId, models, this.children)
+    });
 
   }
 
@@ -525,6 +545,36 @@ export class ContentController {
 
   }
 
+}
+
+function getParentModelId(modelId, models, children) {
+  return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
+    ? findParentModelId(modelId, children, models)
+    : null
+}
+
+function findParentModelId(modelId, childrenMap, models) {
+  const parentId = forEach(
+    Object.entries(childrenMap),
+    ([id, children]) => {
+      if (
+        notNullOrUndefined(children) &&
+        (id !== modelId) &&
+        children.includes(modelId)
+      ) {
+        return id;
+      }
+    },
+    null
+  );
+  return notNullOrUndefined(parentId)
+    // If it has a path, it is not embedded and hence the parent
+    // Otherwise, need to keep looking.
+    ? notNullOrUndefined(ModelHelper.prop(models[parentId], 'path'))
+      ? parentId
+      : findParentModelId(parentId, childrenMap, models)
+    // No parent found for this model
+    : null;
 }
 
 function fetchById(id, site = Cookies.get('crafterSite')) {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   checkInGuest,
@@ -24,6 +24,9 @@ import {
   clearSelectForEdit,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
+  DESKTOP_ASSET_DROP,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
+  fetchAssetsPanelItems,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -41,7 +44,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, moveItem, sortItem } from '../../services/content';
+import { deleteItem, insertComponent, moveItem, sortItem, updateField, uploadDataUrl } from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -50,9 +53,23 @@ import Button from '@material-ui/core/Button';
 import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { useDispatch } from 'react-redux';
-import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
-import { nnou } from '../../utils/object';
-import { useOnMount } from '../../utils/helpers';
+import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
+import { nnou, nou, pluckProps } from '../../utils/object';
+
+// WARNING: This assumes there will only ever be 1 PreviewConcierge. This wouldn't be viable
+// with multiple instances or multiple unrelated content type collections to hold per instance.
+// This subject helps keep the async nature of content type fetching and guest
+// check in events. The idea is that it keeps things in sync despite the timing of
+// content types getting fetch and guest checking in.
+const contentTypes$: {
+  (): ReplaySubject<ContentType[]>;
+  destroy(): void;
+} = (() => {
+  let instance: ReplaySubject<ContentType[]>;
+  const fn: any = () => instance ?? (instance = new ReplaySubject<ContentType[]>(1));
+  fn.destroy = () => (instance = null);
+  return fn;
+})();
 
 export function PreviewConcierge(props: any) {
 
@@ -61,18 +78,18 @@ export function PreviewConcierge(props: any) {
   const site = useActiveSiteId();
   const { guest, selectedTool } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const GUEST_BASE = useSelection<string>(state => state.env.GUEST_BASE);
+  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelection(state => state.env);
   const priorState = useRef({ site });
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
-
-  // This subject helps keep the async nature of content type fetching and guest
-  // check in events. The idea is that it keeps things in sync despite the timing of
-  // content types getting fetch and guest checking in.
-  const contentTypes$ = useMemo(() => new ReplaySubject<ContentType[]>(1), []);
+  const assets = useSelection(state => state.preview.assets);
 
   useOnMount(() => {
     const sub = beginGuestDetection(setSnack);
-    return () => sub.unsubscribe();
+    return () => {
+      sub.unsubscribe();
+      contentTypes$().complete();
+      contentTypes$().unsubscribe();
+      contentTypes$.destroy();
+    }
   });
 
   useEffect(() => {
@@ -85,7 +102,7 @@ export function PreviewConcierge(props: any) {
       switch (type) {
         case GUEST_CHECK_IN: {
 
-          hostToGuest$.next({ type: HOST_CHECK_IN, payload });
+          hostToGuest$.next({ type: HOST_CHECK_IN });
 
           dispatch(checkInGuest(payload));
 
@@ -93,10 +110,9 @@ export function PreviewConcierge(props: any) {
             nnou(site) && dispatch(changeCurrentUrl('/'));
           } else {
 
-            // If the content types have already been loaded, contentTypes$ subject
-            // will emit immediately. If not, it will emit when the content type fetch
-            // payload does arrive.
-            contentTypes$.pipe(take(1)).subscribe((payload) => {
+            // If the content types have already been loaded, contentTypes$ subject will emit
+            // immediately. If not, it will emit when the content type fetch payload does arrive.
+            contentTypes$().pipe(take(1)).subscribe((payload) => {
               hostToGuest$.next({ type: CONTENT_TYPES_RESPONSE, payload });
             });
 
@@ -174,12 +190,13 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case DELETE_ITEM_OPERATION: {
-          const { modelId, fieldId, index } = payload;
+          const { modelId, fieldId, index, parentModelId } = payload;
           deleteItem(
             site,
-            guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
             fieldId,
-            index
+            index,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
               setSnack({ message: 'Delete operation completed.' });
@@ -192,7 +209,18 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          setSnack({ message: 'Updated operation not implemented.' });
+          const { modelId, fieldId, index, parentModelId, value } = payload;
+          updateField(site,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            fieldId,
+            index,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null,
+            value
+          ).subscribe(() => {
+            console.log('Finished');
+          }, (e) => {
+            setSnack({ message: 'Updated operation failed.' });
+          });
           break;
         }
         case ICE_ZONE_SELECTED: {
@@ -212,20 +240,47 @@ export function PreviewConcierge(props: any) {
           dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN));
           break;
         }
+        case DESKTOP_ASSET_DROP:
+          uploadDataUrl(
+            site,
+            pluckProps(payload, 'name', 'type', 'dataUrl'),
+            `/static-assets/images/${payload.modelId}`,
+            XSRF_CONFIG_ARGUMENT
+          ).subscribe(
+            () => {
+            },
+            (error) => {
+              setSnack({ message: error });
+            },
+            () => {
+              hostToGuest$.next({
+                type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                payload: {
+                  id: payload.name,
+                  path: `/static-assets/images/${payload.modelId}/${payload.name}`
+                }
+              });
+            },
+          );
+          break;
       }
     });
 
+    const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
+
     // Retrieve all content types in the system
-    (!contentTypes && site) && dispatch(fetchContentTypes());
-    contentTypes && contentTypes$.next(contentTypes);
+    if (nnou(site) && nou(contentTypes) && !contentTypesBranch.isFetching && nou(contentTypesBranch.error)) {
+      dispatch(fetchContentTypes());
+    }
+
+    nnou(contentTypes) && contentTypes$().next(contentTypes);
 
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        // TODO: aaron to fetch assets here...
+        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems(assets.query));
         break;
       case 'craftercms.ice.components':
-
         break;
     }
 
@@ -234,7 +289,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, selectedTool, dispatch, contentTypes, contentTypes$, guest]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {

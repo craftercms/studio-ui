@@ -23,6 +23,7 @@ const cardTitleStyles = {
   '-webkit-line-clamp': 1,
   '-webkit-box-orient': 'vertical',
   marginBottom: 0,
+  wordBreak: 'break-all'
 };
 
 

@@ -21,6 +21,7 @@ import { Site } from './Site';
 import ContentType from './ContentType';
 import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
+import { ElasticParams, MediaItem } from "./Search";
 import ContentInstance from './ContentInstance';
 
 export interface APIError {
@@ -35,6 +36,15 @@ export interface EntityState<T = any> {
   error: APIError;
   byId: LookupTable<T>;
   isFetching: boolean;
+
+  [key: string]: any;
+}
+
+export interface PagedEntityState<T = any> extends EntityState<T> {
+  page: any;
+  pageNumber: number;
+  count: number;
+  query: ElasticParams;
 }
 
 export interface EditSelection {
@@ -82,6 +92,7 @@ export interface GlobalState {
     tools: Array<any>;
     hostSize: WidthAndHeight;
     guest: GuestData;
+    assets: PagedEntityState<MediaItem>;
   }
 }
 

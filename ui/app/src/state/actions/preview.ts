@@ -22,6 +22,7 @@ import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
 import { GuestData } from '../../models/GlobalState';
+import { ElasticParams, SearchResult } from "../../models/Search";
 
 // region Accommodation Actions
 // To be moved to a common file for sharing across apps
@@ -50,6 +51,8 @@ export const INSTANCE_DRAG_ENDED = 'INSTANCE_DRAG_ENDED';
 export const GUEST_MODELS_RECEIVED = 'GUEST_MODELS_RECEIVED';
 export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
+export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
+export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
 
 // endregion
 
@@ -71,6 +74,9 @@ export const FETCH_CONTENT_TYPES_FAILED = 'FETCH_CONTENT_TYPES_FAILED';
 export const FETCH_CONTENT_MODEL_COMPLETE = 'FETCH_CONTENT_MODEL_COMPLETE';
 export const SET_ITEM_BEING_DRAGGED = 'SET_ITEM_BEING_DRAGGED';
 export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
+export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
+export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
+export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
 
 // endregion
 
@@ -174,5 +180,11 @@ export function setItemBeingDragged(active: boolean): StandardAction {
     payload: active
   };
 }
+
+export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
+
+export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_ASSETS_PANEL_ITEMS_COMPLETE);
+
+export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
 // endregion

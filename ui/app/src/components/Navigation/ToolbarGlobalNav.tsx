@@ -27,11 +27,10 @@ import { palette } from '../../styles/theme';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
-import { useOnMount } from '../../utils/helpers';
 import { getLogoutInfoURL, logout } from '../../services/auth';
 import Cookies from 'js-cookie';
 import GlobalState from '../../models/GlobalState';
-import { useEnv, useSelection } from '../../utils/hooks';
+import { useEnv, useOnMount, useSelection } from '../../utils/hooks';
 
 const useStyles = makeStyles(() => ({
   avatarClickable: {

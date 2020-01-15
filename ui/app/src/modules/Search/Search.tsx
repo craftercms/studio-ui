@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { ElementType, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, useIntl } from "react-intl";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Avatar, Theme } from "@material-ui/core";
@@ -50,6 +50,11 @@ import { History, Location } from 'history';
 import { getContent } from "../../services/content";
 import { palette } from '../../styles/theme';
 import SearchBar from "../../components/SearchBar";
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import { isEditableAsset } from "../../utils/content";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -140,7 +145,35 @@ const useStyles = makeStyles((theme: Theme) => ({
       maxWidth: '100%'
     }
   },
-  videoPreview: {}
+  videoPreview: {},
+  optionIcon: {
+    color: palette.gray.medium3,
+    marginRight: '5px'
+  },
+  mediaCardListRoot: {
+    display: 'flex'
+  },
+  mediaCardListCheckbox: {
+    justifyContent: 'center',
+    order: -2,
+    marginRight: '5px',
+    marginLeft: '16px'
+  },
+  mediaCardListHeader: {
+    marginLeft: '15px'
+  },
+  mediaCardListMedia: {
+    paddingTop: 0,
+    height: '80px',
+    width: '80px',
+    order: -1
+  },
+  mediaCardListMediaIcon: {
+    height: '80px',
+    width: '80px',
+    paddingTop: '0',
+    order: -1
+  }
 }));
 
 const initialSearchParameters: ElasticParams = {
@@ -177,8 +210,23 @@ const messages = defineMessages({
   itemsPerPage: {
     id: 'search.itemsPerPage',
     defaultMessage: 'Items per page:'
-  }
+  },
+  noPermissions: {
+    id: 'search.noPermissions',
+    defaultMessage: 'No permissions available.'
+  },
+  loadingPermissions: {
+    id: 'search.loadingPermissions',
+    defaultMessage: 'Loading...'
+  },
 });
+
+interface CardMenuOption {
+  name: string;
+  icon?: ElementType<any>;
+
+  onClick(...params: any): any;
+}
 
 interface SearchProps {
   history: History;
@@ -201,8 +249,8 @@ interface SearchProps {
 
 function Search(props: SearchProps) {
   const classes = useStyles({});
-  const {current: refs} = useRef<any>({});
-  const {history, location, onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId, previewAppBaseUri} = props;
+  const { current: refs } = useRef<any>({});
+  const { history, location, onEdit, onDelete, onPreview, onSelect, onGetUserPermissions, mode, siteId, previewAppBaseUri } = props;
   const queryParams = useMemo(() => queryString.parse(location.search), [location.search]);
   const searchParameters = useMemo(() => setSearchParameters(initialSearchParameters, queryParams), [queryParams]);
   const [keyword, setKeyword] = useState(queryParams['keywords'] || '');
@@ -217,11 +265,13 @@ function Search(props: SearchProps) {
     data: null
   });
   const onSearch$ = useMemo(() => new Subject<string>(), []);
-  const {formatMessage} = useIntl();
+  const { formatMessage } = useIntl();
   const [apiState, setApiState] = useState({
     error: false,
     errorResponse: null,
   });
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [optionsPermissions, setOptionsPermissions] = useState<any>(formatMessage(messages.loadingPermissions));
 
   refs.createQueryString = createQueryString;
 
@@ -229,16 +279,16 @@ function Search(props: SearchProps) {
 
   useEffect(() => {
     search(siteId, searchParameters).subscribe(
-      ({response}) => {
-        setSearchResults(response.result);
+      (result) => {
+        setSearchResults(result);
       },
-      ({response}) => {
+      ({ response }) => {
         if (response) {
-          setApiState({error: true, errorResponse: response.response});
+          setApiState({ error: true, errorResponse: response.response });
         }
       }
     );
-    return () => setApiState({error: false, errorResponse: null});
+    return () => setApiState({ error: false, errorResponse: null });
   }, [searchParameters, siteId]);
 
   useEffect(() => {
@@ -247,7 +297,7 @@ function Search(props: SearchProps) {
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
       if (!keywords) keywords = undefined;
-      let qs = refs.createQueryString({name: 'keywords', value: keywords});
+      let qs = refs.createQueryString({ name: 'keywords', value: keywords });
       history.push({
         pathname: '/',
         search: `?${qs}`
@@ -264,32 +314,34 @@ function Search(props: SearchProps) {
             <Grid key={i} item xs={12} sm={6} md={4} lg={3} xl={2}>
               <MediaCard
                 item={item}
-                currentView={currentView}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                handlePreview={handlePreview}
-                handlePreviewAsset={handlePreviewAsset}
-                handleSelect={handleSelect}
+                onEdit={handleEdit}
+                onPreview={handlePreview}
+                onPreviewAsset={handlePreviewAsset}
+                onSelect={handleSelect}
                 selected={selected}
-                onGetUserPermissions={onGetUserPermissions}
-                mode={mode}
                 previewAppBaseUri={previewAppBaseUri}
+                onHeaderButtonClick={handleHeaderButtonClick}
               />
             </Grid>
           ) : (
             <Grid key={i} item xs={12}>
               <MediaCard
                 item={item}
-                currentView={currentView}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                handlePreview={handlePreview}
-                handlePreviewAsset={handlePreviewAsset}
-                handleSelect={handleSelect}
+                isList={true}
+                onEdit={handleEdit}
+                onPreview={handlePreview}
+                onPreviewAsset={handlePreviewAsset}
+                onSelect={handleSelect}
+                classes={{
+                  root: classes.mediaCardListRoot,
+                  checkbox: classes.mediaCardListCheckbox,
+                  header: classes.mediaCardListHeader,
+                  media: classes.mediaCardListMedia,
+                  mediaIcon: classes.mediaCardListMediaIcon
+                }}
                 selected={selected}
-                onGetUserPermissions={onGetUserPermissions}
-                mode={mode}
                 previewAppBaseUri={previewAppBaseUri}
+                onHeaderButtonClick={handleHeaderButtonClick}
               />
             </Grid>
           )
@@ -338,7 +390,7 @@ function Search(props: SearchProps) {
       if (queryParams.filters === '{}') {
         queryParams.filters = undefined;
       }
-      newFilters = {...queryParams};
+      newFilters = { ...queryParams };
     } else {
       queryParams.filters = JSON.stringify(filters);
       if (queryParams.filters === '{}') {
@@ -357,7 +409,7 @@ function Search(props: SearchProps) {
   }
 
   function setSearchParameters(initialSearchParameters: ElasticParams, queryParams: Partial<ElasticParams>) {
-    let formatParameters = {...queryParams};
+    let formatParameters = { ...queryParams };
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
       Object.keys(formatParameters.filters).forEach((key) => {
@@ -380,12 +432,12 @@ function Search(props: SearchProps) {
 
       })
     }
-    return {...initialSearchParameters, ...formatParameters};
+    return { ...initialSearchParameters, ...formatParameters };
   }
 
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     let offset = newPage * searchParameters.limit;
-    let qs = refs.createQueryString({name: 'offset', value: offset});
+    let qs = refs.createQueryString({ name: 'offset', value: offset });
     history.push({
       pathname: '/',
       search: `?${qs}`
@@ -393,7 +445,7 @@ function Search(props: SearchProps) {
   }
 
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    let qs = refs.createQueryString({name: 'limit', value: parseInt(event.target.value, 10)});
+    let qs = refs.createQueryString({ name: 'limit', value: parseInt(event.target.value, 10) });
     history.push({
       pathname: '/',
       search: `?${qs}`
@@ -402,23 +454,19 @@ function Search(props: SearchProps) {
 
   function refreshSearch() {
     search(siteId, searchParameters).subscribe(
-      ({response}) => {
-        setSearchResults(response.result);
+      (result) => {
+        setSearchResults(result);
       },
-      ({response}) => {
+      ({ response }) => {
         if (response) {
-          setApiState({error: true, errorResponse: response})
+          setApiState({ error: true, errorResponse: response })
         }
       }
     );
   }
 
-  function handleEdit(path: string, readonly: boolean) {
+  function handleEdit(path: string, readonly: boolean = false) {
     onEdit(path, refreshSearch, readonly);
-  }
-
-  function handleDelete(path: string) {
-    onDelete(path, refreshSearch);
   }
 
   function handlePreview(url: string) {
@@ -429,16 +477,16 @@ function Search(props: SearchProps) {
     if (type === 'Template' || type === 'Groovy') {
       getContent(siteId, url).subscribe(
         (response) => {
-          setPreview({url, open: true, type, name, data: response});
+          setPreview({ url, open: true, type, name, data: response });
         }
       );
     } else {
-      setPreview({url, open: true, type, name, data: null});
+      setPreview({ url, open: true, type, name, data: null });
     }
   }
 
   function handleClosePreview() {
-    setPreview({...preview, url: null, open: false, type: null, name: null, data: null});
+    setPreview({ ...preview, url: null, open: false, type: null, name: null, data: null });
   }
 
   function handleSelect(path: string, isSelected: boolean) {
@@ -495,7 +543,7 @@ function Search(props: SearchProps) {
       case 'Video':
         return (
           <AsyncVideoPlayer
-            playerOptions={{src: preview.url, autoplay: true}}
+            playerOptions={{ src: preview.url, autoplay: true }}
             nonPlayableMessage={formatMessage(messages.videoProcessed)}
           />);
       case 'Page':
@@ -515,13 +563,51 @@ function Search(props: SearchProps) {
     }
   }
 
+  function handleHeaderButtonClick(event: any, item: MediaItem) {
+    setAnchorEl(event.target);
+    onGetUserPermissions(item.path).then(
+      ({ permissions }) => {
+        let options = [];
+        let editable = isEditableAsset(item.path);
+        let isWriteAllowed = permissions.includes('write') || false;
+        let isDeleteAllowed = permissions.includes('delete') || false;
+        if (editable && isWriteAllowed) {
+          options.push(
+            {
+              name: 'Edit',
+              onClick: () => onEdit(item.path, refreshSearch, false),
+              icon: EditIcon
+            }
+          )
+        }
+        if (isDeleteAllowed && mode === 'default') {
+          options.push(
+            {
+              name: 'Delete',
+              onClick: () => onDelete(item.path, refreshSearch),
+              icon: DeleteIcon
+            }
+          )
+        }
+        setOptionsPermissions(options.length ? options : formatMessage(messages.noPermissions));
+      },
+      () => {
+        setOptionsPermissions(formatMessage(messages.noPermissions));
+      },
+    );
+  }
+
+  function handleMenuClose() {
+    setAnchorEl(null);
+  }
+
   return (
     <section className={
       clsx(classes.wrapper, {
         'hasContent': (searchResults && searchResults.total),
         'select': mode === 'select'
-      })
-    }>
+      })}
+    >
       <header className={classes.searchHeader}>
         <div className={classes.search}>
           <SearchBar onChange={handleSearchKeyword} keyword={keyword} closeIcon={true}/>
@@ -575,7 +661,7 @@ function Search(props: SearchProps) {
             labelRowsPerPage={formatMessage(messages.itemsPerPage)}
             count={searchResults.total}
             rowsPerPage={searchParameters.limit}
-            page={searchParameters.offset / searchParameters.limit}
+            page={Math.ceil(searchParameters.offset / searchParameters.limit)}
             backIconButtonProps={{
               'aria-label': 'previous page',
             }}
@@ -614,6 +700,36 @@ function Search(props: SearchProps) {
           {renderPreview(preview)}
         </div>
       </Dialog>
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        {
+          Array.isArray(optionsPermissions) ? (
+            optionsPermissions.map((option: CardMenuOption, i: number) => {
+              let Icon = option.icon;
+              return (
+                <MenuItem
+                  key={i}
+                  onClick={() => {
+                    handleMenuClose();
+                    option.onClick()
+                  }}
+                >
+                  {
+                    Icon && <Icon className={classes.optionIcon}/>
+                  }
+                  {option.name}
+                </MenuItem>
+              )
+            })
+          ) : (
+            <MenuItem>{optionsPermissions}</MenuItem>
+          )
+        }
+      </Menu>
     </section>
   )
 }

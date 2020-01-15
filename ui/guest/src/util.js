@@ -17,8 +17,8 @@
 
 import $ from 'jquery/dist/jquery.slim';
 import { Markers } from './classes/Markers';
-import { interval, fromEvent } from 'rxjs';
-import { switchMap, take, takeUntil, filter } from 'rxjs/operators';
+import { fromEvent, interval } from 'rxjs';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 
 export const foo = () => void null;
 export const
@@ -56,6 +56,8 @@ export const INSTANCE_DRAG_ENDED = 'INSTANCE_DRAG_ENDED';
 export const GUEST_MODELS_RECEIVED = 'GUEST_MODELS_RECEIVED';
 export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
+export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
+export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
 
 // endregion
 
@@ -67,7 +69,8 @@ export const EditingStatus = {
   PLACING_DETACHED_COMPONENT: 'PLACING_DETACHED_COMPONENT',
   PLACING_DETACHED_ASSET: 'PLACING_DETACHED_ASSET',
   EDITING_COMPONENT: 'EDITING_COMPONENT',
-  EDITING_COMPONENT_INLINE: 'EDITING_COMPONENT_INLINE'
+  EDITING_COMPONENT_INLINE: 'EDITING_COMPONENT_INLINE',
+  UPLOAD_ASSET_FROM_DESKTOP: 'UPLOAD_ASSET_FROM_DESKTOP'
 };
 
 export function notNullOrUndefined(value) {
@@ -95,7 +98,7 @@ export function forEach(array, fn, emptyReturnValue) {
   for (let i = 0, l = array.length; i < l; i++) {
     const result = fn(array[i], i, array);
     if (result === 'continue') {
-      continue;
+
     } else if (result === 'break') {
       break;
     } else if (result !== undefined) {
@@ -444,9 +447,10 @@ export function setProperty(object, prop, value) {
   if (object) {
     const props = prop.split('.');
     const propToSet = props.pop();
-    const target = retrieveProperty(object, props.join('.'));
+    let target = retrieveProperty(object, props.join('.'));
     if (!target) {
       setProperty(object, props.join('.'), {});
+      target = retrieveProperty(object, props.join('.'));
     }
     target[propToSet] = value;
     return true;
@@ -497,4 +501,25 @@ export function addClickListener(element, type, handler) {
     ))
   ).subscribe(handler);
 
+}
+
+export function isElementInView(element, fullyInView) {
+  var pageTop = $(window).scrollTop();
+  var pageBottom = pageTop + $(window).height();
+  var elementTop = $(element).offset().top;
+  var elementBottom = elementTop + $(element).height();
+
+  if (fullyInView === true) {
+    return ((pageTop < elementTop) && (pageBottom > elementBottom));
+  } else {
+    return ((elementTop <= pageBottom) && (elementBottom >= pageTop));
+  }
+}
+
+export function removeLastPiece(str, splitChar = '.') {
+  return str.substr(0, str.lastIndexOf(splitChar));
+}
+
+export function popPiece(str, splitChar = '.') {
+  return str.substr(str.lastIndexOf(splitChar) + 1);
 }

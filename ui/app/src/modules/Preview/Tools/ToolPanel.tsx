@@ -16,7 +16,7 @@
  */
 
 import { MessageDescriptor, useIntl } from 'react-intl';
-import React, { FunctionComponent, PropsWithChildren, ElementType, ReactElement } from 'react';
+import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import ChevronLeftRounded from '@material-ui/icons/ChevronLeftRounded';
@@ -38,7 +38,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 type ToolPanelProps = PropsWithChildren<{
   title: string | MessageDescriptor;
   BackIcon?: ElementType,
-  onBack?: () => void
+  onBack?: () => void,
+  classes?: {
+    body?: any;
+  }
 }>;
 
 interface PanelHeaderProps {
@@ -71,7 +74,8 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const {
     title,
     BackIcon,
-    onBack = () => dispatch(selectTool())
+    onBack = () => dispatch(selectTool()),
+    classes
   } = props;
   return (
     <>
@@ -80,7 +84,7 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
         BackIcon={BackIcon}
         onBack={onBack}
       />
-      <section>
+      <section className={classes?.body}>
         {props.children}
       </section>
     </>
