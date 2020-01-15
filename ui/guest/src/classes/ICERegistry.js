@@ -167,14 +167,14 @@ export class ICERegistry {
     );
   }
 
-  getMediaReceptacles() {
+  getMediaReceptacles(type) {
     const receptacles = [];
     forEach(
       Object.values(this.registry),
       (record) => {
         const entries = this.getReferentialEntries(record);
-        if (entries.field && entries.field.type === 'asset') {
-          receptacles.push(record.id);
+        if (entries.field && entries.field.type === type) {
+          receptacles.push(record);
         }
       }
     );

@@ -15,17 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { post } from "../utils/ajax";
+import { Epic, ofType } from 'redux-observable';
+import {
+  FETCH_ASSETS_PANEL_ITEMS,
+  fetchAssetsPanelItemsComplete,
+  fetchAssetsPanelItemsFailed
+} from '../actions/preview';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchAjaxError } from '../../utils/ajax';
+import { search } from "../../services/search";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { SearchResult } from "../models/Search";
+import GlobalState from '../../models/GlobalState';
 
-export function search(siteId: string, parameters: any = {}): Observable<SearchResult> {
-  return post(`/studio/api/2/search/search.json?siteId=${siteId}`, parameters , {
-    'Content-Type': 'application/json'
-  }).pipe(map(({ response }) => response.result))
-}
+const fetchAssets: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
+  ofType(FETCH_ASSETS_PANEL_ITEMS),
+  withLatestFrom(state$),
+  switchMap(([, state]) => search(state.sites.active, state.preview.assets.query).pipe(
+    map(fetchAssetsPanelItemsComplete),
+    catchAjaxError(fetchAssetsPanelItemsFailed)
+  ))
+);
 
-export default {
-  search
-}
+export default [
+  fetchAssets
+] as Epic[];

@@ -271,7 +271,7 @@ function GitForm(props: GitFormProps) {
             fullWidth
             multiline
             className={classes.margin}
-            error={(inputs.submitted && !inputs.repoKey && (gitType === 'clone' ||inputs.pushSite))}
+            error={(inputs.submitted && !inputs.repoKey && (gitType === 'clone' || inputs.pushSite))}
             helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, '', true, inputs.submitted, gitType === 'clone' ? true : inputs.pushSite)}
             onKeyPress={onKeyPress}
             onChange={handleInputChange}
