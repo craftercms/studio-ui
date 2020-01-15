@@ -23,7 +23,10 @@ import Checkbox from '@material-ui/core/Checkbox';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { Control } from '../../../models/FormsEngine';
-import { useStyles } from './Input';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { controlBaseStyles } from './commonStyles';
+
+const useStyles = makeStyles(() => createStyles(controlBaseStyles));
 
 export default function CheckboxGroup(props: Control) {
   const {

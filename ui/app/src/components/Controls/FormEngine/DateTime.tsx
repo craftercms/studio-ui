@@ -22,7 +22,11 @@ import DateTimePicker from '../../DateTimePicker';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import { DateTimeControl } from '../../../models/FormsEngine';
-import { useStyles } from './Input';
+
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { controlBaseStyles } from './commonStyles';
+
+const useStyles = makeStyles(() => createStyles(controlBaseStyles));
 
 export default function DateTime(props: DateTimeControl) {
   const {

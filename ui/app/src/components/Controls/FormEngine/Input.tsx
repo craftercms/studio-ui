@@ -21,25 +21,11 @@ import TextField from '@material-ui/core/TextField';
 import React from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { Control } from '../../../models/FormsEngine';
+import { controlBaseStyles } from './commonStyles';
 
-export const useStyles = makeStyles((theme: Theme) =>
-  ({
-    formControl: {
-      width: '100%',
-      '& .MuiFormGroup-root': {
-        marginLeft: '10px'
-      },
-      '& .MuiInputBase-root': {
-        marginTop: '12px !important'
-      }
-    },
-    inputLabel: {
-      position: 'relative'
-    }
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles(controlBaseStyles));
 
 export default function Input(props: Control) {
   const {
