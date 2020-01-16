@@ -27,8 +27,11 @@ import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from 
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from '../utils/datetime';
+import FormControl from '@material-ui/core/FormControl';
+import { nnou } from '../utils/object';
 
 interface DateTimePickerProps {
+  id?: string;
   onChange?: Function;
   onDateChange?: Function;
   onTimeChange?: Function;
@@ -118,6 +121,7 @@ const getDateMoment = (dateString, timezoneObj) => {
 
 const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerProps) => {
   const {
+    id,
     classes,
     onChange,
     onDateChange,
@@ -165,18 +169,23 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     onChange?.(updatedDateTime);
   };
 
+  const formControlProps = {};
+  if (nnou(id)) {
+    formControlProps['id'] = id;
+  }
+
   return (
-    <>
+    <FormControl {...formControlProps}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        { controls.includes('date') &&
-          <KeyboardDatePicker
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker"
-            value={dateMoment.format('YYYY-MM-DD HH:mm')}
-            onChange={handleDateChange('scheduledDate')}
-            className={classes.picker}
-            InputAdornmentProps={{
+        {controls.includes('date') &&
+        <KeyboardDatePicker
+          format="MM/dd/yyyy"
+          margin="normal"
+          id="date-picker"
+          value={dateMoment.format('YYYY-MM-DD HH:mm')}
+          onChange={handleDateChange('scheduledDate')}
+          className={classes.picker}
+          InputAdornmentProps={{
               className: classes.pickerButton
             }}
             inputProps={{
@@ -230,7 +239,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           disabled={disabled}
         />
       }
-    </>
+    </FormControl>
   )
 });
 

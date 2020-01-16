@@ -47,6 +47,7 @@ export default function DateTime(props: DateTimeControl) {
         {field.name}
       </InputLabel>
       <DateTimePicker
+        id={field.id}
         date={value}
         timezone={timezone}
         onChange={onChange}
