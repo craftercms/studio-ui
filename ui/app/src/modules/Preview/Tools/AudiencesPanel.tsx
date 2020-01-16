@@ -28,7 +28,7 @@ import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { useDispatch } from 'react-redux';
 import { setActiveModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
-import { ContentTypeField } from '../../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { nnou, nou } from '../../../utils/object';
 import GlobalState from '../../../models/GlobalState';
 import ContentInstance from '../../../models/ContentInstance';
@@ -99,10 +99,20 @@ interface AudiencesPanelUIProps {
   model: ContentInstance;
   modelApplying: boolean;
   modelApplied: boolean;
-  onFormChange: Function;
+  onChange: Function;
   onSaveModel: Function;
-  onSetDefaults: Function;
 }
+
+const getDefaultModel = (contentType: ContentType) => {
+  const props = {};
+
+  Object.keys(contentType.fields).forEach((fieldId: string) => {
+    const propValue = contentType.fields[fieldId].defaultValue;
+    props[fieldId] = propValue;
+  });
+
+  return props;
+};
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
@@ -111,11 +121,33 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     audiencesResource,
     model,
     modelApplying,
-    onFormChange,
-    onSaveModel,
-    onSetDefaults
+    onChange,
+    onSaveModel
   } = props;
   const contentType = audiencesResource.read();
+
+  const onFieldChange = (fieldId: string, type: string) => (value: any) => {
+    let props;
+
+    if (type === 'date-time') {
+      const timezone = value.tz();
+      value = value.toISOString();
+
+      props = {
+        ...model,
+        [fieldId]: value,
+        [`${fieldId}_tz`]: timezone
+      };
+    } else {
+      props = {
+        ...model,
+        [fieldId]: value
+      };
+    }
+
+    onChange(props);
+  };
+
   return (
     <ToolPanel title={translations.audiencesPanel}>
       {
@@ -129,7 +161,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 const controlProps = {
                   field: contentType.fields[field],
                   value: model[field] ? model[field] : undefined,
-                  onChange: onFormChange(field, type),
+                  onChange: onFieldChange(field, type),
                   disabled: modelApplying
                 };
 
@@ -148,7 +180,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             }
           </Grid>
           <Grid className={classes.actionBTN}>
-            <Button variant="contained" onClick={() => onSetDefaults(contentType)}>
+            <Button variant="contained" onClick={() => onChange(getDefaultModel(contentType))}>
               <FormattedMessage
                 id="audiencesPanel.defaults"
                 defaultMessage={`Defaults`}
@@ -183,34 +215,12 @@ export default function AudiencesPanel() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
-  const onFormChange = (fieldName: string, type: string) => (value: any) => {
-    if (type === 'date-time') {
-      const timezone = value.tz();
-      value = value.toISOString();
-
-      dispatch(updateAudiencesPanelModel({
-        [`${fieldName}_tz`]: timezone
-      }));
-    }
-
-    dispatch(updateAudiencesPanelModel({
-      [fieldName]: value
-    }));
+  const onChange = (model: ContentInstance) => {
+    dispatch(updateAudiencesPanelModel(model));
   };
 
   const saveModel = () => {
     dispatch(setActiveModel());
-  };
-
-  const setDefaults = (contentType) => {
-    const props = {};
-
-    Object.keys(contentType.fields).forEach((fieldId: string) => {
-      const propValue = contentType.fields[fieldId].defaultValue;
-      props[fieldId] = propValue;
-    });
-
-    dispatch(updateAudiencesPanelModel(props));
   };
 
   return (
@@ -228,9 +238,8 @@ export default function AudiencesPanel() {
           model={state.model}
           modelApplying={state.isApplying}
           modelApplied={state.applied}
-          onFormChange={onFormChange}
+          onChange={onChange}
           onSaveModel={saveModel}
-          onSetDefaults={setDefaults}
         />
       </React.Suspense>
     </ErrorBoundary>
