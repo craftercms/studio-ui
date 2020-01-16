@@ -166,7 +166,7 @@ function renderItems(items) {
       }
     );
 
-  CStudioAuthoring.Utils.removeLoadingIcon();  
+  CStudioAuthoring.Utils.removeLoadingIcon();
   const me = this;
   $(document).on('keyup', function (e) {
     if (e.keyCode === 27) {	// esc
@@ -195,17 +195,18 @@ function populatePublishingOptions(items) {
 
 function fetchPublishingSettings() {
   var me = this;
+  me.isValidateCommentOn = null;
   CStudioAuthoring.Service.getConfiguration(
     CStudioAuthoringContext.site,
-    "/site-config.xml",
+    '/site-config.xml',
     {
       success: function (config) {
-        var publishing =  config["publishing"];
-        isValidateCommentOn = publishing && publishing["comments"] ?
-          (publishing["comments"]["required"] === "true" ? true : false)
+        var publishing = config['publishing'];
+        me.isValidateCommentOn = publishing && publishing['comments'] ?
+          (publishing['comments']['required'] === 'true' ? true : false)
           : false;
-        if(isValidateCommentOn){
-          me.getComponent('.approveDialogSubmissionComment').append(" (*)");
+        if (me.isValidateCommentOn) {
+          me.getComponent('.approveDialogSubmissionComment').append(' (*)');
         }
         var timeZoneText = me.$('.zone-text');
         timeZoneText.html("<a class='zone-link' title='Time zone can be changed through the Site Config -> Configuration -> Site Configuration'>" + config["default-timezone"] + "</a>");
@@ -281,9 +282,10 @@ function initDatePicker() {
 }
 
 function publishValidation() {
-  var me = this;
+  const me = this;
+
   if ((me.result && me.result.length > 0)
-    && ((isValidateCommentOn && me.getComponent('.submission-comment').value !== '') || !isValidateCommentOn)
+    && ((me.isValidateCommentOn && me.getComponent('.submission-comment').value !== '') || !me.isValidateCommentOn)
     && ((me.$('[name="schedulingMode"]:checked').val() !== 'now' && me.$('.date-picker').val() !== '') ||
       me.$('[name="schedulingMode"]:checked').val() === 'now')) {
     me.$('#approveSubmit').prop('disabled', false);
@@ -293,18 +295,19 @@ function publishValidation() {
 }
 
 function initValidation() {
-  var self = this,
-      submissionCommentVal = this.getComponent('.submissionCommentVal');
+  const me = this,
+    submissionCommentVal = this.getComponent('.submissionCommentVal');
+
   this.publishValidation();
   this.$('.submission-comment').focusout(function () {
-    if (isValidateCommentOn && $(this).get(0).value === "") {
-      submissionCommentVal.classList.remove("hide");
+    if (me.isValidateCommentOn && $(this).get(0).value === '') {
+      submissionCommentVal.classList.remove('hide');
     } else {
-      submissionCommentVal.classList.contains("hide") === false
-      ? submissionCommentVal.classList.add("hide")
-      : null;
+      submissionCommentVal.classList.contains('hide') === false
+        ? submissionCommentVal.classList.add('hide')
+        : null;
     }
-    self.publishValidation();
+    me.publishValidation();
   });
 }
 
@@ -385,9 +388,11 @@ function submitComplete(items, dialogue, args){
           dependencies.push(this.item);
         });
       });
-      
+
       var allDeps = dependencies.concat(args[0].deps ? args[0].deps : []);
-      dependencies = allDeps.filter(function (item, pos) {return allDeps.indexOf(item) == pos}); 
+      dependencies = allDeps.filter(function (item, pos) {
+        return allDeps.indexOf(item) == pos;
+      });
 
       eventNS.dependencies = dependencies;
       document.dispatchEvent(eventNS);
@@ -395,7 +400,7 @@ function submitComplete(items, dialogue, args){
     }
   }, items);
 
-};
+}
 
 CStudioAuthoring.Env.ModuleMap.map("publish-util", {
   loadItems,
@@ -414,4 +419,4 @@ CStudioAuthoring.Env.ModuleMap.map("publish-util", {
   getScheduledDateTimeForJson,
   traverse,
   getScheduledDateTimeFromJson
-}); 
+});
