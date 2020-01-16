@@ -25,7 +25,7 @@ import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { createStyles, makeStyles } from "@material-ui/core";
 import ContentInstance from '../../../models/ContentInstance';
-import { Component } from "./Component";
+import { PanelListItem } from "./PanelListItem";
 import List from "@material-ui/core/List";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { fetchComponentsByContentType } from "../../../state/actions/preview";
@@ -228,9 +228,8 @@ function BrowsePanelUI(props) {
       <List className={classes.list}>
         {
           items.map((item: ContentInstance) =>
-            <Component
+            <PanelListItem
               key={item.craftercms.id}
-              item={item.craftercms}
               primaryText={item.craftercms.label}
               onDragStart={(e) => onDragStart(e)}
               onDragEnd={(e) => onDragEnd(e)}

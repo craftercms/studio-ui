@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentType from "../../../models/ContentType";
 import React, { useState } from "react";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -28,7 +27,6 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import { createStyles } from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import { ContentInstanceSystemProps } from "../../../models/ContentInstance";
 
 const useStyles = makeStyles(() => createStyles({
   root: {},
@@ -47,24 +45,22 @@ const useStyles = makeStyles(() => createStyles({
   }
 }));
 
-interface ComponentProps {
+interface PanelListItemProps {
   primaryText: string;
   secondaryText?: string;
-  item: ContentType | ContentInstanceSystemProps,
   onDragStart?: (...args: any) => any;
   onDragEnd?: (...args: any) => any;
-  onMenu?: (anchor: Element, item: ContentType | ContentInstanceSystemProps) => any;
+  onMenu?: (anchor: Element) => any;
 }
 
-export function Component(props: ComponentProps) {
+export function PanelListItem(props: PanelListItemProps) {
   const classes = useStyles({});
   const {
     onMenu,
     primaryText,
     secondaryText,
-    item,
-    onDragStart = (e) => void null,
-    onDragEnd = (e) => void null,
+    onDragStart,
+    onDragEnd,
   } = props;
   const [over, setOver] = useState(false);
   return (
@@ -73,13 +69,13 @@ export function Component(props: ComponentProps) {
         key={secondaryText}
         className={classes.component}
         draggable
-        onDragStart={() => onDragStart(item)}
-        onDragEnd={() => onDragEnd(item)}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         onMouseEnter={() => setOver(true)}
         onMouseLeave={() => setOver(false)}
       >
         <ListItemAvatar>
-          <Avatar classes={{ root: over ? 'classes.avatarRootOver' : '' }}>
+          <Avatar classes={{ root: over ? classes.avatarRootOver : '' }}>
             {over ? <DragIndicatorRounded/> : getInitials(primaryText)}
           </Avatar>
         </ListItemAvatar>
@@ -91,7 +87,7 @@ export function Component(props: ComponentProps) {
         {
           onMenu &&
           <ListItemSecondaryAction>
-            <IconButton edge="end" aria-label="delete" onClick={(e) => onMenu(e.currentTarget, item)}>
+            <IconButton edge="end" aria-label="delete" onClick={(e) => onMenu(e.currentTarget)}>
               <MoreVertRounded/>
             </IconButton>
           </ListItemSecondaryAction>

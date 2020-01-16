@@ -36,7 +36,7 @@ import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
-import { Component } from './Component';
+import { PanelListItem } from './PanelListItem';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -122,7 +122,7 @@ export function ComponentsPanelUI(props) {
   const contentTypes = componentTypesResource.read();
 
   const hostToGuest$ = getHostToGuestBus();
-  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: any }>();
+  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
   const componentTypes = useMemo(
     () => contentTypes.filter((contentType) => contentType.type === 'component'),
     [contentTypes]
@@ -143,14 +143,13 @@ export function ComponentsPanelUI(props) {
       <List className={classes.root}>
         {
           componentTypes.map((contentType) =>
-            <Component
+            <PanelListItem
               key={contentType.id}
               primaryText={contentType.name}
               secondaryText={contentType.id}
-              item={contentType}
-              onDragStart={onDragStart}
+              onDragStart={() => onDragStart(contentType)}
               onDragEnd={onDragEnd}
-              onMenu={(anchor, contentType) => setMenuContext({ anchor, contentType })}
+              onMenu={(anchor) => setMenuContext({ anchor, contentType })}
             />
           )
         }
