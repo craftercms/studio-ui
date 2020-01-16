@@ -125,9 +125,9 @@ const messages: any = defineMessages({
     id: 'searchFilter.sortBy',
     defaultMessage: 'Sort By'
   },
-  revelance: {
-    id: 'searchFilter.revelance',
-    defaultMessage: 'Revelance'
+  relevance: {
+    id: 'searchFilter.relevance',
+    defaultMessage: 'Relevance'
   },
   internalName: {
     id: 'searchFilter.internalName',
@@ -164,6 +164,14 @@ const messages: any = defineMessages({
   desc: {
     id: 'searchFilter.desc',
     defaultMessage: 'Descending'
+  },
+  moreRelevantFirst: {
+    id: 'searchFilter.byRelevanceDescMessage',
+    defaultMessage: 'Most relevant first'
+  },
+  lessRelevantFirst: {
+    id: 'searchFilter.byRelevanceAscMessage',
+    defaultMessage: 'Less relevant first'
   },
   apply: {
     id: 'searchFilter.apply',
@@ -519,7 +527,7 @@ function SortBy(props: SortByProps) {
       className={classes.Select}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
-      <MenuItem value='_score'>{formatMessage(messages.revelance)}</MenuItem>
+      <MenuItem value='_score'>{formatMessage(messages.relevance)}</MenuItem>
       <MenuItem value='internalName'>{formatMessage(messages.internalName)}</MenuItem>
       {
         filterKeys.map((name: string, i: number) => {
@@ -540,14 +548,35 @@ function SortOrder(props: SortOrderProps) {
   const classes = useStyles({});
   const { formatMessage } = useIntl();
   const { queryParams, handleFilterChange } = props;
+  // queryParams['sortBy'] === undefined: this means the current filter is the default === _score
+  const isRelevance = (queryParams['sortBy'] === '_score' || queryParams['sortBy'] === undefined);
+  const options = isRelevance ? [
+    {
+      name: formatMessage(messages.moreRelevantFirst),
+      value: 'desc'
+    },
+    {
+      name: formatMessage(messages.lessRelevantFirst),
+      value: 'asc'
+    },
+  ] : [
+    {
+      name: formatMessage(messages.asc),
+      value: 'asc'
+    },
+    {
+      name: formatMessage(messages.desc),
+      value: 'desc'
+    },
+  ];
   return (
     <Select
-      value={queryParams['sortOrder'] || 'asc'}
+      value={queryParams['sortOrder'] || 'desc'}
       className={clsx(classes.Select, 'last')}
       onChange={(event) => handleFilterChange({ name: 'sortOrder', value: event.target.value })}
     >
-      <MenuItem value="asc">{formatMessage(messages.asc)}</MenuItem>
-      <MenuItem value="desc">{formatMessage(messages.desc)}</MenuItem>
+      <MenuItem value={options[0].value}>{options[0].name}</MenuItem>
+      <MenuItem value={options[1].value}>{options[1].name}</MenuItem>
     </Select>
   )
 }
