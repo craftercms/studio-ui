@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from "@material-ui/core/Checkbox";
-import { InputLabel, Typography } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
+import Checkbox from '@material-ui/core/Checkbox';
+import { InputLabel, Typography } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from '@material-ui/core/Collapse';
@@ -181,7 +181,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
       setInputs({ ...inputs, [name]: e.target.checked });
     } else if (e.target.type === 'radio' || e.target.type === 'textarea') {
       setInputs({ ...inputs, [name]: e.target.value })
-    };
+    }
   };
 
   const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -190,7 +190,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
 
   const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
     setInputs({ ...inputs, 'scheduledDateTime': scheduledDateTime.format() });
-  }
+  };
 
   return (
     <form className={classes.root}>
@@ -229,15 +229,24 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
           />
           <FormControlLabel
             value="custom"
-            control={<Radio color="primary" className={ classes.radioInput } />}
-            label={ formatMessage(messages.schedulingLater) }
+            control={<Radio color="primary" className={classes.radioInput}/>}
+            label={formatMessage(messages.schedulingLater)}
             classes={{
               label: classes.formInputs
             }}
           />
         </RadioGroup>
-        <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={ inputs.scheduling === 'custom' ? (classes.datePicker) : '' }>
-          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone} />
+        <Collapse in={inputs.scheduling === 'custom'} timeout={300}
+                  className={inputs.scheduling === 'custom' ? (classes.datePicker) : ''}>
+          <DateTimePicker
+            onChange={dateTimePickerChange}
+            timeZonePickerProps={{
+              timezone: inputs.scheduledTimeZone
+            }}
+            datePickerProps={{
+              disablePast: true
+            }}
+          />
         </Collapse>
       </div>
 

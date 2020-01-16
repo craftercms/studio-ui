@@ -29,7 +29,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from '../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
-import { nnou } from '../utils/object';
+import { nnou, nou } from '../utils/object';
 
 const translations = defineMessages({
   datePlaceholder: {
@@ -47,15 +47,23 @@ interface DateTimePickerProps {
   onChange?: Function;
   onDateChange?: Function;
   onTimeChange?: Function;
-  onTimezoneChange?: Function;
-  dateFormat?: string;
-  timeFormat?: string;
   date?: string | moment.Moment | Number;
-  timezone?: string;
-  disablePast?: boolean;
   disabled?: boolean;
   classes?: any;
   controls?: string[];    // options: ['date', 'time', 'timezone'], ['date', 'time'], ['date']
+  datePickerProps?: {
+    dateFormat?: string;
+    onDateChange?: Function;
+    disablePast?: boolean;
+  };
+  timePickerProps?: {
+    timeFormat?: string;
+    onTimeChange?: Function;
+  };
+  timeZonePickerProps?: {
+    timezone?: string;
+    onTimezoneChange?: Function;
+  };
 }
 
 const dateTimePickerStyles = () => ({
@@ -136,20 +144,30 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     id,
     classes,
     onChange,
-    onDateChange,
-    onTimeChange,
-    onTimezoneChange,
     date = moment(),
-    timezone = moment.tz.guess(),
-    dateFormat = 'YYYY-MM-DD',
-    timeFormat = 'HH:MM:ss',
-    disablePast = false,
     disabled = false,
-    controls = ['date', 'time', 'timezone']
+    controls = ['date', 'time', 'timezone'],
+    datePickerProps = {},
+    timePickerProps = {},
+    timeZonePickerProps = {}
   } = props;
 
+  // Set defaults on wrapped controls props
+  if (nou(timeZonePickerProps.timezone)) {
+    timeZonePickerProps['timezone'] = moment.tz.guess();
+  }
+  if (nou(datePickerProps.dateFormat)) {
+    datePickerProps['dateFormat'] = 'YYYY-MM-DD';
+  }
+  if (nou(datePickerProps.disablePast)) {
+    datePickerProps['disablePast'] = false;
+  }
+  if (nou(timePickerProps.timeFormat)) {
+    timePickerProps['timeFormat'] = 'HH:MM:ss';
+  }
+
   let dateMoment;
-  let timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timezone)));
+  let timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timeZonePickerProps.timezone)));
   dateMoment = getDateMoment(date, timezoneObj);
   const { formatMessage } = useIntl();
 
@@ -161,12 +179,12 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         updatedDateTime.date(newDate.getDate());
         updatedDateTime.month(newDate.getMonth());
         updatedDateTime.year(newDate.getFullYear());
-        onDateChange?.(updatedDateTime.format(dateFormat));
+        datePickerProps?.onDateChange?.(updatedDateTime.format(datePickerProps.dateFormat));
         break;
       case 'scheduledTime':
         updatedDateTime.hours(newDate.getHours());
         updatedDateTime.minutes(newDate.getMinutes());
-        onTimeChange?.(updatedDateTime.format(timeFormat));
+        timePickerProps?.onTimeChange?.(updatedDateTime.format(timePickerProps.timeFormat));
         break;
     }
 
@@ -175,10 +193,10 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
-      updatedDateTime = moment.tz(dateMoment.format(), `${dateFormat} ${timeFormat} A`, timezone);
+      updatedDateTime = moment.tz(dateMoment.format(), `${datePickerProps.dateFormat} ${timePickerProps.timeFormat} A`, timezone);
 
-    onTimezoneChange?.(timezone);
-    onDateChange?.(updatedDateTime.format(dateFormat));
+    timeZonePickerProps?.onTimezoneChange?.(timezone);
+    datePickerProps?.onDateChange?.(updatedDateTime.format(datePickerProps.dateFormat));
     onChange?.(updatedDateTime);
   };
 
@@ -194,8 +212,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         <KeyboardDatePicker
           format="MM/dd/yyyy"
           margin="normal"
-          id="date-picker"
-          value={dateMoment.format(`${dateFormat} ${timeFormat}`)}
+          value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
           onChange={handleDateChange('scheduledDate')}
           className={classes.picker}
           InputAdornmentProps={{
@@ -206,15 +223,14 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           }}
           placeholder={formatMessage(translations.datePlaceholder)}
           disabled={disabled}
-          disablePast={disablePast}
+          disablePast={datePickerProps.disablePast}
           />
         }
 
         { controls.includes('time') &&
           <KeyboardTimePicker
             margin="normal"
-            id="time-picker"
-            value={dateMoment.format(`${dateFormat} ${timeFormat}`)}
+            value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
             onChange={handleDateChange('scheduledTime')}
             keyboardIcon={<AccessTimeIcon />}
             className={classes.picker}

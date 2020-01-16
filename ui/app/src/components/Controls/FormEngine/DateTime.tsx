@@ -49,9 +49,11 @@ export default function DateTime(props: DateTimeControl) {
       <DateTimePicker
         id={field.id}
         date={value}
-        timezone={timezone}
         onChange={onChange}
         disabled={disabled}
+        timeZonePickerProps={{
+          timezone: timezone
+        }}
       />
     </FormControl>
   )
