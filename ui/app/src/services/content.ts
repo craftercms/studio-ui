@@ -32,7 +32,7 @@ import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../util
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { camelize, dataUriToBlob, popPiece, removeLastPiece } from '../utils/string';
-import ContentInstance from '../models/ContentInstance';
+import ContentInstance, { SearchContentInstance } from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams } from '../models/Search';
 import Core from '@uppy/core';
@@ -47,6 +47,25 @@ export function getContent(site: string, path: string): Observable<string> {
 
 export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(map(fromString));
+}
+
+export function getContentInstance(site: string, path: string): Observable<ContentInstance> {
+  return getDOM(site, path).pipe(map(doc => parseContentXML(doc)))
+}
+
+function parseContentXML(doc: XMLDocument, path: string = null): ContentInstance {
+  return ({
+    craftercms: {
+      id: getInnerHtml(doc.querySelector('objectId')),
+      path,
+      label: getInnerHtml(doc.querySelector('internal-name')),
+      locale: null,
+      dateCreated: getInnerHtml(doc.querySelector('createdDate_dt')),
+      dateModified: getInnerHtml(doc.querySelector('lastModifiedDate_dt')),
+      contentType: getInnerHtml(doc.querySelector('content-type'))
+    }
+    //TODO: getData
+  })
 }
 
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
@@ -651,9 +670,9 @@ export function deleteItem(
   );
 }
 
-export function getContentByContentType(site: string, contentType: string, options?: ComponentsContentTypeParams): Observable<ContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[], options?: ComponentsContentTypeParams): Observable<ContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[] | string, options?: ComponentsContentTypeParams): Observable<ContentInstance> {
+export function getContentByContentType(site: string, contentType: string, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[], options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[] | string, options?: ComponentsContentTypeParams): Observable<SearchContentInstance> {
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
@@ -667,19 +686,20 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
       'Content-Type': 'application/json'
     }
   ).pipe(
-    map<any, ContentInstance>(({ response: { result: { items } } }) => items.map((item) => ({
-      craftercms: {
-        id: null,
-        path: item.path,
-        label: item.name,
-        locale: null,
-        dateCreated: null,
-        dateModified: item.lastModified,
-        contentType: null
-      },
-      id: item.path
-      // ...Search doesn't return all content props. Need to fetch separately 😞.
-    })))
+    map<AjaxResponse, { count: number, paths: string[] }>(({ response }) => ({
+      count: response.result.total,
+      paths: response.result.items.map((item) => item.path)
+    })),
+    switchMap(({ paths, count }) => zip(
+      of(count),
+      forkJoin(
+        paths.reduce<LookupTable<Observable<ContentInstance>>>((hash, path) => {
+          hash[path] = getContentInstance(site, path);
+          return hash;
+        }, {})
+      )
+    )),
+    map(([count, lookup]) => ({ count, lookup }))
   );
 }
 

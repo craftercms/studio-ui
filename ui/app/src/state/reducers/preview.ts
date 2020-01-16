@@ -24,10 +24,10 @@ import {
   FETCH_ASSETS_PANEL_ITEMS,
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
   FETCH_ASSETS_PANEL_ITEMS_FAILED,
+  FETCH_COMPONENTS_BY_CONTENT_TYPE,
+  FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE,
+  FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED,
   FETCH_CONTENT_MODEL_COMPLETE,
-  FETCH_CONTENT_TYPE_COMPONENTS,
-  FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE,
-  FETCH_CONTENT_TYPE_COMPONENTS_FAILED,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
@@ -44,7 +44,7 @@ import {
 import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
 import { ComponentsContentTypeParams, ElasticParams, MediaItem, SearchResult } from '../../models/Search';
-import ContentInstance from "../../models/ContentInstance";
+import ContentInstance, { SearchContentInstance } from "../../models/ContentInstance";
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -287,7 +287,7 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: false }
   }),
-  [FETCH_CONTENT_TYPE_COMPONENTS]: (state, { payload: { contentType, options } }: { payload: { contentType: string[] | string, options?: ComponentsContentTypeParams } }) => {
+  [FETCH_COMPONENTS_BY_CONTENT_TYPE]: (state, { payload: { contentTypeFilter, options } }: { payload: { contentTypeFilter: string[] | string, options?: ComponentsContentTypeParams } }) => {
     let new_query = { ...state.components.query, ...options };
     return {
       ...state,
@@ -296,27 +296,26 @@ const reducer = createReducer<GlobalState['preview']>({
         isFetching: true,
         query: new_query,
         pageNumber: Math.ceil(new_query.offset / new_query.limit),
-        contentType
+        contentTypeFilter
       }
     }
   },
-  [FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE]: (state, { payload }: { payload: any }) => {
-    let itemsLookupTable = createLookupTable<any>(payload);
+  [FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE]: (state, { payload }: { payload: SearchContentInstance }) => {
     let page = [...state.components.page];
-    page[state.components.pageNumber] = Object.keys(itemsLookupTable);
+    page[state.components.pageNumber] = Object.keys(payload.lookup);
     return {
       ...state,
       components: {
         ...state.components,
-        byId: { ...state.components.byId, ...itemsLookupTable },
+        byId: { ...state.components.byId, ...payload.lookup },
         page,
-        // count: searchResult.total,
+        count: payload.count,
         isFetching: false,
         error: null
       }
     }
   },
-  [FETCH_CONTENT_TYPE_COMPONENTS_FAILED]: (state, { payload }) => ({
+  [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
     ...state,
     components: { ...state.components, error: payload.response, isFetching: false }
   }),

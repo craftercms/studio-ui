@@ -1,3 +1,5 @@
+import { LookupTable } from "./LookupTable";
+
 /*
  * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
  *
@@ -27,7 +29,13 @@ export interface ContentInstanceSystemProps {
 
 export interface ContentInstance {
   craftercms: ContentInstanceSystemProps;
+
   [prop: string]: any;
 }
 
 export default ContentInstance;
+
+export interface SearchContentInstance {
+  count: number;
+  lookup: LookupTable<ContentInstance>
+}

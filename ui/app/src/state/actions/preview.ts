@@ -17,7 +17,7 @@
 
 import { StandardAction } from '../../models/StandardAction';
 import ContentType from '../../models/ContentType';
-import ContentInstance from '../../models/ContentInstance';
+import ContentInstance, { SearchContentInstance } from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import Tools from '../../models/PreviewToolIDs';
 import { createAction } from '@reduxjs/toolkit';
@@ -77,9 +77,9 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
-export const FETCH_CONTENT_TYPE_COMPONENTS = 'FETCH_CONTENT_TYPE_COMPONENTS';
-export const FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE = 'FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE';
-export const FETCH_CONTENT_TYPE_COMPONENTS_FAILED = 'FETCH_CONTENT_TYPE_COMPONENTS_FAILED';
+export const FETCH_COMPONENTS_BY_CONTENT_TYPE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE';
+export const FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE';
+export const FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED = 'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED';
 
 // endregion
 
@@ -190,15 +190,15 @@ export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_AS
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export function fetchContentTypeComponents(contentType: string, options?: ComponentsContentTypeParams): StandardAction {
+export function fetchComponentsByContentType(contentTypeFilter: string, options?: ComponentsContentTypeParams): StandardAction {
   return {
-    type: FETCH_CONTENT_TYPE_COMPONENTS,
-    payload: { contentType, options }
+    type: FETCH_COMPONENTS_BY_CONTENT_TYPE,
+    payload: { contentTypeFilter, options }
   };
 }
 
-export const fetchContentTypeComponentsComplete = createAction<ContentInstance>(FETCH_CONTENT_TYPE_COMPONENTS_COMPLETE);
+export const fetchComponentsByContentTypeComplete = createAction<SearchContentInstance>(FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE);
 
-export const fetchContentTypeComponentsFailed = createAction(FETCH_CONTENT_TYPE_COMPONENTS_FAILED);
+export const fetchComponentsByContentTypeFailed = createAction(FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED);
 
 // endregion

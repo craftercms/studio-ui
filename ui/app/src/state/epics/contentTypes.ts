@@ -17,10 +17,10 @@
 
 import { Epic, ofType } from 'redux-observable';
 import {
-  FETCH_CONTENT_TYPE_COMPONENTS,
+  FETCH_COMPONENTS_BY_CONTENT_TYPE,
   FETCH_CONTENT_TYPES,
-  fetchContentTypeComponentsComplete,
-  fetchContentTypeComponentsFailed,
+  fetchComponentsByContentTypeComplete,
+  fetchComponentsByContentTypeFailed,
   fetchContentTypesComplete,
   fetchContentTypesFailed
 } from '../actions/preview';
@@ -40,11 +40,11 @@ const fetch: Epic = (action$, state$) => action$.pipe(
 );
 
 const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
-  ofType(FETCH_CONTENT_TYPE_COMPONENTS),
+  ofType(FETCH_COMPONENTS_BY_CONTENT_TYPE),
   withLatestFrom(state$),
-  switchMap(([action, state]) => getContentByContentType(state.sites.active, action.payload.contentType, action.payload.options).pipe(
-    map(fetchContentTypeComponentsComplete),
-    catchAjaxError(fetchContentTypeComponentsFailed)
+  switchMap(([, state]) => getContentByContentType(state.sites.active, state.preview.components.contentTypeFilter, state.preview.components.query).pipe(
+    map(fetchComponentsByContentTypeComplete),
+    catchAjaxError(fetchComponentsByContentTypeFailed)
   ))
 );
 

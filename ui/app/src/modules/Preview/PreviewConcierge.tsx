@@ -27,7 +27,7 @@ import {
   DESKTOP_ASSET_DROP,
   DESKTOP_ASSET_UPLOAD_COMPLETE,
   fetchAssetsPanelItems,
-  fetchContentTypeComponents,
+  fetchComponentsByContentType,
   fetchContentTypes,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
@@ -280,13 +280,14 @@ export function PreviewConcierge(props: any) {
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems(assets.query));
+        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems());
         break;
       case 'craftercms.ice.components':
         break;
       case 'craftercms.ice.browse':
         (contentTypeComponents.isFetching === null && site && contentTypeComponents.error === null)
-        && dispatch(fetchContentTypeComponents('/component/feature', contentTypeComponents.query));
+        && dispatch(fetchComponentsByContentType('/component/feature'));
+        //TODO: send all the contentTypes??
         break;
     }
 
