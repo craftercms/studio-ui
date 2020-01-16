@@ -51,6 +51,9 @@
     const [text, setText] = useState('');
     const [result, setResult] = useState(null);
     const [fetching, setFetching] = useState(null);
+    const focus = () => {
+      document.querySelector('#encryptionToolRawText').focus();
+    };
     const encrypt = () => {
       if (text) {
         setFetching(true);
@@ -63,11 +66,14 @@
           setResult(encryptedText);
           setTimeout(() => copyToClipboard(inputRef.current), 10);
         });
+      } else {
+        focus();
       }
     };
     const clear = () => {
       setText('');
       setResult(null);
+      focus();
     };
     return (
       <section className="content-types-landing-page">
@@ -75,13 +81,13 @@
           <h1>{messages.pageTitle}</h1>
         </header>
         <div className="form-group">
-          <label htmlFor="rawText" className="control-label">{messages.inputLabel}</label>
+          <label htmlFor="encryptionToolRawText" className="control-label">{messages.inputLabel}</label>
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="form-control"
-            id="rawText"
+            id="encryptionToolRawText"
             autoFocus
             disabled={fetching}
           />
@@ -108,7 +114,7 @@
             <span>{messages.buttonText}</span>
           </button>
           {' '}
-          <button className="btn btn-default" onClick={clear} disabled={fetching || !result}>
+          <button className="btn btn-default" onClick={clear} disabled={fetching}>
             <span>{messages.clearResultButtonText}</span>
           </button>
         </div>
