@@ -19,19 +19,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
-import Avatar from '@material-ui/core/Avatar';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import List from '@material-ui/core/List';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import ContentType from '../../../models/ContentType';
-import { getInitials } from '../../../utils/string';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import DeleteRounded from '@material-ui/icons/DeleteRounded';
-import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
-import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { getHostToGuestBus } from '../previewContext';
@@ -45,6 +36,7 @@ import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
+import { Component } from './Component';
 
 const translations = defineMessages({
   componentsPanel: {
@@ -55,21 +47,6 @@ const translations = defineMessages({
 
 const useStyles = makeStyles((theme) => createStyles({
   root: {},
-  noWrapping: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    display: 'block'
-  },
-  component: {
-    cursor: 'move'
-  },
-
-  avatarRootOver: {
-    color: 'black',
-    background: 'white'
-  },
-
   rubbishBin: {
     height: 250,
     display: 'flex',
@@ -92,7 +69,6 @@ const useStyles = makeStyles((theme) => createStyles({
   rubbishIconHover: {
     transform: ''
   }
-
 }));
 
 export default function ComponentsPanel() {
@@ -146,7 +122,7 @@ export function ComponentsPanelUI(props) {
   const contentTypes = componentTypesResource.read();
 
   const hostToGuest$ = getHostToGuestBus();
-  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
+  const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: any }>();
   const componentTypes = useMemo(
     () => contentTypes.filter((contentType) => contentType.type === 'component'),
     [contentTypes]
@@ -169,7 +145,9 @@ export function ComponentsPanelUI(props) {
           componentTypes.map((contentType) =>
             <Component
               key={contentType.id}
-              contentType={contentType}
+              primaryText={contentType.name}
+              secondaryText={contentType.id}
+              item={contentType}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               onMenu={(anchor, contentType) => setMenuContext({ anchor, contentType })}
@@ -196,53 +174,6 @@ export function ComponentsPanelUI(props) {
     </>
   );
 
-}
-
-interface ComponentProps {
-  contentType: ContentType;
-  onDragStart?: (...args: any) => any;
-  onDragEnd?: (...args: any) => any;
-  onMenu: (anchor: Element, contentType: ContentType) => any;
-}
-
-function Component(props: ComponentProps) {
-  const classes = useStyles({});
-  const {
-    onMenu,
-    contentType,
-    onDragStart = (e) => void null,
-    onDragEnd = (e) => void null
-  } = props;
-  const [over, setOver] = useState(false);
-  return (
-    <>
-      <ListItem
-        key={contentType.id}
-        className={classes.component}
-        draggable
-        onDragStart={() => onDragStart(contentType)}
-        onDragEnd={() => onDragEnd(contentType)}
-        onMouseEnter={() => setOver(true)}
-        onMouseLeave={() => setOver(false)}
-      >
-        <ListItemAvatar>
-          <Avatar classes={{ root: over ? classes.avatarRootOver : '' }}>
-            {over ? <DragIndicatorRounded/> : getInitials(contentType.name)}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={contentType.name}
-          secondary={contentType.id}
-          classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
-        />
-        <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="delete" onClick={(e) => onMenu(e.currentTarget, contentType)}>
-            <MoreVertRounded/>
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    </>
-  );
 }
 
 function RubbishBin(props: any) {

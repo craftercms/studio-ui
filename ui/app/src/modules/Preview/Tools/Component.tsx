@@ -1,0 +1,102 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import ContentType from "../../../models/ContentType";
+import React, { useState } from "react";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import DragIndicatorRounded from '@material-ui/icons/DragIndicatorRounded';
+import { getInitials } from "../../../utils/string";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import IconButton from "@material-ui/core/IconButton";
+import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
+import { createStyles } from "@material-ui/core";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import { ContentInstanceSystemProps } from "../../../models/ContentInstance";
+
+const useStyles = makeStyles(() => createStyles({
+  root: {},
+  noWrapping: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    display: 'block'
+  },
+  component: {
+    cursor: 'move'
+  },
+  avatarRootOver: {
+    color: 'black',
+    background: 'white'
+  }
+}));
+
+interface ComponentProps {
+  primaryText: string;
+  secondaryText?: string;
+  item: ContentType | ContentInstanceSystemProps,
+  onDragStart?: (...args: any) => any;
+  onDragEnd?: (...args: any) => any;
+  onMenu?: (anchor: Element, item: ContentType | ContentInstanceSystemProps) => any;
+}
+
+export function Component(props: ComponentProps) {
+  const classes = useStyles({});
+  const {
+    onMenu,
+    primaryText,
+    secondaryText,
+    item,
+    onDragStart = (e) => void null,
+    onDragEnd = (e) => void null,
+  } = props;
+  const [over, setOver] = useState(false);
+  return (
+    <>
+      <ListItem
+        key={secondaryText}
+        className={classes.component}
+        draggable
+        onDragStart={() => onDragStart(item)}
+        onDragEnd={() => onDragEnd(item)}
+        onMouseEnter={() => setOver(true)}
+        onMouseLeave={() => setOver(false)}
+      >
+        <ListItemAvatar>
+          <Avatar classes={{ root: over ? 'classes.avatarRootOver' : '' }}>
+            {over ? <DragIndicatorRounded/> : getInitials(primaryText)}
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={primaryText}
+          secondary={secondaryText}
+          classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
+        />
+        {
+          onMenu &&
+          <ListItemSecondaryAction>
+            <IconButton edge="end" aria-label="delete" onClick={(e) => onMenu(e.currentTarget, item)}>
+              <MoreVertRounded/>
+            </IconButton>
+          </ListItemSecondaryAction>
+        }
+      </ListItem>
+    </>
+  );
+}

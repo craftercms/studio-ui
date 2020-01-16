@@ -53,10 +53,6 @@ const translations = defineMessages({
     id: 'craftercms.ice.assets.noResults',
     defaultMessage: ' No results found.'
   },
-  retrieveAssets: {
-    id: 'craftercms.ice.assets.retrieveAssets',
-    defaultMessage: 'Retrieving Site Assets'
-  },
   previousPage: {
     id: 'craftercms.ice.assets.previousPage',
     defaultMessage: 'previous page'

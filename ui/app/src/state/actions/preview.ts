@@ -190,7 +190,7 @@ export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_AS
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
-export function fetchComponentsByContentType(contentTypeFilter: string, options?: ComponentsContentTypeParams): StandardAction {
+export function fetchComponentsByContentType(contentTypeFilter: string, options?: Partial<ComponentsContentTypeParams>): StandardAction {
   return {
     type: FETCH_COMPONENTS_BY_CONTENT_TYPE,
     payload: { contentTypeFilter, options }
