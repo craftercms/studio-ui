@@ -44,9 +44,10 @@ const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) => 
   ))
 );
 
-const setActiveModel: Epic = (action$) => action$.pipe(
+const setActiveModel: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(SET_ACTIVE_MODEL),
-  switchMap((action) => setActiveModelService(action.payload).pipe(
+  withLatestFrom(state$),
+  switchMap(([, state]) => setActiveModelService(state.preview.audiencesPanel.model).pipe(
     map(response => setActiveModelCompleteAction(response)),
     catchAjaxError(setActiveModelFailed)
   ))

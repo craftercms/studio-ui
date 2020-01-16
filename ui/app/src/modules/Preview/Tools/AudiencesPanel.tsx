@@ -199,7 +199,7 @@ export default function AudiencesPanel() {
   };
 
   const saveModel = () => {
-    dispatch(setActiveModel(state.model));
+    dispatch(setActiveModel());
   };
 
   const setDefaults = (contentType) => {

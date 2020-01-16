@@ -205,10 +205,9 @@ export function updateAudiencesPanelModel(data): StandardAction {
   }
 }
 
-export function setActiveModel(data): StandardAction {
+export function setActiveModel(): StandardAction {
   return {
-    type: SET_ACTIVE_MODEL,
-    payload: data
+    type: SET_ACTIVE_MODEL
   };
 }
 
