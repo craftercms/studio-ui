@@ -162,7 +162,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
-      updatedDateTime = moment.tz(dateMoment.format(), 'YYYY-MM-DD HH:mm A', timezone);
+      updatedDateTime = moment.tz(dateMoment.format(), `${dateFormat} ${timeFormat} A`, timezone);
 
     onTimezoneChange?.(timezone);
     onDateChange?.(updatedDateTime.format(dateFormat));
@@ -182,18 +182,18 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           format="MM/dd/yyyy"
           margin="normal"
           id="date-picker"
-          value={dateMoment.format('YYYY-MM-DD HH:mm')}
+          value={dateMoment.format(`${dateFormat} ${timeFormat}`)}
           onChange={handleDateChange('scheduledDate')}
           className={classes.picker}
           InputAdornmentProps={{
               className: classes.pickerButton
             }}
-            inputProps={{
+          inputProps={{
               className: classes.pickerInput
             }}
-            placeholder="Date"
-            disabled={disabled}
-            disablePast={disablePast}
+          placeholder="Date"
+          disabled={disabled}
+          disablePast={disablePast}
           />
         }
 
@@ -201,7 +201,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           <KeyboardTimePicker
             margin="normal"
             id="time-picker"
-            value={dateMoment.format('YYYY-MM-DD HH:mm')}
+            value={dateMoment.format(`${dateFormat} ${timeFormat}`)}
             onChange={handleDateChange('scheduledTime')}
             keyboardIcon={<AccessTimeIcon />}
             className={classes.picker}
