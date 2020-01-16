@@ -195,7 +195,7 @@ function populatePublishingOptions(items) {
 
 function fetchPublishingSettings() {
   var me = this;
-  me.isValidateCommentOn = null;
+  me.isValidateCommentOn = false;
   CStudioAuthoring.Service.getConfiguration(
     CStudioAuthoringContext.site,
     '/site-config.xml',
