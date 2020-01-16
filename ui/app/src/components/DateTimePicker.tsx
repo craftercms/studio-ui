@@ -19,6 +19,7 @@
 
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
 import AccessTimeIcon from '@material-ui/icons/AccessTimeRounded';
 import PublicRoundedIcon from '@material-ui/icons/PublicRounded';
@@ -29,6 +30,17 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getTimezones } from '../utils/datetime';
 import FormControl from '@material-ui/core/FormControl';
 import { nnou } from '../utils/object';
+
+const translations = defineMessages({
+  datePlaceholder: {
+    id: 'datetimepicker.datePlaceholder',
+    defaultMessage: 'Date'
+  },
+  timePlaceholder: {
+    id: 'datetimepicker.timePlaceholder',
+    defaultMessage: 'Time'
+  }
+});
 
 interface DateTimePickerProps {
   id?: string;
@@ -139,6 +151,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   let dateMoment;
   let timezoneObj = timezones.find(tz => (tz.timezoneName === unescape(timezone)));
   dateMoment = getDateMoment(date, timezoneObj);
+  const { formatMessage } = useIntl();
 
   const handleDateChange = (name: string) => (newDate: Date | null) => {
     let updatedDateTime = dateMoment;
@@ -189,9 +202,9 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
               className: classes.pickerButton
             }}
           inputProps={{
-              className: classes.pickerInput
-            }}
-          placeholder="Date"
+            className: classes.pickerInput
+          }}
+          placeholder={formatMessage(translations.datePlaceholder)}
           disabled={disabled}
           disablePast={disablePast}
           />
@@ -211,7 +224,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
             inputProps={{
               className: classes.pickerInput
             }}
-            placeholder="Time"
+            placeholder={formatMessage(translations.timePlaceholder)}
             disabled={disabled}
           />
         }
