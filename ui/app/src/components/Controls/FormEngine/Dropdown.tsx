@@ -47,7 +47,6 @@ export default function Dropdown(props: Control) {
     <FormControl className={classes.formControl}>
       <InputLabel
         className={classes.inputLabel}
-        htmlFor={field.id}
       >
         {field.name}
       </InputLabel>
@@ -65,7 +64,7 @@ export default function Dropdown(props: Control) {
         </MenuItem>
         {
           field.values?.map((possibleValue: any) => (
-            <MenuItem value={possibleValue.value} key={value}>{possibleValue.label}</MenuItem>
+            <MenuItem value={possibleValue.value} key={possibleValue.value}>{possibleValue.label}</MenuItem>
           ))
         }
       </Select>

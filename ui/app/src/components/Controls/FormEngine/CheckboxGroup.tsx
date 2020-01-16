@@ -63,7 +63,6 @@ export default function CheckboxGroup(props: Control) {
         field.values?.map((possibleValue: any, index: number) => (
           <FormControlLabel
             key={index}
-            htmlFor={field.id}
             control={
               <Checkbox
                 color="primary"
