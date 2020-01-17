@@ -15,9 +15,11 @@
  */
 
 import React, { useRef, useState } from 'react';
-import ajax from '../utils/ajax';
-import { map } from 'rxjs/operators';
 import { defineMessages, useIntl } from 'react-intl';
+import { encrypt as encryptService } from '../services/security';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 const messages = defineMessages({
   pageTitle: {
@@ -46,7 +48,7 @@ const messages = defineMessages({
   }
 });
 
-function copyToClipboard(input: HTMLInputElement) {
+function copyToClipboard(input: HTMLInputElement, setOpenNotification: Function) {
 
   /* Select the text field */
   input.select();
@@ -56,20 +58,16 @@ function copyToClipboard(input: HTMLInputElement) {
   /* Copy the text inside the text field */
   document.execCommand('copy');
 
-  // TODO: USE material-ui snackbar
-  // $.notify(formatMessage(messages.successMessage), 'success');
+  setOpenNotification(true);
 
 }
 
-export interface EncryptToolProps {
-
-}
-
-function EncryptTool(props: EncryptToolProps) {
+const EncryptTool = () => {
   const inputRef = useRef();
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
+  const [openNotification, setOpenNotification] = useState(false);
 
   const { formatMessage } = useIntl();
 
@@ -82,13 +80,12 @@ function EncryptTool(props: EncryptToolProps) {
     if (text) {
       setFetching(true);
       setResult(null);
-      ajax.get(`/studio/api/2/security/encrypt.json?text=${text}`).pipe(
-        map((response: any) => response.item)
-      ).subscribe((encryptedText) => {
+      encryptService(text).subscribe((encryptedText) => {
         setFetching(false);
         setText('');
         setResult(encryptedText);
-        setTimeout(() => copyToClipboard(inputRef.current), 10);
+
+        setTimeout(() => copyToClipboard(inputRef.current, setOpenNotification), 10);
       });
     } else {
       focus();
@@ -126,7 +123,7 @@ function EncryptTool(props: EncryptToolProps) {
             ref={inputRef}
             className="well"
             value={`\${enc:${result}\}`}
-            onClick={(e: any) => copyToClipboard(e.target)}
+            onClick={(e: any) => copyToClipboard(e.target, setOpenNotification)}
             style={{
               display: 'block',
               width: '100%'
@@ -143,8 +140,24 @@ function EncryptTool(props: EncryptToolProps) {
           <span>{formatMessage(messages.clearResultButtonText)}</span>
         </button>
       </div>
+
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        open={openNotification}
+        autoHideDuration={5000}
+        onClose={() => setOpenNotification(false)}
+        action={
+          <IconButton size="small" aria-label="close" color="inherit" onClick={() => setOpenNotification(false)}>
+            <CloseIcon fontSize="small"/>
+          </IconButton>
+        }
+        message={formatMessage(messages.successMessage)}
+      />
     </section>
   );
-}
+};
 
 export default EncryptTool;
