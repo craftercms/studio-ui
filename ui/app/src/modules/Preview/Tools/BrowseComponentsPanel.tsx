@@ -35,6 +35,9 @@ import SearchBar from "../../../components/SearchBar";
 import EmptyState from "../../../components/SystemStatus/EmptyState";
 import TablePagination from "@material-ui/core/TablePagination";
 import { DRAWER_WIDTH } from "../previewContext";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import ContentType from "../../../models/ContentType";
 
 const translations = defineMessages({
   browse: {
@@ -56,6 +59,10 @@ const translations = defineMessages({
   loading: {
     id: 'craftercms.ice.browse.loading',
     defaultMessage: 'Loading'
+  },
+  all: {
+    id: 'craftercms.ice.browse.all',
+    defaultMessage: 'All content types'
   }
 });
 
@@ -108,6 +115,10 @@ const useStyles = makeStyles((theme) => createStyles({
     fontSize: 'inherit',
     marginTop: '10px'
   },
+  Select: {
+    width: '100%',
+    marginTop: '15px'
+  },
 }));
 
 
@@ -124,7 +135,11 @@ export default function BrowseComponentsPanel() {
   const onSearch$ = useMemo(() => new Subject<string>(), []);
   const dispatch = useDispatch();
   const initialKeyword = useSelection(state => state.preview.components.query.keywords);
+  const initialContentTypeFilter = useSelection(state => state.preview.components.contentTypeFilter);
   const [keyword, setKeyword] = useState(initialKeyword);
+  const [contentTypeFilter, setContentTypeFilter] = useState(initialContentTypeFilter);
+  const contentTypesBranch = useSelection(state => state.contentTypes);
+  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
   const resource = useStateResourceSelection<ComponentResource, PagedEntityState<ContentInstance>>(state => state.preview.components, {
     shouldRenew: (source, resource) => resource.complete,
     shouldResolve: source => (!source.isFetching) && nnou(source.byId),
@@ -165,6 +180,11 @@ export default function BrowseComponentsPanel() {
     onSearch$.next(keyword);
   }
 
+  function handleSelectChange(value: string) {
+    setContentTypeFilter(value);
+    dispatch(fetchComponentsByContentType(value));
+  }
+
   return (
     <ToolPanel title={translations.browse}>
       <ErrorBoundary>
@@ -173,6 +193,21 @@ export default function BrowseComponentsPanel() {
             onChange={handleSearchKeyword}
             keyword={keyword}
           />
+          {
+            contentTypes &&
+            <Select
+              value={contentTypeFilter}
+              className={classes.Select}
+              onChange={(event: any) => handleSelectChange(event.target.value)}
+            >
+              <MenuItem value='all'>{formatMessage(translations.all)}</MenuItem>
+              {
+                contentTypes.map((contentType: ContentType, i: number) => {
+                  return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>
+                })
+              }
+            </Select>
+          }
         </div>
         <React.Suspense
           fallback={

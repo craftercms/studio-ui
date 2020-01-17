@@ -286,7 +286,7 @@ export function PreviewConcierge(props: any) {
         break;
       case 'craftercms.ice.browse':
         (contentTypeComponents.isFetching === null && site && contentTypeComponents.error === null)
-        && dispatch(fetchComponentsByContentType('/component/feature'));
+        && dispatch(fetchComponentsByContentType());
         //TODO: send all the contentTypes??
         break;
     }

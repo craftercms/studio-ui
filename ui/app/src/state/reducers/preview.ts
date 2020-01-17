@@ -74,7 +74,8 @@ const reducer = createReducer<GlobalState['preview']>({
       keywords: '',
       offset: 0,
       limit: 10,
-    }
+    },
+    contentTypeFilter: '/component/feature'
   }) as PagedEntityState<ContentInstance>
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
@@ -296,7 +297,7 @@ const reducer = createReducer<GlobalState['preview']>({
         isFetching: true,
         query: new_query,
         pageNumber: Math.ceil(new_query.offset / new_query.limit),
-        contentTypeFilter
+        contentTypeFilter: contentTypeFilter ? contentTypeFilter : state.components.contentTypeFilter
       }
     }
   },
