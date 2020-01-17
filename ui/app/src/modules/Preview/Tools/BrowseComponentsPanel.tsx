@@ -28,13 +28,17 @@ import ContentInstance from '../../../models/ContentInstance';
 import { PanelListItem } from "./PanelListItem";
 import List from "@material-ui/core/List";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { fetchComponentsByContentType } from "../../../state/actions/preview";
+import {
+  COMPONENT_DRAG_ENDED,
+  COMPONENT_DRAG_STARTED,
+  fetchComponentsByContentType
+} from "../../../state/actions/preview";
 import { Subject } from "rxjs";
 import { useDispatch } from "react-redux";
 import SearchBar from "../../../components/SearchBar";
 import EmptyState from "../../../components/SystemStatus/EmptyState";
 import TablePagination from "@material-ui/core/TablePagination";
-import { DRAWER_WIDTH } from "../previewContext";
+import { DRAWER_WIDTH, getHostToGuestBus } from "../previewContext";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import ContentType from "../../../models/ContentType";
@@ -172,12 +176,11 @@ export default function BrowseComponentsPanel() {
   });
   const { formatMessage } = useIntl();
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const hostToGuest$ = getHostToGuestBus();
 
-  const onDragStart = () => {
-  };
+  const onDragStart = (item) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: item });
 
-  const onDragEnd = () => {
-  };
+  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
@@ -292,8 +295,8 @@ function BrowsePanelUI(props) {
                   <PanelListItem
                     key={item.craftercms.id}
                     primaryText={item.craftercms.label}
-                    onDragStart={(e) => onDragStart(e)}
-                    onDragEnd={(e) => onDragEnd(e)}
+                    onDragStart={() => onDragStart(item.craftercms)}
+                    onDragEnd={onDragEnd}
                   />
                 )
               }
