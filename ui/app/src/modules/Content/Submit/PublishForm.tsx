@@ -1,10 +1,27 @@
+/*
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { useEffect } from 'react';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from "@material-ui/core/Checkbox";
-import { InputLabel, Typography } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
+import Checkbox from '@material-ui/core/Checkbox';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Collapse from '@material-ui/core/Collapse';
@@ -60,7 +77,7 @@ const messages = defineMessages({
   }
 });
 
-const publishFormStyles = () => ({
+const useStyles = makeStyles(() => createStyles({
   root: {
     width: 'auto'
   },
@@ -72,7 +89,7 @@ const publishFormStyles = () => ({
   formSection: {
     marginBottom: '20px'
   },
-  sectionLabel :{
+  sectionLabel: {
     color: '#000',
     width: '100%',
     fontSize: '16px'
@@ -99,12 +116,12 @@ const publishFormStyles = () => ({
     width: '100%'
   },
   datePicker: {
-    position: 'relative' as 'relative',
+    position: 'relative',
     paddingLeft: '30px',
     paddingBottom: '20px',
-    "&::before": {
-      content: "''",
-      position: 'absolute' as 'absolute',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
       width: '5px',
       height: '100%',
       top: '0',
@@ -131,15 +148,13 @@ const publishFormStyles = () => ({
     backgroundColor: '#ffffff',
     padding: 0
   }
-});
+}));
 
-const SelectInput = withStyles(() =>
-  createStyles({
-    input: {
-      borderRadius: 4
-    },
-  }),
-)(InputBase);
+const SelectInput = withStyles(() => createStyles({
+  input: {
+    borderRadius: 4
+  }
+}))(InputBase);
 
 interface PublishFormProps {
   inputs: any;
@@ -151,10 +166,11 @@ interface PublishFormProps {
   classes?: any;
 }
 
-const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
+function PublishForm(props: PublishFormProps) {
 
+  const classes = useStyles({});
+  const { formatMessage } = useIntl();
   const {
-    classes,
     inputs,
     setInputs,
     showEmailCheckbox,
@@ -162,7 +178,6 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
     publishingChannelsStatus,
     getPublishingChannels
   } = props;
-  const { formatMessage } = useIntl();
 
   useEffect(
     () => {
@@ -181,7 +196,8 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
       setInputs({ ...inputs, [name]: e.target.checked });
     } else if (e.target.type === 'radio' || e.target.type === 'textarea') {
       setInputs({ ...inputs, [name]: e.target.value })
-    };
+    }
+
   };
 
   const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -190,14 +206,16 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
 
   const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
     setInputs({ ...inputs, 'scheduledDateTime': scheduledDateTime.format() });
-  }
+  };
 
   return (
     <form className={classes.root}>
       {
         showEmailCheckbox &&
         <div className={classes.formSection}>
-          <FormControlLabel className={classes.sectionLabel}
+          <FormControlLabel
+            label={formatMessage(messages.emailLabel)}
+            className={classes.sectionLabel}
             control={
               <Checkbox
                 className={classes.checkboxInput}
@@ -207,59 +225,66 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
                 color="primary"
               />
             }
-            label={formatMessage(messages.emailLabel)}
           />
         </div>
       }
 
       <div className={classes.formSection}>
-        <InputLabel htmlFor="environmentSelect" className={classes.sectionLabel}>{ formatMessage(messages.scheduling) }</InputLabel>
+        <InputLabel
+          htmlFor="environmentSelect"
+          className={classes.sectionLabel}>
+          {formatMessage(messages.scheduling)}
+        </InputLabel>
         <RadioGroup
-          className={ classes.radioGroup }
+          className={classes.radioGroup}
           value={inputs.scheduling}
           onChange={handleInputChange('scheduling')}
         >
           <FormControlLabel
             value="now"
-            control={<Radio color="primary" className={ classes.radioInput } />}
-            label={ formatMessage(messages.schedulingNow) }
+            control={<Radio color="primary" className={classes.radioInput}/>}
+            label={formatMessage(messages.schedulingNow)}
             classes={{
               label: classes.formInputs
             }}
           />
           <FormControlLabel
             value="custom"
-            control={<Radio color="primary" className={ classes.radioInput } />}
-            label={ formatMessage(messages.schedulingLater) }
+            control={<Radio color="primary" className={classes.radioInput}/>}
+            label={formatMessage(messages.schedulingLater)}
             classes={{
               label: classes.formInputs
             }}
           />
         </RadioGroup>
-        <Collapse in={inputs.scheduling === 'custom'} timeout={300} className={ inputs.scheduling === 'custom' ? (classes.datePicker) : '' }>
-          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone} />
+        <Collapse
+          in={inputs.scheduling === 'custom'}
+          timeout={300}
+          className={inputs.scheduling === 'custom' ? (classes.datePicker) : ''}
+        >
+          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone}/>
         </Collapse>
       </div>
 
       <div className={classes.formSection}>
         <FormControl fullWidth>
-          <InputLabel className={classes.sectionLabel}>{ formatMessage(messages.environment) }</InputLabel>
+          <InputLabel className={classes.sectionLabel}>{formatMessage(messages.environment)}</InputLabel>
           {
             !publishingChannels &&
             <>
 
-              <div className={ classes.environmentLoaderContainer }>
+              <div className={classes.environmentLoaderContainer}>
                 <Typography
                   variant="body1"
                   component="span"
-                  className={ `${classes.environmentLoader} ${classes.formInputs}` }
-                  color={ publishingChannelsStatus === 'Error' ? 'error' : 'initial' }
+                  className={`${classes.environmentLoader} ${classes.formInputs}`}
+                  color={publishingChannelsStatus === 'Error' ? 'error' : 'initial'}
                 >
-                  { formatMessage(messages[`environment${publishingChannelsStatus}`])  }
+                  {formatMessage(messages[`environment${publishingChannelsStatus}`])}
                   {
                     publishingChannelsStatus === 'Error' &&
                     <Link href="#" onClick={() => getPublishingChannels()}>
-                      ({ formatMessage(messages.environmentRetry)})
+                      ({formatMessage(messages.environmentRetry)})
                     </Link>
                   }
                 </Typography>
@@ -278,11 +303,13 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
                 icon: classes.selectIcon
               }}
               onChange={handleSelectChange('environment')}
-              input={<SelectInput />}
+              input={<SelectInput/>}
             >
               {
                 publishingChannels.map((publishingChannel: any) =>
-                  <MenuItem key={publishingChannel.name} value={publishingChannel.name}>{publishingChannel.name}</MenuItem>
+                  <MenuItem key={publishingChannel.name} value={publishingChannel.name}>
+                    {publishingChannel.name}
+                  </MenuItem>
                 )
               }
             </Select>
@@ -306,7 +333,7 @@ const PublishForm = withStyles(publishFormStyles)((props: PublishFormProps) => {
         }}
       />
     </form>
-  )
-});
+  );
+}
 
 export default PublishForm;
