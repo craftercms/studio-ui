@@ -20,6 +20,7 @@ import { encrypt as encryptService } from '../services/security';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { makeStyles } from '@material-ui/core/styles';
 
 const messages = defineMessages({
   pageTitle: {
@@ -48,6 +49,16 @@ const messages = defineMessages({
   }
 });
 
+const useStyles = makeStyles(() => ({
+  header: {
+    marginTop: 0
+  },
+  title: {
+    color: '#555555',
+    padding: '0 20px'
+  }
+}));
+
 function copyToClipboard(input: HTMLInputElement, setOpenNotification: Function) {
 
   /* Select the text field */
@@ -63,6 +74,7 @@ function copyToClipboard(input: HTMLInputElement, setOpenNotification: Function)
 }
 
 const EncryptTool = () => {
+  const classes = useStyles({});
   const inputRef = useRef();
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
@@ -99,8 +111,8 @@ const EncryptTool = () => {
 
   return (
     <section className="content-types-landing-page">
-      <header className="page-header">
-        <h1>{formatMessage(messages.pageTitle)}</h1>
+      <header className={`${classes.header} page-header`} style={{ marginTop: 0 }}>
+        <h1 className={classes.title}>{formatMessage(messages.pageTitle)}</h1>
       </header>
       <div className="form-group">
         <label htmlFor="encryptionToolRawText" className="control-label">{formatMessage(messages.inputLabel)}</label>
