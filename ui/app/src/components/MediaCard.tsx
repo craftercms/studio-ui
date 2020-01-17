@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -22,19 +22,21 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import IconButton from '@material-ui/core/IconButton';
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Theme } from "@material-ui/core";
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import clsx from 'clsx';
 import { MediaItem } from '../models/Search';
 import FormGroup from "@material-ui/core/FormGroup";
 import Checkbox from "@material-ui/core/Checkbox";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { defineMessages, useIntl } from "react-intl";
+import MoreVertRounded from '@material-ui/icons/MoreVertRounded';
 import { palette } from "../styles/theme";
-import { isEditableAsset } from "../utils/content";
 import cardTitleStyles from "../styles/card";
+import { defineMessages, useIntl } from 'react-intl';
+
+const translations = defineMessages({
+  options: {
+    id: 'media.card.title',
+    defaultMessage: 'options'
+  }
+});
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -50,21 +52,19 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: '-webkit-box',
       '-webkit-line-clamp': 1,
       '-webkit-box-orient': 'vertical',
-    },
-    '&.list': {
-      display: 'flex',
     }
   },
   cardHeaderRoot: {
     padding: '9px 0'
   },
+  avatar: {
+    color: palette.black,
+    margin: '0 10px'
+  },
   cardHeader: {
     display: 'flex',
     alignItems: 'center',
     width: '100%',
-    '&.list': {
-      marginLeft: '15px'
-    }
   },
   cardOptions: {
     marginLeft: 'auto'
@@ -72,12 +72,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   media: {
     height: 0,
     paddingTop: '56.25%', // 16:9
-    '&.list': {
-      paddingTop: 0,
-      height: '80px',
-      width: '80px',
-      order: -1
-    }
   },
   listActionArea: {
     paddingTop: 0,
@@ -88,6 +82,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   mediaIcon: {
     paddingTop: '56.25%',
     position: 'relative',
+    overflow: 'hidden',
     '& .media-icon': {
       position: 'absolute',
       top: '50%',
@@ -103,84 +98,68 @@ const useStyles = makeStyles((theme: Theme) => ({
       order: -1
     }
   },
-  optionIcon: {
-    color: palette.gray.medium3,
-    marginRight: '5px'
+  videoThumbnail: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '100%',
   },
-  checkbox: {
-    '&.list': {
-      justifyContent: 'center',
-      order: -2,
-      marginRight: '5px',
-      marginLeft: '16px'
-    }
-  },
+  checkbox: {}
 }));
 
 interface MediaCardProps {
   item: MediaItem;
-  currentView: string;
-  selected: Array<string>;
-  mode: string;
+  hasSubheader?: boolean;
+  isList?: boolean;
+  selected?: Array<string>;
   previewAppBaseUri: string;
+  headerButtonIcon?: React.ElementType<any>;
+  avatar?: React.ElementType<any>;
+  classes?: {
+    root?: any;
+    checkbox?: any;
+    header?: any;
+    media?: any;
+    mediaIcon?: any;
+  };
 
-  handleEdit(path: string, readonly?: boolean): any;
+  onHeaderButtonClick?(...props: any): any;
 
-  handleDelete(path: string): any;
+  onEdit?(path: string, readonly?: boolean): any;
 
-  handlePreview(url: string): any;
+  onPreview?(url: string): any;
 
-  handlePreviewAsset(url: string, type: string, name: string): any;
+  onPreviewAsset?(url: string, type: string, name: string): any;
 
-  handleSelect(path: string, selected: boolean): any;
+  onSelect?(path: string, selected: boolean): any;
 
-  onGetUserPermissions(path: string): any;
+  onDragStart?(...args: any): any;
+
+  onDragEnd?(...args: any): any;
 }
-
-const messages = defineMessages({
-  noPermissions: {
-    id: 'mediaCard.noPermissions',
-    defaultMessage: 'No permissions available.'
-  },
-  loadingPermissions: {
-    id: 'mediaCard.loadingPermissions',
-    defaultMessage: 'Loading...'
-  },
-});
 
 function MediaCard(props: MediaCardProps) {
   const classes = useStyles({});
-  const [permissions, setPermissions] = useState({
-    edit: null,
-    delete: null,
-  });
-  const {handleEdit, handleDelete, handlePreview, handlePreviewAsset, handleSelect, onGetUserPermissions, selected, item, mode, previewAppBaseUri} = props;
-  const {name, path, type} = item;
-  const isList = props.currentView === 'list';
-  const {formatMessage} = useIntl();
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, path: string) => {
-    setAnchorEl(event.currentTarget);
-    if(permissions.edit === null && permissions.delete === null) {
-      onGetUserPermissions(path).then(
-        ({permissions}) => {
-          let editable = isEditableAsset(path);
-          let isWriteAllowed = permissions.includes('write') || false;
-          let isDeleteAllowed = permissions.includes('delete') || false;
-          setPermissions({edit: editable && isWriteAllowed, delete: isDeleteAllowed && mode === 'default'});
-        },
-        (response: string) => {
-          console.log(response)
-        },
-      )
-    }
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const {
+    onEdit,
+    onPreview,
+    onPreviewAsset,
+    onSelect,
+    selected,
+    item,
+    previewAppBaseUri,
+    hasSubheader = true,
+    isList = false,
+    headerButtonIcon: HeaderButtonIcon = MoreVertRounded,
+    onHeaderButtonClick,
+    avatar: Avatar,
+    onDragStart,
+    onDragEnd
+  } = props;
+  const { name, path, type } = item;
+  const { formatMessage } = useIntl();
+  const hasOnAssetClick = (onPreviewAsset || onEdit) ? true : false;
 
   const renderIcon = (type: string, path: string, name: string) => {
     let iconClass = 'fa media-icon';
@@ -213,50 +192,80 @@ function MediaCard(props: MediaCardProps) {
         break;
     }
     return (
-      <CardActionArea
-        onClick={
-          previewArea
-            ? () => handlePreviewAsset(path, type, name)
-            : () => handleEdit(path, true)
-        }
-        className={clsx(isList && classes.listActionArea)}>
-        <div className={clsx(classes.mediaIcon, isList && 'list')}>
-          <i className={iconName}></i>
+      hasOnAssetClick ? (
+        <CardActionArea
+          onClick={
+            previewArea
+              ? () => onPreviewAsset(path, type, name)
+              : () => onEdit(path, true)
+          }
+          className={clsx(isList && classes.listActionArea)}>
+          <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
+            {
+              (type === 'Video') ? (
+                <video className={classes.videoThumbnail}>
+                  <source src={path} type="video/mp4"/>
+                  <i className={iconName}></i>
+                </video>
+              ) : (
+                <i className={iconName}></i>
+              )
+            }
+          </div>
+        </CardActionArea>
+      ) : (
+        <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
+          {
+            (type === 'Video') ? (
+              <video className={classes.videoThumbnail}>
+                <source src={path} type="video/mp4"/>
+                <i className={iconName}></i>
+              </video>
+            ) : (
+              <i className={iconName}></i>
+            )
+          }
         </div>
-      </CardActionArea>
+      )
     )
   };
 
   return (
-    <Card className={clsx(classes.card, isList && 'list')}>
+    <Card
+      className={clsx(classes.card, props.classes?.root)}
+      draggable={!!onDragStart || !!onDragEnd}
+      onDragStart={() => onDragStart(item)}
+      onDragEnd={() => onDragEnd(item)}
+    >
       {
-        isList &&
-        <FormGroup className={clsx(classes.checkbox, 'list')}>
+        (isList && onSelect) &&
+        <FormGroup className={clsx(classes.checkbox, props.classes?.checkbox)}>
           <Checkbox
             checked={selected.includes(path)}
-            onClick={(e: any) => handleSelect(path, e.target.checked)}
+            onClick={(e: any) => onSelect(path, e.target.checked)}
             color="primary"/>
         </FormGroup>
       }
-      <header className={clsx(classes.cardHeader, isList && 'list')}>
+      <header className={clsx(classes.cardHeader, props.classes?.header)}>
         {
-          !isList &&
-          <FormGroup className={classes.checkbox}>
+          (!isList && onSelect) &&
+          <FormGroup>
             <Checkbox
               checked={selected.includes(path)}
-              onClick={(e: any) => handleSelect(path, e.target.checked)}
+              onClick={(e: any) => onSelect(path, e.target.checked)}
               color="primary"/>
           </FormGroup>
         }
         <CardHeader
           title={name}
-          subheader={type}
-          classes={{root: classes.cardHeaderRoot}}
-          onClick={(type === 'Image' || type === 'Video' || type === 'Page') ? () => handlePreview(path) : null}
+          subheader={hasSubheader ? type : null}
+          avatar={Avatar ? <Avatar/> : null}
+          classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
+          onClick={(type === 'Image' || type === 'Video' || type === 'Page') && onPreview ? () => onPreview(path) : null}
           titleTypographyProps={{
             variant: "subtitle2",
             component: "h2",
-            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && 'clickable')
+            className: clsx('cardTitle', (type === 'Image' || type === 'Video' || type === 'Page') && onPreview && 'clickable')
           }}
           subheaderTypographyProps={{
             variant: "subtitle2",
@@ -265,49 +274,37 @@ function MediaCard(props: MediaCardProps) {
             color: "textSecondary"
           }}
         />
-        <IconButton aria-label="options" className={classes.cardOptions} onClick={(e) => handleClick(e, path)}>
-          <MoreVertIcon/>
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          {
-            permissions.edit === true &&
-            <MenuItem onClick={() => {handleClose(); handleEdit(path)}}>
-              <EditIcon className={classes.optionIcon}/>Edit
-            </MenuItem>
-          }
-          {
-            permissions.delete === true &&
-            <MenuItem onClick={() => { handleClose(); handleDelete(path)}}>
-              <DeleteIcon className={classes.optionIcon}/>Delete
-            </MenuItem>
-          }
-          {
-            (permissions.edit === false && permissions.delete === false) &&
-            <MenuItem>{formatMessage(messages.noPermissions)}</MenuItem>
-          }
-          {
-            permissions.edit === null &&
-            <MenuItem>{formatMessage(messages.loadingPermissions)}</MenuItem>
-          }
-        </Menu>
+        {
+          onHeaderButtonClick &&
+          <IconButton
+            aria-label={formatMessage(translations.options)}
+            className={classes.cardOptions}
+            onClick={(e) => onHeaderButtonClick(e, item)}
+          >
+            <HeaderButtonIcon/>
+          </IconButton>
+        }
       </header>
       {
         (type === 'Image') ? (
-          <CardActionArea
-            onClick={() => handlePreviewAsset(path, type, name)}
-            className={clsx(isList && classes.listActionArea)}
-          >
+          onPreviewAsset ? (
+            <CardActionArea
+              onClick={() => onPreviewAsset(path, type, name)}
+              className={clsx(isList && classes.listActionArea)}
+            >
+              <CardMedia
+                className={clsx(classes.media, props.classes?.media)}
+                image={`${previewAppBaseUri}${path}`}
+                title={name}
+              />
+            </CardActionArea>
+          ) : (
             <CardMedia
-              className={clsx(classes.media, isList && 'list')}
+              className={clsx(classes.media, props.classes?.media)}
               image={`${previewAppBaseUri}${path}`}
               title={name}
             />
-          </CardActionArea>
+          )
         ) : (
           renderIcon(type, path, name)
         )

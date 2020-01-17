@@ -31,10 +31,13 @@ import {
 import { camelizeProps, nnou, nou, pluckProps, reversePluckProps } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
-import { camelize, popPiece, removeLastPiece } from '../utils/string';
+import { camelize, dataUriToBlob, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { PaginationOptions } from '../models/Search';
+import Core from '@uppy/core';
+import XHRUpload from '@uppy/xhr-upload';
+import { getRequestForgeryToken } from "../utils/auth";
 
 export function getContent(site: string, path: string): Observable<string> {
   return get(`/studio/api/1/services/api/1/content/get-content.json?site_id=${site}&path=${path}`).pipe(
@@ -398,8 +401,38 @@ function writeContentUrl(qs: object) {
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
 
-export function updateField(modelId: string, fieldId: string, value: any): Observable<any> {
-  throw new Error('Not implemented.');
+export function updateField(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  indexToUpdate: number,
+  parentModelId: string = null,
+  value: any
+): Observable<any> {
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
+      let node = extractNode(doc, removeLastPiece(fieldId) || fieldId, indexToUpdate);
+
+      if (fieldId.includes('.')) {
+        // node is <item/> inside collection
+        const fieldToUpdate = popPiece(fieldId);
+        let fieldNode = node.querySelector(`:scope > ${fieldToUpdate}`);
+        if (nou(fieldNode)) {
+          fieldNode = doc.createElement(fieldToUpdate);
+          node.appendChild(fieldNode);
+        }
+        node = fieldNode;
+      } else if (!node) {
+        // node is <fieldId/> inside the doc
+        node = doc.createElement(fieldId);
+        doc.documentElement.appendChild(node);
+      }
+      node.innerHTML = `<![CDATA[${value}]]>`;
+    }
+  );
 }
 
 function performMutation(
@@ -687,6 +720,9 @@ function extractNode(doc, fieldId, index) {
   const indexes = `${index}`.split('.').map(i => parseInt(i, 10));
   const fields = fieldId.split('.');
   let aux = doc.documentElement;
+  if (nou(index)) {
+    return aux.querySelector(`:scope > ${fieldId}`);
+  }
   if (indexes.length > fields.length) {
     // There's more indexes than fields
     throw new Error(
@@ -747,4 +783,48 @@ export default {
   getContent,
   getDOM,
   fetchPublishingChannels
+}
+
+export function uploadDataUrl(
+  site: string,
+  file: any,
+  path: string,
+  XSRF_CONFIG_ARGUMENT: string
+): Observable<any> {
+  return new Observable((subscriber) => {
+    const uppy = Core({ autoProceed: true });
+    const uploadAssetUrl = `/studio/asset-upload?${XSRF_CONFIG_ARGUMENT}=${getRequestForgeryToken()}`;
+    uppy.use(XHRUpload, { endpoint: uploadAssetUrl });
+    uppy.setMeta({ site, path });
+
+    const blob = dataUriToBlob(file.dataUrl);
+
+    uppy.on('upload-success', () => {
+      subscriber.complete();
+    });
+
+    uppy.on('upload-progress', (file, progress) => {
+      let type = 'progress';
+      if (progress.bytesUploaded === progress.bytesTotal) {
+        type = 'complete'
+      }
+      subscriber.next({
+        type,
+        payload: {
+          file,
+          progress
+        }
+      });
+    });
+
+    uppy.on('upload-error', (file, error) => {
+      subscriber.error(error);
+    });
+
+    uppy.addFile({
+      name: file.name,
+      type: file.type,
+      data: blob,
+    });
+  });
 }
