@@ -60,9 +60,13 @@ const translations = defineMessages({
     id: 'craftercms.ice.browse.loading',
     defaultMessage: 'Loading'
   },
-  all: {
-    id: 'craftercms.ice.browse.all',
-    defaultMessage: 'All content types'
+  selectContentType: {
+    id: 'craftercms.ice.browse.selectContentType',
+    defaultMessage: 'Select content type'
+  },
+  chooseContentType: {
+    id: 'craftercms.ice.browse.chooseContentType',
+    defaultMessage: 'Please choose a content type.'
   }
 });
 
@@ -119,6 +123,16 @@ const useStyles = makeStyles((theme) => createStyles({
     width: '100%',
     marginTop: '15px'
   },
+  emptyState: {
+    margin: `${theme.spacing(4)}px ${theme.spacing(1)}px`
+  },
+  emptyStateImage: {
+    width: '50%',
+    marginBottom: theme.spacing(1)
+  },
+  emptyStateTitle: {
+    fontSize: '1em'
+  }
 }));
 
 
@@ -126,6 +140,7 @@ interface ComponentResource {
   count: number;
   limit: number;
   pageNumber: number;
+  contentTypeFilter: string;
   items: Array<ContentInstance>;
 }
 
@@ -139,21 +154,24 @@ export default function BrowseComponentsPanel() {
   const [keyword, setKeyword] = useState(initialKeyword);
   const [contentTypeFilter, setContentTypeFilter] = useState(initialContentTypeFilter);
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId) : null;
+  const contentTypes = contentTypesBranch.byId ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component') : null;
+  const isFetching = useSelection(state => state.preview.components.isFetching);
   const resource = useStateResourceSelection<ComponentResource, PagedEntityState<ContentInstance>>(state => state.preview.components, {
     shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: source => (!source.isFetching) && nnou(source.byId),
+    shouldResolve: source => ((!source.isFetching) && nnou(source.pageNumber) && nnou(source.page[source.pageNumber])) || !source.contentTypeFilter,
     shouldReject: source => nnou(source.error),
     errorSelector: source => source.error,
     resultSelector: source => {
-      const items = source.page[source.pageNumber].map((id) => source.byId[id]);
+
+      const items = source.page[source.pageNumber]?.map((id) => source.byId[id]) || [];
       return {
-        ...pluckProps(source, 'count', 'query.limit', 'pageNumber'),
+        ...pluckProps(source, 'count', 'query.limit', 'pageNumber', 'contentTypeFilter'),
         items
       } as ComponentResource
     }
   });
   const { formatMessage } = useIntl();
+  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
 
   const onDragStart = () => {
   };
@@ -166,13 +184,13 @@ export default function BrowseComponentsPanel() {
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe((keywords: string) => {
-      dispatch(fetchComponentsByContentType('/component/feature', { keywords }));
+      dispatch(fetchComponentsByContentType(null, { keywords }));
     });
     return () => subscription.unsubscribe();
   }, [dispatch, onSearch$]);
 
   function onPageChanged(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
-    dispatch(fetchComponentsByContentType('/component/feature', { offset: newPage }));
+    dispatch(fetchComponentsByContentType(null, { offset: newPage }));
   }
 
   function handleSearchKeyword(keyword: string) {
@@ -192,15 +210,18 @@ export default function BrowseComponentsPanel() {
           <SearchBar
             onChange={handleSearchKeyword}
             keyword={keyword}
+            disabled={isFetching}
           />
           {
             contentTypes &&
             <Select
               value={contentTypeFilter}
+              displayEmpty
               className={classes.Select}
               onChange={(event: any) => handleSelectChange(event.target.value)}
+              disabled={isFetching}
             >
-              <MenuItem value='all'>{formatMessage(translations.all)}</MenuItem>
+              <MenuItem value="" disabled>{formatMessage(translations.selectContentType)}</MenuItem>
               {
                 contentTypes.map((contentType: ContentType, i: number) => {
                   return <MenuItem value={contentType.id} key={i}>{contentType.name}</MenuItem>
@@ -223,6 +244,7 @@ export default function BrowseComponentsPanel() {
             onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
+            AUTHORING_BASE={AUTHORING_BASE}
           />
         </React.Suspense>
       </ErrorBoundary>
@@ -238,46 +260,60 @@ function BrowsePanelUI(props) {
     onPageChanged,
     onDragStart,
     onDragEnd,
+    AUTHORING_BASE,
   } = props;
   const { formatMessage } = useIntl();
   const components: ComponentResource = componentsResource.read();
-  const { count, pageNumber, items, limit } = components;
+  const { count, pageNumber, items, limit, contentTypeFilter } = components;
+  console.log(components);
   return (
     <div className={classes.browsePanelWrapper}>
-      <TablePagination
-        className={classes.pagination}
-        classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
-        component="div"
-        labelRowsPerPage=""
-        count={count}
-        rowsPerPage={limit}
-        page={pageNumber}
-        backIconButtonProps={{
-          'aria-label': formatMessage(translations.previousPage),
-        }}
-        nextIconButtonProps={{
-          'aria-label': formatMessage(translations.nextPage),
-        }}
-        onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
-      />
-      <List className={classes.list}>
-        {
-          items.map((item: ContentInstance) =>
-            <PanelListItem
-              key={item.craftercms.id}
-              primaryText={item.craftercms.label}
-              onDragStart={(e) => onDragStart(e)}
-              onDragEnd={(e) => onDragEnd(e)}
-            />
-          )
-        }
-      </List>
       {
-        count === 0 &&
-        <EmptyState
-          title={formatMessage(translations.noResults)}
-          classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
-        />
+        contentTypeFilter ? (
+          <>
+            <TablePagination
+              className={classes.pagination}
+              classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+              component="div"
+              labelRowsPerPage=""
+              count={count}
+              rowsPerPage={limit}
+              page={pageNumber}
+              backIconButtonProps={{
+                'aria-label': formatMessage(translations.previousPage),
+              }}
+              nextIconButtonProps={{
+                'aria-label': formatMessage(translations.nextPage),
+              }}
+              onChangePage={(e: React.MouseEvent<HTMLButtonElement>, page: number) => onPageChanged(e, page * limit)}
+            />
+            <List className={classes.list}>
+              {
+                items.map((item: ContentInstance) =>
+                  <PanelListItem
+                    key={item.craftercms.id}
+                    primaryText={item.craftercms.label}
+                    onDragStart={(e) => onDragStart(e)}
+                    onDragEnd={(e) => onDragEnd(e)}
+                  />
+                )
+              }
+            </List>
+            {
+              count === 0 &&
+              <EmptyState
+                title={formatMessage(translations.noResults)}
+                classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+              />
+            }
+          </>
+        ) : (
+          <EmptyState
+            title={formatMessage(translations.chooseContentType)}
+            image={`${AUTHORING_BASE}/static-assets/images/choose_option.svg`}
+            classes={{ root: classes.emptyState, image: classes.emptyStateImage, title: classes.emptyStateTitle }}
+          />
+        )
       }
     </div>
   )

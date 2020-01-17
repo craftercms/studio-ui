@@ -160,7 +160,7 @@ export default function AssetsPanel() {
   const dispatch = useDispatch();
   const resource = useStateResourceSelection<AssetResource, PagedEntityState<MediaItem>>(state => state.preview.assets, {
     shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: source => (!source.isFetching) && nnou(source.byId),
+    shouldResolve: source => (!source.isFetching) && nnou(source.page[source.pageNumber]),
     shouldReject: source => nnou(source.error),
     errorSelector: source => source.error,
     resultSelector: source => {

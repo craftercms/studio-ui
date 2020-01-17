@@ -77,6 +77,7 @@ interface SearchBarProps {
   autofocus?: boolean;
   backgroundColor?: string;
   placeholder?: string;
+  disabled?: boolean;
   classes?: {
     root?: any;
   };
@@ -84,7 +85,7 @@ interface SearchBarProps {
 
 export default function SearchBar(props: SearchBarProps) {
   const classes = useStyles({ background: props.backgroundColor || palette.gray.light5 });
-  const {onChange, keyword, closeIcon = false, autofocus = false, placeholder} = props;
+  const { onChange, keyword, closeIcon = false, autofocus = false, placeholder, disabled = false } = props;
   const [focus, setFocus] = useState(false);
   const {formatMessage} = useIntl();
   return (
@@ -96,6 +97,7 @@ export default function SearchBar(props: SearchBarProps) {
         onBlur={() => setFocus(false)}
         placeholder={placeholder || formatMessage(messages.placeholder)}
         autoFocus={autofocus}
+        disabled={disabled}
         value={keyword}
         classes={{
           root: classes.inputRoot,

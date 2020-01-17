@@ -679,7 +679,7 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
   return post(
     `/studio/api/2/search/search.json?siteId=${site}`,
     {
-      ...options,
+      ...reversePluckProps(options, 'type'),
       filters: { 'content-type': contentTypes }
     },
     {
@@ -688,16 +688,16 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
   ).pipe(
     map<AjaxResponse, { count: number, paths: string[] }>(({ response }) => ({
       count: response.result.total,
-      paths: response.result.items.map((item) => item.path)
+      paths: response.result.items.filter((item) => item.type === options.type).map((item) => item.path)
     })),
     switchMap(({ paths, count }) => zip(
       of(count),
-      forkJoin(
+      paths.length ? forkJoin(
         paths.reduce<LookupTable<Observable<ContentInstance>>>((hash, path) => {
           hash[path] = getContentInstance(site, path);
           return hash;
         }, {})
-      )
+      ) : of({})
     )),
     map(([count, lookup]) => ({ count, lookup }))
   );
