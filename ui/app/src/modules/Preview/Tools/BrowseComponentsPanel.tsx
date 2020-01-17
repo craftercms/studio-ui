@@ -265,7 +265,6 @@ function BrowsePanelUI(props) {
   const { formatMessage } = useIntl();
   const components: ComponentResource = componentsResource.read();
   const { count, pageNumber, items, limit, contentTypeFilter } = components;
-  console.log(components);
   return (
     <div className={classes.browsePanelWrapper}>
       {

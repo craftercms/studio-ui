@@ -295,7 +295,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT, contentTypeComponents]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {

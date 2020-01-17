@@ -224,7 +224,7 @@ export default function AssetsPanel() {
       setDragInProgress(true);
     });
     return () => subscription.unsubscribe();
-  }, [onDragDrop]);
+  }, []);
 
 
   useEffect(() => {
