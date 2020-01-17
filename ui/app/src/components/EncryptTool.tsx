@@ -18,9 +18,12 @@ import React, { useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { encrypt as encryptService } from '../services/security';
 import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { green } from '@material-ui/core/colors';
 
 const messages = defineMessages({
   pageTitle: {
@@ -49,13 +52,27 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   header: {
     marginTop: 0
   },
   title: {
     color: '#555555',
     padding: '0 20px'
+  },
+  success: {
+    backgroundColor: green[600]
+  },
+  icon: {
+    fontSize: 20
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing(1)
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center'
   }
 }));
 
@@ -71,6 +88,30 @@ function copyToClipboard(input: HTMLInputElement, setOpenNotification: Function)
 
   setOpenNotification(true);
 
+}
+
+function SnackbarContentWrapper(props: any) {
+  const classes = useStyles({});
+  const { className, message, onClose, variant, ...other } = props;
+
+  return (
+    <SnackbarContent
+      className={`${classes.success} ${classes.iconVariant}`}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" className={classes.message}>
+          <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
+          {message}
+        </span>
+      }
+      action={[
+        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+          <CloseIcon className={classes.icon}/>
+        </IconButton>
+      ]}
+      {...other}
+    />
+  );
 }
 
 const EncryptTool = () => {
@@ -161,13 +202,13 @@ const EncryptTool = () => {
         open={openNotification}
         autoHideDuration={5000}
         onClose={() => setOpenNotification(false)}
-        action={
-          <IconButton size="small" aria-label="close" color="inherit" onClick={() => setOpenNotification(false)}>
-            <CloseIcon fontSize="small"/>
-          </IconButton>
-        }
-        message={formatMessage(messages.successMessage)}
-      />
+      >
+        <SnackbarContentWrapper
+          onClose={() => setOpenNotification(false)}
+          variant="success"
+          message={formatMessage(messages.successMessage)}
+        />
+      </Snackbar>
     </section>
   );
 };
