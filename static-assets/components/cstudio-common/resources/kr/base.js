@@ -522,6 +522,8 @@ CStudioAuthoring.Messages.registerBundle("search", "kr", {
     relevance: "관련성",
     asc: "오름차순",
     desc: "내림차순",
+    moreRelevance: "가장 관련성이 높은 것",
+    lessRelevance: "먼저 덜 관련",
     sortOrder: "정렬 순서",
     sortBy: "정렬 기준",
     name: "이름",

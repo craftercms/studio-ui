@@ -68,7 +68,7 @@
     <script id="hb-command-controls" type="text/x-handlebars-template">
       <div id="cstudio-command-controls">
         <div id="submission-controls" class="cstudio-form-controls-button-container">
-          <input id="formSaveButton" type="button" class="cstudio-search-btn cstudio-button btn btn-primary" disabled="" value="Add Selection">
+          <input id="formSaveButton" type="button" class="cstudio-search-btn cstudio-button btn btn-primary" disabled value="Add Selection">
           <input id="formCancelButton" type="button" class="cstudio-search-btn cstudio-button btn btn-default" value="Cancel">
         </div>
       </div>
