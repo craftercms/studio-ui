@@ -31,12 +31,18 @@ import Paper from '@material-ui/core/Paper';
 import { palette } from '../../../styles/theme';
 import { Typography } from '@material-ui/core';
 import DeleteRoundedTilted from '../../../components/Icons/DeleteRoundedTilted';
-import { COMPONENT_DRAG_ENDED, COMPONENT_DRAG_STARTED, TRASHED } from '../../../state/actions/preview';
+import {
+  browseSharedInstance,
+  COMPONENT_DRAG_ENDED,
+  COMPONENT_DRAG_STARTED,
+  TRASHED
+} from '../../../state/actions/preview';
 import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
 import { PanelListItem } from './PanelListItem';
+import { useDispatch } from "react-redux";
 
 const translations = defineMessages({
   componentsPanel: {
@@ -120,6 +126,7 @@ export function ComponentsPanelUI(props) {
   const { itemBeingDragged, classes, componentTypesResource } = props;
 
   const contentTypes = componentTypesResource.read();
+  const dispatch = useDispatch();
 
   const hostToGuest$ = getHostToGuestBus();
   const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
@@ -137,6 +144,10 @@ export function ComponentsPanelUI(props) {
   const onMenuClose = () => setMenuContext(null);
 
   const onMenuOptionClicked = () => setMenuContext(null);
+
+  const onBrowseSharedInstancesClicked = () => {
+    dispatch(browseSharedInstance(menuContext.contentType.id))
+  };
 
   return (
     <>
@@ -161,7 +172,7 @@ export function ComponentsPanelUI(props) {
         onClose={onMenuClose}
       >
         <MenuItem onClick={onMenuOptionClicked}>List in-page instances</MenuItem>
-        <MenuItem onClick={onMenuOptionClicked}>Browse "shared" instances</MenuItem>
+        <MenuItem onClick={onBrowseSharedInstancesClicked}>Browse "shared" instances</MenuItem>
         <MenuItem onClick={onMenuOptionClicked}>List welcoming receptacles</MenuItem>
       </Menu>
 

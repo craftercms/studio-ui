@@ -20,7 +20,9 @@ import {
   DELETE_ITEM_OPERATION,
   forEach,
   INSERT_COMPONENT_OPERATION,
+  INSERT_INSTANCE_OPERATION,
   notNullOrUndefined,
+  stripEscapedHtmlTags,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
 import { useGuestContext } from './GuestContext';
@@ -266,6 +268,48 @@ export function GuestProxy(props) {
           };
 
           processFields(instance, contentType.fields);
+
+          const $daddy = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]:not([data-craftercms-index])`);
+
+          const $siblings = $daddy.find('> *');
+
+          if ($siblings.length === targetIndex) {
+            $daddy.append($clone);
+          } else {
+            $clone.insertBefore($siblings.eq(targetIndex));
+          }
+
+          forEach(
+            $daddy.children(),
+            (el, i) => {
+
+              $(el).attr('data-craftercms-index', i);
+
+              const pr = ElementRegistry.fromElement(el);
+
+              pr && context.deregister(pr.id);
+              registerElement(el);
+
+            }
+          );
+
+          break;
+        }
+        case INSERT_INSTANCE_OPERATION: {
+          const { modelId, fieldId, targetIndex, instance } = op.args;
+
+          const $clone = $(`[data-craftercms-field-id="${fieldId}"][data-craftercms-index]:first`).clone();
+
+          //pending no clone?? insert div with label
+
+          Object.keys(instance).forEach((field) => {
+            if (!field.endsWith('_o') && field !== 'craftercms') {
+              //cleaning CDATA and escapedhtmltags
+              let value = instance[field].replace("<![CDATA[", "").replace("]]>", "");
+              value = stripEscapedHtmlTags(value);
+              $clone.find(`[data-craftercms-field-id="${field}"]`).html(value);
+            }
+          });
 
           const $daddy = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]:not([data-craftercms-index])`);
 

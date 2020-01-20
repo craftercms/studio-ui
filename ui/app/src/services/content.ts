@@ -50,23 +50,52 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
 }
 
 export function getContentInstance(site: string, path: string): Observable<ContentInstance> {
-  return getDOM(site, path).pipe(map(doc => parseContentXML(doc)))
+  return getDOM(site, path).pipe(map(doc => parseContentXML(doc, path)))
 }
 
-function parseContentXML(doc: XMLDocument, path: string = null): ContentInstance {
-  return ({
-    craftercms: {
-      id: getInnerHtml(doc.querySelector('objectId')),
-      path,
-      label: getInnerHtml(doc.querySelector('internal-name')),
-      locale: null,
-      dateCreated: getInnerHtml(doc.querySelector('createdDate_dt')),
-      dateModified: getInnerHtml(doc.querySelector('lastModifiedDate_dt')),
-      contentType: getInnerHtml(doc.querySelector('content-type'))
+function parseContentXML(doc: XMLDocument, path: string = null, parseContent = null): ContentInstance {
+  if (!parseContent) {
+    return parseContentXML(doc, path, {
+      craftercms: {
+        id: getInnerHtml(doc.querySelector('objectId')),
+        path,
+        label: getInnerHtml(doc.querySelector('internal-name')),
+        locale: null,
+        dateCreated: getInnerHtml(doc.querySelector('createdDate_dt')),
+        dateModified: getInnerHtml(doc.querySelector('lastModifiedDate_dt')),
+        contentType: getInnerHtml(doc.querySelector('content-type'))
+      },
+    })
+  } else {
+    if (doc.documentElement.children.length) {
+      let element = doc.documentElement.children[0];
+      let tagName = element.tagName;
+      if (!skippableList.includes(tagName)) {
+        parseContent[tagName] = tagName.endsWith('_o') ? [] : element.innerHTML;
+      }
+      doc.documentElement.children[0].remove();
+      return parseContentXML(doc, path, parseContent);
+    } else {
+      return parseContent;
     }
-    //TODO: getData
-  })
+  }
 }
+
+const skippableList = [
+  'content-type',
+  'display-template',
+  'no-template-required',
+  'merge-strategy',
+  'objectGroupId',
+  'objectId',
+  'file-name',
+  'internal-name',
+  'disabled',
+  'createdDate',
+  'createdDate_dt',
+  'lastModifiedDate',
+  'lastModifiedDate_dt'
+];
 
 export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
   return get(`/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`).pipe(
@@ -550,6 +579,74 @@ export function insertComponent(
         } : {
           component
         })
+      });
+
+      let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
+
+      // Fields not initialized will not be present in the document
+      // and we'd rather need to create it.
+      if (nou(fieldNode)) {
+        fieldNode = doc.createElement(fieldId);
+        fieldNode.setAttribute('item-list', 'true');
+        doc.documentElement.appendChild(fieldNode);
+      }
+
+      // Since this operation only deals with components (i.e. no repeat groups)
+      // using `item` as a selector instead of a generic `> *` selection.
+      const itemList = fieldNode.querySelectorAll(`:scope > item`);
+
+      if (itemList.length === targetIndex) {
+        fieldNode.appendChild(newItem);
+      } else {
+        $(newItem).insertBefore(itemList[targetIndex]);
+      }
+
+      return post(
+        writeContentUrl(qs),
+        serialize(doc)
+      );
+
+    })
+  );
+}
+
+export function insertInstance(
+  site: string,
+  modelId: string,
+  fieldId: string,
+  targetIndex: number,
+  instance: ContentInstance,
+): Observable<any> {
+  return getDOM(site, modelId).pipe(
+    switchMap((doc) => {
+
+      const qs = {
+        site,
+        path: modelId,
+        unlock: 'true',
+        fileName: getInnerHtml(doc.querySelector('file-name'))
+      };
+
+      const id = instance.craftercms.id;
+      // TODO: Hardcoded value. Retrieve properly.
+      const pathBase = `/site/components/${instance.craftercms.contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
+      const path = `${pathBase}/${id}.xml`;
+
+      // Create the new `item` that holds or references (embedded vs shared) the component.
+      const newItem = doc.createElement('item');
+
+      // Add the child elements into the `item` node
+      createElements(doc, newItem, {
+        '@attributes': {
+          // TODO: Hardcoded value. Fix.
+          datasource: 'sharedFeatures'
+        },
+        key: path,
+        value: instance.craftercms.label,
+        ...{
+          include: path,
+          disableFlattening: 'false'
+        }
       });
 
       let fieldNode = doc.querySelector(`:scope > ${fieldId}`);

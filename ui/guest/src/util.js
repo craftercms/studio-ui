@@ -37,6 +37,7 @@ export const GUEST_CHECK_IN = 'GUEST_CHECK_IN';
 export const GUEST_CHECK_OUT = 'GUEST_CHECK_OUT';
 export const SORT_ITEM_OPERATION = 'SORT_ITEM_OPERATION';
 export const INSERT_COMPONENT_OPERATION = 'INSERT_COMPONENT_OPERATION';
+export const INSERT_INSTANCE_OPERATION = 'INSERT_INSTANCE_OPERATION';
 export const INSERT_ITEM_OPERATION = 'INSERT_ITEM_OPERATION';
 export const MOVE_ITEM_OPERATION = 'MOVE_ITEM_OPERATION';
 export const DELETE_ITEM_OPERATION = 'DELETE_ITEM_OPERATION';
@@ -58,6 +59,8 @@ export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
 export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
 export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
+export const COMPONENT_INSTANCE_DRAG_STARTED = 'COMPONENT_INSTANCE_DRAG_STARTED';
+export const COMPONENT_INSTANCE_DRAG_ENDED = 'COMPONENT_INSTANCE_DRAG_ENDED';
 
 // endregion
 
@@ -522,4 +525,14 @@ export function removeLastPiece(str, splitChar = '.') {
 
 export function popPiece(str, splitChar = '.') {
   return str.substr(str.lastIndexOf(splitChar) + 1);
+}
+
+function decodeHTML(html) {
+  var txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+}
+
+export function stripEscapedHtmlTags(str) {
+  return decodeHTML(str).replace(/<[^>]*>/g, '');
 }

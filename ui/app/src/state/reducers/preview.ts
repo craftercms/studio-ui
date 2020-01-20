@@ -18,6 +18,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
+  BROWSE_SHARED_INSTANCE,
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
@@ -320,6 +321,11 @@ const reducer = createReducer<GlobalState['preview']>({
   [FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED]: (state, { payload }) => ({
     ...state,
     components: { ...state.components, error: payload.response, isFetching: false }
+  }),
+  [BROWSE_SHARED_INSTANCE]: (state, { payload }) => ({
+    ...state,
+    selectedTool: 'craftercms.ice.browse',
+    components: { ...state.components, contentTypeFilter: payload }
   }),
 });
 

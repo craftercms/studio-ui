@@ -36,6 +36,7 @@ import {
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSERT_COMPONENT_OPERATION,
+  INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
@@ -45,7 +46,15 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, moveItem, sortItem, updateField, uploadDataUrl } from '../../services/content';
+import {
+  deleteItem,
+  insertComponent,
+  insertInstance,
+  moveItem,
+  sortItem,
+  updateField,
+  uploadDataUrl
+} from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -159,6 +168,24 @@ export function PreviewConcierge(props: any) {
           );
           break;
         }
+        case INSERT_INSTANCE_OPERATION:
+          const { modelId, fieldId, targetIndex, instance } = payload;
+          insertInstance(
+            site,
+            guest.models[modelId].craftercms.path,
+            fieldId,
+            targetIndex,
+            instance
+          ).subscribe(
+            () => {
+              setSnack({ message: 'Insert component operation completed.' });
+            },
+            (error) => {
+              console.error(`${type} failed`, error);
+              setSnack({ message: 'Sort operation failed.' });
+            }
+          );
+          break;
         case INSERT_ITEM_OPERATION: {
           setSnack({ message: 'Insert item operation not implemented.' });
           break;

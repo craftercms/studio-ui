@@ -29,8 +29,8 @@ import { PanelListItem } from "./PanelListItem";
 import List from "@material-ui/core/List";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import {
-  COMPONENT_DRAG_ENDED,
-  COMPONENT_DRAG_STARTED,
+  COMPONENT_INSTANCE_DRAG_ENDED,
+  COMPONENT_INSTANCE_DRAG_STARTED,
   fetchComponentsByContentType
 } from "../../../state/actions/preview";
 import { Subject } from "rxjs";
@@ -178,9 +178,12 @@ export default function BrowseComponentsPanel() {
   const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
   const hostToGuest$ = getHostToGuestBus();
 
-  const onDragStart = (item) => hostToGuest$.next({ type: COMPONENT_DRAG_STARTED, payload: item });
+  const onDragStart = (item: ContentInstance) => hostToGuest$.next({
+    type: COMPONENT_INSTANCE_DRAG_STARTED,
+    payload: item
+  });
 
-  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_DRAG_ENDED });
+  const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
 
   useEffect(() => {
     const subscription = onSearch$.pipe(
@@ -295,7 +298,7 @@ function BrowsePanelUI(props) {
                   <PanelListItem
                     key={item.craftercms.id}
                     primaryText={item.craftercms.label}
-                    onDragStart={() => onDragStart(item.craftercms)}
+                    onDragStart={() => onDragStart(item)}
                     onDragEnd={onDragEnd}
                   />
                 )

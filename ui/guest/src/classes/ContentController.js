@@ -27,6 +27,7 @@ import {
   forEach,
   GUEST_MODELS_RECEIVED,
   INSERT_COMPONENT_OPERATION,
+  INSERT_INSTANCE_OPERATION,
   INSERT_ITEM_OPERATION,
   isNullOrUndefined,
   MOVE_ITEM_OPERATION,
@@ -286,6 +287,40 @@ export class ContentController {
     ContentController.operations$.next({
       type: INSERT_COMPONENT_OPERATION,
       args: { modelId, fieldId, targetIndex, contentType, shared, instance }
+    });
+
+  }
+
+  insertInstance(modelId, fieldId, targetIndex, instance) {
+    const models = this.getCachedModels();
+    const model = models[modelId];
+    // A model with a field that hasn't been initialized with
+    // content may not have that field at all
+    let collection = ModelHelper.value(model, fieldId);
+    if (!collection) {
+      collection = [];
+    } else if (!Array.isArray(collection)) {
+      // e.g. A repeat group
+    }
+    const result = collection.slice(0);
+
+    // Insert in desired position
+    result.splice(targetIndex, 0, instance.craftercms.id);
+
+    ContentController.models$.next({
+      ...models,
+      [instance.craftercms.id]: instance,
+      [modelId]: {
+        ...model,
+        [fieldId]: result
+      }
+    });
+
+    post(INSERT_INSTANCE_OPERATION, { modelId, fieldId, targetIndex, instance });
+
+    ContentController.operations$.next({
+      type: INSERT_INSTANCE_OPERATION,
+      args: { modelId, fieldId, targetIndex, instance }
     });
 
   }
