@@ -299,9 +299,9 @@ export function PreviewConcierge(props: any) {
     return () => {
       fetchSubscription && fetchSubscription.unsubscribe();
       guestToHostSubscription.unsubscribe();
-    }
+    };
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, audiencesPanel, XSRF_CONFIG_ARGUMENT]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {

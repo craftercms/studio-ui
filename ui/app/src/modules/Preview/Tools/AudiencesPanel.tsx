@@ -160,7 +160,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
                 const controlProps = {
                   field: contentType.fields[field],
-                  value: model[field] ? model[field] : undefined,
+                  value: model[field] ?? undefined,
                   onChange: onFieldChange(field, type),
                   disabled: modelApplying
                 };
