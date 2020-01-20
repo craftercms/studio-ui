@@ -101,16 +101,15 @@ export function createCodebaseBridge() {
       DependencySelection: lazy(() => import('../modules/Content/Dependencies/DependencySelection')),
       DependecySelectionDelete: lazy(() => (
         import('../modules/Content/Dependencies/DependencySelection')
-          .then(module => ({
-            default: module.DependencySelectionDelete
-          }))
+        .then(module => ({
+          default: module.DependencySelectionDelete
+        }))
       )),
       CreateSiteDialog: lazy(() => import('../modules/System/Sites/Create/CreateSiteDialog')),
       PublishingQueue: lazy(() => import('../modules/System/Publishing/Queue/PublishingQueue')),
       Search: lazy(() => import('../pages/Search')),
       Preview: lazy(() => import('../pages/Preview')),
-      RequestPublishDialog: lazy(() => import('../modules/Content/Submit/RequestPublishDialog')),
-      ApproveDialog: lazy(() => import('../modules/Content/Approve/ApproveDialog')),
+      PublishDialog: lazy(() => import('../modules/Content/Publish/PublishDialog')),
       ToolbarGlobalNav: lazy(() => import('../components/Navigation/ToolbarGlobalNav'))
     },
 
