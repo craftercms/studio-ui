@@ -16,7 +16,13 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { DELETE_ITEM_OPERATION, forEach, INSERT_COMPONENT_OPERATION, notNullOrUndefined } from '../util';
+import {
+  DELETE_ITEM_OPERATION,
+  forEach,
+  INSERT_COMPONENT_OPERATION,
+  notNullOrUndefined,
+  UPDATE_FIELD_VALUE_OPERATION
+} from '../util';
 import { useGuestContext } from './GuestContext';
 import { ElementRegistry } from '../classes/ElementRegistry';
 import iceRegistry from '../classes/ICERegistry';
@@ -24,6 +30,7 @@ import $ from 'jquery/dist/jquery.slim';
 import contentController, { ContentController } from '../classes/ContentController';
 import { zip } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ContentTypeHelper } from "../classes/ContentTypeHelper";
 
 export function GuestProxy(props) {
 
@@ -286,6 +293,26 @@ export function GuestProxy(props) {
 
           break;
         }
+        case UPDATE_FIELD_VALUE_OPERATION:
+          const { modelId, fieldId, index = 0, value } = op.args;
+          const updatedField = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`);
+          const model = contentController.getCachedModel(modelId);
+          const contentType = contentController.getCachedContentType(model.craftercms.contentType);
+          const fieldType = ContentTypeHelper.getField(contentType, fieldId).type;
+
+          if (fieldType === 'image') {
+            const tagName = updatedField.eq(index).prop('tagName').toLowerCase();
+            if (tagName === 'img') {
+              updatedField.eq(index).attr('src', value);
+            } else {
+              updatedField.eq(index).css('background-image', `url(${value})`);
+            }
+          } else if (fieldType === 'video-picker') {
+            updatedField.eq(index).find('source').attr('src', value);
+            updatedField.eq(index)[0].load();
+          }
+
+          break;
       }
     });
 

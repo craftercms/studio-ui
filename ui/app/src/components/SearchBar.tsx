@@ -71,11 +71,15 @@ const messages = defineMessages({
 
 interface SearchBarProps {
   onChange(value: string): any;
-  keyword: string[] | string ;
+
+  keyword: string[] | string;
   closeIcon?: boolean;
   autofocus?: boolean;
   backgroundColor?: string;
   placeholder?: string;
+  classes?: {
+    root?: any;
+  };
 }
 
 export default function SearchBar(props: SearchBarProps) {
@@ -84,7 +88,7 @@ export default function SearchBar(props: SearchBarProps) {
   const [focus, setFocus] = useState(false);
   const {formatMessage} = useIntl();
   return (
-    <div className={clsx(classes.search, focus && 'focus')}>
+    <div className={clsx(classes.search, focus && 'focus', props.classes?.root)}>
       <SearchIcon className={classes.searchIcon}/>
       <InputBase
         onChange={e => onChange(e.target.value)}

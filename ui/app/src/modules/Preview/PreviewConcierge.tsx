@@ -24,6 +24,9 @@ import {
   clearSelectForEdit,
   CONTENT_TYPES_RESPONSE,
   DELETE_ITEM_OPERATION,
+  DESKTOP_ASSET_DROP,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
+  fetchAssetsPanelItems,
   fetchAudiencesPanelFormDefinition,
   fetchContentTypes,
   GUEST_CHECK_IN,
@@ -42,7 +45,7 @@ import {
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../../state/actions/preview';
-import { deleteItem, insertComponent, moveItem, sortItem } from '../../services/content';
+import { deleteItem, insertComponent, moveItem, sortItem, updateField, uploadDataUrl } from '../../services/content';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
 import ContentType from '../../models/ContentType';
 import { of, ReplaySubject, Subscription } from 'rxjs';
@@ -52,7 +55,7 @@ import { FormattedMessage } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus } from './previewContext';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, useOnMount, usePreviewState, useSelection } from '../../utils/hooks';
-import { nnou, nou } from '../../utils/object';
+import { nnou, nou, pluckProps } from '../../utils/object';
 
 // WARNING: This assumes there will only ever be 1 PreviewConcierge. This wouldn't be viable
 // with multiple instances or multiple unrelated content type collections to hold per instance.
@@ -76,8 +79,9 @@ export function PreviewConcierge(props: any) {
   const site = useActiveSiteId();
   const { guest, selectedTool } = usePreviewState();
   const contentTypesBranch = useSelection(state => state.contentTypes);
-  const GUEST_BASE = useSelection(state => state.env.GUEST_BASE);
+  const { GUEST_BASE, XSRF_CONFIG_ARGUMENT } = useSelection(state => state.env);
   const priorState = useRef({ site });
+  const assets = useSelection(state => state.preview.assets);
   const audiencesPanel = useSelection(state => state.preview.audiencesPanel);
 
   useOnMount(() => {
@@ -100,7 +104,7 @@ export function PreviewConcierge(props: any) {
       switch (type) {
         case GUEST_CHECK_IN: {
 
-          hostToGuest$.next({ type: HOST_CHECK_IN, payload });
+          hostToGuest$.next({ type: HOST_CHECK_IN });
 
           dispatch(checkInGuest(payload));
 
@@ -207,7 +211,18 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case UPDATE_FIELD_VALUE_OPERATION: {
-          setSnack({ message: 'Updated operation not implemented.' });
+          const { modelId, fieldId, index, parentModelId, value } = payload;
+          updateField(site,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
+            fieldId,
+            index,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null,
+            value
+          ).subscribe(() => {
+            console.log('Finished');
+          }, (e) => {
+            setSnack({ message: 'Updated operation failed.' });
+          });
           break;
         }
         case ICE_ZONE_SELECTED: {
@@ -227,6 +242,29 @@ export function PreviewConcierge(props: any) {
           dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN));
           break;
         }
+        case DESKTOP_ASSET_DROP:
+          uploadDataUrl(
+            site,
+            pluckProps(payload, 'name', 'type', 'dataUrl'),
+            `/static-assets/images/${payload.modelId}`,
+            XSRF_CONFIG_ARGUMENT
+          ).subscribe(
+            () => {
+            },
+            (error) => {
+              setSnack({ message: error });
+            },
+            () => {
+              hostToGuest$.next({
+                type: DESKTOP_ASSET_UPLOAD_COMPLETE,
+                payload: {
+                  id: payload.name,
+                  path: `/static-assets/images/${payload.modelId}/${payload.name}`
+                }
+              });
+            },
+          );
+          break;
       }
     });
 
@@ -242,7 +280,7 @@ export function PreviewConcierge(props: any) {
     let fetchSubscription;
     switch (selectedTool) {
       case 'craftercms.ice.assets':
-        // TODO: aaron to fetch assets here...
+        (assets.isFetching === null && site && assets.error === null) && dispatch(fetchAssetsPanelItems(assets.query));
         break;
       case 'craftercms.ice.audiences':
         if (
@@ -255,7 +293,6 @@ export function PreviewConcierge(props: any) {
         }
         break;
       case 'craftercms.ice.components':
-
         break;
     }
 
@@ -264,7 +301,7 @@ export function PreviewConcierge(props: any) {
       guestToHostSubscription.unsubscribe();
     }
 
-  }, [site, selectedTool, dispatch, contentTypesBranch, guest]);
+  }, [site, selectedTool, dispatch, contentTypesBranch, guest, assets, XSRF_CONFIG_ARGUMENT]);
 
   useEffect(() => {
     if (priorState.current.site !== site) {

@@ -22,14 +22,18 @@ import {
   CLEAR_SELECTED_ZONES,
   COMPONENT_DRAG_ENDED,
   COMPONENT_DRAG_STARTED,
+  DESKTOP_ASSET_DROP,
+  DESKTOP_ASSET_UPLOAD_COMPLETE,
   EDIT_MODE_CHANGED,
   EditingStatus,
+  forEach,
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   HOST_CHECK_IN,
   ICE_ZONE_SELECTED,
   INSTANCE_DRAG_BEGUN,
   INSTANCE_DRAG_ENDED,
+  isElementInView,
   isNullOrUndefined,
   NAVIGATION_REQUEST,
   not,
@@ -38,8 +42,8 @@ import {
   RELOAD_REQUEST,
   TRASHED
 } from '../util';
-import { fromEvent, Subject, zip } from 'rxjs';
-import { debounceTime, delay, filter, map, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
+import { fromEvent, interval, Subject, zip } from 'rxjs';
+import { debounceTime, delay, filter, map, share, switchMap, take, takeUntil, tap, throttleTime } from 'rxjs/operators';
 import iceRegistry from '../classes/ICERegistry';
 import contentController from '../classes/ContentController';
 import { ElementRegistry } from '../classes/ElementRegistry';
@@ -78,7 +82,6 @@ export function Guest(props) {
   } = props;
   const { current: persistence } = useRef({
     contentReady: false,
-    dragLeaveTimeout: null,
     mouseOverTimeout: null
   });
 
@@ -259,14 +262,12 @@ export function Guest(props) {
                     const content = getContent();
 
                     if (changed) {
-
-                      // contentController.updateField(
-                      //   record.modelId,
-                      //   record.fieldId,
-                      //   record.index,
-                      //   content
-                      // );
-
+                      contentController.updateField(
+                        record.modelId,
+                        field.id,
+                        record.index,
+                        content
+                      );
                     }
 
                   }
@@ -404,7 +405,6 @@ export function Guest(props) {
 
     /*onDragStart*/
     dragstart(e, physicalRecord) {
-
       e.stopPropagation();
       (e.dataTransfer || e.originalEvent.dataTransfer).setData('text/plain', null);
 
@@ -485,17 +485,12 @@ export function Guest(props) {
         return;
       }
 
-      const firstReceptaclePhyRecord = ElementRegistry.fromICEId(receptacles[0].id);
-      // Scroll the doc to the closest drop zone
-      // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
-      $(scrollElement).animate({
-        scrollTop: $(firstReceptaclePhyRecord.element).offset().top - 100
-      }, 300);
-
       const validatedReceptacles = receptacles.filter((id) => {
         // TODO: min/max count validations
         return true;
       });
+
+      scrollToReceptacle(validatedReceptacles);
 
       validatedReceptacles.forEach(({ id }) => {
 
@@ -563,7 +558,6 @@ export function Guest(props) {
 
       let element = physicalRecord.element;
       if (dragContext.players.includes(element)) {
-        clearTimeout(persistence.dragLeaveTimeout);
 
         let
           { next, prev } =
@@ -596,18 +590,15 @@ export function Guest(props) {
 
     },
 
-    drop(e) {
+    drop(e, record) {
       if (fn.dragOk()) {
-
         e.preventDefault();
         e.stopPropagation();
-
-        fn.onDrop();
-
+        fn.onDrop(e, record);
       }
     },
 
-    onDrop(e) {
+    onDrop(e, record) {
 
       const state = stateRef.current;
       const status = state.common.status;
@@ -616,7 +607,6 @@ export function Guest(props) {
       // Asset replacement
       switch (status) {
         case EditingStatus.PLACING_DETACHED_ASSET: {
-
           const { dropZone } = dragContext;
           if (!dropZone || !dragContext.inZone) {
             return;
@@ -627,7 +617,8 @@ export function Guest(props) {
           contentController.updateField(
             record.modelId,
             record.fieldId,
-            dragContext.dragged.url
+            record.index,
+            dragContext.dragged.path
           );
 
           break;
@@ -646,6 +637,42 @@ export function Guest(props) {
         }
         case EditingStatus.PLACING_DETACHED_COMPONENT: {
           // TODO: Insert detached component
+          break;
+        }
+        case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
+          if (stateRef.current.dragContext.inZone) {
+            const file = e.originalEvent.dataTransfer.files[0];
+            const reader = new FileReader();
+            reader.onload = (function (aImg) {
+              message$.pipe(
+                filter((e) =>
+                  (e.data?.type === DESKTOP_ASSET_UPLOAD_COMPLETE) &&
+                  (e.data.id === file.name)
+                ),
+                map(e => e.data),
+                take(1)
+              ).subscribe(function ({ payload }) {
+                contentController.updateField(
+                  record.modelId,
+                  record.fieldId[0],
+                  record.index,
+                  payload.path
+                )
+              });
+
+              return function (event) {
+                post(DESKTOP_ASSET_DROP, {
+                  dataUrl: event.target.result,
+                  name: file.name,
+                  type: file.type,
+                  modelId: record.modelId
+                });
+                aImg.src = event.target.result;
+              };
+            })(record.element);
+            fn.onDragEnd();
+            reader.readAsDataURL(file);
+          }
           break;
         }
         default:
@@ -769,10 +796,7 @@ export function Guest(props) {
 
     dragleave() {
       if (fn.dragOk()) {
-        clearTimeout(persistence.dragLeaveTimeout);
-        persistence.dragLeaveTimeout = setTimeout(() => {
-          fn.onDragLeave();
-        }, 100);
+        fn.onDragLeave();
       }
     },
 
@@ -847,45 +871,29 @@ export function Guest(props) {
     },
 
     onAssetDragStarted(asset) {
-
       let
         players = [],
         siblings = [],
         containers = [],
-        dropZones = [];
+        dropZones = [],
+        type;
 
-      const receptacles = iceRegistry.getMediaReceptacles();
-      const validReceptacles = receptacles.filter((id) => {
+      if (asset.mimeType.includes('image/')) {
+        type = 'image';
+      } else if (asset.mimeType.includes('video/')) {
+        type = 'video-picker';
+      }
+      const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
+      scrollToReceptacle(validatedReceptacles);
 
-        const
-          record = iceRegistry.getReferentialEntries(id),
-          validations = record.field.validations;
-
-        if (isNullOrUndefined(validations)) {
-          return false;
-        } else if (notNullOrUndefined(validations.mimeTypes)) {
-          const values = validations.mimeTypes.value;
-          return (
-            (
-              values.includes('image/*') &&
-              asset.type.includes('image/')
-            ) || (
-              values.includes(asset.type)
-            )
-          );
-        }
-
-      });
-
-      validReceptacles
-        .forEach((id) => {
+      validatedReceptacles
+        .forEach(({ id }) => {
 
           const dropZone = ElementRegistry.compileDropZone(id);
           dropZone.origin = false;
           dropZones.push(dropZone);
 
-          siblings = [...siblings, ...dropZone.children];
-          players = [...players, ...dropZone.children, dropZone.element];
+          players = [...players, dropZone.element];
           containers.push(dropZone.element);
 
         });
@@ -957,7 +965,8 @@ export function Guest(props) {
         EditingStatus.SORTING_COMPONENT,
         EditingStatus.PLACING_NEW_COMPONENT,
         EditingStatus.PLACING_DETACHED_ASSET,
-        EditingStatus.PLACING_DETACHED_COMPONENT
+        EditingStatus.PLACING_DETACHED_COMPONENT,
+        EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
       ].includes(stateRef.current.common.status);
     },
 
@@ -971,8 +980,67 @@ export function Guest(props) {
           highlighted: {}
         }
       });
-    }
+    },
 
+    onDesktopAssetDragStarted(asset) {
+      let
+        players = [],
+        siblings = [],
+        containers = [],
+        dropZones = [],
+        type;
+
+      if (asset.type.includes('image/')) {
+        type = 'image';
+      } else if (asset.type.includes('video/')) {
+        type = 'video-picker';
+      }
+      const validatedReceptacles = iceRegistry.getMediaReceptacles(type);
+      scrollToReceptacle(validatedReceptacles);
+
+      validatedReceptacles
+        .forEach(({ id }) => {
+
+          const dropZone = ElementRegistry.compileDropZone(id);
+          dropZone.origin = false;
+          dropZones.push(dropZone);
+
+          players = [...players, dropZone.element];
+          containers.push(dropZone.element);
+
+        });
+
+      const highlighted = dropZones
+        .reduce(
+          (object, { physicalRecordId: id }) => {
+            object[id] = ElementRegistry.getHoverData(id);
+            return object;
+          },
+          {}
+        );
+
+      fn.initializeSubjects();
+
+      setState({
+        dragContext: {
+          players,
+          siblings,
+          dropZones,
+          containers,
+          inZone: false,
+          targetIndex: null,
+          dragged: asset
+        },
+        common: {
+          ...stateRef.current.common,
+          status: EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
+          highlighted,
+          register,
+          deregister,
+          onEvent
+        }
+      });
+    }
   };
 
   function register(payload) {
@@ -1005,6 +1073,27 @@ export function Guest(props) {
 
     } else {
       return true;
+    }
+  }
+
+  function scrollToReceptacle(receptacles) {
+    let elementInView;
+    let element;
+    elementInView = forEach(receptacles, ({ id }) => {
+      let elem = ElementRegistry.fromICEId(id).element;
+      if (isElementInView(elem)) {
+        elementInView = true;
+        element = elem;
+        return 'break';
+      }
+    }, false);
+
+    if (!elementInView) {
+      // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
+      let element = ElementRegistry.fromICEId(receptacles[0].id).element;
+      $(scrollElement).animate({
+        scrollTop: $(element).offset().top - 100
+      }, 300);
     }
   }
 
@@ -1099,6 +1188,43 @@ export function Guest(props) {
     };
 
   }, [modelId, path]);
+
+  useEffect(() => {
+    const subscription = fromEvent(document, 'dragenter').pipe(
+      filter((e) => e.dataTransfer?.types.includes('Files'))
+    ).subscribe((e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fn.onDesktopAssetDragStarted(e.dataTransfer.items[0]);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (EditingStatus.UPLOAD_ASSET_FROM_DESKTOP === stateRef.current.common.status) {
+      const dropSubscription = fromEvent(document, 'drop').subscribe((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fn.dragend(e);
+      });
+      const dragover$ = fromEvent(document, 'dragover').pipe(
+        tap((e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }),
+        share()
+      );
+      const dragoverSubscription = dragover$.subscribe();
+      const dragleaveSubscription = fromEvent(document, 'dragleave').pipe(
+        switchMap(() => interval(100).pipe(takeUntil(dragover$)))
+      ).subscribe(fn.onDragEnd);
+      return () => {
+        dragoverSubscription.unsubscribe();
+        dragleaveSubscription.unsubscribe();
+        dropSubscription.unsubscribe();
+      };
+    }
+  }, [stateRef.current.common.status]);
 
   return (
     isAuthoring ? (

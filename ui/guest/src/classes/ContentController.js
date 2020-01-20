@@ -160,8 +160,7 @@ export class ContentController {
     return ContentController.contentTypes$.value;
   }
 
-  updateField(modelId, fieldId, value) {
-
+  updateField(modelId, fieldId, index, value) {
     const models = this.getCachedModels();
     const model = { ...models[modelId] };
 
@@ -173,11 +172,17 @@ export class ContentController {
     });
 
     ContentController.operations$.next({
-      type: 'update-field',
-      args: arguments
+      type: UPDATE_FIELD_VALUE_OPERATION,
+      args: { modelId, fieldId, index, value }
     });
 
-    post(UPDATE_FIELD_VALUE_OPERATION, { modelId, fieldId });
+    post(UPDATE_FIELD_VALUE_OPERATION, {
+      modelId,
+      fieldId,
+      index,
+      value,
+      parentModelId: getParentModelId(modelId, models, this.children)
+    });
 
   }
 
@@ -421,9 +426,7 @@ export class ContentController {
       modelId,
       fieldId,
       index,
-      parentModelId: isNullOrUndefined(ModelHelper.prop(model, 'path'))
-        ? findParentModelId(modelId, this.children, models)
-        : null
+      parentModelId: getParentModelId(modelId, models, this.children)
     });
 
   }
@@ -542,6 +545,12 @@ export class ContentController {
 
   }
 
+}
+
+function getParentModelId(modelId, models, children) {
+  return isNullOrUndefined(ModelHelper.prop(models[modelId], 'path'))
+    ? findParentModelId(modelId, children, models)
+    : null
 }
 
 function findParentModelId(modelId, childrenMap, models) {

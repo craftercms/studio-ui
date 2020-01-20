@@ -19,11 +19,14 @@ import { combineEpics } from 'redux-observable';
 import auth from './auth';
 import sites from './sites';
 import contentTypes from './contentTypes';
+import assets from './assets';
 import audiencesPanel from "./audiencesPanel";
 
 const epic: any[] = combineEpics.apply(this, [
   ...auth,
   ...sites,
+  ...contentTypes,
+  ...assets
   ...contentTypes,
   ...audiencesPanel
 ]);

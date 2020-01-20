@@ -16,11 +16,14 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import GlobalState from '../../models/GlobalState';
+import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
   CHANGE_CURRENT_URL,
   CLEAR_SELECT_FOR_EDIT,
   CLOSE_TOOLS,
+  FETCH_ASSETS_PANEL_ITEMS,
+  FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
+  FETCH_ASSETS_PANEL_ITEMS_FAILED,
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION,
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE,
   FETCH_AUDIENCES_PANEL_FORM_DEFINITION_FAILED,
@@ -42,8 +45,9 @@ import {
   TOOLS_LOADED,
   UPDATE_AUDIENCES_PANEL_MODEL
 } from '../actions/preview';
-import { nnou, nou } from '../../utils/object';
+import { createEntityState, createLookupTable, nnou, nou } from '../../utils/object';
 import { CHANGE_SITE } from '../actions/sites';
+import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
 
 // TODO: Notes on currentUrl, computedUrl and guest.url...
 
@@ -62,9 +66,20 @@ const reducer = createReducer<GlobalState['preview']>({
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
-  selectedTool: 'craftercms.ice.components',
+  selectedTool: 'craftercms.ice.assets',
   tools: null,
   guest: null,
+  assets: createEntityState({
+    page: [],
+    query: {
+      keywords: '',
+      offset: 0,
+      limit: 10,
+      filters: {
+        'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
+      }
+    }
+  }) as PagedEntityState<MediaItem>,
   audiencesPanel: audiencesPanelInitialState
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
@@ -311,6 +326,38 @@ const reducer = createReducer<GlobalState['preview']>({
       applied: false,
       error: payload.response
     }
+  }),
+  [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
+    let new_query = { ...state.assets.query, ...query };
+    return {
+      ...state,
+      assets: {
+        ...state.assets,
+        isFetching: true,
+        query: new_query,
+        pageNumber: Math.ceil(new_query.offset / new_query.limit),
+      }
+    }
+  },
+  [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
+    let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
+    let page = [...state.assets.page];
+    page[state.assets.pageNumber] = Object.keys(itemsLookupTable);
+    return {
+      ...state,
+      assets: {
+        ...state.assets,
+        byId: { ...state.assets.byId, ...itemsLookupTable },
+        page,
+        count: searchResult.total,
+        isFetching: false,
+        error: null
+      }
+    }
+  },
+  [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
+    ...state,
+    assets: { ...state.assets, error: payload.response, isFetching: false }
   })
 });
 

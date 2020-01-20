@@ -15,13 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface ElasticParams {
-  query: string;
+export interface ElasticParams extends PaginationOptions {
+  query?: string;
   keywords: string;
-  offset: number;
-  limit: number;
-  sortBy: string;
-  sortOrder: string;
+  sortBy?: string;
+  sortOrder?: string;
   filters:  any;
 }
 
@@ -63,4 +61,30 @@ export interface Facet {
 export interface PaginationOptions {
   limit: number;
   offset: number;
+}
+
+export interface SearchItem {
+  path: string;
+  name: string;
+  type: string;
+  mimeType: string;
+  previewUrl: string;
+  lastModifier: string;
+  lastModified: string;
+  size: number;
+  snippets: any;
+}
+
+export interface SearchFacet {
+  name: string;
+  range: boolean;
+  date: boolean;
+  multiple: boolean;
+  values: any;
+}
+
+export interface SearchResult {
+  total: number;
+  items: Array<SearchItem>;
+  facets: Array<SearchFacet>;
 }
