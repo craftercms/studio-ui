@@ -97,9 +97,9 @@ function SnackbarContentWrapper(props: any) {
   return (
     <SnackbarContent
       className={`${classes.success} ${classes.iconVariant}`}
-      aria-describedby="client-snackbar"
+      aria-describedby="encryptToolSnackbar"
       message={
-        <span id="client-snackbar" className={classes.message}>
+        <span id="encryptToolSnackbar" className={classes.message}>
           <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`}/>
           {message}
         </span>
