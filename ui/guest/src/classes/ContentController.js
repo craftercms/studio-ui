@@ -861,7 +861,7 @@ function reducer(lookupTable, model) {
   const processEntry = ([key, value], data) => {
     if (key.endsWith('_o')) {
       data[key] = [];
-      value && value.item.forEach((item) => {
+      value.item.forEach((item) => {
         // Components & repeat groups
         if (item.component?.id) {
           // 1. Components
