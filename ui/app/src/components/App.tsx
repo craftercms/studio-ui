@@ -16,12 +16,23 @@
  */
 
 import React from 'react';
-import CrafterCMSNextBridge from './CrafterCMSNextBridge';
+import CrafterCMSNextBridge from './CrafterCMSNextBridge'
+import Preview from '../pages/Preview';
 
 export default function App() {
   return (
     <CrafterCMSNextBridge>
-      Hello World!
+      <Preview/>
+      {/*<Search*/}
+      {/*  onEdit={()=>{}}*/}
+      {/*  onDelete={()=>{}}*/}
+      {/*  onPreview={()=>{}}*/}
+      {/*  onSelect={()=>{}}*/}
+      {/*  onGetUserPermissions={()=>{}}*/}
+      {/*  mode='default'*/}
+      {/*  siteId='editorial'*/}
+      {/*  previewAppBaseUri='http://authoring.sample.com:8080'*/}
+      {/*/>*/}
     </CrafterCMSNextBridge>
   );
 }
