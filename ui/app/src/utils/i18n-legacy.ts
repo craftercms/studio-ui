@@ -655,7 +655,7 @@ const globalMenuMessages = defineMessages({
   },
   'home.globalMenu.encryptionTool': {
     id: 'GlobalMenu.EncryptionTool',
-    defaultMessage: 'EncryptionTool'
+    defaultMessage: 'Encryption Tool'
   },
   'home.about-us': {
     id: 'GlobalMenu.AboutUs',
