@@ -32,6 +32,7 @@ import { checkState, onClickSetChecked, paths, selectAllDeps, updateCheckedList 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Button from '@material-ui/core/Button';
+import { palette } from '../../../styles/theme';
 
 interface DependencySelectionProps {
   items: Item[];
@@ -79,8 +80,9 @@ const CenterCircularProgress = withStyles({
 const useStyles = makeStyles((theme: Theme) => ({
   dependencySelection: {
     padding: '11px 12px',
-    backgroundColor: '#fff',
-    border: '1px solid rgba(0, 0, 0, .125)',
+    backgroundColor: palette.white,
+    border: '1px solid',
+    borderColor: palette.gray.light5,
     height: 'calc(100% - 24px)',
     minHeight: '374px',
     overflowY: 'scroll'
@@ -102,8 +104,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   bottomSection: {
     marginTop: '20px',
-    marginLeft: '10px',
-    color: '#777'
+    marginLeft: '10px'
   },
   circularProgressText: {
     position: 'relative',

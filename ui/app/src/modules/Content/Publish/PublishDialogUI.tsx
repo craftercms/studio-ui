@@ -30,12 +30,13 @@ import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import ErrorState from '../../../components/SystemStatus/ErrorState';
+import { palette } from '../../../styles/theme';
 
 const dialogStyles = () => ({
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
-    background: '#fff'
+    background: palette.white
   },
   title: {
     display: 'flex',
@@ -87,7 +88,7 @@ const DialogTitle = withStyles(dialogStyles)((props: any) => {
 const DialogContent = withStyles((theme: Theme) => ({
   root: {
     padding: theme.spacing(2),
-    backgroundColor: '#FAFAFA'
+    backgroundColor: palette.gray.light0
   },
 }))(MuiDialogContent);
 
