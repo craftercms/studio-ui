@@ -140,7 +140,18 @@ function PublishDialog(props: PublishDialogProps) {
   const { formatMessage } = useIntl();
 
   useEffect(getPublishingChannels, []);
-  useEffect(setRef, [checkedItems, checkedSoftDep]);
+  useEffect(() => {
+    function setRef() {
+      const result = (
+        Object.entries({ ...checkedItems, ...checkedSoftDep })
+        .filter(([key, value]) => value === true)
+        .map(([key]) => key)
+      );
+      setSelectedItems(result);
+    }
+
+    setRef();
+  }, [checkedItems, checkedSoftDep]);
 
   function getPublishingChannels() {
     setPublishingChannelsStatus('Loading');
@@ -225,15 +236,6 @@ function PublishDialog(props: PublishDialogProps) {
     });
     _setCheckedSoftDep(nextCheckedSoftDep);
   };
-
-  function setRef() {
-    const result = (
-      Object.entries({ ...checkedItems, ...checkedSoftDep })
-      .filter(([key, value]) => value === true)
-      .map(([key]) => key)
-    );
-    setSelectedItems(result);
-  }
 
   function selectAllSoft() {
     setCheckedSoftDep(deps.items2, true);
