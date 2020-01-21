@@ -50,7 +50,7 @@ const reducer = createReducer<GlobalState['preview']>({
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
-  selectedTool: 'craftercms.ice.assets',
+  selectedTool: 'craftercms.ice.receptacles',
   tools: null,
   guest: null,
   assets: createEntityState({

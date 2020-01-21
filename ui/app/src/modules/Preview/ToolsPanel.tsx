@@ -41,6 +41,7 @@ import SimulatorPanel from './Tools/SimulatorPanel';
 import ICEPanel from './Tools/ICEPanel';
 import { getTranslation } from '../../utils/i18n';
 import EditFormPanel from './Tools/EditFormPanel';
+import ReceptaclesPanel from './Tools/ReceptaclesPanel';
 import { selectTool, toolsLoaded } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId, usePreviewState, useSelection } from '../../utils/hooks';
@@ -200,7 +201,8 @@ const componentMap: any = {
   'craftercms.ice.audiences': AudiencesPanel,
   'craftercms.ice.simulator': SimulatorPanel,
   'craftercms.ice.ice': ICEPanel,
-  'craftercms.ice.editForm': EditFormPanel
+  'craftercms.ice.editForm': EditFormPanel,
+  'craftercms.ice.receptacles': ReceptaclesPanel
 };
 
 export default function ToolsPanel() {
