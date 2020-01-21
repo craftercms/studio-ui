@@ -144,6 +144,7 @@ const EncryptTool = () => {
       focus();
     }
   };
+  
   const clear = () => {
     setText('');
     setResult(null);
