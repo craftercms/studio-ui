@@ -64,6 +64,33 @@ export function GuestProxy(props) {
 
     };
 
+    const registerDeregisterElements = (collection, type, newIndex, oldIndex) => {
+      if (type === 'insert') {
+        collection.slice(newIndex).forEach((el, i) => {
+          $(el).attr('data-craftercms-index', newIndex + i);
+          const pr = ElementRegistry.fromElement(el);
+          pr && context.deregister(pr.id);
+          registerElement(el);
+        })
+      } else if (type === 'move') {
+        let from;
+        let to;
+        if (oldIndex < newIndex) {
+          from = oldIndex;
+          to = newIndex + 1;
+        } else {
+          from = newIndex;
+          to = oldIndex + 1;
+        }
+        collection.slice(from, to).forEach((el, i) => {
+          $(el).attr('data-craftercms-index', from + i);
+          const pr = ElementRegistry.fromElement(el);
+          pr && context.deregister(pr.id);
+          registerElement(el);
+        })
+      }
+    };
+
     zip(
       contentController.models$(),
       contentController.contentTypes$()
@@ -128,29 +155,7 @@ export function GuestProxy(props) {
           // Update attribute(s)
           // $el.attr('data-craftercms-index', newIndex);
 
-          forEach(
-            $el.parent().children(),
-            (el, i) => {
-
-              $(el).attr('data-craftercms-index', i);
-
-              const pr = ElementRegistry.fromElement(el);
-
-              context.deregister(pr.id);
-              registerElement(el);
-
-              if (
-                (newIndex > index && i >= newIndex) ||
-                (newIndex < index && i >= index)
-              ) {
-                console.log(
-                  `(newIndex > index && i >= newIndex) ${(newIndex > index && i >= newIndex)}`,
-                  `(newIndex < index && i >= index) ${(newIndex < index && i >= index)}`
-                );
-                return 'break';
-              }
-
-            });
+          registerDeregisterElements(Array.from($el.parent().children()), 'move', newIndex, index);
 
           // Re-register with updates
           // registerElement(phyRecord.element);
@@ -279,37 +284,27 @@ export function GuestProxy(props) {
             $clone.insertBefore($siblings.eq(targetIndex));
           }
 
-          forEach(
-            $daddy.children(),
-            (el, i) => {
-
-              $(el).attr('data-craftercms-index', i);
-
-              const pr = ElementRegistry.fromElement(el);
-
-              pr && context.deregister(pr.id);
-              registerElement(el);
-
-            }
-          );
+          registerDeregisterElements(Array.from($daddy.children()), 'insert', targetIndex);
 
           break;
         }
         case INSERT_INSTANCE_OPERATION: {
           const { modelId, fieldId, targetIndex, instance } = op.args;
 
-          const $clone = $(`[data-craftercms-field-id="${fieldId}"][data-craftercms-index]:first`).clone();
+          let $clone = $(`[data-craftercms-field-id="${fieldId}"][data-craftercms-index]:first`).clone();
 
-          //pending no clone?? insert div with label
-
-          Object.keys(instance).forEach((field) => {
-            if (!field.endsWith('_o') && field !== 'craftercms') {
-              //cleaning CDATA and escapedhtmltags
-              let value = instance[field].replace("<![CDATA[", "").replace("]]>", "");
-              value = stripEscapedHtmlTags(value);
-              $clone.find(`[data-craftercms-field-id="${field}"]`).html(value);
-            }
-          });
+          if ($clone.length) {
+            Object.keys(instance).forEach((field) => {
+              if (!field.endsWith('_o') && field !== 'craftercms') {
+                //cleaning CDATA and escapedhtmltags
+                let value = instance[field].replace("<![CDATA[", "").replace("]]>", "");
+                value = stripEscapedHtmlTags(value);
+                $clone.find(`[data-craftercms-field-id="${field}"]`).html(value);
+              }
+            });
+          } else {
+            $clone = $(`<div  data-craftercms-model-id="${modelId}" data-craftercms-field-id="${fieldId}">${instance.craftercms.label}</div>`)
+          }
 
           const $daddy = $(`[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]:not([data-craftercms-index])`);
 
@@ -321,19 +316,7 @@ export function GuestProxy(props) {
             $clone.insertBefore($siblings.eq(targetIndex));
           }
 
-          forEach(
-            $daddy.children(),
-            (el, i) => {
-
-              $(el).attr('data-craftercms-index', i);
-
-              const pr = ElementRegistry.fromElement(el);
-
-              pr && context.deregister(pr.id);
-              registerElement(el);
-
-            }
-          );
+          registerDeregisterElements(Array.from($daddy.children()), 'insert', targetIndex);
 
           break;
         }
