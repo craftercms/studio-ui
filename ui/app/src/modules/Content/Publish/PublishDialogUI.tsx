@@ -49,9 +49,6 @@ const dialogStyles = () => ({
     lineHeight: '18px',
     paddingRight: '35px'
   },
-  closeIcon: {
-    padding: 0
-  },
   dialogActions: {
     padding: '10px 22px'
   },
