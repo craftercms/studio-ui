@@ -186,6 +186,10 @@ export default function BrowseComponentsPanel() {
   const onDragEnd = () => hostToGuest$.next({ type: COMPONENT_INSTANCE_DRAG_ENDED });
 
   useEffect(() => {
+    dispatch(fetchComponentsByContentType(contentTypeFilter));
+  }, [contentTypeFilter, dispatch]);
+
+  useEffect(() => {
     const subscription = onSearch$.pipe(
       debounceTime(400),
       distinctUntilChanged()
@@ -206,7 +210,6 @@ export default function BrowseComponentsPanel() {
 
   function handleSelectChange(value: string) {
     setContentTypeFilter(value);
-    dispatch(fetchComponentsByContentType(value));
   }
 
   return (
