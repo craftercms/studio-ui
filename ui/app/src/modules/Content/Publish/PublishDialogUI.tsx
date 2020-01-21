@@ -212,7 +212,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
               <Button
                 color="primary"
                 onClick={ onClickShowAllDeps }
-                className={ classes.leftAlignedAction }
+                className={classes.leftAlignedAction}
+                disabled={submitDisabled}
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"
