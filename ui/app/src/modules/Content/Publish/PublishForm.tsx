@@ -163,6 +163,7 @@ interface PublishFormProps {
   publishingChannels: any[];
   publishingChannelsStatus: string;
   getPublishingChannels: Function;
+  setSubmitDisabled: Function;
   classes?: any;
 }
 
@@ -176,7 +177,8 @@ function PublishForm(props: PublishFormProps) {
     showEmailCheckbox,
     publishingChannels,
     publishingChannelsStatus,
-    getPublishingChannels
+    getPublishingChannels,
+    setSubmitDisabled
   } = props;
 
   useEffect(
@@ -206,6 +208,11 @@ function PublishForm(props: PublishFormProps) {
 
   const dateTimePickerChange = (scheduledDateTime: moment.Moment) => {
     setInputs({ ...inputs, 'scheduledDateTime': scheduledDateTime.format() });
+    if (scheduledDateTime.toString() === 'Invalid date') {
+      setSubmitDisabled(true);
+    } else {
+      setSubmitDisabled(false);
+    }
   };
 
   return (
@@ -262,7 +269,10 @@ function PublishForm(props: PublishFormProps) {
           timeout={300}
           className={inputs.scheduling === 'custom' ? (classes.datePicker) : ''}
         >
-          <DateTimePicker onChange={dateTimePickerChange} timezone={inputs.scheduledTimeZone}/>
+          <DateTimePicker
+            onChange={dateTimePickerChange}
+            timezone={inputs.scheduledTimeZone}
+          />
         </Collapse>
       </div>
 

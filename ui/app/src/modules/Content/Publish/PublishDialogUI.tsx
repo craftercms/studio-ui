@@ -109,6 +109,8 @@ interface PublishDialogUIProps {
   handleClose: any;
   handleSubmit: any;
   submitDisabled: boolean;
+  setSubmitDisabled: Function;
+  showDepsDisabled: boolean;
   dialog: any;
   setDialog: any;
   open: boolean;
@@ -139,6 +141,8 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
     handleClose,
     handleSubmit,
     submitDisabled,
+    setSubmitDisabled,
+    showDepsDisabled,
     dialog,
     setDialog,
     open,
@@ -200,6 +204,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                   <PublishForm
                     inputs={dialog}
                     setInputs={setDialog}
+                    setSubmitDisabled={setSubmitDisabled}
                     showEmailCheckbox={showEmailCheckbox}
                     publishingChannels={publishingChannels}
                     publishingChannelsStatus={publishingChannelsStatus}
@@ -213,7 +218,7 @@ const PublishDialogUI = withStyles(dialogStyles)((props: PublishDialogUIProps) =
                 color="primary"
                 onClick={ onClickShowAllDeps }
                 className={classes.leftAlignedAction}
-                disabled={submitDisabled}
+                disabled={showDepsDisabled}
               >
                 <FormattedMessage
                   id="publishDialog.showAllDependencies"

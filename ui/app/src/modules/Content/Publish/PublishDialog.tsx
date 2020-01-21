@@ -124,6 +124,7 @@ function PublishDialog(props: PublishDialogProps) {
   const [deps, setDeps] = useState<DependenciesResultObject>();
   const [showDepsButton, setShowDepsButton] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [showDepsDisabled, setShowDepsDisabled] = useState(false);
   const [apiState, setApiState] = useState({
     error: false,
     global: false,
@@ -161,8 +162,10 @@ function PublishDialog(props: PublishDialogProps) {
   const setSelectedItems = (items) => {
     if (!items || items.length === 0) {
       setSubmitDisabled(true);
+      setShowDepsDisabled(true);
     } else {
       setSubmitDisabled(false);
+      setShowDepsDisabled(false);
     }
 
     setDialog({ ...dialog, 'selectedItems': items });
@@ -268,6 +271,8 @@ function PublishDialog(props: PublishDialogProps) {
       handleClose={handleClose}
       handleSubmit={handleSubmit}
       submitDisabled={submitDisabled}
+      setSubmitDisabled={setSubmitDisabled}
+      showDepsDisabled={showDepsDisabled}
       dialog={dialog}
       setDialog={setDialog}
       open={open}
