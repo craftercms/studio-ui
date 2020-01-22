@@ -40,6 +40,8 @@ import {
   notNullOrUndefined,
   pluckProps,
   RELOAD_REQUEST,
+  SET_CONTENT_TYPE_RECEPTACLES,
+  SHOW_RECEPTACLES_BY_CONTENT_TYPE,
   TRASHED
 } from '../util';
 import { fromEvent, interval, Subject, zip } from 'rxjs';
@@ -1137,6 +1139,15 @@ export function Guest(props) {
         case NAVIGATION_REQUEST: {
           post({ type: GUEST_CHECK_OUT });
           return window.location.href = payload.url;
+        }
+        case SHOW_RECEPTACLES_BY_CONTENT_TYPE: {
+          let receptacles = iceRegistry.getContentTypeReceptacles(payload).map((item) => {
+            let { physicalRecordId } = ElementRegistry.compileDropZone(item.id);
+            let { label } = ElementRegistry.getHoverData(physicalRecordId);
+            return { modelId: item.modelId, fieldId: item.fieldId, label, id: physicalRecordId }
+          });
+          post({ type: SET_CONTENT_TYPE_RECEPTACLES, payload: receptacles });
+          break;
         }
         default:
           console.warn(`[message$] Unhandled host message "${type}".`);

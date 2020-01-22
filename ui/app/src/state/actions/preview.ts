@@ -53,6 +53,8 @@ export const NAVIGATION_REQUEST = 'NAVIGATION_REQUEST';
 export const RELOAD_REQUEST = 'RELOAD_REQUEST';
 export const DESKTOP_ASSET_DROP = 'DESKTOP_ASSET_DROP';
 export const DESKTOP_ASSET_UPLOAD_COMPLETE = 'DESKTOP_ASSET_UPLOAD_COMPLETE';
+export const SHOW_RECEPTACLES_BY_CONTENT_TYPE = 'SHOW_RECEPTACLES_BY_CONTENT_TYPE';
+export const SET_CONTENT_TYPE_RECEPTACLES = 'SET_CONTENT_TYPE_RECEPTACLES';
 
 // endregion
 
@@ -77,6 +79,7 @@ export const CHANGE_CURRENT_URL = 'CHANGE_CURRENT_URL';
 export const FETCH_ASSETS_PANEL_ITEMS = 'FETCH_ASSETS_PANEL_ITEMS';
 export const FETCH_ASSETS_PANEL_ITEMS_COMPLETE = 'FETCH_ASSETS_PANEL_ITEMS_COMPLETE';
 export const FETCH_ASSETS_PANEL_ITEMS_FAILED = 'FETCH_ASSETS_PANEL_ITEMS_FAILED';
+export const LIST_WELCOMING_RECEPTACLES = 'LIST_WELCOMING_RECEPTACLES';
 
 // endregion
 
@@ -186,5 +189,14 @@ export const fetchAssetsPanelItems = createAction<Partial<ElasticParams>>(FETCH_
 export const fetchAssetsPanelItemsComplete = createAction<SearchResult>(FETCH_ASSETS_PANEL_ITEMS_COMPLETE);
 
 export const fetchAssetsPanelItemsFailed = createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
+
+export const listWelcomingReceptacles = createAction<string>(LIST_WELCOMING_RECEPTACLES);
+
+export function setContentTypeReceptacles(receptacles): StandardAction {
+  return {
+    type: SET_CONTENT_TYPE_RECEPTACLES,
+    payload: receptacles
+  };
+}
 
 // endregion

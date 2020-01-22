@@ -23,6 +23,7 @@ import { WidthAndHeight } from './WidthAndHeight';
 import Tools from './PreviewToolIDs';
 import { ElasticParams, MediaItem } from "./Search";
 import ContentInstance from './ContentInstance';
+import { Receptacle } from "./Receptacle";
 
 export interface APIError {
   code?: number | string;
@@ -93,6 +94,10 @@ export interface GlobalState {
     hostSize: WidthAndHeight;
     guest: GuestData;
     assets: PagedEntityState<MediaItem>;
+    receptacles: {
+      selectedContentType: string;
+      byId: LookupTable<Receptacle>;
+    };
   }
 }
 

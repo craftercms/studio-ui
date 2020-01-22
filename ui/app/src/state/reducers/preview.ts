@@ -28,10 +28,12 @@ import {
   GUEST_CHECK_IN,
   GUEST_CHECK_OUT,
   GUEST_MODELS_RECEIVED,
+  LIST_WELCOMING_RECEPTACLES,
   OPEN_TOOLS,
   SELECT_FOR_EDIT,
   SELECT_PREVIOUS_TOOL,
   SELECT_TOOL,
+  SET_CONTENT_TYPE_RECEPTACLES,
   SET_HOST_HEIGHT,
   SET_HOST_SIZE,
   SET_HOST_WIDTH,
@@ -50,7 +52,7 @@ const reducer = createReducer<GlobalState['preview']>({
   hostSize: { width: null, height: null },
   showToolsPanel: true,
   previousTool: null,
-  selectedTool: 'craftercms.ice.receptacles',
+  selectedTool: 'craftercms.ice.components',
   tools: null,
   guest: null,
   assets: createEntityState({
@@ -63,7 +65,11 @@ const reducer = createReducer<GlobalState['preview']>({
         'mime-type': ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml']
       }
     }
-  }) as PagedEntityState<MediaItem>
+  }) as PagedEntityState<MediaItem>,
+  receptacles: {
+    selectedContentType: null,
+    byId: null
+  }
 }, {
   [SELECT_TOOL]: (state, { payload }) => ({
     ...state,
@@ -274,6 +280,19 @@ const reducer = createReducer<GlobalState['preview']>({
   [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
     ...state,
     assets: { ...state.assets, error: payload.response, isFetching: false }
+  }),
+  [LIST_WELCOMING_RECEPTACLES]: (state, { payload }) => ({
+    ...state,
+    previousTool: state.selectedTool,
+    selectedTool: 'craftercms.ice.receptacles',
+    receptacles: { ...state.receptacles, selectedContentType: payload }
+  }),
+  [SET_CONTENT_TYPE_RECEPTACLES]: (state, { payload }) => ({
+    ...state,
+    receptacles: {
+      ...state.receptacles,
+      byId: { ...state.receptacles.byId, ...createLookupTable(payload) },
+    }
   })
 });
 

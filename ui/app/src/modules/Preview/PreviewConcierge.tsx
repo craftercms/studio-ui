@@ -40,6 +40,8 @@ import {
   INSTANCE_DRAG_ENDED,
   MOVE_ITEM_OPERATION,
   selectForEdit,
+  SET_CONTENT_TYPE_RECEPTACLES,
+  setContentTypeReceptacles,
   setItemBeingDragged,
   SORT_ITEM_OPERATION,
   UPDATE_FIELD_VALUE_OPERATION
@@ -240,7 +242,7 @@ export function PreviewConcierge(props: any) {
           dispatch(setItemBeingDragged(type === INSTANCE_DRAG_BEGUN));
           break;
         }
-        case DESKTOP_ASSET_DROP:
+        case DESKTOP_ASSET_DROP: {
           uploadDataUrl(
             site,
             pluckProps(payload, 'name', 'type', 'dataUrl'),
@@ -263,6 +265,12 @@ export function PreviewConcierge(props: any) {
             },
           );
           break;
+        }
+        case SET_CONTENT_TYPE_RECEPTACLES: {
+          console.log(payload);
+          dispatch(setContentTypeReceptacles(payload));
+          break;
+        }
       }
     });
 
