@@ -14,10 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Typography from '@material-ui/core/Typography';
 import ToolPanel from './ToolPanel';
 import { defineMessages } from 'react-intl';
+import { getHostToGuestBus } from "../previewContext";
+import { SHOW_RECEPTACLES_BY_CONTENT_TYPE } from "../../../state/actions/preview";
 
 const translations = defineMessages({
   receptaclesPanel: {
@@ -27,6 +29,16 @@ const translations = defineMessages({
 });
 
 export default function ReceptaclesPanel() {
+  const hostToGuest$ = getHostToGuestBus();
+
+  useEffect(() => {
+    hostToGuest$.next({
+      type: SHOW_RECEPTACLES_BY_CONTENT_TYPE,
+      payload: '/component/feature'
+    });
+  }, []);
+
+
   return (
     <ToolPanel title={translations.receptaclesPanel}>
       <Typography component="h2" variant="subtitle1" style={{ padding: '10px' }}>
