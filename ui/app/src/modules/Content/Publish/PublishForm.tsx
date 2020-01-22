@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createStyles, makeStyles, withStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -181,25 +181,27 @@ function PublishForm(props: PublishFormProps) {
     setSubmitDisabled
   } = props;
 
-  useEffect(
-    () => {
-      if (publishingChannels && publishingChannels.length > 0) {
-        setInputs({ ...inputs, 'environment': publishingChannels[0].name });
-      }
-    },
-    // eslint-disable-next-line
-    [publishingChannels]
-  );
-
   const handleInputChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
 
     if (e.target.type === 'checkbox') {
       setInputs({ ...inputs, [name]: e.target.checked });
-    } else if (e.target.type === 'radio' || e.target.type === 'textarea') {
-      setInputs({ ...inputs, [name]: e.target.value })
-    }
+    } else if (e.target.type === 'textarea') {
+      setInputs({ ...inputs, [name]: e.target.value });
+    } else if (e.target.type === 'radio') {
+      const inputValue = e.target.value;
+      setInputs({ ...inputs, [name]: inputValue });
 
+      if (inputValue === 'now') {
+        setTimeout(() => {
+          setInputs({
+            ...inputs,
+            'scheduling': 'now',
+            'scheduledDateTime': moment().format()
+          });
+        }, 2000);
+      }
+    }
   };
 
   const handleSelectChange = (name: string) => (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -271,7 +273,10 @@ function PublishForm(props: PublishFormProps) {
         >
           <DateTimePicker
             onChange={dateTimePickerChange}
-            timezone={inputs.scheduledTimeZone}
+            date={inputs.scheduledDateTime}
+            timeZonePickerProps={{
+              timezone: inputs.scheduledTimeZone
+            }}
           />
         </Collapse>
       </div>
