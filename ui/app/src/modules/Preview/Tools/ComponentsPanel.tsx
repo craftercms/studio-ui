@@ -17,7 +17,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import ToolPanel from './ToolPanel';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import List from '@material-ui/core/List';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
@@ -48,6 +48,10 @@ const translations = defineMessages({
   componentsPanel: {
     id: 'craftercms.ice.components.title',
     defaultMessage: 'Components'
+  },
+  browse: {
+    id: 'craftercms.ice.components.browse',
+    defaultMessage: 'Browse existing instances'
   }
 });
 
@@ -127,6 +131,7 @@ export function ComponentsPanelUI(props) {
 
   const contentTypes = componentTypesResource.read();
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
 
   const hostToGuest$ = getHostToGuestBus();
   const [menuContext, setMenuContext] = useState<{ anchor: Element, contentType: ContentType }>();
@@ -172,7 +177,7 @@ export function ComponentsPanelUI(props) {
         onClose={onMenuClose}
       >
         <MenuItem onClick={onMenuOptionClicked}>List in-page instances</MenuItem>
-        <MenuItem onClick={onBrowseSharedInstancesClicked}>Browse "shared" instances</MenuItem>
+        <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
         <MenuItem onClick={onMenuOptionClicked}>List welcoming receptacles</MenuItem>
       </Menu>
 

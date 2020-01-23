@@ -173,7 +173,7 @@ export default function BrowseComponentsPanel() {
     }
   });
   const { formatMessage } = useIntl();
-  const AUTHORING_BASE = useSelection<string>(state => state.env.AUTHORING_BASE);
+  const authoringBase = useSelection<string>(state => state.env.AUTHORING_BASE);
   const hostToGuest$ = getHostToGuestBus();
 
   const onDragStart = (item: ContentInstance) => hostToGuest$.next({
@@ -247,7 +247,7 @@ export default function BrowseComponentsPanel() {
             onPageChanged={onPageChanged}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
-            AUTHORING_BASE={AUTHORING_BASE}
+            chooseContentTypeImageUrl={`${authoringBase}/static-assets/images/choose_option.svg`}
           />
         </React.Suspense>
       </ErrorBoundary>
@@ -263,7 +263,7 @@ function BrowsePanelUI(props) {
     onPageChanged,
     onDragStart,
     onDragEnd,
-    AUTHORING_BASE,
+    chooseContentTypeImageUrl,
   } = props;
   const { formatMessage } = useIntl();
   const components: ComponentResource = componentsResource.read();
@@ -312,7 +312,7 @@ function BrowsePanelUI(props) {
         ) : (
           <EmptyState
             title={formatMessage(translations.chooseContentType)}
-            image={`${AUTHORING_BASE}/static-assets/images/choose_option.svg`}
+            image={chooseContentTypeImageUrl}
             classes={{ root: classes.emptyState, image: classes.emptyStateImage, title: classes.emptyStateTitle }}
           />
         )
