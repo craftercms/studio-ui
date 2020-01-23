@@ -172,18 +172,13 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   const { formatMessage } = useIntl();
 
   const handleDateChange = (name: string) => (newDate: Date | null) => {
-    let updatedDateTime = dateMoment._isValid ? dateMoment : moment();
+    let updatedDateTime = moment(newDate);
 
     switch (name) {
       case 'scheduledDate':
-        updatedDateTime.date(newDate.getDate());
-        updatedDateTime.month(newDate.getMonth());
-        updatedDateTime.year(newDate.getFullYear());
         datePickerProps?.onDateChange?.(updatedDateTime.format(datePickerProps.dateFormat));
         break;
       case 'scheduledTime':
-        updatedDateTime.hours(newDate.getHours());
-        updatedDateTime.minutes(newDate.getMinutes());
         timePickerProps?.onTimeChange?.(updatedDateTime.format(timePickerProps.timeFormat));
         break;
     }
