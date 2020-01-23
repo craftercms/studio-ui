@@ -193,9 +193,9 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 }
 
 export default function AudiencesPanel() {
-  const state = useSelection<GlobalState['preview']['audiencesPanel']>(state => state.preview.audiencesPanel);
+  const panelState = useSelection<GlobalState['preview']['audiencesPanel']>(state => state.preview.audiencesPanel);
   const resource = useStateResource(
-    state,
+    panelState,
     {
       shouldRenew: (source, resource) => resource.complete && nou(source.contentType),
       shouldResolve: source => (!source.isFetching) && nnou(source.contentType) && nnou(source.model),
@@ -228,9 +228,9 @@ export default function AudiencesPanel() {
       >
         <AudiencesPanelUI
           audiencesResource={resource}
-          model={state.model}
-          modelApplying={state.isApplying}
-          modelApplied={state.applied}
+          model={panelState.model}
+          modelApplying={panelState.isApplying}
+          modelApplied={panelState.applied}
           onChange={onChange}
           onSaveModel={saveModel}
         />
