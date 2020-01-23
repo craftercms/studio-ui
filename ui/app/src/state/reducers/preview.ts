@@ -273,7 +273,8 @@ const reducer = createReducer<GlobalState['preview']>({
     ...state,
     audiencesPanel: {
       ...state.audiencesPanel,
-      isFetching: true
+      isFetching: true,
+      error: null
     }
   }),
   [FETCH_AUDIENCES_PANEL_FORM_DEFINITION_COMPLETE]: (state, { payload }) => {
