@@ -28,8 +28,8 @@ import sites from '../services/sites';
 import marketplace from '../services/marketplace';
 import publishing from '../services/publishing';
 import content from '../services/content';
-import { Subject, fromEvent, forkJoin } from 'rxjs';
-import { filter, map, take, catchError } from 'rxjs/operators';
+import { forkJoin, fromEvent, Subject } from 'rxjs';
+import { filter, map, take } from 'rxjs/operators';
 import { IntlShape } from 'react-intl/src/types';
 import messages, { translateElements } from './i18n-legacy';
 import babel from '../utils/babelHelpers-legacy';
@@ -99,12 +99,13 @@ export function createCodebaseBridge() {
       DependencySelection: lazy(() => import('../components/DependencySelection')),
       DependecySelectionDelete: lazy(() => (
         import('../components/DependencySelection')
-          .then(module => ({
-            default: module.DependencySelectionDelete
-          }))
+        .then(module => ({
+          default: module.DependencySelectionDelete
+        }))
       )),
       CreateSiteDialog: lazy(() => import('../components/CreateSiteDialog')),
-      PublishingQueue: lazy(() => import('../components/PublishingQueue'))
+      PublishingQueue: lazy(() => import('../components/PublishingQueue')),
+      EncryptTool: lazy(() => import('../components/EncryptTool'))
     },
 
     assets: {

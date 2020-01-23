@@ -32,7 +32,7 @@
         keywords: "",
         filters: {},
         sortBy: "_score",      // sortBy has value by default, so numFilters starts at 1
-        sortOrder: "asc",
+      sortOrder: "desc",
         numFilters: 1,
         filtersShowing: 10,
         currentPage: 1,
@@ -210,9 +210,11 @@
             }else{
                 filterValue = $(this).val();
                 if(filterValue === '_score') {
-                  $('.filter-item .sort-dropdown[name="sortBy"]').val('desc');
+                  $('.filter-item .sort-dropdown[name="sortOrder"]').val('desc');
+                  CStudioSearch.searchContext['sortOrder'] = 'desc';
                 } else if(CStudioSearch.searchContext[filterName] === '_score'){
-                  $('.filter-item .sort-dropdown[name="sortBy"]').val('asc');
+                  $('.filter-item .sort-dropdown[name="sortOrder"]').val('asc');
+                  CStudioSearch.searchContext['sortOrder'] = 'asc'
                 }
             }
 
