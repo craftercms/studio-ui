@@ -27,7 +27,7 @@ import { useSelection, useStateResource } from '../../../utils/hooks';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import LoadingState from '../../../components/SystemStatus/LoadingState';
 import { useDispatch } from 'react-redux';
-import { setActiveModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
+import { setActiveTargetingModel, updateAudiencesPanelModel } from '../../../state/actions/preview';
 import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { nnou, nou } from '../../../utils/object';
 import GlobalState from '../../../models/GlobalState';
@@ -154,28 +154,28 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
         <>
           <Grid className={classes.PanelMargin}>
             {
-              Object.keys(contentType.fields).map((field: string) => {
-                const type = contentType.fields[field].type;
+              Object.keys(contentType.fields).map((fieldId: string) => {
+                const type = contentType.fields[fieldId].type;
                 const Control = controlsMap[type];
 
                 const controlProps = {
-                  field: contentType.fields[field],
-                  value: model[field] ?? undefined,
-                  onChange: onFieldChange(field, type),
+                  field: contentType.fields[fieldId],
+                  value: model[fieldId] ?? undefined,
+                  onChange: onFieldChange(fieldId, type),
                   disabled: modelApplying
                 };
 
-                if (controlProps.field.type === 'date-time' && model[`${field}_tz`]) {
-                  controlProps['timezone'] = model[`${field}_tz`];
+                if (controlProps.field.type === 'date-time' && model[`${fieldId}_tz`]) {
+                  controlProps['timezone'] = model[`${fieldId}_tz`];
                 }
 
                 return (
-                  <AudiencesFormSection field={contentType.fields[field]} key={field} showDivider>
+                  <AudiencesFormSection field={contentType.fields[fieldId]} key={fieldId} showDivider>
                     <Control
                       {...controlProps}
                     />
                   </AudiencesFormSection>
-                )
+                );
               })
             }
           </Grid>
@@ -220,7 +220,7 @@ export default function AudiencesPanel() {
   };
 
   const saveModel = () => {
-    dispatch(setActiveModel());
+    dispatch(setActiveTargetingModel());
   };
 
   return (
