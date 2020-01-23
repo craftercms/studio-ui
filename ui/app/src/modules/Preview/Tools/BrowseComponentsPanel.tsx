@@ -25,7 +25,7 @@ import { ErrorBoundary } from "../../../components/ErrorBoundary";
 import LoadingState from "../../../components/SystemStatus/LoadingState";
 import { createStyles, makeStyles } from "@material-ui/core";
 import ContentInstance from '../../../models/ContentInstance';
-import { PanelListItem } from "./PanelListItem";
+import { DraggablePanelListItem } from "./DraggablePanelListItem";
 import List from "@material-ui/core/List";
 import {
   COMPONENT_INSTANCE_DRAG_ENDED,
@@ -292,7 +292,7 @@ function BrowsePanelUI(props) {
             <List className={classes.list}>
               {
                 items.map((item: ContentInstance) =>
-                  <PanelListItem
+                  <DraggablePanelListItem
                     key={item.craftercms.id}
                     primaryText={item.craftercms.label}
                     onDragStart={() => onDragStart(item)}

@@ -53,7 +53,7 @@ interface PanelListItemProps {
   onMenu?: (anchor: Element) => any;
 }
 
-export function PanelListItem(props: PanelListItemProps) {
+export function DraggablePanelListItem(props: PanelListItemProps) {
   const classes = useStyles({});
   const {
     onMenu,

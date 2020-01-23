@@ -41,7 +41,7 @@ import { usePreviewState, useStateResourceSelection } from '../../../utils/hooks
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { EntityState } from '../../../models/GlobalState';
 import { nnou } from '../../../utils/object';
-import { PanelListItem } from './PanelListItem';
+import { DraggablePanelListItem } from './DraggablePanelListItem';
 import { useDispatch } from "react-redux";
 
 const translations = defineMessages({
@@ -159,7 +159,7 @@ export function ComponentsPanelUI(props) {
       <List className={classes.root}>
         {
           componentTypes.map((contentType) =>
-            <PanelListItem
+            <DraggablePanelListItem
               key={contentType.id}
               primaryText={contentType.name}
               secondaryText={contentType.id}
