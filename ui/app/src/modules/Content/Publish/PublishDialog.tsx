@@ -115,7 +115,7 @@ function PublishDialog(props: PublishDialogProps) {
   const [open, setOpen] = React.useState(true);
   const [dialog, setDialog] = useReducer((a, b) => ({ ...a, ...b }), {
     ...dialogInitialState,
-    'scheduling': scheduling
+    scheduling
   });
   const [publishingChannels, setPublishingChannels] = useState(null);
   const [publishingChannelsStatus, setPublishingChannelsStatus] = useState('Loading');
