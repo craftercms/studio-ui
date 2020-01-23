@@ -208,41 +208,43 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   return (
     <FormControl {...formControlProps}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        {controls.includes('date') &&
-        <KeyboardDatePicker
-          format="MM/dd/yyyy"
-          margin="normal"
-          value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
-          onChange={handleDateChange('scheduledDate')}
-          className={classes.picker}
-          InputAdornmentProps={{
-            className: classes.pickerButton
-          }}
-          inputProps={{
-            className: classes.pickerInput
-          }}
-          placeholder={formatMessage(translations.datePlaceholder)}
-          disabled={disabled}
-          disablePast={datePickerProps.disablePast}
-        />
+        {
+          controls.includes('date') &&
+          <KeyboardDatePicker
+            format="MM/dd/yyyy"
+            margin="normal"
+            value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
+            onChange={handleDateChange('scheduledDate')}
+            className={classes.picker}
+            InputAdornmentProps={{
+              className: classes.pickerButton
+            }}
+            inputProps={{
+              className: classes.pickerInput
+            }}
+            placeholder={formatMessage(translations.datePlaceholder)}
+            disabled={disabled}
+            disablePast={datePickerProps.disablePast}
+          />
         }
 
-        {controls.includes('time') &&
-        <KeyboardTimePicker
-          margin="normal"
-          value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
-          onChange={handleDateChange('scheduledTime')}
-          keyboardIcon={<AccessTimeIcon/>}
-          className={classes.picker}
-          InputAdornmentProps={{
-            className: classes.pickerButton
-          }}
-          inputProps={{
-            className: classes.pickerInput
-          }}
-          placeholder={formatMessage(translations.timePlaceholder)}
-          disabled={disabled}
-        />
+        {
+          controls.includes('time') &&
+          <KeyboardTimePicker
+            margin="normal"
+            value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
+            onChange={handleDateChange('scheduledTime')}
+            keyboardIcon={<AccessTimeIcon/>}
+            className={classes.picker}
+            InputAdornmentProps={{
+              className: classes.pickerButton
+            }}
+            inputProps={{
+              className: classes.pickerInput
+            }}
+            placeholder={formatMessage(translations.timePlaceholder)}
+            disabled={disabled}
+          />
         }
       </MuiPickersUtilsProvider>
 
