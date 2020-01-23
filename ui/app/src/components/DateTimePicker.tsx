@@ -163,7 +163,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
     datePickerProps['disablePast'] = false;
   }
   if (nou(timePickerProps.timeFormat)) {
-    timePickerProps['timeFormat'] = 'HH:MM:ss';
+    timePickerProps['timeFormat'] = 'HH:mm';
   }
 
   let dateMoment;
@@ -172,7 +172,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
   const { formatMessage } = useIntl();
 
   const handleDateChange = (name: string) => (newDate: Date | null) => {
-    let updatedDateTime = dateMoment;
+    let updatedDateTime = dateMoment._isValid ? dateMoment : moment();
 
     switch (name) {
       case 'scheduledDate':
@@ -193,7 +193,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
 
   const handleTimezoneChange = () => (event: React.ChangeEvent<{}>, timezoneObj: any) => {
     const timezone = timezoneObj.timezoneName,
-      updatedDateTime = moment.tz(dateMoment.format(), `${datePickerProps.dateFormat} ${timePickerProps.timeFormat} A`, timezone);
+      updatedDateTime = moment.tz(dateMoment.format(), `${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`, timezone);
 
     timeZonePickerProps?.onTimezoneChange?.(timezone);
     datePickerProps?.onDateChange?.(updatedDateTime.format(datePickerProps.dateFormat));
@@ -216,33 +216,33 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
           onChange={handleDateChange('scheduledDate')}
           className={classes.picker}
           InputAdornmentProps={{
-              className: classes.pickerButton
-            }}
+            className: classes.pickerButton
+          }}
           inputProps={{
             className: classes.pickerInput
           }}
           placeholder={formatMessage(translations.datePlaceholder)}
           disabled={disabled}
           disablePast={datePickerProps.disablePast}
-          />
+        />
         }
 
-        { controls.includes('time') &&
-          <KeyboardTimePicker
-            margin="normal"
-            value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
-            onChange={handleDateChange('scheduledTime')}
-            keyboardIcon={<AccessTimeIcon />}
-            className={classes.picker}
-            InputAdornmentProps={{
-              className: classes.pickerButton
-            }}
-            inputProps={{
-              className: classes.pickerInput
-            }}
-            placeholder={formatMessage(translations.timePlaceholder)}
-            disabled={disabled}
-          />
+        {controls.includes('time') &&
+        <KeyboardTimePicker
+          margin="normal"
+          value={dateMoment.format(`${datePickerProps.dateFormat} ${timePickerProps.timeFormat}`)}
+          onChange={handleDateChange('scheduledTime')}
+          keyboardIcon={<AccessTimeIcon/>}
+          className={classes.picker}
+          InputAdornmentProps={{
+            className: classes.pickerButton
+          }}
+          inputProps={{
+            className: classes.pickerInput
+          }}
+          placeholder={formatMessage(translations.timePlaceholder)}
+          disabled={disabled}
+        />
         }
       </MuiPickersUtilsProvider>
 
@@ -269,7 +269,7 @@ const DateTimePicker = withStyles(dateTimePickerStyles)((props: DateTimePickerPr
         />
       }
     </FormControl>
-  )
+  );
 });
 
 export default DateTimePicker;
