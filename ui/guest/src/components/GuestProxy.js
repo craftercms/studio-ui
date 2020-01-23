@@ -22,7 +22,6 @@ import {
   INSERT_COMPONENT_OPERATION,
   INSERT_INSTANCE_OPERATION,
   notNullOrUndefined,
-  stripEscapedHtmlTags,
   UPDATE_FIELD_VALUE_OPERATION
 } from '../util';
 import { useGuestContext } from './GuestContext';
@@ -64,7 +63,7 @@ export function GuestProxy(props) {
 
     };
 
-    const registerDeregisterElements = (collection, type, newIndex, oldIndex) => {
+    const updateElementRegistrations = (collection, type, newIndex, oldIndex) => {
       if (type === 'insert') {
         collection.slice(newIndex).forEach((el, i) => {
           $(el).attr('data-craftercms-index', newIndex + i);
@@ -155,7 +154,7 @@ export function GuestProxy(props) {
           // Update attribute(s)
           // $el.attr('data-craftercms-index', newIndex);
 
-          registerDeregisterElements(Array.from($el.parent().children()), 'move', newIndex, index);
+          updateElementRegistrations(Array.from($el.parent().children()), 'move', newIndex, index);
 
           // Re-register with updates
           // registerElement(phyRecord.element);
@@ -284,7 +283,7 @@ export function GuestProxy(props) {
             $clone.insertBefore($siblings.eq(targetIndex));
           }
 
-          registerDeregisterElements(Array.from($daddy.children()), 'insert', targetIndex);
+          updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
 
           break;
         }
@@ -296,10 +295,8 @@ export function GuestProxy(props) {
           if ($clone.length) {
             Object.keys(instance).forEach((field) => {
               if (!field.endsWith('_o') && field !== 'craftercms') {
-                //cleaning CDATA and escapedhtmltags
-                let value = instance[field].replace("<![CDATA[", "").replace("]]>", "");
-                value = stripEscapedHtmlTags(value);
-                $clone.find(`[data-craftercms-field-id="${field}"]`).html(value);
+                //value = stripEscapedHtmlTags(value);
+                $clone.find(`[data-craftercms-field-id="${field}"]`).html(instance[field]);
               }
             });
           } else {
@@ -316,7 +313,7 @@ export function GuestProxy(props) {
             $clone.insertBefore($siblings.eq(targetIndex));
           }
 
-          registerDeregisterElements(Array.from($daddy.children()), 'insert', targetIndex);
+          updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex);
 
           break;
         }

@@ -42,7 +42,7 @@ const fetch: Epic = (action$, state$) => action$.pipe(
 const fetchComponentsByContentType: Epic = (action$, state$: Observable<GlobalState>) => action$.pipe(
   ofType(FETCH_COMPONENTS_BY_CONTENT_TYPE),
   withLatestFrom(state$),
-  switchMap(([, state]) => getContentByContentType(state.sites.active, state.preview.components.contentTypeFilter, state.preview.components.query).pipe(
+  switchMap(([, state]) => getContentByContentType(state.sites.active, state.preview.components.contentTypeFilter, state.contentTypes.byId, state.preview.components.query).pipe(
     map(fetchComponentsByContentTypeComplete),
     catchAjaxError(fetchComponentsByContentTypeFailed)
   ))

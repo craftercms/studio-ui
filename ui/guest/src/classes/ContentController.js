@@ -316,7 +316,13 @@ export class ContentController {
       }
     });
 
-    post(INSERT_INSTANCE_OPERATION, { modelId, fieldId, targetIndex, instance });
+    post(INSERT_INSTANCE_OPERATION, {
+      modelId,
+      fieldId,
+      targetIndex,
+      instance,
+      parentModelId: getParentModelId(modelId, models, this.children)
+    });
 
     ContentController.operations$.next({
       type: INSERT_INSTANCE_OPERATION,

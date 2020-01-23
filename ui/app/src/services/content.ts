@@ -49,36 +49,95 @@ export function getDOM(site: string, path: string): Observable<XMLDocument> {
   return getContent(site, path).pipe(map(fromString));
 }
 
-export function getContentInstance(site: string, path: string): Observable<ContentInstance> {
-  return getDOM(site, path).pipe(map(doc => parseContentXML(doc, path)))
+export function getContentInstance(site: string, path: string, contentTypesList: LookupTable<ContentType>): Observable<ContentInstance> {
+  // @ts-ignore
+  return getDOM(site, path).pipe(map(doc => {
+      const lookup = {};
+      parseContentXML(doc, path, contentTypesList, lookup);
+      // WIP
+      return Object.values(lookup)[0];
+      // return lookup;
+    }
+  ));
 }
 
-function parseContentXML(doc: XMLDocument, path: string = null, parseContent = null): ContentInstance {
-  if (!parseContent) {
-    return parseContentXML(doc, path, {
-      craftercms: {
-        id: getInnerHtml(doc.querySelector('objectId')),
-        path,
-        label: getInnerHtml(doc.querySelector('internal-name')),
-        locale: null,
-        dateCreated: getInnerHtml(doc.querySelector('createdDate_dt')),
-        dateModified: getInnerHtml(doc.querySelector('lastModifiedDate_dt')),
-        contentType: getInnerHtml(doc.querySelector('content-type'))
-      },
-    })
-  } else {
-    if (doc.documentElement.children.length) {
-      let element = doc.documentElement.children[0];
-      let tagName = element.tagName;
-      if (!skippableList.includes(tagName)) {
-        parseContent[tagName] = tagName.endsWith('_o') ? [] : element.innerHTML;
-      }
-      doc.documentElement.children[0].remove();
-      return parseContentXML(doc, path, parseContent);
-    } else {
-      return parseContent;
-    }
+//sent an id compuesto?
+function parseElementByContentType(id: string, element: Element, contentTypesList: LookupTable<ContentType>, contentType: string, lookup: LookupTable<ContentInstance>) {
+  let tagName = element.tagName;
+  let type = contentTypesList[contentType].fields[tagName]?.type;
+  switch (type) {
+    case 'repeat':
+      debugger;
+      Array.from(element.children).forEach((item) => {
+        Array.from(item.children).forEach((child) => {
+          let childTagName = child.tagName;
+          //social_media_links_o
+          //parseElementByContentType()
+          lookup[id][tagName][childTagName] = getInnerHtml(element);
+        })
+      });
+      break;
+    case 'node-selector':
+      //lookup[id][tagName] = [...lookup[id][tagName], element.querySelector('objectId')];
+      break;
+    case 'html':
+      //TODO:decode
+      lookup[id][tagName] = getInnerHtml(element);
+      break;
+    default:
+      lookup[id][tagName] = getInnerHtml(element);
+      break;
   }
+}
+
+function parseContentXML(doc: XMLDocument, path: string = null, contentTypesList: LookupTable<ContentType>, lookup: LookupTable<ContentInstance>): void {
+  const id = getInnerHtml(doc.querySelector('objectId'));
+  const contentType = getInnerHtml(doc.querySelector('content-type'));
+  lookup[id] = {
+    craftercms: {
+      id,
+      path,
+      label: getInnerHtml(doc.querySelector('internal-name')),
+      locale: null,
+      dateCreated: getInnerHtml(doc.querySelector('createdDate_dt')),
+      dateModified: getInnerHtml(doc.querySelector('lastModifiedDate_dt')),
+      contentType
+    }
+  };
+  Array.from(doc.documentElement.children).forEach((element: Element) => {
+    if (!skippableList.includes(element.tagName)) {
+      //lookup[id][tagName] = parseElementByContentType(id, element, contentTypesList[contentType].fields[tagName].type, lookup)
+      parseElementByContentType(id, element, contentTypesList, contentType, lookup)
+    }
+  });
+
+  console.log(lookup);
+  //   let element = doc.documentElement.children[0];
+  //   let tagName = element.tagName;
+  //   if (!skippableList.includes(tagName)) {
+  //     parseContent[tagName] = tagName.endsWith('_o') ? [] : getInnerHtml(element);
+  //     //parseContent[tagName] = parseContentXML(doc, path, {})
+  //   }
+
+
+  // getContentType()
+  //forEachChildren
+  // repeatField iteracion 2
+  // nodeselector, extrae ids, en array
+  // foreach nodeselector = ['123123','123123'] && parseContent(doc.component, loockup); //check if shared || embedded
+  // if (doc.documentElement.children.length) {
+  //   let element = doc.documentElement.children[0];
+  //   let tagName = element.tagName;
+  //   if (!skippableList.includes(tagName)) {
+  //     parseContent[tagName] = tagName.endsWith('_o') ? [] : getInnerHtml(element);
+  //     //parseContent[tagName] = parseContentXML(doc, path, {})
+  //   }
+  //   doc.documentElement.children[0].remove();
+  //   return parseContentXML(doc, path, parseContent);
+  // } else {
+  //   return parseContent;
+  // }
+
 }
 
 const skippableList = [
@@ -89,6 +148,7 @@ const skippableList = [
   'objectGroupId',
   'objectId',
   'file-name',
+  'folder-name',
   'internal-name',
   'disabled',
   'createdDate',
@@ -616,10 +676,13 @@ export function insertInstance(
   fieldId: string,
   targetIndex: number,
   instance: ContentInstance,
+  parentModelId: string = null,
 ): Observable<any> {
-  return getDOM(site, modelId).pipe(
-    switchMap((doc) => {
-
+  return performMutation(
+    site,
+    modelId,
+    parentModelId,
+    doc => {
       const qs = {
         site,
         path: modelId,
@@ -628,14 +691,11 @@ export function insertInstance(
       };
 
       const id = instance.craftercms.id;
-      // TODO: Hardcoded value. Retrieve properly.
       const pathBase = `/site/components/${instance.craftercms.contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
       const path = `${pathBase}/${id}.xml`;
 
-      // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = doc.createElement('item');
 
-      // Add the child elements into the `item` node
       createElements(doc, newItem, {
         '@attributes': {
           // TODO: Hardcoded value. Fix.
@@ -651,16 +711,12 @@ export function insertInstance(
 
       let fieldNode = doc.querySelector(`:scope > ${fieldId}`);
 
-      // Fields not initialized will not be present in the document
-      // and we'd rather need to create it.
       if (nou(fieldNode)) {
         fieldNode = doc.createElement(fieldId);
         fieldNode.setAttribute('item-list', 'true');
         doc.documentElement.appendChild(fieldNode);
       }
 
-      // Since this operation only deals with components (i.e. no repeat groups)
-      // using `item` as a selector instead of a generic `> *` selection.
       const itemList = fieldNode.querySelectorAll(`:scope > item`);
 
       if (itemList.length === targetIndex) {
@@ -673,8 +729,7 @@ export function insertInstance(
         writeContentUrl(qs),
         serialize(doc)
       );
-
-    })
+    }
   );
 }
 
@@ -767,9 +822,9 @@ export function deleteItem(
   );
 }
 
-export function getContentByContentType(site: string, contentType: string, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[], options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
-export function getContentByContentType(site: string, contentTypes: string[] | string, options?: ComponentsContentTypeParams): Observable<SearchContentInstance> {
+export function getContentByContentType(site: string, contentType: string, contentTypesList: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[], contentTypesList: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance>;
+export function getContentByContentType(site: string, contentTypes: string[] | string, contentTypesList: LookupTable<ContentType>, options?: ComponentsContentTypeParams): Observable<SearchContentInstance> {
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
@@ -791,7 +846,7 @@ export function getContentByContentType(site: string, contentTypes: string[] | s
       of(count),
       paths.length ? forkJoin(
         paths.reduce<LookupTable<Observable<ContentInstance>>>((hash, path) => {
-          hash[path] = getContentInstance(site, path);
+          hash[path] = getContentInstance(site, path, contentTypesList);
           return hash;
         }, {})
       ) : of({})

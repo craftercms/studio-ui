@@ -169,13 +169,14 @@ export function PreviewConcierge(props: any) {
           break;
         }
         case INSERT_INSTANCE_OPERATION:
-          const { modelId, fieldId, targetIndex, instance } = payload;
+          const { modelId, fieldId, targetIndex, instance, parentModelId } = payload;
           insertInstance(
             site,
-            guest.models[modelId].craftercms.path,
+            parentModelId ? modelId : guest.models[modelId].craftercms.path,
             fieldId,
             targetIndex,
-            instance
+            instance,
+            parentModelId ? guest.models[parentModelId].craftercms.path : null
           ).subscribe(
             () => {
               setSnack({ message: 'Insert component operation completed.' });
